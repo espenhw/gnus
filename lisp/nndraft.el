@@ -199,9 +199,19 @@
 (deffoo nndraft-request-move-article (article group server
 					      accept-form &optional last)
   (nndraft-possibly-change-group group)
-  (let ((nnmh-allow-delete-final t))
-    (nnoo-parent-function 'nndraft 'nnmh-request-move-article
-			  (list article group server accept-form last))))
+  (let ((buf (get-buffer-create " *nndraft move*"))
+	result)
+    (and
+     (nndraft-request-article article group server)
+     (save-excursion
+       (set-buffer buf)
+       (erase-buffer)
+       (insert-buffer-substring nntp-server-buffer)
+       (setq result (eval accept-form))
+       (kill-buffer (current-buffer))
+       result)
+     (null (nndraft-request-expire-articles (list article) group server 'force))
+     result)))
 
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)

@@ -1,3 +1,10 @@
+2003-12-15  Simon Josefsson  <jas@extundo.com>
+
+	* nndraft.el (nndraft-request-move-article): Copy definition of
+	nnmh-request-move-article instead of calling it, because the nnmh
+	version uses nnmh-request-article which isn't the same as the
+	nndraft version.
+
 2003-12-13  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: added some gnus-registry autoloads
