@@ -1359,10 +1359,11 @@ on failure."
   "Return number of lines in article by looking at the mime bodystructure BODY."
   (if (listp body)
       (if (stringp (car body))
-	  (cond ((and (string= (car body) "TEXT")
+          ;; upcase for bug in courier imap server
+	  (cond ((and (string= (upcase (car body)) "TEXT")
 		      (numberp (nth 7 body)))
 		 (nth 7 body))
-		((and (string= (car body) "MESSAGE")
+		((and (string= (upcase (car body)) "MESSAGE")
 		      (numberp (nth 9 body)))
 		 (nth 9 body))
 		(t 0))
