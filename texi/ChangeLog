@@ -1,3 +1,8 @@
+2004-10-26  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Hashcash): Fix URL.  Add pref to spam section.
+	(Anti-spam Hashcash Payments): No need to load hashcash.el now.
+
 2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (New Features): Add 5.11.

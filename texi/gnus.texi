@@ -22488,11 +22488,11 @@ one of them separately.
 @cindex X-Hashcash
 The ``something costly'' is to burn CPU time, more specifically to
 compute a hash collision up to a certain number of bits.  The
-resulting hashcash cookie is inserted in a @samp{X-Hashcash:}
-header.  For more details, and for the external application
-@code{hashcash} you need to install to use this feature, see
-@uref{http://www.cypherspace.org/~adam/hashcash/}.  Even more
-information can be found at @uref{http://www.camram.org/}.
+resulting hashcash cookie is inserted in a @samp{X-Hashcash:} header.
+For more details, and for the external application @code{hashcash} you
+need to install to use this feature, see
+@uref{http://www.hashcash.org/}.  Even more information can be found
+at @uref{http://www.camram.org/}.
 
 If you wish to generate hashcash for each message you send, you can
 customize @code{message-generate-hashcash} (@pxref{Mail Headers, ,Mail
@@ -22537,7 +22537,8 @@ hand customized mail filtering scripts.  To verify a hashcash cookie
 in a message, use the @code{mail-check-payment} function in the
 @code{hashcash.el} library.  You can also use the @code{spam.el}
 package with the @code{spam-use-hashcash} backend to validate hashcash
-cookies in incoming mail and filter mail accordingly.
+cookies in incoming mail and filter mail accordingly (@pxref{Anti-spam
+Hashcash Payments}).
 
 @node Filtering Spam Using The Spam ELisp Package
 @subsection Filtering Spam Using The Spam ELisp Package
@@ -23352,12 +23353,10 @@ Gmane provides.
 
 Similar to @code{spam-use-whitelist} (@pxref{Blacklists and
 Whitelists}), but uses hashcash tokens for whitelisting messages
-instead of the sender address.  You must have the @code{hashcash.el}
-package loaded for @code{spam-use-hashcash} to work properly.
-Messages without a hashcash payment token will be sent to the next
-spam-split rule.  This is an explicit filter, meaning that unless a
-hashcash token is found, the messages are not assumed to be spam or
-ham.
+instead of the sender address.  Messages without a hashcash payment
+token will be sent to the next spam-split rule.  This is an explicit
+filter, meaning that unless a hashcash token is found, the messages
+are not assumed to be spam or ham.
 
 @end defvar
 
