@@ -4779,7 +4779,7 @@ or a straight list of headers."
 	      gnus-newsgroup-data)
 	(gnus-summary-insert-line
 	 header 0 number
-	 (memq article gnus-newsgroup-undownloaded)
+	 (memq number gnus-newsgroup-undownloaded)
 	 mark (memq number gnus-newsgroup-replied)
 	 (memq number gnus-newsgroup-expirable)
 	 (mail-header-subject header) nil
