@@ -1,3 +1,8 @@
+2000-10-27  Jason Rumney  <jasonr@gnu.org>
+
+	* gnus-art.el (gnus-signature-face): Use italic on any frame that
+	supports it.
+
 2000-10-27 14:19:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-mlspl.el: Require cl when compiling.
@@ -15,6 +20,10 @@
 	* ietf-drums.el: Require cl when compiling.
 
 2000-10-27  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el (gnus-article-x-face-command): Check
+	gnus-article-compface-xbm.
+	(gnus-treat-display-xface): Check for uncompface.
 
 	* nnheader.el (nnheader-translate-file-chars): Only kludge things
 	under Doze with XEmacs.
