@@ -1,3 +1,10 @@
+2001-07-27 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-large-newsgroup): If it is nil, ...
+
+	* gnus-art.el (gnus-mime-view-all-parts): buffer-read-only covers
+	mm-display-parts too.
+
 2001-07-27 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-request-accept-article): Bind
@@ -735,7 +742,7 @@
 
 2001-06-03  Dale Hagglund  <rdh@best.com>
 
-       * gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
+	* gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
        restrict clauses.
 
 2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>

@@ -1224,7 +1224,8 @@ newsgroups."
 (defcustom gnus-large-newsgroup 200
   "*The number of articles which indicates a large newsgroup.
 If the number of articles in a newsgroup is greater than this value,
-confirmation is required for selecting the newsgroup."
+confirmation is required for selecting the newsgroup.
+If it is `nil', no confirmation is required."
   :group 'gnus-group-select
   :type 'integer)
 

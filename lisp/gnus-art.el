@@ -3310,8 +3310,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(goto-char (point-min))
 	(or (search-forward "\n\n") (goto-char (point-max)))
 	(let (buffer-read-only)
-	  (delete-region (point) (point-max)))
-	(mm-display-parts handles)))))
+	  (delete-region (point) (point-max))
+	  (mm-display-parts handles))))))
 
 (defun gnus-mime-save-part-and-strip ()
   "Save the MIME part under point then replace it with an external body."
