@@ -1134,12 +1134,7 @@ this is a reply."
 				group (gnus-status-message method))
 		  (sit-for 2))
 		(when (and group-art gnus-inews-mark-gcc-as-read)
-		  (let ((active (gnus-active group)))
-		    (if active
-			(if (< (cdr active) (cdr group-art))
-			    (gnus-set-active group (cons (car active)
-							 (cdr group-art))))
-		      (gnus-activate-group group)))
+		  (gnus-activate-group group)
 		  (let ((buffer (gnus-summary-buffer-name group))
 			(mark gnus-read-mark)
 			(article (cdr group-art)))
