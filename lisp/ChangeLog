@@ -1,3 +1,8 @@
+2001-12-05 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el: Lower case for the description line. Sync from the
+	Emacs CVS.
+
 2001-12-05 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-find-new-groups): Fix doc. 
