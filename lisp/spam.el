@@ -849,26 +849,30 @@ Respects the process/prefix convention."
 (defun spam-fetch-field-message-id-fast (article &optional prepared-data-header)
   (spam-fetch-field-fast article 'message-id prepared-data-header))
 
-(defun spam-generate-fake-headers (article &optional dh)
-  (concat
-   (format "From: %s\n" (spam-fetch-field-fast article 'from dh))
-   (format "Subject: %s\n" (spam-fetch-field-fast article 'subject dh))
-   (format "Message-ID: %s\n" (spam-fetch-field-fast article 'message-id dh))
-   (format "Date: %s\n" (spam-fetch-field-fast article 'date dh))
-   (format "References: %s\n" (spam-fetch-field-fast article 'references dh))
-   (format "Xref: %s\n" (spam-fetch-field-fast article 'xref dh))
-   (when (spam-fetch-field-fast article 'extra dh)
-     (format "%s\n" (spam-fetch-field-fast article 'extra dh)))))
-
-(defun spam-insert-fake-headers (article)
+(defun spam-generate-fake-headers (article)
   (let ((dh (spam-fetch-article-header article)))
     (if dh
-	(insert (spam-generate-fake-headers article dh))
-;      (debug article gnus-newsgroup-data)
-)))
+	(concat
+	 (format 
+	  (concat "From: %s\nSubject: %s\nMessage-ID: %s\n"
+		  "Date: %s\nReferences: %s\nXref: %s\n")
+	  (spam-fetch-field-fast article 'from dh)
+	  (spam-fetch-field-fast article 'subject dh)
+	  (spam-fetch-field-fast article 'message-id dh)
+	  (spam-fetch-field-fast article 'date dh)
+	  (spam-fetch-field-fast article 'references dh)
+	  (spam-fetch-field-fast article 'xref dh))
+	 (when (spam-fetch-field-fast article 'extra dh)
+	   (format "%s\n" (spam-fetch-field-fast article 'extra dh))))
+      (gnus-error
+       5
+       "spam-generate-fake-headers: article %d didn't have a valid header"
+       article))))
 
 (defun spam-fetch-article-header (article)
-  (nth 3 (gnus-data-find article)))
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (nth 3 (assq article gnus-newsgroup-data))))
 
 
 ;;;; Spam determination.
@@ -1012,6 +1016,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 	 (let* ((spam-split-symbolic-return t)
 		(spam-split-symbolic-return-positive t)
+		(fake-headers (spam-generate-fake-headers article))
 		(split-return
 		 (or registry-lookup
 		     (with-temp-buffer
@@ -1020,7 +1025,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			    article
 			    group)
 			 ;; else, we fake the article
-			 (spam-insert-fake-headers article))
+			 (when fake-headers (insert fake-headers)))
 		       (if (or (null first-method)
 			       (equal first-method 'default))
 			   (spam-split)

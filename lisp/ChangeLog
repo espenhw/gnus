@@ -1,3 +1,13 @@
+2004-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-generate-fake-headers): rewrite to be simpler,
+	also under 80 char limit, and call gnus-error if needed
+	(spam-fetch-article-header): finally fixed - it was a
+	buffer-local variable (gnus-newsgroup-data)
+	(spam-find-spam): use spam-generate-fake-headers, forget about
+	spam-insert-fake-headers
+	(spam-insert-fake-headers): removed
+
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* deuglify.el (gnus-article-outlook-unwrap-lines)
