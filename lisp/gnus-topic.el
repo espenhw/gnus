@@ -212,11 +212,12 @@ If TOPIC, start with that topic."
 			 (if (member group gnus-zombie-list)
 			     gnus-level-zombie gnus-level-killed))))
       (and
-       unread				; nil means that the group is dead.
+       info				; nil means that the group is dead.
        (<= clevel level)
        (>= clevel lowest)		; Is inside the level we want.
        (or all
-	   (if (eq unread t)
+	   (if (or (eq unread t)
+		   (eq unread nil))
 	       gnus-group-list-inactive-groups
 	     (> unread 0))
 	   (and gnus-list-groups-with-ticked-articles

@@ -1,5 +1,10 @@
 1999-09-27 20:33:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-topic-find-groups): Work for unactivated
+	groups. 
+
+	* message.el (message-resend): Use message mode when prompting. 
+
 	* gnus-art.el (article-hide-headers): Mark wash.
 	(article-emphasize): Ditto.
 

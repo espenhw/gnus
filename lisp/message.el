@@ -3833,7 +3833,11 @@ Optional NEWS will use news to forward instead of mail."
 ;;;###autoload
 (defun message-resend (address)
   "Resend the current article to ADDRESS."
-  (interactive "sResend message to: ")
+  (interactive
+   (list
+    (let ((mail-abbrev-mode-regexp ""))
+      (read-from-minibuffer
+       "Resend message to: " nil message-mode-map))))
   (message "Resending message to %s..." address)
   (save-excursion
     (let ((cur (current-buffer))
