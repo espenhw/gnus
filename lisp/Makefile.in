@@ -34,6 +34,13 @@ install: clever
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
 	done
 
+install-el:
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
+	for p in *.el; do \
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
+	done
+
 tags:
 	etags *.el
 
