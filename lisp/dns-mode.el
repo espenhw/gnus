@@ -189,6 +189,8 @@ Turning on DNS mode runs `dns-mode-hook'."
 	      (message "Replaced old serial %s with %s" serial new))
 	  (error "Cannot locate serial number in SOA record"))))))
 
+;;;###autoload(add-to-list 'auto-mode-alist '("\\.soa\\'" . dns-mode))
+
 (provide 'dns-mode)
 
 ;; arch-tag: 6a179f0a-072f-49db-8b01-37b8f23998c0

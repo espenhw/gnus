@@ -1,5 +1,7 @@
 2004-09-13  Simon Josefsson  <jas@extundo.com>
 
+	* dns-mode.el: Add XEmacs auto-mode-alist autoload cookie.
+
 	* nnimap.el (nnimap-demule): Revert 2004-08-30 change.
 
 	* dns-mode.el (dns-mode): Fix menu for XEmacs, reported by Steve
