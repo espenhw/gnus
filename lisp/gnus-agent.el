@@ -1113,11 +1113,11 @@ This can be added to `gnus-select-article-hook' or
     (setq articles (sort (gnus-uncompress-sequence articles) '<))
     ;; Remove known articles.
     (when (gnus-agent-load-alist group)
-      (setq articles (gnus-list-range-intersection
-		      articles
-		      (list
-		       (cons (1+ (caar (last gnus-agent-article-alist)))
-			     (cdr (gnus-active group)))))))
+      (let ((low (1+ (caar (last gnus-agent-article-alist))))
+	    (high (cdr (gnus-active group))))
+	(when (<= low high)
+	  (setq articles (gnus-list-range-intersection
+			  articles (list (cons low high)))))))
     ;; Fetch them.
     (gnus-make-directory (nnheader-translate-file-chars
 			  (file-name-directory file) t))
