@@ -1036,6 +1036,11 @@ no, only reply back to the author."
   :group 'message-headers
   :type 'boolean)
 
+(defcustom message-insert-canlock t
+  "Whether to insert a Cancel-Lock header in news postings."
+  :group 'message-headers
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -2746,6 +2751,27 @@ to find out how to use this."
     ;; Pass it on to mh.
     (mh-send-letter)))
 
+(defun message-canlock-generate ()
+  "Return a string that is non-trival to guess.
+Do not use this for anything important, it is cryptographically weak."
+  (md5 (concat (message-unique-id)
+	       (format "%x%x%x" (random) (random t) (random))
+	       (prin1-to-string (recent-keys))
+	       (prin1-to-string (garbage-collect)))))
+
+(defun message-canlock-password ()
+  "The password used by message for cancel locks.
+This is the value of `canlock-password', if that option is non-nil.
+Otherwise, generate and save a value for `canlock-password' first."
+  (unless canlock-password
+    (customize-save-variable 'canlock-password (message-canlock-generate)))
+  canlock-password)
+
+(defun message-insert-canlock ()
+  (when message-insert-canlock
+    (message-canlock-password)
+    (canlock-insert-header)))
+
 (defun message-send-news (&optional arg)
   (let* ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
 	 (case-fold-search nil)
@@ -2789,6 +2815,7 @@ to find out how to use this."
 	(message-narrow-to-headers)
 	;; Insert some headers.
 	(message-generate-headers message-required-news-headers)
+	(message-insert-canlock)
 	;; Let the user do all of the above.
 	(run-hooks 'message-header-hook))
       ;; Note: This check will be disabled by the ".*" default value for

@@ -1,3 +1,10 @@
+2001-11-01  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-insert-canlock): New variable.
+	(message-canlock-generate, message-canlock-password) 
+	(message-insert-canlock): New functions.
+	(message-send-news): Call `message-insert-canlock'.
+
 2001-11-01 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-copy-article-buffer): Copy sequence.
