@@ -1,6 +1,6 @@
 2002-09-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-start.el (gnus-1): Create nndraft:queue.
+	* gnus-start.el (gnus-1): Create nndraft:queue, nndraft:drafts.
 
 2002-09-24  Simon Josefsson  <jas@extundo.com>
 
