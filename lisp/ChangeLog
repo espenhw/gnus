@@ -1,3 +1,8 @@
+2004-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-update-summary-mark-positions): Search for
+	dummy marks in the right way.
+
 2004-10-18  David Edmondson  <dme@dme.org>
 
 	* mm-view.el (mm-w3m-cid-retrieve-1): Don't use recursive call

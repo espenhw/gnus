@@ -3293,28 +3293,34 @@ buffer that was in action when the last article was fetched."
       (save-excursion
 	(gnus-set-work-buffer)
 	(let ((gnus-summary-line-format-spec spec)
-	      (gnus-newsgroup-downloadable '(0)))
+	      (gnus-newsgroup-downloadable '(0))
+	      marks)
+	  (insert ?\200 "\200" ?\201 "\201" ?\202 "\202" ?\203 "\203")
+	  (while (not (bobp))
+	    (push (buffer-substring (1- (point)) (point)) marks)
+	    (backward-char))
+	  (erase-buffer)
 	  (gnus-summary-insert-line
 	   [0 "" "" "05 Apr 2001 23:33:09 +0400" "" "" 0 0 "" nil]
 	   0 nil t 128 t nil "" nil 1)
 	  (goto-char (point-min))
 	  (setq pos (list (cons 'unread
-				(and (search-forward
-				      (mm-string-as-multibyte "\200") nil t)
+				(and (or (search-forward (nth 0 marks) nil t)
+					 (search-forward (nth 1 marks) nil t))
 				     (- (point) (point-min) 1)))))
 	  (goto-char (point-min))
-	  (push (cons 'replied (and (search-forward
-				     (mm-string-as-multibyte "\201") nil t)
+	  (push (cons 'replied (and (or (search-forward (nth 2 marks) nil t)
+					(search-forward (nth 3 marks) nil t))
 				    (- (point) (point-min) 1)))
 		pos)
 	  (goto-char (point-min))
-	  (push (cons 'score (and (search-forward
-				   (mm-string-as-multibyte "\202") nil t)
+	  (push (cons 'score (and (or (search-forward (nth 4 marks) nil t)
+				      (search-forward (nth 5 marks) nil t))
 				  (- (point) (point-min) 1)))
 		pos)
 	  (goto-char (point-min))
-	  (push (cons 'download (and (search-forward
-				      (mm-string-as-multibyte "\203") nil t)
+	  (push (cons 'download (and (or (search-forward (nth 6 marks) nil t)
+					 (search-forward (nth 7 marks) nil t))
 				     (- (point) (point-min) 1)))
 		pos)))
       (setq gnus-summary-mark-positions pos))))
