@@ -8172,12 +8172,19 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
   ;; We don't want to change current point nor window configuration.
   (save-excursion
     (save-window-excursion
-      (gnus-message 6 "Executing %s..." (key-description command))
-;; We'd like to execute COMMAND interactively so as to give arguments.
-      (gnus-execute header regexp
-		    `(call-interactively ',(key-binding command))
-		    backward)
-      (gnus-message 6 "Executing %s...done" (key-description command)))))
+      (let (gnus-visual
+	    gnus-treat-strip-trailing-blank-lines
+	    gnus-treat-strip-leading-blank-lines
+	    gnus-treat-strip-multiple-blank-lines
+	    gnus-treat-hide-boring-headers
+	    gnus-treat-fold-newsgroups
+	    gnus-article-prepare-hook)
+	(gnus-message 6 "Executing %s..." (key-description command))
+	;; We'd like to execute COMMAND interactively so as to give arguments.
+	(gnus-execute header regexp
+		      `(call-interactively ',(key-binding command))
+		      backward)
+	(gnus-message 6 "Executing %s...done" (key-description command))))))
 
 (defun gnus-summary-beginning-of-article ()
   "Scroll the article back to the beginning."

@@ -1,10 +1,15 @@
+2002-10-22  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-execute-command): Disable visual
+	features while searching.
+
 2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* pgg.el (pgg-snarf-keys): Do not refer unbinded local variables.
 
 2002-10-22  Simon Josefsson  <jas@extundo.com>
 
-	* pgg.el (pgg-encrypt, pgg-decrypt, pgg-sign, pgg-verify) 
+	* pgg.el (pgg-encrypt, pgg-decrypt, pgg-sign, pgg-verify)
 	(pgg-snarf-keys): Add.
 
 2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
