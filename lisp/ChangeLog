@@ -1,6 +1,7 @@
-2001-03-07 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+2001-03-07 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* message.el (message-set-auto-save-file-name): Save a copy.
+	* nndraft.el (nndraft-request-group): Restore auto save files if
+	the original files do not exist.
 
 2001-03-07 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

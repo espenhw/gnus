@@ -3849,8 +3849,6 @@ than 988 characters long, and if they are not, trim them until they are."
       (setq buffer-file-name (expand-file-name "*message*"
 					       message-auto-save-directory))
       (setq buffer-auto-save-file-name (make-auto-save-file-name)))
-    (set-buffer-modified-p t) ;; Force Gnus to save a copy in drafts.
-    (save-buffer) 
     (clear-visited-file-modtime)
     (setq buffer-file-coding-system message-draft-coding-system)))
 

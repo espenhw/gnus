@@ -168,6 +168,24 @@
     (clear-visited-file-modtime)
     article))
 
+(deffoo nndraft-request-group (group &optional server dont-check)
+  (nndraft-possibly-change-group group)
+  (unless dont-check
+    (let* ((pathname (nnmail-group-pathname group nndraft-directory))
+	   (file-name-coding-system nnmail-pathname-coding-system)
+	   dir file)
+      (nnheader-re-read-dir pathname)
+      (setq dir (mapcar (lambda (name) (string-to-int (substring name 1)))
+			(directory-files pathname nil "^#[0-9]+#$" t)))
+      (dolist (n dir)
+	(unless (file-exists-p
+		 (setq file (expand-file-name (int-to-string n) pathname)))
+	  (rename-file (let ((buffer-file-name file))
+			 (make-auto-save-file-name)) file)))))
+  (nnoo-parent-function 'nndraft
+			'nnmh-request-group
+			(list group server dont-check)))
+
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)
   (let* ((nnmh-allow-delete-final t)

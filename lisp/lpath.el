@@ -103,7 +103,4 @@
 (defun nnkiboze-score-file (a)
 )
 
-;; This is just to shut up the byte-compiler.
-(defalias 'nndraft-request-group 'ignore)
-
 (provide 'lpath)
