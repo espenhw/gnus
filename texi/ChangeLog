@@ -1,6 +1,7 @@
 2003-01-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (X-Face): Revert substantial part of last fix.
+	(Splitting in IMAP): Add.
 
 2003-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
 

@@ -15518,6 +15518,15 @@ Example:
 
 Nnmail equivalent: @code{nnmail-split-fancy}.
 
+@item nnimap-split-download-body
+@findex nnimap-split-download-body
+@vindex nnimap-split-download-body
+
+Set to non-nil to download entire articles during splitting.  This is
+generally not required, and will slow things down considerably.  You
+may need it if you want to use an advanced splitting function that
+analyses the body to split the article.
+
 @end table
 
 @node Expiring in IMAP
