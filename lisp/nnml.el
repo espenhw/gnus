@@ -86,7 +86,7 @@ all.  This may very well take some time.")
 
 (defvar nnml-nov-buffer-file-name nil)
 
-(defvoo nnml-file-coding-system nnmail-file-coding-system-1)
+(defvoo nnml-file-coding-system nnmail-file-coding-system)
 
 
 

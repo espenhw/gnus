@@ -486,7 +486,7 @@ If FORCE, re-parse even if already parsed."
       (cond
        ((equal (car (car major)) minor)
 	(setq exact (cons (cdr (car major)) exact)))
-       ((and minor (string-match (car (car major)) minor))
+       ((and minor (string= (car (car major)) minor))
 	(setq wildcard (cons (cdr (car major)) wildcard))))
       (setq major (cdr major)))
     (nconc (nreverse exact) (nreverse wildcard))))

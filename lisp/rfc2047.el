@@ -195,7 +195,14 @@ Should be called narrowed to the head of the message."
 	 (first t))
     (save-restriction
       (narrow-to-region b e)
-      (mm-encode-coding-region b e mime-charset)
+      (when (eq encoding 'B)
+	;; break into lines before encoding
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (goto-char (min (point-max) (+ 15 (point))))
+	  (unless (eobp)
+	    (insert "\n"))))
+      (mm-encode-coding-region (point-min) (point-max) mime-charset)
       (funcall (cdr (assq encoding rfc2047-encoding-function-alist))
 	       (point-min) (point-max))
       (goto-char (point-min))
@@ -231,12 +238,13 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-b-encode-region (b e)
   "Encode the header contained in REGION with the B encoding."
-  (base64-encode-region b e t)
-  (goto-char (point-min))
-  (while (not (eobp))
-    (goto-char (min (point-max) (+ 64 (point))))
-    (unless (eobp)
-      (insert "\n"))))
+  (save-restriction
+    (narrow-to-region (goto-char b) e)
+    (while (not (eobp))
+      (base64-encode-region (point) (progn (end-of-line) (point)) t)
+      (if (and (bolp) (eolp))
+	  (delete-backward-char 1))
+      (forward-line))))
 
 (defun rfc2047-q-encode-region (b e)
   "Encode the header contained in REGION with the Q encoding."

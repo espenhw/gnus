@@ -24,27 +24,18 @@
 
 ;;; Code:
 
-(defvar mm-running-xemacs (string-match "XEmacs" emacs-version))
+(defconst mm-running-xemacs (string-match "XEmacs" emacs-version))
 
-(defvar mm-running-ntemacs
-  (and (not mm-running-xemacs)
-       (string-match "nt\\|windows" system-configuration)))
-
-(defvar mm-binary-coding-system
+(defconst mm-binary-coding-system
   (if mm-running-xemacs
       'binary 'no-conversion)
   "100% binary coding system.")
 
-(defvar mm-text-coding-system
-  (cond
-   ((not (fboundp 'coding-system-p)) nil)
-   (mm-running-xemacs  ;; XEmacs
-    'no-conversion)
-   (mm-running-ntemacs ;; NTEmacs
-    (and (coding-system-p 'raw-text-dos) 'raw-text-dos))
-   ((coding-system-p 'raw-text) 'raw-text) ;; Emacs
-   (t nil))
-  "100% text coding system, for removing ^M.")
+(defconst mm-text-coding-system
+  (and (fboundp 'coding-system-list)
+   (if (memq system-type '(windows-nt ms-dos ms-windows))
+       'raw-text-dos 'raw-text))
+  "Text-safe coding system (For removing ^M).")
 
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
@@ -59,9 +50,7 @@
     (iso-8859-8 hebrew-iso8859-8)
     (iso-8859-9 latin-iso8859-9)
     (viscii vietnamese-viscii-lower)
-    (iso-2022-jp-2 japanese-jisx0208)
-    (iso-2022-jp latin-jisx0201
-		 japanese-jisx0208-1978)
+    (iso-2022-jp latin-jisx0201 japanese-jisx0208 japanese-jisx0208-1978)
     (euc-kr korean-ksc5601)
     (cn-gb-2312 chinese-gb2312)
     (cn-big5 chinese-big5-1 chinese-big5-2)
@@ -215,6 +204,8 @@ used as the line break code type of the coding system."
 	 (mapcar 'mm-mime-charset
 		 (delq 'ascii
 		       (mm-find-charset-region b e)))))
+    (when (memq 'iso-2022-jp-2 charsets)
+      (setq charsets (delq 'iso-2022-jp charsets)))
     (delete-duplicates charsets)))
 
 (defsubst mm-multibyte-p ()

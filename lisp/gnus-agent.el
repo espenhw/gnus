@@ -92,7 +92,7 @@ If nil, only read articles will be expired."
 (defvar gnus-agent-spam-hashtb nil)
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
-(defvar gnus-agent-file-coding-system 'binary)
+(defvar gnus-agent-file-coding-system 'raw-text)
 
 (defconst gnus-agent-scoreable-headers
   '("subject" "from" "date" "message-id" "references" "chars" "lines" "xref")

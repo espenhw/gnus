@@ -420,17 +420,15 @@ parameter.  It should return nil, `warn' or `delete'."
 (defun nnmail-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defvar nnmail-file-coding-system 'binary
+(defvar nnmail-file-coding-system 'raw-text
   "Coding system used in nnmail.")
-
-(defvar nnmail-file-coding-system-1
-  (if (string-match "nt\\|windows" system-configuration)
-      'raw-text-dos 'binary)
-  "Another coding system used in nnmail.")
 
 (defvar nnmail-incoming-coding-system
   mm-text-coding-system
   "Coding system used in reading inbox")
+
+(defvar nnmail-pathname-coding-system 'binary
+  "*Coding system for pathname.")
 
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."
@@ -441,13 +439,10 @@ parameter.  It should return nil, `warn' or `delete'."
     (condition-case ()
 	(let ((coding-system-for-read nnmail-file-coding-system)
 	      (auto-mode-alist (nnheader-auto-mode-alist))
-	      (pathname-coding-system nnmail-file-coding-system))
+	      (pathname-coding-system nnmail-pathname-coding-system))
 	  (insert-file-contents file)
 	  t)
       (file-error nil))))
-
-(defvar nnmail-pathname-coding-system 'binary
-  "*Coding system for pathname.")
 
 (defun nnmail-group-pathname (group dir &optional file)
   "Make pathname for GROUP."
@@ -483,7 +478,7 @@ nn*-request-list should have been called before calling this function."
 	      group-assoc)))
     group-assoc))
 
-(defvar nnmail-active-file-coding-system 'binary
+(defvar nnmail-active-file-coding-system 'raw-text
   "*Coding system for active file.")
 
 (defun nnmail-save-active (group-assoc file-name)
@@ -1461,7 +1456,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defun nnmail-write-region (start end filename &optional append visit lockname)
   "Do a `write-region', and then set the file modes."
   (let ((coding-system-for-write nnmail-file-coding-system)
-	(pathname-coding-system 'binary))
+	(pathname-coding-system nnmail-pathname-coding-system))
     (write-region start end filename append visit lockname)
     (set-file-modes filename nnmail-default-file-modes)))
 

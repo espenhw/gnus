@@ -73,9 +73,13 @@ base64-encoder-program.")
       (setq p (cdr p)))
     v))
 
+(defvar base64-binary-coding-system 'binary)
+
 (defun base64-run-command-on-region (start end output-buffer command
 					   &rest arg-list)
-  (let ((tempfile nil) status errstring default-process-coding-system)
+  (let ((tempfile nil) status errstring default-process-coding-system 
+	(coding-system-for-write base64-binary-coding-system)
+	(coding-system-for-read base64-binary-coding-system))
     (unwind-protect
 	(progn
 	  (setq tempfile (make-temp-name "base64"))
@@ -103,7 +107,8 @@ base64-encoder-program.")
     (if (or (null buffer) (eq buffer (current-buffer)))
 	(insert-char char count)
       (with-current-buffer buffer
-	(insert-char char count)))))
+	(insert-char char count))))
+  (setq base64-binary-coding-system 'no-conversion))
 
 (defun base64-decode-region (start end)
   (interactive "r")

@@ -1,3 +1,129 @@
+Sat Jul  3 07:35:35 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.90 is released.
+
+1999-07-03 09:31:10  Sven Fischer  <herpes@kawo2.rwth-aachen.de>
+
+	* mailcap.el (mailcap-possible-viewers): Use string=.
+
+1999-07-01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-forward-begin-line): New variable.
+	(mm-uu-forward-end-line): New variable.
+	(mm-uu-begin-line): Handle forwarded message.
+	(mm-uu-identifier-alist): Ditto.
+	(mm-uu-dissect): Ditto.
+
+1999-06-29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el: Two free variables.
+
+1999-07-02  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-file-coding-system): Use raw-text.
+	* gnus-agent.el (gnus-agent-file-coding-system): Ditto.
+	* gnus-cache.el (gnus-cache-coding-system): Ditto.
+
+	* nnfolder.el (nnfolder-file-coding-system): Use mm-text-coding-system.
+	(nnfolder-file-coding-system-for-write): New variable.
+	(nnfolder-active-file-coding-system): New variable.
+	(nnfolder-active-file-coding-system-for-write): New variable.
+	(nnfolder-save-active): New function.
+	(nnfolder-save-buffer): Use them.
+	(nnfolder-possibly-change-group): Ditto.
+	(nnfolder-request-list-newsgroups): Ditto.
+	(nnfolder-request-create-group): Ditto.
+	(nnfolder-request-expire-articles): Ditto.
+	(nnfolder-request-move-article): Ditto.
+	(nnfolder-request-accept-article): Ditto.
+	(nnfolder-request-delete-group): Ditto.
+	(nnfolder-request-rename-group): Ditto.
+	(nnfolder-possibly-change-folder): Ditto.
+	(nnfolder-read-folder): Ditto.
+	(nnfolder-request-list): Remove pathname-coding-system.
+	(nnfolder-possibly-change-group): Use nnmail-pathname-coding-system.
+
+	* nnmail.el (nnmail-file-coding-system): Use raw-text.
+	(nnmail-file-coding-system-1): Removed.
+	(nnmail-find-file): Use nnmail-pathname-coding-system.
+	(nnmail-write-region): Ditto.
+
+	* nnmbox.el (nnmbox-file-coding-system): New variable.
+	(nnmbox-file-coding-system-for-write): New variable.
+	(nnmbox-active-file-coding-system): New variable.
+	(nnmbox-active-file-coding-system-for-write): New variable.
+	(nnmbox-save-buffer): New function.
+	(nnmbox-save-active): New function.
+	(nnmbox-request-scan): Use them.
+	(nnmbox-request-expire-articles): Ditto.
+	(nnmbox-request-move-article): Ditto.
+	(nnmbox-request-accept-article): Ditto.
+	(nnmbox-request-replace-article): Ditto.
+	(nnmbox-request-delete-group): Ditto.
+	(nnmbox-request-rename-group): Ditto.
+	(nnmbox-request-create-group): Ditto.
+
+	* mm-util.el (mm-text-coding-system): raw-text or -dos.
+	(mm-running-ntemacs): Removed.
+
+	* nnml.el (nnml-file-coding-system): Use nnmail-file-coding-system.
+
+1999-07-02  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-read-folder): Use nnheader-file-coding-system.
+
+1999-07-01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encoding-characters): Support lower case.
+
+1999-07-01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode): Fold before B-encoding.
+	(rfc2047-b-encode-region): Encode line by line.
+
+1999-07-03 09:20:16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-find-mime-charset-region): Fix.
+
+1999-06-30  KOSEKI Yoshinori  <kose@yk.NetLaputa.ne.jp>
+
+	* mm-util.el (mm-mime-mule-charset-alist): Fix iso-2022-jp(-2) bug.
+	(mm-find-mime-charset-region): Ditto.
+
+1999-07-03 09:15:35  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-summary-move-article): Fix something or
+	other. 
+
+1999-06-29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-newsgroup-ephemeral-charset): New variable.
+	(gnus-newsgroup-ephemeral-ignored-charsets): New variable.
+	(gnus-summary-enter-digest-group): Use them.
+	(gnus-summary-setup-default-charset): Ditto.
+
+1999-06-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* base64.el (base64-run-command-on-region): Use unibyte buffer.
+
+1999-06-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Fix bug when
+          gnus-newsgroup-name is nil.
+
+1999-06-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode): Chop the tail newline.
+
+1999-06-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-emphasize): Use correct
+ 	gnus-article-emphasis-alist.
+
+1999-06-15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Fix text/html bug.
+
 Mon Jun 28 17:54:01 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.89 is released.

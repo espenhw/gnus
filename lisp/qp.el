@@ -24,7 +24,7 @@
 ;;; Code:
 
 (defvar quoted-printable-encoding-characters
-  (mapcar 'identity "0123456789ABCDEF"))
+  (mapcar 'identity "0123456789ABCDEFabcdef"))
 
 (defun quoted-printable-decode-region (from to)
   "Decode quoted-printable in the region between FROM and TO."

@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.89 Manual
+@settitle Pterodactyl Gnus 0.90 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.89 Manual
+@title Pterodactyl Gnus 0.90 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.89.
+This manual corresponds to Pterodactyl Gnus 0.90.
 
 @end ifinfo
 
@@ -17984,8 +17984,6 @@ to display help in the minibuffer on buttons under XEmacs.
 are in the cache.
 @item
  AUTHINFO GENERIC
-@item
- support qmail maildir spools
 @item
  `run-with-idle-timer' in gnus-demon.
 @item

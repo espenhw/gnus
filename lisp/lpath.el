@@ -61,6 +61,8 @@
 		enable-multibyte-characters browse-url-browser-function
 		adaptive-fill-first-line-regexp adaptive-fill-regexp
 		url-current-mime-headers help-echo-owns-message
+		w3-meta-content-type-charset-regexp
+		w3-meta-charset-content-type-regexp
 		babel-translations babel-history))
   (maybe-fbind '(color-instance-rgb-components temp-directory
 		 glyph-width annotation-glyph window-pixel-width glyph-height
@@ -81,7 +83,7 @@
 		 mm-copy-tree url-view-url w3-prepare-buffer
 		 mule-write-region-no-coding-system char-int
 		 annotationp delete-annotation make-image-specifier
-		 make-annotation
+		 make-annotation events-to-keys
 		 w3-do-setup w3-region
 		 w3-coding-system-for-mime-charset 
 		 rmail-summary-exists rmail-select-summary rmail-update-summary

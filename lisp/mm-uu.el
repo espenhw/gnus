@@ -1,13 +1,11 @@
 ;;; mm-uu.el -- Return uu stuffs as mm handles
-;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Copyright (c) 1998,99 by Shenghuo Zhu
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.9 $
-;; Keywords: news postscript uudecode binhex shar
+;; Keywords: postscript uudecode binhex shar forward
 
-;; This file is not part of GNU Emacs, but the same permissions
-;; apply.
-;;
+;; This file is part of pgnus.
+
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
@@ -17,16 +15,22 @@
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;;
+
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-;;
+
 
 ;;; Code:
+
+(require 'mail-parse)
+(require 'message)
+(require 'nnheader)
+(require 'mm-decode)
+(require 'mailcap)
 
 (eval-and-compile
   (autoload 'binhex-decode-region "binhex")
@@ -59,14 +63,21 @@
 (defconst mm-uu-shar-begin-line "^#! */bin/sh")
 (defconst mm-uu-shar-end-line "^exit 0")
 
-(defvar mm-uu-begin-line
+;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
+;;; Peter von der Ah\'e <pahe@daimi.au.dk>
+(defconst mm-uu-forward-begin-line "^-+ \\(Start of \\)?Forwarded message")
+(defconst mm-uu-forward-end-line "^-+ End of forwarded message")
+
+(defconst mm-uu-begin-line
   (concat mm-uu-postscript-begin-line "\\|"
 	  mm-uu-uu-begin-line "\\|"
 	  mm-uu-binhex-begin-line "\\|"
-	  mm-uu-shar-begin-line))
+	  mm-uu-shar-begin-line "\\|"
+	  mm-uu-forward-begin-line))
 
-(defvar mm-uu-identifier-alist
-  '((?% . postscript) (?b . uu) (?: . binhex) (?# . shar)))
+(defconst mm-uu-identifier-alist
+  '((?% . postscript) (?b . uu) (?: . binhex) (?# . shar)
+    (?- . forward)))
 
 (defvar mm-dissect-disposition "inline"
   "The default disposition of uu parts.
@@ -77,7 +88,9 @@ This can be either \"inline\" or \"attachment\".")
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
   (let (ct ctl cte charset text-start start-char end-char
-	   type file-name end-line result text-plain-type)
+	   type file-name end-line result text-plain-type 
+	   start-char-1 end-char-1
+	   (case-fold-search t))
     (save-excursion
       (save-restriction
 	(mail-narrow-to-head)
@@ -97,9 +110,9 @@ This can be either \"inline\" or \"attachment\".")
 				  (if charset
 				      (list (cons 'charset charset)))))
       (while (re-search-forward mm-uu-begin-line nil t)
-	(beginning-of-line)
-	(setq start-char (point))
+	(setq start-char (match-beginning 0))
 	(forward-line) ;; in case of failure
+	(setq start-char-1 (point))
 	(setq type (cdr (assq (aref (match-string 0) 0)
 			      mm-uu-identifier-alist)))
 	(setq file-name
@@ -112,6 +125,7 @@ This can be either \"inline\" or \"attachment\".")
 			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
 	(when (re-search-forward end-line nil t)
+	  (setq end-char-1 (match-beginning 0))
 	  (forward-line)
 	  (setq end-char (point))
 	  (when (or (not (eq type 'binhex))
@@ -128,6 +142,9 @@ This can be either \"inline\" or \"attachment\".")
 	      ((eq type 'postscript)
 	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     '("application/postscript")))
+	      ((eq type 'forward)
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char-1 end-char-1)
+		     '("message/rfc822")))
 	      ((eq type 'uu)
 	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     (list (or (and file-name
@@ -172,7 +189,8 @@ This can be either \"inline\" or \"attachment\".")
       (mail-narrow-to-head)
       (goto-char (point-max)))
     (forward-line)
-    (let (type end-line result)
+    (let (type end-line result
+	       (case-fold-search t))
       (while (and (not result) (re-search-forward mm-uu-begin-line nil t))
 	(forward-line)
 	(setq type (cdr (assq (aref (match-string 0) 0)

@@ -77,7 +77,7 @@ it's not cached."
 (defvar gnus-cache-overview-coding-system 'raw-text
   "Coding system used on Gnus cache files.")
 
-(defvar gnus-cache-coding-system 'binary
+(defvar gnus-cache-coding-system 'raw-text
   "Coding system used on Gnus cache files.")
 
 

@@ -89,7 +89,8 @@
 			       (buffer-substring-no-properties 
 				(match-beginning 2) 
 				(match-end 2)))))
-	    (mm-decode-body charset)
+	    (delete-region (point-min) (point-max))
+	    (insert (mm-decode-string text charset))
 	    (save-window-excursion
 	      (save-restriction
 		(let ((w3-strict-width width)

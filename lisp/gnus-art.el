@@ -2004,7 +2004,9 @@ This format is defined by the `gnus-article-time-format' variable."
   (interactive (gnus-article-hidden-arg))
   (unless (gnus-article-check-hidden-text 'emphasis arg)
     (save-excursion
-      (let ((alist (or gnus-article-emphasis-alist gnus-emphasis-alist))
+      (let ((alist (or (with-current-buffer gnus-summary-buffer 
+			 gnus-article-emphasis-alist) 
+		       gnus-emphasis-alist))
 	    (buffer-read-only nil)
 	    (props (append '(article-type emphasis)
 			   gnus-hidden-properties))

@@ -90,7 +90,13 @@ time saver for large mailboxes.")
 (defvoo nnfolder-buffer-alist nil)
 (defvoo nnfolder-scantime-alist nil)
 (defvoo nnfolder-active-timestamp nil)
-(defvoo nnfolder-file-coding-system nnmail-file-coding-system-1)
+(defvoo nnfolder-active-file-coding-system mm-text-coding-system)
+(defvoo nnfolder-active-file-coding-system-for-write 
+    nnmail-active-file-coding-system)
+(defvoo nnfolder-file-coding-system mm-text-coding-system)
+(defvoo nnfolder-file-coding-system-for-write nnheader-file-coding-system
+  "Coding system for save nnfolder file.
+If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 
 
 
@@ -267,15 +273,14 @@ time saver for large mailboxes.")
   (when group
     (unless (assoc group nnfolder-group-alist)
       (push (list group (cons 1 0)) nnfolder-group-alist)
-      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
       (nnfolder-read-folder group)))
   t)
 
 (deffoo nnfolder-request-list (&optional server)
   (nnfolder-possibly-change-group nil server)
   (save-excursion
-    (let ((nnmail-file-coding-system nnmail-active-file-coding-system)
-	  (pathname-coding-system 'binary))
+    (let ((nnmail-file-coding-system nnfolder-active-file-coding-system))
       (nnmail-find-file nnfolder-active-file)
       (setq nnfolder-group-alist (nnmail-get-active)))
     t))
@@ -287,7 +292,8 @@ time saver for large mailboxes.")
 (deffoo nnfolder-request-list-newsgroups (&optional server)
   (nnfolder-possibly-change-group nil server)
   (save-excursion
-    (nnmail-find-file nnfolder-newsgroups-file)))
+    (let ((nnmail-file-coding-system nnfolder-file-coding-system))
+      (nnmail-find-file nnfolder-newsgroups-file))))
 
 (deffoo nnfolder-request-expire-articles
   (articles newsgroup &optional server force)
@@ -320,7 +326,7 @@ time saver for large mailboxes.")
 	(nnheader-message 5 "Deleting articles...done"))
       (nnfolder-save-buffer)
       (nnfolder-adjust-min-active newsgroup)
-      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
       (nconc rest articles))))
 
 (deffoo nnfolder-request-move-article (article group server
@@ -352,7 +358,7 @@ time saver for large mailboxes.")
 	 (when last
 	   (nnfolder-save-buffer)
 	   (nnfolder-adjust-min-active group)
-	   (nnmail-save-active nnfolder-group-alist nnfolder-active-file))))
+	   (nnfolder-save-active nnfolder-group-alist nnfolder-active-file))))
       result)))
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
@@ -390,7 +396,7 @@ time saver for large mailboxes.")
 	   (nnfolder-save-buffer)
 	   (when nnmail-cache-accepted-message-ids
 	     (nnmail-cache-close)))))
-      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
       (unless result
 	(nnheader-report 'nnfolder "Couldn't store article"))
       result)))
@@ -433,7 +439,7 @@ time saver for large mailboxes.")
 	nnfolder-current-group nil
 	nnfolder-current-buffer nil)
   ;; Save the active file.
-  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+  (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
   t)
 
 (deffoo nnfolder-request-rename-group (group new-name &optional server)
@@ -452,7 +458,7 @@ time saver for large mailboxes.")
 	   (setq nnfolder-current-buffer nil
 		 nnfolder-current-group nil)
 	   ;; Save the new group alist.
-	   (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	   (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
 	   ;; We kill the buffer instead of renaming it and stuff.
 	   (kill-buffer (current-buffer))
 	   t))))
@@ -541,14 +547,14 @@ deleted.  Point is left where the deleted region was."
   ;; Change group.
   (when (and group
 	     (not (equal group nnfolder-current-group)))
-    (let ((pathname-coding-system 'binary))
+    (let ((pathname-coding-system nnmail-pathname-coding-system))
       (nnmail-activate 'nnfolder)
       (when (and (not (assoc group nnfolder-group-alist))
 		 (not (file-exists-p
 		       (nnfolder-group-pathname group))))
 	;; The group doesn't exist, so we create a new entry for it.
 	(push (list group (cons 1 0)) nnfolder-group-alist)
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file))
+	(nnfolder-save-active nnfolder-group-alist nnfolder-active-file))
 
       (if dont-check
 	  (setq nnfolder-current-group group
@@ -578,7 +584,10 @@ deleted.  Point is left where the deleted region was."
 	      ;; See whether we need to create the new file.
 	      (unless (file-exists-p file)
 		(gnus-make-directory (file-name-directory file))
-		(nnmail-write-region 1 1 file t 'nomesg))
+		(let ((nnmail-file-coding-system 
+		       (or nnfolder-file-coding-system-for-write
+			   nnfolder-file-coding-system-for-write)))
+		  (nnmail-write-region 1 1 file t 'nomesg)))
 	      (when (setq nnfolder-current-buffer (nnfolder-read-folder group))
 		(set-buffer nnfolder-current-buffer)
 		(push (list group nnfolder-current-buffer)
@@ -666,7 +675,7 @@ deleted.  Point is left where the deleted region was."
       (when inf
 	(setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist)))
       (when nnfolder-group-alist
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file))
+	(nnfolder-save-active nnfolder-group-alist nnfolder-active-file))
       (push (list group (nnfolder-read-folder group))
 	    nnfolder-buffer-alist))))
 
@@ -688,7 +697,7 @@ deleted.  Point is left where the deleted region was."
 (defun nnfolder-read-folder (group)
   (let* ((file (nnfolder-group-pathname group))
 	 (buffer (set-buffer
-		  (let ((nnmail-file-coding-system
+		  (let ((nnheader-file-coding-system 
 			 nnfolder-file-coding-system))
 		    (nnheader-find-file-noselect file)))))
     (if (equal (cadr (assoc group nnfolder-scantime-alist))
@@ -772,7 +781,7 @@ deleted.  Point is left where the deleted region was."
 
 	  (set-marker end nil)
 	  ;; Make absolutely sure that the active list reflects reality!
-	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	  (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
 	  ;; Set the scantime for this group.
 	  (setq newscantime (visited-file-modtime))
 	  (if scantime
@@ -823,7 +832,16 @@ This command does not work if you use short group names."
   (when (buffer-modified-p)
     (run-hooks 'nnfolder-save-buffer-hook)
     (gnus-make-directory (file-name-directory (buffer-file-name)))
-    (save-buffer)))
+    (let ((coding-system-for-write 
+	   (or nnfolder-file-coding-system-for-write
+	       nnfolder-file-coding-system)))
+      (save-buffer))))
+
+(defun nnfolder-save-active (group-alist active-file)
+  (let ((nnmail-active-file-coding-system
+	 (or nnfolder-active-file-coding-system-for-write
+	     nnfolder-active-file-coding-system)))
+    (nnmail-save-active group-alist active-file)))
 
 (provide 'nnfolder)
 

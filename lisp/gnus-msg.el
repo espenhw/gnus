@@ -1104,7 +1104,7 @@ this is a reply."
 	(when (cond
 	       ((stringp match)
 		;; Regexp string match on the group name.
-		(string-match match gnus-newsgroup-name))
+		(string-match match group))
 	       ((or (symbolp match)
 		    (gnus-functionp match))
 		(cond
