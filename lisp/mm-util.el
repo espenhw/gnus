@@ -167,7 +167,7 @@ used as the line break code type of the coding system."
       (setq idx (1+ idx)))
     string))
 
-(defun mm-enable-multibyte ()
+(defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte t)))
@@ -196,7 +196,7 @@ used as the line break code type of the coding system."
 			   (point-min) (point-max)))))
     (mm-mule-charset-to-mime-charset charset)))
 
-(defun mm-multibyte-p ()
+(defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
   (and (boundp 'enable-multibyte-characters)
        enable-multibyte-characters))

@@ -173,11 +173,11 @@ shorten-followup-to existing-newsgroups buffer-file-name unchanged."
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID
 	 (optional . Organization) Lines
-	 (optional . X-Newsreader))
+	 (optional . User-Agent))
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
 Message-ID.  Organization, Lines, In-Reply-To, Expires, and
-X-Newsreader are optional.  If don't you want message to insert some
+User-Agent are optional.  If don't you want message to insert some
 header, remove it from this list."
   :group 'message-news
   :group 'message-headers
@@ -185,10 +185,10 @@ header, remove it from this list."
 
 (defcustom message-required-mail-headers
   '(From Subject Date (optional . In-Reply-To) Message-ID Lines
-	 (optional . X-Mailer))
+	 (optional . User-Agent))
   "*Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
-included.  Organization, Lines and X-Mailer are optional."
+included.  Organization, Lines and User-Agent are optional."
   :group 'message-mail
   :group 'message-headers
   :type '(repeat sexp))
@@ -939,8 +939,7 @@ The cdr of ech entry is a function for applying the face to a region.")
     (Expires)
     (Message-ID)
     (References . message-shorten-references)
-    (X-Mailer)
-    (X-Newsreader))
+    (User-Agent))
   "Alist used for formatting headers.")
 
 (eval-and-compile
@@ -2891,9 +2890,7 @@ Headers already prepared in the buffer are not modified."
 	   (To nil)
 	   (Distribution (message-make-distribution))
 	   (Lines (message-make-lines))
-	   (X-Newsreader message-newsreader)
-	   (X-Mailer (and (not (message-fetch-field "X-Newsreader"))
-			  message-mailer))
+	   (User-Agent message-newsreader)
 	   (Expires (message-make-expires))
 	   (case-fold-search t)
 	   header value elem)

@@ -821,7 +821,7 @@ password contained in '~/.nntp-authinfo'."
       (format " *server %s %s %s*"
 	      nntp-address nntp-port-number
 	      (gnus-buffer-exists-p buffer))))
-    (buffer-disable-undo (current-buffer))
+    (mm-enable-multibyte)
     (set (make-local-variable 'after-change-functions) nil)
     (set (make-local-variable 'nntp-process-wait-for) nil)
     (set (make-local-variable 'nntp-process-callback) nil)

@@ -386,7 +386,7 @@ jabbering all the time."
 	    ids))
     (nreverse ids)))
 
-(defun gnus-parent-id (references &optional n)
+(defsubst gnus-parent-id (references &optional n)
   "Return the last Message-ID in REFERENCES.
 If N, return the Nth ancestor instead."
   (when references
@@ -539,7 +539,7 @@ Bind `print-quoted' and `print-readably' to t while printing."
     (setq string (replace-match "" t t string)))
   string)
 
-(defun gnus-put-text-property-excluding-newlines (beg end prop val)
+(defsubst gnus-put-text-property-excluding-newlines (beg end prop val)
   "The same as `put-text-property', but don't put this prop on any newlines in the region."
   (save-match-data
     (save-excursion

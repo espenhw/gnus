@@ -2880,7 +2880,7 @@ If NO-DISPLAY, don't generate a summary buffer."
     threads))
 
 ;; Build the thread tree.
-(defun gnus-dependencies-add-header (header dependencies force-new)
+(defsubst gnus-dependencies-add-header (header dependencies force-new)
   "Enter HEADER into the DEPENDENCIES table if it is not already there.
 
 If FORCE-NEW is not nil, enter HEADER into the DEPENDENCIES table even
