@@ -1,3 +1,10 @@
+2001-08-03  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): The article
+	that is entered does not necessarily have the highest article
+	number in the group, so use `gnus-cache-possibly-alter-active'
+	instead of `gnus-cache-update-active'.
+
 2001-08-03 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-gpg-extract-signature-details): Don't barf.

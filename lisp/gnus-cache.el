@@ -209,7 +209,7 @@ it's not cached."
 	      (nnheader-insert-nov headers)
 	      ;; Update the active info.
 	      (set-buffer gnus-summary-buffer)
-	      (gnus-cache-update-active group number)
+	      (gnus-cache-possibly-alter-active group number)
 	      (push article gnus-newsgroup-cached)
 	      (gnus-summary-update-secondary-mark article))
 	    t))))))
