@@ -424,6 +424,8 @@ your main source of newsgroup names."
 		 (const :tag "Bogofilter is not installed"))
   :group 'spam-bogofilter)
 
+(defvar spam-bogofilter-valid 'unknown "Is the bogofilter version valid?")
+
 (defcustom spam-bogofilter-header "X-Bogosity"
   "The header that Bogofilter inserts in messages."
   :type 'string
@@ -2355,10 +2357,13 @@ REMOVE not nil, remove the ADDRESSES."
 
 (defun spam-verify-bogofilter ()
   "Verify the Bogofilter version is sufficient."
-  (when (string-match "^bogofilter version 0\\.\\([0-9]\\|1[01]\\)\\."
-		      (shell-command-to-string 
-		       (format "%s -sV" spam-bogofilter-path)))))
-
+  (when (eq spam-bogofilter-valid 'never)
+    (setq spam-bogofilter-valid
+	  (not (string-match "^bogofilter version 0\\.\\([0-9]\\|1[01]\\)\\."
+			     (shell-command-to-string 
+			      (format "%s -sV" spam-bogofilter-path))))))
+  spam-bogofilter-valid)
+  
 (defun spam-check-bogofilter (&optional score)
   "Check the Bogofilter backend for the classification of this message."
   (if (spam-verify-bogofilter)

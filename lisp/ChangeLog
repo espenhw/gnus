@@ -3,6 +3,7 @@
 	* spam.el (spam-verify-bogofilter): new function
 	(spam-check-bogofilter)
 	(spam-bogofilter-register-with-bogofilter): use it
+	(spam-verify-bogofilter): small fixes
 
 2004-09-28  Simon Josefsson  <jas@extundo.com>
 
