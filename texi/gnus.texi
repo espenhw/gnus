@@ -20746,7 +20746,7 @@ converts it to the X-Face format by using the
 @code{gnus-convert-pbm-to-x-face-command} shell command.  The
 @samp{pbm} files should be 48x48 pixels big.
 
-@code{gnus-x-face-from-file} takes a file as the parameter, and then
+@code{gnus-x-face-from-file} takes a GIF file as the parameter, and then
 converts the file to X-Face format by using the
 @code{gnus-convert-image-to-x-face-command} shell command.
 
