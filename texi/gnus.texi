@@ -18364,8 +18364,8 @@ placeholders if you care (See @code{gnus-auto-goto-ignores}).
 While it may be obvious to all, the only headers and articles
 available while unplugged are those headers and articles that were
 fetched into the Agent while previously plugged.  To put it another
-way, "If you forget to fetch something while plugged, you might have a
-less than satisfying unplugged session".  For this reason, the Agent
+way, ``If you forget to fetch something while plugged, you might have a
+less than satisfying unplugged session''.  For this reason, the Agent
 adds two visual effects to your summary buffer.  These effects display
 the download status of each article so that you always know which
 articles will be available when unplugged.
@@ -20399,8 +20399,8 @@ something like:
 ...
 @end example
 
-Then that means "score on the from header of the grandparent of the
-current article".  An indirection is quite fast, but it's better to say:
+Then that means ``score on the from header of the grandparent of the
+current article''.  An indirection is quite fast, but it's better to say:
 
 @example
 (1-
