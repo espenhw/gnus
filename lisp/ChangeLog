@@ -1,3 +1,8 @@
+2003-12-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-inews-add-send-actions): `yanked' can be a
+	list of lists.  Reported by Dmitri Paduchikh <paduch@imm.uran.ru>.
+
 2003-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-url.el (mm-url-insert-file-contents-external)

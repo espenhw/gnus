@@ -535,7 +535,9 @@ Gcc: header for archiving purposes."
       (set-window-configuration ,winconf))
    'exit 'postpone 'kill)
   (let ((to-be-marked (cond
-		       (yanked yanked)
+		       (yanked
+			(mapcar
+			 (lambda (x) (if (listp x) (car x) x)) yanked))
 		       (article (if (listp article) article (list article)))
 		       (t nil))))
     (message-add-action
