@@ -1,5 +1,5 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -50,7 +50,7 @@
 
 (defgroup gnus-article nil
   "Article display."
-  :link '(custom-manual "(gnus)The Article Buffer")
+  :link '(custom-manual "(gnus)Article Buffer")
   :group 'gnus)
 
 (defgroup gnus-article-treat nil

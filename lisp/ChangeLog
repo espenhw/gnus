@@ -1,3 +1,12 @@
+2004-02-27  Kevin Ryde  <user42@zip.com.au>  (tiny change)
+
+	* gnus.el (gnus-group, gnus-summary, gnus-summary-sort):
+	Corrections to custom-manual links.
+
+	* gnus-art.el (gnus-article): Ditto.
+
+	* mm-decode.el (mime-display, mime-security): Ditto.
+
 2004-02-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* flow-fill.el: Typo.
