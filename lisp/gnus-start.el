@@ -2711,7 +2711,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		     (name (symbol-name group))
 		     (charset
 		      (or (gnus-group-name-charset method name)
-			  (gnus-parameter-charset name))))
+			  (gnus-parameter-charset name)
+			  gnus-default-charset)))
 		(when (and str charset (featurep 'mule))
 		  (setq str (mm-decode-coding-string str charset)))
 		(set group str)))
