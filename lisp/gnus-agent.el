@@ -1860,7 +1860,8 @@ modified) original contents, they are first saved to their own file."
         (line 1))
     (with-temp-buffer
       (condition-case nil
-          (nnheader-insert-file-contents file)
+	  (let ((nnheader-file-coding-system gnus-agent-file-coding-system))
+	    (nnheader-insert-file-contents file))
         (file-error))
 
       (goto-char (point-min))
@@ -1903,27 +1904,27 @@ modified) original contents, they are first saved to their own file."
              ;; NOTE: gnus-command-method is used within gnus-agent-lib-file.
              (dest (gnus-agent-lib-file "local")))
         (gnus-make-directory (gnus-agent-lib-file ""))
-        (with-temp-file dest
-          (let ((gnus-command-method (symbol-value (intern "+method" my-obarray)))
-                (file-name-coding-system nnmail-pathname-coding-system)
-                (coding-system-for-write
-                 gnus-agent-file-coding-system)
-                print-level print-length item article
-                (standard-output (current-buffer)))
-            (mapatoms (lambda (symbol)
-                        (cond ((not (boundp symbol))
-                               nil)
-                              ((member (symbol-name symbol) '("+dirty" "+method"))
-                               nil)
-                              (t
-                               (prin1 symbol)
-                               (let ((range (symbol-value symbol)))
-                                 (princ " ")
-                                 (princ (car range))
-                                 (princ " ")
-                                 (princ (cdr range))
-                                 (princ "\n"))))) 
-                      my-obarray)))))))
+
+	(let ((buffer-file-coding-system gnus-agent-file-coding-system))
+	  (with-temp-file dest
+	    (let ((gnus-command-method (symbol-value (intern "+method" my-obarray)))
+		  (file-name-coding-system nnmail-pathname-coding-system)
+		  print-level print-length item article
+		  (standard-output (current-buffer)))
+	      (mapatoms (lambda (symbol)
+			  (cond ((not (boundp symbol))
+				 nil)
+				((member (symbol-name symbol) '("+dirty" "+method"))
+				 nil)
+				(t
+				 (prin1 symbol)
+				 (let ((range (symbol-value symbol)))
+				   (princ " ")
+				   (princ (car range))
+				   (princ " ")
+				   (princ (cdr range))
+				   (princ "\n"))))) 
+			my-obarray))))))))
 
 (defun gnus-agent-get-local (group)
   (let* ((gmane (gnus-group-real-name group))

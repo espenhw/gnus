@@ -1,3 +1,12 @@
+2004-03-09  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-read-local): Bind
+	nnheader-file-coding-system to gnus-agent-file-coding-system to
+	avoid the implicit assumption that they will always be equal.
+	(gnus-agent-save-local): Bind buffer-file-coding-system, not
+	coding-system-for-write, as the with-temp-file macro first prints
+	to a buffer then saves the buffer.
+
 2004-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-edit-part): New function.
