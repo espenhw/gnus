@@ -1,3 +1,11 @@
+2000-09-19  Dave Love  <fx@gnu.org>
+
+	* nnmail.el (nnmail-cache-accepted-message-ids): Default to nil.
+	(nnmail-get-new-mail): Test `sources' in top-level conditional.
+
+	* mail-source.el (mail-sources): Change default to '((file)).
+	Add useful custom type.
+
 2000-09-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-util.el (gnus-time-iso8601): Correct doc string (four digit
