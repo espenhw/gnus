@@ -342,6 +342,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
    ((looking-at "\^A\^A\^A\^A$")
     'mmdf)
    ((looking-at "^Path:.*\n")
+    'news)
+   ((looking-at "#! *rnews")
     'rnews)
    ((re-search-forward "\^_\^L *\n" nil t)
     'babyl)
@@ -352,8 +354,6 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
    ((let ((case-fold-search nil))
       (re-search-forward "^\t[^a-z]+ ([^a-z]+) --" nil t))
     'clari-briefs)
-   ((re-search-forward "^Path: .*!" nil t)
-    'news)
    (t 
     'digest)))
 

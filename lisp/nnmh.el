@@ -301,7 +301,7 @@
       (and 
        (nnmail-activate 'nnmh)
        ;; We trick the choosing function into believing that only one
-       ;; group is availiable.  
+       ;; group is available.  
        (let ((nnmail-split-methods (list (list group ""))))
 	 (car (nnmh-save-mail noinsert))))
     (and

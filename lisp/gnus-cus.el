@@ -50,7 +50,7 @@
 (custom-declare '()
   '((tag . "GNUS")
     (doc . "\
-The coffe-brewing, all singing, all dancing, kitchen sink newsreader.")
+The coffee-brewing, all singing, all dancing, kitchen sink newsreader.")
     (type . group)
     (data ((tag . "Visual")
 	   (doc . "\
@@ -75,7 +75,7 @@ less space and be faster as a result.")
 WWW Browser to call when clicking on an URL button in the article buffer.
 
 You can choose between one of the predefined browsers, or `Other'.")
-		  (name . gnus-button-url)
+		  (name . browse-url-browser-function)
 		  (calculate . (cond ((boundp 'browse-url-browser-function)
 				      browse-url-browser-function)
 				     ((fboundp 'w3-fetch) 
@@ -88,7 +88,7 @@ You can choose between one of the predefined browsers, or `Other'.")
 			 (default . w3-fetch))
 			((tag . "Netscape")
 			 (type . const)
-			 (default . gnus-netscape-open-url))
+			 (default . browse-url-netscape))
 			((prompt . "Other")
 			 (doc . "\
 You must specify the name of a Lisp function here.  The lisp function
@@ -132,7 +132,7 @@ single bold letter, while a letter followed by a backspace and an
 underscore will be displayed as a single underlined letter.  This
 technique was developed for old line printers (think about it), and is
 still in use on some newsgroups, in particular the ClariNet
-hierearchy.
+hierarchy.
 ")
 				      (type . const)
 				      (default . 
@@ -160,7 +160,7 @@ used for decoding and displaying the face.
 				      (default . gnus-article-display-x-face))
 				     ((tag . "Unquote Printable")
 				      (doc . "\
-Tranform MIME quoted printable into 8-bit characters.
+Transform MIME quoted printable into 8-bit characters.
 
 Quoted printable is often seen by strings like `=EF' where you would
 expect a non-English letter.
@@ -207,7 +207,7 @@ Highlight headers, signature, and buttons.
 				      (default . gnus-article-highlight-some))
 				     ((tag . "Highlight Headers")
 				      (doc . "\
-Highlight headers as specified by `Article Header Highligting'.
+Highlight headers as specified by `Article Header Highlighting'.
 ")
 				      (type . const)
 				      (default .
@@ -430,7 +430,7 @@ Face used for highlighting the current article in the summary buffer.")
 		  (type . face))
 		 ((tag . "Summary Line Highlighting")
 		  (doc . "\
-Controls the higlighting of summary buffer lines. 
+Controls the highlighting of summary buffer lines. 
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
 particular summary line should be displayed, each form is
@@ -531,7 +531,7 @@ mark:    The article's mark.")
 		 )))))
 
 (defun gnus-custom-import-cite-face-list (custom alist)
-  ;; Backward compatible groking of light and dark.
+  ;; Backward compatible grokking of light and dark.
   (cond ((eq alist 'light)
 	 (setq alist (mapcar 'gnus-make-face gnus-face-light-name-list)))
 	((eq alist 'dark)

@@ -83,7 +83,7 @@
 					      group gnus-newsrc-hashtb))))))
 	  ;; Ok, there are new articles in this group, se we fetch the
 	  ;; headers.
-	  (let ((gnus-newsgroup-dependencies (make-vector 10))
+	  (let ((gnus-newsgroup-dependencies (make-vector 10 nil))
 		headers)
 	    (setq headers
 		  (if (eq 'nov

@@ -183,7 +183,9 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	   (and gnus-group-list-inactive-groups
 		(eq unread t))
 	   (> unread 0)
-	   (cdr (assq 'tick (gnus-info-marks info))) ; Has right readedness.
+	   (and gnus-list-groups-with-ticked-articles
+		(cdr (assq 'tick (gnus-info-marks info))))
+					; Has right readedness.
 	   ;; Check for permanent visibility.
 	   (and gnus-permanently-visible-groups
 		(string-match gnus-permanently-visible-groups group))

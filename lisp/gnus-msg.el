@@ -210,6 +210,9 @@ be used instead.")
 (defvar gnus-signature-before-forwarded-message t
   "*If non-nil, put the signature before any included forwarded message.")
 
+(defvar gnus-forward-included-headers gnus-visible-headers
+  "*Regexp matching headers to be included in forwarded messages.")
+
 (defvar gnus-required-headers
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
   "*Headers to be generated or prompted for when posting an article.
@@ -247,7 +250,7 @@ The function will only be called if you have the `Distribution' header in
 (defvar gnus-check-before-posting 
   '(subject-cmsg multiple-headers sendsys message-id from
 		 long-lines control-chars size new-text
-		 redirected-followup signature approved sender)
+		 redirected-followup signature approved sender empty)
   "In non-nil, Gnus will attempt to run some checks on outgoing posts.
 If this variable is t, Gnus will check everything it can.  If it is a
 list, then those elements in that list will be checked.")
@@ -912,8 +915,16 @@ called."
 	  (or (bolp)
 	      (eobp)
 	      (gnus-y-or-n-p
-	       (format
-		"You have lines longer than 79 characters.  Really post? ")))))
+	       "You have lines longer than 79 characters.  Really post? "))))
+    ;; Check whether the article is empty.
+    (or (gnus-check-before-posting 'empty)
+	(save-excursion
+	  (goto-char (point-min))
+	  (re-search-forward
+	   (concat "^" (regexp-quote mail-header-separator) "$"))
+	  (forward-line 1)
+	  (or (re-search-forward "[^ \n\t]" nil t)
+	      (gnus-y-or-n-p "Empty article.  Really post?"))))
     ;; Check for control characters.
     (or (gnus-check-before-posting 'control-chars)
 	(save-excursion
@@ -1505,6 +1516,7 @@ domain is undefined, the domain name is got from it."
 	     (domain 
 	      (or (if (stringp genericfrom) genericfrom)
 		  (getenv "DOMAINNAME")
+		  mail-host-address
 		  gnus-local-domain
 		  ;; Function `system-name' may return full internet name.
 		  ;; Suggested by Mike DeCorte <mrd@sun.soe.clarkson.edu>.
@@ -1569,7 +1581,7 @@ domain is undefined, the domain name is got from it."
 ;; You might for example insert a "." somewhere (not next to another dot
 ;; or string boundary), or modify the newsreader name to "Ding".
 (defun gnus-inews-unique-id ()
-  ;; Dont use microseconds from (current-time), they may be unsupported.
+  ;; Don't use microseconds from (current-time), they may be unsupported.
   ;; Instead we use this randomly inited counter.
   (setq gnus-unique-id-char
 	(% (1+ (or gnus-unique-id-char (logand (random t) (1- (lsh 1 20)))))
@@ -2274,6 +2286,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 (defun gnus-forward-insert-buffer (buffer)
   (save-excursion
     (save-restriction
+      ;; Put point where we want it before inserting the forwarded
+      ;; message. 
       (if gnus-signature-before-forwarded-message
 	  (goto-char (point-max))
 	(goto-char (point-min))
@@ -2287,6 +2301,13 @@ If INHIBIT-PROMPT, never prompt for a Subject."
       (insert-buffer-substring buffer)
       (goto-char (point-max))
       (insert gnus-forward-end-separator)
+      ;; Remove all unwanted headers.
+      (goto-char (point-min))
+      (save-restriction
+	(narrow-to-region (point) (if (search-forward "\n\n" nil t)
+				      (1- (point))
+				    (point)))
+	(delete-non-matching-lines gnus-forward-included-headers))
       ;; Delete any invisible text.
       (goto-char (point-min))
       (let (beg)
@@ -2375,7 +2396,7 @@ If YANK is non-nil, include the original article."
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
     (insert (gnus-version) "\n")
-    (emacs-version t)
+    (insert (emacs-version))
     (insert "\n\n\n\n\n")
     (gnus-debug)
     (goto-char (point-min))
@@ -2413,24 +2434,24 @@ The source file has to be in the Emacs load path."
 	    (setq dirs nil)
 	    (insert-file-contents file)
 	    (goto-char (point-min))
-	    (or (re-search-forward "^;;* *Internal variables" nil t)
-		(error "Malformed sources in file %s" file))
-	    (narrow-to-region (point-min) (point))
-	    (goto-char (point-min))
-	    (while (setq expr (condition-case () 
-				  (read (current-buffer)) (error nil)))
-	      (condition-case ()
-		  (and (eq (car expr) 'defvar)
-		       (stringp (nth 3 expr))
-		       (or (not (boundp (nth 1 expr)))
-			   (not (equal (eval (nth 2 expr))
-				       (symbol-value (nth 1 expr)))))
-		       (setq olist (cons (nth 1 expr) olist)))
-		(error nil)))))
+	    (if (not (re-search-forward "^;;* *Internal variables" nil t))
+		(message "Malformed sources in file %s" file)
+	      (narrow-to-region (point-min) (point))
+	      (goto-char (point-min))
+	      (while (setq expr (condition-case () 
+				    (read (current-buffer)) (error nil)))
+		(condition-case ()
+		    (and (eq (car expr) 'defvar)
+			 (stringp (nth 3 expr))
+			 (or (not (boundp (nth 1 expr)))
+			     (not (equal (eval (nth 2 expr))
+					 (symbol-value (nth 1 expr)))))
+			 (setq olist (cons (nth 1 expr) olist)))
+		  (error nil))))))
 	(setq files (cdr files)))
       (kill-buffer (current-buffer)))
-    (insert "------------------- Environment follows -------------------\n\n")
-    (setq olist (nreverse olist))
+    (when (setq olist (nreverse olist))
+      (insert "------------------ Environment follows ------------------\n\n"))
     (while olist
       (if (boundp (car olist))
 	  (insert "(setq " (symbol-name (car olist)) 
@@ -2636,8 +2657,8 @@ Headers will be generated before sending."
 		    group))))
 	(when gcc
 	  (insert "Gcc: "
-		  (if (stringp group) group
-		    (mapconcat 'identity group " "))
+		  (if (stringp gcc) gcc
+		    (mapconcat 'identity gcc " "))
 		  "\n"))))))
 
 (defun gnus-inews-insert-archive-gcc ()

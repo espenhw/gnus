@@ -186,8 +186,8 @@ all. This may very well take some time.")
 	(when (and (setq group-num (nnml-find-group-number id))
 		   (setq file (cdr
 			       (assq (cdr group-num) 
-				     (setq gpath
-					   (nnheader-article-to-file-alist
+				     (nnheader-article-to-file-alist
+				      (setq gpath
 					    (nnmail-group-pathname
 					     (car group-num) 
 					     nnml-directory)))))))
@@ -342,7 +342,7 @@ all. This may very well take some time.")
 	(and 
 	 (nnmail-activate 'nnml)
 	 ;; We trick the choosing function into believing that only one
-	 ;; group is availiable.  
+	 ;; group is available.  
 	 (let ((nnmail-split-methods (list (list group ""))))
 	   (setq result (car (nnml-save-mail))))
 	 (progn

@@ -449,6 +449,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 ["Set mark" gnus-summary-mark-as-processable t]
 	 ["Remove mark" gnus-summary-unmark-as-processable t]
 	 ["Remove all marks" gnus-summary-unmark-all-processable t]
+	 ["Mark above" gnus-uu-mark-over t]
 	 ["Mark series" gnus-uu-mark-series t]
 	 ["Mark region" gnus-uu-mark-region t]
 	 ["Mark by regexp" gnus-uu-mark-by-regexp t]

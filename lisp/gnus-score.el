@@ -875,7 +875,7 @@ SCORE is the score to add."
     nil)
    (t
     (let ((a alist)
-	  sr err s)
+	  sr err s type)
       (while (and a (not err))
 	(setq
 	 err
@@ -887,12 +887,15 @@ SCORE is the score to add."
 	    ((not (listp (setq sr (cdr (car a)))))
 	     (format "Illegal header match %s in %s" (nth 1 (car a)) file))
 	    (t
+	     (setq type (caar a))
 	     (while (and sr (not err))
 	       (setq s (pop sr))
 	       (setq 
 		err
 		(cond
-		 ((not (stringp (car s)))
+		 ((if (member (downcase type) '("lines" "chars"))
+		      (not (numberp (car s)))
+		    (not (stringp (car s))))
 		  (format "Illegal match %s in %s" (car s) file))
 		 ((and (cadr s) (not (integerp (cadr s))))
 		  (format "Non-integer score %s in %s" (cadr s) file))
@@ -1104,7 +1107,7 @@ SCORE is the score to add."
             (if last
                 (progn
                   ;; Insert the line, with a text property on the
-                  ;; terminating newline refering to the articles with
+                  ;; terminating newline referring to the articles with
                   ;; this line.
                   (insert last ?\n)
                   (put-text-property (1- (point)) (point) 'articles alike)))
@@ -1456,7 +1459,7 @@ SCORE is the score to add."
 
 (defun gnus-score-string (score-list header now expire &optional trace)
   ;; Score ARTICLES according to HEADER in SCORE-LIST.
-  ;; Update matches entries to NOW and remove unmatched entried older
+  ;; Update matching entries to NOW and remove unmatched entries older
   ;; than EXPIRE.
   
   ;; Insert the unique article headers in the buffer.
@@ -1485,7 +1488,7 @@ SCORE is the score to add."
 	(if last
 	    (progn
 	      ;; Insert the line, with a text property on the
-	      ;; terminating newline refering to the articles with
+	      ;; terminating newline referring to the articles with
 	      ;; this line.
 	      (insert last ?\n)
 	      (put-text-property (1- (point)) (point) 'articles alike)))
@@ -1696,7 +1699,7 @@ SCORE is the score to add."
 	  (setcar (car elem) 
 		  `(lambda (h)
 		     (,(intern 
-			(concat "gnus-header-" 
+			(concat "mail-header-" 
 				(if (eq (car (car elem)) 'followup)
 				    "message-id"
 				  (downcase (symbol-name (car (car elem)))))))
@@ -2100,7 +2103,7 @@ The list is determined from the variable gnus-score-file-alist."
 	suffix (or gnus-kill-files-directory "~/News")))
       ((gnus-use-long-file-name 'not-score)
        ;; Append ".SCORE" to newsgroup name.
-       (expand-file-name (concat (gnus-newsgroup-saveable-name newsgroup)
+       (expand-file-name (concat (gnus-newsgroup-savable-name newsgroup)
 				 "." suffix)
 			 (or gnus-kill-files-directory "~/News")))
       (t

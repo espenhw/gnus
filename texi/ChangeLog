@@ -1,3 +1,14 @@
+Wed Jan 17 02:26:15 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Maintenance): Addition.
+	(Setting Process Marks): Addition.
+	(Reading Mail): Addition.
+	(Mail & Post): Change.
+	(Post): Addition.
+	(Listing Groups): Addition.
+	(Mail): Addition.
+	(Emacsen): Change.
+
 Tue Jan 16 15:33:04 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Article Hiding): Fix.

@@ -242,7 +242,7 @@ Example:
 (defvar nnmail-message-id-cache-length 1000
   "*The approximate number of Message-IDs nnmail will keep in its cache.
 If this variable is nil, no checking on duplicate messages will be
-perfomed.")
+performed.")
 
 (defvar nnmail-message-id-cache-file "~/.nnmail-cache"
   "*The file name of the nnmail Message-ID cache.")
@@ -252,7 +252,11 @@ perfomed.")
 Three values are legal: nil, which means that nnmail is not to keep a
 Message-ID cache; `warn', which means that nnmail should insert extra
 headers to warn the user about the duplication (this is the default);
-and `delete', which means that nnmail will delete duplicated mails.")
+and `delete', which means that nnmail will delete duplicated mails.
+
+This variable can also be a function.  It will be called from a buffer
+narrowed to the article in question with the Message-ID as a
+parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
 
@@ -678,7 +682,7 @@ FUNC will be called with the buffer narrowed to each mail."
       (if exit-func (funcall exit-func))
       (kill-buffer (current-buffer)))))
 
-;; Mail crossposts syggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
+;; Mail crossposts suggested by Brian Edmonds <edmonds@cs.ubc.ca>. 
 (defun nnmail-article-group (func)
   "Look at the headers and return an alist of groups that match.
 FUNC will be called with the group name to determine the article number."
@@ -719,7 +723,7 @@ FUNC will be called with the group name to determine the article number."
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
-	  ;; Go throught the split methods to find a match.
+	  ;; Go through the split methods to find a match.
 	  (while (and methods (or nnmail-crosspost (not group-art)))
 	    (goto-char (point-max))
 	    (setq method (pop methods))
@@ -794,7 +798,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (nnmail-split-it nnmail-split-fancy))
 
 (defvar nnmail-split-cache nil)
-;; Alist of split expresions their equivalent regexps.
+;; Alist of split expressions their equivalent regexps.
 
 (defun nnmail-split-it (split)
   ;; Return a list of groups matching SPLIT.
@@ -987,14 +991,18 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
 (defun nnmail-check-duplication (message-id func)
   ;; If this is a duplicate message, then we do not save it.
-  (let ((duplication (nnmail-cache-id-exists-p message-id)))
+  (let* ((duplication (nnmail-cache-id-exists-p message-id))
+	 (action (when duplication
+		   (if (nnheader-functionp nnmail-treat-duplicates)
+		       (funcall nnmail-treat-duplicates message-id)
+		     nnmail-treat-duplicates))))
     (cond
      ((not duplication)
       (nnmail-cache-insert message-id)
       (funcall func))
-     ((eq nnmail-treat-duplicates 'delete)
+     ((eq action 'delete)
       (delete-region (point-min) (point-max)))
-     (t
+     ((eq action 'warn)
       ;; We insert a warning.
       (let ((case-fold-search t)
 	    (newid (nnmail-message-id)))
@@ -1007,7 +1015,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(insert "Gnus-Warning: This is a duplication of message "
 		message-id "\n")
 	(nnmail-cache-insert newid)
-	(funcall func))))))
+	(funcall func)))
+     (t
+      (funcall func)))))
 
 ;;; Get new mail.
 

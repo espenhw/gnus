@@ -423,7 +423,7 @@
 
 ;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
 ;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox
-;; delimeter line.
+;; delimiter line.
 (defun nnbabyl-delete-mail (&optional force leave-delim)
   ;; Delete the current X-Gnus-Newsgroup line.
   (or force
@@ -566,7 +566,8 @@
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
 	    start end)
 	(set-buffer (setq nnbabyl-mbox-buffer 
-			  (find-file-noselect nnbabyl-mbox-file nil 'raw)))
+			  (nnheader-find-file-noselect 
+			   nnbabyl-mbox-file nil 'raw)))
 	;; Save buffer mode.
 	(setq nnbabyl-previous-buffer-mode 
 	      (cons (cons (point-min) (point-max))

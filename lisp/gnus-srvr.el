@@ -98,21 +98,21 @@ with some simple extensions.")
 
   (gnus-define-keys
    gnus-server-mode-map
-   " " 'gnus-server-read-server
-   "\r" 'gnus-server-read-server
-   gnus-mouse-2 'gnus-server-pick-server
-   "q" 'gnus-server-exit
-   "l" 'gnus-server-list-servers
-   "k" 'gnus-server-kill-server
-   "y" 'gnus-server-yank-server
-   "c" 'gnus-server-copy-server
-   "a" 'gnus-server-add-server
-   "e" 'gnus-server-edit-server
+   " " gnus-server-read-server
+   "\r" gnus-server-read-server
+   gnus-mouse-2 gnus-server-pick-server
+   "q" gnus-server-exit
+   "l" gnus-server-list-servers
+   "k" gnus-server-kill-server
+   "y" gnus-server-yank-server
+   "c" gnus-server-copy-server
+   "a" gnus-server-add-server
+   "e" gnus-server-edit-server
 
-   "O" 'gnus-server-open-server
-   "C" 'gnus-server-close-server
-   "D" 'gnus-server-deny-server
-   "R" 'gnus-server-remove-denials))
+   "O" gnus-server-open-server
+   "C" gnus-server-close-server
+   "D" gnus-server-deny-server
+   "R" gnus-server-remove-denials))
 
 (defun gnus-server-mode ()
   "Major mode for listing and editing servers.

@@ -281,6 +281,8 @@ always hide."
       (let ((buffer-read-only nil)
 	    (alist gnus-cite-prefix-alist)
 	    (inhibit-point-motion-hooks t)
+	    (props (nconc (list 'gnus-type 'cite)
+			  gnus-hidden-properties))
 	    numbers number)
 	(while alist
 	  (setq numbers (cdr (car alist))
@@ -291,9 +293,7 @@ always hide."
 	    (goto-line number)
 	    (or (assq number gnus-cite-attribution-alist)
 		(add-text-properties 
-		 (point) (progn (forward-line 1) (point))
-		 (nconc (list 'gnus-type 'cite)
-			gnus-hidden-properties)))))))))
+		 (point) (progn (forward-line 1) (point)) props))))))))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
   "Toggle hiding of cited text that has an attribution line.
@@ -534,12 +534,12 @@ See also the documentation for `gnus-article-highlight-citation'."
   ;; loose attribution lines, otherwise the first prefix will be used.
   ;;
   ;; If AFTER is non-nil, only citations after the attribution line
-  ;; will be concidered.
+  ;; will be considered.
   ;;
   ;; If FUN is non-nil, it will be called with the arguments (WROTE
   ;; PREFIX TAG) and expected to return a regular expression.  Only
   ;; citations whose prefix matches the regular expression will be
-  ;; concidered. 
+  ;; considered. 
   ;; 
   ;; WROTE is the attribution line number.
   ;; PREFIX is the attribution line prefix.

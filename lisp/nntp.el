@@ -29,6 +29,10 @@
 (require 'sendmail)
 (require 'nnheader)
 
+(eval-and-compile
+  (unless (fboundp 'open-network-stream)
+    (require 'tcp)))
+
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
@@ -922,7 +926,7 @@ It will prompt for a password."
 	    (accept-process-output)
 	    ;; On some Emacs versions the preceding function has
 	    ;; a tendency to change the buffer. Perhaps. It's
-	    ;; quite difficult to reporduce, because it only
+	    ;; quite difficult to reproduce, because it only
 	    ;; seems to happen once in a blue moon. 
 	    (set-buffer buf) 
 	    (while (progn

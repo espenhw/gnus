@@ -1,4 +1,135 @@
-Tue Jan 16 21:14:44 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+Wed Jan 17 22:58:05 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-article-hide-header): Hide boring headers
+	selectively. 
+	(gnus-article-hide-header): Didn't hide anything.
+
+	* nntp.el: Make sure `open-network-stream' has the right
+	definition. 
+
+Wed Jan 17 19:34:31 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (tcp): Require tcp.
+
+	* gnus.el (gnus-update-marks): Ignore dead groups.
+
+	* gnus-cus.el: Changed `gnus-button-url' variable.
+
+Wed Jan 17 19:27:36 1996  Marc Auslander  <marc@watson.ibm.com>
+
+	* gnus.el (gnus-summary-mark-below): Would infloop.
+
+Wed Jan 17 19:00:02 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-srvr.el (gnus-server-mode-map): Keymap was buggy.
+
+	* gnus-score.el (gnus-score-check-syntax): Would bug out on Lines
+	headers. 
+
+	* gnus.el (gnus-info-find-node): Configure to the info buffer.
+
+	* nnvirtual.el (nnvirtual-create-mapping): Division by zero.
+
+Wed Jan 17 18:53:50 1996  Ulrich Pfeifer  <pfeifer@buster.informatik.uni-dortmund.de>
+
+	* gnus.el (gnus-summary-move-article): Reversed checks.
+	(gnus-summary-move-article): Would try to remove mark from nil. 
+
+Wed Jan 17 18:37:45 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-update-article): Totally bugged out.
+
+	* nnml.el (nnml-request-article): Didn't fetch by Message-ID.
+
+Tue Jan 16 17:25:28 1996  Steven L. Baur  <steve@miranova.com>
+
+	* nnfolder.el (nnfolder-read-folder): Too many parameters for
+	find-file-noselect for XEmacs.
+
+	* nnbabyl.el (nnbabyl-read-mbox): Too many parameters for
+	find-file-noselect for XEmacs.
+
+	* nnmbox.el (nnmbox-possibly-change-newsgroup): Too many parameters
+	for find-file-noselect for XEmacs.
+
+	* gnus-xmas.el (insert-file-contents-literally): Restored from
+	v0.26 nnheader.el since XEmacs 19.13 doesn't have this function.
+
+	* gnus-msg.el (gnus-bug): (emacs-version) does not take a parameter
+	in XEmacs.
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): make-vector takes two
+	parameters.
+
+Wed Jan 17 05:46:51 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-find-file-noselect): Moved to this
+	file. 
+
+	* gnus-msg.el (gnus-forward-included-headers): New variable.
+	(gnus-forward-insert-buffer): Use it.
+
+	* gnus-score.el (gnus-score-adaptive): Use `mail-header-*' instead
+	of `gnus-header-*'.
+
+	* gnus.el (gnus-list-groups-with-ticked-articles): New variable.
+	(gnus-group-prepare-flat): Use it.
+	(gnus-header-from): Put back in again.
+	(gnus-article-hide-boring-headers): Don't bug out on articles with
+	no From header.
+
+	* gnus-topic.el (gnus-topic-find-groups): Ditto.
+
+	* gnus-msg.el (gnus-debug): Be more lenient with malformed files.
+
+Wed Jan 17 05:29:17 1996  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* gnus-msg.el (gnus-inews-insert-gcc): Go through all Gcc'd
+	groups. 
+
+Wed Jan 17 02:26:21 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-domain-name): Also use
+	mail-host-address.
+
+	* nndoc.el (nndoc-guess-type): Guess `news' when it's news.
+
+	* gnus-msg.el (gnus-debug): Only insert "environment" line if the
+	environment follows.
+	(gnus-inews-check-post): Check empty articles.
+
+	* gnus.el (gnus-summary-edit-article-done): Run display hook.
+	(gnus-newsrc-to-gnus-format): Group names can be just numbers.
+
+	* nnmail.el (nnmail-check-duplication): Allow
+	`nnmail-treat-duplicates' to be a function.
+
+	* nnheader.el (nnheader-functionp): New function.
+
+	* gnus-salt.el (gnus-pick-mode-map): Added `gnus-uu-mark-over'. 
+
+	* gnus-uu.el (gnus-uu-mark-over): New command and keystroke.
+
+	* gnus.el (gnus-find-new-newsgroups): Allow a prefix to force
+	`ask-server'. 
+
+Wed Jan 17 02:14:22 1996  Jason L. Tibbitts, III  <tibbs@sina.hpc.uh.edu>
+
+	* gnus.el (gnus-simplify-buffer-fuzzy): Didn't work for adaptive
+	scoring. 
+	(gnus-summary-select-article): Allow scrolling up.
+
+Tue Jan 16 22:28:41 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el: Applied typo fix patches from eggert@twinsun.COM (Paul
+	Eggert).
+
+Tue Jan 16 21:14:44 1996  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.27 is released.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Would bug out on
+	canceled articles.
 
 	* gnus.el (gnus-message-archive-method): Never get new mail.
 

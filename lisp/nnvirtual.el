@@ -79,7 +79,7 @@ virtual group.")
 				(list (caddr article)) cgroup))
 	      (set-buffer nntp-server-buffer)
 	      (if (zerop (buffer-size))
-		  (nconc (assq cgroup unfetched) (caddr article))
+		  (nconc (assq cgroup unfetched) (list (caddr article)))
 		;; If we got HEAD headers, we convert them into NOV
 		;; headers.  This is slow, inefficient and, come to think
 		;; of it, downright evil.  So sue me.  I couldn't be
@@ -384,7 +384,9 @@ virtual group.")
 		       (push (cons 'cache (gnus-cache-articles-in-group g))
 			     marks))
 		     (when active
-		       (setq div (/ (float (car active)) (cdr active)))
+		       (setq div (/ (float (car active)) 
+				    (if (zerop (cdr active))
+					1 (cdr active))))
 		       (mapcar (lambda (n) 
 				 (list (* div (- n (car active)))
 				       g n (and (memq n unreads) t)

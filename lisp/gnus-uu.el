@@ -180,7 +180,7 @@ Note that this variable can be used in conjunction with the
 Default is \"/tmp/\".")
 
 (defvar gnus-uu-do-not-unpack-archives nil 
-  "*Non-nil means that gnus-uu won't peek inside archives looking for files to dispay. 
+  "*Non-nil means that gnus-uu won't peek inside archives looking for files to display. 
 Default is nil.")
 
 (defvar gnus-uu-view-and-save nil 
@@ -278,6 +278,7 @@ The headers will be included in the sequence they are matched.")
  "p" gnus-summary-mark-as-processable
  "u" gnus-summary-unmark-as-processable
  "U" gnus-summary-unmark-all-processable
+ "v" gnus-uu-mark-over
  "s" gnus-uu-mark-series
  "r" gnus-uu-mark-region
  "R" gnus-uu-mark-by-regexp
@@ -563,6 +564,21 @@ The headers will be included in the sequence they are matched.")
 		(zerop (gnus-summary-next-subject 1))
 		(> (gnus-summary-thread-level) level))))
   (gnus-summary-position-point))
+
+(defun gnus-uu-mark-over (score)
+  "Mark all articles with a score over SCORE (the prefix.)"
+  (interactive "P")
+  (let ((score (gnus-score-default score))
+	(data gnus-newsgroup-data))
+    (save-excursion
+      (while data
+	(when (> (or (cdr (assq (gnus-data-number (caar data))
+				gnus-newsgroup-scored))
+		     gnus-summary-default-score 0)
+		 score)
+	  (gnus-summary-set-process-mark (caar data)))
+	(setq data (cdr data))))
+    (gnus-summary-position-point)))
 
 (defun gnus-uu-mark-sparse ()
   "Mark all series that have some articles marked."

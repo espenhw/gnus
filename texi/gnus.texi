@@ -290,13 +290,13 @@ Gnus should work on :
 @itemize @bullet 
 
 @item
-Emacs 19.26 and up.
+Emacs 19.30 and up.
 
 @item
-XEmacs 19.12 and up.
+XEmacs 19.13 and up.
 
 @item 
-Mule versions based on Emacs 19.26 and up.
+Mule versions based on Emacs 19.30 and up.
 
 @end itemize
 
@@ -2687,6 +2687,7 @@ programs, if you want to.
 
 @vindex nnmail-spool-file
 @cindex POP mail
+@cindex MAILHOST
 @code{nnmail-spool-file} says where to look for new mail.  If this
 variable is @code{nil}, the mail backends will never attempt to fetch
 mail by themselves.  If you are using a POP mail server and your name is
@@ -2771,8 +2772,15 @@ stored.) If all this sounds scary to you, you can set
 default), and @code{nnmail} won't delete duplicate mails.  Instead it
 will generate a brand new @code{Message-ID} for the mail and insert a
 warning into the head of the mail saying that it thinks that this is a
-duplicate of a different message.  Or you can turn this feature off
-completely by setting the variable to @code{nil}. 
+duplicate of a different message.  
+
+This variable can also be a function.  If that's the case, the function
+will be called from a buffer narrowed to the message in question with
+the @code{Message-ID} as a parameter.  The function must return either
+@code{nil}, @code{warn}, or @code{delete}.
+
+You can turn this feature off completely by setting the variable to
+@code{nil}.
 
 Here's a neat feature: If you know that the recipient reads her mail
 with Gnus, and that she has @code{nnmail-treat-duplicates} set to
@@ -3501,6 +3509,13 @@ always be shown, whether they have unread articles or not.  You can also
 add the @code{visible} element to the group parameters in question to
 get the same effect.
 
+@vindex gnus-list-groups-with-ticked-articles
+Groups that have just ticked articles in it are normally listed in the
+group buffer.  If @code{gnus-list-groups-with-ticked-articles} is
+@code{nil}, these groups will be treated just like totally empty
+groups.  It is @code{t} by default.
+
+
 @node Sorting Groups
 @section Sorting Groups
 @cindex sorting groups
@@ -3608,7 +3623,9 @@ Find bogus groups and delete them
 @item F
 @kindex F (Group)
 @findex gnus-find-new-newsgroups
-Find new groups and process them (@code{gnus-find-new-newsgroups}).
+Find new groups and process them (@code{gnus-find-new-newsgroups}).  If
+given a prefix, use the @code{ask-server} method to query the server for
+new groups.
 
 @item C-c C-x
 @kindex C-c C-x (Group)
@@ -4732,11 +4749,16 @@ Delimiter inserted before forwarded messages.
 @item gnus-forward-end-separator
 Delimiter inserted after forwarded messages.
 
-@findex gnus-signature-before-forwarded-message
+@vindex gnus-signature-before-forwarded-message
 @item gnus-signature-before-forwarded-message
 If this variable is @code{t}, which it is by default, your personal
 signature will be inserted before the forwarded message.  If not, the
 forwarded message will be inserted first in the new mail.
+
+@item gnus-forward-included-headers
+@vindex gnus-forward-included-headers
+Regexp matching header lines to be included in forwarded messages.  It
+usese the same regexp as @code{gnus-visible-headers} by default.
 
 @end table
 
@@ -5051,7 +5073,7 @@ insert additional headers, or just change headers in some way or other.
 If non-@code{nil}, Gnus will attempt to check the legality of the
 headers, as well as some other stuff, before posting.  You can control
 the granularity of the check by adding or removing elements from this
-list.  Legal elemetents are:
+list.  Legal elements are:
 
 @table @code
 @item subject-cmsg 
@@ -5079,6 +5101,8 @@ Check the length of the signature.
 @item approved
 Check whether the article has an @code{Approved} header, which is
 something only moderators should include.
+@item empty
+Check whether the article is empty.
 @end table
 
 @end table
@@ -5176,10 +5200,10 @@ that you are silly and have nothing important to say.
 When you are replying to or following up an article, you normally want
 to quote the person you are answering.  Inserting quoted text is done by
 @dfn{yanking}, and each quoted line you yank will have
-@code{mail-yank-prefix} prepended to it.  This is @samp{ } by default,
-which isn't very pretty.  Most everybody prefers that lines are
-prepended with @samp{> }, so @code{(setq mail-yank-prefix "> ")} in your
-@file{.emacs} file.
+@code{mail-yank-prefix} prepended to it.  This is @code{nil} by default,
+which isn't very pretty---the prefix will just be some spaces.  Most
+everybody prefers that lines are prepended with @samp{> }, so
+@code{(setq mail-yank-prefix "> ")} in your @file{.emacs} file.
 
 @item mail-yank-ignored-headers
 @vindex mail-yank-ignored-headers
@@ -5953,6 +5977,12 @@ Mark all articles in the current (sub)thread
 @findex gnus-uu-unmark-thread
 Unmark all articles in the current (sub)thread
 (@code{gnus-uu-unmark-thread}).
+
+@item M P v
+@kindex M P v (Summary)
+@findex gnus-uu-mark-over
+Mark all articles that have a score above the prefix argumnet
+(@code{gnus-uu-mark-over}).
 
 @item M P s
 @kindex M P s (Summary)

@@ -178,25 +178,25 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-enter-remove-article (article)
   "Mark ARTICLE for later possible removal."
-  (push article gnus-cache-removeable-articles))
+  (push article gnus-cache-removable-articles))
 
 (defun gnus-cache-possibly-remove-articles ()
   "Possibly remove some of the removable articles."
   (if (not (gnus-virtual-group-p gnus-newsgroup-name))
       (gnus-cache-possibly-remove-articles-1)
-    (let ((arts gnus-cache-removeable-articles)
+    (let ((arts gnus-cache-removable-articles)
 	  ga)
       (while arts
 	(setq ga (nnvirtual-find-group-art gnus-newsgroup-name (pop arts)))
-	(let ((gnus-cache-removeable-articles (list (cdr ga)))
+	(let ((gnus-cache-removable-articles (list (cdr ga)))
 	      (gnus-newsgroup-name (car ga)))
 	  (gnus-cache-possibly-remove-articles-1))))
-    (setq gnus-cache-removeable-articles nil)))
+    (setq gnus-cache-removable-articles nil)))
 
 (defun gnus-cache-possibly-remove-articles-1 ()
   "Possibly remove some of the removable articles."
   (unless (eq gnus-use-cache 'passive)
-    (let ((articles gnus-cache-removeable-articles)
+    (let ((articles gnus-cache-removable-articles)
 	  (cache-articles gnus-newsgroup-cached)
 	  article)
       (gnus-cache-change-buffer gnus-newsgroup-name)

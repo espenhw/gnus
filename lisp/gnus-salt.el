@@ -52,6 +52,7 @@
    " " gnus-summary-mark-as-processable
    "u" gnus-summary-unmark-as-processable
    "U" gnus-summary-unmark-all-processable
+   "v" gnus-uu-mark-over
    "r" gnus-uu-mark-region
    "R" gnus-uu-unmark-region
    "e" gnus-uu-mark-by-regexp

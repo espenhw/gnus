@@ -430,6 +430,13 @@ without formatting."
    (cond ((null file) "")
 	 ((numberp file) (int-to-string file))
 	 (t file))))
+
+(defun nnheader-functionp (form)
+  "Return non-nil if FORM is funcallable."
+  (or (and (symbolp form) (fboundp form))
+      (and (listp form) (eq (car form) 'lambda))))
+
+(fset 'nnheader-find-file-noselect 'find-file-noselect)
   
 (provide 'nnheader)
 

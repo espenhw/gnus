@@ -201,7 +201,7 @@ If this variable is nil, no files will be excluded.")
 		      nneething-group-alist)))))))
 
 (defun nneething-map-file ()
-  ;; We make sure that the .neething directory exists. 
+  ;; We make sure that the .nneething directory exists. 
   (or (file-exists-p nneething-map-file-directory)
       (make-directory nneething-map-file-directory 'parents))
   ;; We store it in a special directory under the user's home dir.
