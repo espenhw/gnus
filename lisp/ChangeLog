@@ -1,6 +1,11 @@
 2001-10-12  Simon Josefsson  <jas@extundo.com>
 	Suggested by david.goldberg6@verizon.net (David S. Goldberg)
 
+	* gnus-cite.el (gnus-article-toggle-cited-text): Don't remove
+	'cite from g-a-wash-types.
+	(gnus-cite-toggle): Ditto.  Add 'cite.  Set modeline.
+	(gnus-article-hide-citation): Fix.
+
 	* gnus-cite.el (gnus-article-hide-citation): Add `c' mode line
 	character.
 	(gnus-article-toggle-cited-text): Toggle `c' mode line character.
