@@ -21856,14 +21856,14 @@ This variable holds the hash-table with all the statistics -- the
 dictionary we have been talking about.  For every word in either
 collection, this hash-table stores a vector describing how often the
 word appeared in spam and often it appeared in non-spam mails.
+@end defvar
 
 If you want to regenerate the statistics from scratch, you need to
 reset the dictionary.
 
-@end defvar
-
 @defun spam-stat-reset
 Reset the @code{spam-stat} hash-table, deleting all the statistics.
+@end defun
 
 When you are done, you must save the dictionary.  The dictionary may
 be rather large.  If you will not update the dictionary incrementally
@@ -21871,7 +21871,6 @@ be rather large.  If you will not update the dictionary incrementally
 can reduce the size of the dictionary by deleting all words that did
 not appear often enough or that do not clearly belong to only spam or
 only non-spam mails.
-@end defun
 
 @defun spam-stat-reduce-size
 Reduce the size of the dictionary.  Use this only if you do not want
@@ -21963,65 +21962,57 @@ dictionary!
 The main interface to using @code{spam-stat}, are the following functions:
 
 @defun spam-stat-buffer-is-spam
-called in a buffer, that buffer is considered to be a new spam mail;
-use this for new mail that has not been processed before
-
+Called in a buffer, that buffer is considered to be a new spam mail.
+Use this for new mail that has not been processed before.
 @end defun
 
 @defun spam-stat-buffer-is-no-spam
-called in a buffer, that buffer is considered to be a new non-spam
-mail; use this for new mail that has not been processed before
-
+Called in a buffer, that buffer is considered to be a new non-spam
+mail.  Use this for new mail that has not been processed before.
 @end defun
 
 @defun spam-stat-buffer-change-to-spam
-called in a buffer, that buffer is no longer considered to be normal
-mail but spam; use this to change the status of a mail that has
-already been processed as non-spam
-
+Called in a buffer, that buffer is no longer considered to be normal
+mail but spam.  Use this to change the status of a mail that has
+already been processed as non-spam.
 @end defun
 
 @defun spam-stat-buffer-change-to-non-spam
-called in a buffer, that buffer is no longer considered to be spam but
-normal mail; use this to change the status of a mail that has already
-been processed as spam
-
+Called in a buffer, that buffer is no longer considered to be spam but
+normal mail.  Use this to change the status of a mail that has already
+been processed as spam.
 @end defun
 
 @defun spam-stat-save
-save the hash table to the file; the filename used is stored in the
-variable @code{spam-stat-file}
-
+Save the hash table to the file.  The filename used is stored in the
+variable @code{spam-stat-file}.
 @end defun
 
 @defun spam-stat-load
-load the hash table from a file; the filename used is stored in the
-variable @code{spam-stat-file}
-
+Load the hash table from a file.  The filename used is stored in the
+variable @code{spam-stat-file}.
 @end defun
 
 @defun spam-stat-score-word
-return the spam score for a word
-
+Return the spam score for a word.
 @end defun
 
 @defun spam-stat-score-buffer
-return the spam score for a buffer
-
+Return the spam score for a buffer.
 @end defun
 
 @defun spam-stat-split-fancy
-for fancy mail splitting; add the rule @samp{(: spam-stat-split-fancy)} to
-@code{nnmail-split-fancy}
+Use this function for fancy mail splitting.  Add the rule @samp{(:
+spam-stat-split-fancy)} to @code{nnmail-split-fancy}
+@end defun
 
-This requires the following in your @file{~/.gnus} file:
+Make sure you load the dictionary before using it.  This requires the
+following in your @file{~/.gnus} file:
 
 @example
 (require 'spam-stat)
 (spam-stat-load)
 @end example
-
-@end defun
 
 Typical test will involve calls to the following functions:
 
