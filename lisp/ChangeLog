@@ -1,5 +1,10 @@
 2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* message.el (message-setup-fill-variables): Kludge to use
+	normal-auto-fill-function even if auto fill is already activated.
+
+2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
 	* message.el (message-do-auto-fill): New version that does not
 	rely on text properties, by Simon Josefsson <jas@extundo.com>. 
 	(message-setup-1): Removed the `message-field' property.

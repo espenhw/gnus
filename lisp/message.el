@@ -1636,8 +1636,6 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (unless (boundp 'adaptive-fill-first-line-regexp)
     (setq adaptive-fill-first-line-regexp nil))
   (make-local-variable 'adaptive-fill-first-line-regexp)
-  (make-local-variable 'auto-fill-inhibit-regexp)
-  (make-local-variable 'normal-auto-fill-function)
   (let ((quote-prefix-regexp
 	 ;; User should change message-cite-prefix-regexp if
 	 ;; message-yank-prefix is set to an abnormal value.
@@ -1656,10 +1654,19 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	  (concat quote-prefix-regexp "\\|" adaptive-fill-regexp))
     (setq adaptive-fill-first-line-regexp
 	  (concat quote-prefix-regexp "\\|"
-		  adaptive-fill-first-line-regexp))
-    ;;(setq auto-fill-inhibit-regexp "^[A-Z][^: \n\t]+:")
-    (setq auto-fill-inhibit-regexp nil)
-    (setq normal-auto-fill-function 'message-do-auto-fill)))
+		  adaptive-fill-first-line-regexp)))
+  (make-local-variable 'auto-fill-inhibit-regexp)
+  ;;(setq auto-fill-inhibit-regexp "^[A-Z][^: \n\t]+:")
+  (setq auto-fill-inhibit-regexp nil)
+  (make-local-variable 'normal-auto-fill-function)
+  (setq normal-auto-fill-function 'message-do-auto-fill)
+  ;; KLUDGE: auto fill might already be turned on in `text-mode-hook'.
+  ;; In that case, ensure that it uses the right function.  The real
+  ;; solution would be not to use `define-derived-mode', and run
+  ;; `text-mode-hook' ourself at the end of the mode.
+  ;; -- Per Abrahamsen <abraham@dina.kvl.dk> Date: 2001-10-19.
+  (when auto-fill-function
+    (setq auto-fill-function normal-auto-fill-function)))
 
 
 
