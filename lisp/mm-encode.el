@@ -106,7 +106,7 @@ This variable should never be set directly, but bound before a call to
    ((functionp encoding)
     (ignore-errors (funcall encoding (point-min) (point-max))))
    (t
-    (message "Unknown encoding %s; defaulting to 8bit" encoding))))
+    (message "Unknown encoding %s; treating it as 8bit" encoding))))
 
 (defun mm-encode-buffer (type)
   "Encode the buffer which contains data of TYPE.
