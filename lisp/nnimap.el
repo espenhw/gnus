@@ -1216,8 +1216,10 @@ function is generally only called when Gnus is shutting down."
 			 (setq removeorig t)
 			 (when nnmail-cache-accepted-message-ids
 			   (with-current-buffer nntp-server-buffer
-			     (nnmail-cache-insert (nnmail-fetch-field
-						   "message-id") to-group)))
+                             (let (msgid)
+                               (and (setq msgid 
+					  (nnmail-fetch-field "message-id"))
+                                    (nnmail-cache-insert msgid to-group)))))
 			 ;; Add the group-art list to the history list.
 			 (push (list (cons to-group 0)) nnmail-split-history))
 			(t

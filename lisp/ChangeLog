@@ -1,3 +1,8 @@
+2002-07-31  Danny Siu  <dsiu@adobe.com>
+
+	* nnimap.el (nnimap-split-articles): do not call nnmail-fetch-field 
+	when splitting malformed messages without message-id
+
 2002-07-28  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Niklas Morberg <niklas.morberg@axis.com>.
 
