@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 
-;; The hashcash binary is at http://www.cypherspace.org/hashcash/
+;; The hashcash binary is at http://www.hashcash.org/.
 ;;
 ;; Call mail-add-payment to add a hashcash payment to a mail message
 ;; in the current buffer.
