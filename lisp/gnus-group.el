@@ -1772,6 +1772,7 @@ group."
 (defun gnus-group-select-group (&optional all)
   "Select this newsgroup.
 No article is selected automatically.
+If the group is opened, just switch the summary buffer.
 If ALL is non-nil, already read articles become readable.
 If ALL is a number, fetch this number of articles."
   (interactive "P")
