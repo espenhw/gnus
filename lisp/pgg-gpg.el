@@ -83,7 +83,8 @@
 		  (insert-file-contents output-file-name)))
 	    (set-buffer errors-buffer)
 	    (if (not (equal exit-status 0))
-		(error "%s exited abnormally: '%s'" program exit-status))))
+		(insert (format "\n%s exited abnormally: '%s'\n"
+                                program exit-status)))))
       (if (file-exists-p output-file-name)
 	  (delete-file output-file-name))
       (set-default-file-modes orig-mode))))

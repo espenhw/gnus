@@ -1,3 +1,10 @@
+2003-03-01  Satyaki Das  <satyaki@theforce.stanford.edu>
+	(Trivial patch.)
+
+	* pgg-gpg.el (pgg-gpg-process-region): Insert process status into
+	errors-buffer. This produces a nicer error message in case of
+	problems.
+	
 2003-03-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-maybe-spam-stat-load, spam-maybe-spam-stat-load):
