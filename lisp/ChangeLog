@@ -1,3 +1,11 @@
+2003-03-19  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-use-idna): New variable.
+	(message-mode-field-menu): Add entry for IDNA.
+	(message-idna-inside-rhs-p, message-idna-to-ascii-rhs-1)
+	(message-idna-to-ascii-rhs): New function.
+	(message-generate-headers): Invoke IDNA code.
+
 2003-03-19  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--system-name): New function.

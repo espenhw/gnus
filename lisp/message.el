@@ -1288,6 +1288,12 @@ no, only reply back to the author."
   :link '(custom-manual "(message)News Headers")
   :type 'string)
 
+(defcustom message-use-idna 'ask
+  "Whether to encode non-ASCII in domain names into ASCII according to IDNA."
+  :type '(choice (const :tag "Ask" ask)
+		 (const :tag "Never" nil)
+		 (const :tag "Always" t)))
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -2172,6 +2178,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Reduce To: to Cc:" message-reduce-to-to-cc t]
     "----"
     ["Sort Headers" message-sort-headers t]
+    ["Encode non-ASCII domain names" message-idna-to-ascii-rhs t]
     ["Goto Body" message-goto-body t]
     ["Goto Signature" message-goto-signature t]))
 
@@ -4629,6 +4636,60 @@ subscribed address (and not the additional To and Cc header contents)."
 	      list
 	    msg-recipients))))))
 
+(defun message-idna-inside-rhs-p ()
+  "Return t iff point is inside a RHS (heuristically).
+Only works properly if header contains mailbox-list or address-list.
+I.e., calling it on a Subject: header is useless."
+  (if (re-search-backward
+       "[\\\n\r\t ]" (save-excursion (search-backward "@" nil t)) t)
+      ;; whitespace between @ and point
+      nil
+    (let ((dquote 1) (paren 1))
+      (while (save-excursion (re-search-backward "[^\\]\"" nil t dquote))
+	(incf dquote))
+      (while (save-excursion (re-search-backward "[^\\]\(" nil t paren))
+	(incf paren))
+      (and (= (% dquote 2) 1) (= (% paren 2) 1)))))
+
+(defun message-idna-to-ascii-rhs-1 (header)
+  "Interactively potentially IDNA encode domain names in HEADER."
+  (let (rhs ace start end startpos endpos)
+    (goto-char (point-min))
+    (setq start (re-search-forward (concat "^" header) nil t)
+	  end (or (save-excursion (re-search-forward "^[ \t]" nil t))
+		  (point-max)))
+    (when (and start end)
+      (while (re-search-forward "@\\([^ \t\r\n>]+\\)" end t)
+	(setq rhs (match-string-no-properties 1)
+	      startpos (match-beginning 1)
+	      endpos (match-end 1))
+	(when (save-match-data
+		(and (message-idna-inside-rhs-p)
+		     (setq ace (idna-to-ascii rhs))
+		     (not (string= rhs ace))
+		     (if (eq message-use-idna 'ask)
+			 (unwind-protect
+			     (progn
+			       (replace-highlight startpos endpos)
+			       (y-or-n-p
+				(format "Replace with `%s'? " ace)))
+			   (message "")
+			   (replace-dehighlight))
+		       message-use-idna)))
+	  (replace-match (concat "@" ace)))))))
+
+(defun message-idna-to-ascii-rhs ()
+  "Possibly IDNA encode non-ASCII domain names in From:, To: and Cc: headers.
+See `message-idna-encode'."
+  (interactive)
+  (when (condition-case nil (require 'idna) (file-error))
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-head)
+	(message-idna-to-ascii-rhs-1 "From")
+	(message-idna-to-ascii-rhs-1 "To")
+	(message-idna-to-ascii-rhs-1 "Cc")))))
+
 (defun message-generate-headers (headers)
   "Prepare article HEADERS.
 Headers already prepared in the buffer are not modified."
@@ -4780,7 +4841,9 @@ Headers already prepared in the buffer are not modified."
 	    (beginning-of-line))
 	  (when (or (message-news-p)
 		    (string-match "@.+\\.." secure-sender))
-	    (insert "Sender: " secure-sender "\n")))))))
+	    (insert "Sender: " secure-sender "\n"))))
+      ;; Check for IDNA
+      (message-idna-to-ascii-rhs))))
 
 (defun message-insert-courtesy-copy ()
   "Insert a courtesy message in mail copies of combined messages."
