@@ -71,8 +71,8 @@ from the document.")
      (body-begin-function . nndoc-babyl-body-begin)
      (head-begin-function . nndoc-babyl-head-begin))
     (forward
-     (article-begin . "^-+ \\(Start of \\)?forwarded message -+\n+")
-     (body-end . "^-+ End \\(of \\)?forwarded message -+$")
+     (article-begin . "^-+ \\(Start of \\)?forwarded message.*\n+")
+     (body-end . "^-+ End \\(of \\)?forwarded message.*$")
      (prepare-body-function . nndoc-unquote-dashes))
     (rfc934
      (article-begin . "^--.*\n+")
@@ -432,7 +432,8 @@ from the document.")
     t))
 
 (defun nndoc-forward-type-p ()
-  (when (and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
+  (when (and (re-search-forward "^-+ \\(Start of \\)?forwarded message.*\n+" 
+				nil t)
 	     (not (re-search-forward "^Subject:.*digest" nil t))
 	     (not (re-search-backward "^From:" nil t 2))
 	     (not (re-search-forward "^From:" nil t 2)))

@@ -1,3 +1,8 @@
+2000-05-04 17:49:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-type-alist): Extend forward regexp.
+	(nndoc-forward-type-p): Ditto.
+
 2000-05-04 17:13:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-with-unibyte-current-buffer): Set the default
