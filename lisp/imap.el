@@ -817,6 +817,7 @@ Returns t if login was successful, nil otherwise."
 		    (setq imap-password passwd)))
 	    (message "Login failed...")
 	    (setq passwd nil)
+	    (setq imap-password nil)
 	    (sit-for 1))))
       ;;	(quit (with-current-buffer buffer
       ;;		(setq user nil

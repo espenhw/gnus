@@ -1,5 +1,8 @@
 2003-10-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nndraft.el (nndraft-request-move-article): Fix infinite
+	recursion. 
+
 	* gnus-group.el (gnus-group-mark-regexp): Jump to groups.
 
 2003-10-16  Ed L. Cashin  <ecashin@uga.edu>

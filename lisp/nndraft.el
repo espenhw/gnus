@@ -200,7 +200,7 @@
 					      accept-form &optional last)
   (nndraft-possibly-change-group group)
   (let ((nnmh-allow-delete-final t))
-    (nnoo-parent-function 'nndraft 'nndraft-request-move-article
+    (nnoo-parent-function 'nndraft 'nnmh-request-move-article
 			  (list article group server accept-form last))))
 
 (deffoo nndraft-request-expire-articles (articles group &optional server force)

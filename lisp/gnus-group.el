@@ -1736,9 +1736,11 @@ If UNMARK, remove the mark instead."
   (interactive "sMark (regexp): ")
   (let ((alist (cdr gnus-newsrc-alist))
 	group)
-    (while alist
-      (when (string-match regexp (setq group (gnus-info-group (pop alist))))
-	(gnus-group-set-mark group))))
+    (save-excursion
+      (while alist
+	(when (string-match regexp (setq group (gnus-info-group (pop alist))))
+	  (gnus-group-jump-to-group group)
+	  (gnus-group-set-mark group)))))
   (gnus-group-position-point))
 
 (defun gnus-group-remove-mark (group &optional test-marked)
