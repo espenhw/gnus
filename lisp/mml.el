@@ -125,14 +125,15 @@ one charsets.")
 			 (mm-find-mime-charset-region point (point))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
-		  (prog1 (y-or-n-p
-		   "\
+                  (message-options-get 'unknown-encoding)
+		  (and (y-or-n-p "\
 Message contains characters with unknown encoding.  Really send?")
-		    (set (make-local-variable 'mml-confirmation-set)
-			 (push 'unknown-encoding mml-confirmation-set))))
+                       (message-options-set 'unknown-encoding t)))
 	      (if (setq use-ascii
 			(or (memq 'use-ascii mml-confirmation-set)
-			    (y-or-n-p "Use ASCII as charset?")))
+                            (message-options-get 'use-ascii)
+			    (and (y-or-n-p "Use ASCII as charset?")
+                                 (message-options-set 'use-ascii t))))
 		  (setq charsets (delq nil charsets))
 		(setq warn nil))
 	    (error "Edit your message to remove those characters")))
@@ -148,14 +149,11 @@ Message contains characters with unknown encoding.  Really send?")
 			  tag point (point) use-ascii)))
 	    (when (and warn
 		       (not (memq 'multipart mml-confirmation-set))
-		       (not
-			(prog1 (y-or-n-p
-				(format
-				 "\
+                       (not (message-options-get 'multipart))
+		       (not (and (y-or-n-p (format "\
 A message part needs to be split into %d charset parts.  Really send? "
-				 (length nstruct)))
-			  (set (make-local-variable 'mml-confirmation-set)
-			       (push 'multipart mml-confirmation-set)))))
+                                                   (length nstruct)))
+                                 (message-options-set 'multipart t))))
 	      (error "Edit your message to use only one charset"))
 	    (setq struct (nconc nstruct struct)))))))
     (unless (eobp)

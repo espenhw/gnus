@@ -1,3 +1,14 @@
+2001-06-16 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-check-news-header-syntax): Check Reply-To.
+
+2001-06-16 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-parse-1): Use message options.
+
+	* message.el (message-do-fcc): Don't do anything if there is no
+	FCC.
+
 2001-06-16  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-split-articles): Support 'junk to-groups.

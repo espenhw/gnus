@@ -169,7 +169,7 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
 `new-text', `quoting-style', `redirected-followup', `signature',
 `approved', `sender', `empty', `empty-headers', `message-id', `from',
 `subject', `shorten-followup-to', `existing-newsgroups',
-`buffer-file-name', `unchanged', `newsgroups'."
+`buffer-file-name', `unchanged', `newsgroups', `reply-to'."
   :group 'message-news
   :type '(repeat sexp))			; Fixme: improve this
 
@@ -2972,6 +2972,32 @@ to find out how to use this."
 	   (message
 	    "Denied posting -- the From looks strange: \"%s\"." from)
 	   nil)
+	  (t t))))
+     ;; Check the Reply-To header.
+     (message-check 'reply-to
+       (let* ((case-fold-search t)
+	      (reply-to (message-fetch-field "reply-to"))
+	      ad)
+	 (cond
+          ((not reply-to)
+           t)
+          ((string-match "," reply-to)
+           (y-or-n-p
+            (format "Multiple Reply-To addresses: \"%s\". Really post? "
+                    reply-to)))
+	  ((or (not (string-match
+		     "@[^\\.]*\\."
+		     (setq ad (nth 1 (mail-extract-address-components
+				      reply-to))))) ;larsi@ifi
+	       (string-match "\\.\\." ad) ;larsi@ifi..uio
+	       (string-match "@\\." ad)	;larsi@.ifi.uio
+	       (string-match "\\.$" ad)	;larsi@ifi.uio.
+	       (not (string-match "^[^@]+@[^@]+$" ad)) ;larsi.ifi.uio
+	       (string-match "(.*).*(.*)" reply-to)) ;(lars) (lars)
+           (y-or-n-p
+            (format
+             "The Reply-To looks strange: \"%s\". Really post? " 
+             reply-to)))
 	  (t t))))))
 
 (defun message-check-news-body-syntax ()
@@ -3079,47 +3105,49 @@ to find out how to use this."
 	(buf (current-buffer))
 	list file)
     (save-excursion
-      (set-buffer (get-buffer-create " *message temp*"))
-      (erase-buffer)
-      (insert-buffer-substring buf)
       (save-restriction
 	(message-narrow-to-headers)
-	(while (setq file (message-fetch-field "fcc"))
-	  (push file list)
-	  (message-remove-header "fcc" nil t)))
-      (message-encode-message-body)
-      (save-restriction
-	(message-narrow-to-headers)
-	(let ((mail-parse-charset message-default-charset)
-	      (rfc2047-header-encoding-alist
-	       (cons '("Newsgroups" . default)
-		     rfc2047-header-encoding-alist)))
-	  (mail-encode-encoded-word-buffer)))
-      (goto-char (point-min))
-      (when (re-search-forward
-	     (concat "^" (regexp-quote mail-header-separator) "$")
-	     nil t)
-	(replace-match "" t t ))
-      ;; Process FCC operations.
-      (while list
-	(setq file (pop list))
-	(if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
-	    ;; Pipe the article to the program in question.
-	    (call-process-region (point-min) (point-max) shell-file-name
-				 nil nil nil shell-command-switch
-				 (match-string 1 file))
-	  ;; Save the article.
-	  (setq file (expand-file-name file))
-	  (unless (file-exists-p (file-name-directory file))
-	    (make-directory (file-name-directory file) t))
-	  (if (and message-fcc-handler-function
-		   (not (eq message-fcc-handler-function 'rmail-output)))
-	      (funcall message-fcc-handler-function file)
-	    (if (and (file-readable-p file) (mail-file-babyl-p file))
-		(rmail-output file 1 nil t)
-	      (let ((mail-use-rfc822 t))
-		(rmail-output file 1 t t))))))
-      (kill-buffer (current-buffer)))))
+        (setq file (message-fetch-field "fcc" t)))
+      (when file
+        (set-buffer (get-buffer-create " *message temp*"))
+        (erase-buffer)
+        (insert-buffer-substring buf)
+        (message-encode-message-body)
+        (save-restriction
+          (message-narrow-to-headers)
+          (while (setq file (message-fetch-field "fcc" t))
+            (push file list)
+            (message-remove-header "fcc" nil t))
+          (let ((mail-parse-charset message-default-charset)
+                (rfc2047-header-encoding-alist
+                 (cons '("Newsgroups" . default)
+                       rfc2047-header-encoding-alist)))
+            (mail-encode-encoded-word-buffer)))
+        (goto-char (point-min))
+        (when (re-search-forward
+               (concat "^" (regexp-quote mail-header-separator) "$")
+               nil t)
+          (replace-match "" t t ))
+        ;; Process FCC operations.
+        (while list
+          (setq file (pop list))
+          (if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
+              ;; Pipe the article to the program in question.
+              (call-process-region (point-min) (point-max) shell-file-name
+                                   nil nil nil shell-command-switch
+                                   (match-string 1 file))
+            ;; Save the article.
+            (setq file (expand-file-name file))
+            (unless (file-exists-p (file-name-directory file))
+              (make-directory (file-name-directory file) t))
+            (if (and message-fcc-handler-function
+                     (not (eq message-fcc-handler-function 'rmail-output)))
+                (funcall message-fcc-handler-function file)
+              (if (and (file-readable-p file) (mail-file-babyl-p file))
+                  (rmail-output file 1 nil t)
+                (let ((mail-use-rfc822 t))
+                  (rmail-output file 1 t t))))))
+        (kill-buffer (current-buffer))))))
 
 (defun message-output (filename)
   "Append this article to Unix/babyl mail file FILENAME."
