@@ -1536,6 +1536,7 @@ be used in a STORE FLAGS command."
   "Return t iff MARK can be permanently (between IMAP sessions) saved on articles, in GROUP."
   (imap-message-flag-permanent-p (nnimap-mark-to-flag mark)))
 
+;;;###autoload
 (defun nnimap-fixup-unread-after-getting-new-news ()
   (let (server group info)
     (mapatoms

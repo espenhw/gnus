@@ -1,5 +1,8 @@
 2002-09-27  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-fixup-unread-after-getting-new-news): Autoload
+	it just in case.
+
 	* gnus-start.el (gnus-setup-news-hook): Add n-f-u-a-g-n-n.
 	(gnus-after-getting-new-news-hook): Ditto.
 
