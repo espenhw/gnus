@@ -2153,7 +2153,7 @@ covered by that variable."
 
 (defcustom gnus-agent t
   "Whether we want to use the Gnus agent or not.
-Putting (gnus-agentize) in ~/.gnus is obsolete by (setq gnus-agent t)."
+Putting (gnus-agentize) in ~/.gnus is obsoleted by (setq gnus-agent t)."
   :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
