@@ -1,3 +1,7 @@
+2000-12-01  Christopher Splinter <chris@splinter.inka.de>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Fix typo.
+
 2000-12-01  Simon Josefsson  <sj@extundo.com>
 
 	* mml-smime.el (mml-smime-verify): Fix address parsing.

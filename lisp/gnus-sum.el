@@ -6379,7 +6379,7 @@ articles that are younger than AGE days."
      (while (not days-got)
        (setq days (if younger
 		      (read-string "Limit to articles within (in days): ")
-		    (read-string "Limit to articles old than (in days): ")))
+		    (read-string "Limit to articles older than (in days): ")))
        (when (> (length days) 0)
 	 (setq days (read days)))
        (if (numberp days)
