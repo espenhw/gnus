@@ -1,8 +1,18 @@
 2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* message.el (message-do-auto-fill): New version that does not
+	rely on text properties, by Simon Josefsson <jas@extundo.com>. 
+	(message-setup-1): Removed the `message-field' property.
+
+	* gnus-draft.el (gnus-draft-edit-message): Removed the
+	`message-field' property.
+
+2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
 	* gnus-draft.el (gnus-draft-edit-message): Change `field' to
 	`message-field'.  The `field' property has a special significance in
 	Emacs 21.
+
 	* message.el (message-send, message-setup-1): Ditto.
 
 2001-10-18  Simon Josefsson  <jas@extundo.com>

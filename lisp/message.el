@@ -1933,8 +1933,7 @@ Prefix arg means justify as well."
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (unless (text-property-any (gnus-point-at-bol) (point)
-			     'message-field 'header)
+  (when (> (point) (save-excursion (rfc822-goto-eoh)))
     (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)
@@ -3991,9 +3990,6 @@ than 988 characters long, and if they are not, trim them until they are."
   (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)
   (run-hooks 'message-setup-hook)
-  (save-restriction
-    (message-narrow-to-headers)
-    (put-text-property (point-min) (point-max) 'field 'header))
   (message-position-point)
   (undo-boundary))
 
