@@ -216,7 +216,9 @@ Thank you for your help in stamping out bugs.
 	   (,group gnus-newsgroup-name)
 	   (message-header-setup-hook
 	    (copy-sequence message-header-setup-hook))
+	   (mbl mml-buffer-list)
 	   (message-mode-hook (copy-sequence message-mode-hook)))
+       (setq mml-buffer-list nil)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
@@ -228,7 +230,17 @@ Thank you for your help in stamping out bugs.
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
 	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
-	 (gnus-run-hooks 'gnus-message-setup-hook))
+	 (gnus-run-hooks 'gnus-message-setup-hook)
+	 (if (eq major-mode 'message-mode)
+	     ;; Make mml-buffer-list local.
+	     ;; Restore global mml-buffer-list value as mbl.
+	     ;; What a hack! -- Shenghuo
+	     (let ((mml-buffer-list mml-buffer-list))
+	       (setq mml-buffer-list mbl)
+	       (make-local-variable 'mml-buffer-list)
+	       (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))
+	   (mml-destroy-buffers)
+	   (setq mml-buffer-list mbl)))
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)
        (set-buffer-modified-p nil))))

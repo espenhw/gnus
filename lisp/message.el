@@ -1412,6 +1412,8 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body).
 C-c C-a  mml-attach-file (attach a file as MIME).
 M-RET    message-newline-and-reformat (break the line and reformat)."
   (interactive)
+  (if (local-variable-p 'mml-buffer-list)
+      (mml-destroy-buffers))
   (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)
@@ -4049,16 +4051,22 @@ Optional DIGEST will use digest to forward."
 		(insert "<#/mml>\n")
 	      (insert "<#/part>\n")))
 	(insert "\n-------------------- End of forwarded message --------------------\n"))
-      (when (and (or message-forward-show-mml
-		     (not message-forward-as-mime))
-	     (not current-prefix-arg)
-	     message-forward-ignored-headers)
-	(save-restriction
-	  (narrow-to-region b e)
-	  (goto-char b)
-	  (narrow-to-region (point) (or (search-forward "\n\n" nil t) (point)))
-	  (if (and digest message-forward-as-mime)
-	      (delete-region (point-min) (point-max))
+      (if (and digest message-forward-as-mime)
+	  (save-restriction
+	    (narrow-to-region b e)
+	    (goto-char b)
+	    (narrow-to-region (point) 
+			      (or (search-forward "\n\n" nil t) (point)))
+	    (delete-region (point-min) (point-max)))
+	(when (and (or message-forward-show-mml
+		       (not message-forward-as-mime))
+		   (not current-prefix-arg)
+		   message-forward-ignored-headers)
+	  (save-restriction
+	    (narrow-to-region b e)
+	    (goto-char b)
+	    (narrow-to-region (point) 
+			      (or (search-forward "\n\n" nil t) (point)))
 	    (message-remove-header message-forward-ignored-headers t)))))
     (message-position-point)))
 

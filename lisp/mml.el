@@ -74,6 +74,18 @@ one charsets.")
 
 (defvar mml-generate-default-type "text/plain")
 
+(defvar mml-buffer-list nil)
+
+(defun mml-generate-new-buffer (name) 
+  (let ((buf (generate-new-buffer name)))
+    (push buf mml-buffer-list)
+    buf))
+
+(defun mml-destroy-buffers ()
+  (let (kill-buffer-hook)
+    (mapcar 'kill-buffer mml-buffer-list)
+    (setq mml-buffer-list nil)))
+
 (defun mml-parse ()
   "Parse the current buffer as an MML document."
   (goto-char (point-min))
@@ -537,7 +549,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
     (unless (stringp (car handle))
       (unless (setq textp (equal (mm-handle-media-supertype handle) "text"))
 	(save-excursion
-	  (set-buffer (setq buffer (generate-new-buffer " *mml*")))
+	  (set-buffer (setq buffer (mml-generate-new-buffer " *mml*")))
 	  (mm-insert-part handle)
 	  (if (setq mmlp (equal (mm-handle-media-type handle) 
 				"message/rfc822"))

@@ -7771,12 +7771,26 @@ groups."
 	  (with-current-buffer gnus-article-buffer
 	    (mm-enable-multibyte)))
 	(gnus-article-edit-article
-	 (if raw 'ignore 'mime-to-mml)
+	 (if raw 'ignore 
+	   #'(lambda () 
+	       (let ((mbl mml-buffer-list))
+		 (setq mml-buffer-list nil)
+		 (mime-to-mml)
+		 (make-local-hook 'kill-buffer-hook)
+		 (let ((mml-buffer-list mml-buffer-list))
+		   (setq mml-buffer-list mbl)
+		   (make-local-variable 'mml-buffer-list))
+		 (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))))
 	 `(lambda (no-highlight)
 	    (let ((mail-parse-charset ',gnus-newsgroup-charset)
 		  (mail-parse-ignored-charsets 
 		   ',gnus-newsgroup-ignored-charsets))
-	      ,(if (not raw) '(mml-to-mime))
+	      ,(if (not raw) '(progn 
+				(mml-to-mime)
+				(mml-destroy-buffers)
+				(remove-hook 'kill-buffer-hook 
+					     'mml-destroy-buffers t)
+				(kill-local-variable 'mml-buffer-list)))
 	      (gnus-summary-edit-article-done
 	       ,(or (mail-header-references gnus-current-headers) "")
 	       ,(gnus-group-read-only-p) 

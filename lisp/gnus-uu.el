@@ -295,7 +295,9 @@ so I simply dropped them."
 
 (defcustom gnus-uu-digest-headers
   '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
-    "^Summary:" "^References:" "^Content-Type:" "^Content-Transfer-Encoding:")
+    "^Summary:" "^References:" "^Content-Type:" "^Content-Transfer-Encoding:"
+    "^MIME-Version:" "^Content-Disposition:" "^Content-Description:"
+    "^Content-ID:")
   "*List of regexps to match headers included in digested messages.
 The headers will be included in the sequence they are matched."
   :group 'gnus-extract
@@ -853,7 +855,7 @@ When called interactively, prompt for REGEXP."
 		       (current-time-string) name name))
 	      (when (and message-forward-as-mime gnus-uu-digest-buffer)
 		;; The default part in multipart/digest is message/rfc822.
-		;; This is a fake head.
+		;; Subject is a fake head.
 		(insert "<#part type=text/plain>\nSubject: Topics\n\n"))
 	      (insert "Topics:\n")))
 	(when (not (eq in-state 'end))
@@ -869,8 +871,9 @@ When called interactively, prompt for REGEXP."
 	      ;; These two are necessary for XEmacs 19.12 fascism.
 	      (put-text-property (point-min) (point-max) 'invisible nil)
 	      (put-text-property (point-min) (point-max) 'intangible nil))
-	    (when (and message-forward-as-mime gnus-uu-digest-buffer)
-	      ;; FIX ME:: when message-forward-show-mml is nil.
+	    (when (and message-forward-as-mime 
+		       message-forward-show-mml
+		       gnus-uu-digest-buffer)
 	      (mm-enable-multibyte)
 	      (mime-to-mml))
 	    (goto-char (point-min))
@@ -899,16 +902,31 @@ When called interactively, prompt for REGEXP."
 					  (1- (point)))
 				     (progn (forward-line 1) (point)))))))))
 	    (widen)))
-	(when (and message-forward-as-mime gnus-uu-digest-buffer)
-	  (insert "\n<#mml type=message/rfc822>\n"))
-	(insert sorthead) (goto-char (point-max))
-	(insert body) (goto-char (point-max))
 	(if (and message-forward-as-mime gnus-uu-digest-buffer)
-	    (insert "\n<#/mml>\n")
+	  (if message-forward-show-mml
+	      (progn
+		(insert "\n<#mml type=message/rfc822>\n")
+		(insert sorthead) (goto-char (point-max))
+		(insert body) (goto-char (point-max))
+		(insert "\n<#/mml>\n"))
+	    (let ((buf (mml-generate-new-buffer " *mml*")))
+	      (with-current-buffer buf
+		(insert sorthead)
+		(goto-char (point-min))
+		(when (re-search-forward "^Subject: \\(.*\\)$" nil t)
+		  (setq subj (buffer-substring (match-beginning 1) 
+					       (match-end 1))))
+		(goto-char (point-max))
+		(insert body))
+	      (insert "\n<#part type=message/rfc822"
+		      " buffer=\"" (buffer-name buf) "\">\n")))
+	  (insert sorthead) (goto-char (point-max))
+	  (insert body) (goto-char (point-max))
 	  (insert (concat "\n" (make-string 30 ?-) "\n\n")))
 	(goto-char beg)
 	(when (re-search-forward "^Subject: \\(.*\\)$" nil t)
-	  (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
+	  (setq subj (buffer-substring (match-beginning 1) (match-end 1))))
+	(when subj
 	  (save-excursion
 	    (set-buffer "*gnus-uu-pre*")
 	    (insert (format "   %s\n" subj)))))
