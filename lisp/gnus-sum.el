@@ -9956,7 +9956,8 @@ If NO-EXPIRE, auto-expiry will be inhibited."
 	;; Go to the right position on the line.
 	(goto-char (+ forward (point)))
 	;; Replace the old mark with the new mark.
-	(subst-char-in-region (point) (1+ (point)) (char-after) mark)
+	(delete-char 1)
+	(insert-char mark 1 t)
 	;; Optionally update the marks by some user rule.
 	(when (eq type 'unread)
 	  (gnus-data-set-mark

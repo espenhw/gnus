@@ -1,5 +1,7 @@
 2004-01-08  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-sum.el (gnus-summary-update-mark): Fix for multibyte marks.
+
 	* gnus-util.el (gnus-replace-in-string): Remove Emacs 20 code.
 
 2003-11-15  Simon Josefsson  <jas@extundo.com>
