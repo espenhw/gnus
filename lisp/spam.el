@@ -733,7 +733,8 @@ Respects the process/prefix convention."
 	    ;; call spam-register-routine with specific articles to unregister,
 	    ;; when there are articles to unregister and the check is enabled
 	    (when (and unregister-list (symbol-value check))
-	      (spam-register-routine classification check t unregister-list))))))
+	      (spam-register-routine 
+	       classification check t unregister-list))))))
 
     ;; find all the spam processors applicable to this group
     (dolist (processor-param spam-list-of-processors)
@@ -745,9 +746,10 @@ Respects the process/prefix convention."
 	  (spam-register-routine classification check))))
 
     (unless (and spam-move-spam-nonspam-groups-only
-		 (not (spam-group-spam-contents-p gnus-newsgroup-name)))
+		 (spam-group-spam-contents-p gnus-newsgroup-name))
       (gnus-message 5 "Marking spam as expired and moving it to %s"
-		    gnus-newsgroup-name)
+		    (gnus-parameter-spam-process-destination 
+		     gnus-newsgroup-name))
       (spam-mark-spam-as-expired-and-move-routine
        (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 

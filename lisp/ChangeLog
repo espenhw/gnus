@@ -1,3 +1,8 @@
+2004-04-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): logic and message fix.
+	Reported by bojohan+news@dd.chalmers.se (Johan Bockg,Ae(Brd).
+
 2004-04-17  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-set-global-variables)
