@@ -131,6 +131,26 @@ Entries without port tokens default to DEFAULTPORT."
 	(pop result))
       (car result))))
 
+(defun netrc-machine-user-or-password (mode authinfo-file-or-list machines ports defaults)
+  "Get the user name or password according to MODE from AUTHINFO-FILE-OR-LIST.
+Matches a machine from MACHINES and a port from PORTS, giving
+default ports DEFAULTS to `netrc-machine'.
+
+MODE can be \"login\" or \"password\", suitable for passing to
+`netrc-get'."
+  (let ((authinfo-list (if (stringp authinfo-file-or-list)
+			   (netrc-parse authinfo-file-or-list)
+			 authinfo-file-or-list))
+	(ports (or ports '(nil)))
+	(defaults (or defaults '(nil)))
+	info)
+    (dolist (machine machines)
+      (dolist (default defaults)
+	(dolist (port ports)
+	  (let ((alist (netrc-machine authinfo-list machine port default)))
+	  (setq info (or (netrc-get alist mode) info))))))
+    info))
+
 (defun netrc-get (alist type)
   "Return the value of token TYPE from ALIST."
   (cdr (assoc type alist)))

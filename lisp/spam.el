@@ -1703,7 +1703,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     classification
 		     backend
 		     gnus-newsgroup-name))))
-    (length articles))))      ;return the number of articles processed
+      ;; return the number of articles processed
+      (length articles))))
 
 ;;; log a ham- or spam-processor invocation to the registry
 (defun spam-log-processing-to-registry (id type classification backend group)
@@ -2357,7 +2358,7 @@ REMOVE not nil, remove the ADDRESSES."
 
 (defun spam-verify-bogofilter ()
   "Verify the Bogofilter version is sufficient."
-  (when (eq spam-bogofilter-valid 'never)
+  (when (eq spam-bogofilter-valid 'unknown)
     (setq spam-bogofilter-valid
 	  (not (string-match "^bogofilter version 0\\.\\([0-9]\\|1[01]\\)\\."
 			     (shell-command-to-string 
