@@ -851,12 +851,12 @@ be set in `.emacs' instead."
     (storm "#666699" "#99ccff")
     (pdino "#9999cc" "#99ccff")
     (purp "#9999cc" "#666699")
-    (no "#000000" "#ff0000")
+    (no "#ff0000" "#ffff00")
     (neutral "#b4b4b4" "#878787")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
 
-(defcustom gnus-logo-color-style 'oort
+(defcustom gnus-logo-color-style 'no
   "*Color styles used for the Gnus logo."
   :type `(choice ,@(mapcar (lambda (elem) (list 'const (car elem)))
 			   gnus-logo-color-alist))

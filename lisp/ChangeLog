@@ -1,5 +1,7 @@
 2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-logo-color-style): Changed colors to `no'.
+
 	* Moved to Changelog.1.
 
     Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
