@@ -384,13 +384,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		 (unless (equal res (gnus-registry-fetch-group key))
 		   (setq single-match nil))
 		 (setq res (gnus-registry-fetch-group key))
-		 (gnus-message
-		  ;; raise level of messaging if gnus-registry-track-extra
-		  (if gnus-registry-track-extra 5 9)
-		  "%s (extra tracking) traced sender %s to group %s"
-		  "gnus-registry-split-fancy-with-parent"
-		  sender
-		  (if res res "nil")))))
+		 (when (and sender res)
+		   (gnus-message
+		    ;; raise level of messaging if gnus-registry-track-extra
+		    (if gnus-registry-track-extra 5 9)
+		    "%s (extra tracking) traced sender %s to group %s"
+		    "gnus-registry-split-fancy-with-parent"
+		    sender
+		    res)))))
 	   gnus-registry-hashtb))
 	(when (and single-match
 		   (gnus-registry-track-subject-p)
@@ -407,13 +408,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		 (unless (equal res (gnus-registry-fetch-group key))
 		   (setq single-match nil))
 		 (setq res (gnus-registry-fetch-group key))
-		 (gnus-message
-		  ;; raise level of messaging if gnus-registry-track-extra
-		  (if gnus-registry-track-extra 5 9)
-		  "%s (extra tracking) traced subject %s to group %s"
-		  "gnus-registry-split-fancy-with-parent"
-		  subject
-		  (if res res "nil")))))
+		 (when (and subject res)
+		   (gnus-message
+		    ;; raise level of messaging if gnus-registry-track-extra
+		    (if gnus-registry-track-extra 5 9)
+		    "%s (extra tracking) traced subject %s to group %s"
+		    "gnus-registry-split-fancy-with-parent"
+		    subject
+		    res)))))
 	   gnus-registry-hashtb))
 	(unless single-match
 	  (gnus-message
@@ -421,10 +423,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	   "gnus-registry-split-fancy-with-parent: too many extra matches for %s"
 	   refstr)
 	  (setq res nil))))
-    (gnus-message
-     5 
-     "gnus-registry-split-fancy-with-parent traced %s to group %s"
-     refstr (if res res "nil"))
+    (when (and refstr res)
+      (gnus-message
+       5
+       "gnus-registry-split-fancy-with-parent traced %s to group %s"
+       refstr res))
 
     (when (and res gnus-registry-use-long-group-names)
       (let ((m1 (gnus-find-method-for-group res))
