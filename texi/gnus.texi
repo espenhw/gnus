@@ -357,7 +357,7 @@ license to the document, as described in section 6 of the license.
 @end tex
 
 
-@node Top, Starting Up, (dir), (dir)
+@node Top
 @top The Gnus Newsreader
 
 @ifinfo
@@ -891,7 +891,7 @@ Emacs for Heathens
 @end detailmenu
 @end menu
 
-@node Starting Up, Group Buffer, Top, Top
+@node Starting Up
 @chapter Starting Gnus
 @cindex starting up
 
@@ -928,7 +928,7 @@ terminology section (@pxref{Terminology}).
 @end menu
 
 
-@node Finding the News, The First Time, Starting Up, Starting Up
+@node Finding the News
 @section Finding the News
 @cindex finding news
 
@@ -1008,7 +1008,7 @@ would typically set this variable to
 @end lisp
 
 
-@node The First Time, The Server is Down, Finding the News, Starting Up
+@node The First Time
 @section The First Time
 @cindex first time usage
 
@@ -1033,7 +1033,7 @@ use the normal functions for handling new groups, and not do anything
 special.
 
 
-@node The Server is Down, Slave Gnusae, The First Time, Starting Up
+@node The Server is Down
 @section The Server is Down
 @cindex server errors
 
@@ -1061,7 +1061,7 @@ your primary server---instead, it will just activate all groups on level
 levels.) Also @pxref{Group Levels}.
 
 
-@node Slave Gnusae, Fetching a Group, The Server is Down, Starting Up
+@node Slave Gnusae
 @section Slave Gnusae
 @cindex slave
 
@@ -1094,7 +1094,7 @@ Information from the slave files has, of course, precedence over the
 information in the normal (i.e., master) @code{.newsrc} file.
 
 
-@node Fetching a Group, New Groups, Slave Gnusae, Starting Up
+@node Fetching a Group
 @section Fetching a Group
 @cindex fetching a group
 
@@ -1106,7 +1106,7 @@ command @code{gnus-fetch-group} provides this functionality in any case.
 It takes the group name as a parameter.
 
 
-@node New Groups, Changing Servers, Fetching a Group, Starting Up
+@node New Groups
 @section New Groups
 @cindex new groups
 @cindex subscription
@@ -1128,7 +1128,7 @@ when you do the @kbd{g} command (@pxref{Scanning New Messages}).
 @end menu
 
 
-@node Checking New Groups, Subscription Methods, New Groups, New Groups
+@node Checking New Groups
 @subsection Checking New Groups
 
 Gnus normally determines whether a group is new or not by comparing the
@@ -1162,7 +1162,7 @@ that startup will take much longer, so you can meditate while waiting.
 Use the mantra ``dingnusdingnusdingnus'' to achieve permanent bliss.
 
 
-@node Subscription Methods, Filtering New Groups, Checking New Groups, New Groups
+@node Subscription Methods
 @subsection Subscription Methods
 
 @vindex gnus-subscribe-newsgroup-method
@@ -1243,7 +1243,7 @@ One common mistake is to set the variable a few paragraphs above
 will not work.  This is ga-ga.  So don't do it.
 
 
-@node Filtering New Groups,  , Subscription Methods, New Groups
+@node Filtering New Groups
 @subsection Filtering New Groups
 
 A nice and portable way to control which new newsgroups should be
@@ -1288,7 +1288,7 @@ New groups that match this regexp are subscribed using
 @code{gnus-subscribe-options-newsgroup-method}.
 
 
-@node Changing Servers, Startup Files, New Groups, Starting Up
+@node Changing Servers
 @section Changing Servers
 @cindex changing servers
 
@@ -1338,7 +1338,7 @@ since the cached articles will have wrong article numbers, which will
 affect which articles Gnus thinks are read.
 
 
-@node Startup Files, Auto Save, Changing Servers, Starting Up
+@node Startup Files
 @section Startup Files
 @cindex startup files
 @cindex .newsrc
@@ -1424,7 +1424,7 @@ and finally @file{~/.gnus} (in this order).
 
 
 
-@node Auto Save, The Active File, Startup Files, Starting Up
+@node Auto Save
 @section Auto Save
 @cindex dribble file
 @cindex auto-save
@@ -1456,7 +1456,7 @@ If @code{gnus-always-read-dribble-file} is non-@code{nil}, Gnus will
 read the dribble file on startup without querying the user.
 
 
-@node The Active File, Startup Variables, Auto Save, Starting Up
+@node The Active File
 @section The Active File
 @cindex active file
 @cindex ignored groups
@@ -1520,7 +1520,7 @@ Note that this variable also affects active file retrieval from
 secondary select methods.
 
 
-@node Startup Variables,  , The Active File, Starting Up
+@node Startup Variables
 @section Startup Variables
 
 @table @code
@@ -1581,7 +1581,7 @@ default is @samp{Tuxedomoon.Jingle4.au}.
 @end table
 
 
-@node Group Buffer, Summary Buffer, Starting Up, Top
+@node Group Buffer
 @chapter Group Buffer
 @cindex group buffer
 
@@ -1624,7 +1624,7 @@ long as Gnus is active.
 @end menu
 
 
-@node Group Buffer Format, Group Maneuvering, Group Buffer, Group Buffer
+@node Group Buffer Format
 @section Group Buffer Format
 
 @menu
@@ -1634,7 +1634,7 @@ long as Gnus is active.
 @end menu
 
 
-@node Group Line Specification, Group Modeline Specification, Group Buffer Format, Group Buffer Format
+@node Group Line Specification
 @subsection Group Line Specification
 @cindex group buffer format
 
@@ -1782,7 +1782,7 @@ if no info is available---for instance, if it is a non-activated foreign
 group, or a bogus native group.
 
 
-@node Group Modeline Specification, Group Highlighting, Group Line Specification, Group Buffer Format
+@node Group Modeline Specification
 @subsection Group Modeline Specification
 @cindex group modeline
 
@@ -1799,7 +1799,7 @@ The native select method.
 @end table
 
 
-@node Group Highlighting,  , Group Modeline Specification, Group Buffer Format
+@node Group Highlighting
 @subsection Group Highlighting
 @cindex highlighting
 @cindex group highlighting
@@ -1874,7 +1874,7 @@ It will not be called when @code{gnus-visual} is @code{nil}.  This hook
 calls @code{gnus-group-highlight-line} by default.
 
 
-@node Group Maneuvering, Selecting a Group, Group Buffer Format, Group Buffer
+@node Group Maneuvering
 @section Group Maneuvering
 @cindex group movement
 
@@ -1951,7 +1951,7 @@ the commands that say they move to the next unread group.  The default
 is @code{t}.
 
 
-@node Selecting a Group, Subscription Commands, Group Maneuvering, Group Buffer
+@node Selecting a Group
 @section Selecting a Group
 @cindex group selection
 
@@ -2069,7 +2069,7 @@ in @code{gnus-select-group-hook}, which is called when a group is
 selected.
 
 
-@node Subscription Commands, Group Data, Selecting a Group, Group Buffer
+@node Subscription Commands
 @section Subscription Commands
 @cindex subscription
 
@@ -2143,7 +2143,7 @@ kill off all unsubscribed groups that do not have message numbers in the
 Also @pxref{Group Levels}.
 
 
-@node Group Data, Group Levels, Subscription Commands, Group Buffer
+@node Group Data
 @section Group Data
 
 @table @kbd
@@ -2181,7 +2181,7 @@ caution.
 @end table
 
 
-@node Group Levels, Group Score, Group Data, Group Buffer
+@node Group Levels
 @section Group Levels
 @cindex group level
 @cindex level
@@ -2290,7 +2290,7 @@ activate unsubscribed groups, for instance, you might set this variable
 to 5.  The default is 6.
 
 
-@node Group Score, Marking Groups, Group Levels, Group Buffer
+@node Group Score
 @section Group Score
 @cindex group score
 @cindex group rank
@@ -2321,7 +2321,7 @@ action after each summary exit, you can add
 slow things down somewhat.
 
 
-@node Marking Groups, Foreign Groups, Group Score, Group Buffer
+@node Marking Groups
 @section Marking Groups
 @cindex marking groups
 
@@ -2382,7 +2382,7 @@ with the process mark, you can use the @kbd{M-&}
 the command to be executed.
 
 
-@node Foreign Groups, Group Parameters, Marking Groups, Group Buffer
+@node Foreign Groups
 @section Foreign Groups
 @cindex foreign groups
 
@@ -2552,7 +2552,7 @@ groups from different @sc{nntp} servers.  Also @pxref{Group Levels};
 newsgroups.
 
 
-@node Group Parameters, Listing Groups, Foreign Groups, Group Buffer
+@node Group Parameters
 @section Group Parameters
 @cindex group parameters
 
@@ -2847,7 +2847,7 @@ String value of parameters will be subjected to regexp substitution, as
 the @code{to-group} example shows.
 
 
-@node Listing Groups, Sorting Groups, Group Parameters, Group Buffer
+@node Listing Groups
 @section Listing Groups
 @cindex group listing
 
@@ -2974,7 +2974,7 @@ group buffer.  If @code{gnus-list-groups-with-ticked-articles} is
 groups.  It is @code{t} by default.
 
 
-@node Sorting Groups, Group Maintenance, Listing Groups, Group Buffer
+@node Sorting Groups
 @section Sorting Groups
 @cindex sorting groups
 
@@ -3122,7 +3122,7 @@ And finally, note that you can use @kbd{C-k} and @kbd{C-y} to manually
 move groups around.
 
 
-@node Group Maintenance, Browse Foreign Server, Sorting Groups, Group Buffer
+@node Group Maintenance
 @section Group Maintenance
 @cindex bogus groups
 
@@ -3159,7 +3159,7 @@ Run all expirable articles in all groups through the expiry process
 @end table
 
 
-@node Browse Foreign Server, Exiting Gnus, Group Maintenance, Group Buffer
+@node Browse Foreign Server
 @section Browse Foreign Server
 @cindex foreign servers
 @cindex browsing servers
@@ -3223,7 +3223,7 @@ there) (@code{gnus-browse-describe-briefly}).
 @end table
 
 
-@node Exiting Gnus, Group Topics, Browse Foreign Server, Group Buffer
+@node Exiting Gnus
 @section Exiting Gnus
 @cindex exiting Gnus
 
@@ -3273,7 +3273,7 @@ plastic chair.
 @end quotation
 
 
-@node Group Topics, Misc Group Stuff, Exiting Gnus, Group Buffer
+@node Group Topics
 @section Group Topics
 @cindex topics
 
@@ -3335,7 +3335,7 @@ the hook for the group mode:
 @end menu
 
 
-@node Topic Variables, Topic Commands, Group Topics, Group Topics
+@node Topic Variables
 @subsection Topic Variables
 @cindex topic variables
 
@@ -3377,7 +3377,7 @@ The @code{gnus-topic-display-empty-topics} says whether to display even
 topics that have no unread articles in them.  The default is @code{t}.
 
 
-@node Topic Commands, Topic Sorting, Topic Variables, Group Topics
+@node Topic Commands
 @subsection Topic Commands
 @cindex topic commands
 
@@ -3542,7 +3542,7 @@ Edit the topic parameters (@code{gnus-topic-edit-parameters}).
 @end table
 
 
-@node Topic Sorting, Topic Topology, Topic Commands, Group Topics
+@node Topic Sorting
 @subsection Topic Sorting
 @cindex topic sorting
 
@@ -3592,7 +3592,7 @@ Sort the current topic alphabetically by backend name
 @xref{Sorting Groups}, for more information about group sorting.
 
 
-@node Topic Topology, Topic Parameters, Topic Sorting, Group Topics
+@node Topic Topology
 @subsection Topic Topology
 @cindex topic topology
 @cindex topology
@@ -3636,7 +3636,7 @@ and which topics are visible.  Two settings are currently
 allowed---@code{visible} and @code{invisible}.
 
 
-@node Topic Parameters,  , Topic Topology, Group Topics
+@node Topic Parameters
 @subsection Topic Parameters
 @cindex topic parameters
 
@@ -3699,7 +3699,7 @@ happen.  In fact, I hereby declare that it is @dfn{undefined} what
 happens.  You just have to be careful if you do stuff like that.
 
 
-@node Misc Group Stuff,  , Group Topics, Group Buffer
+@node Misc Group Stuff
 @section Misc Group Stuff
 
 @menu
@@ -3779,7 +3779,7 @@ For example:
 
 @end table
 
-@node Scanning New Messages, Group Information, Misc Group Stuff, Misc Group Stuff
+@node Scanning New Messages
 @subsection Scanning New Messages
 @cindex new messages
 @cindex scanning new news
@@ -3830,7 +3830,7 @@ Gnus variables, and then starts Gnus all over again.
 news.
 
 
-@node Group Information, Group Timestamp, Scanning New Messages, Misc Group Stuff
+@node Group Information
 @subsection Group Information
 @cindex group information
 @cindex information on groups
@@ -3894,7 +3894,7 @@ Go to the Gnus info node (@code{gnus-info-find-node}).
 @end table
 
 
-@node Group Timestamp, File Commands, Group Information, Misc Group Stuff
+@node Group Timestamp
 @subsection Group Timestamp
 @cindex timestamps
 @cindex group timestamps
@@ -3934,7 +3934,7 @@ something like:
 @end lisp
 
 
-@node File Commands,  , Group Timestamp, Misc Group Stuff
+@node File Commands
 @subsection File Commands
 @cindex file commands
 
@@ -3964,7 +3964,7 @@ file(s) whether Gnus thinks it is necessary or not.
 @end table
 
 
-@node Summary Buffer, Article Buffer, Group Buffer, Top
+@node Summary Buffer
 @chapter Summary Buffer
 @cindex summary buffer
 
@@ -4012,7 +4012,7 @@ You can have as many summary buffers open as you wish.
 @end menu
 
 
-@node Summary Buffer Format, Summary Maneuvering, Summary Buffer, Summary Buffer
+@node Summary Buffer Format
 @section Summary Buffer Format
 @cindex summary buffer format
 
@@ -4055,7 +4055,7 @@ article has the same subject as the previous.  This string will be used
 with those specs that require it.  The default is @code{""}.
 
 
-@node Summary Buffer Lines, To From Newsgroups, Summary Buffer Format, Summary Buffer Format
+@node Summary Buffer Lines
 @subsection Summary Buffer Lines
 
 @vindex gnus-summary-line-format
@@ -4183,7 +4183,7 @@ The smart choice is to have these specs as far to the left as possible.
 This restriction may disappear in later versions of Gnus.
 
 
-@node To From Newsgroups, Summary Buffer Mode Line, Summary Buffer Lines, Summary Buffer Format
+@node To From Newsgroups
 @subsection To From Newsgroups
 @cindex To
 @cindex Newsgroups
@@ -4265,7 +4265,7 @@ to the end of her @file{overview.fmt} file, then you can use that just
 as you would the extra headers from the mail groups.
 
 
-@node Summary Buffer Mode Line, Summary Highlighting, To From Newsgroups, Summary Buffer Format
+@node Summary Buffer Mode Line
 @subsection Summary Buffer Mode Line
 
 @vindex gnus-summary-mode-line-format
@@ -4316,7 +4316,7 @@ Number of articles expunged by the score files.
 @end table
 
 
-@node Summary Highlighting,  , Summary Buffer Mode Line, Summary Buffer Format
+@node Summary Highlighting
 @subsection Summary Highlighting
 
 @table @code
@@ -4353,7 +4353,7 @@ As you may have guessed, if @var{form} returns a non-@code{nil} value,
 @end table
 
 
-@node Summary Maneuvering, Choosing Articles, Summary Buffer Format, Summary Buffer
+@node Summary Maneuvering
 @section Summary Maneuvering
 @cindex summary movement
 
@@ -4442,7 +4442,7 @@ the given number of lines from the top.
 @end table
 
 
-@node Choosing Articles, Paging the Article, Summary Maneuvering, Summary Buffer
+@node Choosing Articles
 @section Choosing Articles
 @cindex selecting articles
 
@@ -4452,7 +4452,7 @@ the given number of lines from the top.
 @end menu
 
 
-@node Choosing Commands, Choosing Variables, Choosing Articles, Choosing Articles
+@node Choosing Commands
 @subsection Choosing Commands
 
 None of the following movement commands understand the numeric prefix,
@@ -4555,7 +4555,7 @@ article (@code{gnus-summary-goto-article}).
 @end table
 
 
-@node Choosing Variables,  , Choosing Commands, Choosing Articles
+@node Choosing Variables
 @subsection Choosing Variables
 
 Some variables relevant for moving and selecting articles:
@@ -4591,7 +4591,7 @@ instead.  It will leave marks like @code{gnus-low-score-mark},
 @end table
 
 
-@node Paging the Article, Reply Followup and Post, Choosing Articles, Summary Buffer
+@node Paging the Article
 @section Scrolling the Article
 @cindex article scrolling
 
@@ -4675,7 +4675,7 @@ Select the article buffer (@code{gnus-summary-select-article-buffer}).
 @end table
 
 
-@node Reply Followup and Post, Delayed Articles, Paging the Article, Summary Buffer
+@node Reply Followup and Post
 @section Reply, Followup and Post
 
 @menu
@@ -4686,7 +4686,7 @@ Select the article buffer (@code{gnus-summary-select-article-buffer}).
 @end menu
 
 
-@node Summary Mail Commands, Summary Post Commands, Reply Followup and Post, Reply Followup and Post
+@node Summary Mail Commands
 @subsection Summary Mail Commands
 @cindex mail
 @cindex composing mail
@@ -4826,7 +4826,7 @@ command understands the process/prefix convention
 Also @pxref{(message)Header Commands} for more information.
 
 
-@node Summary Post Commands, Summary Message Commands, Summary Mail Commands, Reply Followup and Post
+@node Summary Post Commands
 @subsection Summary Post Commands
 @cindex post
 @cindex composing news
@@ -4910,7 +4910,7 @@ Uuencode a file, split it into parts, and post it as a series
 Also @pxref{(message)Header Commands} for more information.
 
 
-@node Summary Message Commands, Canceling and Superseding, Summary Post Commands, Reply Followup and Post
+@node Summary Message Commands
 @subsection Summary Message Commands
 
 @table @kbd
@@ -4925,7 +4925,7 @@ process/prefix convention (@pxref{Process/Prefix}).
 @end table
 
 
-@node Canceling and Superseding,  , Summary Message Commands, Reply Followup and Post
+@node Canceling and Superseding
 @subsection Canceling Articles
 @cindex canceling articles
 @cindex superseding articles
@@ -4980,7 +4980,7 @@ canceled/superseded.
 
 Just remember, kids: There is no 'c' in 'supersede'.
 
-@node Delayed Articles, Marking Articles, Reply Followup and Post, Summary Buffer
+@node Delayed Articles
 @section Delayed Articles
 @cindex delayed sending
 @cindex send delayed
@@ -5078,7 +5078,7 @@ forget to set that up :-)
 @end table
 
 
-@node Marking Articles, Limiting, Delayed Articles, Summary Buffer
+@node Marking Articles
 @section Marking Articles
 @cindex article marking
 @cindex article ticking
@@ -5112,7 +5112,7 @@ There's a plethora of commands for manipulating these marks:
 @end menu
 
 
-@node Unread Articles, Read Articles, Marking Articles, Marking Articles
+@node Unread Articles
 @subsection Unread Articles
 
 The following marks mark articles as (kinda) unread, in one form or
@@ -5149,7 +5149,7 @@ Marked as unread (@code{gnus-unread-mark}).
 @end table
 
 
-@node Read Articles, Other Marks, Unread Articles, Marking Articles
+@node Read Articles
 @subsection Read Articles
 @cindex expirable mark
 
@@ -5225,7 +5225,7 @@ any time.
 @end table
 
 
-@node Other Marks, Setting Marks, Read Articles, Marking Articles
+@node Other Marks
 @subsection Other Marks
 @cindex process mark
 @cindex bookmarks
@@ -5299,7 +5299,7 @@ replied -> saved.  So if the article is in the cache and is replied,
 you'll only see the cache mark and not the replied mark.
 
 
-@node Setting Marks, Generic Marking Commands, Other Marks, Marking Articles
+@node Setting Marks
 @subsection Setting Marks
 @cindex setting marks
 
@@ -5449,7 +5449,7 @@ one line up or down.  As a special case, if this variable is
 The default is @code{t}.
 
 
-@node Generic Marking Commands, Setting Process Marks, Setting Marks, Marking Articles
+@node Generic Marking Commands
 @subsection Generic Marking Commands
 
 Some people would like the command that ticks an article (@kbd{!}) go to
@@ -5487,7 +5487,7 @@ or
 @end lisp
 
 
-@node Setting Process Marks,  , Generic Marking Commands, Marking Articles
+@node Setting Process Marks
 @subsection Setting Process Marks
 @cindex setting process marks
 
@@ -5602,7 +5602,7 @@ Also see the @kbd{&} command in @pxref{Searching for Articles} for how to
 set process marks based on article body contents.
 
 
-@node Limiting, Threading, Marking Articles, Summary Buffer
+@node Limiting
 @section Limiting
 @cindex limiting
 
@@ -5732,7 +5732,7 @@ also mark excluded ticked and dormant articles as read.
 @end table
 
 
-@node Threading, Sorting the Summary Buffer, Limiting, Summary Buffer
+@node Threading
 @section Threading
 @cindex threading
 @cindex article threading
@@ -5784,7 +5784,7 @@ displayed as empty lines in the summary buffer.
 @end menu
 
 
-@node Customizing Threading, Thread Commands, Threading, Threading
+@node Customizing Threading
 @subsection Customizing Threading
 @cindex customizing threading
 
@@ -5796,7 +5796,7 @@ displayed as empty lines in the summary buffer.
 @end menu
 
 
-@node Loose Threads, Filling In Threads, Customizing Threading, Customizing Threading
+@node Loose Threads
 @subsubsection Loose Threads
 @cindex <
 @cindex >
@@ -5979,7 +5979,7 @@ something like:
 @end table
 
 
-@node Filling In Threads, More Threading, Loose Threads, Customizing Threading
+@node Filling In Threads
 @subsubsection Filling In Threads
 
 @table @code
@@ -6030,7 +6030,7 @@ that matches the group name, or @code{t} for all groups.
 @end table
 
 
-@node More Threading, Low-Level Threading, Filling In Threads, Customizing Threading
+@node More Threading
 @subsubsection More Threading
 
 @table @code
@@ -6085,7 +6085,7 @@ more logical sub-thread ordering in such instances.
 @end table
 
 
-@node Low-Level Threading,  , More Threading, Customizing Threading
+@node Low-Level Threading
 @subsubsection Low-Level Threading
 
 @table @code
@@ -6119,7 +6119,7 @@ meaningful.  Here's one example:
 @end table
 
 
-@node Thread Commands,  , Customizing Threading, Threading
+@node Thread Commands
 @subsection Thread Commands
 @cindex thread commands
 
@@ -6256,7 +6256,7 @@ that have subjects fuzzily equal will be included (@pxref{Fuzzy
 Matching}).
 
 
-@node Sorting the Summary Buffer, Asynchronous Fetching, Threading, Summary Buffer
+@node Sorting the Summary Buffer
 @section Sorting the Summary Buffer
 
 @findex gnus-thread-sort-by-total-score
@@ -6345,7 +6345,7 @@ say something like:
 
 
 
-@node Asynchronous Fetching, Article Caching, Sorting the Summary Buffer, Summary Buffer
+@node Asynchronous Fetching
 @section Asynchronous Article Fetching
 @cindex asynchronous article fetching
 @cindex article pre-fetch
@@ -6437,7 +6437,7 @@ The default value is @code{(read exit)}.
 @c from the next group.
 
 
-@node Article Caching, Persistent Articles, Asynchronous Fetching, Summary Buffer
+@node Article Caching
 @section Article Caching
 @cindex article caching
 @cindex caching
@@ -6514,7 +6514,7 @@ files, and @kbd{gnus-cache-generate-active} will (re)generate the active
 file.
 
 
-@node Persistent Articles, Article Backlog, Article Caching, Summary Buffer
+@node Persistent Articles
 @section Persistent Articles
 @cindex persistent articles
 
@@ -6559,7 +6559,7 @@ interested in persistent articles:
 @end lisp
 
 
-@node Article Backlog, Saving Articles, Persistent Articles, Summary Buffer
+@node Article Backlog
 @section Article Backlog
 @cindex backlog
 @cindex article backlog
@@ -6584,7 +6584,7 @@ that in there just to keep y'all on your toes.
 This variable is @code{nil} by default.
 
 
-@node Saving Articles, Decoding Articles, Article Backlog, Summary Buffer
+@node Saving Articles
 @section Saving Articles
 @cindex saving articles
 
@@ -6853,7 +6853,7 @@ the top level directory as the argument (@file{~/News/}).  Then just walk
 around to the groups/directories with @code{nneething}.
 
 
-@node Decoding Articles, Article Treatment, Saving Articles, Summary Buffer
+@node Decoding Articles
 @section Decoding Articles
 @cindex decoding articles
 
@@ -6890,7 +6890,7 @@ series}, will not be properly recognized by any of the automatic viewing
 commands, and you have to mark the articles manually with @kbd{#}.
 
 
-@node Uuencoded Articles, Shell Archives, Decoding Articles, Decoding Articles
+@node Uuencoded Articles
 @subsection Uuencoded Articles
 @cindex uudecode
 @cindex uuencoded articles
@@ -6943,7 +6943,7 @@ you have just viewed the file in question.  This feature can't be turned
 off.
 
 
-@node Shell Archives, PostScript Files, Uuencoded Articles, Decoding Articles
+@node Shell Archives
 @subsection Shell Archives
 @cindex unshar
 @cindex shell archives
@@ -6978,7 +6978,7 @@ Unshars, views and saves the current series
 @end table
 
 
-@node PostScript Files, Other Files, Shell Archives, Decoding Articles
+@node PostScript Files
 @subsection PostScript Files
 @cindex PostScript
 
@@ -7009,7 +7009,7 @@ View and save the current PostScript series
 @end table
 
 
-@node Other Files, Decoding Variables, PostScript Files, Decoding Articles
+@node Other Files
 @subsection Other Files
 
 @table @kbd
@@ -7027,7 +7027,7 @@ doesn't really work yet.
 @end table
 
 
-@node Decoding Variables, Viewing Files, Other Files, Decoding Articles
+@node Decoding Variables
 @subsection Decoding Variables
 
 Adjective, not verb.
@@ -7039,7 +7039,7 @@ Adjective, not verb.
 @end menu
 
 
-@node Rule Variables, Other Decode Variables, Decoding Variables, Decoding Variables
+@node Rule Variables
 @subsubsection Rule Variables
 @cindex rule variables
 
@@ -7077,7 +7077,7 @@ archives.
 @end table
 
 
-@node Other Decode Variables, Uuencoding and Posting, Rule Variables, Decoding Variables
+@node Other Decode Variables
 @subsubsection Other Decode Variables
 
 @table @code
@@ -7181,7 +7181,7 @@ simply dropped them.
 @end table
 
 
-@node Uuencoding and Posting,  , Other Decode Variables, Decoding Variables
+@node Uuencoding and Posting
 @subsubsection Uuencoding and Posting
 
 @table @code
@@ -7217,7 +7217,7 @@ Default is @code{t}.
 @end table
 
 
-@node Viewing Files,  , Decoding Variables, Decoding Articles
+@node Viewing Files
 @subsection Viewing Files
 @cindex viewing files
 @cindex pseudo-articles
@@ -7260,7 +7260,7 @@ So; there you are, reading your @emph{pseudo-articles} in your
 Why isn't anything real anymore? How did we get here?
 
 
-@node Article Treatment, MIME Commands, Decoding Articles, Summary Buffer
+@node Article Treatment
 @section Article Treatment
 
 Reading through this huge manual, you may have quite forgotten that the
@@ -7281,7 +7281,7 @@ these articles easier.
 @end menu
 
 
-@node Article Highlighting, Article Fontisizing, Article Treatment, Article Treatment
+@node Article Highlighting
 @subsection Article Highlighting
 @cindex highlighting
 
@@ -7382,7 +7382,7 @@ default.
 @xref{Customizing Articles}, for how to highlight articles automatically.
 
 
-@node Article Fontisizing, Article Hiding, Article Highlighting, Article Treatment
+@node Article Fontisizing
 @subsection Article Fontisizing
 @cindex emphasis
 @cindex article emphasis
@@ -7449,7 +7449,7 @@ parameter (@pxref{Group Parameters}) can also be used.
 @xref{Customizing Articles}, for how to fontize articles automatically.
 
 
-@node Article Hiding, Article Washing, Article Fontisizing, Article Treatment
+@node Article Hiding
 @subsection Article Hiding
 @cindex article hiding
 
@@ -7626,7 +7626,7 @@ citation customization.
 automatically.
 
 
-@node Article Washing, Article Buttons, Article Hiding, Article Treatment
+@node Article Washing
 @subsection Article Washing
 @cindex washing
 @cindex article washing
@@ -7883,7 +7883,7 @@ body (@code{gnus-article-strip-trailing-space}).
 @xref{Customizing Articles}, for how to wash articles automatically.
 
 
-@node Article Buttons, Article Date, Article Washing, Article Treatment
+@node Article Buttons
 @subsection Article Buttons
 @cindex buttons
 
@@ -7969,7 +7969,7 @@ Face used when the mouse cursor is over a button.
 @xref{Customizing Articles}, for how to buttonize articles automatically.
 
 
-@node Article Date, Article Signature, Article Buttons, Article Treatment
+@node Article Date
 @subsection Article Date
 
 The date is most likely generated in some obscure timezone you've never
@@ -8057,7 +8057,7 @@ that the article was posted in 1854.  Although something like that is
 preferred format automatically.
 
 
-@node Article Signature, Article Miscellania, Article Date, Article Treatment
+@node Article Signature
 @subsection Article Signature
 @cindex signatures
 @cindex article signature
@@ -8119,7 +8119,7 @@ the regular expression @samp{^---*Forwarded article}, then it isn't a
 signature after all.
 
 
-@node Article Miscellania,  , Article Signature, Article Treatment
+@node Article Miscellania
 @subsection Article Miscellania
 
 @table @kbd
@@ -8132,7 +8132,7 @@ Translate the article from one language to another
 @end table
 
 
-@node MIME Commands, Charsets, Article Treatment, Summary Buffer
+@node MIME Commands
 @section @sc{mime} Commands
 @cindex MIME decoding
 @cindex attachments
@@ -8310,7 +8310,7 @@ to your @file{.gnus} file.
 @end table
 
 
-@node Charsets, Article Commands, MIME Commands, Summary Buffer
+@node Charsets
 @section Charsets
 @cindex charsets
 
@@ -8396,7 +8396,7 @@ something like
 @end lisp
 
 
-@node Article Commands, Summary Sorting, Charsets, Summary Buffer
+@node Article Commands
 @section Article Commands
 
 @table @kbd
@@ -8414,7 +8414,7 @@ run just before printing the buffer.
 @end table
 
 
-@node Summary Sorting, Finding the Parent, Article Commands, Summary Buffer
+@node Summary Sorting
 @section Summary Sorting
 @cindex summary sorting
 
@@ -8473,7 +8473,7 @@ toggle whether to use threading, type @kbd{T T} (@pxref{Thread
 Commands}).
 
 
-@node Finding the Parent, Alternative Approaches, Summary Sorting, Summary Buffer
+@node Finding the Parent
 @section Finding the Parent
 @cindex parent articles
 @cindex referring articles
@@ -8569,7 +8569,7 @@ have been posted to the current group.  (Anything else would be too time
 consuming.)  @code{nnmh} does not support this at all.
 
 
-@node Alternative Approaches, Tree Display, Finding the Parent, Summary Buffer
+@node Alternative Approaches
 @section Alternative Approaches
 
 Different people like to read news using different methods.  This being
@@ -8581,7 +8581,7 @@ Gnus, we offer a small selection of minor modes for the summary buffers.
 @end menu
 
 
-@node Pick and Read, Binary Groups, Alternative Approaches, Alternative Approaches
+@node Pick and Read
 @subsection Pick and Read
 @cindex pick and read
 
@@ -8665,7 +8665,7 @@ Variables}).  It accepts the same format specs that
 @code{gnus-summary-line-format} does (@pxref{Summary Buffer Lines}).
 
 
-@node Binary Groups,  , Pick and Read, Alternative Approaches
+@node Binary Groups
 @subsection Binary Groups
 @cindex binary groups
 
@@ -8687,7 +8687,7 @@ command, when you have turned on this mode
 @code{gnus-binary-mode-hook} is called in binary minor mode buffers.
 
 
-@node Tree Display, Mail Group Commands, Alternative Approaches, Summary Buffer
+@node Tree Display
 @section Tree Display
 @cindex trees
 
@@ -8826,7 +8826,7 @@ following to your @file{.gnus.el} file:
 @xref{Window Layout}.
 
 
-@node Mail Group Commands, Various Summary Stuff, Tree Display, Summary Buffer
+@node Mail Group Commands
 @section Mail Group Commands
 @cindex mail group commands
 
@@ -8964,7 +8964,7 @@ suggestions you find reasonable.  (Note that
 @end lisp
 
 
-@node Various Summary Stuff, Exiting the Summary Buffer, Mail Group Commands, Summary Buffer
+@node Various Summary Stuff
 @section Various Summary Stuff
 
 @menu
@@ -9028,7 +9028,7 @@ the list in one particular group:
 @end table
 
 
-@node Summary Group Information, Searching for Articles, Various Summary Stuff, Various Summary Stuff
+@node Summary Group Information
 @subsection Summary Group Information
 
 @table @kbd
@@ -9065,7 +9065,7 @@ Go to the Gnus info node (@code{gnus-info-find-node}).
 @end table
 
 
-@node Searching for Articles, Summary Generation Commands, Summary Group Information, Various Summary Stuff
+@node Searching for Articles
 @subsection Searching for Articles
 
 @table @kbd
@@ -9101,7 +9101,7 @@ Perform any operation on all articles that have been marked with
 the process mark (@code{gnus-summary-universal-argument}).
 @end table
 
-@node Summary Generation Commands, Really Various Summary Commands, Searching for Articles, Various Summary Stuff
+@node Summary Generation Commands
 @subsection Summary Generation Commands
 
 @table @kbd
@@ -9120,7 +9120,7 @@ Pull all cached articles (for the current group) into the summary buffer
 @end table
 
 
-@node Really Various Summary Commands,  , Summary Generation Commands, Various Summary Stuff
+@node Really Various Summary Commands
 @subsection Really Various Summary Commands
 
 @table @kbd
@@ -9179,7 +9179,7 @@ group (@code{gnus-summary-customize-parameters}).
 @end table
 
 
-@node Exiting the Summary Buffer, Crosspost Handling, Various Summary Stuff, Summary Buffer
+@node Exiting the Summary Buffer
 @section Exiting the Summary Buffer
 @cindex summary exit
 @cindex exiting groups
@@ -9303,7 +9303,7 @@ neither @code{nil} nor @code{t}, the article will be marked as read in
 both subscribed and unsubscribed groups (@pxref{Crosspost Handling}).
 
 
-@node Crosspost Handling, Duplicate Suppression, Exiting the Summary Buffer, Summary Buffer
+@node Crosspost Handling
 @section Crosspost Handling
 
 @cindex velveeta
@@ -9356,7 +9356,7 @@ C'est la vie.
 For an alternative approach, @pxref{Duplicate Suppression}.
 
 
-@node Duplicate Suppression, Security, Crosspost Handling, Summary Buffer
+@node Duplicate Suppression
 @section Duplicate Suppression
 
 By default, Gnus tries to make sure that you don't have to read the same
@@ -9432,7 +9432,7 @@ so that means that if you stop and start Gnus often, you should set
 @code{gnus-save-duplicate-list} to @code{nil}.  Uhm.  I'll leave this up
 to you to figure out, I think.
 
-@node Security, Mailing List, Duplicate Suppression, Summary Buffer
+@node Security
 @section Security
 
 Gnus is able to verify PGP or S/MIME signed messages or decrypt PGP
@@ -9460,7 +9460,7 @@ protocols. Otherwise, ask user.
 
 @end table
 
-@node Mailing List,  , Security, Summary Buffer
+@node Mailing List
 @section Mailing List
 
 Gnus understands some mailing list fields of RFC 2369.
@@ -9500,7 +9500,7 @@ Browse the mailing list archive, if List-Archive field exists.
 
 @end table
 
-@node Article Buffer, Composing Messages, Summary Buffer, Top
+@node Article Buffer
 @chapter Article Buffer
 @cindex article buffer
 
@@ -9517,7 +9517,7 @@ tell Gnus otherwise.
 @end menu
 
 
-@node Hiding Headers, Using MIME, Article Buffer, Article Buffer
+@node Hiding Headers
 @section Hiding Headers
 @cindex hiding headers
 @cindex deleting headers
@@ -9637,7 +9637,7 @@ To include these three elements, you could say something like;
 This is also the default value for this variable.
 
 
-@node Using MIME, Customizing Articles, Hiding Headers, Article Buffer
+@node Using MIME
 @section Using @sc{mime}
 @cindex @sc{mime}
 
@@ -9753,7 +9753,7 @@ Any similarity to real events and people is purely coincidental.  Ahem.
 Also see @pxref{MIME Commands}.
 
 
-@node Customizing Articles, Article Keymap, Using MIME, Article Buffer
+@node Customizing Articles
 @section Customizing Articles
 @cindex article customization
 
@@ -9870,7 +9870,7 @@ information that you have to keep in the buffer---you can change
 everything.
 
 
-@node Article Keymap, Misc Article, Customizing Articles, Article Buffer
+@node Article Keymap
 @section Article Keymap
 
 Most of the keystrokes in the summary buffer can also be used in the
@@ -9932,7 +9932,7 @@ Go to the previous button, if any (@code{gnus-article-prev-button}).
 @end table
 
 
-@node Misc Article,  , Article Keymap, Article Buffer
+@node Misc Article
 @section Misc Article
 
 @table @code
@@ -9996,7 +9996,7 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @end table
 
 
-@node Composing Messages, Select Methods, Article Buffer, Top
+@node Composing Messages
 @chapter Composing Messages
 @cindex composing messages
 @cindex messages
@@ -10029,7 +10029,7 @@ Also see @pxref{Canceling and Superseding} for information on how to
 remove articles you shouldn't have posted.
 
 
-@node Mail, Posting Server, Composing Messages, Composing Messages
+@node Mail
 @section Mail
 
 Variables for customizing outgoing mail:
@@ -10048,7 +10048,7 @@ that have none when you do a @kbd{a}.
 @end table
 
 
-@node Posting Server, Mail and Post, Mail, Composing Messages
+@node Posting Server
 @section Posting Server
 
 When you press those magical @kbd{C-c C-c} keys to ship off your latest
@@ -10086,7 +10086,7 @@ Finally, if you want to always post using the native select method,
 you can set this variable to @code{nil}.
 
 
-@node Mail and Post, Archived Messages, Posting Server, Composing Messages
+@node Mail and Post
 @section Mail and Post
 
 Here's a list of variables relevant to both mailing and
@@ -10136,7 +10136,7 @@ you're in, you could say something like the following:
 Modify to suit your needs.
 
 
-@node Archived Messages, Posting Styles, Mail and Post, Composing Messages
+@node Archived Messages
 @section Archived Messages
 @cindex archived messages
 @cindex sent messages
@@ -10281,7 +10281,7 @@ If non-@code{nil}, automatically mark @code{Gcc} articles as read.
 @end table
 
 
-@node Posting Styles, Drafts, Archived Messages, Composing Messages
+@node Posting Styles
 @section Posting Styles
 @cindex posting styles
 @cindex styles
@@ -10388,7 +10388,7 @@ The @samp{nnml:.*} rule means that you use the @code{To} address as the
 if you fill many roles.
 
 
-@node Drafts, Rejected Articles, Posting Styles, Composing Messages
+@node Drafts
 @section Drafts
 @cindex drafts
 
@@ -10460,7 +10460,7 @@ If you have some messages that you wish not to send, you can use the
 as unsendable.  This is a toggling command.
 
 
-@node Rejected Articles, Using GPG, Drafts, Composing Messages
+@node Rejected Articles
 @section Rejected Articles
 @cindex rejected articles
 
@@ -10479,7 +10479,7 @@ The rejected articles will automatically be put in a special draft group
 (@pxref{Drafts}).  When the server comes back up again, you'd then
 typically enter that group and send all the articles off.
 
-@node Using GPG,  , Rejected Articles, Composing Messages
+@node Using GPG
 @section Using GPG
 @cindex using gpg
 
@@ -10523,7 +10523,7 @@ encrypt using S/MIME.
 Gnus will ask for your passphrase and then it will send your message, if
 you've typed it correctly.
 
-@node Select Methods, Scoring, Composing Messages, Top
+@node Select Methods
 @chapter Select Methods
 @cindex foreign groups
 @cindex select methods
@@ -10565,7 +10565,7 @@ The different methods all have their peculiarities, of course.
 @end menu
 
 
-@node Server Buffer, Getting News, Select Methods, Select Methods
+@node Server Buffer
 @section Server Buffer
 
 Traditionally, a @dfn{server} is a machine or a piece of software that
@@ -10605,7 +10605,7 @@ To enter the server buffer, use the @kbd{^}
 @code{gnus-server-mode-hook} is run when creating the server buffer.
 
 
-@node Server Buffer Format, Server Commands, Server Buffer, Server Buffer
+@node Server Buffer Format
 @subsection Server Buffer Format
 @cindex server buffer format
 
@@ -10645,7 +10645,7 @@ Server method.
 Also @pxref{Formatting Variables}.
 
 
-@node Server Commands, Example Methods, Server Buffer Format, Server Buffer
+@node Server Commands
 @subsection Server Commands
 @cindex server commands
 
@@ -10708,7 +10708,7 @@ a mail backend that has gotten out of sync.
 @end table
 
 
-@node Example Methods, Creating a Virtual Server, Server Commands, Server Buffer
+@node Example Methods
 @subsection Example Methods
 
 Most select methods are pretty simple and self-explanatory:
@@ -10804,7 +10804,7 @@ connection, you have to have the @samp{Compression} option in the
 @code{ssh} @file{config} file.
 
 
-@node Creating a Virtual Server, Server Variables, Example Methods, Server Buffer
+@node Creating a Virtual Server
 @subsection Creating a Virtual Server
 
 If you're saving lots of articles in the cache by using persistent
@@ -10839,7 +10839,7 @@ Type @kbd{C-c C-c} to return to the server buffer.  If you now press
 buffer, and you should be able to enter any of the groups displayed.
 
 
-@node Server Variables, Servers and Methods, Creating a Virtual Server, Server Buffer
+@node Server Variables
 @subsection Server Variables
 
 One sticky point when defining variables (both on backends and in Emacs
@@ -10866,7 +10866,7 @@ manual, but here's an example @code{nnml} definition:
 @end lisp
 
 
-@node Servers and Methods, Unavailable Servers, Server Variables, Server Buffer
+@node Servers and Methods
 @subsection Servers and Methods
 
 Wherever you would normally use a select method
@@ -10876,7 +10876,7 @@ instead.  This could potentially save lots of typing.  And it's nice all
 over.
 
 
-@node Unavailable Servers,  , Servers and Methods, Server Buffer
+@node Unavailable Servers
 @subsection Unavailable Servers
 
 If a server seems to be unreachable, Gnus will mark that server as
@@ -10941,7 +10941,7 @@ Remove all marks to whether Gnus was denied connection from any servers
 @end table
 
 
-@node Getting News, Getting Mail, Server Buffer, Select Methods
+@node Getting News
 @section Getting News
 @cindex reading news
 @cindex news backends
@@ -10956,7 +10956,7 @@ or it can read from a local spool.
 @end menu
 
 
-@node NNTP, News Spool, Getting News, Getting News
+@node NNTP
 @subsection @sc{nntp}
 @cindex nntp
 
@@ -11185,7 +11185,7 @@ indirect ones (two pre-made).
 @end menu
 
 
-@node Direct Functions, Indirect Functions, NNTP, NNTP
+@node Direct Functions
 @subsubsection Direct Functions
 @cindex direct connection functions
 
@@ -11240,7 +11240,7 @@ session, which is not a good idea.
 @end table
 
 
-@node Indirect Functions, Common Variables, Direct Functions, NNTP
+@node Indirect Functions
 @subsubsection Indirect Functions
 @cindex indirect connection functions
 
@@ -11321,7 +11321,7 @@ Address of the intermediate host to connect to.
 @end table
 
 
-@node Common Variables,  , Indirect Functions, NNTP
+@node Common Variables
 @subsubsection Common Variables
 
 The following variables affect the behavior of all, or several of the
@@ -11365,7 +11365,7 @@ is @samp{("-8")}.
 @end table
 
 
-@node News Spool,  , NNTP, Getting News
+@node News Spool
 @subsection News Spool
 @cindex nnspool
 @cindex news spool
@@ -11438,7 +11438,7 @@ load the entire file into a buffer and process it there.
 @end table
 
 
-@node Getting Mail, Browsing the Web, Getting News, Select Methods
+@node Getting Mail
 @section Getting Mail
 @cindex reading mail
 @cindex mail
@@ -11463,7 +11463,7 @@ course.
 @end menu
 
 
-@node Mail in a Newsreader, Getting Started Reading Mail, Getting Mail, Getting Mail
+@node Mail in a Newsreader
 @subsection Mail in a Newsreader
 
 If you are used to traditional mail readers, but have decided to switch
@@ -11528,7 +11528,7 @@ Will Be Assimilated.  You Love Gnus.  You Love The Gnus Mail Way.
 You Do.)
 
 
-@node Getting Started Reading Mail, Splitting Mail, Mail in a Newsreader, Getting Mail
+@node Getting Started Reading Mail
 @subsection Getting Started Reading Mail
 
 It's quite easy to use Gnus to read your new mail.  You just plonk the
@@ -11567,7 +11567,7 @@ give the other sections in this part of the manual a perusal, though.
 Especially @pxref{Choosing a Mail Backend} and @pxref{Expiring Mail}.
 
 
-@node Splitting Mail, Mail Sources, Getting Started Reading Mail, Getting Mail
+@node Splitting Mail
 @subsection Splitting Mail
 @cindex splitting mail
 @cindex mail splitting
@@ -11652,7 +11652,7 @@ you really should be out collecting empty bottles to save up for next
 month's rent money.
 
 
-@node Mail Sources, Mail Backend Variables, Splitting Mail, Getting Mail
+@node Mail Sources
 @subsection Mail Sources
 
 Mail can be gotten from many different sources---the mail spool, from a
@@ -11666,7 +11666,7 @@ instance.
 @end menu
 
 
-@node Mail Source Specifiers, Mail Source Customization, Mail Sources, Mail Sources
+@node Mail Source Specifiers
 @subsubsection Mail Source Specifiers
 @cindex POP
 @cindex mail server
@@ -12096,7 +12096,7 @@ and @code{authentication} are also bound (to their default values).
 See above for a list of keywords for each type of mail source.
 
 
-@node Mail Source Customization, Fetching Mail, Mail Source Specifiers, Mail Sources
+@node Mail Source Customization
 @subsubsection Mail Source Customization
 
 The following is a list of variables that influence how the mail is
@@ -12134,7 +12134,7 @@ All new mail files will get this file mode.  The default is 384.
 @end table
 
 
-@node Fetching Mail,  , Mail Source Customization, Mail Sources
+@node Fetching Mail
 @subsubsection Fetching Mail
 
 @vindex mail-sources
@@ -12178,7 +12178,7 @@ shouldn't be too surprised when Gnus moves your mail.
 
 
 
-@node Mail Backend Variables, Fancy Mail Splitting, Mail Sources, Getting Mail
+@node Mail Backend Variables
 @subsection Mail Backend Variables
 
 These variables are (for the most part) pertinent to all the various
@@ -12244,7 +12244,7 @@ discovery cache.  The default is @code{nil}.
 @end table
 
 
-@node Fancy Mail Splitting, Group Mail Splitting, Mail Backend Variables, Getting Mail
+@node Fancy Mail Splitting
 @subsection Fancy Mail Splitting
 @cindex mail splitting
 @cindex fancy mail splitting
@@ -12425,7 +12425,7 @@ also records the message ids of moved articles, so that the followup
 messages goes into the new group.
 
 
-@node Group Mail Splitting, Incorporating Old Mail, Fancy Mail Splitting, Getting Mail
+@node Group Mail Splitting
 @subsection Group Mail Splitting
 @cindex mail splitting
 @cindex group mail splitting
@@ -12554,7 +12554,7 @@ Because you may want to change @code{nnmail-split-fancy} after it is set
 by @code{gnus-group-split-update}, this function will run
 @code{gnus-group-split-updated-hook} just before finishing.
 
-@node Incorporating Old Mail, Expiring Mail, Group Mail Splitting, Getting Mail
+@node Incorporating Old Mail
 @subsection Incorporating Old Mail
 @cindex incorporating old mail
 @cindex import old mail
@@ -12605,7 +12605,7 @@ backend to another.  Just respool all the mail in the old mail groups
 using the new mail backend.
 
 
-@node Expiring Mail, Washing Mail, Incorporating Old Mail, Getting Mail
+@node Expiring Mail
 @subsection Expiring Mail
 @cindex article expiry
 
@@ -12756,7 +12756,7 @@ commands will not mark an article as expirable, even if the group has
 auto-expire turned on.
 
 
-@node Washing Mail, Duplicates, Expiring Mail, Getting Mail
+@node Washing Mail
 @subsection Washing Mail
 @cindex mail washing
 @cindex list server brain damage
@@ -12852,7 +12852,7 @@ Decode Quoted Readable encoding.
 @end table
 
 
-@node Duplicates, Not Reading Mail, Washing Mail, Getting Mail
+@node Duplicates
 @subsection Duplicates
 
 @vindex nnmail-treat-duplicates
@@ -12910,7 +12910,7 @@ using a @code{Message-ID} of a mail that you know that she's already
 received.  Think of all the fun!  She'll never see any of it!  Whee!
 
 
-@node Not Reading Mail, Choosing a Mail Backend, Duplicates, Getting Mail
+@node Not Reading Mail
 @subsection Not Reading Mail
 
 If you start using any of the mail backends, they have the annoying
@@ -12938,7 +12938,7 @@ narrowed to the article to be saved before saving it when reading
 incoming mail.
 
 
-@node Choosing a Mail Backend,  , Not Reading Mail, Getting Mail
+@node Choosing a Mail Backend
 @subsection Choosing a Mail Backend
 
 Gnus will read the mail spool when you activate a mail group.  The mail
@@ -12960,7 +12960,7 @@ backends are available separately.  The mail backend most people use
 @end menu
 
 
-@node Unix Mail Box, Rmail Babyl, Choosing a Mail Backend, Choosing a Mail Backend
+@node Unix Mail Box
 @subsubsection Unix Mail Box
 @cindex nnmbox
 @cindex unix mail box
@@ -12991,7 +12991,7 @@ into groups.  Default is @code{t}.
 @end table
 
 
-@node Rmail Babyl, Mail Spool, Unix Mail Box, Choosing a Mail Backend
+@node Rmail Babyl
 @subsubsection Rmail Babyl
 @cindex nnbabyl
 @cindex rmail mbox
@@ -13021,7 +13021,7 @@ If non-@code{nil}, @code{nnbabyl} will read incoming mail.  Default is
 @end table
 
 
-@node Mail Spool, MH Spool, Rmail Babyl, Choosing a Mail Backend
+@node Mail Spool
 @subsubsection Mail Spool
 @cindex nnml
 @cindex mail @sc{nov} spool
@@ -13101,7 +13101,7 @@ functionality can be found in the server buffer (@pxref{Server
 Commands}).
 
 
-@node MH Spool, Mail Folders, Mail Spool, Choosing a Mail Backend
+@node MH Spool
 @subsubsection MH Spool
 @cindex nnmh
 @cindex mh-e mail spool
@@ -13136,7 +13136,7 @@ to set this variable to @code{t}.  The default is @code{nil}.
 @end table
 
 
-@node Mail Folders, Comparing Mail Backends, MH Spool, Choosing a Mail Backend
+@node Mail Folders
 @subsubsection Mail Folders
 @cindex nnfolder
 @cindex mbox folders
@@ -13207,7 +13207,7 @@ command to make @code{nnfolder} aware of all likely files in
 @code{nnfolder-directory}.  This only works if you use long file names,
 though.
 
-@node Comparing Mail Backends,  , Mail Folders, Choosing a Mail Backend
+@node Comparing Mail Backends
 @subsubsection Comparing Mail Backends
 
 First, just for terminology, the @dfn{backend} is the common word for a
@@ -13328,7 +13328,7 @@ friendly mail backend all over.
 @end table
 
 
-@node Browsing the Web, Other Sources, Getting Mail, Select Methods
+@node Browsing the Web
 @section Browsing the Web
 @cindex web
 @cindex browsing the web
@@ -13379,7 +13379,7 @@ Unplugged}) handle downloading articles, and then you can read them at
 leisure from your local disk.  No more World Wide Wait for you.
 
 
-@node Web Searches, Slashdot, Browsing the Web, Browsing the Web
+@node Web Searches
 @subsection Web Searches
 @cindex nnweb
 @cindex DejaNews
@@ -13468,7 +13468,7 @@ Format string URL to fetch an article by @code{Message-ID}.
 @end table
 
 
-@node Slashdot, Ultimate, Web Searches, Browsing the Web
+@node Slashdot
 @subsection Slashdot
 @cindex Slashdot
 @cindex nnslashdot
@@ -13558,7 +13558,7 @@ updated.  The default is 0.
 
 
 
-@node Ultimate, Web Archive, Slashdot, Browsing the Web
+@node Ultimate
 @subsection Ultimate
 @cindex nnultimate
 @cindex Ultimate Bulletin Board
@@ -13586,7 +13586,7 @@ The directory where @code{nnultimate} stores its files.  The default is
 @end table
 
 
-@node Web Archive, RSS, Ultimate, Browsing the Web
+@node Web Archive
 @subsection Web Archive
 @cindex nnwarchive
 @cindex Web Archive
@@ -13622,7 +13622,7 @@ The account name on the web server.
 The password for your account on the web server.
 @end table
 
-@node RSS, Customizing w3, Web Archive, Browsing the Web
+@node RSS
 @subsection RSS
 @cindex nnrss
 @cindex RSS
@@ -13681,7 +13681,7 @@ summary buffer.
 (add-to-list 'nnmail-extra-headers nnrss-url-field)
 @end lisp
 
-@node Customizing w3,  , RSS, Browsing the Web
+@node Customizing w3
 @subsection Customizing w3
 @cindex w3
 @cindex html
@@ -13712,7 +13712,7 @@ Put that in your @file{.emacs} file, and hitting links in w3-rendered
 follow the link.
 
 
-@node Other Sources, Combined Groups, Browsing the Web, Select Methods
+@node Other Sources
 @section Other Sources
 
 Gnus can do more than just read news or mail.  The methods described
@@ -13729,7 +13729,7 @@ newsgroups.
 @end menu
 
 
-@node Directory Groups, Anything Groups, Other Sources, Other Sources
+@node Directory Groups
 @subsection Directory Groups
 @cindex nndir
 @cindex directory groups
@@ -13757,7 +13757,7 @@ whatever you use @code{nndir} for, so you could switch to any of those
 methods if you feel the need to have a non-read-only @code{nndir}.
 
 
-@node Anything Groups, Document Groups, Directory Groups, Other Sources
+@node Anything Groups
 @subsection Anything Groups
 @cindex nneething
 
@@ -13821,7 +13821,7 @@ Name of the map files.
 @end table
 
 
-@node Document Groups, SOUP, Anything Groups, Other Sources
+@node Document Groups
 @subsection Document Groups
 @cindex nndoc
 @cindex documentation group
@@ -13912,7 +13912,7 @@ and @code{news}.
 @end menu
 
 
-@node Document Server Internals,  , Document Groups, Document Groups
+@node Document Server Internals
 @subsubsection Document Server Internals
 
 Adding new document types to be recognized by @code{nndoc} isn't
@@ -14034,7 +14034,7 @@ correct type.  A high number means high probability; a low number means
 low probability with @samp{0} being the lowest valid number.
 
 
-@node SOUP, Mail-To-News Gateways, Document Groups, Other Sources
+@node SOUP
 @subsection SOUP
 @cindex SOUP
 @cindex offline
@@ -14135,7 +14135,7 @@ reading and Gnus for packing/sending these @sc{soup} packets.
 @end menu
 
 
-@node SOUP Commands, SOUP Groups, SOUP, SOUP
+@node SOUP Commands
 @subsubsection SOUP Commands
 
 These are commands for creating and manipulating @sc{soup} packets.
@@ -14221,7 +14221,7 @@ Regular expression matching @sc{soup} reply packets in
 @end table
 
 
-@node SOUP Groups, SOUP Replies, SOUP Commands, SOUP
+@node SOUP Groups
 @subsubsection @sc{soup} Groups
 @cindex nnsoup
 
@@ -14293,7 +14293,7 @@ If non-@code{nil}, save the replies buffer after each posted message.
 @end table
 
 
-@node SOUP Replies,  , SOUP Groups, SOUP
+@node SOUP Replies
 @subsubsection SOUP Replies
 
 Just using @code{nnsoup} won't mean that your postings and mailings end
@@ -14317,7 +14317,7 @@ system you just use the first line.  If you only want mail to be
 @sc{soup}ed you use the second.
 
 
-@node Mail-To-News Gateways, IMAP, SOUP, Other Sources
+@node Mail-To-News Gateways
 @subsection Mail-To-News Gateways
 @cindex mail-to-news gateways
 @cindex gateways
@@ -14397,7 +14397,7 @@ So, to use this, simply say something like:
 
 
 
-@node IMAP,  , Mail-To-News Gateways, Other Sources
+@node IMAP
 @subsection @sc{imap}
 @cindex nnimap
 @cindex @sc{imap}
@@ -14676,7 +14676,7 @@ variable @code{nntp-authinfo-file} for exact syntax; also see
 
 
 
-@node Splitting in IMAP, Editing IMAP ACLs, IMAP, IMAP
+@node Splitting in IMAP
 @subsubsection Splitting in @sc{imap}
 @cindex splitting imap mail
 
@@ -14831,7 +14831,7 @@ Nnmail equivalent: @code{nnmail-split-fancy}.
 
 @end table
 
-@node Editing IMAP ACLs, Expunging mailboxes, Splitting in IMAP, IMAP
+@node Editing IMAP ACLs
 @subsubsection Editing @sc{imap} ACLs
 @cindex editing imap acls
 @cindex Access Control Lists
@@ -14862,7 +14862,7 @@ mail sent to user+mailbox@@domain ending up in the @sc{imap} mailbox
 INBOX.mailbox).
 @end itemize
 
-@node Expunging mailboxes,  , Editing IMAP ACLs, IMAP
+@node Expunging mailboxes
 @subsubsection Expunging mailboxes
 @cindex expunging
 
@@ -14880,7 +14880,7 @@ delete them.
 
 
 
-@node Combined Groups, Gnus Unplugged, Other Sources, Select Methods
+@node Combined Groups
 @section Combined Groups
 
 Gnus allows combining a mixture of all the other group types into bigger
@@ -14892,7 +14892,7 @@ groups.
 @end menu
 
 
-@node Virtual Groups, Kibozed Groups, Combined Groups, Combined Groups
+@node Virtual Groups
 @subsection Virtual Groups
 @cindex nnvirtual
 @cindex virtual groups
@@ -14972,7 +14972,7 @@ line from the article you respond to in these cases.
 
 
 
-@node Kibozed Groups,  , Virtual Groups, Combined Groups
+@node Kibozed Groups
 @subsection Kibozed Groups
 @cindex nnkiboze
 @cindex kibozing
@@ -15023,7 +15023,7 @@ Articles marked as read in the @code{nnkiboze} group will have
 their @sc{nov} lines removed from the @sc{nov} file.
 
 
-@node Gnus Unplugged,  , Combined Groups, Select Methods
+@node Gnus Unplugged
 @section Gnus Unplugged
 @cindex offline
 @cindex unplugged
@@ -15083,7 +15083,7 @@ Of course, to use it as such, you have to learn a few new commands.
 @end menu
 
 
-@node Agent Basics, Agent Categories, Gnus Unplugged, Gnus Unplugged
+@node Agent Basics
 @subsection Agent Basics
 
 First, let's get some terminology out of the way.
@@ -15152,7 +15152,7 @@ Uhm... that's it.
 @end itemize
 
 
-@node Agent Categories, Agent Commands, Agent Basics, Gnus Unplugged
+@node Agent Categories
 @subsection Agent Categories
 
 One of the main reasons to integrate the news transport layer into the
@@ -15176,7 +15176,7 @@ managing categories.
 @end menu
 
 
-@node Category Syntax, Category Buffer, Agent Categories, Agent Categories
+@node Category Syntax
 @subsubsection Category Syntax
 
 A category consists of two things.
@@ -15447,7 +15447,7 @@ Group Parameter specification
 @end itemize
 @end enumerate
 
-@node Category Buffer, Category Variables, Category Syntax, Agent Categories
+@node Category Buffer
 @subsubsection Category Buffer
 
 You'd normally do all category maintenance from the category buffer.
@@ -15502,7 +15502,7 @@ List all the categories (@code{gnus-category-list}).
 @end table
 
 
-@node Category Variables,  , Category Buffer, Agent Categories
+@node Category Variables
 @subsubsection Category Variables
 
 @table @code
@@ -15548,7 +15548,7 @@ Articles that have a score higher than this have a high score.  Default
 @end table
 
 
-@node Agent Commands, Agent Expiry, Agent Categories, Gnus Unplugged
+@node Agent Commands
 @subsection Agent Commands
 
 All the Gnus Agent commands are on the @kbd{J} submap.  The @kbd{J j}
@@ -15572,7 +15572,7 @@ $ emacs -batch -l ~/.gnus.el -f gnus-agent-batch-fetch
 
 
 
-@node Group Agent Commands, Summary Agent Commands, Agent Commands, Agent Commands
+@node Group Agent Commands
 @subsubsection Group Agent Commands
 
 @table @kbd
@@ -15622,7 +15622,7 @@ Synchronize flags changed while unplugged with remote server, if any.
 @end table
 
 
-@node Summary Agent Commands, Server Agent Commands, Group Agent Commands, Agent Commands
+@node Summary Agent Commands
 @subsubsection Summary Agent Commands
 
 @table @kbd
@@ -15656,7 +15656,7 @@ Download all downloadable articles in the current group
 @end table
 
 
-@node Server Agent Commands,  , Summary Agent Commands, Agent Commands
+@node Server Agent Commands
 @subsubsection Server Agent Commands
 
 @table @kbd
@@ -15675,7 +15675,7 @@ Agent (@code{gnus-agent-remove-server}).
 @end table
 
 
-@node Agent Expiry, Agent and IMAP, Agent Commands, Gnus Unplugged
+@node Agent Expiry
 @subsection Agent Expiry
 
 @vindex gnus-agent-expire-days
@@ -15699,7 +15699,7 @@ expire all articles---unread, read, ticked and dormant.  If @code{nil}
 unread, ticked and dormant articles will be kept indefinitely.
 
 
-@node Agent and IMAP, Outgoing Messages, Agent Expiry, Gnus Unplugged
+@node Agent and IMAP
 @subsection Agent and IMAP
 
 The Agent work with any Gnus backend, including nnimap.  However,
@@ -15753,7 +15753,7 @@ operations can be found in the per-server @code{flags} file in the Agent
 directory.  It's emptied when you synchronize flags.
 
 
-@node Outgoing Messages, Agent Variables, Agent and IMAP, Gnus Unplugged
+@node Outgoing Messages
 @subsection Outgoing Messages
 
 When Gnus is unplugged, all outgoing messages (both mail and news) are
@@ -15767,7 +15767,7 @@ messages in the draft group.
 
 
 
-@node Agent Variables, Example Setup, Outgoing Messages, Gnus Unplugged
+@node Agent Variables
 @subsection Agent Variables
 
 @table @code
@@ -15794,7 +15794,7 @@ Hook run when disconnecting from the network.
 @end table
 
 
-@node Example Setup, Batching Agents, Agent Variables, Gnus Unplugged
+@node Example Setup
 @subsection Example Setup
 
 If you don't want to read this manual, and you have a fairly standard
@@ -15839,7 +15839,7 @@ with the @kbd{J s} command.  And then read the rest of this manual to
 find out which of the other gazillion things you want to customize.
 
 
-@node Batching Agents, Agent Caveats, Example Setup, Gnus Unplugged
+@node Batching Agents
 @subsection Batching Agents
 
 Having the Gnus Agent fetch articles (and post whatever messages you've
@@ -15852,7 +15852,7 @@ emacs -batch -l ~/.emacs -f gnus-agent-batch >/dev/null
 @end example
 
 
-@node Agent Caveats,  , Batching Agents, Gnus Unplugged
+@node Agent Caveats
 @subsection Agent Caveats
 
 The Gnus Agent doesn't seem to work like most other offline
@@ -15876,7 +15876,7 @@ In short, when Gnus is unplugged, it only looks into the locally stored
 articles; when it's plugged, it only talks to your ISP.
 
 
-@node Scoring, Various, Select Methods, Top
+@node Scoring
 @chapter Scoring
 @cindex scoring
 
@@ -15924,7 +15924,7 @@ silently to help keep the sizes of the score files down.
 @end menu
 
 
-@node Summary Score Commands, Group Score Commands, Scoring, Scoring
+@node Summary Score Commands
 @section Summary Score Commands
 @cindex score commands
 
@@ -16163,7 +16163,7 @@ The @code{gnus-score-mimic-keymap} says whether these commands will
 pretend they are keymaps or not.
 
 
-@node Group Score Commands, Score Variables, Summary Score Commands, Scoring
+@node Group Score Commands
 @section Group Score Commands
 @cindex group score commands
 
@@ -16189,7 +16189,7 @@ $ emacs -batch -l ~/.emacs -l ~/.gnus.el -f gnus-batch-score
 @end example
 
 
-@node Score Variables, Score File Format, Group Score Commands, Scoring
+@node Score Variables
 @section Score Variables
 @cindex score variables
 
@@ -16353,7 +16353,7 @@ simplified in this manner.
 @end table
 
 
-@node Score File Format, Score File Editing, Score Variables, Scoring
+@node Score File Format
 @section Score File Format
 @cindex score file format
 
@@ -16626,7 +16626,7 @@ much.  Note that the @var{value} won't be evaluated.
 @end table
 
 
-@node Score File Editing, Adaptive Scoring, Score File Format, Scoring
+@node Score File Editing
 @section Score File Editing
 
 You normally enter all scoring commands from the summary buffer, but you
@@ -16670,7 +16670,7 @@ In the summary buffer you can use commands like @kbd{V f} and @kbd{V
 e} to begin editing score files.
 
 
-@node Adaptive Scoring, Home Score File, Score File Editing, Scoring
+@node Adaptive Scoring
 @section Adaptive Scoring
 @cindex adaptive scoring
 
@@ -16831,7 +16831,7 @@ that it's totally useless as it stands.  Some more work (involving more
 rigorous statistical methods) will have to be done to make this useful.
 
 
-@node Home Score File, Followups To Yourself, Adaptive Scoring, Scoring
+@node Home Score File
 @section Home Score File
 
 The score file where new score file entries will go is called the
@@ -16930,7 +16930,7 @@ Parameters}) to achieve much the same.  Group and topic parameters take
 precedence over this variable.
 
 
-@node Followups To Yourself, Scoring On Other Headers, Home Score File, Scoring
+@node Followups To Yourself
 @section Followups To Yourself
 
 Gnus offers two commands for picking out the @code{Message-ID} header in
@@ -16984,7 +16984,7 @@ Whether it's the first two or first three characters that are ``yours''
 is system-dependent.
 
 
-@node Scoring On Other Headers, Scoring Tips, Followups To Yourself, Scoring
+@node Scoring On Other Headers
 @section Scoring On Other Headers
 @cindex scoring on other headers
 
@@ -17017,7 +17017,7 @@ so: @kbd{I e s p To RET <your name> RET}.
 See?  Simple.
 
 
-@node Scoring Tips, Reverse Scoring, Scoring On Other Headers, Scoring
+@node Scoring Tips
 @section Scoring Tips
 @cindex scoring tips
 
@@ -17067,7 +17067,7 @@ That will match newlines, which might lead to, well, The Unknown.  Say
 @end table
 
 
-@node Reverse Scoring, Global Score Files, Scoring Tips, Scoring
+@node Reverse Scoring
 @section Reverse Scoring
 @cindex reverse scoring
 
@@ -17086,7 +17086,7 @@ So, you raise all articles that match @samp{Sex with Emacs} and mark the
 rest as read, and expunge them to boot.
 
 
-@node Global Score Files, Kill Files, Reverse Scoring, Scoring
+@node Global Score Files
 @section Global Score Files
 @cindex global score files
 
@@ -17162,7 +17162,7 @@ Wave, xrn and 1stReader are bound to implement scoring.  Should we start
 holding our breath yet?
 
 
-@node Kill Files, Converting Kill Files, Global Score Files, Scoring
+@node Kill Files
 @section Kill Files
 @cindex kill files
 
@@ -17258,7 +17258,7 @@ A hook called in kill-file mode buffers.
 @end table
 
 
-@node Converting Kill Files, GroupLens, Kill Files, Scoring
+@node Converting Kill Files
 @section Converting Kill Files
 @cindex kill files
 @cindex converting kill files
@@ -17278,7 +17278,7 @@ hand.  Or just let them be as they are.  Gnus will still use them as
 before.
 
 
-@node GroupLens, Advanced Scoring, Converting Kill Files, Scoring
+@node GroupLens
 @section GroupLens
 @cindex GroupLens
 
@@ -17304,7 +17304,7 @@ article.
 @end menu
 
 
-@node Using GroupLens, Rating Articles, GroupLens, GroupLens
+@node Using GroupLens
 @subsection Using GroupLens
 
 To use GroupLens you must register a pseudonym with your local Better
@@ -17340,7 +17340,7 @@ yourself.  Then the scores GroupLens gives you will be personalized for
 you, based on how the people you usually agree with have already rated.
 
 
-@node Rating Articles, Displaying Predictions, Using GroupLens, GroupLens
+@node Rating Articles
 @subsection Rating Articles
 
 In GroupLens, an article is rated on a scale from 1 to 5, inclusive.
@@ -17388,7 +17388,7 @@ If you want to give the current article a score of 4 and then go to the
 next article, just type @kbd{4 n}.
 
 
-@node Displaying Predictions, GroupLens Variables, Rating Articles, GroupLens
+@node Displaying Predictions
 @subsection Displaying Predictions
 
 GroupLens makes a prediction for you about how much you will like a
@@ -17444,7 +17444,7 @@ Prediction +/- confidence.
 @end table
 
 
-@node GroupLens Variables,  , Displaying Predictions, GroupLens
+@node GroupLens Variables
 @subsection GroupLens Variables
 
 @table @code
@@ -17474,7 +17474,7 @@ The scale factor is applied after the offset.  The default is 1.
 @end table
 
 
-@node Advanced Scoring, Score Decays, GroupLens, Scoring
+@node Advanced Scoring
 @section Advanced Scoring
 
 Scoring on Subjects and From headers is nice enough, but what if you're
@@ -17493,7 +17493,7 @@ scoring patterns.
 @end menu
 
 
-@node Advanced Scoring Syntax, Advanced Scoring Examples, Advanced Scoring, Advanced Scoring
+@node Advanced Scoring Syntax
 @subsection Advanced Scoring Syntax
 
 Ordinary scoring rules have a string as the first element in the rule.
@@ -17543,7 +17543,7 @@ and a match type.  A typical match operator looks like @samp{("from"
 simple scoring, and the match types are also the same.
 
 
-@node Advanced Scoring Examples, Advanced Scoring Tips, Advanced Scoring Syntax, Advanced Scoring
+@node Advanced Scoring Examples
 @subsection Advanced Scoring Examples
 
 Let's say you want to increase the score of articles written by Lars
@@ -17598,7 +17598,7 @@ very interesting:
 The possibilities are endless.
 
 
-@node Advanced Scoring Tips,  , Advanced Scoring Examples, Advanced Scoring
+@node Advanced Scoring Tips
 @subsection Advanced Scoring Tips
 
 The @code{&} and @code{|} logical operators do short-circuit logic.
@@ -17640,7 +17640,7 @@ than it is to say:
 @end example
 
 
-@node Score Decays,  , Advanced Scoring, Scoring
+@node Score Decays
 @section Score Decays
 @cindex score decays
 @cindex decays
@@ -17700,7 +17700,7 @@ Gnus will try to decay scores once a day.  If you haven't run Gnus for
 four days, Gnus will decay the scores four times, for instance.
 
 
-@node Various, The End, Scoring, Top
+@node Various
 @chapter Various
 
 @menu
@@ -17725,7 +17725,7 @@ four days, Gnus will decay the scores four times, for instance.
 @end menu
 
 
-@node Process/Prefix, Interactive, Various, Various
+@node Process/Prefix
 @section Process/Prefix
 @cindex process/prefix convention
 
@@ -17777,7 +17777,7 @@ command.  For instance, to mark all the articles in the group as
 expirable, you could say `M P b M-& E'.
 
 
-@node Interactive, Symbolic Prefixes, Process/Prefix, Various
+@node Interactive
 @section Interactive
 @cindex interaction
 
@@ -17809,7 +17809,7 @@ default.
 @end table
 
 
-@node Symbolic Prefixes, Formatting Variables, Interactive, Various
+@node Symbolic Prefixes
 @section Symbolic Prefixes
 @cindex symbolic prefixes
 
@@ -17844,7 +17844,7 @@ If you're interested in how Gnus implements this, @pxref{Extended
 Interactive}.
 
 
-@node Formatting Variables, Window Layout, Symbolic Prefixes, Various
+@node Formatting Variables
 @section Formatting Variables
 @cindex formatting variables
 
@@ -17891,7 +17891,7 @@ examine the resulting lisp code to be run to generate the line.
 
 
 
-@node Formatting Basics, Mode Line Formatting, Formatting Variables, Formatting Variables
+@node Formatting Basics
 @subsection Formatting Basics
 
 Each @samp{%} element will be replaced by some string or other when the
@@ -17911,7 +17911,7 @@ means that the field will never be more than 6 characters wide and never
 less than 4 characters wide.
 
 
-@node Mode Line Formatting, Advanced Formatting, Formatting Basics, Formatting Variables
+@node Mode Line Formatting
 @subsection Mode Line Formatting
 
 Mode line formatting variables (e.g.,
@@ -17936,7 +17936,7 @@ mode line specs Emacs understands, see the documentation of the
 @end enumerate
 
 
-@node Advanced Formatting, User-Defined Specs, Mode Line Formatting, Formatting Variables
+@node Advanced Formatting
 @subsection Advanced Formatting
 
 It is frequently useful to post-process the fields in some way.
@@ -17996,7 +17996,7 @@ gnus-compile} when you are satisfied with the look of your lines.
 @xref{Compilation}.
 
 
-@node User-Defined Specs, Formatting Fonts, Advanced Formatting, Formatting Variables
+@node User-Defined Specs
 @subsection User-Defined Specs
 
 All the specs allow for inserting user defined specifiers---@samp{u}.
@@ -18016,7 +18016,7 @@ given here will be evaluated to yield the current line number, and then
 inserted.
 
 
-@node Formatting Fonts, Positioning Point, User-Defined Specs, Formatting Variables
+@node Formatting Fonts
 @subsection Formatting Fonts
 
 There are specs for highlighting, and these are shared by all the format
@@ -18067,7 +18067,7 @@ and extremely vulgar displays.  Have fun!
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
 
-@node Positioning Point, Tabulation, Formatting Fonts, Formatting Variables
+@node Positioning Point
 @subsection Positioning Point
 
 Gnus usually moves point to a pre-defined place on each line in most
@@ -18086,7 +18086,7 @@ put a @samp{%C} somewhere in your format line definition, Gnus will
 place point there.
 
 
-@node Tabulation, Wide Characters, Positioning Point, Formatting Variables
+@node Tabulation
 @subsection Tabulation
 
 You can usually line up your displays by padding and cutting your
@@ -18106,7 +18106,7 @@ This is the soft tabulator.
 50 will be removed.  This is the hard tabulator.
 
 
-@node Wide Characters,  , Tabulation, Formatting Variables
+@node Wide Characters
 @subsection Wide Characters
 
 Proportional fonts in most countries have characters of the same width.
@@ -18124,7 +18124,7 @@ prettieer.  The default value is @code{nil}.
 
 
 
-@node Window Layout, Faces and Fonts, Formatting Variables, Various
+@node Window Layout
 @section Window Layout
 @cindex window layout
 
@@ -18406,7 +18406,7 @@ between summary buffer (top one-sixth) and article buffer (bottom).
 @end itemize
 
 
-@node Faces and Fonts, Compilation, Window Layout, Various
+@node Faces and Fonts
 @section Faces and Fonts
 @cindex faces
 @cindex fonts
@@ -18418,7 +18418,7 @@ the face you want to alter, and alter it via the standard Customize
 interface.
 
 
-@node Compilation, Mode Lines, Faces and Fonts, Various
+@node Compilation
 @section Compilation
 @cindex compilation
 @cindex byte-compilation
@@ -18442,7 +18442,7 @@ this function, though---you should compile them yourself by sticking
 them into the @code{.gnus.el} file and byte-compiling that file.)
 
 
-@node Mode Lines, Highlighting and Menus, Compilation, Various
+@node Mode Lines
 @section Mode Lines
 @cindex mode lines
 
@@ -18484,7 +18484,7 @@ complete in the buffer may be crowded off the mode line; the user should
 configure this variable appropriately for her configuration.
 
 
-@node Highlighting and Menus, Buttons, Mode Lines, Various
+@node Highlighting and Menus
 @section Highlighting and Menus
 @cindex visual
 @cindex highlighting
@@ -18581,7 +18581,7 @@ Hook called after creating the score mode menu.
 @end table
 
 
-@node Buttons, Daemons, Highlighting and Menus, Various
+@node Buttons
 @section Buttons
 @cindex buttons
 @cindex mouse
@@ -18637,7 +18637,7 @@ are either cons cells where the @code{car} contains a text to be displayed and
 the @code{cdr} contains a function symbol, or a simple string.
 
 
-@node Daemons, NoCeM, Buttons, Various
+@node Daemons
 @section Daemons
 @cindex demons
 @cindex daemons
@@ -18725,7 +18725,7 @@ is a sure-fire way of getting booted off any respectable system.  So
 behave.
 
 
-@node NoCeM, Undo, Daemons, Various
+@node NoCeM
 @section NoCeM
 @cindex nocem
 @cindex spam
@@ -18854,7 +18854,7 @@ big.  If this is a problem, you should kill off all (or most) of your
 unsubscribed groups (@pxref{Subscription Commands}).
 
 
-@node Undo, Moderation, NoCeM, Various
+@node Undo
 @section Undo
 @cindex undo
 
@@ -18891,7 +18891,7 @@ command, which should feel kinda like the normal Emacs @code{undo}
 command.
 
 
-@node Moderation, XEmacs Enhancements, Undo, Various
+@node Moderation
 @section Moderation
 @cindex moderation
 
@@ -18936,7 +18936,7 @@ To use moderation mode in these two groups, say:
 @end lisp
 
 
-@node XEmacs Enhancements, Fuzzy Matching, Moderation, Various
+@node XEmacs Enhancements
 @section XEmacs Enhancements
 @cindex XEmacs
 
@@ -18951,7 +18951,7 @@ advantage of that.
 @end menu
 
 
-@node Picons, Smileys, XEmacs Enhancements, XEmacs Enhancements
+@node Picons
 @subsection Picons
 
 @iftex
@@ -18973,7 +18973,7 @@ over your shoulder as you read news.
 @end menu
 
 
-@node Picon Basics, Picon Requirements, Picons, Picons
+@node Picon Basics
 @subsubsection Picon Basics
 
 What are Picons?  To quote directly from the Picons Web site:
@@ -19008,7 +19008,7 @@ picons to be installed into a location pointed to by
 @code{gnus-picons-database}.
 
 
-@node Picon Requirements, Easy Picons, Picon Basics, Picons
+@node Picon Requirements
 @subsubsection Picon Requirements
 
 To have Gnus display Picons for you, you must be running XEmacs
@@ -19026,7 +19026,7 @@ the @code{netpbm} utilities installed, or munge the
 @code{gnus-picons-convert-x-face} variable to use something else.
 
 
-@node Easy Picons, Hard Picons, Picon Requirements, Picons
+@node Easy Picons
 @subsubsection Easy Picons
 
 To enable displaying picons, simply put the following line in your
@@ -19048,7 +19048,7 @@ Alternatively if you want to use the web piconsearch engine add this:
 @end lisp
 
 
-@node Hard Picons, Picon Useless Configuration, Easy Picons, Picons
+@node Hard Picons
 @subsubsection Hard Picons
 
 @iftex
@@ -19120,7 +19120,7 @@ Decodes and displays the X-Face header if present.
 
 
 
-@node Picon Useless Configuration,  , Hard Picons, Picons
+@node Picon Useless Configuration
 @subsubsection Picon Useless Configuration
 
 @iftex
@@ -19216,7 +19216,7 @@ cleared every time you exit Gnus.  Defaults to @code{t}.
 
 @end table
 
-@node Smileys, Toolbar, Picons, XEmacs Enhancements
+@node Smileys
 @subsection Smileys
 @cindex smileys
 
@@ -19288,7 +19288,7 @@ Face used for mouse highlighting over the smiley face.
 @end table
 
 
-@node Toolbar, XVarious, Smileys, XEmacs Enhancements
+@node Toolbar
 @subsection Toolbar
 
 @table @code
@@ -19320,7 +19320,7 @@ The toolbar in the summary buffer of mail groups.
 @end table
 
 
-@node XVarious,  , Toolbar, XEmacs Enhancements
+@node XVarious
 @subsection Various XEmacs Variables
 
 @table @code
@@ -19358,7 +19358,7 @@ default.
 
 
 
-@node Fuzzy Matching, Thwarting Email Spam, XEmacs Enhancements, Various
+@node Fuzzy Matching
 @section Fuzzy Matching
 @cindex fuzzy matching
 
@@ -19376,7 +19376,7 @@ adequate results---even when faced with strings generated by text
 manglers masquerading as newsreaders.
 
 
-@node Thwarting Email Spam, Various Various, Fuzzy Matching, Various
+@node Thwarting Email Spam
 @section Thwarting Email Spam
 @cindex email spam
 @cindex spam
@@ -19468,7 +19468,7 @@ spam.  It's a win-win situation.  Forging @code{From} headers to point
 to non-existent domains is yucky, in my opinion.
 
 
-@node Various Various,  , Thwarting Email Spam, Various
+@node Various Various
 @section Various Various
 @cindex mode lines
 @cindex highlights
@@ -19576,7 +19576,7 @@ group).
 @end table
 
 
-@node The End, Appendices, Various, Top
+@node The End
 @chapter The End
 
 Well, that's the manual---you can get on with your life now.  Keep in
@@ -19606,7 +19606,7 @@ but at the common table.@*
 @end quotation
 
 
-@node Appendices, Index, The End, Top
+@node Appendices
 @chapter Appendices
 
 @menu
@@ -19621,7 +19621,7 @@ but at the common table.@*
 @end menu
 
 
-@node History, On Writing Manuals, Appendices, Appendices
+@node History
 @section History
 
 @cindex history
@@ -19659,7 +19659,7 @@ renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 @end menu
 
 
-@node Gnus Versions, Other Gnus Versions, History, History
+@node Gnus Versions
 @subsection Gnus Versions
 @cindex Pterodactyl Gnus
 @cindex ding Gnus
@@ -19693,7 +19693,7 @@ run.  Walk away, calmly, until you're out of its reach.  Find a proper
 released version of Gnus and snuggle up to that instead.
 
 
-@node Other Gnus Versions, Why?, Gnus Versions, History
+@node Other Gnus Versions
 @subsection Other Gnus Versions
 @cindex Semi-gnus
 
@@ -19709,7 +19709,7 @@ called T-gnus, ET-gnus, Nana-gnus and Chaos.  These provide powerful
 Japanese users.
 
 
-@node Why?, Compatibility, Other Gnus Versions, History
+@node Why?
 @subsection Why?
 
 What's the point of Gnus?
@@ -19737,7 +19737,7 @@ May Gnus never be complete.  @kbd{C-u 100 M-x all-hail-emacs} and
 @kbd{C-u 100 M-x all-hail-xemacs}.
 
 
-@node Compatibility, Conformity, Why?, History
+@node Compatibility
 @subsection Compatibility
 
 @cindex compatibility
@@ -19809,7 +19809,7 @@ may find the helpful help buffer annoying after a while.  If so, set
 up at you.
 
 
-@node Conformity, Emacsen, Compatibility, History
+@node Conformity
 @subsection Conformity
 
 No rebels without a clue here, ma'am.  We conform to all standards known
@@ -19855,7 +19855,7 @@ mentioned above, don't hesitate to drop a note to Gnus Towers and let us
 know.
 
 
-@node Emacsen, Gnus Development, Conformity, History
+@node Emacsen
 @subsection Emacsen
 @cindex Emacsen
 @cindex XEmacs
@@ -19884,7 +19884,7 @@ other than that, things should look pretty much the same under all
 Emacsen.
 
 
-@node Gnus Development, Contributors, Emacsen, History
+@node Gnus Development
 @subsection Gnus Development
 
 Gnus is developed in a two-phased cycle.  The first phase involves much
@@ -19922,7 +19922,7 @@ can't be assumed to do so.
 
 
 
-@node Contributors, New Features, Gnus Development, History
+@node Contributors
 @subsection Contributors
 @cindex contributors
 
@@ -20244,7 +20244,7 @@ Gee, that's quite a list of people.  I guess that must mean that there
 actually are people who are using Gnus.  Who'd'a thunk it!
 
 
-@node New Features,  , Contributors, History
+@node New Features
 @subsection New Features
 @cindex new features
 
@@ -20260,7 +20260,7 @@ These lists are, of course, just @emph{short} overviews of the
 @emph{most} important new features.  No, really.  There are tons more.
 Yes, we have feeping creaturism in full effect.
 
-@node ding Gnus, September Gnus, New Features, New Features
+@node ding Gnus
 @subsubsection (ding) Gnus
 
 New features in Gnus 5.0/5.1:
@@ -20377,7 +20377,7 @@ You can click on buttons instead of using the keyboard
 @end itemize
 
 
-@node September Gnus, Red Gnus, ding Gnus, New Features
+@node September Gnus
 @subsubsection September Gnus
 
 @iftex
@@ -20612,7 +20612,7 @@ Further syntax checking of outgoing articles have been added.
 @end itemize
 
 
-@node Red Gnus, Quassia Gnus, September Gnus, New Features
+@node Red Gnus
 @subsubsection Red Gnus
 
 New features in Gnus 5.4/5.5:
@@ -20770,7 +20770,7 @@ Emphasized text can be properly fontisized:
 @end itemize
 
 
-@node Quassia Gnus, Pterodactyl Gnus, Red Gnus, New Features
+@node Quassia Gnus
 @subsubsection Quassia Gnus
 
 New features in Gnus 5.6:
@@ -20899,7 +20899,7 @@ updated by the @code{gnus-start-date-timer} command.
 
 @end itemize
 
-@node Pterodactyl Gnus,  , Quassia Gnus, New Features
+@node Pterodactyl Gnus
 @subsubsection Pterodactyl Gnus
 
 New features in Gnus 5.8:
@@ -20958,7 +20958,7 @@ again, to keep up with ever-changing layouts.
 @iftex
 
 @page
-@node History, On Writing Manuals, History, Appendices
+@node History
 @section The Manual
 @cindex colophon
 @cindex manual
@@ -21019,7 +21019,7 @@ of the mysteries of this world, I guess.)
 @end iftex
 
 
-@node On Writing Manuals, Terminology, History, Appendices
+@node On Writing Manuals
 @section On Writing Manuals
 
 I guess most manuals are written after-the-fact; documenting a program
@@ -21040,7 +21040,7 @@ reference manual as source material.  It would look quite differently.
 
 
 @page
-@node Terminology, Customization, On Writing Manuals, Appendices
+@node Terminology
 @section Terminology
 
 @cindex terminology
@@ -21231,7 +21231,7 @@ specified by RFC 1153.
 
 
 @page
-@node Customization, Troubleshooting, Terminology, Appendices
+@node Customization
 @section Customization
 @cindex general customization
 
@@ -21247,7 +21247,7 @@ for some quite common situations.
 @end menu
 
 
-@node Slow/Expensive Connection, Slow Terminal Connection, Customization, Customization
+@node Slow/Expensive Connection
 @subsection Slow/Expensive @sc{nntp} Connection
 
 If you run Emacs on a machine locally, and get your news from a machine
@@ -21270,7 +21270,7 @@ support @sc{xover}; Gnus will detect this by itself.
 @end table
 
 
-@node Slow Terminal Connection, Little Disk Space, Slow/Expensive Connection, Customization
+@node Slow Terminal Connection
 @subsection Slow Terminal Connection
 
 Let's say you use your home computer for dialing up the system that runs
@@ -21314,7 +21314,7 @@ lines, which might save some time.
 @end table
 
 
-@node Little Disk Space, Slow Machine, Slow Terminal Connection, Customization
+@node Little Disk Space
 @subsection Little Disk Space
 @cindex disk space
 
@@ -21344,7 +21344,7 @@ variable to @code{nil}.  This variable is @code{t} by default.
 @end table
 
 
-@node Slow Machine,  , Little Disk Space, Customization
+@node Slow Machine
 @subsection Slow Machine
 @cindex slow machine
 
@@ -21360,7 +21360,7 @@ summary buffer faster.
 
 
 @page
-@node Troubleshooting, Gnus Reference Guide, Customization, Appendices
+@node Troubleshooting
 @section Troubleshooting
 @cindex troubleshooting
 
@@ -21441,7 +21441,7 @@ Write to @samp{ding-request@@gnus.org} to subscribe.
 
 
 @page
-@node Gnus Reference Guide, Emacs for Heathens, Troubleshooting, Appendices
+@node Gnus Reference Guide
 @section Gnus Reference Guide
 
 It is my hope that other people will figure out smart stuff that Gnus
@@ -21469,7 +21469,7 @@ and general methods of operation.
 @end menu
 
 
-@node Gnus Utility Functions, Backend Interface, Gnus Reference Guide, Gnus Reference Guide
+@node Gnus Utility Functions
 @subsection Gnus Utility Functions
 @cindex Gnus utility functions
 @cindex utility functions
@@ -21590,7 +21590,7 @@ Prompts the user for a select method.
 @end table
 
 
-@node Backend Interface, Score File Syntax, Gnus Utility Functions, Gnus Reference Guide
+@node Backend Interface
 @subsection Backend Interface
 
 Gnus doesn't know anything about @sc{nntp}, spools, mail or virtual
@@ -21675,7 +21675,7 @@ In the examples and definitions I will refer to the imaginary backend
 @end menu
 
 
-@node Required Backend Functions, Optional Backend Functions, Backend Interface, Backend Interface
+@node Required Backend Functions
 @subsubsection Required Backend Functions
 
 @table @code
@@ -21894,7 +21894,7 @@ There should be no result data from this function.
 @end table
 
 
-@node Optional Backend Functions, Error Messaging, Required Backend Functions, Backend Interface
+@node Optional Backend Functions
 @subsubsection Optional Backend Functions
 
 @table @code
@@ -22123,7 +22123,7 @@ There should be no data returned.
 @end table
 
 
-@node Error Messaging, Writing New Backends, Optional Backend Functions, Backend Interface
+@node Error Messaging
 @subsubsection Error Messaging
 
 @findex nnheader-report
@@ -22151,7 +22151,7 @@ so the @code{nnchoke} backend will have its error message stored in
 @code{nnchoke-status-string}.
 
 
-@node Writing New Backends, Hooking New Backends Into Gnus, Error Messaging, Backend Interface
+@node Writing New Backends
 @subsubsection Writing New Backends
 
 Many backends are quite similar.  @code{nnml} is just like
@@ -22322,7 +22322,7 @@ Below is a slightly shortened version of the @code{nndir} backend.
 @end lisp
 
 
-@node Hooking New Backends Into Gnus, Mail-like Backends, Writing New Backends, Backend Interface
+@node Hooking New Backends Into Gnus
 @subsubsection Hooking New Backends Into Gnus
 
 @vindex gnus-valid-select-methods
@@ -22364,7 +22364,7 @@ The user should be prompted for an address when doing commands like
 @end table
 
 
-@node Mail-like Backends,  , Hooking New Backends Into Gnus, Backend Interface
+@node Mail-like Backends
 @subsubsection Mail-like Backends
 
 One of the things that separate the mail backends from the rest of the
@@ -22417,7 +22417,7 @@ this:
 @end example
 
 
-@node Score File Syntax, Headers, Backend Interface, Gnus Reference Guide
+@node Score File Syntax
 @subsection Score File Syntax
 
 Score files are meant to be easily parseable, but yet extremely
@@ -22493,7 +22493,7 @@ The meaning of the various atoms are explained elsewhere in this
 manual (@pxref{Score File Format}).
 
 
-@node Headers, Ranges, Score File Syntax, Gnus Reference Guide
+@node Headers
 @subsection Headers
 
 Internally Gnus uses a format for storing article headers that
@@ -22519,7 +22519,7 @@ All these slots contain strings, except the @code{extra} slot, which
 contains an alist of header/value pairs (@pxref{To From Newsgroups}).
 
 
-@node Ranges, Group Info, Headers, Gnus Reference Guide
+@node Ranges
 @subsection Ranges
 
 @sc{gnus} introduced a concept that I found so useful that I've started
@@ -22599,7 +22599,7 @@ totally range-based without ever having to convert back to normal
 sequences.)
 
 
-@node Group Info, Extended Interactive, Ranges, Gnus Reference Guide
+@node Group Info
 @subsection Group Info
 
 Gnus stores all permanent info on groups in a @dfn{group info} list.
@@ -22716,7 +22716,7 @@ is necessary, you can just pass on a non-@code{nil} third parameter to
 the three final setter functions to have this happen automatically.
 
 
-@node Extended Interactive, Emacs/XEmacs Code, Group Info, Gnus Reference Guide
+@node Extended Interactive
 @subsection Extended Interactive
 @cindex interactive
 @findex gnus-interactive
@@ -22769,7 +22769,7 @@ function.
 @end table
 
 
-@node Emacs/XEmacs Code, Various File Formats, Extended Interactive, Gnus Reference Guide
+@node Emacs/XEmacs Code
 @subsection Emacs/XEmacs Code
 @cindex XEmacs
 @cindex Emacsen
@@ -22815,7 +22815,7 @@ mapping functions the other way around.  But I didn't.  The performance
 hit these indirections impose on Gnus under XEmacs should be slight.
 
 
-@node Various File Formats,  , Emacs/XEmacs Code, Gnus Reference Guide
+@node Various File Formats
 @subsection Various File Formats
 
 @menu
@@ -22824,7 +22824,7 @@ hit these indirections impose on Gnus under XEmacs should be slight.
 @end menu
 
 
-@node Active File Format, Newsgroups File Format, Various File Formats, Various File Formats
+@node Active File Format
 @subsubsection Active File Format
 
 The active file lists all groups available on the server in
@@ -22857,7 +22857,7 @@ For a full description of this file, see the manual pages for
 @samp{innd}, in particular @samp{active(5)}.
 
 
-@node Newsgroups File Format,  , Active File Format, Various File Formats
+@node Newsgroups File Format
 @subsubsection Newsgroups File Format
 
 The newsgroups file lists groups along with their descriptions.  Not all
@@ -22878,7 +22878,7 @@ description   = <string>
 
 
 @page
-@node Emacs for Heathens,  , Gnus Reference Guide, Appendices
+@node Emacs for Heathens
 @section Emacs for Heathens
 
 Believe it or not, but some people who use Gnus haven't really used
@@ -22896,7 +22896,7 @@ cat instead.
 @end menu
 
 
-@node Keystrokes, Emacs Lisp, Emacs for Heathens, Emacs for Heathens
+@node Keystrokes
 @subsection Keystrokes
 
 @itemize @bullet
@@ -22939,7 +22939,7 @@ it.
 
 
 
-@node Emacs Lisp,  , Keystrokes, Emacs for Heathens
+@node Emacs Lisp
 @subsection Emacs Lisp
 
 Emacs is the King of Editors because it's really a Lisp interpreter.
@@ -23000,11 +23000,11 @@ former).  The manual is unambiguous, but it can be confusing.
 @page
 @include gnus-faq.texi
 
-@node Index, Key Index, Appendices, Top
+@node Index
 @chapter Index
 @printindex cp
 
-@node Key Index,  , Index, Top
+@node Key Index
 @chapter Key Index
 @printindex ky
 
