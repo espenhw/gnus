@@ -1,4 +1,9 @@
 2001-07-03  Simon Josefsson  <jas@extundo.com>
+	From Nuutti Kotivuori <nuutti.kotivuori@smarttrust.com>
+
+	* flow-fill.el (fill-flowed): Use (1+ (point-at-eol)) instead.
+
+2001-07-03  Simon Josefsson  <jas@extundo.com>
 
 	* flow-fill.el (fill-flowed): If `fill-region' inserts empty line,
 	remove it (workaround XEmacs `fill-region' bug).
