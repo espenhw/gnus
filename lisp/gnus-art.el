@@ -3731,22 +3731,35 @@ If given a prefix, show the hidden text instead."
 	    'article)
 	   ;; Get the article and put into the article buffer.
 	   ((or (stringp article) (numberp article))
-	    (let ((gnus-override-method
-		   (or gnus-override-method
-		       (and (stringp article) 
-			    (car (gnus-refer-article-methods)))))
+	    (let ((gnus-override-method gnus-override-method)
+		  (methods (and (stringp article) 
+				gnus-refer-article-method))
+		  result
 		  (buffer-read-only nil))
-	      (erase-buffer)
-	      (gnus-kill-all-overlays)
-	      (let ((gnus-newsgroup-name group))
-		(gnus-check-group-server))
-	      (when (gnus-request-article article group (current-buffer))
-		(when (numberp article)
-		  (gnus-async-prefetch-next group article gnus-summary-buffer)
-		  (when gnus-keep-backlog
-		    (gnus-backlog-enter-article
-		     group article (current-buffer))))
-		'article)))
+	      (setq methods
+		    (if (listp methods)
+			(delq 'current methods)
+		      (list methods)))
+	      (if (and (null gnus-override-method) methods)
+		  (setq gnus-override-method (pop methods)))
+	      (while (not result)
+		(erase-buffer)
+		(gnus-kill-all-overlays)
+		(let ((gnus-newsgroup-name group))
+		  (gnus-check-group-server))
+		(when (gnus-request-article article group (current-buffer))
+		  (when (numberp article)
+		    (gnus-async-prefetch-next group article 
+					      gnus-summary-buffer)
+		    (when gnus-keep-backlog
+		      (gnus-backlog-enter-article
+		       group article (current-buffer))))
+		  (setq result 'article))
+		(if (not result)
+		    (if methods
+			(setq gnus-override-method (pop methods))
+		      (setq result 'done))))
+	      (and (eq result 'article) 'article)))
 	   ;; It was a pseudo.
 	   (t article)))
 

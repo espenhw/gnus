@@ -1,3 +1,8 @@
+1999-12-14 10:40:33  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Use all refer
+	method if cannot find the article.
+
 1999-12-14 01:13:50  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Don't use refer
