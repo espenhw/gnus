@@ -439,7 +439,7 @@ If WIDTH (the numerical prefix), use that text width when filling."
 	  (narrow-to-region (caar marks) (caadr marks))
 	  (let ((adaptive-fill-regexp
 		 (concat "^" (regexp-quote (cdar marks)) " *"))
-		(fill-prefix (cdar marks)))
+		(fill-prefix (concat (cdar marks) " ")))
 	    (fill-region (point-min) (point-max)))
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))

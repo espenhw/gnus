@@ -1633,6 +1633,7 @@ increase the score of each group you read."
     "z" gnus-article-date-ut
     "u" gnus-article-date-ut
     "l" gnus-article-date-local
+    "p" gnus-article-date-english
     "e" gnus-article-date-lapsed
     "o" gnus-article-date-original
     "i" gnus-article-date-iso8601
@@ -1705,7 +1706,6 @@ increase the score of each group you read."
       "Score"
       (nconc
        (list
-	["Enter score..." gnus-summary-score-entry t]
 	["Customize" gnus-score-customize t])
        (gnus-make-score-map 'increase)
        (gnus-make-score-map 'lower)
@@ -8753,7 +8753,7 @@ even ticked and dormant ones."
     (let ((scored gnus-newsgroup-scored)
 	  headers h)
       (while scored
-	(unless (gnus-summary-goto-subject (caar scored))
+	(unless (gnus-number-to-header (caar scored))
 	  (and (setq h (gnus-summary-article-header (caar scored)))
 	       (< (cdar scored) gnus-summary-expunge-below)
 	       (push h headers)))

@@ -1,4 +1,35 @@
+2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-limit-include-expunged): Really
+	include the expunged articles.
+
+	* gnus-group.el (gnus-group-sort-by-server): New function.
+
+	* gnus.el (gnus-method-to-server-name): New function.
+	(gnus-group-prefixed-name): Use it.
+
+	* gnus-group.el (gnus-group-sort-function): Doc fix.
+	(gnus-group-sort-groups-by-server): New command.
+
 2000-12-29 13:25:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-date-english): New variable.
+	(article-date-english): New command.
+	(gnus-english-month-names): New variable.
+	(article-make-date-line): Do 'english.
+
+	* gnus-cite.el (gnus-article-fill-cited-article): Add a space
+	after the fill prefix.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Removed "Enter
+	score...". 
+
+	* gnus-art.el (gnus-ignored-headers): Hide more headers.
+
+	* message.el (message-mode-map): Bind comment-region.
+
+	* gnus-art.el (gnus-mime-display-part): Let w3 display
+	multipart/related.
 
 	* mm-bodies.el (mm-long-lines-p): New function.
 	(mm-body-encoding): Use it.

@@ -126,7 +126,9 @@
     "^List-[A-Za-z]+:" "^X-Listprocessor-Version:"
     "^X-Received:" "^X-Distribute:" "^X-Sequence:" "^X-Juno-Line-Breaks:"
     "^X-Notes-Item:" "^X-MS-TNEF-Correlator:" "^x-uunet-gateway:"
-    "^X-Received:" "^Content-length:" "X-precedence:")
+    "^X-Received:" "^Content-length:" "X-precedence:"
+    "^X-Authenticated-User:" "^X-Comment" "^X-Report:" "^X-Abuse-Info:"
+    "^X-HTTP-Proxy:" "^X-Mydeja-Info:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -897,6 +899,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
+(defcustom gnus-treat-date-english nil
+  "Display the Date in a format that can be read aloud in English.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-head-custom)
+
 (defcustom gnus-treat-date-lapsed nil
   "Display the Date header in a way that says how much time has elapsed.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1051,6 +1060,10 @@ It is a string, such as \"PGP\". If nil, ask user."
 
 ;;; Internal variables
 
+(defvar gnus-english-month-names
+  '("January" "February" "March" "April" "May" "June" "July" "August"
+    "September" "October" "November" "December"))
+
 (defvar article-goto-body-goes-to-point-min-p nil)
 (defvar gnus-article-wash-types nil)
 (defvar gnus-article-emphasis-alist nil)
@@ -1080,6 +1093,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-highlight-signature gnus-article-highlight-signature)
     (gnus-treat-date-ut gnus-article-date-ut)
     (gnus-treat-date-local gnus-article-date-local)
+    (gnus-treat-date-english gnus-article-date-english)
     (gnus-treat-date-lapsed gnus-article-date-lapsed)
     (gnus-treat-date-original gnus-article-date-original)
     (gnus-treat-date-user-defined gnus-article-date-user)
@@ -2229,6 +2243,26 @@ should replace the \"Date:\" one, or should be added below it."
 	   (if (> real-sec 0)
 	       " ago"
 	     " in the future"))))))
+     ;; Display the date in proper English
+     ((eq type 'english)
+      (let ((dtime (decode-time time)))
+	(concat
+	 "Date: the "
+	 (number-to-string (nth 3 dtime))
+	 (let ((digit (% (nth 3 dtime) 10)))
+	   (cond
+	    ((= digit 1) "st")
+	    ((= digit 2) "nd")
+	    ((= digit 3) "rd")
+	    (t "th")))
+	 " of "
+	 (nth (1- (nth 4 dtime)) gnus-english-month-names)
+	 " "
+	 (number-to-string (nth 5 dtime))
+	 " at "
+	 (number-to-string (nth 0 dtime))
+	 ":"
+	 (number-to-string (nth 1 dtime)))))
      (t
       (error "Unknown conversion type: %s" type)))))
 
@@ -2236,6 +2270,11 @@ should replace the \"Date:\" one, or should be added below it."
   "Convert the current article date to the local timezone."
   (interactive (list t))
   (article-date-ut 'local highlight))
+
+(defun article-date-english (&optional highlight)
+  "Convert the current article date to something that is proper English."
+  (interactive (list t))
+  (article-date-ut 'english highlight))
 
 (defun article-date-original (&optional highlight)
   "Convert the current article date to what it was originally.
@@ -2751,6 +2790,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-blank-lines
      article-strip-all-blank-lines
      article-date-local
+     article-date-english
      article-date-iso8601
      article-date-original
      article-date-ut
@@ -3667,7 +3707,9 @@ In no internal viewer is available, use an external viewer."
     ;;;!!! Most multipart/related is an HTML message plus images.
     ;;;!!! Unfortunately we are unable to let W3 display those 
     ;;;!!! included images, so we just display it as a mixed multipart.
-    (gnus-mime-display-mixed (cdr handle)))
+    ;;(gnus-mime-display-mixed (cdr handle))
+    ;;;!!! No, w3 can display everything just fine.
+    (gnus-mime-display-part (cadr handle)))
    ((equal (car handle) "multipart/signed")
     (or (memq 'signed gnus-article-wash-types)
 	(push 'signed gnus-article-wash-types))

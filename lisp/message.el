@@ -1432,7 +1432,8 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
 
-  (define-key message-mode-map "\t" 'message-tab))
+  (define-key message-mode-map "\t" 'message-tab)
+  (define-key message-mode-map "\M-;" 'comment-region))
 
 (easy-menu-define
  message-mode-menu message-mode-map "Message Menu."
@@ -1553,8 +1554,6 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (message-setup-fill-variables)
   ;; Allow using comment commands to add/remove quoting.
   (set (make-local-variable 'comment-start) message-yank-prefix)
-  ;;(when (fboundp 'mail-hist-define-keys)
-  ;;  (mail-hist-define-keys))
   (if (featurep 'xemacs)
       (message-setup-toolbar)
     (set (make-local-variable 'font-lock-defaults)
