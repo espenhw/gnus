@@ -1,3 +1,8 @@
+2001-12-17  Josh Huber  <huber@alum.wpi.edu>
+
+	* ChangeLog: changed coding to buffer-file-coding-system
+	* todo: same
+
 2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make-x.bat: Code cleanup.  Fix a bug with "/copy".  From Frank
@@ -133,5 +138,5 @@
 	Windows NT.
 
 ;; Local Variables:
-;; coding: iso-2022-7bit
+;; buffer-file-coding-system: iso-2022-7bit
 ;; End:
