@@ -1,5 +1,10 @@
 2002-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
+	* gnus-group.el (gnus-topic-mode-p): Fixed free variable
+	reference.
+
+2002-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* nnheader.el (nnheader-find-nov-line): Changed midpoint
 	calculation to avoid integer overflow.
 

@@ -730,7 +730,7 @@ simple manner.")
 (defun gnus-topic-mode-p ()
   "Return non-nil in `gnus-topic-mode'."
   (and (boundp 'gnus-topic-mode) 
-       gnus-topic-mode))
+       (symbol-value 'gnus-topic-mode)))
 
 (defun gnus-group-make-menu-bar ()
   (gnus-turn-off-edit-menu 'group)
