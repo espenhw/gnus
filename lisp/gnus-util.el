@@ -1093,17 +1093,14 @@ Return the modified alist."
 	(remove-text-properties start end properties object))
     t))
 
-(if (fboundp 'compare-strings)
-    ;; Reduce consing.  (Assume multibyte conversion `compare-strings'
-    ;; can do isn't relevant.)
-    (defun gnus-string-equal (x y)
-      "Like `string-equal', except it compares case-insensitively."
-      (eq t (compare-strings x nil nil y nil nil t)))
-  (defun gnus-string-equal (x y)
-    "Like `string-equal', except it compares case-insensitively."
-    (and (= (length x) (length y))
-	 (or (string-equal x y)
-	     (string-equal (downcase x) (downcase y))))))
+;; This might use `compare-strings' to reduce consing in the
+;; case-insensitive case, but it has to cope with null args.
+;; (`string-equal' uses symbol print names.)
+(defun gnus-string-equal (x y)
+  "Like `string-equal', except it compares case-insensitively."
+  (and (= (length x) (length y))
+       (or (string-equal x y)
+	   (string-equal (downcase x) (downcase y)))))
 
 (defcustom gnus-use-byte-compile t
   "If non-nil, byte-compile crucial run-time codes.
