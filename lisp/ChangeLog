@@ -1,3 +1,8 @@
+2000-11-05 22:34:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-verify-option): Default value.
+	(mm-possibly-verify-or-decrypt): Dealing with broken messages.
+
 2000-11-05 15:06:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnvirtual.el (nnvirtual-request-expire-articles): Uncompress range.

@@ -237,7 +237,7 @@ to:
     ("application/pkcs7-signature" mml-smime-verify "S/MIME")
     ("application/x-pkcs7-signature" mml-smime-verify "S/MIME")))
 
-(defcustom mm-verify-option nil
+(defcustom mm-verify-option 'known
   "Option of verifying signed parts.
 `never', not verify; `always', always verify; 
 `known', only verify known protocols. Otherwise, ask user."
@@ -252,7 +252,7 @@ to:
 (defvar mm-decrypt-function-alist
   '(("application/pgp-encrypted" mml2015-decrypt "PGP")))
 
-(defcustom mm-decrypt-option nil
+(defcustom mm-decrypt-option 'known
   "Option of decrypting signed parts.
 `never', not decrypt; `always', always decrypt; 
 `known', only decrypt known protocols. Otherwise, ask user."
@@ -262,7 +262,7 @@ to:
 		 (item :tag "ask" nil))
   :group 'gnus-article)
 
-(defcustom mm-snarf-option nil
+(defcustom mm-snarf-option 'known
   "Option of snarfing PGP key.
 `never', not snarf; `always', always snarf; 
 `known', only snarf known protocols. Otherwise, ask user."
@@ -985,7 +985,15 @@ If NOTP, returns first non-matching part."
 	protocol func)
     (cond 
      ((equal subtype "signed")
-      (setq protocol (mail-content-type-get ctl 'protocol))
+      (unless (setq protocol (mail-content-type-get ctl 'protocol))
+	;; The message is broken.
+	(let ((parts parts))
+	  (while parts
+	    (if (assoc (mm-handle-media-type (car parts)) 
+		       mm-verify-function-alist)
+		(setq protocol (mm-handle-media-type (car parts)) 
+		      parts nil)
+	      (setq parts (cdr parts))))))
       (setq func (nth 1 (assoc protocol mm-verify-function-alist)))
       (if (cond
 	   ((eq mm-verify-option 'never) nil)
@@ -1004,7 +1012,15 @@ If NOTP, returns first non-matching part."
 	     (unless (y-or-n-p (format "%s, continue? " err))
 	       (error "Verify failure."))))))
      ((equal subtype "encrypted")
-      (setq protocol (mail-content-type-get ctl 'protocol))
+      (unless (setq protocol (mail-content-type-get ctl 'protocol))
+	;; The message is broken.
+	(let ((parts parts))
+	  (while parts
+	    (if (assoc (mm-handle-media-type (car parts)) 
+		       mm-decrypt-function-alist)
+		(setq protocol (mm-handle-media-type (car parts))
+		      parts nil)
+	      (setq parts (cdr parts))))))
       (setq func (nth 1 (assoc protocol mm-decrypt-function-alist)))
       (if (cond
 	   ((eq mm-decrypt-option 'never) nil)
