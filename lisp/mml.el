@@ -37,6 +37,7 @@
   (autoload 'gnus-add-minor-mode "gnus-ems")
   (autoload 'gnus-make-local-hook "gnus-util")
   (autoload 'message-fetch-field "message")
+  (autoload 'fill-flowed-encode "flow-fill")
   (autoload 'message-posting-charset "message"))
 
 (defcustom mml-content-type-parameters

@@ -33,6 +33,7 @@
   (autoload 'gnus-article-prepare-display "gnus-art")
   (autoload 'vcard-parse-string "vcard")
   (autoload 'vcard-format-string "vcard")
+  (autoload 'fill-flowed "flow-fill")
   (autoload 'html2text "html2text")
   (unless (fboundp 'diff-mode)
     (autoload 'diff-mode "diff-mode" "" t nil)))

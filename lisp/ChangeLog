@@ -1,8 +1,6 @@
 2003-10-23  Simon Josefsson  <jas@extundo.com>
 
 	* flow-fill.el (fill-flowed-encode, fill-flowed): Autoload.
-	* mml.el: Remove autoload cookie for flow-fill.
-	* mm-view.el: Likewise.
 
 2003-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
