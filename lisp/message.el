@@ -5702,6 +5702,45 @@ responses here are directed to other newsgroups."))
 
      cur)))
 
+;;;###autoload
+(defun message-is-yours-p ()
+  "Non-nil means current article is yours.
+If you have added 'cancel-messages to 'message-shoot-gnksa-feet', all articles
+are yours except those that have Cancel-Lock header not belonging to you.
+Instead of shooting GNKSA feet, you should modify 'message-alternative-emails'
+regexp to match all of yours addresses."
+  ;; Canlock-logic as suggested by Per Abrahamsen
+  ;; <abraham@dina.kvl.dk>
+  ;;
+  ;; IF article has cancel-lock THEN
+  ;;   IF we can verify it THEN
+  ;;     issue cancel
+  ;;   ELSE
+  ;;     error: cancellock: article is not yours
+  ;; ELSE
+  ;;   Use old rules, comparing sender...
+  (if (message-fetch-field "Cancel-Lock")
+      (if (null (canlock-verify))
+	  t
+	(error "Failed to verify Cancel-lock: This article is not yours"))
+    (or
+     (message-gnksa-enable-p 'cancel-messages)
+     (and sender
+	  (string-equal
+	   (downcase sender)
+	   (downcase (message-make-sender))))
+     ;; Email address in From field equals to our address
+     (string-equal
+      (downcase (cadr (mail-extract-address-components from)))
+      (downcase (cadr (mail-extract-address-components
+		       (message-make-from)))))
+     ;; Email address in From field matches
+     ;; 'message-alternative-emails' regexp
+     (and message-alternative-emails
+	  (string-match
+	   message-alternative-emails
+	   (cadr (mail-extract-address-components from)))))))
+
 
 ;;;###autoload
 (defun message-cancel-news (&optional arg)
@@ -5721,31 +5760,7 @@ If ARG, allow editing of the cancellation message."
 	      message-id (message-fetch-field "message-id" t)
 	      distribution (message-fetch-field "distribution")))
       ;; Make sure that this article was written by the user.
-      (unless (or
-	       ;; Canlock-logic as suggested by Per Abrahamsen
-	       ;; <abraham@dina.kvl.dk>
-	       ;;
-	       ;; IF article has cancel-lock THEN
-	       ;;   IF we can verify it THEN
-	       ;;     issue cancel
-	       ;;   ELSE
-	       ;;     error: cancellock: article is not yours
-	       ;; ELSE
-	       ;;   Use old rules, comparing sender...
-	       (if (message-fetch-field "Cancel-Lock")
-		   (if (null (canlock-verify))
-		       t
-		     (error "Failed to verify Cancel-lock: This article is not yours"))
-		 nil)
-	       (message-gnksa-enable-p 'cancel-messages)
-	       (and sender
-		    (string-equal
-		     (downcase sender)
-		     (downcase (message-make-sender))))
-	       (string-equal
-		(downcase (cadr (mail-extract-address-components from)))
-		(downcase (cadr (mail-extract-address-components
-				 (message-make-from))))))
+      (unless (message-is-yours-p)
 	(error "This article is not yours"))
       (when (yes-or-no-p "Do you really want to cancel this article? ")
 	;; Make control message.
@@ -5781,31 +5796,7 @@ header line with the old Message-ID."
 	(sender (message-fetch-field "sender"))
 	(from (message-fetch-field "from")))
     ;; Check whether the user owns the article that is to be superseded.
-    (unless (or
-	     ;; Canlock-logic as suggested by Per Abrahamsen
-	     ;; <abraham@dina.kvl.dk>
-	     ;;
-	     ;; IF article has cancel-lock THEN
-	     ;;   IF we can verify it THEN
-	     ;;     issue cancel
-	     ;;   ELSE
-	     ;;     error: cancellock: article is not yours
-	     ;; ELSE
-	     ;;   Use old rules, comparing sender...
-	     (if (message-fetch-field "Cancel-Lock")
-		 (if (null (canlock-verify))
-		     t
-		   (error "Failed to verify Cancel-lock: This article is not yours"))
-	       nil)
-	     (message-gnksa-enable-p 'cancel-messages)
-		(and sender
-		     (string-equal
-		      (downcase sender)
-		      (downcase (message-make-sender))))
-		(string-equal
-		 (downcase (cadr (mail-extract-address-components from)))
-		 (downcase (cadr (mail-extract-address-components
-				  (message-make-from))))))
+    (unless (message-is-yours-p)
       (error "This article is not yours"))
     ;; Get a normal message buffer.
     (message-pop-to-buffer (message-buffer-name "supersede"))
