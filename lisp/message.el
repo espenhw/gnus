@@ -4744,7 +4744,7 @@ I.e., calling it on a Subject: header is useless."
   (let (rhs ace start startpos endpos ovl)
     (goto-char (point-min))
     (while (re-search-forward (concat "^" header) nil t)
-      (while (re-search-forward "@\\([^ \t\r\n>]+\\)"
+      (while (re-search-forward "@\\([^ \t\r\n>,]+\\)"
 				(or (save-excursion
 				      (re-search-forward "^[^ \t]" nil t))
 				    (point-max))
