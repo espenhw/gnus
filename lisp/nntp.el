@@ -899,7 +899,7 @@ password contained in '~/.nntp-authinfo'."
     (when (and (buffer-name pbuffer)
 	       process)
       (process-kill-without-query process)
-      (if (and (nntp-wait-for process "^200.*\n" buffer nil t)
+      (if (and (nntp-wait-for process "^2.*\n" buffer nil t)
 	       (memq (process-status process) '(open run)))
 	  (prog1
 	      (caar (push (list process buffer nil) nntp-connection-alist))
