@@ -1,5 +1,8 @@
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-generate-headers-first): Default to
+	'(references).
+
 	* gnus-art.el (gnus-mime-delete-part): Require confirmation.
 
 2003-04-21  Jesper Harder  <harder@ifa.au.dk>

@@ -690,7 +690,11 @@ variable isn't used."
   ;; create a dependence to `gnus.el'.
   :type 'sexp)
 
-(defcustom message-generate-headers-first nil
+;; FIXME: This should be a temporary workaround until someone implements a
+;; proper solution.  If a crash happens while replying, the auto-save file
+;; will *not* have a `References:' header if `message-generate-headers-first'
+;; is nil.  See: http://article.gmane.org/gmane.emacs.gnus.general/51138
+(defcustom message-generate-headers-first '(references)
   "*If non-nil, generate all required headers before composing.
 The variables `message-required-news-headers' and
 `message-required-mail-headers' specify which headers to generate.
@@ -702,6 +706,7 @@ are to be deleted and then re-generated before sending, so this variable
 will not have a visible effect for those headers."
   :group 'message-headers
   :type '(choice (const :tag "None" nil)
+                 (const :tag "References" '(references))
                  (const :tag "All" t)
                  (repeat (sexp :tag "Header"))))
 
