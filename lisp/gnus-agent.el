@@ -284,6 +284,8 @@ node `(gnus)Server Buffer'.")
                     (setq category (cdr category)))))))
   category)
 
+;; Fixme: These two can probably be in eval-when-compile.
+
 (defmacro gnus-agent-cat-defaccessor (name prop-name)
   "Define accessor and setter methods for manipulating a list of the form
 \(NAME (PROPERTY1 VALUE1) ... (PROPERTY_N VALUE_N)).
@@ -296,8 +298,8 @@ manipulated as follows:
                                     (quote (quote ,prop-name)) category)))
 
           (define-setf-method ,name (category)
-            (let* ((--category--temp-- (gensym "--category--"))
-                   (--value--temp-- (gensym "--value--")))
+            (let* ((--category--temp-- (make-symbol "--category--"))
+                   (--value--temp-- (make-symbol "--value--")))
               (list (list --category--temp--) ; temporary-variables
                     (list category)     ; value-forms
                     (list --value--temp--) ; store-variables
@@ -332,8 +334,9 @@ manipulated as follows:
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-score-file        agent-score-file)
 
-(defsetf gnus-agent-cat-groups (category) (groups)
-  (list 'gnus-agent-set-cat-groups category groups))
+(eval-when-compile
+  (defsetf gnus-agent-cat-groups (category) (groups)
+    (list 'gnus-agent-set-cat-groups category groups)))
 
 (defun gnus-agent-set-cat-groups (category groups)
   (unless (eq groups 'ignore)
