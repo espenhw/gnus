@@ -310,6 +310,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)
   (save-excursion
+    (set-buffer nntp-server-buffer)
     (goto-char (point-min))
     (cond ((looking-at "5[0-9]+")
 	   (setq nntp-server-list-active-group nil))
@@ -579,8 +580,10 @@ It will prompt for a password."
 	      (caar (push (list process buffer nil) 
 			  nntp-connection-alist))
 	    (push process nntp-connection-list)
-	    (nntp-read-server-type)
-	    (run-hooks 'nntp-server-opened-hook))
+	    (save-excursion
+	      (set-buffer nntp-server-buffer)
+	      (nntp-read-server-type)
+	      (run-hooks 'nntp-server-opened-hook)))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))

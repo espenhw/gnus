@@ -1,3 +1,19 @@
+Thu Sep 12 01:16:38 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.33 is released.
+
+Wed Sep 11 00:22:01 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-score.el (gnus-adaptive-word-syntax-table): Modified
+	standard syntax table.
+
+	* nntp.el (nntp-read-server-type): Worked in the wrong buffer.
+
+	* gnus-demon.el (gnus-demon-cancel): Put
+	nnheader-cancel-function-timers back in again.
+
+	* gnus.el: Red Gnus v0.32 is released.
+
 Tue Sep 10 19:10:09 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-kill.el (gnus-batch-score): Didn't work at all.

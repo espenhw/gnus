@@ -57,6 +57,7 @@
 \newcommand{\gnushash}{\#}
 \newcommand{\gnushat}{\symbol{"5E}}
 \newcommand{\gnusunderline}{\symbol{"5F}}
+\newcommand{\gnusnot}{\#}
 \newcommand{\gnustilde}{\symbol{"7E}}
 \newcommand{\gnusless}{{$<$}}
 \newcommand{\gnusgreater}{{$>$}}
@@ -10808,7 +10809,7 @@ myself:
 
 @lisp
 ("references" 
- "<x6[0-9a-z]+\\.fsf@.*eyesore.no>" 1000 nil r)
+ "<x6[0-9a-z]+\\.fsf@@.*eyesore.no>" 1000 nil r)
 @end lisp
 
 Whether it's the first two or first three characters that are ``yours''
