@@ -1,3 +1,25 @@
+Sun Aug 30 12:15:54 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.7 is released.
+
+1998-08-30 01:26:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Remove autoload for
+	gnus-article-mime-decode-quoted-printable.
+
+	* mm-decode.el (mm-charset-to-coding-system): Allow iso-8859-1 to
+	be decoded in non-MULE Emacsen.
+
+	* gnus-xmas.el (gnus-xmas-logo-color-alist): More brown.
+
+1998-08-29  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el (gnus-xmas-logo-color-alist): Try shades of brown.
+
+1998-08-30 01:04:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el: Check for coding-system-list.
+
 Sun Aug 30 00:59:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.6 is released.

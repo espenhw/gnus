@@ -82,6 +82,11 @@ Return WORD if not."
       (fset 'mm-decode-coding-string 'decode-coding-string)
     (fset 'mm-decode-coding-string (lambda (s a) s))))
 
+(eval-and-compile
+  (if (fboundp 'coding-system-list)
+      (fset 'mm-coding-system-list 'coding-system-list)
+    (fset 'mm-coding-system-list 'ignore)))
+
 (defun mm-decode-text (charset encoding string)
   "Decode STRING as an encoded text.
 Valid ENCODINGs are \"B\" and \"Q\".
@@ -104,7 +109,7 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
 	   (gb2312 . cn-gb-2312)
 	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
 	   (x-ctext . ctext)))
-	(systems (coding-system-list))
+	(systems (mm-coding-system-list))
 	dest)
     (while rest
       (let ((pair (car rest)))
@@ -126,8 +131,17 @@ used as the line break code type of the coding system."
 	    charset))
   (when lbt
     (setq charset (intern (format "%s-%s" charset lbt))))
-  (when (memq charset (coding-system-list))
-    charset))
+  (cond
+   ;; Running in a non-MULE environment.
+   ((and (null (mm-coding-system-list))
+	 (eq charset 'iso-8859-1))
+    charset)
+   ;; Check to see whether we can handle this charset.
+   ((memq charset (mm-coding-system-list))
+    charset)
+   ;; Nope.
+   (t
+    nil)))
 
 (provide 'mm-decode)
 

@@ -52,7 +52,7 @@ automatically."
     (grape "#b264cc" "#cf7df")
     (labia "#cc64c2" "#fd7dff")
     (berry "#cc6485" "#ff7db5")
-    (dino "#cc6485" "#ff7db5")
+    (dino "#8e4900" "#911e1e")
     (neutral "#b4b4b4" "#878787")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
@@ -62,7 +62,8 @@ automatically."
   :type '(choice (const flame) (const pine) (const moss)
 		 (const irish) (const sky) (const tin)
 		 (const velvet) (const grape) (const labia)
-		 (const berry) (const neutral) (const september))
+		 (const berry) (const neutral) (const september)
+		 (const dino))
   :group 'gnus-xmas)
 
 (defvar gnus-xmas-logo-colors
