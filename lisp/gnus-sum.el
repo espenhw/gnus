@@ -7953,10 +7953,6 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
   (interactive "P")
   (unless action
     (setq action 'move))
-  ;; Disable marking as read.
-  (let (gnus-mark-article-hook)
-    (save-window-excursion
-      (gnus-summary-select-article)))
   ;; Check whether the source group supports the required functions.
   (cond ((and (eq action 'move)
 	      (not (gnus-check-backend-function

@@ -2774,16 +2774,26 @@ You should probably use `gnus-find-method-for-group' instead."
       (when (string-match (car elem) group)
 	(setq params-list
 	      (nconc (gnus-expand-group-parameters
-		      (copy-sequence (cdr elem)) group)
+		      (car elem) (cdr elem) group)
 		     params-list))))
     params-list))
 
-(defun gnus-expand-group-parameters (parameters group)
+(defun gnus-expand-group-parameters (match parameters group)
   "Go through PARAMETERS and expand them according to the match data."
-  (dolist (elem parameters)
-    (when (stringp (cdr elem))
-      (setcdr elem (replace-match (cdr elem) nil nil group))))
-  parameters)
+  (let (new)
+    (dolist (elem parameters)
+      (if (and (stringp (cdr elem))
+	       (string-match "\\\\" (cdr elem)))
+	  (push (cons (car elem)
+		      (with-temp-buffer
+			(insert group)
+			(goto-char (point-min))
+			(while (re-search-forward match nil t)
+			  (replace-match (cdr elem)))
+			(buffer-string)))
+		new)
+	(push elem new)))
+    new))
 
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.

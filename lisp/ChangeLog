@@ -1,3 +1,10 @@
+2001-08-20 01:34:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-expand-group-parameters): Don't alter the variable
+	list. 
+
+	* gnus-sum.el (gnus-summary-move-article): Don't select article. 
+
 2001-08-20  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-msg.el (gnus-inews-do-gcc): If archive server can't be
