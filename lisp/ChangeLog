@@ -1,3 +1,11 @@
+2003-11-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-copy-or-move-routine): add respooling
+	support, not working well yet
+
+	* gnus.el (ham-process-destination): make 'respool option the
+	only one, so it can't be chosen together with other groups
+
 2003-11-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-track-extra): make it a set of

@@ -603,11 +603,16 @@ spamoracle database."
 	(backend-supports-deletions
 	 (gnus-check-backend-function
 	  'request-move-article gnus-newsgroup-name))
-	article mark todo deletep)
+	(respool-method (gnus-find-method-for-group gnus-newsgroup-name))
+	article mark todo deletep respool)
     (dolist (article articles)
       (when (spam-group-ham-mark-p gnus-newsgroup-name
 				   (gnus-summary-article-mark article))
 	(push article todo)))
+
+    (when (member 'respool groups)
+      (setq respool t)			; boolean for later
+      (setq groups '("fake"))) ; when respooling, groups are dynamic so fake it
 
     ;; now do the actual move
     (dolist (group groups)
@@ -617,12 +622,14 @@ spamoracle database."
 	    (gnus-summary-mark-article article gnus-unread-mark))
 	  (gnus-summary-set-process-mark article))
 
-	(if (or (not backend-supports-deletions)
-		(> (length groups) 1))
-	    (progn 
-	      (gnus-summary-copy-article nil group)
-	      (setq deletep t))
-	  (gnus-summary-move-article nil group))))
+	(if respool			   ; respooling is with a "fake" group
+	    (gnus-summary-respool-article nil respool-method)
+	  (if (or (not backend-supports-deletions) ; else, we are not respooling
+		  (> (length groups) 1))
+	      (progn			; if copying, copy and set deletep
+		(gnus-summary-copy-article nil group)
+		(setq deletep t))
+	    (gnus-summary-move-article nil group))))) ; else move articles
     
     ;; now delete the articles, unless a) copy is t, and there was a copy done
     ;;                                 b) a move was done to a single group
