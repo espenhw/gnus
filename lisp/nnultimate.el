@@ -185,8 +185,11 @@
 	      (setq date (substring (car datel) (match-end 0))
 		    datel nil))
 	    (pop datel))
-	  (when (string-match " *\\([-0-9]+ [0-9:]+\\)[\n ]+" date)
-	    (setq date (match-string 1 date)))
+	  (setq date (delete "" (split-string date "[- \n\t\r    ]")))
+	  (setq date (format "%s %s %s %s"
+			     (car (rassq (string-to-number (nth 1 date))
+					 parse-time-months))
+			     (nth 0 date) (nth 2 date) (nth 3 date)))
 	  (push
 	   (cons
 	    article
@@ -229,6 +232,7 @@
 (deffoo nnultimate-request-article (article &optional group server buffer)
   (nnultimate-possibly-change-server group server)
   (let ((contents (cdr (assq article nnultimate-articles))))
+    (setq contents (cdr (nth 2 (nth 1 (nth 2 (car contents))))))
     (when contents
       (save-excursion
 	(set-buffer (or buffer nntp-server-buffer))
