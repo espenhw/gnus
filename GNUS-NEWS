@@ -234,10 +234,14 @@ In the message buffer, C-c C-f C-i or C-u cycles through the valid values.
 
 ** Gnus supports Cancel Locks in News.
 
-This means a header "Cancel-Lock" is inserted in news posting. It is
-used to determine if you wrote a article or not (for
-cancelling/superseding).  The behaviour can be changed by customizing
-`message-insert-canlock'.
+This means a header "Cancel-Lock" is inserted in news posting.  It is
+used to determine if you wrote a article or not (for cancelling and
+superseding).  Gnus generates a random password string the first time
+you post a message, and saves it in your ~/.emacs using the Custom
+system.  While the variable is called `canlock-password', it is not
+security sensitive data.  Publishing your canlock string on the web
+will not allow anyone to be able to anything she could not already do.
+The behaviour can be changed by customizing `message-insert-canlock'.
 
 ** Gnus supports server-side mail filtering using Sieve.
 
