@@ -690,11 +690,12 @@ the actual number of articles toggled is returned."
 			     (format " *Gnus agent %s history*"
 				     (gnus-agent-method)))))
 	  gnus-agent-history-buffers)
+    (mm-disable-multibyte) ;; everything is binary
     (erase-buffer)
     (insert "\n")
     (let ((file (gnus-agent-lib-file "history")))
       (when (file-exists-p file)
-	(insert-file file))
+	(nnheader-insert-file-contents file))
       (set (make-local-variable 'gnus-agent-file-name) file))))
 
 (defun gnus-agent-save-history ()
