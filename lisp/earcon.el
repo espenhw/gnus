@@ -35,11 +35,6 @@
   "Turn ** sounds ** into noise."
   :group 'gnus-visual)
 
-(defcustom earcon-auto-play nil
-  "*When True, automatically play sounds as well as buttonize them."
-  :type 'boolean
-  :group 'earcon)
-
 (defcustom earcon-prefix "**"
   "*String denoting the start of an earcon."
   :type 'string

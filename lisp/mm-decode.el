@@ -279,6 +279,14 @@ Ready-made functions include
 `capitalize', `downcase', `upcase', and
 `upcase-initials'.")
 
+(defvar mm-path-name-rewrite-functions nil
+  "*List of functions used for rewriting path names of MIME parts.
+This is used when viewing parts externally , and is meant for
+transforming the path name so that non-compliant programs can
+find the file where it's saved.
+
+Each function takes a file name as input and returns a file name.")
+
 (defvar mm-file-name-replace-whitespace nil
   "String used for replacing whitespace characters; default is `\"_\"'.")
 
@@ -611,7 +619,8 @@ external if displayed external."
 		  (mm-handle-set-undisplayer handle mm)))))
 	;; The function is a string to be executed.
 	(mm-insert-part handle)
-	(let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
+	(let* ((dir (make-temp-name
+		     (expand-file-name "emm." mm-tmp-directory)))
 	       (filename (mail-content-type-get
 			  (mm-handle-disposition handle) 'filename))
 	       (mime-info (mailcap-mime-info
@@ -620,7 +629,7 @@ external if displayed external."
 			      (assoc "needsterminal" mime-info)))
 	       (copiousoutput (assoc "copiousoutput" mime-info))
 	       file buffer)
-	;; We create a private sub-directory where we store our files.
+	  ;; We create a private sub-directory where we store our files.
 	  (make-directory dir)
 	  (set-file-modes dir 448)
 	  (if filename
@@ -630,74 +639,76 @@ external if displayed external."
 	  (let ((coding-system-for-write mm-binary-coding-system))
 	    (write-region (point-min) (point-max) file nil 'nomesg))
 	  (message "Viewing with %s" method)
-	  (cond (needsterm
-		 (unwind-protect
-		     (if window-system
-			 (start-process "*display*" nil
-					mm-external-terminal-program
-					"-e" shell-file-name
-					shell-command-switch
-					(mm-mailcap-command
-					 method file (mm-handle-type handle)))
-		       (require 'term)
-		       (require 'gnus-win)
-		       (set-buffer
-			(setq buffer
-			      (make-term "display"
-					 shell-file-name
-					 nil
-					 shell-command-switch
-					 (mm-mailcap-command
-					  method file
-					  (mm-handle-type handle)))))
-		       (term-mode)
-		       (term-char-mode)
-		       (set-process-sentinel
-			(get-buffer-process buffer)
-			`(lambda (process state)
-			   (if (eq 'exit (process-status process))
-			       (gnus-configure-windows
-				',gnus-current-window-configuration))))
-		       (gnus-configure-windows 'display-term))
-		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
-		 (message "Displaying %s..." (format method file))
-		 'external)
-		(copiousoutput
-		 (with-current-buffer outbuf
-		   (forward-line 1)
-		   (mm-insert-inline
-		    handle
-		    (unwind-protect
-			(progn
-			  (call-process shell-file-name nil
-					(setq buffer
-					      (generate-new-buffer " *mm*"))
-					nil
-					shell-command-switch
-					(mm-mailcap-command
-					 method file (mm-handle-type handle)))
-			  (if (buffer-live-p buffer)
-			      (save-excursion
-				(set-buffer buffer)
-				(buffer-string))))
-		      (progn
-			(ignore-errors (delete-file file))
-			(ignore-errors (delete-directory
-					(file-name-directory file)))
-			(ignore-errors (kill-buffer buffer))))))
-		 'inline)
-		(t
-		 (unwind-protect
-		     (start-process "*display*"
-				    (setq buffer
-					  (generate-new-buffer " *mm*"))
+	  (cond
+	   (needsterm
+	    (unwind-protect
+		(if window-system
+		    (start-process "*display*" nil
+				   mm-external-terminal-program
+				   "-e" shell-file-name
+				   shell-command-switch
+				   (mm-mailcap-command
+				    method file (mm-handle-type handle)))
+		  (require 'term)
+		  (require 'gnus-win)
+		  (set-buffer
+		   (setq buffer
+			 (make-term "display"
 				    shell-file-name
+				    nil
 				    shell-command-switch
 				    (mm-mailcap-command
-				     method file (mm-handle-type handle)))
-		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
-		 (message "Displaying %s..." (format method file))
-		 'external)))))))
+				     method file
+				     (mm-handle-type handle)))))
+		  (term-mode)
+		  (term-char-mode)
+		  (set-process-sentinel
+		   (get-buffer-process buffer)
+		   `(lambda (process state)
+		      (if (eq 'exit (process-status process))
+			  (gnus-configure-windows
+			   ',gnus-current-window-configuration))))
+		  (gnus-configure-windows 'display-term))
+	      (mm-handle-set-external-undisplayer handle (cons file buffer)))
+	    (message "Displaying %s..." (format method file))
+	    'external)
+	   (copiousoutput
+	    (with-current-buffer outbuf
+	      (forward-line 1)
+	      (mm-insert-inline
+	       handle
+	       (unwind-protect
+		   (progn
+		     (call-process shell-file-name nil
+				   (setq buffer
+					 (generate-new-buffer " *mm*"))
+				   nil
+				   shell-command-switch
+				   (mm-mailcap-command
+				    method file (mm-handle-type handle)))
+		     (if (buffer-live-p buffer)
+			 (save-excursion
+			   (set-buffer buffer)
+			   (buffer-string))))
+		 (progn
+		   (ignore-errors (delete-file file))
+		   (ignore-errors (delete-directory
+				   (file-name-directory file)))
+		   (ignore-errors (kill-buffer buffer))))))
+	    'inline)
+	   (t
+	    (unwind-protect
+		(start-process "*display*"
+			       (setq buffer
+				     (generate-new-buffer " *mm*"))
+			       shell-file-name
+			       shell-command-switch
+			       (mm-mailcap-command
+				method file (mm-handle-type handle)))
+	      (mm-handle-set-external-undisplayer
+	       handle (cons file buffer)))
+	    (message "Displaying %s..." (format method file))
+	    'external)))))))
 
 (defun mm-mailcap-command (method file type-list)
   (let ((ctl (cdr type-list))
@@ -714,16 +725,18 @@ external if displayed external."
 	(push "%" out))
        ((string= total "%s")
 	(setq uses-stdin nil)
-	(push (mm-quote-arg file) out))
+	(push (mm-quote-arg
+	       (gnus-map-function mm-path-name-rewrite-functions file)) out))
        ((string= total "%t")
 	(push (mm-quote-arg (car type-list)) out))
        (t
 	(push (mm-quote-arg (or (cdr (assq (intern sub) ctl)) "")) out))))
     (push (substring method beg (length method)) out)
-    (if uses-stdin
-	(progn
-	  (push "<" out)
-	  (push (mm-quote-arg file) out)))
+    (when uses-stdin
+      (push "<" out)
+      (push (mm-quote-arg
+	     (gnus-map-function mm-path-name-rewrite-functions file))
+	    out))
     (mapconcat 'identity (nreverse out) "")))
 
 (defun mm-remove-parts (handles)

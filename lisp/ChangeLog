@@ -1,4 +1,27 @@
+2001-08-19  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
+
+	* earcon.el (earcon-auto-play): Remove unused option.
+
 2001-08-19 16:14:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-score-headers): Move the "Scoring..."
+	message down in levels, since it happens very fast.
+
+	* smiley-ems.el (smiley-update-cache): Respect the symbol version
+	of smiley-regexp-alist.
+
+	* mm-view.el (mm-inline-text): Ignore vcard errors.
+
+	* gnus-art.el (gnus-ignored-headers): Added more junk headers. 
+
+	* gnus-score.el (gnus-all-score-files): Use append instead of
+	nconc. 
+
+	* gnus.el (gnus-splash-face): Doc fix.
+
+	* mm-decode.el (mm-mailcap-command): Use
+	mm-path-name-rewrite-functions. 
+	(mm-path-name-rewrite-functions): New variable.
 
 	* gnus-spec.el (gnus-parse-complex-format): React to ?=.
 	(gnus-complex-form-to-spec): Insert tab.

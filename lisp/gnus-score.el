@@ -1433,7 +1433,7 @@ EXTRA is the possible non-standard header."
 	       (headers gnus-newsgroup-headers)
 	       (current-score-file gnus-current-score-file)
 	       entry header new)
-	  (gnus-message 5 "Scoring...")
+	  (gnus-message 7 "Scoring...")
 	  ;; Create articles, an alist of the form `(HEADER . SCORE)'.
 	  (while (setq header (pop headers))
 	    ;; WARNING: The assq makes the function O(N*S) while it could
@@ -1494,7 +1494,7 @@ EXTRA is the possible non-standard header."
 		  (gnus-score-advanced (car score) trace))
 		(pop score))))
 
-	  (gnus-message 5 "Scoring...done"))))))
+	  (gnus-message 7 "Scoring...done"))))))
 
 (defun gnus-score-lower-thread (thread score-adjust)
   "Lower the score on THREAD with SCORE-ADJUST.
@@ -2744,8 +2744,8 @@ The list is determined from the variable gnus-score-file-alist."
       (while funcs
 	(when (gnus-functionp (car funcs))
 	  (setq score-files
-		(nconc score-files
-		       (nreverse (funcall (car funcs) group)))))
+		(append score-files
+			(nreverse (funcall (car funcs) group)))))
 	(setq funcs (cdr funcs)))
       (when gnus-score-use-all-scores
 	;; Add any home score files.

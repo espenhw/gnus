@@ -753,7 +753,7 @@ be set in `.emacs' instead."
      (:foreground "Brown"))
     (t
      ()))
-  "Face of the splash screen.")
+  "Face for the splash screen.")
 
 (defun gnus-splash ()
   (save-excursion

@@ -70,7 +70,9 @@ rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 (defvar smiley-cached-regexp-alist nil)
 
 (defun smiley-update-cache ()
-  (dolist (elt smiley-regexp-alist)
+  (dolist (elt (if (symbolp smiley-regexp-alist)
+		   (symbol-value smiley-regexp-alist)
+		 smiley-regexp-alist))
     (let* ((data-directory smiley-data-directory)
 	   (image (find-image (list (list :type 'pbm
 					  :file (nth 2 elt)
