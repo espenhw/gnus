@@ -1,3 +1,13 @@
+2000-09-16 15:57:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* smiley.el (smiley-buffer-ems, smiley-create-glyph-ems,
+	smiley-toggle-extent-ems, smiley-toggle-extents-ems,
+	smiley-toggle-buffer-ems): New functions for Emacs 21. Toggle
+	functions are not implemented yet.
+	
+	* dgnushack.el (dgnushack-compile): Remove smiley.el and 
+	x-overlay.el from the FSF Emacs black list.
+
 2000-09-15 21:10:20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-inlined-types): Add application/emacs-lisp.
