@@ -1,3 +1,7 @@
+2001-06-21 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-goto-body): Return nil if not found. (revert!)
+
 2001-06-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Fremlin <chief@bandits.org>
 
