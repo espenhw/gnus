@@ -1,6 +1,20 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* gnus-topic-kill-region
+  From Colin Marquardt <colin.marquardt@usa.alcatel.com>
+  
+  I noticed that when re-arranging topics, C-k yanks a topic just fine
+  (runs gnus-topic-kill-group).
+
+  However, my habit is to do marking and the yanking the region, so I
+  would run C-w on the marked topic. But C-w runs
+  gnus-group-kill-region and doesn't yank the topic (for groups it
+  works fine).
+
+  So could we have a gnus-topic-kill-region, or a
+  gnus-group-kill-region which handles topics as well?
+
 * Speed up sorting in summary buffer if there is a limit.
   
   Suggested by Daniel Ortmann <ortmann@isl.net>.
