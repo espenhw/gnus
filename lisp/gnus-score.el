@@ -1831,6 +1831,11 @@ score in `gnus-newsgroup-scored' by SCORE."
 		;; Found a match, update scores.
 		(while (setq art (pop arts))
 		  (setcdr art (+ score (cdr art)))
+		  (when trace
+		    (push (cons
+			   (car-safe (rassq alist gnus-score-cache))
+			   kill)
+			  gnus-score-trace))
 		  (when (setq new (gnus-score-add-followups
 				   (car art) score all-scores thread))
 		    (push new news)))))

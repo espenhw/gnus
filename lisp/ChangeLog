@@ -1,5 +1,7 @@
 2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-score.el (gnus-score-followup): Allow tracing.
+
 	* gnus-art.el (gnus-treat-display-face): New variable.
 	(article-display-face): New command.
 
