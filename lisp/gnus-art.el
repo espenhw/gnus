@@ -30,6 +30,7 @@
 (require 'article)
 (require 'gnus-spec)
 (require 'gnus-int)
+(require 'browse-url)
 
 (defvar gnus-article-save-directory gnus-directory
   "*Name of the directory articles will be saved in (default \"~/News\").")

@@ -1,0 +1,355 @@
+\input texinfo.tex
+
+@c %**start of header
+@setfilename custom.info
+@settitle The Customization Library
+@iftex
+@afourpaper
+@headings double
+@end iftex
+@c %**end of header
+
+@node Top, Introduction, (dir), (dir)
+@comment  node-name,  next,  previous,  up
+@top The Customization Library
+
+Version: 0.9
+
+@menu
+* Introduction::                
+* User Commands::               
+* The Customization Buffer::    
+* Declaring Groups::            
+* Declaring Variables::         
+* Declaring Faces::             
+* The Init File::               
+* Wishlist::                    
+@end menu
+
+@node   Introduction, User Commands, Top, Top
+@comment  node-name,  next,  previous,  up
+@section Introduction
+
+This library allows customization of @dfn{user options}.  Currently two
+types of user options are supported, namely @dfn{variables} and
+@dfn{faces}.  Each user option can have four different values
+simultaneously:
+@table @dfn
+@item factory setting
+The value specified by the programmer.
+@item default value
+The value specified by the user as the default for this variable.  This
+overwrites the factory setting when starting a new emacs.
+@item current value
+The value used by Emacs.  This will not be remembered next time you
+run Emacs.
+@item widget value
+The value entered by the user in a customization buffer, but not yet
+applied.
+@end table
+
+Variables also have a @dfn{type}, which specifies what kind of values
+the variable can hold, and how the value is presented in a customization
+buffer.  By default a variable can hold any valid expression, but the
+programmer can specify a more limited type when declaring the variable.
+
+The user options are organized in a number of @dfn{groups}.  Each group
+can contain a number user options, as well as other groups.  The groups
+allows the user to concentrate on a specific part of emacs.
+
+@node  User Commands, The Customization Buffer, Introduction, Top
+@comment  node-name,  next,  previous,  up
+@section User Commands
+
+The following commands will create a customization buffer:
+
+@table @code
+@item customize
+Create a customization buffer containing a specific group, by default
+the @code{emacs} group.
+
+@item customize-variable
+Create a customization buffer containing a single variable.  
+
+@item customize-face
+Create a customization buffer contaning a single face.
+
+@item customize-apropos
+Create a customization buffer containing all variables, faces, and
+groups that match a user specified regular expression.
+@end table
+
+@node  The Customization Buffer, Declaring Groups, User Commands, Top
+@comment  node-name,  next,  previous,  up
+@section The Customization Buffer.
+
+Here should be a description of how to use a customization buffer. 
+For now, try to press @kbd{C-h m} in the buffer, or read @ref{User
+Interface,,widget,The Widget Library}. 
+
+The interface will change, as it currently stinks.  Here is some hints
+about how to use it though:
+
+@itemize @bullet
+@item
+Groups and user option start on a new line, and look like this
+@t{@b{name}:}.  If you move point above to the @t{@b{name}} and press
+@kbd{@key{RET}}, or move the mouse pointer above it and press
+@kbd{mouse-2}, you will be presented with a menu.  I call this the
+@dfn{tag menu} below. 
+
+@item
+For groups and faces, you need to activate @samp{Toggle Hide} from the
+tag menu to be able to see the content.
+
+@item
+After editing a variable or face, you must activate @samp{Apply} for the
+setting to take effect, and @samp{Set Default} for marking the widget
+value as the new default value.
+
+@item
+After setting new default values with @samp{Set Default}, you must
+activate the @samp{Save} button in the bottom of the screen to save the
+new defaults.  Otherwise the new defaults will be silently forgotten.
+
+@item
+Pushing @samp{Save} is a no-op unless you have activated @samp{Set Default}
+for some user option.
+
+@item
+The @code{face} widget never attempts to display the current value of a
+face.  Instead it allows you to specify how the face should be
+initialized.  This is done with a list of @dfn{display} and
+@dfn{attributes} pairs, where the first display that matches a frame
+specify the attributes to use for that frame.
+
+A display can either match all frames, or only frames with a given
+@dfn{type}, @dfn{class}, and @dfn{background}.  The checkbox before each
+of these display parameters determine whether the parameter will be
+checked.  If the checkbox before @samp{Type} is unchecked, the display
+will match all types of frames.  If it is checked, it will match the
+type of frames specified on the rest of the line.
+
+The attributes are specified next.  Each attribute line begins with a
+checkbox, if that checkbox is unchecked the face will not affect that
+particular attribute on the screen, otherwise the face will force the
+the text to have the value for attribute specified after the attrbute
+name.  This means that an attribute like @samp{bold} in effect have
+three states: If the first checkmark is unchecked, the face will not
+affect the boldness of the text.  If the first checkmark is checked, but
+the second is unchecked, the text will be forced to be unbold.  If both
+checkmarks are checked, the text will be forced to be bold.
+
+Think about this, and mail me a suggestion for how to make the face
+widget more intuitive. 
+@end itemize
+
+@node  Declaring Groups, Declaring Variables, The Customization Buffer, Top
+@comment  node-name,  next,  previous,  up
+@section Declaring Groups
+
+Use @code{defgroup} to declare new customization groups. 
+
+@defun defgroup symbol members [keyword value]... doc
+Declare @var{symbol} as a customization group containing @var{members}. 
+@var{symbol} does not need to be quoted.
+
+@var{members} should be an alist of the form ((@var{name}
+@var{widget})...) where @var{name} is a symbol and @var{widget} is a
+widget for editing that symbol.  Useful widgets are
+@code{custom-variable} for editing variables, @code{custom-face} for
+editing faces, and @code{custom-group} for editing groups.@refill
+
+@var{doc} is the group documentation.
+
+The following @var{keyword}'s are defined:
+
+@table @code
+@item :group
+@var{value} should be a customization group. 
+Add @var{symbol} to that group. 
+@end table
+@end defun
+
+Internally, custom uses the symbol property @code{custom-group} to keep
+track of the group members, and @code{group-documentation} for the
+documentation string. 
+
+@node  Declaring Variables, Declaring Faces, Declaring Groups, Top
+@comment  node-name,  next,  previous,  up
+@section Declaring Variables
+
+Use @code{defcustom} to declare user editable variables.
+
+@defun defcustom symbol [keyword value]... doc
+Declare @var{symbol} as a customizable variable that defaults to @var{value}.
+Neither @var{symbol} nor @var{value} needs to be quoted.
+If @var{symbol} is not already bound, initialize it to @var{value}.
+
+@var{doc} is the variable documentation.
+
+The following @var{keyword}'s are defined:
+
+@table @code
+@item :type	
+@var{value} should be a sexp widget.
+@item :group
+@var{value} should be a customization group. 
+Add @var{symbol} to that group. 
+@end table
+
+@xref{Sexp Types,,widget,The Widget Library}, for information about
+widgets to use together with the @code{:type} keyword.
+@end defun
+
+Internally, custom uses the symbol property @code{custom-type} to keep
+track of the variables type, @code{factory-value} for the program
+specified default value, @code{default-value} for a user specified
+default value, and @code{variable-documentation} for the documentation
+string.
+
+
+@node  Declaring Faces, The Init File, Declaring Variables, Top
+@comment  node-name,  next,  previous,  up
+@section Declaring Faces
+
+Faces are declared with @code{defface}.
+
+@defun defface FACE SPEC [KEYWORD VALUE]... DOC
+
+Declare @var{face} as a customizable face that defaults to @var{spec}.
+@var{face} does not need to be quoted.
+
+If @var{face} has been set with `custom-set-face', set the face attributes
+as specified by that function, otherwise set the face attributes
+according to @var{spec}.
+
+@var{doc} is the face documentation.
+
+The following @var{keyword}'s are defined:
+
+@table @code
+@item :group
+@var{value} should be a customization group. 
+Add @var{symbol} to that group. 
+@end table
+
+@var{spec} should be an alist of the form @samp{((@var{display} @var{atts})...)}.
+
+@var{atts} is a list of face attributes and their values.  The possible
+attributes are defined in the variable `custom-face-attributes'.
+Alternatively, @var{atts} can be a face in which case the attributes of
+that face is used.
+
+The @var{atts} of the first entry in @var{spec} where the @var{display}
+matches the frame should take effect in that frame.  @var{display} can
+either be the symbol `t', which will match all frames, or an alist of
+the form @samp{((@var{req} @var{item}...)...)}@refill
+
+For the @var{display} to match a FRAME, the @var{req} property of the
+frame must match one of the @var{item}.  The following @var{req} are
+defined:@refill
+
+@table @code
+@item type
+(the value of (window-system))@br
+Should be one of @code{x} or @code{tty}.
+
+@item class
+(the frame's color support)@br
+Should be one of @code{color}, @code{grayscale}, or @code{mono}.
+
+@item background
+(what color is used for the background text)@br
+Should be one of @code{light} or @code{dark}.
+@end table
+  
+Internally, custom uses the symbol property @code{factory-face} for the
+program specified default face properties, @code{default-face} for a
+user specified default properties, and @code{face-documentation} for the
+documentation string.@refill
+
+@end defun
+
+@node  The Init File, Wishlist, Declaring Faces, Top
+@comment  node-name,  next,  previous,  up
+@section The Init File
+
+When you save the customizations, call to @code{custom-set-variables},
+@code{custom-set-faces} are inserted into the file specified by
+@code{custom-file}.  By default @code{custom-file} is your @file{.emacs}
+file.  The two functions will initialize variables and faces as you have
+specified. 
+
+@node  Wishlist,  , The Init File, Top
+@comment  node-name,  next,  previous,  up
+@section Wishlist
+
+@itemize @bullet
+@item
+The names of the menu items for the @code{custom-variable},
+@code{custom-face}, and @code{custom-group} tags should be rethought.
+Some of the actions may be better placed as buttons in the buffer.
+
+@item
+The menu items above should be grayed out when the information is
+missing.  I.e. if a variable doesn't have a factory setting, the user
+should not be allowed to select the @samp{Factory} menu item.
+
+@item 
+We need @strong{much} better support for keyboard operations in the
+customize buffer.
+
+@item
+There should be buttons that will apply, set, reset, etc. all the relevant
+widgets in a customize buffer.
+
+@item
+There should be a menu in the customize buffer.
+
+@item
+The group widget should allow you to apply, set, reset, etc. all the
+relevant members of the group.
+
+@item
+There should be a function to create a customize menu from a group.
+
+@item
+There should be a `Help | Customize' entry in the menu bar with a user
+specified number of levels of submenus.  
+
+@item
+It would be nice if one could set simple variables directly from the
+menu. 
+
+@item
+Support real specifiers under XEmacs.
+
+@item
+@code{customize-apropos} should only match user options that has either
+been declared with this library, or variables whose documentation start
+with @samp{*}.  With an prefix argument, also match all variables that
+has a documentation string.
+
+@item
+If there is only one line of documentation, the @samp{Documentation}
+tag-menu items should go from `first line only' to `none' without going
+over `full'.  I.e. it should have two states instead of three.
+
+@item
+@code{custom-face} should display the @code{face-documentation}
+property.
+
+@item
+@code{custom-face}, @code{custom-variable}, and @code{custom-group}
+should be derived from a common @code{custom} widget.
+
+@item
+Integrate with @file{w3} so you can customization buffers with much
+better formatting.  I'm thinking about adding a <custom>name</custom>
+tag. 
+
+@end itemize
+
+@contents
+@bye

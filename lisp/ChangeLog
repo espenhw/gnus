@@ -1,3 +1,11 @@
+Tue Sep 17 03:15:26 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* custom.el: 0.9 included.
+
+	* gnus-art.el (browse-url): Required.
+
+	* gnus.el: Red Gnus v0.36 is released.
+
 Tue Sep 17 02:37:26 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-edit.el: Removed.
