@@ -40,6 +40,9 @@
 (autoload 'binhex-decode-region-external "binhex")
 (autoload 'binhex-decode-region-internal "binhex")
 
+(autoload 'yenc-decode-region "yenc")
+(autoload 'yenc-extract-filename "yenc")
+
 (defcustom mm-uu-decode-function 'uudecode-decode-region
   "*Function to uudecode.
 Internal function is done in Lisp by default, therefore decoding may
@@ -60,6 +63,8 @@ decoder, such as hexbin."
 		 (function-item :tag "Internal" binhex-decode-region-internal)
 		 (function-item :tag "External" binhex-decode-region-external))
   :group 'gnus-article-mime)
+
+(defvar mm-uu-yenc-decode-function 'yenc-decode-region)
 
 (defvar mm-uu-pgp-beginning-signature
      "^-----BEGIN PGP SIGNATURE-----")
@@ -90,6 +95,11 @@ This can be either \"inline\" or \"attachment\".")
      mm-uu-binhex-extract
      nil
      mm-uu-binhex-filename)
+    (yenc
+     "^=ybegin.*size=[0-9]+.*name=.*$"
+     "^=yend.*size=[0-9]+"
+     mm-uu-yenc-extract
+     mm-uu-yenc-filename)
     (shar
      "^#! */bin/sh"
      "^exit 0$"
@@ -205,6 +215,12 @@ Return that buffer."
 	(ignore-errors
 	  (binhex-decode-region start-point end-point t))))
 
+(defun mm-uu-yenc-filename ()
+  (goto-char start-point)
+  (setq file-name
+	(ignore-errors
+	  (yenc-extract-filename))))
+
 (defun mm-uu-forward-test ()
   (save-excursion
     (goto-char start-point)
@@ -261,6 +277,19 @@ Return that buffer."
 		  (if (and file-name (not (equal file-name "")))
 		      (list mm-dissect-disposition
 			    (cons 'filename file-name)))))
+
+(defun mm-uu-yenc-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  (list (or (and file-name
+				 (string-match "\\.[^\\.]+$" file-name)
+				 (mailcap-extension-to-mime
+				  (match-string 0 file-name)))
+			    "application/octet-stream"))
+		  'x-yenc nil
+		  (if (and file-name (not (equal file-name "")))
+		      (list mm-dissect-disposition
+			    (cons 'filename file-name)))))
+
 
 (defun mm-uu-shar-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)

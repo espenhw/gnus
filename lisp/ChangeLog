@@ -1,3 +1,14 @@
+2002-08-07  Jesper harder  <harder@ifa.au.dk>
+
+	* yenc.el: New file.
+
+	* mm-uu.el (mm-uu-yenc-decode-function): New variable.
+	(mm-uu-type-alist): Add yenc.
+	(mm-uu-yenc-filename): New function.
+	(mm-uu-yenc-extract): New function.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Add yenc.
+
 2002-08-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (merge): Don't use coerce.
