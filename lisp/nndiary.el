@@ -759,7 +759,7 @@ all.  This may very well take some time.")
   (when (nndiary-schedule)
     (let (result)
       (when nnmail-cache-accepted-message-ids
-	(nnmail-cache-insert (nnmail-fetch-field "message-id")))
+	(nnmail-cache-insert (nnmail-fetch-field "message-id") group))
       (if (stringp group)
 	  (and
 	   (nnmail-activate 'nndiary)

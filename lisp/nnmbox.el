@@ -332,7 +332,7 @@
        (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
        (when nnmail-cache-accepted-message-ids
-	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+	 (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
        (setq result (if (stringp group)
 			(list (cons group (nnmbox-active-number group)))
 		      (nnmail-article-group 'nnmbox-active-number)))

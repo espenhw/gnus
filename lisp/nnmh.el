@@ -316,7 +316,7 @@ as unread by Gnus.")
   (nnmh-possibly-change-directory group server)
   (nnmail-check-syntax)
   (when nnmail-cache-accepted-message-ids
-    (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+    (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
   (nnheader-init-server-buffer)
   (prog1
       (if (stringp group)

@@ -782,8 +782,8 @@ If SOURCE is a directory spec, try to return the group name component."
 	 start
 	 (if (search-forward "\n\n" nil t)
 	     (1- (point))
-	 ;; This will never happen, but just to be on the safe side --
-      ;; if there is no head-body delimiter, we search a bit manually.
+	   ;; This will never happen, but just to be on the safe side --
+	   ;; if there is no head-body delimiter, we search a bit manually.
 	   (while (and (looking-at "From \\|[^ \t]+:")
 		       (not (eobp)))
 	     (forward-line 1))
@@ -815,12 +815,12 @@ If SOURCE is a directory spec, try to return the group name component."
 	(goto-char (point-max))
 	(widen)
 	(setq head-end (point))
-   ;; We try the Content-Length value.  The idea: skip over the header
-   ;; separator, then check what happens content-length bytes into the
-    ;; message body.  This should be either the end ot the buffer, the
-       ;; message separator or a blank line followed by the separator.
-      ;; The blank line should probably be deleted.  If neither of the
-       ;; three is met, the content-length header is probably invalid.
+	;; We try the Content-Length value.  The idea: skip over the header
+	;; separator, then check what happens content-length bytes into the
+	;; message body.  This should be either the end ot the buffer, the
+	;; message separator or a blank line followed by the separator.
+	;; The blank line should probably be deleted.  If neither of the
+	;; three is met, the content-length header is probably invalid.
 	(when content-length
 	  (forward-line 1)
 	  (setq skip (+ (point) content-length))
@@ -1456,37 +1456,23 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defvar group)
 (defvar group-art-list)
 (defvar group-art)
-(defun nnmail-cache-insert (id &optional grp)
+(defun nnmail-cache-insert (id grp)
   (when nnmail-treat-duplicates
     ;; Store some information about the group this message is written
-    ;; to.  This function might have been called from various places.
-    ;; Sometimes, a function up in the calling sequence has an
-    ;; argument GROUP which is bound to a string, the group name.  At
-    ;; other times, there is a function up in the calling sequence
-    ;; which has an argument GROUP-ART which is a list of pairs, and
-    ;; the car of a pair is a group name.  Should we check that the
-    ;; length of the list is equal to 1? -- kai
-    (let ((g nil))
-      (cond (grp
-	     (setq g grp))
-	    ((and (boundp 'group-art) group-art (listp group-art))
-	     (setq g (caar group-art)))
-	    ((and (boundp 'group) group)
-	     (setq g group))
-	    ((and (boundp 'group-art-list) group-art-list
-		  (listp group-art-list))
-	     (setq g (caar group-art-list)))
-	    (t (setq g "")))
-      (unless (gnus-buffer-live-p nnmail-cache-buffer)
-	(nnmail-cache-open))
-      (save-excursion
-	(set-buffer nnmail-cache-buffer)
-	(goto-char (point-max))
-	(if (and g (not (string= "" g))
-		 (gnus-methods-equal-p gnus-command-method
-				       (nnmail-cache-primary-mail-backend)))
-	    (insert id "\t" g "\n")
-	  (insert id "\n"))))))
+    ;; to.  This is passed in as the grp argument -- all locations this
+    ;; has been called from have been checked and the group is available.
+    ;; The only ambiguous case is nnmail-check-duplication which will only
+    ;; pass the first (of possibly >1) group which matches. -Josh
+    (unless (gnus-buffer-live-p nnmail-cache-buffer)
+      (nnmail-cache-open))
+    (save-excursion
+      (set-buffer nnmail-cache-buffer)
+      (goto-char (point-max))
+      (if (and grp (not (string= "" grp))
+	       (gnus-methods-equal-p gnus-command-method
+				     (nnmail-cache-primary-mail-backend)))
+	  (insert id "\t" grp "\n")
+	(insert id "\n")))))
 
 (defun nnmail-cache-primary-mail-backend ()
   (let ((be-list (cons gnus-select-method gnus-secondary-select-methods))
@@ -1588,7 +1574,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
      ((not duplication)
       (funcall func (setq group-art
 			  (nreverse (nnmail-article-group artnum-func))))
-      (nnmail-cache-insert message-id))
+      (nnmail-cache-insert message-id (caar group-art)))
      ((eq action 'delete)
       (setq group-art nil))
      ((eq action 'warn)

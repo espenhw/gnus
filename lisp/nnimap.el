@@ -1381,7 +1381,8 @@ function is generally only called when Gnus is shutting down."
 		    (while (search-forward "\n" nil t)
 		      (replace-match "\r\n"))
 		    (when nnmail-cache-accepted-message-ids
-		      (nnmail-cache-insert (nnmail-fetch-field "message-id"))))
+		      (nnmail-cache-insert (nnmail-fetch-field "message-id")
+					   group)))
 		  (when (and last nnmail-cache-accepted-message-ids)
 		    (nnmail-cache-close))
 		  ;; this 'or' is for Cyrus server bug

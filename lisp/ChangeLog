@@ -1,3 +1,17 @@
+2002-05-15  Josh Huber  <huber@alum.wpi.edu>
+
+	* nnbabyl.el (nnbabyl-request-accept-article): Pass group to
+	nnmail-cache-insert.
+	* nndiary.el (nndiary-request-accept-article): Ditto.
+	* nnfolder.el (nnfolder-request-accept-article): Ditto.
+	* nnimap.el (nnimap-request-accept-article): Ditto.
+	* nnmail.el (nnmail-process-unix-mail-format): Ditto.
+	* nnmail.el (nnmail-check-duplication): Ditto. (from gnus-art)
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+	* nnmail.el (nnmail-cache-insert): Change group to required,
+	removed code which tried to figure out the group.
+
 2002-05-13  Josh Huber  <huber@alum.wpi.edu>
 
 	* mml.el (mml-generate-mime-1): Fix mml generation for signed only
