@@ -1,3 +1,8 @@
+2003-04-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Summary Buffer Lines): Add
+	gnus-sum-thread-tree-false-root.
+
 2003-04-15  Michael Shields  <shields@msrl.com>
 
 	* gnus.texi (Group Parameters, Hiding Headers): Document that

@@ -4515,7 +4515,12 @@ glyphs.
 @item gnus-sum-thread-tree-root
 @vindex gnus-sum-thread-tree-root
 Used for the root of a thread.  If @code{nil}, use subject
-instead. The default is @samp{> }.
+instead.  The default is @samp{> }.
+
+@item gnus-sum-thread-tree-false-root
+@vindex gnus-sum-thread-tree-false-root
+Used for the false root of a thread (@pxref{Loose Threads}).  If
+@code{nil}, use subject instead.  The default is @samp{> }.
 
 @item gnus-sum-thread-tree-single-indent
 @vindex gnus-sum-thread-tree-single-indent
