@@ -1,3 +1,9 @@
+2003-01-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-regex-headers, spam-list-of-checks) 
+	(spam-regex-headers-spam, spam-regex-headers-ham): added spam/ham
+	checks of incoming mail based on simple header regexp matching
+
 2003-01-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-sum.el (gnus-spam-mark): set to `$'

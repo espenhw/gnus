@@ -105,6 +105,12 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-regex-headers nil
+  "Whether a header regular expression match should be used by spam-split.
+Also see the variable `spam-spam-regex-headers' and `spam-ham-regex-headers'."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-bogofilter-headers nil
   "Whether bogofilter headers should be used by spam-split.
 Enable this if you pre-process messages with Bogofilter BEFORE Gnus sees them."
@@ -175,6 +181,16 @@ Such articles will be transmitted to `bogofilter -s' on group exit."
 (defcustom spam-face 'gnus-splash-face
   "Face for spam-marked articles"
   :type 'face
+  :group 'spam)
+
+(defcustom spam-regex-headers-spam '("^X-Spam-Flag: YES")
+  "Regular expression for positive header spam matches"
+  :type '(repeat (regexp :tag "Regular expression to match spam header"))
+  :group 'spam)
+
+(defcustom spam-regex-headers-ham '("^X-Spam-Flag: NO")
+  "Regular expression for positive header ham matches"
+  :type '(repeat (regexp :tag "Regular expression to match ham header"))
   :group 'spam)
 
 (defgroup spam-ifile nil
@@ -464,6 +480,7 @@ your main source of newsgroup names."
 
 (defvar spam-list-of-checks
   '((spam-use-blacklist  		. 	spam-check-blacklist)
+    (spam-use-regex-headers  		. 	spam-check-regex-headers)
     (spam-use-whitelist  		. 	spam-check-whitelist)
     (spam-use-BBDB	 		. 	spam-check-BBDB)
     (spam-use-ifile	 		. 	spam-check-ifile)
@@ -503,6 +520,26 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (if (eq decision t)
 	nil
       decision)))
+
+;;;; Regex headers
+
+(defun spam-check-regex-headers ()
+  (let (ret found)
+    (dolist (h-regex spam-regex-headers-ham)
+      (unless found
+	(goto-char (point-min))
+	(when (re-search-forward h-regex nil t)
+	  (message "Ham regex header search positive.")
+	  (setq found t))))
+    (dolist (s-regex spam-regex-headers-spam)
+      (unless found
+	(goto-char (point-min))
+	(when (re-search-forward s-regex nil t)
+	  (message "Spam regex header search positive." (match-string 1))
+	  (setq found t)
+	  (setq ret spam-split-group))))
+    ret))
+
 
 ;;;; Blackholes.
 
