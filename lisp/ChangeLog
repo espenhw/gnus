@@ -1,5 +1,10 @@
 2001-10-09  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* message.el (message-send-news): Oops, missed case with no
+	"Followup-To" header...
+
+2001-10-09  Per Abrahamsen  <abraham@dina.kvl.dk>
+
 	* message.el (message-send-news): Allow
 	`gnus-group-name-charset-group-alist' to affect encoding of the
 	"Newsgroups" and "Followup-To" headers.

@@ -2720,7 +2720,7 @@ to find out how to use this."
 	 (group-field-charset
 	  (gnus-group-name-charset method newsgroups-field))
 	 (followup-field-charset 
-	  (gnus-group-name-charset method followup-field))
+	  (gnus-group-name-charset method (or followup-field "")))
 	 (rfc2047-header-encoding-alist
 	  (append (when group-field-charset
 		    (list (cons "Newsgroups" group-field-charset)))
