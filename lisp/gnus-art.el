@@ -706,7 +706,8 @@ To see e.g. security buttons you could set this to
 This variable is used by `gnus-article-treat-body-boundary' which can
 be controled by `gnus-treat-body-boundary'."
   :group 'gnus-article-various
-  :type 'string)
+  :type '(choice (item :tag "None" :value nil)
+		 string))
 
 (defcustom gnus-article-mime-part-function nil
   "Function called with a MIME handle as the argument.
@@ -1707,17 +1708,18 @@ unfolded."
 (defun gnus-article-treat-body-boundary ()
   "Place a boundary line at the end of the headers."
   (interactive)
-  (gnus-with-article-headers
-    (goto-char (point-max))
-    (let ((start (point)))
-      (insert "X-Boundary: ")
-      (gnus-add-text-properties start (point) '(invisible t intangible t))
-      (insert (let (str)
-		(while (and gnus-body-boundary-delimiter
-			    (>= (1- (window-width)) (length str)))
-		  (setq str (concat str gnus-body-boundary-delimiter)))
-		(substring str 0 (1- (window-width))))
-	      "\n"))))
+  (when (and gnus-body-boundary-delimiter 
+	     (> (length gnus-body-boundary-delimiter) 0))
+    (gnus-with-article-headers
+      (goto-char (point-max))
+      (let ((start (point)))
+	(insert "X-Boundary: ")
+	(gnus-add-text-properties start (point) '(invisible t intangible t))
+	(insert (let (str)
+		  (while (>= (1- (window-width)) (length str))
+		    (setq str (concat str gnus-body-boundary-delimiter)))
+		  (substring str 0 (1- (window-width))))
+		"\n")))))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."

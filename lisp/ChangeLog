@@ -1,3 +1,8 @@
+2002-01-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-article-treat-body-boundary): Handle nil.
+	(gnus-body-boundary-delimiter): Fix type.
+
 2002-01-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-treat-buttonize, gnus-treat-buttonize-head) 
