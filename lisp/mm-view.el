@@ -185,7 +185,9 @@
 	  (setq handles gnus-article-mime-handles))
 	(when handles
 	  (setq gnus-article-mime-handles
-		(append gnus-article-mime-handles handles)))
+		(nconc gnus-article-mime-handles 
+		       (if (listp (car handles)) 
+			   handles (list handles)))))
 	(mm-handle-set-undisplayer
 	 handle
 	 `(lambda ()

@@ -1,3 +1,7 @@
+1999-10-13 12:52:18  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-message): Fix leaving group bug.
+
 1999-10-07 17:59:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-post-method): Use normal method if current is
