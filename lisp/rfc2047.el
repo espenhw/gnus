@@ -290,13 +290,23 @@ Dynamically bind `rfc2047-encoding-type' to change that."
   (save-restriction
     (narrow-to-region b e)
     (if (eq 'mime rfc2047-encoding-type)
-	;; Simple case -- treat as single word.
+	;; Simple case.  Treat as single word after any initial ASCII
+	;; part and before any tailing ASCII part.  The leading ASCII
+	;; is relevant for instance in Subject headers with `Re:' for
+	;; interoperability with non-MIME clients, and we might as
+	;; well avoid the tail too.
 	(progn
 	  (goto-char (point-min))
 	  ;; Does it need encoding?
-	  (skip-chars-forward "\000-\177" e)
+	  (skip-chars-forward "\000-\177")
 	  (unless (eobp)
-	    (rfc2047-encode b e)))
+	    (skip-chars-backward "^ \n") ; beginning of space-delimited word
+	    (rfc2047-encode (point) (progn
+				      (goto-char e)
+				      (skip-chars-backward "\000-\177")
+				      (skip-chars-forward "^ \n")
+				      ;; end of space-delimited word
+				      (point)))))
       ;; `address-mime' case -- take care of quoted words, comments.
       (with-syntax-table rfc2047-syntax-table
 	(let ((start)			; start of current token
@@ -579,6 +589,12 @@ By default, the region is treated as containing addresses (see
 ;; Fixme: This should decode in place, not cons intermediate strings.
 ;; Also check whether it needs to worry about delimiting fields like
 ;; encoding.
+
+;; In fact it's reported that (invalid) encoding of mailboxes in
+;; addr-specs is in use, so delimiting fields might help.  Probably
+;; not decoding a word which isn't properly delimited is good enough
+;; and worthwhile (is it more correct or not?), e.g. something like
+;; `=?iso-8859-1?q?foo?=@'.
 
 (defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."
