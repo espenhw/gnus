@@ -1975,27 +1975,26 @@ increase the score of each group you read."
 	      ["Show picons in mail headers" gnus-treat-mail-picon t]
 	      ["Show picons in news headers" gnus-treat-newsgroups-picon t]
 	      ("View as different encoding"
-	       ,@(let (out)
-		   (if (fboundp 'read-coding-system)
-		       (mapc (lambda (el)
-			       (let ((cs (car el)))
-				 (unless (or (string-match "dos$" cs)
-					     (string-match "mac$" cs)
-					     (string-match "unix$" cs))
-				   (push (car el) out)))) 
-			     coding-system-alist)
-		     (mapc (lambda (el)
-			     (push (car el) out))
-			   mm-mime-mule-charset-alist))
-		   (setq out (sort out 'string<))
-		   (mapcar (lambda (cs)
-			     `[,cs
-			       (lambda ()
-				 (let ((gnus-summary-show-article-charset-alist
-					((1 . ,cs))))
-				   (gnus-summary-show-article 1)))
-			       t])
-			   out))))
+	       ,@(mapcar
+		  (lambda (cs)
+		    ;; Since easymenu under FSF Emacs doesn't allow lambda
+		    ;; forms for menu commands, we should provide intern'ed
+		    ;; function symbols.
+		    (let ((command (intern (format "\
+gnus-summary-show-article-from-menu-as-charset-%s" cs))))
+		      (fset command
+			    `(lambda ()
+			       (interactive)
+			       (let ((gnus-summary-show-article-charset-alist
+				      '((1 . ,cs))))
+				 (gnus-summary-show-article 1))))
+		      `[,(symbol-name cs) ,command t]))
+		  (sort (if (fboundp 'coding-system-list)
+			    (coding-system-list)
+			  (mapcar 'car mm-mime-mule-charset-alist))
+			(lambda (a b)
+			  (string< (symbol-name a)
+				   (symbol-name b)))))))
 	     ("Washing"
 	      ("Remove Blanks"
 	       ["Leading" gnus-article-strip-leading-blank-lines t]
