@@ -2720,6 +2720,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   ">" end-of-buffer
   "\C-c\C-i" gnus-info-find-node
   "\C-c\C-b" gnus-bug
+  "\C-hk" gnus-article-describe-key
 
   "\C-d" gnus-article-read-summary-keys
   "\M-*" gnus-article-read-summary-keys
@@ -4041,6 +4042,30 @@ Argument LINES specifies lines to be scrolled down."
 		    (set-window-point win new-sum-point))))    )
 	  (switch-to-buffer gnus-article-buffer)
           (ding))))))
+
+(defun gnus-article-describe-key (key)
+  "Display documentation of the function invoked by KEY.  KEY is a string."
+  (interactive "kDescribe key: ")
+  (gnus-article-check-buffer)
+  (if (eq (key-binding key) 'gnus-article-read-summary-keys)
+      (save-excursion
+	(set-buffer gnus-article-current-summary)
+	(let (gnus-pick-mode)
+	  (push (elt key 0) unread-command-events)
+	  (setq key (if (featurep 'xemacs)
+			(events-to-keys (read-key-sequence nil))
+		      (read-key-sequence nil))))
+	(let ((defn (key-binding key)))
+	  (if (or (null defn) (integerp defn))
+	      (message "%s is undefined" (key-description key))
+	    (with-output-to-temp-buffer "*Help*"
+	      (princ (key-description key))
+	      (princ " runs the command ")
+	      (prin1 defn)
+	      (princ " in the article buffer.\n   which is ")
+	      (describe-function-1 defn nil (interactive-p))
+	      (print-help-return-message)))))
+    (describe-key key)))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
