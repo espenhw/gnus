@@ -492,7 +492,7 @@ Gnus will prompt you for an action.
 
 @end table
 
-It is considered good nettiquette to honor MFT, as it is assumed the
+It is considered good netiquette to honor MFT, as it is assumed the
 fellow who posted a message knows where the followups need to go
 better than you do.
 
