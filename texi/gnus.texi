@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.70 Manual
+@settitle Red Gnus 0.71 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.70 Manual
+@title Red Gnus 0.71 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.70
+This manual corresponds to Red Gnus 0.71
 
 @end ifinfo
 
@@ -2994,6 +2994,7 @@ You can have as many summary buffers open as you wish.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
 * Article Treatment::           The article buffer can be mangled at will.
+* Article Commands::            Doing various things with the article buffer.
 * Summary Sorting::             Sorting the summary buffer in various ways.
 * Finding the Parent::          No child support? Get the parent.
 * Alternative Approaches::      Reading using non-default summaries.
@@ -6125,6 +6126,22 @@ in question is not a signature.
 
 This variable can also be a list where the elements may be of the types
 listed above.  
+
+
+@node Article Commands
+@section Article Commands
+
+@table @kbd
+
+@item A P
+@cindex PostScript
+@cindex printing
+@kindex A P (Summary)
+@findex gnus-summary-print-article 
+Generate and print a PostScript image of the article buffer
+(@code{gnus-summary-print-article}).
+
+@end table
 
 
 @node Summary Sorting

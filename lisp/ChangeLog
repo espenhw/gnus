@@ -1,3 +1,55 @@
+Tue Nov 26 00:58:25 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-split-value): Expand file names in save
+	dir. 
+
+Mon Nov 25 22:50:19 1996  Jens Lautenbacher  <jens@lemming5.lem.uni-karlsruhe.de>
+
+	* gnus-group.el (gnus-group-make-menu-bar): Moved customize.
+
+Mon Nov 25 15:27:41 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (custom-facep): Removed.
+
+	* gnus-topic.el (gnus-topic-line-format): Added customize
+	support. 
+
+	* gnus.el (gnus-article-display-hook): Moved
+	`gnus-article-treat-overstrike' last.
+
+Mon Nov 25 04:17:03 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-read-folder): Make buffer read/write.
+
+	* gnus-sum.el (gnus-summary-print-article): Delete invisible text
+	first. 
+
+	* article.el (article-delete-invisible-text): New function.
+
+	* nntp.el (nntp-possibly-change-group): Would abort async
+	fetches. 
+
+	* gnus-sum.el (gnus-summary-print-article): New command and
+	keystroke. 
+	(gnus-summary-move-article): Select the article first.
+
+	* message.el (message-user-agent): Define the message mail user
+	agent. 
+
+Sun Nov 24 02:28:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-possibly-change-group): Would get confused.
+
+	* gnus-art.el (gnus-button-url-regexp): Allow all word-constituent
+	characters to be part of urls.
+
+	* nntp.el (nntp-possibly-change-group): Wait until the status line
+	arrives and delete it.
+
+Sun Nov 24 01:36:45 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.70 is released.
+
 Sat Nov 23 23:22:27 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-mode-menu): Added `message-caesar-region'. 

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.02
+;; Version: 1.04
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -51,6 +51,9 @@ into the buffer visible in the event's window."
 
 (defgroup widgets nil
   "Customization support for the Widget Library."
+  :link '(custom-manual "(widget)Top")
+  :link '(url-link :tag "Development Page" 
+		   "http://www.dina.kvl.dk/~abraham/custom/")
   :group 'emacs)
 
 (defface widget-documentation-face '((t ()))

@@ -159,6 +159,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvoo nntp-status-string "")
 (defconst nntp-version "nntp 5.0")
 (defvoo nntp-inhibit-erase nil)
+(defvoo nntp-inhibit-output nil)
 
 (defvoo nntp-server-xover 'try)
 (defvoo nntp-server-list-active-group 'try)
@@ -478,7 +479,8 @@ It will prompt for a password."
 
 (defun nntp-send-command (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
-  (unless nnheader-callback-function
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
@@ -496,7 +498,8 @@ It will prompt for a password."
 
 (defun nntp-send-command-and-decode (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
-  (unless nnheader-callback-function
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)))
@@ -507,7 +510,8 @@ It will prompt for a password."
 
 (defun nntp-send-buffer (wait-for)
   "Send the current buffer to server and wait until WAIT-FOR returns."
-  (unless nnheader-callback-function
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
     (save-excursion
       (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
       (erase-buffer)))
@@ -746,15 +750,13 @@ It will prompt for a password."
   (when group
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (when (not (equal group (caddr entry)))
-	(nntp-request-group group)
 	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (if nnheader-callback-function
-	      (progn
-		(goto-char (point-max))
-		(forward-line -1)
-		(gnus-delete-line))
-	    (erase-buffer)))))))
+	  (set-buffer (process-buffer (car entry)))
+	  (erase-buffer)
+	  (nntp-send-string (car entry) (concat "GROUP " group))
+	  (nntp-wait-for-string "^2.*\n")
+	  (setcar (cddr entry) group)
+	  (erase-buffer))))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."

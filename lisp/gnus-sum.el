@@ -1426,7 +1426,8 @@ increase the score of each group you read."
     "r" gnus-summary-refer-parent-article
     "R" gnus-summary-refer-references
     "g" gnus-summary-show-article
-    "s" gnus-summary-isearch-article)
+    "s" gnus-summary-isearch-article
+    "P" gnus-summary-print-article)
 
   (gnus-define-keys (gnus-summary-wash-map "W" gnus-summary-mode-map)
     "b" gnus-article-add-buttons
@@ -1695,7 +1696,8 @@ increase the score of each group you read."
 	["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
 	["Save body in file" gnus-summary-save-article-body-file t]
 	["Pipe through a filter" gnus-summary-pipe-output t]
-	["Add to SOUP packet" gnus-soup-add-article t])
+	["Add to SOUP packet" gnus-soup-add-article t]
+	["Print" gnus-summary-print-article t])
        ("Backend"
 	["Respool article..." gnus-summary-respool-article t]
 	["Move article..." gnus-summary-move-article
@@ -6359,6 +6361,20 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
     (when gnus-break-pages
       (gnus-narrow-to-page))))
 
+(defun gnus-summary-print-article ()
+  "Generate and print a PostScript image of the article buffer."
+  (interactive)
+  (gnus-summary-select-article)
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (let ((buffer (generate-new-buffer " *print*")))
+      (unwind-protect
+	  (progn
+	    (copy-to-buffer buffer (point-min) (point-max))
+	    (set-buffer buffer)
+	    (article-delete-invisible-text)
+	    (ps-print-buffer-with-faces))
+	(kill-buffer buffer)))))
+
 (defun gnus-summary-show-article (&optional arg)
   "Force re-fetching of the current article.
 If ARG (the prefix) is non-nil, show the raw article without any
@@ -6483,6 +6499,8 @@ and `request-accept' functions."
   (unless action
     (setq action 'move))
   (gnus-set-global-variables)
+  (save-window-excursion
+    (gnus-summary-select-article))
   ;; Check whether the source group supports the required functions.
   (cond ((and (eq action 'move)
 	      (not (gnus-check-backend-function
@@ -8116,7 +8134,9 @@ save those articles instead."
 		      (setq result (eval match)))))
 	      (setq split-name (append (cdr method) split-name))
 	      (cond ((stringp result)
-		     (push result split-name))
+		     (push (expand-file-name
+			    result gnus-article-save-directory)
+			   split-name))
 		    ((consp result)
 		     (setq split-name (append result split-name)))))))))
     split-name))

@@ -653,6 +653,7 @@ time saver for large mailboxes.")
 	(set-buffer (setq nnfolder-current-buffer 
 			  (nnheader-find-file-noselect file)))
 	(buffer-disable-undo (current-buffer))
+	(setq buffer-read-only nil)
 	;; If the file hasn't been touched since the last time we scanned it,
 	;; don't bother doing anything with it.
 	(let ((delim (concat "^" message-unix-mail-delimiter))

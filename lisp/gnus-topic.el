@@ -42,7 +42,7 @@
   :type 'hook
   :group 'gnus-topic)
 
-(defvar gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
+(defcustom gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
   "Format of topic lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -53,7 +53,9 @@ with some simple extensions.
 %g  Number of groups in the topic.
 %a  Number of unread articles in the groups in the topic.
 %A  Number of unread articles in the groups in the topic and its subtopics.
-")
+"
+  :type 'string
+  :group 'gnus-topic)
 
 (defcustom gnus-topic-indent-level 2
   "*How much each subtopic should be indented."

@@ -768,13 +768,13 @@ ticked: The number of ticked articles."
        ["Set group level" gnus-group-set-current-level
 	(gnus-group-group-name)]
        ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
+       ["Customize" gnus-group-customize (gnus-group-group-name)]
        ("Edit"
 	["Parameters" gnus-group-edit-group-parameters
 	 (gnus-group-group-name)]
 	["Select method" gnus-group-edit-group-method
 	 (gnus-group-group-name)]
 	["Info" gnus-group-edit-group (gnus-group-group-name)]
-	["Customize" gnus-group-customize t]
 	["Local kill file" gnus-group-edit-local-kill (gnus-group-group-name)]
 	["Global kill file" gnus-group-edit-global-kill t])
        ))

@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.70"
+(defconst gnus-version-number "0.71"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -61,15 +61,6 @@ be set in `.emacs' instead."
   :type 'boolean)
 
 ;;; Kludges to help the transition from the old `custom.el'.
-
-;; XEmacs and Emacs 19.29 facep does different things.
-(defalias 'custom-facep
-  (cond ((fboundp 'find-face)
-	 'find-face)
-	((fboundp 'facep)
-	 'facep)
-	(t
-	 'ignore)))
 
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
@@ -857,7 +848,6 @@ want."
   :type 'hook
   :options '(gnus-article-add-buttons
 	     gnus-article-add-buttons-to-head
-	     gnus-article-treat-overstrike
 	     gnus-article-emphasize
 	     gnus-article-fill-cited-article
 	     gnus-article-remove-cr
@@ -885,7 +875,9 @@ want."
 	     gnus-article-remove-trailing-blank-lines
 	     gnus-article-strip-leading-blank-lines
 	     gnus-article-strip-multiple-blank-lines
-	     gnus-article-strip-blank-lines))
+	     gnus-article-strip-blank-lines
+	     gnus-article-treat-overstrike
+	     ))
 
 
 ;;; Internal variables

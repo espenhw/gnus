@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.02
+;; Version: 1.04
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -160,7 +160,10 @@ if that value is non-nil."
 ;;;###autoload
 (defun customize-face (symbol)
   "Customize FACE."
-  (interactive (list (completing-read "Customize face: " obarray 'facep)))
+  (interactive (list (completing-read "Customize face: " 
+				      obarray 'custom-facep)))
+  (if (stringp symbol)
+      (setq symbol (intern symbol)))
   (unless (symbolp symbol)
     (error "Should be a symbol %S" symbol))
   (custom-buffer-create (list (list symbol 'custom-face))))
@@ -172,7 +175,7 @@ if that value is non-nil."
   (let ((found nil))
     (mapatoms (lambda (symbol)
 		(and (get symbol 'saved-face)
-		     (facep symbol)
+		     (custom-facep symbol)
 		     (setq found (cons (list symbol 'custom-face) found)))
 		(and (get symbol 'saved-value)
 		     (boundp symbol)
@@ -193,7 +196,7 @@ user-settable."
 		(when (string-match regexp (symbol-name symbol))
 		  (when (get symbol 'custom-group)
 		    (setq found (cons (list symbol 'custom-group) found)))
-		  (when (facep symbol)
+		  (when (custom-facep symbol)
 		    (setq found (cons (list symbol 'custom-face) found)))
 		  (when (and (boundp symbol)
 			     (or (get symbol 'saved-value)
@@ -283,7 +286,13 @@ Push RET or click mouse-2 on the word ")
 				   (t t)))))
 (widget-put (get 'menu-choice 'widget-type) :custom-show t)
 
-;;; The `custom-magic' Widget
+;;; The `custom-manual' Widget.
+
+(define-widget 'custom-manual 'info-link
+  "Link to the manual entry for this customization option."
+  :tag "Manual")
+
+;;; The `custom-magic' Widget.
 
 (define-widget 'custom-magic 'item
   "Status feedback for customization option."
@@ -420,7 +429,7 @@ The list should be sorted most significant first."
 (define-widget 'custom 'default
   "Customize a user option."
   :convert-widget 'widget-item-convert-widget
-  :format "%l%[%t%]: %v%m %h"
+  :format "%l%[%t%]: %v%m %h%a"
   :format-handler 'custom-format-handler
   :notify 'custom-notify
   :custom-level 1
@@ -461,6 +470,28 @@ The list should be sorted most significant first."
 	     (widget-put widget :custom-magic magic)
 	     (push magic buttons)
 	     (widget-put widget :buttons buttons)))
+	  ((eq escape ?a)
+	   (let* ((symbol (widget-get widget :value))
+		  (links (get symbol 'custom-links))
+		  (many (> (length links) 2)))
+	     (when links
+	       (and (eq (preceding-char) ?\n)
+		    (widget-get widget :indent)
+		    (insert-char ?  (widget-get widget :indent)))
+	       (insert "See also ")
+	       (while links
+		 (push (widget-create-child-and-convert widget (car links))
+		       buttons)
+		 (setq links (cdr links))
+		 (cond ((null links)
+			(insert ".\n"))
+		       ((null (cdr links))
+			(if many
+			    (insert ", and ")
+			  (insert " and ")))
+		       (t 
+			(insert ", "))))
+	       (widget-put widget :buttons buttons))))
 	  (t 
 	   (widget-default-format-handler widget escape)))))
 
@@ -501,7 +532,7 @@ The list should be sorted most significant first."
 
 (define-widget 'custom-variable 'custom
   "Customize variable."
-  :format "%l%v%m %h"
+  :format "%l%v%m %h%a"
   :help-echo "Push me to set or reset this variable."
   :documentation-property 'variable-documentation
   :custom-state nil
@@ -761,7 +792,7 @@ Optional EVENT is the location for the menu."
 
 (define-widget 'custom-face 'custom
   "Customize face."
-  :format "%l%[%t%]: %s%m %h%v"
+  :format "%l%[%t%]: %s%m %h%a%v"
   :format-handler 'custom-face-format-handler
   :help-echo "Push me to set or reset this face."
   :documentation-property 'face-documentation
@@ -954,7 +985,7 @@ Optional EVENT is the location for the menu."
 
 (define-widget 'custom-group 'custom
   "Customize group."
-  :format "%l%[%t%]: %L\n%m %h%v"
+  :format "%l%[%t%]: %L\n%m %h%a%v"
   :documentation-property 'group-documentation
   :help-echo "Push me to set or reset all members of this group."
   :value-create 'custom-group-value-create
@@ -1113,7 +1144,7 @@ Leave point at the location of the call, or after the last expression."
 		      (princ " ")
 		      (prin1 value)
 		      (if (or (get symbol 'factory-face)
-			      (and (not (facep symbol))
+			      (and (not (custom-facep symbol))
 				   (not (get symbol 'force-face))))
 			  (princ ")")
 			(princ " t)"))))))

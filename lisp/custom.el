@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.02
+;; Version: 1.04
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -19,7 +19,7 @@
 
 (require 'widget)
 
-(define-widget-keywords :options :type :group)
+(define-widget-keywords :link :options :type :group)
 
 ;; These autoloads should be deleted when the file is added to Emacs
 (autoload 'customize "custom-edit" nil t)
@@ -74,6 +74,19 @@ If FRAME is omitted or nil, use the selected frame."
 			     (list (cons 'background-mode mode)))
     mode))
 
+;; XEmacs and Emacs have two different definitions of `facep'.
+(cond ((not (fboundp 'facep))
+       (defun custom-facep (face) 
+	 "No faces"
+	 nil))
+      ((string-match "XEmacs" emacs-version)
+       (defun custom-facep (face) 
+	 "Face symbol or object."
+	 (or (facep face)
+	     (find-face face))))
+      (t
+       (defalias 'custom-facep 'facep)))
+
 ;;; The `defcustom' Macro.
 
 ;;;###autoload
@@ -109,9 +122,12 @@ If FRAME is omitted or nil, use the selected frame."
 		 (put symbol 'custom-options (copy-list value))))
 	      ((eq keyword :group)
 	       (custom-add-to-group value symbol 'custom-variable))
+	      ((eq keyword :link)
+	       (custom-add-link symbol value))
 	      (t
-	       (error "Unknown keyword %s" symbol))))))
-  (run-hooks 'custom-define-hook))
+	       (error "Unknown keyword %s" keyword))))))
+  (run-hooks 'custom-define-hook)
+  symbol)
 
 ;;;###autoload
 (defmacro defcustom (symbol value doc &rest args)
@@ -143,7 +159,7 @@ information."
   "Like `defface', but FACE is evaluated as a normal argument."
   (put face 'factory-face spec)
   (when (fboundp 'facep)
-    (unless (and (facep face)
+    (unless (and (custom-facep face)
 		 (not (get face 'saved-face)))
       ;; If the user has already created the face, respect that.
       (let ((value (or (get face 'saved-face) spec)))
@@ -162,9 +178,12 @@ information."
 	(setq args (cdr args))
 	(cond ((eq keyword :group)
 	       (custom-add-to-group value face 'custom-face))
+	      ((eq keyword :link)
+	       (custom-add-link face value))
 	      (t
 	       (error "Unknown keyword %s" face))))))
-  (run-hooks 'custom-define-hook))
+  (run-hooks 'custom-define-hook)
+  face)
 
 ;;;###autoload
 (defmacro defface (face spec doc &rest args)
@@ -234,9 +253,12 @@ information."
 	(setq args (cdr args))
 	(cond ((eq keyword :group)
 	       (custom-add-to-group value symbol 'custom-group))
+	      ((eq keyword :link)
+	       (custom-add-link symbol value))
 	      (t
 	       (error "Unknown keyword %s" symbol))))))
-  (run-hooks 'custom-define-hook))
+  (run-hooks 'custom-define-hook)
+  symbol)
 
 ;;;###autoload
 (defmacro defgroup (symbol members doc &rest args)
@@ -273,7 +295,7 @@ If there already is an entry for that option, overwrite it."
 	(setcar (cdr old) widget)
       (put group 'custom-group (nconc members (list (list option widget)))))))
 
-;;; Options
+;;; Properties.
 
 (defun custom-add-option (symbol option)
   "To the variable SYMBOL add OPTION.
@@ -283,6 +305,12 @@ For other types variables, the effect is undefined."
   (let ((options (get symbol 'custom-options)))
     (unless (member option options)
       (put symbol 'custom-options (cons option options)))))
+
+(defun custom-add-link (symbol widget)
+  "To the custom option SYMBOL add the link WIDGET."
+  (let ((links (get symbol 'custom-links)))
+    (unless (member widget links)
+      (put symbol 'custom-links (cons widget links)))))
 
 ;;; Face Utilities.
 
@@ -490,10 +518,14 @@ See `defface' for the format of SPEC."
 ;;; Meta Customization
 
 (defgroup emacs nil
-  "Customization of the One True Editor.")
+  "Customization of the One True Editor."
+  :link '(custom-manual "(emacs)Top"))
 
 (defgroup customize nil
   "Customization of the Customization support."
+  :link '(custom-manual "(custom)Top")
+  :link '(url-link :tag "Development Page" 
+		   "http://www.dina.kvl.dk/~abraham/custom/")
   :group 'emacs)
 
 (defcustom custom-define-hook nil

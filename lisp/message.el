@@ -41,37 +41,82 @@
     (require 'mail-abbrevs)
   (require 'mailabbrev))
 
-(defgroup message nil
+(defgroup message '((user-mail-address custom-variable)
+		    (user-full-name custom-variable))
   "Mail and news message composing."
+  :link '(custom-manual "(message)Top")
   :group 'emacs)
+
+(put 'user-mail-address 'custom-type 'string)
+(put 'user-full-name 'custom-type 'string)
+
+(defgroup message-various nil
+  "Various Message Variables"
+  :link '(custom-manual "(message)Various Message Variables")
+  :group 'message)
+
+(defgroup message-buffers nil
+  "Message Buffers"
+  :link '(custom-manual "(message)Message Buffers")
+  :group 'message)
+
+(defgroup message-sending nil
+  "Message Sending"
+  :link '(custom-manual "(message)Sending Variables")
+  :group 'message)
+
+(defgroup message-interface nil
+  "Message Interface"
+  :link '(custom-manual "(message)Interface")
+  :group 'message)
+
+(defgroup message-forwarding nil
+  "Message Forwarding"
+  :link '(custom-manual "(message)Forwarding")
+  :group 'message-interface)
+
+(defgroup message-insertion nil
+  "Message Insertion"
+  :link '(custom-manual "(message)Insertion")
+  :group 'message)
+
+(defgroup message-headers nil
+  "Message Headers"
+  :link '(custom-manual "(message)Message Headers")
+  :group 'message)
+
+(defgroup message-news nil
+  "Composing News Messages"
+  :group 'message)
+
+(defgroup message-mail nil
+  "Composing Mail Messages"
+  :group 'message)
 
 (defcustom message-directory "~/Mail/"
   "*Directory from which all other mail file variables are derived."
-  :group 'message
+  :group 'message-various
   :type 'directory)
 
 (defcustom message-max-buffers 10
   "*How many buffers to keep before starting to kill them off."
-  :group 'message
+  :group 'message-buffers
   :type 'integer)
 
 (defcustom message-send-rename-function nil
   "Function called to rename the buffer after sending it."
-  :group 'message
+  :group 'message-buffers
   :type 'function)
 
 ;;;###autoload
-(defvar message-fcc-handler-function 'rmail-output
+(defcustom message-fcc-handler-function 'rmail-output
   "*A function called to save outgoing articles.
 This function will be called with the name of the file to store the
 article in.  The default function is `rmail-output' which saves in Unix
-mailbox format.")
-(put 'message-fcc-handler-function 
-     'custom-type '(radio (function-item rmail-output)
-			  (function :tag "Other")))
-(put 'message-fcc-handler-function
-     'factory-value '('rmail-output))
-(custom-add-to-group 'message 'message-fcc-handler-function 'custom-variable)
+mailbox format."
+  :type '(radio (function-item rmail-output)
+		(function :tag "Other"))
+  :group 'message-sending)
 
 (defcustom message-courtesy-message
   "The following message is a courtesy copy of an article\nthat has been posted to %s as well.\n\n"
@@ -79,16 +124,16 @@ mailbox format.")
 If the string contains the format spec \"%s\", the Newsgroups
 the article has been posted to will be inserted there.
 If this variable is nil, no such courtesy message will be added."
-  :group 'message
+  :group 'message-sending
   :type 'string)
 
 (defcustom message-ignored-bounced-headers "^\\(Received\\|Return-Path\\):"
   "*Regexp that matches headers to be removed in resent bounced mail."
-  :group 'message
+  :group 'message-interface
   :type 'regexp)
 
 ;;;###autoload
-(defvar message-from-style 'default
+(defcustom message-from-style 'default
   "*Specifies how \"From\" headers look.
 
 If `nil', they contain just the return address like:
@@ -99,17 +144,14 @@ If `angles', they look like:
 	Elvis Parsley <king@grassland.com>
 
 Otherwise, most addresses look like `angles', but they look like
-`parens' if `angles' would need quoting and `parens' would not.")
-(put 'message-from-style
-     'custom-type '(choice (const :tag "simple" nil)
-			   (const parens)
-			   (const angles)
-			   (const default)))
-(put 'message-from-style
-     'factory-value '('default))
-(custom-add-to-group 'message 'message-from-style 'custom-variable)
+`parens' if `angles' would need quoting and `parens' would not."
+  :type '(choice (const :tag "simple" nil)
+		 (const parens)
+		 (const angles)
+		 (const default))
+  :group 'message-headers)
 
-(defvar message-syntax-checks nil
+(defcustom message-syntax-checks nil
   ;; Guess this one shouldn't be easy to customize...
   "Controls what syntax checks should not be performed on outgoing posts.
 To disable checking of long signatures, for instance, add
@@ -120,7 +162,8 @@ Don't touch this variable unless you really know what you're doing.
 Checks include subject-cmsg multiple-headers sendsys message-id from
 long-lines control-chars size new-text redirected-followup signature
 approved sender empty empty-headers message-id from subject
-shorten-followup-to existing-newsgroups.")
+shorten-followup-to existing-newsgroups."
+  :group 'message-news)
 
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID 
@@ -131,8 +174,9 @@ RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
 Message-ID.  Organization, Lines, In-Reply-To, Expires, and
 X-Newsreader are optional.  If don't you want message to insert some
 header, remove it from this list."
-  :group 'message
-  :type 'sexp)
+  :group 'message-news
+  :group 'message-headers
+  :type '(repeat sexp))
 
 (defcustom message-required-mail-headers 
   '(From Subject Date (optional . In-Reply-To) Message-ID Lines
@@ -140,45 +184,46 @@ header, remove it from this list."
   "Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
 included.  Organization, Lines and X-Mailer are optional."
-  :group 'message
-  :type 'sexp)
+  :group 'message-mail
+  :group 'message-headers
+  :type '(repeat sexp))
 
 (defcustom message-deletable-headers '(Message-ID Date Lines)
   "Headers to be deleted if they already exist and were generated by message previously."
-  :group 'message
+  :group 'message-headers
   :type 'sexp)
 
 (defcustom message-ignored-news-headers 
   "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before posting."
-  :group 'message
+  :group 'message-news
+  :group 'message-headers
   :type 'regexp)
 
 (defcustom message-ignored-mail-headers "^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before mailing."
-  :group 'message
+  :group 'message-mail
+  :group 'message-headers
   :type 'regexp)
 
 (defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|Return-Path:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion."
-  :group 'message
+  :group 'message-interface
   :type 'regexp)
 
 ;;;###autoload
-(defvar message-signature-separator "^-- *$"
-  "Regexp matching the signature separator.")
-(put 'message-signature-separator
-     'custom-type 'regexp)
-(put 'message-signature-separator
-     'factory-value '("^-- *$"))
-(custom-add-to-group 'message 'message-signature-separator 'custom-variable)
+(defcustom message-signature-separator "^-- *$"
+  "Regexp matching the signature separator."
+  :type 'regexp
+  :group 'message-various)
 
 (defcustom message-interactive nil 
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors."
-  :group 'message
+  :group 'message-sending
+  :group 'message-mail
   :type 'boolean)
 
 (defcustom message-generate-new-buffers t
@@ -186,14 +231,14 @@ nil means let mailer mail back a message to report errors."
 If this is a function, call that function with three parameters:  The type,
 the to address and the group name.  (Any of these may be nil.)  The function
 should return the new buffer name."
-  :group 'message
+  :group 'message-buffers
   :type '(choice (const :tag "off" nil)
 		 (const :tag "on" t)
 		 (function fun)))
 
 (defcustom message-kill-buffer-on-exit nil
   "*Non-nil means that the message buffer will be killed after sending a message."
-  :group 'message
+  :group 'message-buffers
   :type 'boolean)
 
 (defvar gnus-local-organization)
@@ -204,109 +249,104 @@ should return the new buffer name."
       t)
   "*String to be used as an Organization header.
 If t, use `message-user-organization-file'."
-  :group 'message
+  :group 'message-headers
   :type '(choice string
 		 (const :tag "consult file" t)))
 
 ;;;###autoload
-(defvar message-user-organization-file "/usr/lib/news/organization"
-  "*Local news organization file.")
-(put 'message-user-organization-file
-     'custom-type 'file)
-(put 'message-user-organization-file
-     'factory-value '("/usr/lib/news/organization"))
-(custom-add-to-group 'message 'message-user-organization-file 'custom-variable)
+(defcustom message-user-organization-file "/usr/lib/news/organization"
+  "*Local news organization file."
+  :type 'file
+  :group 'message-headers)
 
 (defcustom message-autosave-directory "~/"
   ; (concat (file-name-as-directory message-directory) "drafts/")
   "*Directory where message autosaves buffers.
 If nil, message won't autosave."
-  :group 'message
+  :group 'message-buffers
   :type 'directory)
 
 (defcustom message-forward-start-separator 
   "------- Start of forwarded message -------\n"
   "*Delimiter inserted before forwarded messages."
-  :group 'message
+  :group 'message-forwarding
   :type 'string)
 
 (defcustom message-forward-end-separator
   "------- End of forwarded message -------\n"
   "*Delimiter inserted after forwarded messages."
-  :group 'message
+  :group 'message-forwarding
   :type 'string)
 
 (defcustom message-signature-before-forwarded-message t
   "*If non-nil, put the signature before any included forwarded message."
-  :group 'message
+  :group 'message-forwarding
   :type 'boolean)
 
 (defcustom message-included-forward-headers 
   "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\|^Message-ID:\\|^References:"
   "*Regexp matching headers to be included in forwarded messages."
-  :group 'message
+  :group 'message-forwarding
   :type 'regexp)
 
 (defcustom message-ignored-resent-headers "^Return-receipt"
   "*All headers that match this regexp will be deleted when resending a message."
-  :group 'message
+  :group 'message-interface
   :type 'regexp)
 
 (defcustom message-ignored-cited-headers "."
   "*Delete these headers from the messages you yank."
-  :group 'message
+  :group 'message-insertion
   :type 'regexp)
 
 (defcustom message-cancel-message "I am canceling my own article."
   "Message to be inserted in the cancel message."
-  :group 'message
+  :group 'message-interface
   :type 'string)
 
 ;; Useful to set in site-init.el
 ;;;###autoload
-(defvar message-send-mail-function 'message-send-mail-with-sendmail
+(defcustom message-send-mail-function 'message-send-mail-with-sendmail
   "Function to call to send the current buffer as mail.
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
 
 Legal values include `message-send-mail-with-sendmail' (the default),
-`message-send-mail-with-mh' and `message-send-mail-with-qmail'.")
-(put 'message-send-mail-function
-     'custom-type '(radio (function-item message-send-mail-with-sendmail)
-			  (function-item message-send-mail-with-mh)
-			  (function-item message-send-mail-with-qmail)
-			  (function :tag "Other")))
-(put 'message-send-mail-function
-     'factory-value '('rmail-output))
-(custom-add-to-group 'message 'message-send-mail-function 'custom-variable)
-
+`message-send-mail-with-mh' and `message-send-mail-with-qmail'."
+  :type '(radio (function-item message-send-mail-with-sendmail)
+		(function-item message-send-mail-with-mh)
+		(function-item message-send-mail-with-qmail)
+		(function :tag "Other"))
+  :group 'message-sending
+  :group 'message-mail)
 
 (defcustom message-send-news-function 'message-send-news
   "Function to call to send the current buffer as news.
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'."
-  :group 'message
+  :group 'message-sending
+  :group 'message-news
   :type 'function)
 
 (defcustom message-reply-to-function nil
   "Function that should return a list of headers.
 This function should pick out addresses from the To, Cc, and From headers
 and respond with new To and Cc headers."
-  :group 'message
+  :group 'message-interface
   :type 'function)
 
 (defcustom message-wide-reply-to-function nil
   "Function that should return a list of headers.
 This function should pick out addresses from the To, Cc, and From headers
 and respond with new To and Cc headers."
-  :group 'message
+  :group 'message-interface
   :type 'function)
 
 (defcustom message-followup-to-function nil
   "Function that should return a list of headers.
 This function should pick out addresses from the To, Cc, and From headers
 and respond with new To and Cc headers."
-  :group 'message
+  :group 'message-interface
   :type 'function)
 
 (defcustom message-use-followup-to 'ask
@@ -315,7 +355,7 @@ If nil, ignore the header.  If it is t, use its value, but query before
 using the \"poster\" value.  If it is the symbol `ask', query the user
 whether to ignore the \"poster\" value.  If it is the symbol `use',
 always use the value."
-  :group 'message
+  :group 'message-interface
   :type '(choice (const :tag "ignore" nil)
 		 (const use)
 		 (const ask)))
@@ -323,7 +363,7 @@ always use the value."
 ;; qmail-related stuff
 (defcustom message-qmail-inject-program "/var/qmail/bin/qmail-inject"
   "Location of the qmail-inject program."
-  :group 'message
+  :group 'message-sending
   :type 'file)
 
 (defcustom message-qmail-inject-args nil
@@ -333,7 +373,7 @@ This should be a list of strings, one string for each argument.
 For e.g., if you wish to set the envelope sender address so that bounces
 go to the right place or to deal with listserv's usage of that address, you
 might set this variable to '(\"-f\" \"you@some.where\")."
-  :group 'message
+  :group 'message-sending
   :type '(repeat string))
 
 (defvar gnus-post-method)
@@ -346,135 +386,122 @@ might set this variable to '(\"-f\" \"you@some.where\")."
 	 gnus-select-method)
 	(t '(nnspool "")))
   "Method used to post news."
-  :group 'message
+  :group 'message-news
+  :group 'mesage-sending
   ;; This should be the `gnus-select-method' widget, but that might
   ;; create a dependence to `gnus.el'.
   :type 'sexp)
 
 (defcustom message-generate-headers-first nil
   "*If non-nil, generate all possible headers before composing."
-  :group 'message
+  :group 'message-headers
   :type 'boolean)
 
 (defcustom message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
 The function `message-setup' runs this hook."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-signature-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
 It is run after the headers have been inserted and before 
 the signature is inserted."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-mode-hook nil
   "Hook run in message mode buffers."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-header-hook nil
   "Hook run in a message mode buffer narrowed to the headers."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-header-setup-hook nil
   "Hook called narrowed to the headers when setting up a message
 buffer."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 ;;;###autoload
-(defvar message-citation-line-function 'message-insert-citation-line
-  "*Function called to insert the \"Whomever writes:\" line.")
-(put 'message-citation-line-function
-     'custom-type 'function)
-(put 'message-citation-line-function
-     'factory-value '('message-insert-citation-line))
-(custom-add-to-group 'message 'message-citation-line-function 'custom-variable)
-
+(defcustom message-citation-line-function 'message-insert-citation-line
+  "*Function called to insert the \"Whomever writes:\" line."
+  :type 'function
+  :group 'message-insertion)
 
 ;;;###autoload
-(defvar message-yank-prefix "> "
+(defcustom message-yank-prefix "> "
   "*Prefix inserted on the lines of yanked messages.
-nil means use indentation.")
-(put 'message-yank-prefix
-     'custom-type 'string)
-(put 'message-yank-prefix
-     'factory-value '("> "))
-(custom-add-to-group 'message 'message-yank-prefix 'custom-variable)
+nil means use indentation."
+  :type 'string
+  :group 'message-insertion)
 
 (defcustom message-indentation-spaces 3
   "*Number of spaces to insert at the beginning of each cited line.
 Used by `message-yank-original' via `message-yank-cite'."
-  :group 'message
+  :group 'message-insertion
   :type 'integer)
 
 ;;;###autoload
-(defvar message-cite-function
+(defcustom message-cite-function
   (if (and (boundp 'mail-citation-hook)
 	   mail-citation-hook)
       mail-citation-hook
     'message-cite-original)
-  "*Function for citing an original message.")
-(put 'message-cite-function
-     'custom-type '(radio (function-item message-cite-original)
-			  (function-item sc-cite-original)
-			  (function :tag "Other")))
-(put 'message-cite-function
-     'factory-value '('message-cite-original))
-(custom-add-to-group 'message 'message-cite-function 'custom-variable)
+  "*Function for citing an original message."
+  :type '(radio (function-item message-cite-original)
+		(function-item sc-cite-original)
+		(function :tag "Other"))
+  :group 'message-insertion)
 
 ;;;###autoload
-(defvar message-indent-citation-function 'message-indent-citation
+(defcustom message-indent-citation-function 'message-indent-citation
   "*Function for modifying a citation just inserted in the mail buffer.
 This can also be a list of functions.  Each function can find the
 citation between (point) and (mark t).  And each function should leave
-point and mark around the citation text as modified.")
-(put 'message-indent-citation-function
-     'custom-type 'function)
-(put 'message-indent-citation-function
-     'factory-value '('message-indent-citation))
-(custom-add-to-group 'message 'message-indent-citation-function 'custom-variable)
+point and mark around the citation text as modified."
+  :type 'function
+  :group 'message-insertion)
 
 (defvar message-abbrevs-loaded nil)
 
 ;;;###autoload
-(defvar message-signature t
+(defcustom message-signature t
   "*String to be inserted at the end of the message buffer.
 If t, the `message-signature-file' file will be inserted instead.
 If a function, the result from the function will be used instead.
-If a form, the result from the form will be used instead.")
-(put 'message-signature
-     'custom-type 'sexp)
-(put 'message-signature
-     'factory-value '(t))
-(custom-add-to-group 'message 'message-signature 'custom-variable)
+If a form, the result from the form will be used instead."
+  :type 'sexp
+  :group 'message-insertion)
 
 ;;;###autoload
-(defvar message-signature-file "~/.signature"
-  "*File containing the text inserted at end of message buffer.")
-(put 'message-signature-file
-     'custom-type 'file)
-(put 'message-signature-file
-     'factory-value '("~/.signature"))
-(custom-add-to-group 'message 'message-signature-file 'custom-variable)
+(defcustom message-signature-file "~/.signature"
+  "*File containing the text inserted at end of message buffer."
+  :type 'file
+  :group 'message-insertion)
 
 (defcustom message-distribution-function nil
   "*Function called to return a Distribution header."
-  :group 'message
+  :group 'message-news
+  :group 'message-headers
   :type 'function)
 
 (defcustom message-expires 14
-  "*Number of days before your article expires."
-  :group 'message
+  "Number of days before your article expires."
+  :group 'message-news
+  :group 'message-headers
+  :link '(custom-manual "(message)News Headers")
   :type 'integer)
 
 (defcustom message-user-path nil
   "If nil, use the NNTP server name in the Path header.
 If stringp, use this; if non-nil, use no host name (user name only)."
-  :group 'message
+  :group 'message-news
+  :group 'message-headers
+  :link '(custom-manual "(message)News Headers")
   :type '(choice (const :tag "nntp" nil)
 		 (string :tag "name")
 		 (sexp :tag "none" :format "%t" t)))
@@ -498,18 +525,20 @@ If stringp, use this; if non-nil, use no host name (user name only)."
   "*A string containing header lines to be inserted in outgoing messages.
 It is inserted before you edit the message, so you can edit or delete
 these lines."
-  :group 'message
+  :group 'message-headers
   :type 'string)
 
 (defcustom message-default-mail-headers ""
   "*A string of header lines to be inserted in outgoing mails."
-  :group 'message
+  :group 'message-headers
+  :group 'message-mail
   :type 'string)
 
 (defcustom message-default-news-headers ""
   "*A string of header lines to be inserted in outgoing news
 articles."
-  :group 'message
+  :group 'message-headers
+  :group 'message-news
   :type 'string)
 
 ;; Note: could use /usr/ucb/mail instead of sendmail;
@@ -536,8 +565,13 @@ articles."
 \(This problem exists on Sunos 4 when sendmail is run in remote mode.)
 The value should be an expression to test whether the problem will
 actually occur."
-  :group 'message
+  :group 'message-sending
   :type 'sexp)
+
+(ignore-errors
+  (define-mail-user-agent 'message-user-agent
+    'message-mail 'message-send-and-exit 
+    'message-kill-buffer 'message-send-hook))
 
 ;;; Internal variables.
 ;;; Well, not really internal.
@@ -579,23 +613,23 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defcustom message-send-hook nil
   "Hook run before sending messages."
-  :group 'message
+  :group 'message-various
   :options '(ispell-message)
   :type 'hook)
 
 (defcustom message-send-mail-hook nil
   "Hook run before sending mail messages."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-send-news-hook nil
   "Hook run before sending news messages."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 (defcustom message-sent-hook nil
   "Hook run after sending messages."
-  :group 'message
+  :group 'message-various
   :type 'hook)
 
 ;;; Internal variables.
