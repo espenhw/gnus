@@ -99,7 +99,7 @@
 2003-01-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-prepare-threads): Reset state for %B
-	before beginning.  Trivial patch from Mark Thomas
+	before beginning.  Tiny patch from Mark Thomas
 	<swoon@bellatlantic.net>.
 
 2003-01-24  Teodor Zlatanov  <tzz@lifelogs.com>
