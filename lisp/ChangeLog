@@ -1,3 +1,7 @@
+2000-07-12 16:50:06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el: Fbind subst-char-in-string.
+
 2000-07-12 15:48:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in: Use W3DIR and lispdir.

@@ -34,7 +34,7 @@
 		     set-buffer-multibyte
 		     find-non-ascii-charset-region char-charset
 		     mule-write-region-no-coding-system
-		     find-charset-region
+		     find-charset-region subst-char-in-string
 		     find-coding-systems-region get-charset-property
 		     coding-system-get w3-region
 		     w3-coding-system-for-mime-charset 
