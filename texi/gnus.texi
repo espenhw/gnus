@@ -9950,7 +9950,7 @@ variable will be referenced.  If it's a list, then that list will be
 then the style is said to @dfn{match}.
 
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
-attribute consists of a @code{(@var{name} . @var{value})} pair.  The
+attribute consists of a @code{(@var{name} @var{value})} pair.  The
 attribute name can be one of @code{signature}, @code{signature-file},
 @code{organization}, @code{address}, @code{name} or @code{body}.  The
 attribute name can also be a string.  In that case, this will be used as

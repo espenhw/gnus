@@ -1,3 +1,8 @@
+2001-03-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Posting Styles): Posting styles have (NAME VALUE),
+	not (NAME . VALUE).
+
 2001-02-25 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Michael Totschnig <michaelt@supernet.ca>.
 
