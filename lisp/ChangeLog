@@ -1,3 +1,9 @@
+2001-09-17  Didier Verna  <didier@xemacs.org>
+
+	* nndiary.el: version 0.2-b14.
+	* gnus-diary.el (gnus-diary-check-message): fix `read-string'
+	compatibility problem with XEmacs 21.1.
+
 2001-09-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-line-format): Document %c.
@@ -16,7 +22,7 @@
 	character before we wanted (never included last character).
 	(gnus-tilde-max-form, gnus-tilde-cut-form) Made readable again,
 	add missing "," (once per function)
-	
+
 2001-09-14  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-start.el (gnus-group-mode-hook): Moved from gnus-group

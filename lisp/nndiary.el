@@ -2,22 +2,20 @@
 
 ;; Copyright (C) 1999-2001 Didier Verna.
 
-;; PRCS: $Id: nndiary.el 1.26 Wed, 12 Sep 2001 15:23:27 +0200 didier $
-
 ;; Author:        Didier Verna <didier@xemacs.org>
 ;; Maintainer:    Didier Verna <didier@xemacs.org>
 ;; Created:       Fri Jul 16 18:55:42 1999
 ;; Last Revision: Wed Aug  8 17:36:21 2001
 ;; Keywords:      calendar mail news
 
-;; This file is part of NNDiary.
+;; This file is part of Gnus.
 
-;; NNDiary is free software; you can redistribute it and/or modify
+;; Gnus is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
 
-;; NNDiary is distributed in the hope that it will be useful,
+;; Gnus is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -365,25 +363,7 @@ all.  This may very well take some time.")
 
 
 
-;; $Format: "(defconst nndiary-prcs-major-version \"$ProjectMajorVersion$\")"$
-(defconst nndiary-prcs-major-version "branch-0-2")
-;; $Format: "(defconst nndiary-prcs-minor-version \"$ProjectMinorVersion$\")"$
-(defconst nndiary-prcs-minor-version "13")
-(defconst nndiary-version
-  (let ((level nndiary-prcs-minor-version)
-	major minor status)
-    (string-match "\\(branch\\|version\\)-\\([0-9]+\\)-\\([0-9]+\\)"
-		  nndiary-prcs-major-version)
-    (setq major (match-string 2 nndiary-prcs-major-version)
-	  minor (match-string 3 nndiary-prcs-major-version)
-	  status (match-string 1 nndiary-prcs-major-version))
-    (cond ((string= status "version")
-	   (setq level (int-to-string (1- (string-to-int level))))
-	   (if (eq level 0)
-	       (concat major "." minor)
-	     (concat major "." minor "." level)))
-	  ((string= status "branch")
-	   (concat major "." minor "-b" level))))
+(defconst nndiary-version "0.2-b14"
   "Current Diary backend version.")
 
 (defun nndiary-version ()
