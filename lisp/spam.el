@@ -763,11 +763,6 @@ spam-use-* variable.")
       (apply 'spam-ham-move-routine (car groups))
     (spam-ham-copy-or-move-routine nil groups)))
 
-(eval-and-compile
-  (defalias 'spam-point-at-eol (if (fboundp 'point-at-eol)
-				   'point-at-eol
-				 'line-end-position)))
-
 (defun spam-get-article-as-string (article)
   (let ((article-buffer (spam-get-article-as-buffer article))
 	article-string)
@@ -1368,7 +1363,7 @@ functions")
 	;; check the return now (we're back in the temp buffer)
 	(goto-char (point-min))
 	(if (not (eobp))
-	    (setq category (buffer-substring (point) (spam-point-at-eol))))
+	    (setq category (buffer-substring (point) (point-at-eol))))
 	(when (not (zerop (length category))) ; we need a category here
 	  (if spam-ifile-all-categories
 	      (setq return category)
@@ -1556,7 +1551,7 @@ REMOVE not nil, remove the ADDRESSES."
       (with-temp-buffer
 	(insert-file-contents file)
 	(while (not (eobp))
-	  (setq address (buffer-substring (point) (spam-point-at-eol)))
+	  (setq address (buffer-substring (point) (point-at-eol)))
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
 	  (unless (zerop (length address))

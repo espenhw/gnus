@@ -34,12 +34,6 @@
 ;;; .netrc and .authinforc parsing
 ;;;
 
-(eval-and-compile
-  (defalias 'netrc-point-at-eol
-    (if (fboundp 'point-at-eol)
-	'point-at-eol
-      'line-end-position)))
-
 (defun netrc-parse (file)
   "Parse FILE and return an list of all entries in the file."
   (when (file-exists-p file)
@@ -52,7 +46,7 @@
 	(goto-char (point-min))
 	;; Go through the file, line by line.
 	(while (not (eobp))
-	  (narrow-to-region (point) (netrc-point-at-eol))
+	  (narrow-to-region (point) (point-at-eol))
 	  ;; For each line, get the tokens and values.
 	  (while (not (eobp))
 	    (skip-chars-forward "\t ")

@@ -512,13 +512,6 @@ A string or a list of strings is returned."
 	    (caddr curkey)
 	  (smime-get-certfiles keyfile otherkeys)))))
 
-;; Use mm-util?
-(eval-and-compile
-  (defalias 'smime-point-at-eol
-    (if (fboundp 'point-at-eol)
-	'point-at-eol
-      'line-end-position)))
-
 (defun smime-buffer-as-string-region (b e)
   "Return each line in region between B and E as a list of strings."
   (save-excursion

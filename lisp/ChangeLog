@@ -1,5 +1,19 @@
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam.el (spam-point-at-eol): Replace with point-at-eol.
+
+	* smime.el (smime-point-at-eol): Replace with point-at-eol.
+
+	* rfc2047.el (rfc2047-point-at-bol, rfc2047-point-at-eol): Replace
+	with point-at-{eol,bol}.
+
+	* netrc.el (netrc-point-at-eol): Replace with point-at-eol.
+
+	* imap.el (imap-point-at-eol): Replace with point-at-eol.
+
+	* flow-fill.el (fill-flowed-point-at-bol,
+	fill-flowed-point-at-eol): Replace with point-at-{eol,bol}.
+
 	* gnus-util.el (gnus-point-at-bol, gnus-point-at-eol): Remove.
 	Replace with point-at-{eol,bol} throughout all files.
 

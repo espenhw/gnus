@@ -153,15 +153,7 @@
   (autoload 'utf7-decode "utf7")
   (autoload 'format-spec "format-spec")
   (autoload 'format-spec-make "format-spec")
-  (autoload 'open-tls-stream "tls")
-  ;; Avoid use gnus-point-at-eol so we're independent of Gnus.  These
-  ;; days we have point-at-eol anyhow.
-  (if (fboundp 'point-at-eol)
-      (defalias 'imap-point-at-eol 'point-at-eol)
-    (defun imap-point-at-eol ()
-      (save-excursion
-	(end-of-line)
-	(point)))))
+  (autoload 'open-tls-stream "tls"))
 
 ;; User variables.
 
@@ -2452,7 +2444,7 @@ Return nil if no complete line has arrived."
 			      ;; next line for Courier IMAP bug.
 			      (skip-chars-forward " ")
 			      (point)))
-		(> (skip-chars-forward "^ )" (imap-point-at-eol)) 0))
+		(> (skip-chars-forward "^ )" (point-at-eol)) 0))
       (push (buffer-substring start (point)) flag-list))
     (assert (eq (char-after) ?\)) t "In imap-parse-flag-list")
     (imap-forward)
