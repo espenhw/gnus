@@ -683,7 +683,7 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-article-decode-hook
   '(article-decode-charset article-decode-encoded-words
-			   article-decode-group-name)
+			   article-decode-group-name article-decode-idna-rhs)
   "*Hook run to decode charsets in articles."
   :group 'gnus-article-headers
   :type 'hook)
@@ -1319,6 +1319,12 @@ It is a string, such as \"PGP\". If nil, ask user."
 
 (defvar gnus-article-wash-function nil
   "Function used for converting HTML into text.")
+
+(defcustom gnus-use-idna (condition-case nil (require 'idna) (file-error))
+  "Whether IDNA decoding of headers is used when viewing messages.
+This requires GNU Libidn, and by default only enabled if it is found."
+  :group 'gnus-article-headers
+  :type 'boolean)
 
 ;;; Internal variables
 
@@ -2127,6 +2133,27 @@ If PROMPT (the prefix), prompt for a coding system to use."
 				      gnus-original-article-buffer
 				    (nnmail-fetch-field "Followup-To"))
 				  gnus-newsgroup-name method))))))
+
+(defun article-decode-idna-rhs ()
+  "Decode IDNA strings in RHS in From:, To: and Cc: headers in current buffer."
+  (when gnus-use-idna
+    (save-restriction
+      (let ((inhibit-point-motion-hooks t)
+	    buffer-read-only)
+	(article-narrow-to-head)
+	(goto-char (point-min))
+	(while (re-search-forward "\\(xn--.*\\)[ \t\n\r,>]" nil t)
+	  (let (ace unicode)
+	    (when (save-match-data
+		    (and (setq ace (match-string 1))
+			 (save-excursion
+			   (and (re-search-backward "^[^ \t]" nil t)
+				(looking-at "From\\|To\\|Cc")))
+			 (save-excursion (backward-char)
+					 (message-idna-inside-rhs-p))
+			 (setq unicode (idna-to-unicode ace))))
+	      (unless (string= ace unicode)
+		(replace-match unicode nil nil nil 1)))))))))
 
 (defun article-de-quoted-unreadable (&optional force read-charset)
   "Translate a quoted-printable-encoded article.

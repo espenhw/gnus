@@ -1,5 +1,9 @@
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-article-decode-hook): Add IDNA.
+	(gnus-use-idna): New variable.
+	(article-decode-idna-rhs): New function.
+
 	* message.el (message-use-idna): New variable.
 	(message-mode-field-menu): Add entry for IDNA.
 	(message-idna-inside-rhs-p, message-idna-to-ascii-rhs-1)
