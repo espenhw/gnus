@@ -146,7 +146,11 @@ on your system, you could say something like:
 ;; Parsing headers and NOV lines.
 
 (defsubst nnheader-header-value ()
-  (buffer-substring (match-end 0) (gnus-point-at-eol)))
+  (buffer-substring 
+   (match-end 0) 
+   (if (re-search-forward "^[^ \t]" nil 'move)
+       (- (point) 2)
+     (1- (point)))))
 
 (defvar nnheader-newsgroup-none-id 1)
 
@@ -747,6 +751,16 @@ find-file-hooks, etc.
   (let ((format-alist nil)
         (after-insert-file-functions nil))
     (insert-file-contents filename visit beg end replace)))
+
+(defun nnheader-directory-regular-files (dir)
+  "Return a list of all regular files in DIR."
+  (let ((files (directory-files dir t))
+	out)
+    (while files
+      (when (file-regular-p (car files))
+	(push (car files) out))
+      (pop files))
+    (nreverse out)))
 
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)

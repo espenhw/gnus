@@ -445,18 +445,21 @@ reading."
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r?\n" "AUTHINFO USER"
-		     (read-string "NNTP user name: "))
-  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
-		     (nnmail-read-passwd "NNTP password: ")))
+  (nntp-send-command 
+   "^.*\r?\n" "AUTHINFO USER"
+   (read-string "NNTP (%s) user name: " nntp-address))
+  (nntp-send-command 
+   "^.*\r?\n" "AUTHINFO PASS" 
+   (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
-		     (read-string "NNTP password: ")))
+  (nntp-send-command
+   "^.*\r?\n" "AUTHINFO PASS" 
+   (read-string "NNTP (%s) password: " nntp-address)))
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.
@@ -583,7 +586,9 @@ It will prompt for a password."
 	    (save-excursion
 	      (set-buffer nntp-server-buffer)
 	      (nntp-read-server-type)
-	      (run-hooks 'nntp-server-opened-hook)))
+	      (run-hooks 'nntp-server-opened-hook)
+	      (set-buffer pbuffer)
+	      (erase-buffer)))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))
@@ -738,7 +743,8 @@ It will prompt for a password."
   (when group
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (when (not (equal group (caddr entry)))
-	(nntp-request-group group)))))
+	(nntp-request-group group)
+	(erase-buffer)))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."

@@ -190,23 +190,23 @@ isn't bound, the message will be used unconditionally."
       (narrow-to-region b (1+ (match-beginning 0)))
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
-	(condition-case nil
-	    (setq group (let ((obarray gnus-active-hashtb)) (read buf)))
-	  (error nil))
-	(if (not (boundp group))
-	    ;; Make sure all entries in the hashtb are bound.
-	    (set group nil)
-	  (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
-	    ;; Valid group.
-	    (beginning-of-line)
-	    (while (= (following-char) ?\t)
-	      (forward-line -1))
-	    (setq id (buffer-substring (point) (1- (search-forward "\t"))))
-	    (push id ncm)
-	    (gnus-sethash id t gnus-nocem-hashtb)
-	    (forward-line 1)
-	    (while (= (following-char) ?\t)
-	      (forward-line 1)))))
+	(if (condition-case nil
+		(setq group (let ((obarray gnus-active-hashtb)) (read buf)))
+	      (error nil))
+	    (if (not (boundp group))
+		;; Make sure all entries in the hashtb are bound.
+		(set group nil)
+	      (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
+		;; Valid group.
+		(beginning-of-line)
+		(while (= (following-char) ?\t)
+		  (forward-line -1))
+		(setq id (buffer-substring (point) (1- (search-forward "\t"))))
+		(push id ncm)
+		(gnus-sethash id t gnus-nocem-hashtb)
+		(forward-line 1)
+		(while (= (following-char) ?\t)
+		  (forward-line 1))))))
       (when ncm
 	(setq gnus-nocem-touched-alist t)
 	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)

@@ -4083,9 +4083,6 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 					    gnus-valid-select-methods)))
 		 (equal (nth 1 m1) (nth 1 m2)))))))
 
-(defsubst gnus-header-value ()
-  (buffer-substring (match-end 0) (gnus-point-at-eol)))
-
 (defvar gnus-newsgroup-none-id 0)
 
 (defun gnus-get-newsgroup-headers (&optional dependencies force-new)
@@ -4130,22 +4127,22 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nsubject: " nil t)
-		  (gnus-header-value) "(none)"))
+		  (nnheader-header-value) "(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom: " nil t)
-		  (gnus-header-value) "(nobody)"))
+		  (nnheader-header-value) "(nobody)"))
 	    ;; Date.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\ndate: " nil t)
-		  (gnus-header-value) ""))
+		  (nnheader-header-value) ""))
 	    ;; Message-ID.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nmessage-id: " nil t)
-		  (setq id (gnus-header-value))
+		  (setq id (nnheader-header-value))
 		;; If there was no message-id, we just fake one to make
 		;; subsequent routines simpler.
 		(setq id (concat "none+"
@@ -4159,7 +4156,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		  (progn
 		    (setq end (point))
 		    (prog1
-			(gnus-header-value)
+			(nnheader-header-value)
 		      (setq ref
 			    (buffer-substring
 			     (progn
@@ -4173,7 +4170,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		;; were no references and the in-reply-to header looks
 		;; promising.
 		(if (and (search-forward "\nin-reply-to: " nil t)
-			 (setq in-reply-to (gnus-header-value))
+			 (setq in-reply-to (nnheader-header-value))
 			 (string-match "<[^>]+>" in-reply-to))
 		    (setq ref (substring in-reply-to (match-beginning 0)
 					 (match-end 0)))
@@ -4191,7 +4188,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (and (search-forward "\nxref: " nil t)
-		   (gnus-header-value)))))
+		   (nnheader-header-value)))))
 	  (when (equal id ref)
 	    (setq ref nil))
 	  ;; We do the threading while we read the headers.  The
@@ -5050,6 +5047,8 @@ initially.  If NEXT-GROUP, go to this group.  If BACKWARD, go to
 previous group instead."
   (interactive "P")
   (gnus-set-global-variables)
+  ;; Stop pre-fetching.
+  (gnus-async-halt-prefetch)
   (let ((current-group gnus-newsgroup-name)
 	(current-buffer (current-buffer))
 	entered)
@@ -6085,6 +6084,8 @@ to guess what the document format is."
 
 (defun gnus-summary-read-document (n)
   "Open a new group based on the current article(s).
+This will allow you to read digests and other similar
+documents as newsgroups.
 Obeys the standard process/prefix convention."
   (interactive "P")
   (let* ((articles (gnus-summary-work-articles n))
@@ -6403,9 +6404,14 @@ forward."
   (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-eval-in-buffer-window gnus-article-buffer
-    (widen)))
+    (widen)
+    (when (gnus-visual-p 'page-marker)
+      (let ((buffer-read-only nil))
+	(gnus-remove-text-with-property 'gnus-prev)
+	(gnus-remove-text-with-property 'gnus-next)))))
 
-(defun gnus-summary-move-article (&optional n to-newsgroup select-method action)
+(defun gnus-summary-move-article (&optional n to-newsgroup 
+					    select-method action)
   "Move the current article to a different newsgroup.
 If N is a positive number, move the N next articles.
 If N is a negative number, move the N previous articles.
@@ -6453,7 +6459,8 @@ and `request-accept' functions."
     (setq to-method (or select-method 
 			(gnus-group-name-to-method to-newsgroup)))
     ;; Check the method we are to move this article to...
-    (unless (gnus-check-backend-function 'request-accept-article (car to-method))
+    (unless (gnus-check-backend-function 
+	     'request-accept-article (car to-method))
       (error "%s does not support article copying" (car to-method)))
     (unless (gnus-check-server to-method)
       (error "Can't open server %s" (car to-method)))
@@ -7519,11 +7526,11 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 If prefix argument ALL is non-nil, all articles are marked as read."
   (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-catchup all quietly nil 'fast)
-  ;; Select next newsgroup or exit.
-  (if (eq gnus-auto-select-next 'quietly)
-      (gnus-summary-next-group nil)
-    (gnus-summary-exit)))
+  (when (gnus-summary-catchup all quietly nil 'fast)
+    ;; Select next newsgroup or exit.
+    (if (eq gnus-auto-select-next 'quietly)
+	(gnus-summary-next-group nil)
+      (gnus-summary-exit))))
 
 (defun gnus-summary-catchup-all-and-exit (&optional quietly)
   "Mark all articles in this newsgroup as read, and then exit."
@@ -8042,22 +8049,19 @@ save those articles instead."
 		     (setq split-name (append result split-name)))))))))
     split-name))
 
+(defun gnus-valid-move-group-p (group)
+  (and (boundp group)
+       (symbol-name group)
+       (memq 'respool
+	     (assoc (symbol-name
+		     (car (gnus-find-method-for-group
+			   (symbol-name group))))
+		    gnus-valid-select-methods))))
+
 (defun gnus-read-move-group-name (prompt default articles prefix)
   "Read a group name."
   (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
 	 (minibuffer-confirm-incomplete nil) ; XEmacs
-	 group-map
-	 (dum (mapatoms
-	       (lambda (g)
-		 (and (boundp g)
-		      (symbol-name g)
-		      (memq 'respool
-			    (assoc (symbol-name
-				    (car (gnus-find-method-for-group
-					  (symbol-name g))))
-				   gnus-valid-select-methods))
-		      (push (list (symbol-name g)) group-map)))
-	       gnus-active-hashtb))
 	 (prom
 	  (format "%s %s to:"
 		  prompt
@@ -8068,11 +8072,15 @@ save those articles instead."
 	  (cond
 	   ((null split-name)
 	    (gnus-completing-read default prom
-				  group-map nil nil prefix
+				  gnus-active-hashtb
+				  'gnus-valid-move-group-p
+				  nil prefix
 				  'gnus-group-history))
 	   ((= 1 (length split-name))
-	    (gnus-completing-read (car split-name) prom group-map
-				  nil nil nil
+	    (gnus-completing-read (car split-name) prom
+				  gnus-active-hashtb
+				  'gnus-valid-move-group-p
+				  nil nil
 				  'gnus-group-history))
 	   (t
 	    (gnus-completing-read nil prom 
@@ -8081,19 +8089,19 @@ save those articles instead."
 				  nil nil nil
 				  'gnus-group-history)))))
     (when to-newsgroup
-      (when (or (string= to-newsgroup "")
-		(string= to-newsgroup prefix))
-	(setq to-newsgroup (or default "")))
+      (if (or (string= to-newsgroup "")
+	      (string= to-newsgroup prefix))
+	  (setq to-newsgroup (or default "")))
       (or (gnus-active to-newsgroup)
 	  (gnus-activate-group to-newsgroup)
-	  (when (gnus-y-or-n-p (format "No such group: %s.  Create it? "
-				       to-newsgroup))
-	    (or (and (gnus-request-create-group 
-		      to-newsgroup (gnus-group-name-to-method to-newsgroup))
-		     (gnus-activate-group to-newsgroup nil nil
-					  (gnus-group-name-to-method
-					   to-newsgroup)))
-		(error "Couldn't create group %s" to-newsgroup)))
+	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
+				     to-newsgroup))
+	      (or (and (gnus-request-create-group 
+			to-newsgroup (gnus-group-name-to-method to-newsgroup))
+		       (gnus-activate-group to-newsgroup nil nil
+					    (gnus-group-name-to-method
+					     to-newsgroup)))
+		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
 

@@ -388,7 +388,7 @@ virtual group.")
 		(mapcar
 		 (lambda (g)
 		   (when (and (setq active (gnus-activate-group g))
-			      (> (cdr active) (car active)))
+			      (>= (cdr active) (car active)))
 		     (setq unreads (gnus-list-of-unread-articles g)
 			   marks (gnus-uncompress-marks
 				  (gnus-info-marks (gnus-get-info g))))

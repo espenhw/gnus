@@ -106,7 +106,9 @@ Eg.:
 This variable is \"/usr/spool/mail/$user\" by default.
 If this variable is nil, no mail backends will read incoming mail.
 If this variable is a list, all files mentioned in this list will be
-used as incoming mailboxes.")
+used as incoming mailboxes.
+If this variable is a directory (i. e., it's name ends with a \"/\"),
+treat all files in that directory as incoming spool files.")
 
 (defvar nnmail-crash-box "~/.gnus-crash-box"
   "*File where Gnus will store mail while processing it.")
@@ -626,15 +628,22 @@ is a spool.  If not using procmail, return GROUP."
   "Put point at the beginning of the next message."
   (let ((case-fold-search t)
 	(delim (concat "^" message-unix-mail-delimiter))
-	found)
+	found search )
     (while (not found)
-      (if (re-search-forward delim nil t)
-	  (when (or (looking-at "[^\n :]+ *:")
-		    (looking-at delim)
-		    (looking-at (concat ">" message-unix-mail-delimiter)))
-	    (forward-line -1)
-	    (setq found 'yes))
-	(setq found 'no)))
+      (setq search (condition-case ()
+		       (re-search-forward delim nil t)
+		     (error 'error)))
+      (cond 
+       ((eq search 'error)
+	(setq found 'yes))
+       (search
+	(when (or (looking-at "[^\n :]+ *:")
+		  (looking-at delim)
+		  (looking-at (concat ">" message-unix-mail-delimiter)))
+	  (forward-line -1)
+	  (setq found 'yes)))
+       (t
+	(setq found 'no))))
     (eq found 'yes)))
 
 (defun nnmail-process-unix-mail-format (func artnum-func)
@@ -1041,9 +1050,24 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		   (eq nnmail-spool-file 'procmail))
 	      nil)
 	     ((listp nnmail-spool-file)
-	      (append nnmail-spool-file procmails))
-	     ((stringp nnmail-spool-file)
+	      (nconc
+	       (apply 
+		'nconc
+		(mapcar 
+		 (lambda (file)
+		   (if (file-directory-p file)
+		       (nnheader-directory-regular-files file)
+		     (list file)))
+		 nnmail-spool-file))
+	       procmails))
+	     ((and (stringp nnmail-spool-file)
+		   (not (file-directory-p nnmail-spool-file)))
 	      (cons nnmail-spool-file procmails))
+	     ((and (stringp nnmail-spool-file)
+		   (file-directory-p nnmail-spool-file))
+	      (nconc
+	       (nnheader-directory-regular-files nnmail-spool-file)
+	       procmails))
 	     ((eq nnmail-spool-file 'pop)
 	      (cons (format "po:%s" (user-login-name)) procmails))
 	     (t
@@ -1298,13 +1322,19 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (nnmail-time-less days (nnmail-time-since time)))))))
 
 (defvar nnmail-read-passwd nil)
-(defun nnmail-read-passwd (prompt)
-  (unless nnmail-read-passwd
-    (if (load "passwd" t)
-	(setq nnmail-read-passwd 'read-passwd)
-      (autoload 'ange-ftp-read-passwd "ange-ftp")
-      (setq nnmail-read-passwd 'ange-ftp-read-passwd)))
-  (funcall nnmail-read-passwd prompt))
+(defun nnmail-read-passwd (prompt &rest args)
+  "Read a password using PROMPT.
+If ARGS, PROMPT is used as an argument to `format'."
+  (let ((prompt
+	 (if args
+	     (apply 'format prompt args)
+	   prompt)))
+    (unless nnmail-read-passwd
+      (if (load "passwd" t)
+	  (setq nnmail-read-passwd 'read-passwd)
+	(autoload 'ange-ftp-read-passwd "ange-ftp")
+	(setq nnmail-read-passwd 'ange-ftp-read-passwd)))
+    (funcall nnmail-read-passwd prompt)))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."

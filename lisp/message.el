@@ -961,8 +961,9 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   "Move point to the beginning of the message signature."
   (interactive)
   (goto-char (point-min))
-  (or (re-search-forward message-signature-separator nil t)
-      (goto-char (point-max))))
+  (if (re-search-forward message-signature-separator nil t)
+      (forward-line 1)
+    (goto-char (point-max))))
 
 
 
@@ -1643,9 +1644,12 @@ to find out how to use this."
 		   (re-search-forward "^[^ \t:]+: " nil t))
 	 (save-excursion
 	   (or (re-search-forward 
-		(concat "^" (setq found
-				  (buffer-substring
-				   (match-beginning 0) (- (match-end 0) 2))))
+		(concat "^" 
+			(regexp-quote
+			 (setq found
+			       (buffer-substring
+				(match-beginning 0) (- (match-end 0) 2))))
+			":")
 		nil t)
 	       (setq found nil))))
        (if found

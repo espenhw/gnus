@@ -437,11 +437,15 @@ articles in the topic and its subtopics."
       (while (and (zerop (forward-line 1))
 		  (> (or (gnus-group-topic-level) (1+ level)) level)))
       (delete-region beg (point))
-      (setcdr (cadr (gnus-topic-find-topology topic))
-	      (if insert (list 'visible) (list 'invisible)))
-      (when hide
-	(setcdr (cdadr (gnus-topic-find-topology topic))
-		(list hide)))
+      ;; Do the change in this rather odd manner because it has been
+      ;; reported that some topics share parts of some lists, for some
+      ;; reason.  I have been unable to determine why this is the
+      ;; case, but this hack seems to take care of things.
+      (let ((data (cadr (gnus-topic-find-topology topic))))
+	(setcdr data
+		(list (if insert 'visible 'invisible)
+		      (if hide 'hide nil)
+		      (cadddr data))))
       (unless total-remove
 	(gnus-topic-insert-topic topic in-level)))))
 
@@ -914,7 +918,8 @@ articles in the topic and its subtopics."
       (remove-hook 'gnus-group-change-level-function 
 		   'gnus-topic-change-level)
       (remove-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
-      (setq gnus-group-prepare-function 'gnus-group-prepare-flat))
+      (setq gnus-group-prepare-function 'gnus-group-prepare-flat)
+      (setq gnus-group-sort-alist-function 'gnus-group-sort-flat))
     (when redisplay
       (gnus-group-list-groups))))
     

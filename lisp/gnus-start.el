@@ -479,7 +479,7 @@ the first newsgroup."
 	gnus-zombie-list nil
 	gnus-killed-hashtb nil
 	gnus-active-hashtb nil
-	gnus-moderated-list nil
+	gnus-moderated-hashtb nil
 	gnus-description-hashtb nil
 	gnus-current-headers nil
 	gnus-thread-indent-array nil
@@ -1498,6 +1498,14 @@ newsgroup."
 		(gnus-message 5 "%sdone" mesg))))))
 	(setq methods (cdr methods))))))
 
+
+(defun gnus-ignored-newsgroups-has-to-p ()
+  "T only when gnus-ignored-newsgroups includes \"^to\\\\.\" as an element."
+  ;; note this regexp is the same as:
+  ;; (concat (regexp-quote "^to\\.") "\\($\\|" (regexp-quote "\\|") "\\)")
+  (string-match "\\^to\\\\\\.\\($\\|\\\\|\\)"
+		gnus-ignored-newsgroups))
+  
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors)
   (unless method
@@ -1512,20 +1520,23 @@ newsgroup."
 				(gnus-make-hashtable
 				 (count-lines (point-min) (point-max)))
 			      (gnus-make-hashtable 4096)))))))
-    ;; Delete unnecessary lines.
+    ;; Delete unnecessary lines, cleaned up dmoore@ucsd.edu 31.10.1996
     (goto-char (point-min))
-    (while (search-forward "\nto." nil t)
-      (delete-region (1+ (match-beginning 0))
-		     (progn (forward-line 1) (point))))
-    (unless (string= gnus-ignored-newsgroups "")
-      (goto-char (point-min))
-      (delete-matching-lines gnus-ignored-newsgroups))
+    (cond ((gnus-ignored-newsgroups-has-to-p)
+	   (delete-matching-lines gnus-ignored-newsgroups))
+	  ((string= gnus-ignored-newsgroups "")
+	   (delete-matching-lines "^to\\."))
+	  (t
+	   (delete-matching-lines (concat "^to\\.\\|"
+					  gnus-ignored-newsgroups))))
+
     ;; Make the group names readable as a lisp expression even if they
     ;; contain special characters.
     ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
     (goto-char (point-max))
     (while (re-search-backward "[][';?()#]" nil t)
       (insert ?\\))
+
     ;; If these are groups from a foreign select method, we insert the
     ;; group prefix in front of the group names.
     (and method (not (gnus-server-equal
@@ -1537,70 +1548,44 @@ newsgroup."
 		       (progn (insert prefix)
 			      (zerop (forward-line 1)))))))
     ;; Store the active file in a hash table.
+    ;; dmoore@ucsd.edu 31.10.1996 - use same method for moderation or not
     (goto-char (point-min))
-    (if (and (boundp 'gnus-group-line-format)
-	     (string-match "%[oO]" gnus-group-line-format))
-	;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
-	;; If we want information on moderated groups, we use this
-	;; loop...
-	(let* ((mod-hashtb (make-vector 7 0))
-	       (m (intern "m" mod-hashtb))
-	       group max min)
-	  (while (not (eobp))
-	    (condition-case nil
-		(progn
-		  (narrow-to-region (point) (gnus-point-at-eol))
-		  (setq group (let ((obarray hashtb)) (read cur)))
-		  (if (and (numberp (setq max (read cur)))
-			   (numberp (setq min (read cur)))
-			   (progn
-			     (skip-chars-forward " \t")
-			     (not
-			      (or (= (following-char) ?=)
-				  (= (following-char) ?x)
-				  (= (following-char) ?j)))))
-		      (set group (cons min max))
-		    (set group nil))
-		  ;; Enter moderated groups into a list.
-		  (when (eq (let ((obarray mod-hashtb)) (read cur)) m)
-		    (push (symbol-name group) gnus-moderated-list)))
-	      (error
-	       (and group
-		    (symbolp group)
-		    (set group nil))))
-	    (widen)
-	    (forward-line 1)))
-      ;; And if we do not care about moderation, we use this loop,
-      ;; which is faster.
-      (let (group max min)
-	(while (not (eobp))
-	  (condition-case ()
-	      (progn
-		(narrow-to-region (point) (gnus-point-at-eol))
-		;; group gets set to a symbol interned in the hash table
-		;; (what a hack!!) - jwz
-		(setq group (let ((obarray hashtb)) (read cur)))
-		(if (and (numberp (setq max (read cur)))
-			 (numberp (setq min (read cur)))
-			 (progn
-			   (skip-chars-forward " \t")
-			   (not
-			    (or (= (following-char) ?=)
-				(= (following-char) ?x)
-				(= (following-char) ?j)))))
+    (let (group max min)
+      (while (not (eobp))
+	(condition-case ()
+	    (progn
+	      (narrow-to-region (point) (gnus-point-at-eol))
+	      ;; group gets set to a symbol interned in the hash table
+	      ;; (what a hack!!) - jwz
+	      (setq group (let ((obarray hashtb)) (read cur)))
+	      (if (and (numberp (setq max (read cur)))
+		       (numberp (setq min (read cur)))
+		       (progn
+			 (skip-chars-forward " \t")
+			 (not
+			  (or (= (following-char) ?=)
+			      (= (following-char) ?x)
+			      (= (following-char) ?j)))))
+		  (progn
 		    (set group (cons min max))
-		  (set group nil)))
-	    (error
-	     (progn
-	       (and group
-		    (symbolp group)
-		    (set group nil))
-	       (unless ignore-errors
-		 (gnus-message 3 "Warning - illegal active: %s"
-			       (buffer-substring
-				(gnus-point-at-bol) (gnus-point-at-eol)))))))
-	  (widen)
-	  (forward-line 1))))))
+		    ;; if group is moderated, stick in moderation table
+		    (when (= (following-char) ?m)
+		      (unless gnus-moderated-hashtb
+			(setq gnus-moderated-hashtb (make-vector 127 0)))
+		      (gnus-sethash (symbol-name group) t
+				    gnus-moderated-hashtb)))
+		(set group nil)))
+	  (error
+	   (progn
+	     (and group
+		  (symbolp group)
+		  (set group nil))
+	     (unless ignore-errors
+	       (gnus-message 3 "Warning - illegal active: %s"
+			     (buffer-substring
+			      (gnus-point-at-bol) (gnus-point-at-eol)))))))
+	(widen)
+	(forward-line 1)))))
 
 (defun gnus-groups-to-gnus-format (method &optional hashtb)
   ;; Parse a "groups" active file.

@@ -684,6 +684,7 @@ score the alt hierarchy, you'd say \"!alt.all\"."
 	 (gnus-expert-user t)
 	 (nnmail-spool-file nil)
 	 (gnus-use-dribble-file nil)
+	 (gnus-batch-mode t)
 	 group newsrc entry
 	 ;; Disable verbose message.
 	 gnus-novice-user gnus-large-newsgroup
@@ -691,16 +692,17 @@ score the alt hierarchy, you'd say \"!alt.all\"."
 	 gnus-options-not-subscribe)
     ;; Eat all arguments.
     (setq command-line-args-left nil)
-    (gnus)
+    (gnus-slave)
     ;; Apply kills to specified newsgroups in command line arguments.
     (setq newsrc (cdr gnus-newsrc-alist))
     (while (setq group (car (pop newsrc)))
       (setq entry (gnus-gethash group gnus-newsrc-hashtb))
-      (when (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
+      (when (and (<= (gnus-info-level (car newsrc)) gnus-level-subscribed)
 		 (and (car entry)
 		      (or (eq (car entry) t)
 			  (not (zerop (car entry)))))
-		 (eq (gnus-matches-options-n group) 'subscribe))
+		 ;;(eq (gnus-matches-options-n group) 'subscribe)
+		 )
 	(gnus-summary-read-group group nil t nil t)
 	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))
 	  (gnus-summary-exit))))

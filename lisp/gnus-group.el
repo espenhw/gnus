@@ -1206,7 +1206,7 @@ If REGEXP, only list groups matching REGEXP."
 	      (or (gnus-gethash gnus-tmp-group gnus-description-hashtb) "")
 	    ""))
 	 (gnus-tmp-moderated
-	  (if (member gnus-tmp-group gnus-moderated-list) ?m ? ))
+	  (if (gnus-gethash gnus-tmp-group gnus-moderated-hashtb) ?m ? ))
 	 (gnus-tmp-moderated-string
 	  (if (eq gnus-tmp-moderated ?m) "(m)" ""))
 	 (gnus-tmp-method
@@ -2463,7 +2463,8 @@ If REVERSE, sort in reverse order."
       (while (setq info (pop alist))
 	(when (gnus-group-native-p (gnus-info-group info))
 	  (gnus-info-clear-data info)))
-      (gnus-get-unread-articles))))
+      (gnus-get-unread-articles)
+      (gnus-dribble-enter ""))))
 
 (defun gnus-info-clear-data (info)
   "Clear all marks and read ranges from INFO."

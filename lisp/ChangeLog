@@ -1,3 +1,91 @@
+Tue Nov  5 22:34:01 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-goto-signature): Place point better.
+
+	* gnus-art.el (gnus-summary-save-body-in-file): Restored.
+
+	* nntp.el (nntp-send-authinfo): Better password prompting.
+
+	* nnmail.el (nnmail-read-passwd): Allow format strings.
+
+Tue Nov  5 22:10:20 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-sum.el (gnus-valid-move-group-p): New function.
+	(gnus-read-move-group-name): Faster implementation.
+
+Tue Nov  5 12:35:40 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Would wipe out topic
+	parameters. 
+
+	* gnus-sum.el (gnus-summary-stop-page-breaking): Remove all
+	buttons. 
+
+	* nnweb.el (nnweb-set-hashtb): Typo.
+
+Tue Nov  5 10:43:24 1996  Randal Schwartz  <merlyn@stonehenge.com>
+
+	* gnus-uu.el (gnus-uu-be-dangerous): New variable.
+	(gnus-uu-save-files): Use it.
+
+Tue Nov  5 10:19:39 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-read-document): Doc fix.
+	(gnus-summary-catchup-and-exit): Don't exit when replying "n".
+
+	* gnus-art.el (gnus-summary-write-to-file): Doc fix.
+
+	* gnus-uu.el (gnus-uu-get-list-of-articles): Get numerical prefix
+	value. 
+
+Tue Nov  5 10:14:02 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-start.el (gnus-groups-to-gnus-format): Simplified and made
+	faster. 
+
+Tue Nov  5 04:56:33 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-search-unix-mail-delim): Protect against
+	regexp overflows.
+
+	* nnheader.el (nnheader-header-value): New definition.
+
+	* nntp.el (nntp-open-connection): Erase buffer.
+	(nntp-possibly-change-group): Ditto.
+
+	* nnvirtual.el (nnvirtual-create-mapping): Would ignore groups
+	with just one article.
+
+Tue Nov  5 03:41:30 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-nocem.el (gnus-nocem-enter-article): Would bug out on some
+	lines. 
+
+Tue Nov  5 03:36:03 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-find-favourite-words): Put point at
+	bob. 
+
+Tue Nov  5 03:33:04 1996  jeff sparkes  <jsparkes@nortel.ca>
+
+	* gnus-kill.el (gnus-batch-score): Run in slave mode.
+
+Mon Nov  4 03:16:18 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnheader.el (nnheader-directory-regular-files): New function. 
+
+	* nnmail.el (nnmail-get-spool-files): Allow nnmail-spool-file to
+	be a directory.
+
+	* gnus-sum.el (gnus-summary-next-group): Halt prefetch.
+
+	* gnus-async.el (gnus-async-halt-prefetch): New function.
+
+	* message.el (message-check-news-header-syntax): Anchor
+	multiple-searches. 
+
+	* gnus-topic.el (gnus-topic-mode): Reset sorting function.
+
 Tue Oct 29 20:42:07 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-remove-topic): Fold properly.

@@ -899,13 +899,14 @@ function and want to see what the date was before converting."
 		visible (nth 2 elem)
 		face (nth 3 elem))
 	  (while (re-search-forward regexp nil t)
-	    (article-hide-text
-	     (match-beginning invisible) (match-end invisible) props)
-	    (article-unhide-text-type
-	     (match-beginning visible) (match-end visible) 'emphasis)
-	    (put-text-property 
-	     (match-beginning visible) (match-end visible)
-	     'face face)))))))
+ 	    (when (and (match-beginning visible) (match-beginning invisible))
+ 	      (article-hide-text
+ 	       (match-beginning invisible) (match-end invisible) props)
+ 	      (article-unhide-text-type
+ 	       (match-beginning visible) (match-end visible) 'emphasis)
+ 	      (put-text-property 
+ 	       (match-beginning visible) (match-end visible) 'face face)
+ 	      (goto-char (match-end invisible)))))))))
 
 (provide 'article)
 

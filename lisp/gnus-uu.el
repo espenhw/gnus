@@ -234,6 +234,11 @@ The headers will be included in the sequence they are matched.")
 (defvar gnus-uu-save-separate-articles nil
   "*Non-nil means that gnus-uu will save articles in separate files.")
 
+(defvar gnus-uu-be-dangerous 'ask
+  "*Specifies what to do if unusual situations arise during decoding.
+If nil, be as conservative as possible.  If t, ignore things that
+didn't work, and overwrite existing files.  Otherwise, ask each time.")
+
 ;; Internal variables
 
 (defvar gnus-uu-saved-article-name nil)
@@ -718,7 +723,10 @@ The headers will be included in the sequence they are matched.")
 	    (gnus-make-directory (concat dir fromdir))
 	  (setq to-file (concat dir fromdir))
 	  (when (or (not (file-exists-p to-file))
-		    (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
+		    (eq gnus-uu-be-dangerous t)
+		    (and gnus-uu-be-dangerous
+			 (gnus-y-or-n-p (format "%s exists; overwrite? "
+						to-file))))
 	    (copy-file file to-file t t)))))
     (gnus-message 5 "Saved %d file%s" len (if (= len 1) "" "s"))))
 
@@ -1000,6 +1008,7 @@ The headers will be included in the sequence they are matched.")
   (let (articles)
     (cond 
      (n
+      (setq n (prefix-numeric-value n))
       (let ((backward (< n 0))
 	    (n (abs n)))
 	(save-excursion
@@ -1185,9 +1194,11 @@ The headers will be included in the sequence they are matched.")
 	  ;; file was unsuccessfully decoded, so we delete it.
 	  (when (and result-file 
 		     (file-exists-p result-file)
-		     (gnus-y-or-n-p
-		      (format "Delete unsuccessfully decoded file %s"
-			      result-file)))
+		     (not gnus-uu-be-dangerous)
+		     (or (eq gnus-uu-be-dangerous t)
+			 (gnus-y-or-n-p
+			  (format "Delete unsuccessfully decoded file %s"
+				  result-file))))
 	    (delete-file result-file)))
 	(when (memq 'begin process-state)
 	  (setq result-file (car process-state)))
@@ -1224,7 +1235,9 @@ The headers will be included in the sequence they are matched.")
 	   (not (memq 'end process-state))
 	   result-file 
 	   (file-exists-p result-file)
-	   (gnus-y-or-n-p (format "Delete incomplete file %s? " result-file))
+	   (not gnus-uu-be-dangerous)
+	   (or (eq gnus-uu-be-dangerous t)
+	       (gnus-y-or-n-p (format "Delete incomplete file %s? " result-file)))
 	   (delete-file result-file))
 
       ;; If this was a file of the wrong sort, then 

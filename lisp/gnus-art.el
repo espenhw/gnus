@@ -499,11 +499,35 @@ Directory to save to is default to `gnus-article-save-directory'."
     (setq gnus-newsgroup-last-file filename)))
 
 (defun gnus-summary-write-to-file (&optional filename)
-  "Append this article body to a file.
+  "Write this article to a file.
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
   (gnus-summary-save-in-file nil t))
+
+
+(defun gnus-summary-save-body-in-file (&optional filename)
+  "Append this article body to a file.
+Optional argument FILENAME specifies file name.
+The directory to save in defaults to `gnus-article-save-directory'."
+  (interactive)
+  (gnus-set-global-variables)
+  (let ((default-name
+	  (funcall gnus-file-save-name gnus-newsgroup-name
+		   gnus-current-headers gnus-newsgroup-last-file)))
+    (setq filename (gnus-read-save-file-name
+		    "Save %s body in file:" default-name filename))
+    (gnus-make-directory (file-name-directory filename))
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (goto-char (point-min))
+	  (when (search-forward "\n\n" nil t)
+	    (narrow-to-region (point) (point-max)))
+	  (gnus-output-to-file filename))))
+    ;; Remember the directory name to save articles.
+    (setq gnus-newsgroup-last-file filename)))
 
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."

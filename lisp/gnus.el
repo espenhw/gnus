@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.53"
+(defconst gnus-version-number "0.54"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -71,23 +71,24 @@ be set in `.emacs' instead."
 	(t
 	 'ignore)))
 
-(defalias 'gnus-make-overlay 'make-overlay)
-(defalias 'gnus-overlay-put 'overlay-put)
-(defalias 'gnus-move-overlay 'move-overlay)
-(defalias 'gnus-overlay-end 'overlay-end)
-(defalias 'gnus-extent-detached-p 'ignore)
-(defalias 'gnus-extent-start-open 'ignore)
-(defalias 'gnus-set-text-properties 'set-text-properties)
-(defalias 'gnus-group-remove-excess-properties 'ignore)
-(defalias 'gnus-topic-remove-excess-properties 'ignore)
-(defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
-(defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
-(defalias 'gnus-make-local-hook 'make-local-hook)
-(defalias 'gnus-add-hook 'add-hook)
-(defalias 'gnus-character-to-event 'identity)
-(defalias 'gnus-add-text-properties 'add-text-properties)
-(defalias 'gnus-put-text-property 'put-text-property)
-(defalias 'gnus-mode-line-buffer-identification 'identity)
+(when (not (featurep 'gnus-xmas))
+  (progn (defalias 'gnus-make-overlay 'make-overlay)
+	 (defalias 'gnus-overlay-put 'overlay-put)
+	 (defalias 'gnus-move-overlay 'move-overlay)
+	 (defalias 'gnus-overlay-end 'overlay-end)
+	 (defalias 'gnus-extent-detached-p 'ignore)
+	 (defalias 'gnus-extent-start-open 'ignore)
+	 (defalias 'gnus-set-text-properties 'set-text-properties)
+	 (defalias 'gnus-group-remove-excess-properties 'ignore)
+	 (defalias 'gnus-topic-remove-excess-properties 'ignore)
+	 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
+	 (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
+	 (defalias 'gnus-make-local-hook 'make-local-hook)
+	 (defalias 'gnus-add-hook 'add-hook)
+	 (defalias 'gnus-character-to-event 'identity)
+	 (defalias 'gnus-add-text-properties 'add-text-properties)
+	 (defalias 'gnus-put-text-property 'put-text-property)
+	 (defalias 'gnus-mode-line-buffer-identification 'identity)))
 
 ;; The XEmacs people think this is evil, so it must go.
 (defun custom-face-lookup (&optional fg bg stipple bold italic underline)
@@ -758,6 +759,9 @@ want.")
 (defvar gnus-slave nil
   "Whether this Gnus is a slave or not.")
 
+(defvar gnus-batch-mode nil
+  "Whether this Gnus is running in batch mode or not.")
+
 (defvar gnus-variable-list
   '(gnus-newsrc-options gnus-newsrc-options-n
     gnus-newsrc-last-checked-date
@@ -792,8 +796,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-active-hashtb nil
   "Hashtable of active articles.")
 
-(defvar gnus-moderated-list nil
-  "List of moderated newsgroups.")
+(defvar gnus-moderated-hashtb nil
+  "Hashtable of moderated newsgroups.")
 
 ;; Save window configuration.
 (defvar gnus-prev-winconf nil)
@@ -960,7 +964,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-logic" gnus-score-advanced)
      ("gnus-undo" gnus-undo-mode gnus-undo-register)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
-      gnus-async-prefetch-article gnus-async-prefetch-remove-group)
+      gnus-async-prefetch-article gnus-async-prefetch-remove-group
+      gnus-async-halt-prefetch)
      ("article" article-decode-rfc1522)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))

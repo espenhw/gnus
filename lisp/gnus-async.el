@@ -120,6 +120,10 @@ It should return non-nil if the article is to be prefetched."
 (defun gnus-async-set-buffer ()
   (nnheader-set-temp-buffer gnus-async-prefetch-article-buffer t))
 
+(defun gnus-async-halt-prefetch ()
+  "Stop prefetching."
+  (setq gnus-async-fetch-list nil))
+
 (defun gnus-async-prefetch-next (group article summary)
   "Possibly prefetch several articles starting with the article after ARTICLE."
   (when (and (gnus-buffer-live-p summary)

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.53 Manual
+@settitle Red Gnus 0.54 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.53 Manual
+@title Red Gnus 0.54 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -5367,6 +5367,13 @@ View the file.
 Move the file (if you're using a saving function.)
 @end table
 
+@item gnus-uu-be-dangerous
+@vindex gnus-uu-be-dangerous
+Specifies what to do if unusual situations arise during decoding.  If
+@code{nil}, be as conservative as possible.  If @code{t}, ignore things
+that didn't work, and overwrite existing files.  Otherwise, ask each
+time.
+
 @item gnus-uu-ignore-files-by-name
 @vindex gnus-uu-ignore-files-by-name
 Files with name matching this regular expression won't be viewed.
@@ -6110,6 +6117,8 @@ header of the article by pushing @kbd{A R}
 
 @findex gnus-summary-refer-article
 @kindex M-^ (Summary)
+@cindex Message-ID
+@cindex fetching by Message-ID
 You can also ask the @sc{nntp} server for an arbitrary article, no
 matter what group it belongs to.  @kbd{M-^}
 (@code{gnus-summary-refer-article}) will ask you for a
@@ -10166,7 +10175,7 @@ silently to help keep the sizes of the score files down.
 * Score Variables::          Customize your scoring.  (My, what terminology).
 * Score File Format::        What a score file may contain.
 * Score File Editing::       You can edit score files by hand as well.
-* Adaptive Scoring::         Big Sister Gnus @emph{knows} what you read.
+* Adaptive Scoring::         Big Sister Gnus knows what you read.
 * Home Score File::          How to say where new score entries are to go.
 * Followups To Yourself::    Having Gnus notice when people answer you.
 * Scoring Tips::             How to score effectively.
@@ -10678,7 +10687,11 @@ instead, if you feel like.
 
 @item Lines, Chars
 These two headers use different match types: @code{<}, @code{>},
-@code{=}, @code{>=} and @code{<=}.
+@code{=}, @code{>=} and @code{<=}.  When matching on @code{Lines}, be
+careful because some backends (like @code{nndir}) do not generate
+@code{Lines} header, so every article ends up being marked as having 0
+lines.  This can lead to strange results if you happen to lower score of
+the articles with few lines.
 
 @item Date
 For the Date header we have three kinda silly match types:
@@ -14642,6 +14655,7 @@ In the examples and definitions I will refer to the imaginary backend
 * Error Messaging::                   How to get messages and report errors.
 * Writing New Backends::              Extending old backends.
 * Hooking New Backends Into Gnus::    What has to be done on the Gnus end.
+* Mail-like Backends::                Some tips on mail backends.
 @end menu
 
 
@@ -15298,6 +15312,58 @@ The user should be prompted for an address when doing commands like
 @code{nntp}, but not @code{nnmbox}, for instance. 
 @end table
 
+
+@node Mail-like Backends
+@subsubsection Mail-like Backends
+
+One of the things that separate the mail backends from the rest of the
+backends is the heavy dependence by the mail backends on common
+functions in @file{nnmail.el}.  For instance, here's the definition of
+@code{nnml-request-scan}: 
+
+@lisp
+(deffoo nnml-request-scan (&optional group server)
+  (setq nnml-article-file-alist nil)
+  (nnmail-get-new-mail 'nnml 'nnml-save-nov nnml-directory group))
+@end lisp
+
+It simply just calls @code{nnmail-get-new-mail} will a few parameters,
+and @code{nnmail} takes care of all the moving and splitting of the
+mail.  
+
+This function takes four parameters.
+
+@table @var
+@item method
+This should be a symbol to designate which backend is responsible for
+the call.
+
+@item exit-function
+This function should be called after the splitting has been performed.
+
+@item temp-directory
+Where the temporary files should be stored.
+
+@item group
+This optional argument should be a group name if the splitting is to be
+performed for one group only.
+@end table
+
+@code{nnmail-get-new-mail} will call @var{backend}@code{-save-mail} to
+save each article.  @var{backend}@code{-active-number} will be called to
+find the article number assigned to this article.  
+
+The function also uses the following variables:
+@var{backend}@code{-get-new-mail} (to see whether to get new mail for
+this backend); and @var{backend}@code{-group-alist} and
+@var{backend}@code{-active-file} to generate the new active file.
+@var{backend}@code{-group-alist} should be a group-active alist, like
+this:
+
+@example
+(("a-group" (1 . 10))
+ ("some-group" (34 . 39)))
+@end example
 
 
 @node Score File Syntax
