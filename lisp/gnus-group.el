@@ -2423,8 +2423,9 @@ score file entries for articles to include in the group."
       (error "Killed group; can't be edited"))
     (unless (eq (car (setq method (gnus-find-method-for-group group))) 'nnimap)
       (error "%s is not an nnimap group" group))
-    (gnus-edit-form (setq acl (nnimap-acl-get mailbox (cadr method)))
-		    (format "Editing the access control list for `%s'.
+    (unless (setq acl (nnimap-acl-get mailbox (cadr method)))
+      (error "Server does not support ACL's"))
+    (gnus-edit-form acl (format "Editing the access control list for `%s'.
 
    An access control list is a list of (identifier . rights) elements.
 
