@@ -1,3 +1,8 @@
+2002-03-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-mail-in-mail-type-p): Break a long regexp into
+	pieces.
+
 2002-03-05  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnnil.el: New file.

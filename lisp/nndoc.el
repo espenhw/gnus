@@ -707,9 +707,11 @@ from the document.")
 
 (defun nndoc-mail-in-mail-type-p ()
   (save-excursion
-    (and (search-forward "\n\n" nil t)
-	 (re-search-forward "^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\(^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\)+\n" nil t)
-	 t)))
+    (while (re-search-forward "\n\n[-A-Za-z0-9]+:" nil t)
+      (forward-line)
+      (while (looking-at "[ \t]\\|[-A-Za-z0-9]+:")
+	(forward-line))
+      (looking-at "\n"))))
 
 (defun nndoc-mail-in-mail-article-begin ()
   (when (re-search-forward "^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\(^[-A-Za-z0-9]+: .*\n\\([ \t]?.*\n\\)*\\)+\n" nil t)
