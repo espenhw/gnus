@@ -1,3 +1,29 @@
+2005-04-06  D Goel  <deego@gnufans.org>
+
+	* spam-stat.el (spam-stat-score-buffer): Add a call to a
+	user-function allow user modifications of the scores.
+	(spam-stat-score-buffer-user): New function, to allow
+	user-computed modifications to the score.
+	(spam-stat-score-buffer-user-functions): list of additional
+	scoring functions
+	(spam-stat-error-holder): global temporary error holder
+	(spam-stat-split-fancy): use the new `spam-stat-error-holder'
+	variable
+
+2005-04-06  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-clean-empty-function)
+	(gnus-registry-trim, gnus-registry-fetch-groups)
+	(gnus-registry-delete-group): now groups that match
+	`gnus-registry-ignored-groups' will be removed from the registry
+	entries, not just ignored for splitting.  This helps clean up the
+	registry.  Also, `gnus-registry-fetch-groups' is a convenient way
+	to get all the groups a message ID is in.
+
+	* spam-stat.el (spam-stat-split-fancy-spam-threshold)
+	(spam-stat-split-fancy): changed "threshhold" to "threshold"
+	(spam-stat-score-buffer-user-functions): added :number custom type
+
 2005-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-p): Don't return binary for the nil

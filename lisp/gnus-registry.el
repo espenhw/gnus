@@ -250,15 +250,37 @@ way."
 (defun gnus-registry-clean-empty-function ()
   "Remove all empty entries from the registry.  Returns count thereof."
   (let ((count 0))
+
     (maphash
      (lambda (key value)
-       (unless (or
-		(gnus-registry-fetch-group key)
-		;; TODO: look for specific extra data here!
-		;; in this example, we look for 'label
-		(gnus-registry-fetch-extra key 'label)) 
-	 (incf count)
-	 (remhash key gnus-registry-hashtb)))
+       (when (stringp key)
+	 (dolist (group (gnus-registry-fetch-groups key))
+	   (when (gnus-parameter-registry-ignore group)
+	     (gnus-message 
+	      10 
+	      "gnus-registry: deleted ignored group %s from key %s"
+	      group key)
+	     (gnus-registry-delete-group key group)))
+
+	 (unless (gnus-registry-group-count key)
+	   (gnus-registry-delete-id key))
+
+	 (unless (or
+		  (gnus-registry-fetch-group key)
+		  ;; TODO: look for specific extra data here!
+		  ;; in this example, we look for 'label
+		  (gnus-registry-fetch-extra key 'label)
+		  (stringp key))
+	   (incf count)
+	   (gnus-registry-delete-id key))
+	 
+	 (unless (stringp key)
+	   (gnus-message 
+	    10 
+	    "gnus-registry key %s was not a string, removing" 
+	    key)
+	   (gnus-registry-delete-id key))))
+       
      gnus-registry-hashtb)
     count))
 
@@ -268,7 +290,8 @@ way."
   (setq gnus-registry-dirty nil))
 
 (defun gnus-registry-trim (alist)
-  "Trim alist to size, using gnus-registry-max-entries."
+  "Trim alist to size, using gnus-registry-max-entries.
+Also, drop all gnus-registry-ignored-groups matches."
   (if (null gnus-registry-max-entries)
       alist                             ; just return the alist
     ;; else, when given max-entries, trim the alist
@@ -281,16 +304,16 @@ way."
        (lambda (key value)
          (puthash key (gnus-registry-fetch-extra key 'mtime) timehash))
        gnus-registry-hashtb)
-
+      
       ;; we use the return value of this setq, which is the trimmed alist
       (setq alist
 	    (nthcdr
 	     trim-length
 	     (sort alist 
 		   (lambda (a b)
-		     (time-less-p 
-		      (cdr (gethash (car a) timehash))
-		      (cdr (gethash (car b) timehash))))))))))
+		     (time-less-p
+		      (or (cdr (gethash (car a) timehash)) '(0 0 0))
+		      (or (cdr (gethash (car b) timehash)) '(0 0 0))))))))))
 
 (defun alist-to-hashtable (alist)
   "Build a hashtable from the values in ALIST."
@@ -600,6 +623,23 @@ Returns the first place where the trail finds a group name."
 		       crumb
 		     (gnus-group-short-name crumb))))))))
 
+(defun gnus-registry-fetch-groups (id)
+  "Get the groups of a message, based on the message ID."
+  (let ((trail (gethash id gnus-registry-hashtb))
+	groups)
+    (dolist (crumb trail)
+      (when (stringp crumb)
+	;; push the group name into the list
+	(setq 
+	 groups
+	 (cons
+	  (if (or (not (stringp crumb)) gnus-registry-use-long-group-names)
+	      crumb
+	    (gnus-group-short-name crumb))
+	 groups))))
+    ;; return the list of groups
+    groups))
+
 (defun gnus-registry-group-count (id)
   "Get the number of groups of a message, based on the message ID."
   (let ((trail (gethash id gnus-registry-hashtb)))
@@ -609,12 +649,11 @@ Returns the first place where the trail finds a group name."
 
 (defun gnus-registry-delete-group (id group)
   "Delete a group for a message, based on the message ID."
-  (when group
-    (when id
+  (when (and group id)
       (let ((trail (gethash id gnus-registry-hashtb))
-	    (group (gnus-group-short-name group)))
+	    (short-group (gnus-group-short-name group)))
 	(puthash id (if trail
-			(delete group trail)
+			(delete short-group (delete group trail))
 		      nil)
 		 gnus-registry-hashtb))
       ;; now, clear the entry if there are no more groups
@@ -623,7 +662,7 @@ Returns the first place where the trail finds a group name."
 	  (gnus-registry-delete-id id)))
       ;; is this ID still in the registry?
       (when (gethash id gnus-registry-hashtb)
-	(gnus-registry-store-extra-entry id 'mtime (current-time))))))
+	(gnus-registry-store-extra-entry id 'mtime (current-time)))))
 
 (defun gnus-registry-delete-id (id)
   "Delete a message ID from the registry."
