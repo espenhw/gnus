@@ -148,23 +148,23 @@ distclean: clean
 
 install:
 
-new-herd-section.ps: $(srcdir)/../herds/new-herd-section.gif $(srcdir)/../herds/convol11.pnm
-	giftopnm $< | pnmscale 4 | pnmconvol $(srcdir)/../herds/convol11.pnm |\
+new-herd-section.ps: $(srcdir)/../herds/new-herd-section.png $(srcdir)/../herds/convol11.pnm
+	pngtopnm $< | pnmscale 4 | pnmconvol $(srcdir)/../herds/convol11.pnm |\
 	ppmtopgm | pnmdepth 255 | \
 	pnmtops -noturn -width 100 -height 100 > $@ || rm -f $@
 
-%.ps: $(srcdir)/../herds/%.gif $(srcdir)/../herds/convol5.pnm
-	giftopnm $< | pnmcrop -white | pnmmargin -white 9 | pnmscale 2 | \
+%.ps: $(srcdir)/../herds/%.png $(srcdir)/../herds/convol5.pnm
+	pngtopnm $< | pnmcrop -white | pnmmargin -white 9 | pnmscale 2 | \
 	pnmconvol $(srcdir)/../herds/convol5.pnm  | ppmtopgm | \
 	pnmdepth 255 | pnmtops -width 100 -height 100 -noturn > $@ || rm -f $@
 
 
-%.ps: $(srcdir)/../screen/%.gif
-	giftopnm $< | pnmmargin -black 1 | ppmtopgm | \
+%.ps: $(srcdir)/../screen/%.png
+	pngtopnm $< | pnmmargin -black 1 | ppmtopgm | \
 	pnmtops -width 100 -height 100 -noturn > $@ || rm -f $@
 
-larsi.ps: $(srcdir)/../misc/larsi.gif
-	giftopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
+larsi.ps: $(srcdir)/../misc/larsi.png
+	pngtopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
 
 september.ps: $(srcdir)/../misc/eseptember.tif
 	tifftopnm $< | pnmscale 4 | ppmtopgm | \
@@ -185,11 +185,11 @@ red.ps: $(srcdir)/../misc/ered.tif
 picons-%.ps: $(srcdir)/../picons/%.xbm
 	xbmtopbm $< | pnmtops -noturn > $@ || rm -f $@
 
-picons-%.ps: $(srcdir)/../picons/%.gif
-	giftopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
+picons-%.ps: $(srcdir)/../picons/%.png
+	pngtopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
 
-xface-%.ps: $(srcdir)/../xface/%.gif
-	giftopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
+xface-%.ps: $(srcdir)/../xface/%.png
+	pngtopnm $< | ppmtopgm | pnmtops -noturn > $@ || rm -f $@
 
 %.ps: $(srcdir)/../smilies/%.tif
 	tifftopnm $< | ppmtopgm | pnmtops > $@ || rm -f $@
