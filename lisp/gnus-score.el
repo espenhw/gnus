@@ -740,7 +740,7 @@ file for the command instead of the current score file."
 	(setq i (1+ i))))
     (goto-char (point-min))
     ;; display ourselves in a small window at the bottom
-    (gnus-appt-select-lowest-window)
+    (gnus-select-lowest-window)
     (if (< (/ (window-height) 2) window-min-height)
 	(switch-to-buffer "*Score Help*")
       (split-window)

@@ -243,7 +243,7 @@ call it with the value of the `gnus-data' text property."
 	  (select-window selected))))))
 
 ;; Select the lowest window on the frame.
-(defun gnus-xmas-appt-select-lowest-window ()
+(defun gnus-xmas-select-lowest-window ()
   (let* ((lowest-window (selected-window))
 	 (bottom-edge (car (cdr (cdr (cdr (window-pixel-edges))))))
 	 (last-window (previous-window))
@@ -419,8 +419,8 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-read-event-char 'gnus-xmas-read-event-char)
   (defalias 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
   (defalias 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
-  (defalias 'gnus-appt-select-lowest-window
-    'gnus-xmas-appt-select-lowest-window)
+  (defalias 'gnus-select-lowest-window
+    'gnus-xmas-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'character-to-event)
   (defalias 'gnus-mode-line-buffer-identification

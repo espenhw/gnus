@@ -44,7 +44,6 @@
 (eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")
-  (autoload 'appt-select-lowest-window "appt")
   (autoload 'gnus-get-buffer-create "gnus")
   (autoload 'nnheader-find-etc-directory "nnheader"))
 
@@ -140,6 +139,18 @@
 	 (point))
        gnus-mouse-face-prop gnus-mouse-face)
       (insert " " gnus-tmp-subject-or-nil "\n")))))
+
+;; Clone of `appt-select-lowest-window' in appt.el.
+(defun gnus-select-lowest-window ()
+"Select the lowest window on the frame."
+  (let ((lowest-window (selected-window))
+	(bottom-edge (nth 3 (window-edges))))
+    (walk-windows (lambda (w)
+		    (let ((next-bottom-edge (nth 3 (window-edges w))))
+		      (when (< bottom-edge next-bottom-edge)
+			(setq bottom-edge next-bottom-edge
+			      lowest-window w)))))
+    (select-window lowest-window)))
 
 (defun gnus-region-active-p ()
   "Say whether the region is active."
