@@ -1469,13 +1469,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     (let ((g nil))
       (cond (grp
 	     (setq g grp))
+	    ((and (boundp 'group-art) group-art (listp group-art))
+	     (setq g (caar group-art)))
 	    ((and (boundp 'group) group)
 	     (setq g group))
 	    ((and (boundp 'group-art-list) group-art-list
 		  (listp group-art-list))
 	     (setq g (caar group-art-list)))
-	    ((and (boundp 'group-art) group-art (listp group-art))
-	     (setq g (caar group-art)))
 	    (t (setq g "")))
       (unless (gnus-buffer-live-p nnmail-cache-buffer)
 	(nnmail-cache-open))
