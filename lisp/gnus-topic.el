@@ -288,11 +288,11 @@ with some simple extensions.
       (error "No such topic: %s" topic))
     ;; We may have to extend if there is no parameters here
     ;; to begin with.
-    (unless (nthcdr 2 (car top))
-      (nconc (car top) (list nil)))
-    (unless (nthcdr 3 (car top))
-      (nconc (car top) (list nil)))
-    (setcar (nthcdr 3 (car top)) parameters)))
+    (unless (nthcdr 2 (cadr top))
+      (nconc (cadr top) (list nil)))
+    (unless (nthcdr 3 (cadr top))
+      (nconc (cadr top) (list nil)))
+    (setcar (nthcdr 3 (cadr top)) parameters)))
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheretance from topics."
@@ -639,7 +639,8 @@ articles in the topic and its subtopics."
       (let ((topic-name (pop topic))
 	    group filtered-topic)
 	(while (setq group (pop topic))
-	  (if (and (gnus-gethash group gnus-active-hashtb)
+	  (if (and (or (gnus-gethash group gnus-active-hashtb)
+		       (gnus-info-method (gnus-get-info group)))
 		   (not (gnus-gethash group gnus-killed-hashtb)))
 	      (push group filtered-topic)))
 	(push (cons topic-name (nreverse filtered-topic)) result)))

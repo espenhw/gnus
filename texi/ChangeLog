@@ -1,3 +1,8 @@
+Mon Aug 26 18:29:23 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Optional Backend Functions): Deletia.
+	(Asynchronous Fetching): Deletia and addition.
+
 Sun Aug 25 23:39:03 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi: Include the version number.

@@ -1,3 +1,36 @@
+Tue Aug 27 00:36:58 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-set-parameters): Bugout.
+
+Mon Aug 26 22:41:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-retrieve-groups): Didn't inhibit erasing.
+
+	* nnweb.el (nnweb-callback): Ignore if the callback buffer is
+	dead. 
+
+	* gnus-async.el (gnus-async-prefetch-article): Don't do anything
+	if Gnus is dead.
+
+Mon Aug 26 00:57:06 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Fold search.
+	(nnweb-reference-create-mapping): Ditto.
+	(nnweb-altavista-create-mapping): Ditto.
+
+	* gnus-async.el (gnus-asynchronous): New variable.
+	(gnus-async-prefetch-article): Use it.
+	(gnus-async-prefetch-headers): Ditto.
+
+	* nnweb.el (nnweb-close-group): New function.
+
+	* gnus-topic.el (gnus-topic-clean-alist): Would remove foreign
+	groups from topics.
+
+Mon Aug 26 00:10:40 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.15 is released.
+
 Sun Aug 25 23:09:18 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-send-mail-with-qmail): Use

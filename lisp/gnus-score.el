@@ -187,14 +187,6 @@ This variable allows the same syntax as `gnus-home-score-file'.")
     "re")
   "Default list of words to be ignored when doing adaptive word scoring.")
 
-(defvar gnus-adaptive-word-syntax-table
-  (let ((table (copy-syntax-table (standard-syntax-table)))
-	(numbers '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)))
-    (while numbers
-      (modify-syntax-entry (pop numbers) " " table))
-    table)
-  "Syntax table used when doing adaptive word scoring.")
-
 (defvar gnus-default-adaptive-word-score-alist  
   `((,gnus-read-mark . 30)
     (,gnus-catchup-mark . -10)
@@ -273,6 +265,14 @@ If nil, the user will be asked for a duration.")
 
 
 ;; Internal variables.
+
+(defvar gnus-adaptive-word-syntax-table
+  (let ((table (copy-syntax-table (standard-syntax-table)))
+	(numbers '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)))
+    (while numbers
+      (modify-syntax-entry (pop numbers) " " table))
+    table)
+  "Syntax table used when doing adaptive word scoring.")
 
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-internal-global-score-files nil)

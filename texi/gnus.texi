@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.15 Manual
+@settitle Red Gnus 0.16 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.15 Manual
+@title Red Gnus 0.16 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -4367,7 +4367,7 @@ If you read your news from an @sc{nntp} server that's far away, the
 network latencies may make reading articles a chore.  You have to wait
 for a while after pressing @kbd{n} to go to the next article before the
 article appears.  Why can't Gnus just go ahead and fetch the article
-while you are reading the previous one? Why not, indeed.
+while you are reading the previous one?  Why not, indeed.
 
 First, some caveats.  There are some pitfalls to using asynchronous
 article fetching, especially the way Gnus does it.  
@@ -4396,23 +4396,32 @@ you really want to.
 Here's how:  Set @code{gnus-asynchronous} to @code{t}.  The rest should
 happen automatically.
 
-@vindex nntp-async-number
+@vindex gnus-use-article-prefetch
 You can control how many articles that are to be pre-fetched by setting
-@code{nntp-async-number}.  This is five by default, which means that when
-you read an article in the group, @code{nntp} will pre-fetch the next
-five articles.  If this variable is @code{t}, @code{nntp} will pre-fetch
-all the articles that it can without bound.  If it is @code{nil}, no
-pre-fetching will be made.
+@code{gnus-use-article-prefetch}.  This is 30 by default, which means
+that when you read an article in the group, the backend will pre-fetch
+the next 30 articles.  If this variable is @code{t}, the backend will
+pre-fetch all the articles that it can without bound.  If it is
+@code{nil}, no pre-fetching will be made.
 
-@vindex gnus-asynchronous-article-function
-You may wish to create some sort of scheme for choosing which articles
-that @code{nntp} should consider as candidates for pre-fetching.  For
-instance, you may wish to pre-fetch all articles with high scores, and
-not pre-fetch low-scored articles.  You can do that by setting the
-@code{gnus-asynchronous-article-function}, which will be called with an
-alist where the keys are the article numbers.  Your function should
-return an alist where the articles you are not interested in have been
-removed.  You could also do sorting on article score and the like. 
+@vindex gnus-prefetched-article-deletion-strategy
+Articles have to be removed from the asynch buffer sooner or later.  The
+@code{gnus-prefetched-article-deletion-strategy} says when to remove
+articles.  This is a list that may contain the following elements:
+
+@table @code
+@item read
+Remove articles when they are read.
+
+@item exit
+Remove articles when exiting the group.
+@end table
+
+The default value is @code{(read exit)}.
+
+@vindex gnus-use-header-prefetch
+If @code{gnus-use-header-prefetch} is non-@code{nil}, prefetch articles
+from the next group.
 
 
 @node Article Caching
@@ -7812,13 +7821,6 @@ that fetching will probably be slower.  If this variable is @code{nil},
 @item nntp-prepare-server-hook
 @vindex nntp-prepare-server-hook
 A hook run before attempting to connect to an @sc{nntp} server.
-
-@item nntp-async-number
-@vindex nntp-async-number
-How many articles should be pre-fetched when in asynchronous mode.  If
-this variable is @code{t}, @code{nntp} will pre-fetch all the articles
-that it can without bound.  If it is @code{nil}, no pre-fetching will be
-made.
 
 @item nntp-warn-about-losing-connection
 @vindex nntp-warn-about-losing-connection
@@ -13683,19 +13685,6 @@ would be nice, however, to keep things local if that's practical.
 
 There should be no result data from this function.
 
-
-@item (nnchoke-request-asynchronous GROUP &optional SERVER ARTICLES)
-
-This is a request to fetch articles asynchronously later.
-@var{articles} is an alist of @var{(article-number line-number)}.  One
-would generally expect that if one later fetches article number 4, for
-instance, some sort of asynchronous fetching of the articles after 4
-(which might be 5, 6, 7 or 11, 3, 909 depending on the order in that
-alist) would be fetched asynchronously, but that is left up to the
-backend.  Gnus doesn't care.
-
-There should be no result data from this function.
- 
 
 @item (nnchoke-request-group-description GROUP &optional SERVER)
 

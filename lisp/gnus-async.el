@@ -29,6 +29,10 @@
 (require 'gnus-sum)
 (require 'nntp)
 
+(defvar gnus-asynchronous t
+  "*If nil, inhibit all Gnus asynchronicity.
+If non-nil, let the other asynch variables be heeded.")
+
 (defvar gnus-use-article-prefetch 30
   "*If non-nil, prefetch articles in groups that allow this.
 If a number, prefetch only that many articles forward;
@@ -93,58 +97,60 @@ from that group.")
 
 (defun gnus-async-prefetch-article (group article summary &optional next)
   "Possibly prefetch several articles starting with ARTICLE."
-  (when next
-    (gnus-async-get-semaphore 'gnus-async-article-semaphore)
-    (pop gnus-async-fetch-list)
-    (gnus-async-release-semaphore 'gnus-async-article-semaphore))
-  (let ((do-fetch next))
-    (when (and (gnus-group-asynchronous-p group)
-	       (gnus-buffer-live-p summary)
-	       (or (not next)
-		   gnus-async-fetch-list))
-      (unwind-protect
-	  (progn
-	    (gnus-async-get-semaphore 'gnus-async-article-semaphore)
-	    (unless next
-	      (setq do-fetch (not gnus-async-fetch-list))
-	      ;; Nix out any outstanding requests.
-	      (setq gnus-async-fetch-list nil)
-	      ;; Fill in the new list.
-	      (let ((n gnus-use-article-prefetch)
-		    (data (gnus-data-find-list article))
-		    d)
-		(while (and (setq d (pop data))
-			    (if (numberp n) 
-				(natnump (decf n))
-			      n))
-		  (unless (or (gnus-async-prefetched-article-entry
-			       group (setq article (gnus-data-number d)))
-			      (not (natnump article)))
-		    ;; Not already fetched -- so we add it to the list.
-		    (push article gnus-async-fetch-list)))
-		(setq gnus-async-fetch-list (nreverse gnus-async-fetch-list))))
+  (when (and gnus-asynchronous
+	     (gnus-alive-p))
+    (when next
+      (gnus-async-get-semaphore 'gnus-async-article-semaphore)
+      (pop gnus-async-fetch-list)
+      (gnus-async-release-semaphore 'gnus-async-article-semaphore))
+    (let ((do-fetch next))
+      (when (and (gnus-group-asynchronous-p group)
+		 (gnus-buffer-live-p summary)
+		 (or (not next)
+		     gnus-async-fetch-list))
+	(unwind-protect
+	    (progn
+	      (gnus-async-get-semaphore 'gnus-async-article-semaphore)
+	      (unless next
+		(setq do-fetch (not gnus-async-fetch-list))
+		;; Nix out any outstanding requests.
+		(setq gnus-async-fetch-list nil)
+		;; Fill in the new list.
+		(let ((n gnus-use-article-prefetch)
+		      (data (gnus-data-find-list article))
+		      d)
+		  (while (and (setq d (pop data))
+			      (if (numberp n) 
+				  (natnump (decf n))
+				n))
+		    (unless (or (gnus-async-prefetched-article-entry
+				 group (setq article (gnus-data-number d)))
+				(not (natnump article)))
+		      ;; Not already fetched -- so we add it to the list.
+		      (push article gnus-async-fetch-list)))
+		  (setq gnus-async-fetch-list (nreverse gnus-async-fetch-list))))
 
-	    (when do-fetch
-	      (setq article (pop gnus-async-fetch-list))))
+	      (when do-fetch
+		(setq article (pop gnus-async-fetch-list))))
 	
-	(gnus-async-release-semaphore 'gnus-async-article-semaphore))
+	  (gnus-async-release-semaphore 'gnus-async-article-semaphore))
     
-      (when article
-	;; We want to fetch some more articles.
-	(save-excursion
-	  (set-buffer summary)
-	  (let (mark)
-	    (gnus-async-set-buffer)
-	    (goto-char (point-max))
-	    (setq mark (point-marker))
-	    (let ((nnheader-callback-function
-		   (gnus-make-async-article-function 
-		    group article mark summary next))
-		  (nntp-server-buffer (get-buffer
-				       gnus-async-prefetch-article-buffer)))
-	      (gnus-message 7 "Prefetching article %d in group %s"
-			    article group)
-	      (gnus-request-article article group))))))))
+	(when article
+	  ;; We want to fetch some more articles.
+	  (save-excursion
+	    (set-buffer summary)
+	    (let (mark)
+	      (gnus-async-set-buffer)
+	      (goto-char (point-max))
+	      (setq mark (point-marker))
+	      (let ((nnheader-callback-function
+		     (gnus-make-async-article-function 
+		      group article mark summary next))
+		    (nntp-server-buffer (get-buffer
+					 gnus-async-prefetch-article-buffer)))
+		(gnus-message 7 "Prefetching article %d in group %s"
+			      article group)
+		(gnus-request-article article group)))))))))
 
 (defun gnus-make-async-article-function (group article mark summary next)
   "Return a callback function."
@@ -212,6 +218,7 @@ from that group.")
   (save-excursion
     (let (unread)
       (when (and gnus-use-header-prefetch
+		 gnus-asynchronous
 		 (gnus-group-asynchronous-p group)
 		 (listp gnus-async-header-prefetched)
 		 (setq unread (gnus-list-of-unread-articles group)))

@@ -252,6 +252,7 @@ server there that you can connect to. See also `nntp-open-connection-function'")
     (let ((count 0)
 	  (received 0)
 	  (last-point (point-min))
+	  (nntp-inhibit-erase t)
 	  (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
       (while groups
 	;; Send the command to the server.

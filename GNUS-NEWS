@@ -77,8 +77,8 @@ even when the NNTP server doesn't allow posting.
 *** A new mail-to-news backend makes it possible to post
 even when the NNTP server doesn't allow posting.
 
-*** A new backend for reading searches from DejaNews has
-been added.  
+*** A new backend for reading searches from Web search engines
+(DejaNews, Alta Vista, InReference) has been added.
 
     Use the `G n' command in the group buffer to create such
     a group.
