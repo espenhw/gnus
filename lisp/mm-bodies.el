@@ -243,7 +243,7 @@ If TYPE is `text/plain' CRLF->LF translation may occur."
       (while (search-forward "\r\n" nil t)
 	(replace-match "\n" t t)))))
 
-(defun mm-decode-body (charset &optional encoding type)
+(defun mm-decode-body (charset &optional encoding type force)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
   (if (stringp charset)
@@ -271,8 +271,11 @@ The characters in CHARSET should then be decoded."
 		   (or (not (eq coding-system 'ascii))
 		       (setq coding-system mail-parse-charset))
 		   (not (eq coding-system 'gnus-decoded)))
-	  (mm-decode-coding-region-safely (point-min) (point-max)
-					  coding-system))))))
+	  (if force
+	      (mm-decode-coding-region (point-min) (point-max)
+					      coding-system)
+	    (mm-decode-coding-region-safely (point-min) (point-max)
+					    coding-system)))))))
 
 (defun mm-decode-coding-region-safely (start end coding-system)
   "Decode region between START and END with CODING-SYSTEM.
