@@ -1,3 +1,7 @@
+Sun Jun 16 08:13:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Saving Articles): Fix.
+
 Sat Jun 15 02:09:46 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Article Washing): Addition.

@@ -130,14 +130,13 @@ It is provided only to ease porting of broken FSF Emacs programs."
 
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
-  (if gnus-summary-selected-face
-      (progn
-	(if gnus-newsgroup-selected-overlay
-	    (delete-extent gnus-newsgroup-selected-overlay))
-	(setq gnus-newsgroup-selected-overlay 
-	      (make-extent (gnus-point-at-bol) (gnus-point-at-eol)))
-	(set-extent-face gnus-newsgroup-selected-overlay
-			 gnus-summary-selected-face))))
+  (when gnus-summary-selected-face
+    (if gnus-newsgroup-selected-overlay
+	(delete-extent gnus-newsgroup-selected-overlay))
+    (setq gnus-newsgroup-selected-overlay 
+	  (make-extent (gnus-point-at-bol) (gnus-point-at-eol)))
+    (set-extent-face gnus-newsgroup-selected-overlay
+		     gnus-summary-selected-face)))
 
 (defun gnus-xmas-summary-recenter ()
   "\"Center\" point in the summary window.
@@ -298,8 +297,9 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-summary-menu-add ()
   (gnus-xmas-menu-add summary
+    gnus-summary-misc-menu gnus-summary-kill-menu
     gnus-summary-article-menu gnus-summary-thread-menu
-    gnus-summary-misc-menu gnus-summary-post-menu gnus-summary-kill-menu))
+    gnus-summary-post-menu ))
 
 (defun gnus-xmas-article-menu-add ()
   (gnus-xmas-menu-add article
@@ -483,8 +483,6 @@ pounce directly on the real variables themselves.")
   "Redefine lots of Gnus functions for XEmacs."
   (fset 'gnus-summary-make-display-table 'ignore)
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
-  (fset 'gnus-highlight-selected-summary
-	'gnus-xmas-highlight-selected-summary)
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
   (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
   (fset 'gnus-copy-article-buffer 'gnus-xmas-copy-article-buffer)
@@ -500,6 +498,9 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-make-local-hook 'make-local-variable)
   (fset 'gnus-add-hook 'gnus-xmas-add-hook)
   (fset 'gnus-character-to-event 'character-to-event)
+  (fset 'gnus-article-show-hidden-text 'gnus-xmas-article-show-hidden-text)
+  (fset 'gnus-mode-line-buffer-identification
+	'gnus-xmas-mode-line-buffer-identification)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
@@ -518,6 +519,8 @@ pounce directly on the real variables themselves.")
 
   (when (and (<= emacs-major-version 19)
 	     (<= emacs-minor-version 13))
+    (fset 'gnus-highlight-selected-summary
+	  'gnus-xmas-highlight-selected-summary)
     (fset 'gnus-group-remove-excess-properties
 	  'gnus-xmas-group-remove-excess-properties)
     (fset 'gnus-topic-remove-excess-properties
@@ -598,7 +601,7 @@ pounce directly on the real variables themselves.")
     (goto-char (point-min))
     (let* ((mode-string (gnus-group-set-mode-line)))
       (setq modeline-buffer-identification 
-	    (list (concat gnus-version (substring (car mode-string) 4))))
+	    (list (concat gnus-version ": *Group*")))
       (set-buffer-modified-p t))))
 
 
@@ -657,6 +660,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-summary-cancel-article t "Cancel article"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
+    [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
     )
   "The summary buffer toolbar.")
 
@@ -685,24 +689,21 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-summary-save-article t "Save article"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
+    [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
     )
   "The summary buffer mail toolbar.")
 
 (defun gnus-xmas-setup-group-toolbar ()
-  (let (dir)
-    (and gnus-use-toolbar
-	 (setq dir (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus"))
-	 (file-exists-p (concat dir "gnus-group-catchup-current-up.xpm"))
-	 (set-specifier (symbol-value gnus-use-toolbar)
-			(cons (current-buffer) gnus-group-toolbar)))))
+  (and gnus-use-toolbar
+       (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus")
+       (set-specifier (symbol-value gnus-use-toolbar)
+		      (cons (current-buffer) gnus-group-toolbar))))
 
 (defun gnus-xmas-setup-summary-toolbar ()
   (let ((bar (if (gnus-news-group-p gnus-newsgroup-name)
-		 gnus-summary-toolbar gnus-summary-mail-toolbar))
-	dir)
+		 gnus-summary-toolbar gnus-summary-mail-toolbar)))
     (and gnus-use-toolbar
-	 (setq dir (message-xmas-setup-toolbar bar nil "gnus"))
-	 (file-exists-p (concat dir "gnus-group-catchup-current-up.xpm"))
+	 (message-xmas-setup-toolbar bar nil "gnus")
 	 (set-specifier (symbol-value gnus-use-toolbar)
 			(cons (current-buffer) bar)))))
 
@@ -717,6 +718,9 @@ XEmacs compatibility workaround."
   (apply
    'call-process-region (point-min) (point-max) command t '(t nil) nil
    args))
+
+(unless (find-face 'gnus-x-face)
+  (copy-face 'default 'gnus-x-face))
 
 (defun gnus-xmas-article-display-xface (beg end)
   "Display any XFace headers in the current article."
@@ -739,10 +743,43 @@ XEmacs compatibility workaround."
 	    (setq xface-glyph
 		  (make-glyph
 		   (vector 'xpm :data (buffer-string )))))))
+      (set-glyph-face xface-glyph 'gnus-x-face)
       (goto-char (point-min))
       (re-search-forward "^From:" nil t)
-      (beginning-of-line)
       (set-extent-begin-glyph 
        (make-extent (point) (1+ (point))) xface-glyph))))
+
+(defun gnus-xmas-article-show-hidden-text (type &optional hide)
+  "Show all hidden text of type TYPE.
+If HIDE, hide the text instead."
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t)
+	  (beg (point-min)))
+      (while (gnus-goto-char (text-property-any
+			      beg (point-max) 'gnus-type type))
+	(setq beg (point))
+	(forward-char)
+	(if hide
+	    (gnus-hide-text beg (point) gnus-hidden-properties)
+	  (gnus-unhide-text beg (point)))
+	(setq beg (point)))
+      (save-window-excursion
+	(select-window (get-buffer-window (current-buffer)))
+	(recenter))
+      t)))
+
+(defun gnus-xmas-mode-line-buffer-identification (line)
+  (let ((line (car line))
+	chop)
+    (if (not (stringp line))
+	(list line)
+      (unless (setq chop (string-match ":" line))
+	(setq chop (/ (length line) 2)))
+      (list (cons modeline-buffer-id-left-extent (substring line 0 chop))
+	    (cons modeline-buffer-id-right-extent (substring line chop))))))
+
+(provide 'gnus-xmas)
 
 ;;; gnus-xmas.el ends here

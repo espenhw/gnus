@@ -440,10 +440,10 @@ Number of spaces to indent yanked messages.
 @vindex message-cite-function
 @findex message-cite-original
 @findex sc-cite-original
-@cindex SuperCite
+@cindex Supercite
 Function for citing an original message.  The default is
 @code{message-cite-original}.  You can also set it to
-@code{sc-cite-original} to use SuperCite.
+@code{sc-cite-original} to use Supercite.
 
 @item message-indent-citation-function
 @vindex message-indent-citation-function

@@ -4479,11 +4479,12 @@ like:
 We see that this is a list where each element is a list that has two
 elements---the @dfn{match} and the @dfn{file}.  The match can either be
 a string (in which case it is used as a regexp to match on the article
-head); it can be a symbol (which will be called as a function); or it
-can be a list (which will be @code{eval}ed).  If any of these actions
-have a non-@code{nil} result, the @dfn{file} will be used as a default
-prompt.  In addition, the result of the operation itself will be used if
-the function or form called returns a string or a list of strings. 
+head); it can be a symbol (which will be called as a function with the
+group name as a parameter); or it can be a list (which will be
+@code{eval}ed).  If any of these actions have a non-@code{nil} result,
+the @dfn{file} will be used as a default prompt.  In addition, the
+result of the operation itself will be used if the function or form
+called returns a string or a list of strings.
 
 You basically end up with a list of file names that might be used when
 saving the current article.  (All ``matches'' will be used.)  You will
@@ -4971,11 +4972,11 @@ see who wrote what.
 
 @item gnus-supercite-regexp
 @vindex gnus-supercite-regexp
-Regexp matching normal SuperCite attribution lines.  
+Regexp matching normal Supercite attribution lines.  
 
 @item gnus-supercite-secondary-regexp
 @vindex gnus-supercite-secondary-regexp
-Regexp matching mangled SuperCite attribution lines.
+Regexp matching mangled Supercite attribution lines.
 
 @item gnus-cite-minimum-match-count
 @vindex gnus-cite-minimum-match-count

@@ -262,21 +262,21 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 ;;; Group mode highlighting.
 
 ;see gnus-cus.el
-(defvar gnus-group-highlight nil
-  "Group lines are highlighted with the FACE for the first FORM which
-evaluate to a non-nil value.  
-
-Point will be at the beginning of the line when FORM is evaluated.
-Variables bound when these forms are evaluated include:
-
-group: The group name.
-unread: The number of unread articles.
-method: The select method.
-mailp: Whether the select method is a mail method.
-level: The level of the group.
-score: The score of the group.
-ticked: The number of ticked articles in the group.
-")
+;(defvar gnus-group-highlight nil
+;  "Group lines are highlighted with the FACE for the first FORM which
+;evaluate to a non-nil value.  
+;
+;Point will be at the beginning of the line when FORM is evaluated.
+;Variables bound when these forms are evaluated include:
+;
+;group: The group name.
+;unread: The number of unread articles.
+;method: The select method.
+;mailp: Whether the select method is a mail method.
+;level: The level of the group.
+;score: The score of the group.
+;ticked: The number of ticked articles in the group.
+;")
 
 
 ;;; Internal variables.
@@ -789,8 +789,6 @@ ticked: The number of ticked articles in the group.
        ["Fetch article with id..." gnus-summary-refer-article t]
        ["Redisplay" gnus-summary-show-article t]))
 
-
-	 
     (easy-menu-define
      gnus-summary-thread-menu gnus-summary-mode-map ""
      '("Threads"

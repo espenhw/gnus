@@ -212,8 +212,9 @@
 	    "%s %d %d y\n" 
 	    (progn
 	      (string-match 
-	       (file-truename (file-name-as-directory 
-			       (expand-file-name nnmh-toplev))) dir)
+	       (regexp-quote
+		(file-truename (file-name-as-directory 
+				(expand-file-name nnmh-toplev)))) dir)
 	      (nnheader-replace-chars-in-string
 	       (substring dir (match-end 0)) ?/ ?.))
 	    (apply 'max files) 

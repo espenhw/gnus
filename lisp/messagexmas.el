@@ -43,7 +43,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 (defvar message-toolbar 
   '([message-spell ispell-message t "Spell"]
-    [message-help (toolbar-info "message") t "Message help"])
+    [message-help (Info-goto-node "(Message)Top") t "Message help"])
   "The message buffer toolbar.")
 
 (defun message-xmas-find-glyph-directory (&optional package)
@@ -86,10 +86,8 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	  (setq down (concat dir name "-down." xpm))
 	  (setq disabled (concat dir name "-disabled." xpm))
 	  (if (not (file-exists-p up))
-	      (progn
-		(set icon nil)
-		(setq bar nil
-		      dir nil))
+	      (setq bar nil
+		    dir nil)
 	    (set icon (toolbar-make-button-list
 		       up (and (file-exists-p down) down)
 		       (and (file-exists-p disabled) disabled)))))))

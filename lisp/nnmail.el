@@ -137,9 +137,6 @@ links, you could set this variable to `copy-file' instead.")
   "*A command to be executed to move mail from the inbox.
 The default is \"movemail\".")
 
-(defvar nnmail-pop-password nil
-  "*Password to use when reading mail from a POP server, if required.")
-
 (defvar nnmail-pop-password-required nil
   "*Non-nil if a password is required when reading mail using POP.")
 
@@ -269,6 +266,9 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
 
+(defvar nnmail-pop-password nil
+  "*Password to use when reading mail from a POP server, if required.")
+
 (defvar nnmail-split-fancy-syntax-table
   (copy-syntax-table (standard-syntax-table))
   "Syntax table used by `nnmail-split-fancy'.")
@@ -278,6 +278,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 (defvar nnmail-moved-inboxes nil
   "List of inboxes that have been moved.")
+
+(defvar nnmail-internal-password nil)
 
 
 
@@ -372,9 +374,9 @@ parameter.  It should return nil, `warn' or `delete'.")
 	nil
       (if popmail
 	  (progn
-	    (setq password nnmail-pop-password)
+	    (setq nnmail-internal-password nnmail-pop-password)
 	    (when (and nnmail-pop-password-required (not nnmail-pop-password))
-	      (setq password
+	      (setq nnmail-internal-password
 		    (nnmail-read-passwd
 		     (format "Password for %s: "
 			     (substring inbox (+ popmail 3))))))
@@ -422,10 +424,11 @@ parameter.  It should return nil, `warn' or `delete'.")
 		  (list
 		   (expand-file-name nnmail-movemail-program exec-directory)
 		   nil errors nil inbox tofile)
-		  (when password (list password)))))
+		  (when nnmail-internal-password
+		    (list nnmail-internal-password)))))
 	      (if (not (buffer-modified-p errors))
 		  ;; No output => movemail won
-		  (push tofile nnmail-moved-inboxes)
+		  (push inbox nnmail-moved-inboxes)
 		(set-buffer errors)
 		(subst-char-in-region (point-min) (point-max) ?\n ?\  )
 		(goto-char (point-max))

@@ -313,8 +313,8 @@ used as score."
 	    (?e e "exact string" string)
 	    (?f f "fuzzy string" string)
 	    (?r r "regexp string" string)
-	    (?s s "substring" body-string)
-	    (?r s "regexp string" body-string)
+	    (?z s "substring" body-string)
+	    (?p s "regexp string" body-string)
 	    (?b before "before date" date)
 	    (?a at "at date" date) 
 	    (?n now "this date" date)
@@ -332,80 +332,93 @@ used as score."
 	 (pchar (and gnus-score-default-duration
 		     (aref (symbol-name gnus-score-default-duration) 0)))
 	 entry temporary type match)
-
-    ;; First we read the header to score.
-    (while (not hchar)
-      (if mimic
-	  (progn 
-	    (sit-for 1)
-	    (message "%c-" prefix))
-	(message "%s header (%s?): " (if increase "Increase" "Lower")
-		 (mapconcat (lambda (s) (char-to-string (car s)))
-			    char-to-header "")))
-      (setq hchar (read-char))
-      (when (or (= hchar ??) (= hchar ?\C-h))
-	(setq hchar nil)
-	(gnus-score-insert-help "Match on header" char-to-header 1)))
-
-    (gnus-score-kill-help-buffer)
-    (unless (setq entry (assq (downcase hchar) char-to-header))
-      (if mimic (error "%c %c" prefix hchar) (error "")))
-
-    (when (/= (downcase hchar) hchar)
-      ;; This was a majuscle, so we end reading and set the defaults.
-      (if mimic (message "%c %c" prefix hchar) (message ""))
-      (setq tchar (or tchar ?s)
-	    pchar (or pchar ?t)))
     
-    ;; We continue reading - the type.
-    (while (not tchar)
-      (if mimic
-	  (progn
-	    (sit-for 1) (message "%c %c-" prefix hchar))
-	(message "%s header '%s' with match type (%s?): "
-		 (if increase "Increase" "Lower")
-		 (nth 1 entry)
-		 (mapconcat (lambda (s) 
-			      (if (eq (nth 4 entry) 
-				      (nth 3 s))
-				  (char-to-string (car s))
-				""))
-			    char-to-type "")))
-      (setq tchar (read-char))
-      (when (or (= tchar ??) (= tchar ?\C-h))
-	(setq tchar nil)
-	(gnus-score-insert-help "Match type" char-to-type 2)))
+    (unwind-protect
+	(progn
 
-    (gnus-score-kill-help-buffer)
-    (unless (setq type (nth 1 (assq (downcase tchar) char-to-type)))
-      (if mimic (error "%c %c" prefix hchar) (error "")))
+	  ;; First we read the header to score.
+	  (while (not hchar)
+	    (if mimic
+		(progn 
+		  (sit-for 1)
+		  (message "%c-" prefix))
+	      (message "%s header (%s?): " (if increase "Increase" "Lower")
+		       (mapconcat (lambda (s) (char-to-string (car s)))
+				  char-to-header "")))
+	    (setq hchar (read-char))
+	    (when (or (= hchar ??) (= hchar ?\C-h))
+	      (setq hchar nil)
+	      (gnus-score-insert-help "Match on header" char-to-header 1)))
 
-    (when (/= (downcase tchar) tchar)
-      ;; It was a majuscle, so we end reading and the the default.
-      (if mimic (message "%c %c %c" prefix hchar tchar)
-	(message ""))
-      (setq pchar (or pchar ?p)))
+	  (gnus-score-kill-help-buffer)
+	  (unless (setq entry (assq (downcase hchar) char-to-header))
+	    (if mimic (error "%c %c" prefix hchar) (error "")))
 
-    ;; We continue reading.
-    (while (not pchar)
-      (if mimic
-	  (progn
-	    (sit-for 1) (message "%c %c %c-" prefix hchar tchar))
-	(message "%s permanence (%s?): " (if increase "Increase" "Lower")
-		 (mapconcat (lambda (s) (char-to-string (car s)))
-			    char-to-perm "")))
-      (setq pchar (read-char))
-      (when (or (= pchar ??) (= pchar ?\C-h))
-	(setq pchar nil)
-	(gnus-score-insert-help "Match permanence" char-to-perm 2)))
+	  (when (/= (downcase hchar) hchar)
+	    ;; This was a majuscle, so we end reading and set the defaults.
+	    (if mimic (message "%c %c" prefix hchar) (message ""))
+	    (setq tchar (or tchar ?s)
+		  pchar (or pchar ?t)))
+    
+	  ;; We continue reading - the type.
+	  (while (not tchar)
+	    (if mimic
+		(progn
+		  (sit-for 1) (message "%c %c-" prefix hchar))
+	      (message "%s header '%s' with match type (%s?): "
+		       (if increase "Increase" "Lower")
+		       (nth 1 entry)
+		       (mapconcat (lambda (s) 
+				    (if (eq (nth 4 entry) 
+					    (nth 3 s))
+					(char-to-string (car s))
+				      ""))
+				  char-to-type "")))
+	    (setq tchar (read-char))
+	    (when (or (= tchar ??) (= tchar ?\C-h))
+	      (setq tchar nil)
+	      (gnus-score-insert-help
+	       "Match type"
+	       (delq nil
+		     (mapcar (lambda (s) 
+			       (if (eq (nth 4 entry) 
+				       (nth 3 s))
+				   s nil))
+			     char-to-type ))
+	       2)))
 
-    (gnus-score-kill-help-buffer)
-    (if mimic (message "%c %c %c" prefix hchar tchar pchar)
-      (message ""))
-    (unless (setq temporary (cadr (assq pchar char-to-perm)))
-      (if mimic 
-	  (error "%c %c %c %c" prefix hchar tchar pchar)
-	(error "")))
+	  (gnus-score-kill-help-buffer)
+	  (unless (setq type (nth 1 (assq (downcase tchar) char-to-type)))
+	    (if mimic (error "%c %c" prefix hchar) (error "")))
+
+	  (when (/= (downcase tchar) tchar)
+	    ;; It was a majuscle, so we end reading and the the default.
+	    (if mimic (message "%c %c %c" prefix hchar tchar)
+	      (message ""))
+	    (setq pchar (or pchar ?p)))
+
+	  ;; We continue reading.
+	  (while (not pchar)
+	    (if mimic
+		(progn
+		  (sit-for 1) (message "%c %c %c-" prefix hchar tchar))
+	      (message "%s permanence (%s?): " (if increase "Increase" "Lower")
+		       (mapconcat (lambda (s) (char-to-string (car s)))
+				  char-to-perm "")))
+	    (setq pchar (read-char))
+	    (when (or (= pchar ??) (= pchar ?\C-h))
+	      (setq pchar nil)
+	      (gnus-score-insert-help "Match permanence" char-to-perm 2)))
+
+	  (gnus-score-kill-help-buffer)
+	  (if mimic (message "%c %c %c" prefix hchar tchar pchar)
+	    (message ""))
+	  (unless (setq temporary (cadr (assq pchar char-to-perm)))
+	    (if mimic 
+		(error "%c %c %c %c" prefix hchar tchar pchar)
+	      (error ""))))
+      ;; Always kill the score help buffer.
+      (gnus-score-kill-help-buffer))
 
     ;; We have all the data, so we enter this score.
     (setq match (if (string= (nth 2 entry) "") ""
@@ -452,8 +465,8 @@ used as score."
 	    (setq max n))
 	(setq list (cdr list)))
       (setq max (+ max 4))		; %c, `:', SPACE, a SPACE at end
-      (setq n (/ (window-width) max))	; items per line
-      (setq width (/ (window-width) n)) ; width of each item
+      (setq n (/ (1- (window-width)) max))	; items per line
+      (setq width (/ (1- (window-width)) n)) ; width of each item
       ;; insert `n' items, each in a field of width `width' 
       (while alist
 	(if (< i n)
@@ -470,7 +483,8 @@ used as score."
     (gnus-appt-select-lowest-window)
     (split-window)
     (pop-to-buffer "*Score Help*")
-    (shrink-window-if-larger-than-buffer)
+    (let ((window-min-height 1))
+      (shrink-window-if-larger-than-buffer))
     (select-window (get-buffer-window gnus-summary-buffer))))
   
 (defun gnus-summary-header (header &optional no-err)

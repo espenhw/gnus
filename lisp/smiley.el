@@ -27,29 +27,30 @@
 ;; comments go here.
 ;;
 
-;;; Test smileys:  :-] :-o :-) ;-) :-< :-d :-P 8-| :-(
+;;; Test smileys:  :-] :-o :-) ;-) :-\ :-| :-d :-P 8-| :-(
 
 ;; To use:
 ;; (require 'smiley)
 ;; (add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
 
+(require 'annotations)
 (eval-when-compile (require 'cl))
 
 (defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
   "Location of the smiley faces files.")
 
 (defvar smiley-regexp-alist
-  '((":-*\\]" 0 "FaceGrinning.xpm")
-    (":-*[oO]" 0 "FaceStartled.xpm")
-    (":-*[)>]" 0 "FaceHappy.xpm")
-    (";-*[>)]" 0 "FaceWinking.xpm")
-    (":-[/\\]" 0 "FaceIronic.xpm")
-    (":-*|" 0 "FaceStraight.xpm")
-    (":-*<" 0 "FaceAngry.xpm")
-    (":-*d" 0 "FaceTasty.xpm")
-    (":-*[pP]" 0 "FaceYukky.xpm")
-    ("8-*|" 0 "FaceKOed.xpm")
-    (":-*(" 0 "FaceAngry.xpm"))
+  '(("\\s-\\(:-*\\]\\)" 1 "FaceGrinning.xpm")
+    ("\\s-\\(:-*[oO]\\)" 1 "FaceStartled.xpm")
+    ("\\s-\\(:-*[)>]\\)" 1 "FaceHappy.xpm")
+    ("\\s-\\(;-*[>)]\\)" 1 "FaceWinking.xpm")
+    ("\\s-\\(:-[/\\]\\)" 1 "FaceIronic.xpm")
+    ("\\s-\\(:-*|\\)" 1 "FaceStraight.xpm")
+    ("\\s-\\(:-*<\\)" 1 "FaceAngry.xpm")
+    ("\\s-\\(:-*d\\)" 1 "FaceTasty.xpm")
+    ("\\s-\\(:-*[pP]\\)" 1 "FaceYukky.xpm")
+    ("\\s-\\(8-*|\\)" 1 "FaceKOed.xpm")
+    ("\\s-\\(:-*(\\)" 1 "FaceAngry.xpm"))
   "A list of regexps to map smilies to real images.")
 
 (defvar smiley-flesh-color "yellow"
@@ -59,6 +60,9 @@
   "Features color.")
 
 (defvar smiley-tongue-color "red"
+  "Tongue color.")
+
+(defvar smiley-circle-color "black"
   "Tongue color.")
 
 (defvar smiley-glyph-cache nil)
@@ -110,15 +114,27 @@
 		 (end (match-end group))
 		 (glyph (smiley-create-glyph (buffer-substring start end)
 					     file)))
-	    (if glyph
-		(progn 
-		  (mapcar 'delete-annotation (annotations-at end))
-		  (let ((ext (make-extent start end)))
-		    (set-extent-property ext 'invisible t)
-		    (set-extent-property ext 'end-open t)
-		    (set-extent-property ext 'intangible t))
-		  (make-annotation glyph end 'text)
-		  (goto-char end)))))))))
+	    (when glyph
+	      (mapcar 'delete-annotation (annotations-at end))
+	      (let ((ext (make-extent start end)))
+		(set-extent-property ext 'invisible t)
+		(set-extent-property ext 'end-open t)
+		(set-extent-property ext 'intangible t))
+	      (make-annotation glyph end 'text)
+	      (when (smiley-end-paren-p start end)
+		(make-annotation ")" end 'text))
+	      (goto-char end))))))))
+
+(defun smiley-end-paren-p (start end)
+  "Try to guess whether the current smiley is an end-paren smiley."
+  (save-excursion
+    (goto-char start)
+    (when (and (re-search-backward "[()]" nil t)
+	       (= (following-char) ?\()
+	       (goto-char end)
+	       (or (not (re-search-forward "[()]" nil t))
+		   (= (char-after (1- (point))) ?\()))
+      t)))
 
 ;;;###autoload    
 (defun gnus-smiley-display ()

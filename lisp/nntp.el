@@ -490,7 +490,8 @@ servers."
 	(if (numberp id) id
 	  ;; We find out what the article number was.
 	  (nntp-find-group-and-number)))
-    (nntp-decode-text)))
+    (nntp-decode-text)
+    (nnheader-fold-continuation-lines)))
 
 (deffoo nntp-request-stat (id &optional group server)
   "Request STAT of article ID (Message-ID or number)."
@@ -1088,7 +1089,10 @@ If SERVICE, this this as the port number."
 	     (unless status
 	       (nntp-close-server-internal server)
 	       (nnheader-report 
-		'nntp "Couldn't open connection to %s" nntp-address))
+		'nntp "Couldn't open connection to %s" 
+		(if (and nntp-address
+			 (not (equal nntp-address "")))
+		    nntp-address server)))
 	     (when nntp-server-process
 	       (set-process-sentinel 
 		nntp-server-process 'nntp-default-sentinel)

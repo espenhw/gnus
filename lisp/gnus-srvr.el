@@ -221,17 +221,24 @@ The following commands are available:
   (save-excursion
     (set-buffer gnus-server-buffer)
     (let* ((buffer-read-only nil)
-	   (entry (assoc server gnus-server-alist)))
+	   (entry (assoc server gnus-server-alist))
+	   (oentry (assoc (gnus-server-to-method server)
+			  gnus-opened-servers)))
       (when entry
 	(gnus-dribble-enter 
 	 (concat "(gnus-server-set-info \"" server "\" '"
-		 (prin1-to-string (cdr entry)) ")"))
+		 (prin1-to-string (cdr entry)) ")")))
+      (when (or entry oentry)
 	;; Buffer may be narrowed.
 	(save-restriction
 	  (widen)
 	  (when (gnus-server-goto-server server)
 	    (gnus-delete-line))
-	  (gnus-server-insert-server-line (car entry) (cdr entry))
+	  (if entry
+	      (gnus-server-insert-server-line (car entry) (cdr entry))
+	    (gnus-server-insert-server-line 
+	     (format "%s:%s" (caar oentry) (nth 1 (car oentry)))
+	     (car oentry)))
 	  (gnus-server-position-point))))))
 
 (defun gnus-server-set-info (server info)
@@ -304,6 +311,13 @@ The following commands are available:
       (forward-line -1))
     (gnus-server-position-point)))
 
+(defun gnus-server-set-status (method status)
+  "Make METHOD have STATUS."
+  (let ((entry (assoc method gnus-opened-servers)))
+    (if entry
+	(setcar (cdr entry) status)
+      (push (list method status) gnus-opened-servers))))
+
 (defun gnus-opened-servers-remove (method)
   "Remove METHOD from the list of opened servers."
   (setq gnus-opened-servers (delq (assoc method gnus-opened-servers)
@@ -314,7 +328,7 @@ The following commands are available:
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
     (or method (error "No such server: %s" server))
-    (gnus-opened-servers-remove method)
+    (gnus-server-set-status method 'ok)
     (prog1
 	(or (gnus-open-server method)
 	    (progn (message "Couldn't open %s" server) nil))
@@ -326,7 +340,7 @@ The following commands are available:
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
     (or method (error "No such server: %s" server))
-    (gnus-opened-servers-remove method)
+    (gnus-server-set-status method 'closed)
     (prog1
 	(gnus-close-server method)
       (gnus-server-update-server server)
@@ -337,11 +351,10 @@ The following commands are available:
   (interactive (list (gnus-server-server-name)))
   (let ((method (gnus-server-to-method server)))
     (or method (error "No such server: %s" server))
-    (gnus-opened-servers-remove method)
-    (setq gnus-opened-servers
-	  (cons (list method 'denied) gnus-opened-servers)))
+    (gnus-server-set-status method 'denied))
   (gnus-server-update-server server)
-  (gnus-server-position-point))
+  (gnus-server-position-point)
+  t)
 
 (defun gnus-server-remove-denials ()
   "Make all denied servers into closed servers."

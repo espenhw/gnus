@@ -346,10 +346,11 @@ If NOT-ALL, don't pack ticked articles."
 	(gnus-make-directory dir))
     (setq gnus-soup-areas nil)
     (gnus-message 4 "Packing %s..." packer)
-    (if (zerop (call-process "sh" nil nil nil "-c" 
+    (if (zerop (call-process shell-file-name
+			     nil nil nil shell-command-switch 
 			     (concat "cd " dir " ; " packer)))
 	(progn
-	  (call-process "sh" nil nil nil "-c" 
+	  (call-process shell-file-name nil nil nil shell-command-switch 
 			(concat "cd " dir " ; rm " files))
 	  (gnus-message 4 "Packing...done" packer))
       (error "Couldn't pack packet."))))
@@ -488,7 +489,7 @@ Return whether the unpacking was successful."
   (gnus-message 4 "Unpacking: %s" (format unpacker packet))
   (prog1
       (zerop (call-process
-	      "sh" nil nil nil "-c"
+	      shell-file-name nil nil nil shell-command-switch
 	      (format "cd %s ; %s" (expand-file-name dir) 
 		      (format unpacker packet))))
     (gnus-message 4 "Unpacking...done")))

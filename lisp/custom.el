@@ -1464,7 +1464,8 @@ If optional ORIGINAL is non-nil, consider VALUE for the original value."
 
 (defun custom-face-import (custom value)
   "Modify CUSTOM's VALUE to match internal expectations."
-  (let ((name (symbol-name value)))
+  (let ((name (or (and (facep value) (symbol-name (face-name value)))
+		  (symbol-name value))))
     (list (if (string-match "\
 custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
 			    name)

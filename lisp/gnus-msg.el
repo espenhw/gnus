@@ -278,7 +278,7 @@ header line with the old Message-ID."
   (or (memq gnus-article-copy gnus-buffer-list)
       (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
   (let ((article-buffer (or article-buffer gnus-article-buffer))
-	end)
+	end beg)
     (when (and (get-buffer article-buffer)
 	       (buffer-name (get-buffer article-buffer)))
       (save-excursion
@@ -288,12 +288,15 @@ header line with the old Message-ID."
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
 	  (set-buffer gnus-original-article-buffer)
 	  (goto-char (point-min))
+	  (while (looking-at message-unix-mail-delimiter)
+	    (forward-line 1))
+	  (setq beg (point))
 	  (setq end (or (search-forward "\n\n" nil t) (point)))
 	  (set-buffer gnus-article-copy)
 	  (gnus-set-text-properties (point-min) (point-max) nil)
 	  (delete-region (goto-char (point-min))
 			 (or (search-forward "\n\n" nil t) (point)))
-	  (insert-buffer-substring gnus-original-article-buffer 1 end)))
+	  (insert-buffer-substring gnus-original-article-buffer beg end)))
       gnus-article-copy)))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject

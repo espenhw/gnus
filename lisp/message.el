@@ -917,7 +917,9 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 (defun message-insert-to ()
   "Insert a To header that points to the author of the article being replied to."
   (interactive)
-  (when (message-position-on-field "To")
+  (when (and (message-position-on-field "To")
+	     (mail-fetch-field "to")
+	     (not (string-match "\\` *\\'" (mail-fetch-field "to"))))
     (insert ", "))
   (insert (or (message-fetch-reply-field "reply-to")
 	      (message-fetch-reply-field "from") "")))
@@ -925,7 +927,9 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 (defun message-insert-newsgroups ()
   "Insert the Newsgroups header from the article being replied to."
   (interactive)
-  (when (message-position-on-field "Newsgroups")
+  (when (and (message-position-on-field "Newsgroups")
+	     (mail-fetch-field "newsgroups")
+	     (not (string-match "\\` *\\'" (mail-fetch-field "newsgroups"))))
     (insert ","))
   (insert (or (message-fetch-reply-field "newsgroups") "")))
 
@@ -1409,6 +1413,7 @@ the user from the mailer."
       (message-generate-headers message-required-news-headers)
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
+    (message-cleanup-headers)
     (when (message-check-news-syntax)
       (unwind-protect
 	  (save-excursion
@@ -1735,7 +1740,8 @@ the user from the mailer."
 	(if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
 	    ;; Pipe the article to the program in question.
 	    (call-process-region (point-min) (point-max) shell-file-name
-				 nil nil nil "-c" (match-string 1 file))
+				 nil nil nil shell-command-switch
+				 (match-string 1 file))
 	  ;; Save the article.
 	  (setq file (expand-file-name file))
 	  (unless (file-exists-p (file-name-directory file))
@@ -2244,7 +2250,7 @@ Headers already prepared in the buffer are not modified."
 			 (or (car (mail-extract-address-components to))
 			     to) "")
 	       "")
-	     (if group (concat " on " group) "")
+	     (if (and group (not (string= group ""))) (concat " on " group) "")
 	     "*")))
    ;; Use standard name.
    (t
@@ -2309,7 +2315,7 @@ Headers already prepared in the buffer are not modified."
        (pop h))
      alist)
    headers)
-  (forward-line -1)
+  (delete-region (point) (progn (forward-line -1) (point)))
   (when message-default-headers
     (insert message-default-headers))
   (put-text-property

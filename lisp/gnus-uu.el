@@ -1318,7 +1318,7 @@ The headers will be included in the sequence they are matched.")
 		(start-process 
 		 "*uudecode*" 
 		 (get-buffer-create gnus-uu-output-buffer-name)
-		 "sh" "-c" 
+		 shell-file-name shell-command-switch
 		 (format "cd %s ; uudecode" gnus-uu-work-dir)))
 	  (set-process-sentinel 
 	   gnus-uu-uudecode-process 'gnus-uu-uudecode-sentinel)
@@ -1380,9 +1380,9 @@ The headers will be included in the sequence they are matched.")
 	(beginning-of-line)
 	(setq start-char (point))
 	(call-process-region 
-	 start-char (point-max) "sh" nil 
+	 start-char (point-max) shell-file-name nil 
 	 (get-buffer-create gnus-uu-output-buffer-name) nil 
-	 "-c" (concat "cd " gnus-uu-work-dir " ; sh"))))
+	 shell-command-switch (concat "cd " gnus-uu-work-dir " ; sh"))))
     state))
 
 ;; Returns the name of what the shar file is going to unpack.
@@ -1446,9 +1446,9 @@ The headers will be included in the sequence they are matched.")
 
     (gnus-message 5 "Unpacking: %s..." (gnus-uu-command action file-path))
 
-    (if (= 0 (call-process "sh" nil 
+    (if (= 0 (call-process shell-file-name nil 
 			   (get-buffer-create gnus-uu-output-buffer-name)
-			   nil "-c" command))
+			   nil shell-command-switch command))
 	(message "")
       (gnus-message 2 "Error during unpacking of archive")
       (setq did-unpack nil))
@@ -1748,7 +1748,7 @@ The user will be asked for a file name."
 ;; Encodes a file PATH with COMMAND, leaving the result in the
 ;; current buffer.
 (defun gnus-uu-post-encode-file (command path file-name)
-  (= 0 (call-process "sh" nil t nil "-c" 
+  (= 0 (call-process shell-file-name nil t nil shell-command-switch 
 		     (format "%s %s %s" command path file-name))))
 
 (defun gnus-uu-post-news-inews ()

@@ -45,6 +45,8 @@
 (defalias 'gnus-character-to-event 'identity)
 (defalias 'gnus-add-text-properties 'add-text-properties)
 (defalias 'gnus-put-text-property 'put-text-property)
+(defalias 'gnus-mode-line-buffer-identification 'identity)
+
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")

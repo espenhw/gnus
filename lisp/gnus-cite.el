@@ -55,12 +55,12 @@ Set it to nil to parse all articles.")
 (defvar gnus-supercite-regexp 
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
-  "Regexp matching normal SuperCite attribution lines.
+  "Regexp matching normal Supercite attribution lines.
 The first grouping must match prefixes added by other packages.")
 
 (defvar gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
-  "Regexp matching mangled SuperCite attribution lines.
-The first regexp group should match the SuperCite attribution.")
+  "Regexp matching mangled Supercite attribution lines.
+The first regexp group should match the Supercite attribution.")
 
 (defvar gnus-cite-minimum-match-count 2
   "Minimum number of identical prefixes before we believe it's a citation.")
@@ -138,7 +138,7 @@ The text matching the first grouping will be used as a button.")
 ;; WROTE: is the attribution line number
 ;; IN: is the line number of the previous line if part of the same attribution,
 ;; PREFIX: Is the citation prefix of the attribution line(s), and
-;; TAG: Is a SuperCite tag, if any.
+;; TAG: Is a Supercite tag, if any.
 
 (defvar gnus-cited-text-button-line-format-alist 
   `((?b beg ?d)
@@ -451,7 +451,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    end (progn (beginning-of-line 2) (point))
 	    start end)
       (goto-char begin)
-      ;; Ignore standard SuperCite attribution prefix.
+      ;; Ignore standard Supercite attribution prefix.
       (if (looking-at gnus-supercite-regexp)
 	  (if (match-end 1)
 	      (setq end (1+ (match-end 1)))
@@ -599,7 +599,7 @@ See also the documentation for `gnus-article-highlight-citation'."
   ;; 
   ;; WROTE is the attribution line number.
   ;; PREFIX is the attribution line prefix.
-  ;; TAG is the SuperCite tag on the attribution line.
+  ;; TAG is the Supercite tag on the attribution line.
   (let ((atts gnus-cite-loose-attribution-alist)
 	(case-fold-search t)
 	att wrote in prefix tag regexp limit smallest best size)
