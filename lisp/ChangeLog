@@ -1,3 +1,11 @@
+Sun Mar  2 16:58:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.18 is released.
+
+Sun Mar  2 05:48:56 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-load.el (customize): Load `cus-edit'.
+
 Sun Mar  2 04:40:48 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.17 is released.

@@ -47,7 +47,7 @@
 (put 'message-sending 'custom-loads '("message"))
 (put 'message-insertion 'custom-loads '("message"))
 (put 'gnus-summary-sort 'custom-loads '("gnus-sum"))
-(put 'customize 'custom-loads '("custom" "custom-edit"))
+(put 'customize 'custom-loads '("custom" "cus-edit"))
 (put 'gnus-asynchronous 'custom-loads '("gnus-async"))
 (put 'article-mime 'custom-loads '("gnus-sum"))
 (put 'gnus-extract 'custom-loads '("gnus-uu" "gnus-sum"))
