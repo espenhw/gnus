@@ -1,3 +1,8 @@
+2003-04-16  Reiner Steib  <Reiner.Steib@gmx.de>
+	From Frank Schmitt  <ich@frank-schmitt.net>
+
+	* make.bat: New variable EMACS_ARGS.  Changed XEmacs args.
+
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Add IDNA.  Add TLS.  Fix USEFOR reference.

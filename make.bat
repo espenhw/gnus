@@ -42,6 +42,7 @@ if not exist %1\..\site-lisp mkdir %1\..\site-lisp
 if not exist %1\..\site-lisp\gnus mkdir %1\..\site-lisp\gnus
 if not exist %1\..\site-lisp\subdirs.el set subdirwarning=yes
 :emacsnocopy
+set EMACS_ARGS=-batch -q -no-site-file
 set GNUS_INFO_DIR=%1\..\info
 set GNUS_LISP_DIR=%1\..\site-lisp\gnus\lisp
 set GNUS_ETC_DIR=%1\..\site-lisp\gnus\etc
@@ -55,6 +56,7 @@ if not exist %1\..\..\site-packages\info mkdir %1\..\..\site-packages\info
 if not exist %1\..\..\site-packages\lisp mkdir %1\..\..\site-packages\lisp
 if not exist %1\..\..\site-packages\etc mkdir %1\..\..\site-packages\etc
 :xemacsnocopy
+set EMACS_ARGS=-batch -no-autoloads
 set GNUS_INFO_DIR=%1\..\..\site-packages\info
 set GNUS_LISP_DIR=%1\..\..\site-packages\lisp\gnus
 set GNUS_ETC_DIR=%1\..\..\site-packages\etc
@@ -66,7 +68,7 @@ echo.
 goto lisp
 
 :lisp
-set EMACSBATCH=call %1\%EMACS% -no-site-file -batch -q
+set EMACSBATCH=call %1\%EMACS% %EMACS_ARGS%
 cd lisp
 if exist gnus-load.el del gnus-load.el
 echo.
