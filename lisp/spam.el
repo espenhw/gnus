@@ -75,7 +75,7 @@
 When nil, only ham and unclassified groups will have their spam moved
 to the spam-process-destination.  When t, spam will also be moved from
 spam groups."
-  :type 'repeat (choice
+  :type 'boolean
   :group 'spam)
 
 (defcustom spam-mark-only-unseen-as-spam t
