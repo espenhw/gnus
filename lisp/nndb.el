@@ -60,6 +60,10 @@
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
+  (autoload 'news-setup "rnewspost")
+  (autoload 'news-reply-mode "rnewspost")
+  (autoload 'cancel-timer "timer")
+  (autoload 'telnet "telnet" nil t)
   (autoload 'telnet-send-input "telnet" nil t)
   (autoload 'gnus-declare-backend "gnus-start"))
 

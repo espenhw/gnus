@@ -1,3 +1,13 @@
+2004-09-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-fetch-old-headers): Added custom choices `t'
+	and `invisible'.
+
+2004-09-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-trim): watch out for negatives
+	in gnus-registry-trim
+
 2004-09-13  Simon Josefsson  <jas@extundo.com>
 
 	* dns-mode.el: Add XEmacs auto-mode-alist autoload cookie.
