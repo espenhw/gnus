@@ -483,20 +483,22 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
     (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
   (when (gnus-check-backend-function
 	 'request-update-info (car gnus-command-method))
-    (let* ((group (gnus-info-group info))
-           (result (funcall (gnus-get-function gnus-command-method
-                                               'request-update-info)
-                            (gnus-group-real-name group)
-                            info (nth 1 gnus-command-method))))
-      (when result ;; artificially add nonexistent articles to the read range
-        (let* ((active (gnus-active group))
-               (min (car active)))
-          (when (> min 1) ;; otherwise, there are no known nonexistent articles
-            (let* ((range (if (= min 2) 1 (cons 1 (1- min))))
-                   (read (gnus-info-read result))
-                   (new-read (gnus-range-add read (list range))))
-              (gnus-info-set-read result new-read)))))
-      result)))
+    (let ((group (gnus-info-group info)))
+      (and (funcall (gnus-get-function gnus-command-method
+				       'request-update-info)
+		    (gnus-group-real-name group)
+		    info (nth 1 gnus-command-method))
+	   ;; If the minimum article number is greater than 1, then all
+	   ;; smaller article numbers are known not to exist; we'll
+	   ;; artificially add those to the 'read range.
+	   (let* ((active (gnus-active group))
+		  (min (car active)))
+	     (when (> min 1)
+	       (let* ((range (if (= min 2) 1 (cons 1 (1- min))))
+		      (read (gnus-info-read info))
+		      (new-read (gnus-range-add read (list range))))
+		 (gnus-info-set-read info new-read)))
+	     info)))))
 
 (defun gnus-request-expire-articles (articles group &optional force)
   (let* ((gnus-command-method (gnus-find-method-for-group group))

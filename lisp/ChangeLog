@@ -1,3 +1,8 @@
+2002-12-19  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus-int.el (gnus-request-update-info): nnchoke-r-u-i might not
+	return the info object.
+
 2002-12-18  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-int.el (gnus-request-update-info): Artificially add
