@@ -1,3 +1,7 @@
+2003-04-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* earcon.el (earcon-regexp-alist): catmeow is a wav file.
+
 2003-04-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-ctan-directory-regexp): Changed meaning

@@ -1,6 +1,6 @@
 ;;; earcon.el --- Sound effects for messages
 
-;; Copyright (C) 1996, 2000, 2001 Free Software Foundation
+;; Copyright (C) 1996, 2000, 2001, 2003 Free Software Foundation
 
 ;; Author: Steven L. Baur <steve@miranova.com>
 
@@ -50,7 +50,7 @@
     ("evil[ \t]+laugh" 1 "Evil_Laugh.au")
     ("gag\\|puke" 1 "Puke.au")
     ("snicker" 1 "Snicker.au")
-    ("meow" 1 "catmeow.au")
+    ("meow" 1 "catmeow.wav")
     ("sob\\|boohoo" 1 "cry.wav")
     ("drum[ \t]*roll" 1 "drumroll.au")
     ("blast" 1 "explosion.au")
