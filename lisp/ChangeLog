@@ -1,3 +1,9 @@
+2001-01-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-string-as-unibyte): New.
+
+	* message.el (message-forward): Use it.
+
 2001-01-19 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-cite-original-without-signature): Don't peel

@@ -121,6 +121,7 @@
 		(aset string idx to))
 	      (setq idx (1+ idx)))
 	    string)))
+     (string-as-unibyte . identity)
       )))
 
 (eval-and-compile

@@ -4366,24 +4366,18 @@ Optional DIGEST will use digest to forward."
 	      (insert-buffer-substring cur)
 	    (mml-insert-buffer cur))
 	(if message-forward-show-mml
-	    (let ((target (current-buffer)) tmp)
-	      (with-temp-buffer
-		(mm-disable-multibyte) ;; Must copy buffer in unibyte mode
-		(setq tmp (current-buffer))
-		(set-buffer cur)
-		(mm-with-unibyte-current-buffer
-		  (set-buffer tmp)
-		  (insert-buffer-substring cur)
-		  (set-buffer cur))
-		(set-buffer tmp)
-		(mm-enable-multibyte)
-		(mime-to-mml)
-		(goto-char (point-min))
-		(when (looking-at "From ")
-		  (replace-match "X-From-Line: "))
-		(set-buffer target)
-		(insert-buffer-substring tmp)
-		(set-buffer tmp)))
+	    (insert
+	     (with-temp-buffer
+	       (mm-disable-multibyte) ;; Must copy buffer in unibyte mode
+	       (insert
+		(with-current-buffer cur
+		  (mm-string-as-unibyte (buffer-string))))
+	       (mm-enable-multibyte)
+	       (mime-to-mml)
+	       (goto-char (point-min))
+	       (when (looking-at "From ")
+		 (replace-match "X-From-Line: "))
+	       (buffer-string)))
 	  (save-restriction
 	    (narrow-to-region (point) (point))
 	    (mml-insert-buffer cur)
