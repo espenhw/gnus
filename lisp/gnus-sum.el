@@ -10889,9 +10889,8 @@ If REVERSE, save parts that do not match TYPE."
 	   (setq gnus-newsgroup-selected-overlay (gnus-make-overlay from to))
 	   'face gnus-summary-selected-face))))))
 
-(eval-when-compile
 (defvar gnus-summary-highlight-line-cached nil)
-  (defvar gnus-summary-highlight-line-trigger nil))
+(defvar gnus-summary-highlight-line-trigger nil)
 
 (defun gnus-summary-highlight-line-0 ()
   (if (and (eq gnus-summary-highlight-line-trigger 
@@ -10908,10 +10907,6 @@ If REVERSE, save parts that do not match TYPE."
               (setq c (cdr c)
                     list (cdr list)))
             (gnus-byte-compile (list 'lambda nil cond))))))
-
-(eval-when-compile
-(defvar gnus-summary-highlight-line-downloaded-alist nil)
-  (defvar gnus-summary-highlight-line-downloaded-cached nil))
 
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
