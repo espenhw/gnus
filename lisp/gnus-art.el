@@ -1241,6 +1241,14 @@ See Info node `(gnus)Customizing Articles' for details."
   :link '(custom-manual "(gnus)Customizing Articles")
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-wash-html nil
+  "Format as HTML.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See Info node `(gnus)Customizing Articles' for details."
+  :group 'gnus-article-treat
+  :link '(custom-manual "(gnus)Customizing Articles")
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-fill-long-lines nil
   "Fill long lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1346,6 +1354,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-treat-smiley)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
+    (gnus-treat-wash-html gnus-article-wash-html)
     (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-hide-citation gnus-article-hide-citation)
     (gnus-treat-hide-citation-maybe gnus-article-hide-citation-maybe)
@@ -2187,8 +2196,8 @@ If READ-CHARSET, ask for a coding system."
 				 (mail-content-type-get ctl 'charset)))
 	      (if (stringp charset)
 		  (setq charset (intern (downcase charset)))))))
-      (if read-charset
-	  (setq charset (mm-read-coding-system "Charset: " charset)))
+      (when read-charset
+	(setq charset (mm-read-coding-system "Charset: " charset)))
       (unless charset
 	(setq charset gnus-newsgroup-charset))
       (article-goto-body)
@@ -2197,8 +2206,8 @@ If READ-CHARSET, ask for a coding system."
 	  (narrow-to-region (point) (point-max))
 	  (let* ((func (or gnus-article-wash-function mm-text-html-renderer))
 		 (entry (assq func mm-text-html-washer-alist)))
-	    (if entry
-		(setq func (cdr entry)))
+	    (when entry
+	      (setq func (cdr entry)))
 	    (cond
 	     ((gnus-functionp func)
 	      (funcall func))

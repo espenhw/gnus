@@ -1,5 +1,13 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (article-wash-html): Clean up.
+
+2003-01-02  pete-temp  <pete-temp-12-29-2002@kazmier.com>
+
+	* gnus-art.el (gnus-treat-wash-html): New variable.
+
+2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
 	* message.el (message-check-news-header-syntax): Allow posting. 
 	(message-check-news-header-syntax): Fix logic for sure, this
 	time. 
