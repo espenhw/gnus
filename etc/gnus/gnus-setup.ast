@@ -1,0 +1,22 @@
+@title Configuring Gnus for the first time
+
+
+@node What do you want to do with Gnus?
+
+@variable outbound (:radio ((item :tag "Send mail via sendmail" "sendmail") (item :tag "Send mail via SMTP" "smtp"))) "sendmail"
+
+@variable backends (:set ((item :tag "Read news via NNTP" "nntp") (item :tag"Sacrifice a goat" "goat") (item :tag "Read mail, store it locally" "nnml") (item :tag "Read mail and store it on an IMAP server" "nnimap"))) (list "nnml")
+
+@result primary-mail-selections (list backends outbound)
+
+@text
+Welcome to Gnus.  You need to tell us what you want to do with Gnus
+before we go on to specific configurations.
+
+Choose the tasks you want to set up: 
+@variable{backends}
+
+Choose the method Gnus will use to send mail: 
+@variable{outbound}
+
+@end text
