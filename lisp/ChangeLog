@@ -1,3 +1,8 @@
+2003-12-29  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-agent.el (gnus-agentize): Improve auto-agentizing logic.
+	Suggested by Steinar Bang <sb@dod.no>.
+
 2003-12-29  Kevin Greiner <kgreiner@xpediantsolutions.com>
 	* gnus.el (gnus-server-to-method): Fixed bug in 2003-12-22
 	check-in.
