@@ -1,5 +1,10 @@
 2000-08-14  Kai Grossjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* gnus.texi (Mail Source Specifiers): Replace `@paragraph' with
+	`@subsubheading'.
+
+2000-08-14  Kai Grossjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* gnus.texi (Mail Source Specifiers): Try to document the
 	interface to the functions called via (among others) the
 	`:function' keyword.

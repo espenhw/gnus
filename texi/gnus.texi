@@ -11376,7 +11376,7 @@ useful when you use local mail and news.
 @end table
 @end table
 
-@paragraph Function Interface
+@subsubheading Function Interface
 
 Some of the above keywords specify a Lisp function to be executed.
 For each keyword @code{:foo}, the Lisp variable @code{foo} is bound to
