@@ -454,7 +454,7 @@ call it with the value of the `gnus-data' text property."
     (defun gnus-article-add-button (from to fun &optional data)
       "Create a button between FROM and TO with callback FUN and data DATA."
       (and gnus-article-button-face
-	   (overlay-put (make-overlay from to) 'face gnus-article-button-face))
+	   (gnus-overlay-put (gnus-make-overlay from to) 'face gnus-article-button-face))
       (add-text-properties from to
 			   (append
 			    (and gnus-article-mouse-face
@@ -586,7 +586,7 @@ call it with the value of the `gnus-data' text property."
 	    (skip-chars-backward " \t")
 	    (setq to (point))
 	    (if (< from to)
-		(overlay-put (make-overlay from to) 'face face)))))
+		(gnus-overlay-put (gnus-make-overlay from to) 'face face)))))
 
     (defun gnus-max-width-function (el max-width)
       (` (let* ((val (eval (, el)))

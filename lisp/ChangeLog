@@ -1,4 +1,13 @@
-Sun Jul 30 00:00:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+Sun Jul 30 22:02:46 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-msg.el (gnus-debug): Remove null chars.
+
+	* nnfolder.el (nnfolder-active-number): Would return t instead of
+	the active number.
+
+Sun Jul 30 00:00:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99 is released.
 
 	* gnus.el (gnus-active-to-gnus-format): Ignore groups that have
 	flags that are not y, n or m.

@@ -231,10 +231,10 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		   (setq nnfolder-active-timestamp timestamp)
 		   (nnmail-activate 'nnfolder)))
 	     (let* ((active (assoc group nnfolder-group-alist))
-		   (group (car active))
-		   (range (car (cdr active)))
-		   (minactive (car range))
-		   (maxactive (cdr range)))
+		    (group (car active))
+		    (range (car (cdr active)))
+		    (minactive (car range))
+		    (maxactive (cdr range)))
 	       ;; I've been getting stray 211 lines in my nnfolder active
 	       ;; file.  So, let's make sure that doesn't happen. -SLB
 	       (set-buffer nntp-server-buffer)
@@ -280,7 +280,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (or (assoc group nnfolder-group-alist)
       (let (active)
 	(setq nnfolder-group-alist 
-	      (cons (list group (setq active (cons 0 0)))
+	      (cons (list group (setq active (cons 1 0)))
 		    nnfolder-group-alist))
 	(nnfolder-possibly-change-group group)
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
@@ -552,15 +552,17 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-active-number (group)
   (save-excursion 
     ;; Find the next article number in GROUP.
-    (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
-      (if active
-	  (setcdr active (1+ (cdr active)))
-	;; This group is new, so we create a new entry for it.
-	;; This might be a bit naughty... creating groups on the drop of
-	;; a hat, but I don't know...
-	(setq nnfolder-group-alist (cons (list group (setq active (cons 1 1)))
-					 nnfolder-group-alist)))
-      (cdr active))
+    (prog1
+	(let ((active (car (cdr (assoc group nnfolder-group-alist)))))
+	  (if active
+	      (setcdr active (1+ (cdr active)))
+	    ;; This group is new, so we create a new entry for it.
+	    ;; This might be a bit naughty... creating groups on the drop of
+	    ;; a hat, but I don't know...
+	    (setq nnfolder-group-alist 
+		  (cons (list group (setq active (cons 1 1)))
+			nnfolder-group-alist)))
+	  (cdr active)))
     (nnfolder-possibly-activate-groups group)))
 
 

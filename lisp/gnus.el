@@ -1248,8 +1248,10 @@ automatically when it is selected.")
 	(list ?S 'subject ?s)
 	(list ?s 'subject-or-nil ?s)
 	(list ?n 'name ?s)
-	(list ?A '(car (cdr (funcall gnus-extract-address-components from))) ?s)
-	(list ?a '(or (car (funcall gnus-extract-address-components from)) from) ?s)
+	(list ?A '(car (cdr (funcall gnus-extract-address-components from)))
+	      ?s)
+	(list ?a '(or (car (funcall gnus-extract-address-components from)) 
+		      from) ?s)
 	(list ?F 'from ?s)
 	(list ?x (macroexpand '(header-xref header)) ?s)
 	(list ?D (macroexpand '(header-date header)) ?s)
@@ -1306,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99"
+(defconst gnus-version "(ding) Gnus v0.99.1"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5680,7 +5682,8 @@ article number."
   (let* ((number 
 	  (if (and (consp thread) (cdr thread)
 		   (not (memq (header-number (car (car (cdr thread))))
-			      gnus-tmp-gathered)))
+			      gnus-tmp-gathered))
+		   )
 	      (apply 
 	       '+ 1 (mapcar 'gnus-summary-number-of-articles-in-thread 
 			    (cdr thread)))
@@ -9189,6 +9192,7 @@ returned."
 
     ;; See whether the article is to be put in the cache.
     (and gnus-use-cache
+	 (vectorp (gnus-get-header-by-num article))
 	 (save-excursion
 	   (gnus-cache-possibly-enter-article 
 	    gnus-newsgroup-name article 
@@ -9232,6 +9236,7 @@ marked."
     ;; See whether the article is to be put in the cache.
     (and gnus-use-cache
 	 (not (= mark gnus-canceled-mark))
+	 (vectorp (gnus-get-header-by-num article))
 	 (save-excursion
 	   (gnus-cache-possibly-enter-article 
 	    gnus-newsgroup-name article 
@@ -10604,6 +10609,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (setq gnus-have-all-headers 
 			(or all-headers gnus-show-all-headers))
 		  (and gnus-use-cache 
+		       (vectorp (gnus-get-header-by-number article))
 		       (gnus-cache-possibly-enter-article
 			group article
 			(gnus-get-header-by-number article)

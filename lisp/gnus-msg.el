@@ -1728,7 +1728,12 @@ The source file has to be in the Emacs load path."
 		  (prin1-to-string (symbol-value (car olist))) ")\n")
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
-    (insert "\n\n")))
+    (insert "\n\n")
+    ;; Remove any null chars - they seem to cause trouble for some
+    ;; mailers. (Byte-compiled output from the stuff above.) 
+    (goto-char (point-min))
+    (while (re-search-forward "[\000\200]" nil t)
+      (replace-match "" t t))))
 
 (gnus-ems-redefine)
 
