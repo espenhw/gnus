@@ -1,3 +1,8 @@
+2001-07-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-citation-line-function): Refer to
+	gnus-cite-attribution-suffix.
+
 2001-07-15  Pavel Jan,Bm(Bk <Pavel@Janik.cz>
 
 	* gnus-art.el,...: Error convention changes.

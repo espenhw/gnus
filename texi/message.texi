@@ -500,6 +500,12 @@ Hallvard B Furuseth <h.b.furuseth@@usit.uio.no> writes:
 Point will be at the beginning of the body of the message when this
 function is called.
 
+Note that Gnus provides a feature where clicking on `writes:' hides the
+cited text.  If you change the citation line too much, readers of your
+messages will have to adjust their Gnus, too.  See the variable
+@code{gnus-cite-attribution-suffix}.  @xref{Article Highlighting, ,
+Article Highlighting, gnus}, for details.
+
 @item message-yank-prefix
 @vindex message-yank-prefix
 @cindex yanking

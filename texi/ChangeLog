@@ -1,3 +1,7 @@
+2001-07-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.texi (Insertion): Refer to gnus-cite-attribution-suffix.
+
 2001-07-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (RSS): Add.

@@ -522,7 +522,12 @@ the signature is inserted."
 
 ;;;###autoload
 (defcustom message-citation-line-function 'message-insert-citation-line
-  "*Function called to insert the \"Whomever writes:\" line."
+  "*Function called to insert the \"Whomever writes:\" line.
+
+Note that Gnus provides a feature where the reader can click on
+`writes:' to hide the cited text.  If you change this line too much,
+people who read your message will have to change their Gnus
+configuration.  See the variable `gnus-cite-attribution-suffix'."
   :type 'function
   :group 'message-insertion)
 
