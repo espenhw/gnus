@@ -629,7 +629,7 @@ Composing Messages
 * Posting Styles::              An easier way to specify who you are.
 * Drafts::                      Postponing messages and rejected messages.
 * Rejected Articles::           What happens if the server doesn't like your article?
-* Using GPG::                   How to use GPG and MML to sign and encrypt messages
+* Signing and encrypting::      How to compose secure messages.
 
 Select Methods
 
@@ -8097,7 +8097,7 @@ message.@footnote{PGP keys for many hierarchies are available at
 @kindex W s (Summary)
 @findex gnus-summary-force-verify-and-decrypt
 Verify a signed (PGP, PGP/MIME or S/MIME) message
-(@code{gnus-summary-force-verify-and-decrypt}).
+(@code{gnus-summary-force-verify-and-decrypt}). @xref{Security}.
 
 @item W W H
 @kindex W W H (Summary)
@@ -9832,23 +9832,22 @@ to you to figure out, I think.
 @section Security
 
 Gnus is able to verify signed messages or decrypt encrypted messages.
-The formats that are supported are PGP (plain text, RFC 1991 format),
-PGP/MIME (RFC 2015/3156) and S/MIME, however you need some external
-programs to get things to work:
+The formats that are supported are PGP, PGP/MIME and S/MIME, however
+you need some external programs to get things to work:
 
 @enumerate
 @item
-To verify or decrypt PGP messages, you have to install mailcrypt or
-gpg.el as well as a OpenPGP implementation (such as GnuPG). @xref{Using GPG}.
+To handle PGP messages, you have to install mailcrypt or gpg.el as
+well as a OpenPGP implementation (such as GnuPG).
 
 @item
-To verify or decrypt S/MIME message, you need to install OpenSSL.
-OpenSSL 0.9.6 or newer is recommended.
+To handle S/MIME message, you need to install OpenSSL.  OpenSSL 0.9.6
+or newer is recommended.
 
 @end enumerate
 
 More information on how to set things up can be found in the message
-manual. @xref{Security, ,Security, message, The Message Manual}.
+manual (@pxref{Security, ,Security, message, Message Manual}).
 
 @table @code
 @item mm-verify-option
@@ -9860,7 +9859,7 @@ protocols. Otherwise, ask user.
 @item mm-decrypt-option
 @vindex mm-decrypt-option
 Option of decrypting encrypted parts.  @code{never}, no decryption;
-@code{always}, always decrypt @code{known}, only decrypt known
+@code{always}, always decrypt; @code{known}, only decrypt known
 protocols. Otherwise, ask user.
 
 @end table
@@ -10503,11 +10502,13 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @cindex followup
 @cindex post
 @cindex using gpg
+@cindex using s/mime
+@cindex using smime
 
 @kindex C-c C-c (Post)
 All commands for posting and mailing will put you in a message buffer
 where you can edit the article all you like, before you send the
-article by pressing @kbd{C-c C-c}.  @xref{Top, , Top, message, The
+article by pressing @kbd{C-c C-c}.  @xref{Top, , Overview, message,
 Message Manual}.  Where the message will be posted/mailed to depends
 on your setup (@pxref{Posting Server}).
 
@@ -10519,7 +10520,7 @@ on your setup (@pxref{Posting Server}).
 * Posting Styles::              An easier way to specify who you are.
 * Drafts::                      Postponing messages and rejected messages.
 * Rejected Articles::           What happens if the server doesn't like your article?
-* Using GPG::                   How to use GPG and MML to sign and encrypt messages
+* Signing and encrypting::      How to compose secure messages.
 @end menu
 
 Also see @pxref{Canceling and Superseding} for information on how to
@@ -10980,36 +10981,66 @@ The rejected articles will automatically be put in a special draft group
 (@pxref{Drafts}).  When the server comes back up again, you'd then
 typically enter that group and send all the articles off.
 
-@node Using GPG
-@section Using GPG
+@node Signing and encrypting
+@section Signing and encrypting
 @cindex using gpg
+@cindex using s/mime
+@cindex using smime
 
-Gnus has an ALPHA support to GPG that's provided by @file{gpg.el}. See
-@code{mm-verify-option} and @code{mm-decrypt-option} to enable Gnus to
-verify or decrypt messages accordingly.
+Gnus can digitally sign and encrypt your messages, using vanilla PGP
+format or PGP/MIME or S/MIME.  For decoding such messages, see the
+@code{mm-verify-option} and @code{mm-decrypt-option} options
+(@pxref{Security}).
 
-To use this correctly with GPG, you'll need the following lisp code in your
-@file{~/.emacs} or @file{~/.gnus}:
+For PGP, Gnus supports two external libraries, @sc{gpg.el} and
+@sc{Mailcrypt}, you need to install at least one of them.  The S/MIME
+support in Gnus requires the external program OpenSSL.
 
-@lisp
-(require 'gpg)
-(setq mml2015-use 'gpg)
-(setq mml1991-use 'gpg)
-(setq gpg-temp-directory (expand-file-name "~/.gnupg/tmp"))
-@end lisp
+Instructing MML to perform security operations on a MIME part is done
+using the @code{C-c C-m s} key map for signing and the @code{C-c C-m
+c} key map for encryption, as follows.
 
-The @code{gpg-temp-directory} need to point to a directory with permissions set
-to 700, for your own safety.
+@table @kbd
 
-To sign or encrypt your message you may choose to use the MML Security
-menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME,
-@kbd{C-c C-m s s} to sign your message using S/MIME.  There's also
-@kbd{C-c C-m c p} to encrypt your message with PGP/MIME and @kbd{C-c
-C-m c s} to encrypt using S/MIME. @xref{Security, ,Security, message,
-The Message Manual}.
+@item C-c C-m s s
+@kindex C-c C-m s s
+@findex mml-secure-sign-smime
 
-Gnus will ask for your passphrase and then it will send your message, if
-you've typed it correctly.
+Digitally sign current MIME part using S/MIME.
+
+@item C-c C-m s o
+@kindex C-c C-m s o
+@findex mml-secure-sign-pgp
+
+Digitally sign current MIME part using PGP.
+
+@item C-c C-m s p
+@kindex C-c C-m s p
+@findex mml-secure-sign-pgp
+
+Digitally sign current MIME part using PGP/MIME.
+
+@item C-c C-m c s
+@kindex C-c C-m c s
+@findex mml-secure-encrypt-smime
+
+Digitally encrypt current MIME part using S/MIME.
+
+@item C-c C-m c o
+@kindex C-c C-m c o
+@findex mml-secure-encrypt-pgp
+
+Digitally encrypt current MIME part using PGP.
+
+@item C-c C-m c p
+@kindex C-c C-m c p
+@findex mml-secure-encrypt-pgpmime
+
+Digitally encrypt current MIME part using PGP/MIME.
+
+@end table
+
+Also @xref{Security, ,Security, message, Message Manual}.
 
 @node Select Methods
 @chapter Select Methods
@@ -14345,23 +14376,24 @@ server is much similar to connecting to a news server, you just
 specify the network address of the server.
 
 @sc{imap} has two properties.  First, @sc{imap} can do everything that
-POP can, it can hence be viewed as POP++.  Secondly, @sc{imap} is a
+POP can, it can hence be viewed as a POP++.  Secondly, @sc{imap} is a
 mail storage protocol, similar to @sc{nntp} being a news storage
-protocol.  (@sc{imap} offers more features than @sc{nntp} because news
-is more or less read-only whereas mail is read-write.)
+protocol -- however, @sc{imap} offers more features than @sc{nntp}
+because news is more or less read-only whereas mail is read-write.
 
-If you want to use @sc{imap} as POP++, use an imap entry in
-mail-sources.  With this, Gnus will fetch mails from the @sc{imap}
-server and store them on the local disk.  This is not the usage
-described in this section.  @xref{Mail Sources}.
+If you want to use @sc{imap} as a POP++, use an imap entry in
+@code{mail-sources}.  With this, Gnus will fetch mails from the
+@sc{imap} server and store them on the local disk.  This is not the
+usage described in this section--@xref{Mail Sources}.
 
 If you want to use @sc{imap} as a mail storage protocol, use an nnimap
-entry in gnus-secondary-select-methods.  With this, Gnus will
+entry in @code{gnus-secondary-select-methods}.  With this, Gnus will
 manipulate mails stored on the @sc{imap} server.  This is the kind of
 usage explained in this section.
 
 A server configuration in @code{~/.gnus} with a few @sc{imap} servers
-might look something like this:
+might look something like the following. (Note that for SSL/TLS, you
+need external programs and libraries, see below.)
 
 @lisp
 (setq gnus-secondary-select-methods
@@ -14386,9 +14418,6 @@ might look something like this:
                 (nnimap-server-port 9930)
                 (nnimap-stream ssl))))
 @end lisp
-
-(Note that for SSL/TLS to work, you need the external library
-@samp{ssl.el}, see below.)
 
 The following variables can be used to create a virtual @code{nnimap}
 server:
@@ -14451,10 +14480,10 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 
 @itemize @bullet
 @item
-@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Requires the
+@dfn{gssapi:} Connect with GSSAPI (usually Kerberos 5). Requires the
 @samp{imtest} program.
 @item
-@dfn{kerberos4:} Connect with kerberos 4. Requires the @samp{imtest} program.
+@dfn{kerberos4:} Connect with Kerberos 4. Requires the @samp{imtest} program.
 @item
 @dfn{starttls:} Connect via the STARTTLS extension (similar to
 SSL). Requires the external library @samp{starttls.el} and program
@@ -14512,13 +14541,13 @@ Please note that the value of @code{nnimap-authenticator} is a symbol!
 
 @itemize @bullet
 @item
-@dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Require
+@dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Requires
 external program @code{imtest}.
 @item
-@dfn{kerberos4:} Kerberos authentication. Require external program
+@dfn{kerberos4:} Kerberos 4 authentication. Requires external program
 @code{imtest}.
 @item
-@dfn{digest-md5:} Encrypted username/password via DIGEST-MD5. Require
+@dfn{digest-md5:} Encrypted username/password via DIGEST-MD5. Requires
 external library @code{digest-md5.el}.
 @item
 @dfn{cram-md5:} Encrypted username/password via CRAM-MD5.
@@ -20567,8 +20596,9 @@ with, of course.
 
 @table @strong
 
-@item RFC 822
+@item RFC (2)822
 @cindex RFC 822
+@cindex RFC 2822
 There are no known breaches of this standard.
 
 @item RFC 1036
@@ -20596,6 +20626,35 @@ USEFOR is an IETF working group writing a successor to RFC 1036, based
 on Son-of-RFC 1036.  They have produced a number of drafts proposing
 various changes to the format of news articles.  The Gnus towers will
 look into implementing the changes when the draft is accepted as an RFC.
+
+@item PGP - RFC 1991 and RFC 2440
+@cindex RFC 1991
+@cindex RFC 2440
+
+RFC 1991 is the original PGP message specification, published as a
+Information RFC.  RFC 2440 was the follow-up, now called Open PGP, and
+put on the Standards Track.  Both document a non-MIME aware PGP
+format.  Gnus supports both encoding (signing and encryption) and
+decoding (verification and decryption).
+
+@item PGP/MIME - RFC 2015/3156
+
+RFC 2015 (superceded by 3156 which references RFC 2440 instead of RFC
+1991) describes the MIME-wrapping around the RF 1991/2440 format.
+Gnus supports both encoding and decoding.
+
+@item S/MIME - RFC 2633
+
+RFC 2633 describes the S/MIME format.
+
+@item IMAP - RFC 1730/2060, RFC 2195, RFC 2086, RFC 2359, RFC 2595, RFC 1731
+
+RFC 1730 is IMAP version 4, updated somewhat by RFC 2060 (IMAP 4
+revision 1).  RFC 2195 describes CRAM-MD5 authentication for IMAP. RFC
+2086 describes access control lists (ACLs) for IMAP. RFC 2359
+describes a IMAP protocol enhancement.  RFC 2595 describes the proper
+TLS integration (STARTTLS) with IMAP.  RFC 1731 describes the
+GSSAPI/Kerberos4 mechanisms for IMAP.
 
 @end table
 

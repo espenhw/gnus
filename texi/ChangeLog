@@ -1,5 +1,16 @@
 2002-01-01  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Conformity): Add and fix.
+
+	* message.texi (Security): Mention gpg-temp-directory.
+
+	* gnus.texi (Article Washing): Link to Security section.
+	(Security): Fix.
+	(Signing and Encrypting): Renamed from Using GPG.
+	(IMAP): Fixes.
+
+2002-01-01  Simon Josefsson  <jas@extundo.com>
+
 	* gnus.texi (Customizing Articles): Add crossreference links.  Add
 	gnus-body-boundary-delimiter.
 
