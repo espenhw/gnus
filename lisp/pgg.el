@@ -305,7 +305,7 @@ within the region."
 (defun pgg-snarf-keys ()
   "Import public keys in the current buffer."
   (interactive "")
-  (pgg-snarf-keys-region (or start (point-min)) (or end (point-max))))
+  (pgg-snarf-keys-region (point-min) (point-max)))
 
 (defun pgg-lookup-key (string &optional type)
   (pgg-invoke "lookup-key" (or pgg-scheme pgg-default-scheme) string type))
