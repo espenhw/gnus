@@ -246,10 +246,10 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.37"
+(defconst gnus-version-number "5.6.1"
   "Version number for this version of Gnus.")
 
-(defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
+(defconst gnus-version (format "Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
@@ -1374,6 +1374,7 @@ want."
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
 (defvar gnus-ephemeral-servers nil)
+(defvar gnus-edit-form-buffer "*Gnus edit form*")
 
 (defvar gnus-agent nil
   "Whether we want to use the Gnus agent or not.")

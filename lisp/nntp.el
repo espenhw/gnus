@@ -236,6 +236,7 @@ server there that you can connect to.  See also
   "Record the command STRING."
   (save-excursion
     (set-buffer (get-buffer-create "*nntp-log*"))
+    (goto-char (point-max))
     (insert (format-time-string "%Y%m%dT%H%M%S" (current-time))
 	    " " nntp-address " " string "\n")))
 

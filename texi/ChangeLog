@@ -3,6 +3,7 @@ Sat Mar  7 17:09:49 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus.texi: Took direntries out again, since makeinfo doesn't
 	understand them.
 	(Agent Expiry): New.
+	(Quassia Gnus): New.
 
 Sat Mar  7 16:14:10 1998  Dan Christensen  <jdc@chow.mat.jhu.edu>
 

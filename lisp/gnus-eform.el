@@ -49,7 +49,6 @@
 ;;; Internal variables
 
 (defvar gnus-edit-form-done-function nil)
-(defvar gnus-edit-form-buffer "*Gnus edit form*")
 
 (defvar gnus-edit-form-mode-map nil)
 (unless gnus-edit-form-mode-map

@@ -1,6 +1,6 @@
 ** Gnus changes.
 
-*** The Gnus alpha distribution no longer bundles Custom and Widget.
+*** The Gnus distribution no longer bundles Custom and Widget.
 If your Emacs doesn't come with these libraries, fetch them from
 <URL:http://www.dina.kvl.dk/~abraham/custom/>.  You also then need to
 add the following to the lisp/dgnushack.el file:
@@ -62,4 +62,38 @@ rewrite them to use `face-spec-set' instead.
 
 *** New command to translate M******** sm*rtq**t*s into proper text
 -- `W d'.
+
+*** For easier debugging of nntp, you can set `nntp-record-commands'
+to a non-nil value.
+
+*** nntp now uses ~/.authinfo, a .netrc-like file, for controlling
+where and how to send AUTHINFO to NNTP servers.
+
+*** A command for editing group parameters from the summary buffer
+has been added.
+
+*** A history of where mails have been split is available.
+
+*** A new article date command has been added -- `article-date-iso8601'.
+
+*** Subjects can be simplified when threading by setting
+`gnus-score-thread-simplify'.
+
+*** A new function for citing in Message has been added --
+`message-cite-original-without-signature'.
+
+*** `article-strip-all-blank-lines' -- new article command.
+
+*** A new Message command to kill to the end of the article has
+been added.
+
+*** A minimum adaptive score can be specified by using the
+`gnus-adaptive-word-minimum' variable.
+
+*** The "lapsed date" article header can be kept continually
+updated by the `gnus-start-date-timer' command.
+
+*** Web listserv archives can be read with the nnlistserv backend.
+
+*** Old dejanews archives can now be read by nnweb.
 

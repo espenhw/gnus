@@ -1,3 +1,15 @@
+Sun Mar  8 00:00:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.1 is released.
+
+Sat Mar  7 22:15:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-edit-form-buffer): Moved here.
+
+	* gnus-agent.el (gnus-agent-expire-old): Removed.
+	(gnus-agent-expire-directory): Ditto.
+	(gnus-agent-expire-group): Even more ditto.
+
 Sat Mar  7 21:59:18 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.37 is released.

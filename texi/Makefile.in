@@ -13,6 +13,9 @@ XINFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f sa
 LATEX=latex
 DVIPS=dvips
 PERL=perl
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+SHELL = /bin/sh
 
 all: gnus message
 

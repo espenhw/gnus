@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.37 Manual
+@settitle Gnus 5.6.1 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.37 Manual
+@title Gnus 5.6.1 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.37.
+This manual corresponds to Gnus 5.6.1.
 
 @end ifinfo
 
@@ -15457,7 +15457,8 @@ David Moore---rewrite of @file{nnvirtual.el} and many other things.
 Kevin Davidson---came up with the name @dfn{ding}, so blame him.
 
 @item
-François Pinard---many, many interesting and thorough bug reports.
+François Pinard---many, many interesting and thorough bug reports, as
+well as autoconf support.
 
 @end itemize
 
@@ -15641,6 +15642,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.1.7.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16169,6 +16171,137 @@ Emphasized text can be properly fontisized:
 (add-hook 'gnus-article-display-hook 'gnus-article-emphasize)
 @end lisp
  
+@end itemize
+
+
+@node Quassia Gnus
+@subsubsection Quassia Gnus
+
+New features in Gnus 5.6.1.7:
+
+@itemize @bullet
+
+@item
+New functionality for using Gnus as an offline newsreader has been
+added.  A plethora of new commands and modes have been added.  See
+@pxref{Gnus Unplugged} for the full story.
+
+@item
+ The @code{nndraft} backend has returned, but works differently than
+before.  All Message buffers are now also articles in the @code{nndraft}
+group, which is created automatically.
+
+@item
+@code{gnus-alter-header-function} can now be used to alter header
+values.
+
+@item
+ @code{gnus-summary-goto-article} now accept Message-ID's.
+
+@item
+ A new Message command for deleting text in the body of a message
+outside the region: @kbd{C-c C-v}.
+
+@item
+ You can now post to component group in @code{nnvirtual} groups with
+@kbd{C-u C-c C-c}.
+
+@item
+ @code{nntp-rlogin-program}---new variable to ease customization.
+
+@item
+ @code{C-u C-c C-c} in @code{gnus-article-edit-mode} will now inhibit
+re-highlighting of the article buffer.
+
+@item
+ New element in @code{gnus-boring-article-headers}---@code{long-to}.
+
+@item
+ @kbd{M-i} symbolic prefix command.  See the section "Symbolic
+Prefixes" in the Gnus manual for details.
+
+@item
+ @kbd{L} and @kbd{I} in the summary buffer now take the symbolic prefix
+@kbd{a} to add the score rule to the "all.SCORE" file.
+
+@item
+ @code{gnus-simplify-subject-functions} variable to allow greater
+control over simplification.
+
+@item
+ @kbd{A T}---new command for fetching the current thread.
+
+@item
+ @kbd{/ T}---new command for including the current thread in the
+limit.
+
+@item
+ @kbd{M-RET} is a new Message command for breaking cited text.
+
+@item
+ @samp{\\1}-expressions are now valid in @code{nnmail-split-methods}.
+
+@item
+ The @code{custom-face-lookup} function has been removed.  
+If you used this function in your initialization files, you must
+rewrite them to use @code{face-spec-set} instead.
+
+@item
+ Cancelling now uses the current select method.  Symbolic prefix
+@kbd{a} forces normal posting method.
+
+@item
+ New command to translate M@item
+@item
+** sm*rtq**t*s into proper text---@kbd{W d}.
+
+@item
+ For easier debugging of @code{nntp}, you can set
+@code{nntp-record-commands} to a non-@code{nil} value.
+
+@item
+ @code{nntp} now uses @file{~/.authinfo}, a @file{.netrc}-like file, for
+controlling where and how to send @sc{authinfo} to @sc{nntp} servers.
+
+@item
+ A command for editing group parameters from the summary buffer
+has been added.
+
+@item
+ A history of where mails have been split is available.
+
+@item
+ A new article date command has been added---@code{article-date-iso8601}.
+
+@item
+ Subjects can be simplified when threading by setting
+@code{gnus-score-thread-simplify}.
+
+@item
+ A new function for citing in Message has been
+added---@code{message-cite-original-without-signature}.
+
+@item
+ @code{article-strip-all-blank-lines}---new article command.
+
+@item
+ A new Message command to kill to the end of the article has
+been added.
+
+@item
+ A minimum adaptive score can be specified by using the
+@code{gnus-adaptive-word-minimum} variable.
+
+@item
+ The "lapsed date" article header can be kept continually
+updated by the @code{gnus-start-date-timer} command.
+
+@item
+ Web listserv archives can be read with the @code{nnlistserv} backend.
+
+@item
+ Old dejanews archives can now be read by @code{nnweb}.
+
 @end itemize
 
 
