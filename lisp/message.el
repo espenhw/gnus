@@ -1110,6 +1110,9 @@ no, only reply back to the author."
 (defvar	message-options nil
   "Some saved answers when sending message.")
 
+(defvar message-send-mail-real-function nil
+  "Internal send mail function.")
+
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-new-draft-name "mh-comp")
@@ -2486,7 +2489,8 @@ It should typically alter the sending method in some way or other."
 	      (insert "\n")
 	      (widen)
 	      (mm-with-unibyte-current-buffer
-		(funcall message-send-mail-function)))
+		(funcall (or message-send-mail-real-function
+                             message-send-mail-function))))
 	    (setq n (+ n 1))
 	    (setq p (pop plist))
 	    (erase-buffer)))
@@ -2552,7 +2556,8 @@ It should typically alter the sending method in some way or other."
 		  (not (y-or-n-p "Message exceeds message-send-mail-partially-limit, send in parts? ")))
 	      (mm-with-unibyte-current-buffer
 		(message "Sending via mail...")
-		(funcall message-send-mail-function))
+		(funcall (or message-send-mail-real-function
+                             message-send-mail-function)))
 	    (message-send-mail-partially)))
       (kill-buffer tembuf))
     (set-buffer mailbuf)

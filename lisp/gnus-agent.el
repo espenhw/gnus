@@ -354,14 +354,16 @@ last form in your `.gnus.el' file:
 \(gnus-agentize)
 
 This will modify the `gnus-setup-news-hook', and
-`message-send-mail-function' variables, and install the Gnus agent
+`message-send-mail-real-function' variables, and install the Gnus agent
 minor mode in all Gnus buffers."
   (interactive)
   (gnus-open-agent)
   (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)
   (unless gnus-agent-send-mail-function
-    (setq gnus-agent-send-mail-function message-send-mail-function
-	  message-send-mail-function 'gnus-agent-send-mail))
+    (setq gnus-agent-send-mail-function (or 
+                                         message-send-mail-real-function
+                                         message-send-mail-function)
+	  message-send-mail-real-function 'gnus-agent-send-mail))
   (unless gnus-agent-covered-methods
     (setq gnus-agent-covered-methods (list gnus-select-method))))
 

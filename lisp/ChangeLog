@@ -1,3 +1,15 @@
+2001-07-09 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-real-function): New variable.
+	(message-send-mail-partially, message-send-mail): 
+
+	* nngateway.el (nngateway-request-post): Use it.
+
+	* gnus-agent.el (gnus-agentize): Use it. 
+
+	* nnsoup.el (nnsoup-old-functions, nnsoup-set-variables) 
+	(nnsoup-revert-variables): Use it.
+
 2001-07-09  Colin Walters  <walters@cis.ohio-state.edu>
 
 	* mm-decode.el (mm-inline-media-tests): Default to displaying as

@@ -656,20 +656,20 @@ backend for the messages.")
     (and areas (car areas))))
 
 (defvar nnsoup-old-functions
-  (list message-send-mail-function message-send-news-function))
+  (list message-send-mail-real-function message-send-news-function))
 
 ;;;###autoload
 (defun nnsoup-set-variables ()
   "Use the SOUP methods for posting news and mailing mail."
   (interactive)
   (setq message-send-news-function 'nnsoup-request-post)
-  (setq message-send-mail-function 'nnsoup-request-mail))
+  (setq message-send-mail-real-function 'nnsoup-request-mail))
 
 ;;;###autoload
 (defun nnsoup-revert-variables ()
   "Revert posting and mailing methods to the standard Emacs methods."
   (interactive)
-  (setq message-send-mail-function (car nnsoup-old-functions))
+  (setq message-send-mail-real-function (car nnsoup-old-functions))
   (setq message-send-news-function (cadr nnsoup-old-functions)))
 
 (defun nnsoup-store-reply (kind)
