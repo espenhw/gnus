@@ -235,8 +235,10 @@ The buffer may be narrowed."
   (require 'message)			; for message-posting-charset
   (let ((charsets
 	 (mm-find-mime-charset-region (point-min) (point-max))))
-    (and charsets
-	 (not (equal charsets (list (car message-posting-charset)))))))
+    (goto-char (point-min))
+    (or (search-forward "=?" nil t)
+	(and charsets
+	     (not (equal charsets (list (car message-posting-charset))))))))
 
 ;; Use this syntax table when parsing into regions that may need
 ;; encoding.  Double quotes are string delimiters, backslash is
@@ -284,18 +286,20 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	;; is relevant for instance in Subject headers with `Re:' for
 	;; interoperability with non-MIME clients, and we might as
 	;; well avoid the tail too.
-	(progn
+	(let ((encodable-regexp "[^\000-\177]\\|=\\?"))
 	  (goto-char (point-min))
 	  ;; Does it need encoding?
-	  (skip-chars-forward "\000-\177")
+	  (re-search-forward encodable-regexp (point-max) 'move)
 	  (unless (eobp)
 	    (skip-chars-backward "^ \n") ; beginning of space-delimited word
-	    (rfc2047-encode (point) (progn
-				      (goto-char e)
-				      (skip-chars-backward "\000-\177")
-				      (skip-chars-forward "^ \n")
-				      ;; end of space-delimited word
-				      (point)))))
+	    (rfc2047-encode
+	     (point)
+	     (progn
+	       (goto-char e)
+	       (re-search-backward encodable-regexp (point-max) 'move)
+	       (skip-chars-forward "^ \n")
+	       ;; end of space-delimited word
+	       (point)))))
       ;; `address-mime' case -- take care of quoted words, comments.
       (with-syntax-table rfc2047-syntax-table
 	(let ((start)			; start of current token
@@ -385,7 +389,7 @@ By default, the string is treated as containing addresses (see
   "Encode the word(s) in the region B to E.
 By default, the region is treated as containing addresses (see
 `rfc2047-encoding-type')."
-  (let* ((mime-charset (mm-find-mime-charset-region b e))
+  (let* ((mime-charset (or (mm-find-mime-charset-region b e) (list 'us-ascii)))
 	 (cs (if (> (length mime-charset) 1)
 		 ;; Fixme: Instead of this, try to break region into
 		 ;; parts that can be encoded separately.
