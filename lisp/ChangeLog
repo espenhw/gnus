@@ -1,3 +1,8 @@
+2001-12-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-group-prefixed-name): If group name is prefixed,
+	return it.
+
 2001-12-21  Paul Jarc <prj@po.cwru.edu>
 	
 	* gnus.el (gnus-valid-select-methods): Include nnmaildir.

@@ -2725,7 +2725,8 @@ that that variable is buffer-local to the summary buffers."
   "Return the whole name from GROUP and METHOD."
   (and (stringp method) (setq method (gnus-server-to-method method)))
   (if (or (not method)
-	  (gnus-server-equal method "native"))
+	  (gnus-server-equal method "native")
+	  (string-match ":" group))
       group
     (concat (gnus-method-to-server-name method) ":" group)))
 
