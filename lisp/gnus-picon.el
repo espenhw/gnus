@@ -60,7 +60,8 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type '(repeat string)
   :group 'picon)
 
-(defcustom gnus-picon-user-directories '("users" "usenix" "local" "misc")
+(defcustom gnus-picon-user-directories '("users" "usenix" "local"
+					 "misc" "unknown")
   "*List of directories to search for user faces."
   :type '(repeat string)
   :group 'picon)
@@ -116,9 +117,6 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	(dolist (directory directories)
 	  (setq address faddress
 		base (expand-file-name directory database))
-	  ;; Kludge to search misc/MISC for users.
-	  (when (string= directory "misc")
-	    (setq address '("MISC")))
 	  (while address
 	    (when (setq result (gnus-picon-find-image
 				(concat base "/" (mapconcat 'identity
@@ -128,7 +126,11 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	      (throw 'found result))
 	    (if exact
 		(setq address nil)
-	      (pop address))))))))
+	      (pop address)))
+	  ;; Kludge to search MISC as well.
+	  (when (setq result (gnus-picon-find-image
+			      (concat base "/MISC/" user "/")))
+	    (throw 'found result)))))))
 
 (defun gnus-picon-find-image (directory)
   (let ((types gnus-picon-file-types)
@@ -166,10 +168,16 @@ GLYPH can be either a glyph or a string."
 	      first t)
 	(when (and (stringp address)
 		   (setq spec (gnus-picon-split-address address)))
-	  (when (setq file (gnus-picon-find-face
-			    address gnus-picon-user-directories))
+	  (when (setq file (or (gnus-picon-find-face
+				address gnus-picon-user-directories)
+			       (gnus-picon-find-face
+				(concat "unknown@"
+					(mapconcat
+					 'identity (cdr spec) "."))
+				gnus-picon-user-directories)))
 	    (setcar spec (cons (gnus-picon-create-glyph file)
 			       (car spec))))
+	      
 	  (dotimes (i (1- (length spec)))
 	    (when (setq file (gnus-picon-find-face
 			      (concat "unknown@"
