@@ -1,12 +1,7 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
 ;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
-;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
-;; Keywords: news, mail
-
-;; This file is part of GNU Emacs.
-
-;; GNU Emacs is free software; you can redistribute it and/or modify
+;; Author: Per Abhiddenware; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.
@@ -535,27 +530,27 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    (atts gnus-cite-attribution-alist)
 	    (buffer-read-only nil)
 	    (inhibit-point-motion-hooks t)
-	    (hiden 0)
+	    (hidden 0)
 	    total)
 	(goto-char (point-max))
 	(gnus-article-search-signature)
 	(setq total (count-lines start (point)))
 	(while atts
-	  (setq hiden (+ hiden (length (cdr (assoc (cdar atts)
-						   gnus-cite-prefix-alist))))
+	  (setq hidden (+ hidden (length (cdr (assoc (cdar atts)
+						     gnus-cite-prefix-alist))))
 		atts (cdr atts)))
 	(when (or force
-		  (and (> (* 100 hiden) (* gnus-cite-hide-percentage total))
-		       (> hiden gnus-cite-hide-absolute)))
+		  (and (> (* 100 hidden) (* gnus-cite-hide-percentage total))
+		       (> hidden gnus-cite-hide-absolute)))
 	  (setq atts gnus-cite-attribution-alist)
 	  (while atts
 	    (setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
 		  atts (cdr atts))
 	    (while total
-	      (setq hiden (car total)
+	      (setq hidden (car total)
 		    total (cdr total))
-	      (goto-line hiden)
-	      (unless (assq hiden gnus-cite-attribution-alist)
+	      (goto-line hidden)
+	      (unless (assq hidden gnus-cite-attribution-alist)
 		(gnus-add-text-properties
 		 (point) (progn (forward-line 1) (point))
 		 (nconc (list 'article-type 'cite)

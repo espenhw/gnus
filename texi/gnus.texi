@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.30 Manual
+@settitle Gnus 5.6.31 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.30 Manual
+@title Gnus 5.6.31 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.30.
+This manual corresponds to Gnus 5.6.31.
 
 @end ifinfo
 
@@ -6223,7 +6223,9 @@ too much cruft in most articles.
 @item W W a
 @kindex W W a (Summary)
 @findex gnus-article-hide
-Do maximum hiding on the summary buffer (@kbd{gnus-article-hide}).
+Do quote a lot of hiding on the article buffer
+(@kbd{gnus-article-hide}).  In particular, this function will hide
+headers, PGP, cited text and the signature.  
 
 @item W W h
 @kindex W W h (Summary)
@@ -6265,16 +6267,6 @@ customizing the hiding:
 
 @table @code
 
-@item gnus-cite-hide-percentage
-@vindex gnus-cite-hide-percentage
-If the cited text is of a bigger percentage than this variable (default
-50), hide the cited text.
-
-@item gnus-cite-hide-absolute
-@vindex gnus-cite-hide-absolute
-The cited text must have at least this length (default 10) before it
-is hidden.
-
 @item gnus-cited-text-button-line-format
 @vindex gnus-cited-text-button-line-format
 Gnus adds buttons to show where the cited text has been hidden, and to
@@ -6295,6 +6287,25 @@ Length of the hidden text.
 @vindex gnus-cited-lines-visible
 The number of lines at the beginning of the cited text to leave shown.
 
+@end table
+
+@item W W C-c
+@kindex W W C-c (Summary)
+@findex gnus-article-hide-citation-maybe
+
+Hide citation (@code{gnus-article-hide-citation-maybe}) depending on the
+following two variables:
+
+@table @code
+@item gnus-cite-hide-percentage
+@vindex gnus-cite-hide-percentage
+If the cited text is of a bigger percentage than this variable (default
+50), hide the cited text.
+
+@item gnus-cite-hide-absolute
+@vindex gnus-cite-hide-absolute
+The cited text must have at least this length (default 10) before it
+is hidden.
 @end table
 
 @item W W C
@@ -10472,6 +10483,9 @@ The rnews batch transport format.
 @item forward
 Forwarded articles.
 
+@item mime-parts
+MIME multipart messages, besides digests.
+
 @item mime-digest
 @cindex digest
 @cindex MIME digest
@@ -10514,8 +10528,9 @@ Virtual server variables:
 @vindex nndoc-article-type
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @code{news}, @code{rnews}, @code{mmdf}, @code{forward}, @code{rfc934},
-@code{rfc822-forward}, @code{mime-digest}, @code{standard-digest},
-@code{slack-digest}, @code{clari-briefs} or @code{guess}.
+@code{rfc822-forward}, @code{mime-parts}, @code{mime-digest},
+@code{standard-digest}, @code{slack-digest}, @code{clari-briefs} or
+@code{guess}.
 
 @item nndoc-post-type
 @vindex nndoc-post-type
@@ -15387,7 +15402,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.30' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6.31' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15864,7 +15879,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.30.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.31.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16399,7 +16414,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.30:
+New features in Gnus 5.6.31:
 
 @itemize @bullet
 

@@ -535,7 +535,8 @@ the actual number of articles toggled is returned."
 	   (file (gnus-agent-lib-file "active")))
       (gnus-make-directory (file-name-directory file))
       (nnheader-temp-write file
-	(insert-file-contents file)
+	(when (file-exists-p file)
+	  (insert-file-contents file))
 	(goto-char (point-min))
 	(when (re-search-forward (concat "^" (regexp-quote group) " ") nil t)
 	  (gnus-delete-line))

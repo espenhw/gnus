@@ -1417,12 +1417,15 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (search-forward (concat "\n" mail-header-separator "\n") nil t))
 
 (defun message-goto-signature ()
-  "Move point to the beginning of the message signature."
+  "Move point to the beginning of the message signature.
+If there is no signature in the article, go to the end and
+return nil."
   (interactive)
   (goto-char (point-min))
   (if (re-search-forward message-signature-separator nil t)
       (forward-line 1)
-    (goto-char (point-max))))
+    (goto-char (point-max))
+    nil))
 
 
 
@@ -1462,16 +1465,17 @@ With the prefix argument FORCE, insert the header anyway."
   (interactive "r")
   (save-excursion
     (goto-char end)
-    (delete-region (point) (progn (message-goto-signature)
-				  (forward-line -2)
-				  (point)))
+    (delete-region (point) (if (not (message-goto-signature))
+			       (point)
+			     (forward-line -2)
+			     (point)))
     (insert "\n")
     (goto-char beg)
     (delete-region beg (progn (message-goto-body)
 			      (forward-line 2)
 			      (point))))
-  (message-goto-signature)
-  (forward-line -2))
+  (when (message-goto-signature)
+    (forward-line -2)))
 
 (defun message-kill-to-signature ()
   "Deletes all text up to the signature."

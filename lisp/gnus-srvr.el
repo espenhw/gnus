@@ -534,7 +534,7 @@ The following commands are available:
      '("Browse"
        ["Subscribe" gnus-browse-unsubscribe-current-group t]
        ["Read" gnus-browse-read-group t]
-       ["Select" gnus-browse-read-group t]
+       ["Select" gnus-browse-select-group t]
        ["Next" gnus-browse-next-group t]
        ["Prev" gnus-browse-next-group t]
        ["Exit" gnus-browse-exit t]))

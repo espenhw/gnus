@@ -38,7 +38,7 @@
 (defvoo nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
-`rfc934', `rfc822-forward', `mime-digest', `standard-digest',
+`rfc934', `rfc822-forward', `mime-digest', `mime-parts', `standard-digest',
 `slack-digest', `clari-briefs' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
@@ -74,6 +74,9 @@ from the document.")
      (article-begin . "^--.*\n+")
      (body-end . "^--.*$")
      (prepare-body-function . nndoc-unquote-dashes))
+    (mime-parts
+     (generate-head-function . nndoc-generate-mime-parts-head)
+     (article-transform-function . nndoc-transform-mime-parts))
     (clari-briefs
      (article-begin . "^ \\*")
      (body-end . "^\t------*[ \t]^*\n^ \\*")
@@ -128,7 +131,6 @@ from the document.")
      (subtype nil))))
 
 
-
 (defvoo nndoc-file-begin nil)
 (defvoo nndoc-first-article nil)
 (defvoo nndoc-article-begin nil)
@@ -140,6 +142,11 @@ from the document.")
 (defvoo nndoc-body-begin-function nil)
 (defvoo nndoc-head-begin-function nil)
 (defvoo nndoc-body-end nil)
+;; nndoc-dissection-alist is a list of sublists.  Each sublist holds the
+;; following items.  ARTICLE is an ordinal starting at 1.  HEAD-BEGIN,
+;; HEAD-END, BODY-BEGIN and BODY-END are positions in the `nndoc' buffer.
+;; LINE-COUNT is a count of lines in the body.  SUBJECT, MESSAGE-ID and
+;; REFERENCES, only present for MIME dissections, are field values.
 (defvoo nndoc-dissection-alist nil)
 (defvoo nndoc-prepare-body-function nil)
 (defvoo nndoc-generate-head-function nil)
@@ -151,6 +158,8 @@ from the document.")
 (defvoo nndoc-current-buffer nil
   "Current nndoc news buffer.")
 (defvoo nndoc-address nil)
+(defvoo nndoc-mime-header nil)
+(defvoo nndoc-mime-subject nil)
 
 (defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
@@ -292,7 +301,9 @@ from the document.")
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(nndoc-set-delims)
-	(nndoc-dissect-buffer)))
+	(if (eq nndoc-article-type 'mime-parts)
+	    (nndoc-dissect-mime-parts)
+	  (nndoc-dissect-buffer))))
     (unless nndoc-current-buffer
       (nndoc-close-server))
     ;; Return whether we managed to select a file.
@@ -436,6 +447,46 @@ from the document.")
 (defun nndoc-rfc822-forward-body-end-function ()
   (goto-char (point-max)))
 
+(defun nndoc-mime-parts-type-p ()
+  (let ((case-fold-search t)
+	(limit (search-forward "\n\n" nil t)))
+    (goto-char (point-min))
+    (when (and limit
+		(re-search-forward
+		 (concat "\
+^Content-Type:[ \t]*multipart/[a-z]+;\\(.*;\\)*"
+			 "[ \t\n]*[ \t]boundary=\"?[^\"\n]*[^\" \t\n]")
+	   limit t))
+      t)))
+
+(defun nndoc-transform-mime-parts (article)
+  (unless (= article 1)
+    ;; Ensure some MIME-Version.
+    (goto-char (point-min))
+    (search-forward "\n\n")
+    (let ((case-fold-search nil)
+	  (limit (point)))
+      (goto-char (point-min))
+      (or (save-excursion (re-search-forward "^MIME-Version:" limit t))
+	  (insert "Mime-Version: 1.0\n")))
+    ;; Generate default header before entity fields.
+    (goto-char (point-min))
+    (nndoc-generate-mime-parts-head article t)))
+
+(defun nndoc-generate-mime-parts-head (article &optional full-subject)
+  (let ((entry (cdr (assq article nndoc-dissection-alist))))
+    (let ((subject (concat "<" (nth 5 entry) ">"))
+	  (message-id (nth 6 entry))
+	  (references (nth 7 entry)))
+      (insert nndoc-mime-header
+	      "Subject: "
+	      (cond ((not full-subject) subject)
+		    (nndoc-mime-subject (concat nndoc-mime-subject " " subject))
+		    (t subject))
+	      "\n")
+      (and message-id (insert "Message-ID: " message-id "\n"))
+      (and references (insert "References: " references "\n")))))
+
 (defun nndoc-clari-briefs-type-p ()
   (when (let ((case-fold-search nil))
 	  (re-search-forward "^\t[^a-z]+ ([^a-z]+) --" nil t))
@@ -473,7 +524,7 @@ from the document.")
     (when (and
 	   (re-search-forward
 	    (concat "^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
-		    "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
+		    "boundary=\"?\\([^\"\n]*[^\" \t\n]\\)")
 	    nil t)
 	   (match-beginning 1))
       (setq boundary-id (match-string 1)
@@ -608,6 +659,104 @@ from the document.")
   "Unquote quoted non-separators in digests."
   (while (re-search-forward "^- -"nil t)
     (replace-match "-" t t)))
+
+;; Against compiler warnings.
+(defvar nndoc-mime-split-ordinal)
+
+(defun nndoc-dissect-mime-parts ()
+  "Go through a MIME composite article and partition it into sub-articles.
+When a MIME entity contains sub-entities, dissection produces one article for
+the header of this entity, and one article per sub-entity."
+  (setq nndoc-dissection-alist nil
+	nndoc-mime-split-ordinal 0)
+  (save-excursion
+    (set-buffer nndoc-current-buffer)
+    (message-narrow-to-head)
+    (let ((case-fold-search t)
+	  (message-id (message-fetch-field "Message-ID"))
+	  (references (message-fetch-field "References")))
+      (setq nndoc-mime-header (buffer-substring (point-min) (point-max))
+	    nndoc-mime-subject (message-fetch-field "Subject"))
+      (while (string-match "\
+^\\(Subject\\|Message-ID\\|References\\|Lines\\|\
+MIME-Version\\|Content-Type\\|Content-Transfer-Encoding\\|\
+\\):.*\n\\([ \t].*\n\\)*"
+			   nndoc-mime-header)
+	(setq nndoc-mime-header (replace-match "" t t nndoc-mime-header)))
+      (widen)
+      (nndoc-dissect-mime-parts-sub (point-min) (point-max)
+				    nil message-id references))))
+
+(defun nndoc-dissect-mime-parts-sub (begin end position message-id references)
+  "Dissect an entity within a composite MIME message.
+The article, which corresponds to a MIME entity, extends from BEGIN to END.
+The string POSITION holds a dotted decimal representation of the article
+position in the hierarchical structure, it is nil for the outer entity.
+The generated article should use MESSAGE-ID and REFERENCES field values."
+  ;; Note: `case-fold-search' is already `t' from the calling function.
+  (let ((head-begin begin)
+	(body-end end)
+	head-end body-begin type subtype composite comment)
+    (save-excursion
+      ;; Gracefully handle a missing body.
+      (goto-char head-begin)
+      (if (search-forward "\n\n" body-end t)
+	  (setq head-end (1- (point))
+		body-begin (point))
+	(setq head-end end
+	      body-begin end))
+      ;; Save MIME attributes.
+      (goto-char head-begin)
+      (if (re-search-forward "\
+^Content-Type: *\\([^ \t\n/;]+\\)/\\([^ \t\n/;]+\\)"
+			     head-end t)
+	  (setq type (downcase (match-string 1))
+		subtype (downcase (match-string 2)))
+	(setq type "text"
+	      subtype "plain"))
+      (setq composite (string= type "multipart")
+	    comment (concat position
+			    (when (and position composite) ".")
+			    (when composite "*")
+			    (when (or position composite) " ")
+			    (cond ((string= subtype "plain") type)
+				  ((string= subtype "basic") type)
+				  (t subtype))))
+      ;; Generate dissection information for this entity.
+      (push (list (incf nndoc-mime-split-ordinal)
+		  head-begin head-end body-begin body-end
+		  (count-lines body-begin body-end)
+		  comment message-id references)
+	    nndoc-dissection-alist)
+      ;; Recurse for all sub-entities, if any.
+      (goto-char head-begin)
+      (when (re-search-forward
+	     (concat "\
+^Content-Type: *multipart/\\([a-z]+\\);\\(.*;\\)*"
+		     "[ \t\n]*[ \t]boundary=\"?\\([^\"\n]*[^\" \t\n]\\)")
+	   head-end t)
+	(let ((boundary (concat "\n--" (match-string 3) "\\(--\\)?[ \t]*\n"))
+	      (part-counter 0)
+	      begin end eof-flag)
+	  (goto-char head-end)
+	  (setq eof-flag (not (re-search-forward boundary body-end t)))
+	  (while (not eof-flag)
+	    (setq begin (point))
+	    (cond ((re-search-forward boundary body-end t)
+		   (or (not (match-string 1))
+		       (string= (match-string 1) "")
+		       (setq eof-flag t))
+		   (forward-line -1)
+		   (setq end (point))
+		   (forward-line 1))
+		  (t (setq end body-end
+			   eof-flag t)))
+	    (nndoc-dissect-mime-parts-sub begin end
+					  (concat position (when position ".")
+						  (format "%d"
+							  (incf part-counter)))
+					  (nnmail-message-id)
+					  message-id)))))))
 
 ;;;###autoload
 (defun nndoc-add-type (definition &optional position)

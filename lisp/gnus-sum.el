@@ -1382,6 +1382,7 @@ increase the score of each group you read."
     "b" gnus-article-hide-boring-headers
     "s" gnus-article-hide-signature
     "c" gnus-article-hide-citation
+    "C" gnus-article-hide-citation-in-followups
     "p" gnus-article-hide-pgp
     "P" gnus-article-hide-pem
     "\C-c" gnus-article-hide-citation-maybe)
