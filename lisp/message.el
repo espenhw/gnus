@@ -665,8 +665,9 @@ Valid valued are `unique' and `unsent'."
 		 (const :tag "unsent" unsent)))
 
 (defcustom message-default-charset 
-  (and (featurep 'xemacs) (not (featurep 'mule)) 'iso-8859-1)
-  "Default charset used in non-MULE XEmacsen."
+  (and (not (mm-multibyte-p)) 'iso-8859-1)
+  "Default charset used in non-MULE Emacsen.
+If nil, you might be asked to input the charset."
   :group 'message
   :type 'symbol)
 
