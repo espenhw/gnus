@@ -1,3 +1,7 @@
+1999-12-20 14:10:39  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-type-definition): Set default value.
+
 1999-12-19 22:49:13  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnagent.el (nnagent-server-opened): Optional.

@@ -77,9 +77,11 @@
       "http://www.egroups.com/group/%s/%d.html?raw=1" group article)
      (article-dissect . nnwarchive-egroups-article)
      (authentication . t)
+     (article-offset . 0)
      (xover-files . nnwarchive-egroups-xover-files))
     (mail-archive
      (address . "www.mail-archive.com")
+     (open-url)
      (list-url 
       "http://www.mail-archive.com/lists.html")
      (list-dissect . nnwarchive-mail-archive-list)
@@ -88,11 +90,13 @@
       "http://www.mail-archive.com/%s/mail%d.html" group aux)
      (xover-last-url 
       "http://www.mail-archive.com/%s/maillist.html" group)
+     (xover-page-size)
      (xover-dissect . nnwarchive-mail-archive-xover)
      (article-url 
       "http://www.mail-archive.com/%s/msg%05d.html" group article1)
      (article-dissect . nnwarchive-mail-archive-article)
      (xover-files . nnwarchive-mail-archive-xover-files)
+     (authentication)
      (article-offset . 1))))
 
 (defvar nnwarchive-default-type 'egroups)
