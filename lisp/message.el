@@ -6203,16 +6203,20 @@ you."
       (mm-insert-part handles)
       (undo-boundary)
       (goto-char (point-min))
-      (search-forward "\n\n" nil t)
-      (if (or (and (re-search-forward message-unsent-separator nil t)
-		   (forward-line 1))
-	      (re-search-forward "^Return-Path:.*\n" nil t))
-	  ;; We remove everything before the bounced mail.
-	  (delete-region
-	   (point-min)
-	   (if (re-search-forward "^[^ \n\t]+:" nil t)
-	       (match-beginning 0)
-	     (point)))
+      (re-search-forward "\n\n+" nil t)
+      (setq boundary (point))
+      ;; We remove everything before the bounced mail.
+      (if (or (re-search-forward message-unsent-separator nil t)
+	      (progn
+		(search-forward "\n\n" nil 'move)
+		(re-search-backward "^Return-Path:.*\n" boundary t)))
+	  (progn
+	    (forward-line 1)
+	    (delete-region (point-min)
+			   (if (re-search-forward "^[^ \n\t]+:" nil t)
+			       (match-beginning 0)
+			     (point))))
+	(goto-char boundary)
 	(when (re-search-backward "^.?From .*\n" nil t)
 	  (delete-region (match-beginning 0) (match-end 0)))))
     (mm-enable-multibyte)

@@ -1,3 +1,7 @@
+2003-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-bounce): Don't erase except bounced header.
+
 2003-10-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-reverse-ip-string): new function to reverse an IP
