@@ -1,3 +1,8 @@
+2000-10-05 11:43:25  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-region): Merge only if regions are
+	adjacent.
+
 2000-10-05 09:41:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-multibyte-p): In XEmacs, it is (feature 'mule).

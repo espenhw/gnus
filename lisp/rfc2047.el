@@ -224,7 +224,8 @@ Should be called narrowed to the head of the message."
   (let ((words (rfc2047-dissect-region b e))
 	beg end current word)
     (while (setq word (pop words))
-      (if (equal (nth 2 word) current)
+      (if (and (eq (nth 2 word) current)
+	       (eq beg (nth 1 word)))
 	  (setq beg (nth 0 word))
 	(when current
 	  (if (and (eq beg (nth 1 word)) (nth 2 word))
