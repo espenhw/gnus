@@ -30,7 +30,7 @@
 (require 'smime)
 
 (defun mml-smime-verify (handle ctl)
-  (with-current-buffer (mm-handle-original-buffer ctl)
+  (with-current-buffer (mm-handle-multipart-original-buffer ctl)
     ;; xxx modifies buffer -- noone else uses the buffer, so what the heck
     (goto-char (point-min))
     (insert (format "Content-Type: %s; " (mm-handle-media-type ctl)))
