@@ -36,16 +36,24 @@
 (nnoo-declare nnmbox)
 
 (defvoo nnmbox-mbox-file (expand-file-name "~/mbox")
-  "The name of the mail box file in the user's home directory.")
+  "The name of the mail box file in the user's home directory.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmbox-active-file (expand-file-name "~/.mbox-active")
-  "The name of the active file for the mail box.")
+  "The name of the active file for the mail box.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmbox-get-new-mail t
-  "If non-nil, nnmbox will check the incoming mail file and split the mail.")
+  "If non-nil, nnmbox will check the incoming mail file and split the mail.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmbox-prepare-save-mail-hook nil
-  "Hook run narrowed to an article before saving.")
+  "Hook run narrowed to an article before saving.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 
 

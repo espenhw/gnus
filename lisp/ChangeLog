@@ -1,3 +1,22 @@
+2001-08-18 00:14:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-spec.el (gnus-correct-length): New function.
+	(gnus-correct-substring): New function.
+	(gnus-tilde-max-form): Use it.
+
+2001-08-17  Nevin Kapur  <nevin@jhu.edu>
+
+	* nnmh.el: Docstring changes as below.
+
+	* nnml.el: Docstring changes as below.
+
+	* nnbabyl.el: Docstring changes as below.
+
+	* nnmbox.el: Docstring changes as below.
+
+	* nnfolder.el: Added docstrings identifying each virtual server
+	parameter.
+
 2001-08-18  Simon Josefsson  <jas@extundo.com>
 
 	* mml.el (mml-menu): Collapse Attach, Insert and Security submenu.

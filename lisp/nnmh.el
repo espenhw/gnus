@@ -41,19 +41,27 @@
 (nnoo-declare nnmh)
 
 (defvoo nnmh-directory message-directory
-  "*Mail spool directory.")
+  "*Mail spool directory.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmh-get-new-mail t
-  "*If non-nil, nnmh will check the incoming mail file and split the mail.")
+  "*If non-nil, nnmh will check the incoming mail file and split the mail.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmh-prepare-save-mail-hook nil
-  "*Hook run narrowed to an article before saving.")
+  "*Hook run narrowed to an article before saving.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnmh-be-safe nil
   "*If non-nil, nnmh will check all articles to make sure whether they are new or not.
 Go through the .nnmh-articles file and compare with the actual
 articles in this folder.  The articles that are \"new\" will be marked
-as unread by Gnus.")
+as unread by Gnus.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 
 

@@ -30,6 +30,11 @@
 
 (require 'gnus)
 
+(defcustom gnus-use-correct-string-widths t
+  "*If non-nil, use correct functions for dealing with wide characters."
+  :group 'gnus-format
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-summary-mark-positions nil)
@@ -246,20 +251,68 @@
     'balloon-help
     ,(intern (format "gnus-balloon-face-%d" type))))
 
+(defun gnus-correct-length (string)
+  "Return the correct width of STRING."
+  (let ((length 0))
+    (mapcar (lambda (char) (incf length (char-width char))) string)
+    length))
+
+(defun gnus-correct-substring (string start end)
+  (let ((wstart 0)
+	(wend 0)
+	(seek 0)
+	(length (length string)))
+    ;; Find the start position.
+    (while (and (< seek length)
+		(< wstart start))
+      (incf wstart (char-width (aref string seek)))
+      (incf seek))
+    (setq wend wstart
+	  wstart seek)
+    ;; Find the end position.
+    (while (and (< seek length)
+		(< wend end))
+      (incf wend (char-width (aref string seek)))
+      (incf seek))
+    (setq wend seek)
+    (substring string wstart (1- wend))))
+
 (defun gnus-tilde-max-form (el max-width)
   "Return a form that limits EL to MAX-WIDTH."
   (let ((max (abs max-width)))
     (if (symbolp el)
-	`(if (> (length ,el) ,max)
+	`(if (> (,(if gnus-use-correct-string-widths
+		      'gnus-correct-length
+		    'length) ,el)
+		,max)
 	     ,(if (< max-width 0)
-		  `(substring ,el (- (length el) ,max))
-		`(substring ,el 0 ,max))
+		  `(,(if gnus-use-correct-string-widths
+			 'gnus-correct-substring
+		       'substring)
+		    ,el (- (,(if gnus-use-correct-string-widths
+				 'gnus-correct-length
+			       'length)
+			    el) ,max))
+		`(,(if gnus-use-correct-string-widths
+		       'gnus-correct-substring
+		     'substring)
+		  ,el 0 ,max))
 	   ,el)
       `(let ((val (eval ,el)))
-	 (if (> (length val) ,max)
+	 (if (> (,(if gnus-use-correct-string-widths
+		      'gnus-correct-length
+		    'length) val) ,max)
 	     ,(if (< max-width 0)
-		  `(substring val (- (length val) ,max))
-		`(substring val 0 ,max))
+		  `(,(if gnus-use-correct-string-widths
+			 'gnus-correct-substring
+		       'substring)
+		    val (- (,(if gnus-use-correct-string-widths
+				 'gnus-correct-length
+			       'length) val) ,max))
+		`(,(if gnus-use-correct-string-widths
+		       'gnus-correct-substring
+		     'substring)
+		  val 0 ,max))
 	   val)))))
 
 (defun gnus-tilde-cut-form (el cut-width)

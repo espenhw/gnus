@@ -43,7 +43,9 @@
 (nnoo-declare nnfolder)
 
 (defvoo nnfolder-directory (expand-file-name message-directory)
-  "The name of the nnfolder directory.")
+  "The name of the nnfolder directory.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnfolder-nov-directory nil
   "The name of the nnfolder NOV directory.
@@ -51,7 +53,9 @@ If nil, `nnfolder-directory' is used.")
 
 (defvoo nnfolder-active-file
     (nnheader-concat nnfolder-directory "active")
-  "The name of the active file.")
+  "The name of the active file.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 ;; I renamed this variable to something more in keeping with the general GNU
 ;; style. -SLB
@@ -73,19 +77,28 @@ message, a huge time saver for large mailboxes.")
 
 (defvoo nnfolder-newsgroups-file
     (concat (file-name-as-directory nnfolder-directory) "newsgroups")
-  "Mail newsgroups description file.")
+  "Mail newsgroups description file.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnfolder-get-new-mail t
-  "If non-nil, nnfolder will check the incoming mail file and split the mail.")
+  "If non-nil, nnfolder will check the incoming mail file and split the mail.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnfolder-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
 (defvoo nnfolder-save-buffer-hook nil
-  "Hook run before saving the nnfolder mbox buffer.")
+  "Hook run before saving the nnfolder mbox buffer.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
+
 
 (defvoo nnfolder-inhibit-expiry nil
-  "If non-nil, inhibit expiry.")
+  "If non-nil, inhibit expiry.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 
 
@@ -117,7 +130,9 @@ This variable shouldn't be flipped much.  If you have, for some reason,
 set this to t, and want to set it to nil again, you should always run
 the `nnfolder-generate-active-file' command.  The function will go
 through all nnfolder directories and generate nov databases for them
-all.  This may very well take some time.")
+all.  This may very well take some time.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnfolder-nov-file-suffix ".nov")
 

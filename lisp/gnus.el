@@ -38,6 +38,11 @@
   :group 'news
   :group 'mail)
 
+(defgroup gnus-format nil
+  "Dealing with formatting issues."
+  :group 'news
+  :group 'mail)
+
 (defgroup gnus-charset nil
   "Group character set issues."
   :link '(custom-manual "(gnus)Charsets")

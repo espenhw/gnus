@@ -39,18 +39,26 @@
 (nnoo-declare nnml)
 
 (defvoo nnml-directory message-directory
-  "Spool directory for the nnml mail backend.")
+  "Spool directory for the nnml mail backend.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-active-file
     (expand-file-name "active" nnml-directory)
-  "Mail active file.")
+  "Mail active file.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-newsgroups-file
     (expand-file-name "newsgroups" nnml-directory)
-  "Mail newsgroups description file.")
+  "Mail newsgroups description file.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-get-new-mail t
-  "If non-nil, nnml will check the incoming mail file and split the mail.")
+  "If non-nil, nnml will check the incoming mail file and split the mail.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-nov-is-evil nil
   "If non-nil, Gnus will never generate and use nov databases for mail groups.
@@ -59,13 +67,19 @@ This variable shouldn't be flipped much.  If you have, for some reason,
 set this to t, and want to set it to nil again, you should always run
 the `nnml-generate-nov-databases' command.  The function will go
 through all nnml directories and generate nov databases for them
-all.  This may very well take some time.")
+all.  This may very well take some time.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-prepare-save-mail-hook nil
-  "Hook run narrowed to an article before saving.")
+  "Hook run narrowed to an article before saving.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-inhibit-expiry nil
-  "If non-nil, inhibit expiry.")
+  "If non-nil, inhibit expiry.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
 
 
 
