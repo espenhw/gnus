@@ -368,8 +368,8 @@ manipulated as follows:
                            (setcdr category (cons cell (cdr category)))
                            cell)) groups))))))
 
-(defsubst gnus-agent-cat-make (name)
-  (list name '(agent-predicate . false)))
+(defsubst gnus-agent-cat-make (name &optional default-agent-predicate)
+  (list name `(agent-predicate . ,(or default-agent-predicate 'false))))
 
 ;;; Fetching setup functions.
 
@@ -2184,7 +2184,7 @@ The following commands are available:
                                   '(agent-predicate agent-score-file agent-groups))))
                    c)
                  old-list)))))
-         (list (gnus-agent-cat-make 'default)))))
+         (list (gnus-agent-cat-make 'default 'short)))))
 
 (defun gnus-category-write ()
   "Write the category alist."

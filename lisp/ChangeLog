@@ -1,3 +1,10 @@
+2003-04-16  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-make-cat): Added optional parameter to
+	specify a predicate other than false.
+	(gnus-category-read): Use the new feature to create a 'default'
+	category with a 'short' predicate.
+	
 2003-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-unique-id): Comment change.
