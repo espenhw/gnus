@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.4 2000/12/01 04:01:39 zsh Exp $
+;; $Id: gpg.el,v 1.5 2000/12/01 04:13:45 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -798,10 +798,12 @@ Updates the timeout for clearing the cache to `gpg-passphrase-timeout'."
 		    (timer-relative-time (current-time) 
 					 gpg-passphrase-timeout))
     (timer-set-function gpg-passphrase-timer 'gpg-passphrase-forget)
-    (timer-activate gpg-passphrase-timer)
+    (unless (and (fboundp 'itimer-live-p)
+		 (itimer-live-p gpg-passphrase-timer))
+      (timer-activate gpg-passphrase-timer))
     (setq gpg-passphrase passphrase))
   passphrase)
-  
+
 (defun gpg-passphrase-read ()
   "Read a passphrase and remember it for some time."
   (interactive)

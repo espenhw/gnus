@@ -1,3 +1,7 @@
+2000-12-14 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gpg.el (gpg-passphrase-store): Don't activate timer if it is live.
+
 2000-11-30 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gpg.el: (gpg-make-temp-file): Use expand-file-name.
@@ -8,7 +12,7 @@
 	(gpg-with-temp-files): Ditto.
 	(gpg-show-result): Ditto.
 
-2000-11-08  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
+2000-11-08  Bj-Aörn Torkelsson  <torkel@hpc2n.umu.se>$)A
 
 	* gpg.el: In Xemacs it is called point-at-eol, not
 	line-end-position
