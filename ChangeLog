@@ -1,3 +1,14 @@
+2005-02-18  Miles Bader  <miles@gnu.org>
+
+	Move all remaining images from etc/gnus to etc/images/gnus.
+
+2004-06-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (all): Do sub-make in etc.
+	* etc/Makefile.in (all): Link . to images.
+	(install, uninstall): Use $(etcdir)/images for images.
+	* make.bat: Likewise.
+
 2005-01-02  Romain Francoise  <romain@orebokech.com>
 
 	* GNUS-NEWS: Generated.

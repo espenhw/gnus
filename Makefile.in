@@ -8,6 +8,7 @@ EMACS = @EMACS@
 XEMACS = @EMACS@
 
 all: lick info
+	cd etc && $(MAKE) EMACS="$(EMACS)" all
 
 lick:
 	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" all

@@ -14,39 +14,41 @@ INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 
 all: 
+	ln -s . images
 
 install: 
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)
 	cd $(srcdir) \
 	&& for p in gnus-tut.txt; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/gnus
 	cd $(srcdir) \
 	&& for p in gnus/*.xpm gnus/*.pbm gnus/*.xbm gnus/x-splash; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/smilies
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies
 	cd $(srcdir) \
 	&& for p in smilies/*.pbm smilies/*.xpm; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo " $(INSTALL_DATA) $$p $(etcdir)/images/$$p"; \
+	  $(INSTALL_DATA) $$p $(etcdir)/images/$$p; \
 	done
 
 uninstall: 
 	rm -f $(etcdir)/gnus-tut.txt
 	cd $(srcdir) \
 	&& for p in gnus/*.xpm gnus/*.pbm gnus/*.xbm gnus/x-splash; do \
-	  rm -f "$(etcdir)/$$p"; \
+	  rm -f "$(etcdir)/images/$$p"; \
 	done
-	rmdir $(etcdir)/gnus 2> /dev/null || true
+	rmdir $(etcdir)/images/gnus 2> /dev/null || true
 	cd $(srcdir) \
 	&& for p in smilies/*.pbm smilies/*.xpm; do \
-	  rm -f "$(etcdir)/$$p"; \
+	  rm -f "$(etcdir)/images/$$p"; \
 	done
-	rmdir $(etcdir)/smilies 2> /dev/null || true
+	rmdir $(etcdir)/images/smilies 2> /dev/null || true
+	rmdir $(etcdir)/images 2> /dev/null || true
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. \

@@ -13,6 +13,12 @@
 	characters when rfc2047-quote-decoded-words-containing-tspecials
 	is non-nil.
 
+2005-02-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-delete-group): minor bug fix
+
+	* gnus.el (gnus-install-group-spam-parameters): Doc fix.
+
 2005-02-15  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-debug): Doc fix.
@@ -60,6 +66,14 @@
 
 	* gnus-group.el (gnus-group-make-doc-group): Mention prefix
 	argument in doc string.  Make query for type more clear.
+
+2005-02-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el (gnus-group-startup-message): Search for gnus images in
+	etc/images/gnus.
+	* mm-util.el (mm-find-charset-region): Likewise.
+	* smiley.el (smiley-data-directory): Search for smilies in
+	etc/images/smilies.
 
 2005-02-09  Kim F. Storm  <storm@cua.dk>
 
