@@ -1,5 +1,11 @@
 2003-04-27  Jesper Harder  <harder@ifa.au.dk>
 
+	* texi2latex.el (latexi-translate-file): Support @display,
+	@group, @smallexample, @subsubheading.
+
+	* gnus.texi, gnus-faq.texi: Fix some of the worst overfull and
+	underfull hboxes.
+
 	* message.texi, gnus.texi: Use the second arg to @uref where it
 	makes sense to make HTML and PDF output look nicer.
 

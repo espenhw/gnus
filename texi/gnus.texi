@@ -1919,7 +1919,8 @@ background is dark:
        (defface my-group-face-1
          '((t (:foreground "Red" :bold t))) "First group face")
        (defface my-group-face-2
-         '((t (:foreground "DarkSeaGreen4" :bold t))) "Second group face")
+         '((t (:foreground "DarkSeaGreen4" :bold t))) 
+         "Second group face")
        (defface my-group-face-3
          '((t (:foreground "Green4" :bold t))) "Third group face")
        (defface my-group-face-4
@@ -2947,8 +2948,8 @@ if address \"sender\" \"sieve-admin@@extundo.com\" @{
 @}
 @end example
 
-The Sieve language is described in RFC 3028.  @xref{Top, , Top, sieve,
-Emacs Sieve}.
+The Sieve language is described in RFC 3028. @xref{Top, , Top, sieve,
+Emacs Sieve.}
 
 @item (@var{variable} @var{form})
 You can use the group parameters to set variables local to the group you
@@ -2973,11 +2974,13 @@ parameters, then you may need the following statement elsewhere in your
 @vindex gnus-list-identifiers
 A use for this feature is to remove a mailing list identifier tag in
 the subject fields of articles.   E.g. if the news group
-@samp{nntp+news.gnus.org:gmane.text.docbook.apps} has the tag
-@samp{DOC-BOOK-APPS:} in the subject of all articles, this tag can be
-removed from the article subjects in the summary buffer for the group by
-putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")} into the group
-parameters for the group.
+@example
+nntp+news.gnus.org:gmane.text.docbook.apps
+@end example
+has the tag @samp{DOC-BOOK-APPS:} in the subject of all articles, this
+tag can be removed from the article subjects in the summary buffer for
+the group by putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")}
+into the group parameters for the group.
 
 This can also be used as a group-specific hook function, if you'd like.
 If you want to hear a beep when you enter a group, you could put
@@ -3242,7 +3245,7 @@ Sort the group buffer by group rank
 @item G S m
 @kindex G S m (Group)
 @findex gnus-group-sort-groups-by-method
-Sort the group buffer alphabetically by back end name
+Sort the group buffer alphabetically by back end name@*
 (@code{gnus-group-sort-groups-by-method}).
 
 @item G S n
@@ -3295,7 +3298,7 @@ Sort the groups by group rank
 @item G P m
 @kindex G P m (Group)
 @findex gnus-group-sort-selected-groups-by-method
-Sort the groups alphabetically by back end name
+Sort the groups alphabetically by back end name@*
 (@code{gnus-group-sort-selected-groups-by-method}).
 
 @item G P n
@@ -3863,6 +3866,7 @@ sorting.
 So, let's have a look at an example group buffer:
 
 @example
+@group
 Gnus
   Emacs -- I wuw it!
      3: comp.emacs
@@ -3873,6 +3877,7 @@ Gnus
   Misc
      8: comp.binaries.fractals
     13: comp.sources.unix
+@end group
 @end example
 
 So, here we have one top-level topic (@samp{Gnus}), two topics under
@@ -6036,9 +6041,11 @@ altering the summary mode keymap.  For instance, if you would like the
 article, you could say something like:
 
 @lisp
+@group
 (add-hook 'gnus-summary-mode-hook 'my-alter-summary-map)
 (defun my-alter-summary-map ()
   (local-set-key "!" 'gnus-summary-put-mark-as-ticked-next))
+@end group
 @end lisp
 
 or
@@ -6310,7 +6317,7 @@ Include all the articles in the current thread in the limit.
 @item / c
 @kindex / c (Summary)
 @findex gnus-summary-limit-exclude-childless-dormant
-Exclude all dormant articles that have no children from the limit
+Exclude all dormant articles that have no children from the limit@*
 (@code{gnus-summary-limit-exclude-childless-dormant}).
 
 @item / C
@@ -6664,7 +6671,7 @@ generated.
 
 This can also be a predicate specifier (@pxref{Predicate Specifiers}).
 Available predicates are @code{gnus-article-unread-p} and
-@code{gnus-article-unseen-p}).
+@code{gnus-article-unseen-p}.
 
 Here's an example:
 
@@ -6801,7 +6808,7 @@ Toggle threading (@code{gnus-summary-toggle-threads}).
 @item T s
 @kindex T s (Summary)
 @findex gnus-summary-show-thread
-Expose the (sub-)thread hidden under the current article, if any
+Expose the (sub-)thread hidden under the current article, if any@*
 (@code{gnus-summary-show-thread}).
 
 @item T h
@@ -8222,7 +8229,8 @@ banner something like @samp{Do You Yoo-hoo!?} in all articles he
 sends, you can use the following element to remove them:
 
 @lisp
-("@@yoo-hoo\\.co\\.jp\\'" . "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
+("@@yoo-hoo\\.co\\.jp\\'" . 
+ "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
 @end lisp
 
 @end table
@@ -8418,7 +8426,7 @@ maximum length of an unwrapped citation line.
 @item W Y a
 @kindex W Y a (Summary)
 @findex gnus-article-outlook-repair-attribution
-Repair a broken attribution line.
+Repair a broken attribution line.@*
 (@code{gnus-article-outlook-repair-attribution}).
 
 @item W Y c
@@ -8717,9 +8725,11 @@ used to say what headers to apply the buttonize coding to:
 @end lisp
 
 @var{header} is a regular expression.
+@end table
 
 @subsubsection Related variables and functions
 
+@table @code
 @item gnus-button-@var{*}-level
 @xref{Article Button Levels}.
 
@@ -9756,9 +9766,13 @@ Variables related to the display are:
 @item gnus-tree-brackets
 @vindex gnus-tree-brackets
 This is used for differentiating between ``real'' articles and
-``sparse'' articles.  The format is @code{((@var{real-open} . @var{real-close})
-(@var{sparse-open} . @var{sparse-close}) (@var{dummy-open} . @var{dummy-close}))}, and the
-default is @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}) (?< . ?>))}.
+``sparse'' articles.  The format is 
+@example
+((@var{real-open} . @var{real-close}) 
+ (@var{sparse-open} . @var{sparse-close}) 
+ (@var{dummy-open} . @var{dummy-close}))
+@end example
+and the default is @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}) (?< . ?>))}.
 
 @item gnus-tree-parent-child-edges
 @vindex gnus-tree-parent-child-edges
@@ -9811,6 +9825,7 @@ Here's an example from a horizontal tree buffer:
 Here's the same thread displayed in a vertical tree buffer:
 
 @example
+@group
 @{***@}
   |--------------------------\-----\-----\
 (***)                         [Bjo] [Gun] [Gun]
@@ -9820,6 +9835,7 @@ Here's the same thread displayed in a vertical tree buffer:
 [Gun]       [Eri] [Eri] [odd]
                           |
                         [Paa]
+@end group
 @end example
 
 If you're using horizontal trees, it might be nice to display the trees
@@ -10076,9 +10092,9 @@ other buffers. For example:
 
 @lisp
 (setq gnus-newsgroup-variables
-     '(message-use-followup-to
-       (gnus-visible-headers .
-         "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
+      '(message-use-followup-to
+        (gnus-visible-headers .
+ "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
 @end lisp
 
 @end table
@@ -10564,7 +10580,7 @@ Privacy Guard when you click on the @acronym{MIME} button
 @example
 application/pgp-keys; gpg --import --interactive --verbose; needsterminal
 @end example
-
+@noindent
 This happens to also be the default action defined in
 @code{mailcap-mime-data}.
 
@@ -12850,7 +12866,7 @@ Where @code{nnspool} looks for the articles.  This is normally
 
 @item nnspool-nov-directory
 @vindex nnspool-nov-directory
-Where @code{nnspool} will look for @acronym{NOV} files.  This is normally
+Where @code{nnspool} will look for @acronym{NOV} files.  This is normally@*
 @file{/usr/spool/news/over.view/}.
 
 @item nnspool-lib-dir
@@ -13598,7 +13614,7 @@ variables.
 @table @code
 @item mail-source-crash-box
 @vindex mail-source-crash-box
-File where mail will be stored while processing it.  The default is
+File where mail will be stored while processing it.  The default is@*
 @file{~/.emacs-mail-crash-box}.
 
 @item mail-source-delete-incoming
@@ -14472,13 +14488,13 @@ methods:
 @lisp
 (setq nnmail-split-fancy
       '(| ;; @r{Messages duplicates go to a separate group.}
-          ("gnus-warning" "duplicat\\(e\\|ion\\) of message" "duplicate")
-          ;; @r{Message from daemons, postmaster, and the like to another.}
-          (any mail "mail.misc")
-          ;; @r{Other rules.}
-          [ ... ] ))
+        ("gnus-warning" "duplicat\\(e\\|ion\\) of message" "duplicate")
+        ;; @r{Message from daemons, postmaster, and the like to another.}
+        (any mail "mail.misc")
+        ;; @r{Other rules.}
+        [...] ))
 @end lisp
-
+@noindent
 Or something like:
 @lisp
 (setq nnmail-split-methods
@@ -14894,11 +14910,13 @@ delivery time, but editing an article makes it younger.  Moving an
 article (other than via expiry) may also make an article younger.
 
 @item expire-group
-If this is set to a string (a full Gnus group name, like
-@code{"backend+server.address.string:group.name"}), and if it is not
-the name of the same group that the parameter belongs to, then
-articles will be moved to the specified group during expiry before
-being deleted.  @emph{If this is set to an nnmaildir group, the
+If this is set to a string such as a full Gnus group name, like
+@example
+"backend+server.address.string:group.name"
+@end example
+and if it is not the name of the same group that the parameter belongs
+to, then articles will be moved to the specified group during expiry
+before being deleted.  @emph{If this is set to an nnmaildir group, the
 article will be just as old in the destination group as it was in the
 source group.}  So be careful with @code{expire-age} in the
 destination group.  If this is set to the name of the same group that
@@ -15523,7 +15541,7 @@ Where @code{nnslashdot} will store its files.  The default is
 @item nnslashdot-active-url
 @vindex nnslashdot-active-url
 The @sc{url} format string that will be used to fetch the information on
-news articles and comments.  The default is
+news articles and comments.  The default is@*
 @samp{http://slashdot.org/search.pl?section=&min=%d}.
 
 @item nnslashdot-comments-url
@@ -15574,7 +15592,7 @@ The following @code{nnultimate} variables can be altered:
 @table @code
 @item nnultimate-directory
 @vindex nnultimate-directory
-The directory where @code{nnultimate} stores its files.  The default is
+The directory where @code{nnultimate} stores its files.  The default is@*
 @file{~/News/ultimate/}.
 @end table
 
@@ -15604,7 +15622,7 @@ The following @code{nnwarchive} variables can be altered:
 @table @code
 @item nnwarchive-directory
 @vindex nnwarchive-directory
-The directory where @code{nnwarchive} stores its files.  The default is
+The directory where @code{nnwarchive} stores its files.  The default is@*
 @file{~/News/warchive/}.
 
 @item nnwarchive-login
@@ -16119,11 +16137,11 @@ the syntax of this variable have been extended along the lines of:
 
 @lisp
 (setq nnimap-split-rule
-      '(("my1server"    (".*"    (("ding"    "ding@@gnus.org")
-                                  ("junk"    "From:.*Simon")))
+      '(("my1server"    (".*" (("ding"    "ding@@gnus.org")
+                               ("junk"    "From:.*Simon")))
         ("my2server"    ("INBOX" nnimap-split-fancy))
-        ("my[34]server" (".*"    (("private" "To:.*Simon")
-                                  ("junk"    my-junk-func)))))
+        ("my[34]server" (".*" (("private" "To:.*Simon")
+                               ("junk"    my-junk-func)))))
 @end lisp
 
 The virtual server name is in fact a regexp, so that the same rules
@@ -16274,7 +16292,7 @@ delete them.
 The @acronym{IMAP} protocol has a concept called namespaces, described
 by the following text in the RFC:
 
-@example
+@display
 5.1.2.  Mailbox Namespace Naming Convention
 
    By convention, the first hierarchical element of any mailbox name
@@ -16288,7 +16306,7 @@ by the following text in the RFC:
       comp.mail.misc newsgroup would have an mailbox name of
       "#news.comp.mail.misc", and the name "comp.mail.misc" could refer
       to a different object (e.g. a user's private mailbox).
-@end example
+@end display
 
 While there is nothing in this text that warrants concern for the
 @acronym{IMAP} implementation in Gnus, some servers use namespace
@@ -17004,6 +17022,9 @@ Creates a @code{To} header that looks like
 @item nngateway-mail2news-header-transformation
 Creates a @code{To} header that looks like
 @code{nngateway-address}.
+@end table
+
+@end table
 
 Here's an example:
 
@@ -17014,11 +17035,6 @@ Here's an example:
         (nngateway-header-transformation
          nngateway-mail2news-header-transformation)))
 @end lisp
-
-@end table
-
-
-@end table
 
 So, to use this, simply say something like:
 
@@ -17288,7 +17304,6 @@ all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
 @code{gnus-secondary-select-methods} are agentized.
 
 @item
-
 Decide on download policy.  It's fairly simple once you decide whether
 you are going to use agent categories, topic parameters, and/or group
 parameters to implement your policy.  If you're new to gnus, it
@@ -20688,6 +20703,7 @@ To be slightly more formal, here's a definition of what a valid split
 may look like:
 
 @example
+@group
 split      = frame | horizontal | vertical | buffer | form
 frame      = "(frame " size *split ")"
 horizontal = "(horizontal " size *split ")"
@@ -20695,6 +20711,7 @@ vertical   = "(vertical " size *split ")"
 buffer     = "(" buf-name " " size *[ "point" ] *[ "frame-focus"] ")"
 size       = number | frame-params
 buf-name   = group | article | summary ...
+@end group
 @end example
 
 The limitations are that the @code{frame} split can only appear as the
@@ -21219,17 +21236,23 @@ by default.
 @item gnus-nocem-groups
 @vindex gnus-nocem-groups
 Gnus will look for NoCeM messages in the groups in this list.  The
-default is @code{("news.lists.filters" "news.admin.net-abuse.bulletins"
-"alt.nocem.misc" "news.admin.net-abuse.announce")}.
+default is 
+@lisp
+("news.lists.filters" "news.admin.net-abuse.bulletins"
+ "alt.nocem.misc" "news.admin.net-abuse.announce")
+@end lisp
 
 @item gnus-nocem-issuers
 @vindex gnus-nocem-issuers
 There are many people issuing NoCeM messages.  This list says what
-people you want to listen to.  The default is @code{("Automoose-1"
-"clewis@@ferret.ocunix.on.ca" "cosmo.roadkill" "SpamHippo"
-"hweede@@snafu.de")}; fine, upstanding citizens all of them.
+people you want to listen to.  The default is
+@lisp
+("Automoose-1" "clewis@@ferret.ocunix.on.ca"
+ "cosmo.roadkill" "SpamHippo" "hweede@@snafu.de")
+@end lisp
+fine, upstanding citizens all of them.
 
-Known despammers that you can put in this list are listed at
+Known despammers that you can put in this list are listed at@*
 @uref{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
 
 You do not have to heed NoCeM messages from all these people---just the
@@ -21286,7 +21309,7 @@ This might be dangerous, though.
 
 @item gnus-nocem-directory
 @vindex gnus-nocem-directory
-This is where Gnus will store its NoCeM cache files.  The default is
+This is where Gnus will store its NoCeM cache files.  The default is@*
 @file{~/News/NoCeM/}.
 
 @item gnus-nocem-expiry-wait
@@ -22029,9 +22052,9 @@ like:
 (add-hook 'message-send-hook 'mail-add-payment)
 @end lisp
 
-The @code{hashcash.el} library can be found at
-@uref{http://users.actrix.gen.nz/mycroft/hashcash.el}, or in the Gnus
-development contrib directory.
+The @code{hashcash.el} library can be found in the Gnus development
+contrib directory. or at
+@uref{http://users.actrix.gen.nz/mycroft/hashcash.el}.
 
 You will need to set up some additional variables as well:
 
@@ -22940,7 +22963,7 @@ following in your @file{~/.gnus.el} file:
 
 Typical test will involve calls to the following functions:
 
-@example
+@smallexample
 Reset: (setq spam-stat (make-hash-table :test 'equal))
 Learn spam: (spam-stat-process-spam-directory "~/Mail/mail/spam")
 Learn non-spam: (spam-stat-process-non-spam-directory "~/Mail/mail/misc")
@@ -22955,18 +22978,18 @@ File size: (nth 7 (file-attributes spam-stat-file))
 Number of words: (hash-table-count spam-stat)
 Test spam: (spam-stat-test-directory "~/Mail/mail/spam")
 Test non-spam: (spam-stat-test-directory "~/Mail/mail/misc")
-@end example
+@end smallexample
 
 Here is how you would create your dictionary:
 
-@example
+@smallexample
 Reset: (setq spam-stat (make-hash-table :test 'equal))
 Learn spam: (spam-stat-process-spam-directory "~/Mail/mail/spam")
 Learn non-spam: (spam-stat-process-non-spam-directory "~/Mail/mail/misc")
 Repeat for any other non-spam group you need...
 Reduce table size: (spam-stat-reduce-size)
 Save table: (spam-stat-save)
-@end example
+@end smallexample
 
 @node Various Various
 @section Various Various
@@ -25050,28 +25073,29 @@ Sometimes, a problem do not directly generate a elisp error but
 manifests itself by causing Gnus to be very slow.  In these cases, you
 can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-g} when things are
 slow, and then try to analyze the backtrace (repeating the procedure
-helps isolating the real problem areas).  A fancier approach is to use
-the elisp profiler, ELP.  The profiler is (or should be) fully
-documented elsewhere, but to get you started there are a few steps
-that need to be followed.  First, instrument the part of Gnus you are
-interested in for profiling, e.g. @kbd{M-x elp-instrument-package RET
-gnus} or @kbd{M-x elp-instrument-package RET message}.  Then perform
-the operation that is slow and press @kbd{M-x elp-results}.  You will
-then see which operations that takes time, and can debug them further.
-If the entire operation takes much longer than the time spent in the
-slowest function in the profiler output, you probably profiled the
-wrong part of Gnus.  To reset profiling statistics, use @kbd{M-x
-elp-reset-all}.  @kbd{M-x elp-restore-all} is supposed to remove
-profiling, but given the complexities and dynamic code generation in
-Gnus, it might not always work perfectly.
+helps isolating the real problem areas).  
 
-If you just need help, you are better off asking on
-@samp{gnu.emacs.gnus}.  I'm not very helpful.
+A fancier approach is to use the elisp profiler, ELP.  The profiler is
+(or should be) fully documented elsewhere, but to get you started
+there are a few steps that need to be followed.  First, instrument the
+part of Gnus you are interested in for profiling, e.g. @kbd{M-x
+elp-instrument-package RET gnus} or @kbd{M-x elp-instrument-package
+RET message}.  Then perform the operation that is slow and press
+@kbd{M-x elp-results}.  You will then see which operations that takes
+time, and can debug them further.  If the entire operation takes much
+longer than the time spent in the slowest function in the profiler
+output, you probably profiled the wrong part of Gnus.  To reset
+profiling statistics, use @kbd{M-x elp-reset-all}.  @kbd{M-x
+elp-restore-all} is supposed to remove profiling, but given the
+complexities and dynamic code generation in Gnus, it might not always
+work perfectly.
 
 @cindex gnu.emacs.gnus
 @cindex ding mailing list
-You can also ask on the ding mailing list---@email{ding@@gnus.org}.
-Write to @email{ding-request@@gnus.org} to subscribe.
+If you just need help, you are better off asking on
+@samp{gnu.emacs.gnus}.  I'm not very helpful.  You can also ask on
+@email{ding@@gnus.org, the ding mailing list}.  Write to
+@email{ding-request@@gnus.org} to subscribe.
 
 
 @page
