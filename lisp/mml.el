@@ -37,6 +37,20 @@
   (autoload 'message-fetch-field "message")
   (autoload 'message-posting-charset "message"))
 
+(defcustom mml-content-type-parameters 
+  '(name access-type expiration size permission format)
+  "*A list of acceptable parameters in MML tag.
+These parameters are generated in Content-Type header if exists."
+  :type '(repeat (symbol :tag "Parameter"))
+  :group 'message)
+
+(defcustom mml-content-disposition-parameters 
+  '(filename creation-date modification-date read-date)
+  "*A list of acceptable parameters in MML tag.
+These parameters are generated in Content-Disposition header if exists."
+  :type '(repeat (symbol :tag "Parameter"))
+  :group 'message)
+
 (defvar mml-generate-multipart-alist nil
   "*Alist of multipart generation functions.
 Each entry has the form (NAME . FUNCTION), where
@@ -121,8 +135,13 @@ one charsets.")
 	(setq raw (cdr (assq 'raw tag))
 	      point (point)
 	      contents (mml-read-part (eq 'mml (car tag)))
-	      charsets (if raw nil
-			 (mm-find-mime-charset-region point (point))))
+	      charsets (cond
+                        (raw nil)
+                        ((assq 'charset tag)
+                         (list
+                          (intern (downcase (cdr (assq 'charset tag))))))
+                        (t
+                         (mm-find-mime-charset-region point (point)))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
                   (message-options-get 'unknown-encoding)
@@ -478,7 +497,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
   (let (parameters disposition description)
     (setq parameters
 	  (mml-parameter-string
-	   cont '(name access-type expiration size permission)))
+	   cont mml-content-type-parameters))
     (when (or charset
 	      parameters
 	      (not (equal type mml-generate-default-type)))
@@ -491,17 +510,17 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		      "charset" (symbol-name charset))))
       (when parameters
 	(mml-insert-parameter-string
-	 cont '(name access-type expiration size permission)))
+	 cont mml-content-type-parameters))
       (insert "\n"))
     (setq parameters
 	  (mml-parameter-string
-	   cont '(filename creation-date modification-date read-date)))
+	   cont mml-content-disposition-parameters))
     (when (or (setq disposition (cdr (assq 'disposition cont)))
 	      parameters)
       (insert "Content-Disposition: " (or disposition "inline"))
       (when parameters
 	(mml-insert-parameter-string
-	 cont '(filename creation-date modification-date read-date)))
+	 cont mml-content-disposition-parameters))
       (insert "\n"))
     (unless (eq encoding '7bit)
       (insert (format "Content-Transfer-Encoding: %s\n" encoding)))
