@@ -6765,10 +6765,6 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	(gnus-summary-clear-local-variables)
 	(let ((gnus-summary-local-variables gnus-newsgroup-variables))
 	  (gnus-summary-clear-local-variables))
-	(set-buffer gnus-group-buffer)
-	(gnus-summary-clear-local-variables)
-	(let ((gnus-summary-local-variables gnus-newsgroup-variables))
-	  (gnus-summary-clear-local-variables))
 	(gnus-kill-buffer gnus-summary-buffer))
       (unless gnus-single-article-buffer
 	(setq gnus-article-current nil))

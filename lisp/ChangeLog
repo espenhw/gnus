@@ -1,3 +1,8 @@
+2004-12-10  Arnaud Giersch <arnaud.giersch@free.fr>  (tiny change)
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Don't clear the
+	global counterparts of the buffer-local variables.
+
 2004-11-16  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-sum.el (gnus-summary-exit): Don't clear the global
