@@ -1117,13 +1117,13 @@ For example:
 	       (eq gnus-newsgroup-name
 		   (car gnus-decode-encoded-word-methods-cache)))
     (setq gnus-decode-encoded-word-methods-cache (list gnus-newsgroup-name))
-    (mapc '(lambda (x)
-	     (if (symbolp x)
-		 (nconc gnus-decode-encoded-word-methods-cache (list x))
-	       (if (and gnus-newsgroup-name
-			(string-match (car x) gnus-newsgroup-name))
-		   (nconc gnus-decode-encoded-word-methods-cache
-			  (list (cdr x))))))
+    (mapcar (lambda (x)
+	      (if (symbolp x)
+		  (nconc gnus-decode-encoded-word-methods-cache (list x))
+		(if (and gnus-newsgroup-name
+			 (string-match (car x) gnus-newsgroup-name))
+		    (nconc gnus-decode-encoded-word-methods-cache
+			   (list (cdr x))))))
 	  gnus-decode-encoded-word-methods))
   (let ((xlist gnus-decode-encoded-word-methods-cache))
     (pop xlist)
@@ -5409,7 +5409,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (gnus-async-halt-prefetch)
       (mapcar 'funcall
 	      (delq 'gnus-summary-expire-articles
-		    (copy-list gnus-summary-prepare-exit-hook)))
+		    (copy-sequence gnus-summary-prepare-exit-hook)))
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)

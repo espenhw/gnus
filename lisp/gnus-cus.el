@@ -155,7 +155,8 @@ rules as described later).")
 
     (banner (choice :tag "Banner"
 		    (const signature)
-		    string ) "\
+		    string
+		    (const :tag "None" nil)) "\
 Banner to be removed from articles.")
 
     (auto-expire (const :tag "Automatic Expire" t) "\

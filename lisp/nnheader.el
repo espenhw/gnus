@@ -296,7 +296,9 @@ on your system, you could say something like:
   '(prog1
        (if (eq (char-after) ?\t)
 	   0
-	 (let ((num (ignore-errors (read (current-buffer)))))
+	 (let ((num (condition-case nil
+			(read (current-buffer))
+		      (error nil))))
 	   (if (numberp num) num 0)))
      (or (eobp) (forward-char 1))))
 

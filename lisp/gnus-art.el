@@ -2091,12 +2091,12 @@ This format is defined by the `gnus-article-time-format' variable."
 	       (while (setq elem (pop alist))
 		 (when (and name (string-match (car elem) name))
 		   (setq alist nil
-			 highlight (copy-list (cdr elem)))))
+			 highlight (copy-sequence (cdr elem)))))
 	       highlight)
-	     (copy-list highlight-words)
+	     (copy-sequence highlight-words)
 	     (if gnus-newsgroup-name
-		 (copy-list (gnus-group-find-parameter 
-			     gnus-newsgroup-name 'highlight-words t)))
+		 (copy-sequence (gnus-group-find-parameter 
+				 gnus-newsgroup-name 'highlight-words t)))
 	     gnus-emphasis-alist)))))
 
 (defvar gnus-summary-article-menu)
@@ -4481,13 +4481,13 @@ For example:
 	       (eq gnus-newsgroup-name
 		   (car gnus-decode-header-methods-cache)))
     (setq gnus-decode-header-methods-cache (list gnus-newsgroup-name))
-    (mapc '(lambda (x)
-	     (if (symbolp x)
-		 (nconc gnus-decode-header-methods-cache (list x))
-	       (if (and gnus-newsgroup-name
-			(string-match (car x) gnus-newsgroup-name))
-		   (nconc gnus-decode-header-methods-cache
-			  (list (cdr x))))))
+    (mapcar (lambda (x)
+	      (if (symbolp x)
+		  (nconc gnus-decode-header-methods-cache (list x))
+		(if (and gnus-newsgroup-name
+			 (string-match (car x) gnus-newsgroup-name))
+		    (nconc gnus-decode-header-methods-cache
+			   (list (cdr x))))))
 	  gnus-decode-header-methods))
   (let ((xlist gnus-decode-header-methods-cache))
     (pop xlist)

@@ -1256,10 +1256,11 @@ The following commands are available:
   (let ((info (assq category gnus-category-alist)))
     (gnus-edit-form
      (cadr info) (format "Editing the predicate for category %s" category)
-     `(lambda (predicate)
-	(setf (cadr (assq ',category gnus-category-alist)) predicate)
-	(gnus-category-write)
-	(gnus-category-list)))))
+     (function
+      `(lambda (predicate)
+	 (setcar (cdr (assq ',category gnus-category-alist)) predicate)
+	 (gnus-category-write)
+	 (gnus-category-list))))))
 
 (defun gnus-category-edit-score (category)
   "Edit the score expression for CATEGORY."
@@ -1268,10 +1269,11 @@ The following commands are available:
     (gnus-edit-form
      (caddr info)
      (format "Editing the score expression for category %s" category)
-     `(lambda (groups)
-	(setf (caddr (assq ',category gnus-category-alist)) groups)
-	(gnus-category-write)
-	(gnus-category-list)))))
+     (function
+      `(lambda (groups)
+	 (setcar (cddr (assq ',category gnus-category-alist)) groups)
+	 (gnus-category-write)
+	 (gnus-category-list))))))
 
 (defun gnus-category-edit-groups (category)
   "Edit the group list for CATEGORY."
@@ -1279,10 +1281,11 @@ The following commands are available:
   (let ((info (assq category gnus-category-alist)))
     (gnus-edit-form
      (cadddr info) (format "Editing the group list for category %s" category)
-     `(lambda (groups)
-	(setf (cadddr (assq ',category gnus-category-alist)) groups)
-	(gnus-category-write)
-	(gnus-category-list)))))
+     (function
+      `(lambda (groups)
+	 (setcar (nthcdr 3 (assq ',category gnus-category-alist)) groups)
+	 (gnus-category-write)
+	 (gnus-category-list))))))
 
 (defun gnus-category-kill (category)
   "Kill the current category."

@@ -236,6 +236,15 @@ If the charset is `composition', return the actual one."
     ;; This is for XEmacs.
     (mm-mule-charset-to-mime-charset charset)))
 
+(defun mm-delete-duplicates (list)
+  "Simple  substitute for CL `delete-duplicates', testing with `equal'."
+  (let (result head)
+    (while list
+      (setq head (car list))
+      (setq list (delete head list))
+      (setq result (cons head result)))
+    (nreverse result)))
+
 (defun mm-find-mime-charset-region (b e)
   "Return the MIME charsets needed to encode the region between B and E."
   (let ((charsets (mapcar 'mm-mime-charset
@@ -243,7 +252,7 @@ If the charset is `composition', return the actual one."
 				(mm-find-charset-region b e)))))
     (when (memq 'iso-2022-jp-2 charsets)
       (setq charsets (delq 'iso-2022-jp charsets)))
-    (setq charsets (delete-duplicates charsets))
+    (setq charsets (mm-delete-duplicates charsets))
     (if (and (> (length charsets) 1)
 	     (fboundp 'find-coding-systems-region)
 	     (memq 'utf-8 (find-coding-systems-region b e)))

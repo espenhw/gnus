@@ -775,19 +775,19 @@ function is generally only called when Gnus is shutting down."
 			 seen))
 	    (gnus-info-set-read info seen)))
 
-	(mapc (lambda (pred)
-		(when (and (nnimap-mark-permanent-p (cdr pred))
-			   (member (nnimap-mark-to-flag (cdr pred))
-				   (imap-mailbox-get 'flags)))
-		  (gnus-info-set-marks
-		   info
-		   (nnimap-update-alist-soft
-		    (cdr pred)
-		    (gnus-compress-sequence
-		     (imap-search (nnimap-mark-to-predicate (cdr pred))))
-		    (gnus-info-marks info))
-		   t)))
-	      gnus-article-mark-lists)
+	(mapcar (lambda (pred)
+		  (when (and (nnimap-mark-permanent-p (cdr pred))
+			     (member (nnimap-mark-to-flag (cdr pred))
+				     (imap-mailbox-get 'flags)))
+		    (gnus-info-set-marks
+		     info
+		     (nnimap-update-alist-soft
+		      (cdr pred)
+		      (gnus-compress-sequence
+		       (imap-search (nnimap-mark-to-predicate (cdr pred))))
+		      (gnus-info-marks info))
+		     t)))
+		gnus-article-mark-lists)
 	
 	(gnus-message 5 "nnimap: Updating info for %s...done"
 		      (gnus-info-group info))
@@ -1186,7 +1186,7 @@ sure of changing the value of `foo'."
 (when nnimap-debug
   (require 'trace)
   (buffer-disable-undo (get-buffer-create nnimap-debug))
-  (mapc (lambda (f) (trace-function-background f nnimap-debug))
+  (mapcar (lambda (f) (trace-function-background f nnimap-debug))
         '(
 	  nnimap-possibly-change-server
 	  nnimap-verify-uidvalidity

@@ -617,7 +617,7 @@ one charsets.")
 		  (format "Content type (default %s): " default)
 		  (mapcar
 		   'list
-		   (delete-duplicates
+		   (mm-delete-duplicates
 		    (nconc
 		     (mapcar (lambda (m) (cdr m))
 			     mailcap-mime-extensions)
@@ -634,8 +634,7 @@ one charsets.")
 					nil
 				      type)))
 				(cdr l))))
-		       mailcap-mime-data)))
-		    :test 'equal)))))
+		       mailcap-mime-data))))))))
     (if (not (equal string ""))
 	string
       default)))

@@ -1,12 +1,10 @@
 ;;; uudecode.el -- elisp native uudecode
-;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Copyright (c) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.7 $
-;; Keywords: uudecode
+;; Keywords: uudecode news
 
-;; This file is not part of GNU Emacs, but the same permissions
-;; apply.
+;; This file is a part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

@@ -1,14 +1,11 @@
 ;;; binhex.el -- elisp native binhex decode
-;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Copyright (c) 1998 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 5.7 $
-;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
-;; Keywords: binhex
+;; Keywords: binhex news
 
-;; This file is not part of GNU Emacs, but the same permissions
-;; apply.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,6 +25,8 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile (require 'cl))
 
 (if (not (fboundp 'char-int))
     (fset 'char-int 'identity))

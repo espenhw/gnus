@@ -1,3 +1,51 @@
+1999-12-12 12:27:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el: Change headers.
+	* rfc1843.el: Ditto.
+	* uudecode.el: Ditto.
+
+1999-12-07  Dave Love  <fx@gnu.org>
+
+	* gnus-agent.el (gnus-category-edit-predicate)
+	(gnus-category-edit-score, gnus-category-edit-score): Expand setf
+	inside backquote to avoid it at runtime.
+
+1999-12-07  Dave Love  <fx@gnu.org>
+
+	* binhex.el: Require cl when compiling.
+
+1999-12-04  Dave Love  <fx@gnu.org>
+
+	* gnus-cus.el (gnus-group-parameters): Allow nil for banner.
+
+1999-12-04  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-delete-duplicates): New function.
+	(mm-write-region): Use it.
+
+	* mml.el (mml-minibuffer-read-type): Use mm-delete-duplicates.
+
+	* mailcap.el (mailcap-mime-types): Require mm-util.  Use
+	mm-delete-duplicates.
+
+	* imap.el (imap-open, imap-debug): Avoid mapc.
+
+	* nnvirtual.el (nnvirtual-create-mapping): Likewise.
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Avoid copy-list.
+	(gnus-multi-decode-encoded-word-string): Avoid mapc.
+
+	* gnus-start.el (gnus-site-init-file): Avoid ignore-errors at
+	runtime.
+
+	* gnus.el (gnus-select-method): Likewise.
+
+	* nnheader.el (nnheader-nov-read-integer): Likewise.
+
+	* mm-view.el (mm-inline-message): Require cl when compiling.
+	Avoid ignore-errors at runtime.
+	(mm-inline-text): Avoid mapc.
+	
 1999-12-12 10:36:51  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-decode-charset): Widen is bad.

@@ -1,10 +1,10 @@
 ;;; mm-uu.el -- Return uu stuffs as mm handles
-;; Copyright (c) 1998,99 by Shenghuo Zhu
+;; Copyright (c) 1998,99 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: postscript uudecode binhex shar forward
+;; Keywords: postscript uudecode binhex shar forward news
 
-;; This file is part of pgnus.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

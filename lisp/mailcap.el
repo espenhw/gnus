@@ -28,6 +28,7 @@
 
 (eval-when-compile (require 'cl))
 (require 'mail-parse)
+(require 'mm-util)
 
 (defvar mailcap-parse-args-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
@@ -881,7 +882,7 @@ The path of COMMAND will be returned iff COMMAND is a command."
 
 (defun mailcap-mime-types ()
   "Return a list of MIME media types."
-  (delete-duplicates (mapcar 'cdr mailcap-mime-extensions)))
+  (mm-delete-duplicates (mapcar 'cdr mailcap-mime-extensions)))
 
 (provide 'mailcap)
 
