@@ -1,3 +1,10 @@
+2004-08-06  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-encrypt.el (gnus-encrypt-insert-file-contents)
+	(gnus-encrypt-write-file-contents): the password key is the file
+	name PLUS the cipher, not just the cipher.  Also remove failed
+	passwords from the cache.
+
 2004-08-06  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-article-loose-mime): Change default to t.  Doc

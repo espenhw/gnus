@@ -109,8 +109,8 @@ Format example:
   (let* ((model (or model (gnus-encrypt-find-model file)))
 	 (method (nth 0 model))
 	 (cipher (nth 1 model))
-	 (password-key (format "gnus-encrypt-password-%s-%s"
-			       (symbol-name method) cipher))
+	 (password-key (format "gnus-encrypt-password-%s-%s %s"
+			       (symbol-name method) cipher file))
 	 (passphrase
 	  (password-read-and-add
 	   (format "%s password for cipher %s? "
@@ -136,6 +136,8 @@ Format example:
 	  (delete-region (point-min) (point-max))
 	  (goto-char (point-min))
 	  (insert outdata))
+      ;; the decryption failed, alas
+      (password-cache-remove password-key)
       (gnus-error 5 "%s was NOT decrypted with %s (cipher %s)"
 		  file (symbol-name method) cipher))))
 
@@ -158,12 +160,13 @@ Format example:
   (let* ((model (or model (gnus-encrypt-find-model file)))
 	 (method (nth 0 model))
 	 (cipher (nth 1 model))
+	 (password-key (format "gnus-encrypt-password-%s-%s %s"
+			       (symbol-name method) cipher file))
 	 (passphrase
 	  (password-read
 	   (format "%s password for cipher %s? "
 		   (symbol-name method) cipher)
-	   (format "gnus-encrypt-password-%s-%s"
-		   (symbol-name method) cipher)))
+	   password-key))
 	 outdata)
 
     (cond
@@ -181,6 +184,8 @@ Format example:
 	  (insert outdata)
 	  ;; do not confirm overwrites
 	  (write-file file nil))
+      ;; the decryption failed, alas
+      (password-cache-remove password-key)
       (gnus-error 5 "%s was NOT encrypted with %s (cipher %s)"
 		  file (symbol-name method) cipher))))
 
