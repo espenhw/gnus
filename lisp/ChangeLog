@@ -5,6 +5,9 @@
 	not currently agentized.
 	(gnus-agent-expire): Use gnus-agent-expire-unagentized-dirs.
 	
+	* gnus-int.el (gnus-open-server): Report backend errors in
+	condition handler.
+
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-idna-to-ascii-rhs-1): Don't continue outside
