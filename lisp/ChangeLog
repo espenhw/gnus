@@ -1,5 +1,7 @@
 2004-09-13  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-demule): Revert 2004-08-30 change.
+
 	* dns-mode.el (dns-mode): Fix menu for XEmacs, reported by Steve
 	Youngs <steve@youngs.au.com> and suggested by Katsumi Yamaoka
 	<yamaoka@jpl.org>.
