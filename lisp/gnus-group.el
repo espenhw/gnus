@@ -1166,8 +1166,8 @@ if it is a string, only list groups matching REGEXP."
 	      params (gnus-info-params info)
 	      newsrc (cdr newsrc)
 	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
-	(if not-in-list
-	    (setq not-in-list (delete group not-in-list)))
+	(when not-in-list
+	  (setq not-in-list (delete group not-in-list)))
 	(when (gnus-group-prepare-logic
 	       group
 	       (and unread		; This group might be unchecked
@@ -1200,23 +1200,23 @@ if it is a string, only list groups matching REGEXP."
 	   (gnus-info-marks info) unread (gnus-info-method info)))))
 
     ;; List dead groups.
-    (if (or gnus-group-listed-groups
-	    (and (>= level gnus-level-zombie)
-		 (<= lowest gnus-level-zombie)))
-	(gnus-group-prepare-flat-list-dead
-	 (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
-	 gnus-level-zombie ?Z
-	 regexp))
-    (if not-in-list
-	(dolist (group gnus-zombie-list)
-	  (setq not-in-list (delete group not-in-list))))
-    (if (or gnus-group-listed-groups
-	    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)))
-	(gnus-group-prepare-flat-list-dead
-	 (gnus-union
-	  not-in-list
-	  (setq gnus-killed-list (sort gnus-killed-list 'string<)))
-	 gnus-level-killed ?K regexp))
+    (when (or gnus-group-listed-groups
+	      (and (>= level gnus-level-zombie)
+		   (<= lowest gnus-level-zombie)))
+      (gnus-group-prepare-flat-list-dead
+       (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
+       gnus-level-zombie ?Z
+       regexp))
+    (when not-in-list
+      (dolist (group gnus-zombie-list)
+	(setq not-in-list (delete group not-in-list))))
+    (when (or gnus-group-listed-groups
+	      (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)))
+      (gnus-group-prepare-flat-list-dead
+       (gnus-union
+	not-in-list
+	(setq gnus-killed-list (sort gnus-killed-list 'string<)))
+       gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)
     (setq gnus-group-list-mode (cons level predicate))
