@@ -1,3 +1,9 @@
+2001-12-13  Josh Huber  <huber@alum.wpi.edu>
+
+	* gnus-cus.el (gnus-extra-topic-parameters): added topic parameter
+	subscribe-level
+	* gnus-topic.el (gnus-subscribe-topics): use it.
+
 2001-12-13 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-summary-mail-forward): Forward all marked

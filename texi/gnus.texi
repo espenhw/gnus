@@ -3776,6 +3776,11 @@ When subscribing new groups by topic (@pxref{Subscription Methods}), the
 value should be a regexp to match the groups that should go in that
 topic.
 
+@item subscribe-level
+When subscribing new groups by topic (see the @code{subscribe} parameter),
+the group will be subscribed with the level specified in the 
+@code{subscribe-level} instead of @code{gnus-level-default-subscribed}.
+
 @end table
 
 Group parameters (of course) override topic parameters, and topic

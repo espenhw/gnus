@@ -242,7 +242,12 @@ DOC is a documentation string for the parameter.")
 If `gnus-subscribe-newsgroup-method' or
 `gnus-subscribe-options-newsgroup-method' is set to
 `gnus-subscribe-topics', new groups that matches this regexp will
-automatically be subscribed to this topic"))
+automatically be subscribed to this topic")
+    (subscribe-level (integer :tag "Subscribe Level" :value 1) "\
+If this topic parameter is set, when new groups are subscribed
+automatically under this topic (via the `subscribe' topic parameter)
+assign this level to the group, rather than the default level
+set in `gnus-level-default-subscribed'"))
   "Alist of topic parameters that are not also group parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter

@@ -1690,6 +1690,12 @@ If REVERSE, reverse the sorting order."
 	  (gnus-subscribe-alphabetically newsgroup)
 	  ;; Add the group to the topic.
 	  (nconc (assoc topic gnus-topic-alist) (list newsgroup))
+	  ;; if this topic specifies a default level, use it
+	  (let ((subscribe-level (cdr (assq 'subscribe-level
+					    (gnus-topic-parameters topic)))))
+	    (when subscribe-level
+		(gnus-group-change-level newsgroup subscribe-level
+					 gnus-level-default-subscribed)))
 	  (throw 'end t)))
       nil)))
 
