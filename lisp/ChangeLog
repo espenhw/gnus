@@ -1,3 +1,11 @@
+2003-05-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-fetch-extra) 
+	(gnus-registry-store-extra, gnus-registry-group-count): new functions
+	(gnus-registry-fetch-group, gnus-registry-delete-group) 
+	(gnus-registry-add-group): changed to work with extra data element
+	if present
+
 2003-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Gnus v5.10.1 is released.

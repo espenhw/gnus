@@ -182,18 +182,43 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     (string-match x word))
 		   list)))))
 
+(defun gnus-registry-fetch-extra (id)
+  "Get the extra data of a message, based on the message ID.
+Returns the first place where the trail finds a nonstring."
+  (let ((trail (gethash id gnus-registry-hashtb)))
+    (dolist (crumb trail)
+      (unless (stringp crumb)
+	(return crumb)))))
+
+(defun gnus-registry-store-extra (id extra)
+  "Store the extra data of a message, based on the message ID.
+The message must have at least one group name."
+  (when (gnus-registry-group-count id)
+    ;; we now know the trail has at least 1 group name, so it's not empty
+    (let ((trail (gethash id gnus-registry-hashtb))
+	  (old-extra (gnus-registry-fetch-extra id)))
+      (puthash id (cons extra (delete old-extra trail))
+	       gnus-registry-hashtb))))
+
 (defun gnus-registry-fetch-group (id)
   "Get the group of a message, based on the message ID.
-Returns the first place where the trail finds a spool action."
-  (when id
+Returns the first place where the trail finds a group name."
+  (when (gnus-registry-group-count id)
+    ;; we now know the trail has at least 1 group name
     (let ((trail (gethash id gnus-registry-hashtb)))
-      (if trail
-	  (car trail)
-	nil))))
+      (dolist (crumb trail)
+	(when (stringp crumb)
+	  (return crumb))))))
+
+(defun gnus-registry-group-count (id)
+  "Get the number of groups of a message, based on the message ID."
+  (let ((trail (gethash id gnus-registry-hashtb)))
+    (if (and trail (listp trail))
+	(apply '+ (mapcar (lambda (x) (if (stringp x) 1 0)) trail))
+      0)))
 
 (defun gnus-registry-delete-group (id group)
-  "Get the group of a message, based on the message ID.
-Returns the first place where the trail finds a spool action."
+  "Delete a group for a message, based on the message ID."
   (when group
     (when id
       (let ((trail (gethash id gnus-registry-hashtb))
@@ -202,23 +227,24 @@ Returns the first place where the trail finds a spool action."
 			(delete group trail)
 		      nil)
 		 gnus-registry-hashtb))
-      ;; now, clear the entry if it's empty
-      (unless (gethash id gnus-registry-hashtb)
+      ;; now, clear the entry if there are no more groups
+      (unless (gnus-registry-group-count id)
 	(remhash id gnus-registry-hashtb)))))
 
-(defun gnus-registry-add-group (id group)
-  "Get the group of a message, based on the message ID.
-Returns the first place where the trail finds a spool action."
+(defun gnus-registry-add-group (id group &rest extra)
+  "Add a group for a message, based on the message ID."
   ;; make sure there are no duplicate entries
   (when group
-    (when id
+    (when (and id
+	       (not (string-match "totally-fudged-out-message-id" id)))
       (let ((group (gnus-group-short-name group)))
 	(gnus-registry-delete-group id group)	
 	(let ((trail (gethash id gnus-registry-hashtb)))
 	  (puthash id (if trail
 			  (cons group trail)
 			(list group))
-		   gnus-registry-hashtb))))))
+		   gnus-registry-hashtb)
+	  (when extra (gnus-registry-store-extra id extra)))))))
 
 (defun gnus-registry-clear ()
   "Clear the Gnus registry."
