@@ -126,15 +126,20 @@ the most significant sort function should be the last function in the
 list."
   :group 'gnus-group-listing
   :link '(custom-manual "(gnus)Sorting Groups")
-  :type '(radio (function-item gnus-group-sort-by-alphabet)
-		(function-item gnus-group-sort-by-real-name)
-		(function-item gnus-group-sort-by-unread)
-		(function-item gnus-group-sort-by-level)
-		(function-item gnus-group-sort-by-score)
-		(function-item gnus-group-sort-by-method)
-		(function-item gnus-group-sort-by-server)
-		(function-item gnus-group-sort-by-rank)
-		(function :tag "other" nil)))
+  :type '(repeat :value-to-internal (lambda (widget value)
+				      (if (listp value) value (list value)))
+		 :match (lambda (widget value)
+			  (or (symbolp value)
+			      (widget-editable-list-match widget value)))
+		 (choice (function-item gnus-group-sort-by-alphabet)
+			 (function-item gnus-group-sort-by-real-name)
+			 (function-item gnus-group-sort-by-unread)
+			 (function-item gnus-group-sort-by-level)
+			 (function-item gnus-group-sort-by-score)
+			 (function-item gnus-group-sort-by-method)
+			 (function-item gnus-group-sort-by-server)
+			 (function-item gnus-group-sort-by-rank)
+			 (function :tag "other" nil))))
 
 (defcustom gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l\n"
   "*Format of group lines.
