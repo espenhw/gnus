@@ -766,7 +766,8 @@ be controlled by `gnus-treat-body-boundary'."
   :type '(choice (item :tag "None" :value nil)
 		 string))
 
-(defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces")
+(defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces"
+				  "/usr/share/picons")
   "Defines the location of the faces database.
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"

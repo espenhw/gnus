@@ -1,3 +1,7 @@
+2004-05-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-picon-databases): Add /usr/share/picons.
+
 2004-05-20  Magnus Henoch  <mange@freemail.hu>
 
 	* dns.el (dns-read-type): Add support for SVR.  (small patch)
