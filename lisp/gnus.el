@@ -2521,16 +2521,18 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-news-group-p (group &optional article)
   "Return non-nil if GROUP (and ARTICLE) come from a news server."
-  (or (gnus-member-of-valid 'post group) ; Ordinary news group.
-      (and (gnus-member-of-valid 'post-mail group) ; Combined group.
-	   (if (or (null article)
-		   (not (< article 0)))
-	       (eq (gnus-request-type group article) 'news)
-	     (if (not (vectorp article))
-		 nil
-	       ;; It's a real article.
-	       (eq (gnus-request-type group (mail-header-id article))
-		   'news))))))
+  (cond ((gnus-member-of-valid 'post group) ;Ordinary news group
+	 t)				;is news of course.
+	((not (gnus-member-of-valid 'post-mail group)) ;Non-combined.
+	 nil)				;must be mail then.
+	((vectorp article)		;Has header info.
+	 (eq (gnus-request-type group (mail-header-id article)) 'news))
+	((null article)			;Hasn't header info
+	 (eq (gnus-request-type group) 'news)) ;(unknown ==> mail)
+	((< article 0)			;Virtual message
+	 nil)				;we don't know, guess mail.
+	(t				;Has positive number
+	 (eq (gnus-request-type group article) 'news)))) ;use it.
 
 ;; Returns a list of writable groups.
 (defun gnus-writable-groups ()

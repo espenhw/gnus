@@ -1,6 +1,17 @@
 2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* gnus.el (gnus-news-group-p): Rewrote.  Now accepts a header
+	vector (it didn't before because of a bug).
+	* gnus-msg.el (gnus-post-news): Use header vector directly, if
+	available.  Before it converted it to an article number.
+
+	This makes followup to news articles with negative numbers in
+	nnvirtual groups use news instead of mail.
+
+2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
+
 	* gnus.el (post-method): Use `native' instead of `nil'.
+
 	* gnus-msg.el (gnus-post-method): Ditto.
 
 2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>

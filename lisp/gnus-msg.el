@@ -614,8 +614,7 @@ header line with the old Message-ID."
 		force-news
 		(and (gnus-news-group-p
 		      (or pgroup gnus-newsgroup-name)
-		      (if header (mail-header-number header)
-			gnus-current-article))
+		      (or header gnus-current-article))
 		     (not mailing-list)
 		     (not to-list)
 		     (not to-address)))
