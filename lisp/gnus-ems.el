@@ -31,7 +31,7 @@
 ;;; Function aliases later to be redefined for XEmacs usage.
 
 (eval-and-compile
-  (defvar gnus-xemacs (string-match "XEmacs" emacs-version)
+  (defvar gnus-xemacs (featurep 'xemacs)
     "Non-nil if running under XEmacs."))
 
 (defvar gnus-mouse-2 [mouse-2])
@@ -157,7 +157,7 @@
 
 (if (fboundp 'add-minor-mode)
     (defalias 'gnus-add-minor-mode 'add-minor-mode)
-  (defun gnus-add-minor-mode (mode name map)
+  (defun gnus-add-minor-mode (mode name map &rest rest)
     (set (make-local-variable mode) t)
     (unless (assq mode minor-mode-alist)
       (push `(,mode ,name) minor-mode-alist))
