@@ -1,3 +1,8 @@
+2000-11-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* rfc2047.el (rfc2047-encoded-word-regexp): Allow empty encoded
+	word.
+
 2000-11-01 10:07:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-display-part): Add to signed or encrypted.
