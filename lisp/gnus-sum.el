@@ -660,7 +660,8 @@ was sent, sorting by number means sorting by arrival time.)
 
 Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
-`gnus-thread-sort-by-date', `gnus-thread-sort-by-score' and
+`gnus-thread-sort-by-date', `gnus-thread-sort-by-score',
+`gnus-thread-sort-by-most-recent-thread' and
 `gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').
 
 When threading is turned off, the variable
@@ -4154,15 +4155,26 @@ Unscored articles will be counted as having a score of zero."
 
 (defun gnus-thread-total-score (thread)
   ;; This function find the total score of THREAD.
-  (cond ((null thread)
-	 0)
-	((consp thread)
-	 (if (stringp (car thread))
-	     (apply gnus-thread-score-function 0
-		    (mapcar 'gnus-thread-total-score-1 (cdr thread)))
-	   (gnus-thread-total-score-1 thread)))
-	(t
-	 (gnus-thread-total-score-1 (list thread)))))
+  (cond
+   ((null thread)
+    0)
+   ((consp thread)
+    (if (stringp (car thread))
+	(apply gnus-thread-score-function 0
+	       (mapcar 'gnus-thread-total-score-1 (cdr thread)))
+      (gnus-thread-total-score-1 thread)))
+   (t
+    (gnus-thread-total-score-1 (list thread)))))
+
+(defun gnus-thread-sort-by-most-recent-thread (h1 h2)
+  "Sort threads such that the thread with the most recently arrived article is comes first."
+  (> (gnus-thread-highest-number h1) (gnus-thread-highest-number h2)))
+
+(defun gnus-thread-highest-number (thread)
+  "Return the highest article number from THREAD."
+  (apply 'max (mapcar (lambda (header)
+			(mail-header-number header))
+		      (message-flatten-list thread))))
 
 (defun gnus-thread-total-score-1 (root)
   ;; This function find the total score of the thread below ROOT.
