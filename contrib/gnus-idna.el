@@ -24,9 +24,8 @@
 
 ;;; Commentary:
 
-;; This package implement crude support for internationalized
-;; (non-ASCII) domain names in Gnus.  It is meant as a proof of
-;; concept.
+;; This package implement crude support for internationalized domain
+;; names in Gnus.
 
 ;; Theory of Operation:
 
@@ -34,82 +33,121 @@
 ;; using IDNA ToASCII() when you send mail using Message.  The hook
 ;; used is message-send-hook.
 ;;
-;; For incoming articles, when QP in headers are decoded, it searches
-;; for "xn--" prefixes and decode them using IDNA ToUnicode().  The
-;; hook used is gnus-article-decode-hook.
+;; For incoming articles, when QP in headers are decoded (i.e., when
+;; gnus-article-decode-hook is invoked), it searches for "xn--"
+;; prefixes and decode them if they are found inside (heuristically
+;; determined) RHS in From:, To: and Cc:, using IDNA ToUnicode().
 
 ;; Usage:
 
-;; Simply put (require 'gnus-idna) in your ~/.gnus or ~/.emacs and it
-;; should work.  You need to install GNU Libidn (0.1.11 or later) and
-;; make sure the idna.el installed by it is found by emacs.
+;; You need to install GNU Libidn (0.1.11 or later) and make sure the
+;; idna.el installed by it is found by emacs.
+
+;; If you use an older Gnus, you may need to put the following in your
+;; init scripts too, but keep in mind that most older Gnuses either
+;; doesn't have these hooks or are buggy in other regards so it
+;; doesn't work anyway.  (The window of Gnus versions that this works
+;; on is a few weeks during the Oort CVS in winter 2003.)  Update to a
+;; recent Gnus instead, then you don't have to do anything.
+
+;; (add-hook 'message-send-hook 'message-idna-to-ascii-rhs)
+;; (add-hook 'gnus-article-decode-hook 'gnus-idna-to-unicode-rhs 'append)
+
+;; Revision history:
+
+;; 2003-02-26 Initial release
+;;
+;; 2003-03-19 Cleanup. Fixes a bug that may corrupt outgoing mail if
+;;            it contains From:, To: or Cc: headers in the body.
 
 ;;; Code:
 
 (require 'gnus)
+(require 'gnus-util)
 (require 'rfc822)
-(require 'idna)
+(autoload 'idna-to-ascii "idna")
+(autoload 'idna-to-unicode "idna")
 
-(eval-and-compile
-  (cond
-   ((fboundp 'replace-in-string)
-    (defalias 'gnus-replace-in-string 'replace-in-string))
-   ((fboundp 'replace-regexp-in-string)
-    (defun gnus-replace-in-string  (string regexp newtext &optional literal)
-      (replace-regexp-in-string regexp newtext string nil literal)))
-   (t
-    (defun gnus-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
+(defcustom message-use-idna 'ask
+  "Whether to encode non-ASCII in domain names into ASCII according to IDNA."
+  :type '(choice (const :tag "Ask" ask)
+		 (const :tag "Never" nil)
+		 (const :tag "Always" t)))
 
-(defun gnus-idna-to-ascii-rhs-1 (header)
-  (save-excursion
-    (save-restriction
-      (let (address header-data new-header-data rhs ace)
-	(message-narrow-to-head)
-	(setq header-data (message-fetch-field header))
-	(when header-data
-	  (dolist (element (message-tokenize-header header-data))
-	    (setq address (car (rfc822-addresses element)))
-	    (when (string-match "\\(.*\\)@\\([^@]+\\)" address)
-	      (setq ace (if (setq rhs (match-string 2 address))
-			    (idna-to-ascii rhs)))
-	      (push (if (string= rhs ace)
-			element
-		      (gnus-replace-in-string
-		       element (regexp-quote rhs) ace t))
-		    new-header-data)))
-	  (message-remove-header header)
-	  (message-position-on-field header)
-	  (dolist (addr (reverse new-header-data))
-	    (insert addr ", "))
-	  (when new-header-data
-	    (delete-backward-char 2)))))))
+(defun message-idna-inside-rhs-p ()
+  "Return t iff point is inside a RHS (heuristically).
+Only works properly if header contains mailbox-list or address-list.
+I.e., calling it on a Subject: header is useless."
+  (if (re-search-backward
+       "[\\\n\r\t ]" (save-excursion (search-backward "@" nil t)) t)
+      ;; whitespace between @ and point
+      nil
+    (let ((dquote 1) (paren 1))
+      (while (save-excursion (re-search-backward "[^\\]\"" nil t dquote))
+	(incf dquote))
+      (while (save-excursion (re-search-backward "[^\\]\(" nil t paren))
+	(incf paren))
+      (and (= (% dquote 2) 1) (= (% paren 2) 1)))))
 
-(defun gnus-idna-to-ascii-rhs ()
-  (gnus-idna-to-ascii-rhs-1 "From")
-  (gnus-idna-to-ascii-rhs-1 "To")
-  (gnus-idna-to-ascii-rhs-1 "Cc"))
-
-(add-hook 'message-send-hook 'gnus-idna-to-ascii-rhs)
-
-(defun gnus-idna-to-unicode-rhs ()
-  (let ((inhibit-point-motion-hooks t)
-	buffer-read-only)
+(defun message-idna-to-ascii-rhs-1 (header)
+  "Interactively potentially IDNA encode domain names in HEADER."
+  (let (rhs ace start end startpos endpos)
     (goto-char (point-min))
-    (while (re-search-forward "xn--.*[ \t\n\r.,<>()@!]" nil t)
-      ;(or (eobp) (forward-char))
-      (let (ace unicode)
-	(when (setq ace (match-string 0))
-	  (setq unicode (idna-to-unicode ace))
-	  (unless (string= ace unicode)
-	    (replace-match unicode)))))))
+    (setq start (re-search-forward (concat "^" header) nil t)
+	  end (or (save-excursion (re-search-forward "^[ \t]" nil t))
+		  (point-max)))
+    (when (and start end)
+      (while (re-search-forward "@\\([^ \t\r\n>]+\\)" end t)
+	(setq rhs (match-string-no-properties 1)
+	      startpos (match-beginning 1)
+	      endpos (match-end 1))
+	(when (save-match-data
+		(and (message-idna-inside-rhs-p)
+		     (setq ace (idna-to-ascii rhs))
+		     (not (string= rhs ace))
+		     (if (eq message-use-idna 'ask)
+			 (unwind-protect
+			     (progn
+			       (replace-highlight startpos endpos)
+			       (y-or-n-p
+				(format "Replace with `%s'? " ace)))
+			   (message "")
+			   (replace-dehighlight))
+		       message-use-idna)))
+	  (replace-match (concat "@" ace)))))))
 
-(add-hook 'gnus-article-decode-hook 'gnus-idna-to-unicode-rhs 'append)
+;;;###autoload
+(defun message-idna-to-ascii-rhs ()
+  "Possibly IDNA encode non-ASCII domain names in From:, To: and Cc: headers.
+See `message-idna-encode'."
+  (interactive)
+  (when (condition-case nil (require 'idna) (file-error))
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-head)
+	(message-idna-to-ascii-rhs-1 "From")
+	(message-idna-to-ascii-rhs-1 "To")
+	(message-idna-to-ascii-rhs-1 "Cc")))))
+
+;;;###autoload
+(defun gnus-idna-to-unicode-rhs ()
+  "Decode IDNA strings in RHS in From:, To: and Cc: headers in current buffer."
+  (when (condition-case nil (require 'idna) (file-error))
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
+      (article-narrow-to-head)
+      (goto-char (point-min))
+      (while (re-search-forward "\\(xn--.*\\)[ \t\n\r,>]" nil t)
+	(let (ace unicode)
+	  (when (save-match-data
+		  (and (setq ace (match-string 1))
+		       (save-excursion (and (re-search-backward "^[^ \t]" nil t)
+					    (looking-at "From\\|To\\|Cc")))
+		       (save-excursion (backward-char)
+				       (message-idna-inside-rhs-p))
+		       (setq unicode (idna-to-unicode ace))))
+	    (unless (string= ace unicode)
+	      (replace-match unicode nil nil nil 1))))))))
 
 (provide 'gnus-idna)
 

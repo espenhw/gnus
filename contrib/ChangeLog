@@ -1,3 +1,7 @@
+2003-03-19  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-idna.el: Update.
+
 2003-03-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* hashcash.el (hashcash-version, hashcash-insert-payment): patch
