@@ -58,7 +58,3 @@ distclean:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
-
-m4_if(dnl	Do not change this comment
-   arch-tag: 2bb4458b-f1c3-41ab-a3b2-260899daa307
-)dnl

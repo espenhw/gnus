@@ -252,7 +252,3 @@ gnusconfig.tex: $(srcdir)/gnusconfig.tex.in ../config.status
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
-
-m4_if(dnl	Do not change this comment
-   arch-tag: 9ba7e62d-d90d-45c1-a2de-5926f6fb2b9c
-)dnl
