@@ -1,3 +1,7 @@
+2003-03-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnvirtual.el (nnvirtual-update-xref-header): Simplify.
+
 2003-03-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-article-refer-article): Be more permissive.
