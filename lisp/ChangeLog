@@ -1,3 +1,17 @@
+2003-09-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam-report.el: use mm-url.el functions for external URL
+	loading when the built-in HTTP GET is insufficient (e.g. proxies
+	are in the way).  From Eric Knauel
+	<knauel@informatik.uni-tuebingen.de>.
+	(spam-report-url-ping-function): new option, defaults to the
+	built-in HTTP GET (spam-report-url-ping-plain)
+	(spam-report-url-ping): calls spam-report-url-ping-function now
+	(spam-report-url-ping-plain): new function, does what
+	spam-report-url-ping used to do
+	(spam-report-url-ping-mm-url): function that delegates to
+	mm-url.el (autoloaded)
+
 2003-09-08  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-delete-id): function to

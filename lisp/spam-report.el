@@ -31,6 +31,9 @@
 (require 'gnus)
 (require 'gnus-sum)
 
+(eval-and-compile
+  (autoload 'mm-url-insert "mm-url"))
+
 (defgroup spam-report nil
   "Spam reporting configuration.")
 
@@ -52,6 +55,16 @@ instead."
 (defcustom spam-report-gmane-use-article-number t
   "Whether the article number (faster!) or the header should be used."
   :type 'boolean
+  :group 'spam-report)
+
+(defcustom spam-report-url-ping-function
+  'spam-report-url-ping-plain
+  "Function to use for url ping spam reporting."
+  :type '(choice
+	  (const :tag "Connect directly" 
+		 spam-report-url-ping-plain)
+	  (const :tag "Use the external program specified in `mm-url-program'" 
+		 spam-report-url-ping-mm-url))
   :group 'spam-report)
 
 (defun spam-report-gmane (article)
@@ -78,9 +91,13 @@ instead."
 	    (gnus-message 10 "Could not find X-Report-Spam in article %d..."
 			  article))))))
 
-
 (defun spam-report-url-ping (host report)
-  "Ping a host through HTTP, addressing a specific GET resource"
+  "Ping a host through HTTP, addressing a specific GET resource using
+the function specified by `spam-report-url-ping-function'."
+  (funcall spam-report-url-ping-function host report))
+
+(defun spam-report-url-ping-plain (host report)
+  "Ping a host through HTTP, addressing a specific GET resource."
   (let ((tcp-connection))
     (with-temp-buffer
       (or (setq tcp-connection
@@ -94,6 +111,14 @@ instead."
       (process-send-string tcp-connection
 			   (format "GET %s HTTP/1.1\nHost: %s\n\n"
 				   report host)))))
+
+(defun spam-report-url-ping-mm-url (host report)
+  "Ping a host through HTTP, addressing a specific GET resource. Use
+the external program specified in `mm-url-program' to connect to
+server."
+  (with-temp-buffer
+    (let ((url (concat "http://" host "/" report)))
+      (mm-url-insert url t))))
 
 (provide 'spam-report)
 
