@@ -6557,6 +6557,7 @@ Matching}).
 @findex gnus-thread-sort-by-author
 @findex gnus-thread-sort-by-number
 @vindex gnus-thread-sort-functions
+@findex gnus-thread-sort-by-most-recent-thread
 If you are using a threaded summary display, you can sort the threads by
 setting @code{gnus-thread-sort-functions}, which can be either a single
 function, a list of functions, or a list containing functions and
@@ -6565,7 +6566,8 @@ function, a list of functions, or a list containing functions and
 By default, sorting is done on article numbers.  Ready-made sorting
 predicate functions include @code{gnus-thread-sort-by-number},
 @code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
-@code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score}, and
+@code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score},
+@code{gnus-thread-sort-by-most-recent-thread} and
 @code{gnus-thread-sort-by-total-score}.
 
 Each function takes two threads and returns non-@code{nil} if the first
@@ -15655,6 +15657,9 @@ not-news back end.  (Just to be on the safe side.)
 @kbd{C-c C-n} in the message buffer will insert the @code{Newsgroups}
 line from the article you respond to in these cases.
 
+@code{nnvirtual} groups do not inherit anything but articles and marks
+from component groups---group parameters, for instance, are not
+inherited. 
 
 
 @node Kibozed Groups

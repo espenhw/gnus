@@ -1,3 +1,11 @@
+2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Sorting the Summary Buffer): Addition.
+
+2002-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Virtual Groups): Addition.
+
 2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Keymap): Addition.
