@@ -455,13 +455,15 @@ Return the number of files that were found."
 	      (setq found (mail-source-callback
 			   callback mail-source-crash-box)))
 	    (+ found
-	       (condition-case err
+	       (if (or debug-on-quit debug-on-error)
 		   (funcall function source callback)
-		 (error
-		  (unless (yes-or-no-p
-			   (format "Mail source error (%s).  Continue? " err))
-		    (error "Cannot get new mail"))
-		  0))))))))
+		 (condition-case err
+		     (funcall function source callback)
+		   (error
+		    (unless (yes-or-no-p
+			     (format "Mail source error (%s).  Continue? " err))
+		      (error "Cannot get new mail"))
+		    0)))))))))
 
 (defun mail-source-make-complex-temp-name (prefix)
   (let ((newname (make-temp-name prefix))
@@ -675,15 +677,17 @@ If ARGS, PROMPT is used as an argument to `format'."
 		    (pop3-port port)
 		    (pop3-authentication-scheme
 		     (if (eq authentication 'apop) 'apop 'pass)))
-		(condition-case err
+		(if (or debug-on-quit debug-on-error)
 		    (save-excursion (pop3-movemail mail-source-crash-box))
-		  (error
-		   ;; We nix out the password in case the error
-		   ;; was because of a wrong password being given.
-		   (setq mail-source-password-cache
-			 (delq (assoc from mail-source-password-cache)
-			       mail-source-password-cache))
-		   (signal (car err) (cdr err))))))))
+		  (condition-case err
+		      (save-excursion (pop3-movemail mail-source-crash-box))
+		    (error
+		     ;; We nix out the password in case the error
+		     ;; was because of a wrong password being given.
+		     (setq mail-source-password-cache
+			   (delq (assoc from mail-source-password-cache)
+				 mail-source-password-cache))
+		     (signal (car err) (cdr err)))))))))
       (if result
 	  (progn
 	    (when (eq authentication 'password)
@@ -734,15 +738,17 @@ If ARGS, PROMPT is used as an argument to `format'."
 		    (pop3-port port)
 		    (pop3-authentication-scheme
 		     (if (eq authentication 'apop) 'apop 'pass)))
-		(condition-case err
+		(if (or debug-on-quit debug-on-error)
 		    (save-excursion (pop3-get-message-count))
-		  (error
-		   ;; We nix out the password in case the error
-		   ;; was because of a wrong password being given.
-		   (setq mail-source-password-cache
-			 (delq (assoc from mail-source-password-cache)
-			       mail-source-password-cache))
-		   (signal (car err) (cdr err))))))))
+		  (condition-case err
+		      (save-excursion (pop3-get-message-count))
+		    (error
+		     ;; We nix out the password in case the error
+		     ;; was because of a wrong password being given.
+		     (setq mail-source-password-cache
+			   (delq (assoc from mail-source-password-cache)
+				 mail-source-password-cache))
+		     (signal (car err) (cdr err)))))))))
       (if result
 	  ;; Inform display-time that we have new mail.
 	  (setq mail-source-new-mail-available (> result 0))

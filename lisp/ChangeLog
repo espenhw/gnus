@@ -1,3 +1,9 @@
+2001-10-31 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch): If debug, don't regain signals.
+	(mail-source-fetch-pop): Ditto.
+	(mail-source-check-pop): Ditto.
+
 2001-10-30 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-get-reply-headers): Make sure there is ", ".
