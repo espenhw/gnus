@@ -230,6 +230,8 @@ NOTES:
 (defvar gnus-agent-file-coding-system 'raw-text)
 (defvar gnus-agent-file-loading-cache nil)
 (defvar gnus-agent-total-fetched-hashtb nil)
+(defvar gnus-agent-inhibit-update-total-fetched-for nil)
+(defvar gnus-agent-need-update-total-fetched-for nil)
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -3806,9 +3808,6 @@ If CLEAN, obsolete (ignore)."
 
 (defun gnus-agent-group-covered-p (group)
   (gnus-agent-method-p (gnus-group-method group)))
-
-(defvar gnus-agent-inhibit-update-total-fetched-for nil)
-(defvar gnus-agent-need-update-total-fetched-for nil)
 
 (defun gnus-agent-update-files-total-fetched-for 
   (group delta &optional method path)
