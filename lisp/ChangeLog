@@ -1,3 +1,9 @@
+2003-03-31  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bound
+	print-escape-newlines to print escape sequences rather than
+	literal newline characters.
+
 2003-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-valid-fqdn-regexp): Use
