@@ -136,6 +136,27 @@ fixed in Emacs after 21.3."
 	  (setq ad-return-value (cons fn (nreverse backwards))))
       ad-do-it)))
 
+(when (and (featurep 'xemacs)
+	   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
+	     (modify-syntax-entry ?= " " table)
+	     (with-temp-buffer
+	       (with-syntax-table table
+		 (insert "foo=bar")
+		 (goto-char (point-min))
+		 (forward-sexp 1)
+		 (eolp)))))
+  ;; The original `with-syntax-table' uses `copy-syntax-table' which
+  ;; doesn't seem to copy modified syntax entries in XEmacs 21.5.
+  (defmacro with-syntax-table (syntab &rest body)
+    "Evaluate BODY with the SYNTAB as the current syntax table."
+    `(let ((stab (syntax-table)))
+       (unwind-protect
+	   (progn
+	     ;;(set-syntax-table (copy-syntax-table ,syntab))
+	     (set-syntax-table ,syntab)
+	     ,@body)
+	 (set-syntax-table stab)))))
+
 (push srcdir load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)
 

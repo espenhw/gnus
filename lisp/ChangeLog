@@ -1,5 +1,7 @@
 2004-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* dgnushack.el (with-syntax-table): Redefine it for XEmacs 21.5.
+
 	* message.el (message-setup-fill-variables): Add mml tags to
 	paragraph-start and paragraph-separate.  Suggested by Andrew Korty
 	<ajk@iu.edu>.
