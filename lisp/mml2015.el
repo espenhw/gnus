@@ -421,7 +421,7 @@ by you.")
 		    (unless trust-good-enough-p
 		      (concat "\nUntrusted, Fingerprint: "
 			      (mml2015-gpg-pretty-print-fpr fprint))))
-	  (error "From unknown user")))
+	  "From unknown user"))
     (if (re-search-forward "^gpg: Good signature from \"\\(.*\\)\"$" nil t)
 	(match-string 1)
       "From unknown user")))
