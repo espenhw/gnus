@@ -67,7 +67,9 @@
 ;;                              USING GROUPLENS
 ;; How do I Rate an article??
 ;;   Before you type n to go to the next article, hit a number from 1-5
-;;   Type V r in the summary buffer and you will be prompted.
+;;   Type r in the summary buffer and you will be prompted.
+;;   Note that when you're in grouplens-minor-mode 'r' maskes the
+;;   usual reply binding for 'r'
 ;;
 ;; What if, Gasp, I find a bug???
 ;; Please type M-x gnus-gl-submit-bug-report.  This will set up a
@@ -292,12 +294,12 @@ The scale factor is applied after the offset.")
 	      (bbb-send-command bbb-process 
 				(concat "login " grouplens-pseudonym))
 	      (if (bbb-read-response bbb-process)
-		  (setq grouplens-bbb-token (extract-token-number))
+		  (setq grouplens-bbb-token (bbb-extract-token-number))
 		(gnus-message 3 "Error: Grouplens login failed")))))
     (gnus-message 3 "Error: you must set a pseudonym"))
   grouplens-bbb-token)
 
-(defun extract-token-number ()
+(defun bbb-extract-token-number ()
   (let ((token-pos (search-forward "token=" nil t) ))
     (if (looking-at "[0-9]+")
 	(buffer-substring token-pos (match-end 0)))))
@@ -327,7 +329,7 @@ you should see the offset and scale variables.  At this point, I don't
 recommend using both scores and grouplens predictions together."
   (setq grouplens-current-group groupname)
   (if (member groupname grouplens-newsgroups)
-      (let* ((mid-list (get-all-mids))
+      (let* ((mid-list (bbb-get-all-mids))
 	     (predict-list (bbb-get-predictions mid-list groupname)))
 	(setq grouplens-previous-article nil)
 	;; scores-alist should be a list of lists:
@@ -357,7 +359,7 @@ recommend using both scores and grouplens predictions together."
 	      (ding))))
       (setq bbb-alist predict-list))))
 
-(defun get-all-mids ()
+(defun bbb-get-all-mids ()
   (let ((index (nth 1 (assoc "message-id" gnus-header-index)))
 	(articles gnus-newsgroup-headers)
 	art this)
@@ -400,20 +402,20 @@ recommend using both scores and grouplens predictions together."
     (setq grouplens-current-hashtable (make-hash-table :test 'equal :size 100))
     (while
 	(cond ((looking-at "\\(<.*>\\) :nopred=")
-	       (push `(,(get-mid) ,gnus-summary-default-score nil s) resp)
+	       (push `(,(bbb-get-mid) ,gnus-summary-default-score nil s) resp)
 	       (forward-line 1)
 	       t)
 	      ((looking-at "\\(<.*>\\) :pred=\\([0-9]\.[0-9][0-9]\\) :conflow=\\([0-9]\.[0-9][0-9]\\) :confhigh=\\([0-9]\.[0-9][0-9]\\)")
-	       (push `(,(get-mid) ,(get-pred) nil s) resp)
-	       (cl-puthash (get-mid)
-			   (list (get-pred) (get-confl) (get-confh))
+	       (push `(,(bbb-get-mid) ,(bbb-get-pred) nil s) resp)
+	       (cl-puthash (bbb-get-mid)
+			   (list (bbb-get-pred) (bbb-get-confl) (bbb-get-confh))
 			   grouplens-current-hashtable)
 	       (forward-line 1)
 	       t)
 	      ((looking-at "\\(<.*>\\) :pred=\\([0-9]\.[0-9][0-9]\\)")
-	       (push `(,(get-mid) ,(get-pred) nil s) resp)
-	       (cl-puthash (get-mid)
-			   (list (get-pred) 0 0)
+	       (push `(,(bbb-get-mid) ,(bbb-get-pred) nil s) resp)
+	       (cl-puthash (bbb-get-mid)
+			   (list (bbb-get-pred) 0 0)
 			   grouplens-current-hashtable)
 	       (forward-line 1)
 	       t)
@@ -424,10 +426,10 @@ recommend using both scores and grouplens predictions together."
 ;; around.  Where the first parenthesized expression is the
 ;; message-id, and the second is the prediction.  Since gnus assumes
 ;; that scores are integer values?? we round the prediction.
-(defun get-mid ()
+(defun bbb-get-mid ()
   (buffer-substring (match-beginning 1) (match-end 1)))
 
-(defun get-pred ()
+(defun bbb-get-pred ()
   (let ((tpred (round (string-to-int (buffer-substring  
 				      (match-beginning 2) 
 				      (match-end 2))))))
@@ -435,16 +437,16 @@ recommend using both scores and grouplens predictions together."
 	(* grouplens-score-scale-factor (+ grouplens-score-offset  tpred))
       1)))
 
-(defun get-confl ()
+(defun bbb-get-confl ()
   (string-to-number (buffer-substring (match-beginning 3) (match-end 3))))
 
-(defun get-confh ()
+(defun bbb-get-confh ()
   (string-to-number (buffer-substring (match-beginning 4) (match-end 4))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;      Prediction Display
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defconst rating-range 4.0)
+(defconst grplens-rating-range 4.0)
 (defconst grplens-maxrating 5)
 (defconst grplens-minrating 1)
 (defconst grplens-predstringsize 12)
@@ -471,18 +473,18 @@ recommend using both scores and grouplens predictions together."
 	       (setq iscore 5))))
       (setq low 0) 
       (setq high 0))
-    (if (and (grouplens-valid-score iscore) 
+    (if (and (bbb-valid-score iscore) 
 	     (not (null mid)))
 	(cond 
 	 ;; prediction-spot
 	 ((equal grouplens-prediction-display 'prediction-spot)
-	  (setq rate-string (fmt-prediction-spot rate-string iscore)))
+	  (setq rate-string (bbb-fmt-prediction-spot rate-string iscore)))
 	 ;; confidence-interval
 	 ((equal grouplens-prediction-display 'confidence-interval)
-	  (setq rate-string (fmt-confidence-interval iscore low high)))
+	  (setq rate-string (bbb-fmt-confidence-interval iscore low high)))
 	 ;; prediction-bar
 	 ((equal grouplens-prediction-display 'prediction-bar)
-	  (setq rate-string (fmt-prediction-bar rate-string iscore)))
+	  (setq rate-string (bbb-fmt-prediction-bar rate-string iscore)))
 	 ;; confidence-bar
 	 ((equal grouplens-prediction-display 'confidence-bar)
 	  (setq rate-string (format "|   %4.2f   |" iscore)))
@@ -491,10 +493,10 @@ recommend using both scores and grouplens predictions together."
 	  (setq rate-string (format "|   %4.2f   |" iscore)))
 	 ;; prediction-num
 	 ((equal grouplens-prediction-display 'prediction-num)
-	  (setq rate-string (fmt-prediction-num iscore)))
+	  (setq rate-string (bbb-fmt-prediction-num iscore)))
 	 ;; confidence-plus-minus
 	 ((equal grouplens-prediction-display 'confidence-plus-minus)
-	       (setq rate-string (fmt-confidence-plus-minus iscore low high))
+	       (setq rate-string (bbb-fmt-confidence-plus-minus iscore low high))
 	       )
 	 (t (gnus-message 3 "Invalid prediction display type")))
       (aset rate-string 5 ?N) (aset rate-string 6 ?A))
@@ -518,7 +520,11 @@ recommend using both scores and grouplens predictions together."
       ;; Init rate-string
       (aset rate-string 0 ?|) 
       (aset rate-string 11 ?|)
-      
+      (unless (equal grouplens-prediction-display 'prediction-num)
+	(cond ((< pred 0)
+	       (setq pred 1))
+	      ((> pred 5)
+	       (setq pred 5))))
       ;; If no entry in BBB hash mark rate string as NA and return
       (cond 
        ((null hashent) 
@@ -527,13 +533,13 @@ recommend using both scores and grouplens predictions together."
 	rate-string)
 
        ((equal grouplens-prediction-display 'prediction-spot)
-	(fmt-prediction-spot rate-string pred))
+	(bbb-fmt-prediction-spot rate-string pred))
        
        ((equal grouplens-prediction-display 'confidence-interval)
-	(fmt-confidence-interval pred low high))
+	(bbb-fmt-confidence-interval pred low high))
        
        ((equal grouplens-prediction-display 'prediction-bar)
-	(fmt-prediction-bar rate-string pred))
+	(bbb-fmt-prediction-bar rate-string pred))
 
        ((equal grouplens-prediction-display 'confidence-bar)
 	(format "|   %4.2f   |" pred))
@@ -542,10 +548,10 @@ recommend using both scores and grouplens predictions together."
 	(format "|   %4.2f   |" pred))
        
        ((equal grouplens-prediction-display 'prediction-num)
-	(fmt-prediction-num pred))
+	(bbb-fmt-prediction-num pred))
        
        ((equal grouplens-prediction-display 'confidence-plus-minus)
-	(fmt-confidence-plus-minus pred low high))
+	(bbb-fmt-confidence-plus-minus pred low high))
        
        (t 
 	(gnus-message 3 "Invalid prediction display type")
@@ -553,40 +559,40 @@ recommend using both scores and grouplens predictions together."
 	(aset rate-string 11 ?|)
 	rate-string)))))
 
-(defun grouplens-valid-score (score)
+(defun bbb-valid-score (score)
   (or (equal grouplens-prediction-display 'prediction-num)
       (and (>= score grplens-minrating)
 	   (<= score grplens-maxrating))))
 
-(defun requires-confidence (format-type)
+(defun bbb-requires-confidence (format-type)
   (or (equal format-type 'confidence-plus-minus)
       (equal format-type 'confidence-spot)
       (equal format-type 'confidence-interval)))
 
-(defun have-confidence (clow chigh)
+(defun bbb-have-confidence (clow chigh)
   (not (or (null clow)
 	   (null chigh))))
 
-(defun fmt-prediction-spot (rate-string score)
+(defun bbb-fmt-prediction-spot (rate-string score)
   (aset rate-string
-	(round (* (/ (- score grplens-minrating) rating-range)
+	(round (* (/ (- score grplens-minrating) grplens-rating-range)
 		  (+ (- grplens-predstringsize 4) 1.49)))
 	?*)
   rate-string)
 
-(defun fmt-confidence-interval (score low high)
-  (if (have-confidence low high)
+(defun bbb-fmt-confidence-interval (score low high)
+  (if (bbb-have-confidence low high)
       (format "|%4.2f-%4.2f |" low high)
-    (fmt-prediction-num score)))
+    (bbb-fmt-prediction-num score)))
 
-(defun fmt-confidence-plus-minus (score low high)
-  (if (have-confidence low high)
+(defun bbb-fmt-confidence-plus-minus (score low high)
+  (if (bbb-have-confidence low high)
       (format "|%3.1f+/-%4.2f|" score (/ (- high low) 2.0))
-    (fmt-prediction-num score)))
+    (bbb-fmt-prediction-num score)))
 
-(defun fmt-prediction-bar (rate-string score)
+(defun bbb-fmt-prediction-bar (rate-string score)
   (let* ((i 1) 
-	 (step (/ rating-range (- grplens-predstringsize 4)))
+	 (step (/ grplens-rating-range (- grplens-predstringsize 4)))
 	 (half-step (/ step 2))
 	 (loc (- grplens-minrating half-step)))
     (while (< i (- grplens-predstringsize 2))
@@ -598,7 +604,7 @@ recommend using both scores and grouplens predictions together."
     )
   rate-string)
 
-(defun fmt-prediction-num (score)
+(defun bbb-fmt-prediction-num (score)
   (format "|   %4.2f   |" score))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -643,7 +649,7 @@ recommend using both scores and grouplens predictions together."
 (defun bbb-summary-rate-article (rating &optional midin)
   (interactive "nRating: ")
   (when (member gnus-newsgroup-name grouplens-newsgroups)
-    (let ((mid (or midin (get-current-id))))
+    (let ((mid (or midin (bbb-get-current-id))))
       (if (and rating 
 	       (>= rating grplens-minrating) 
 	       (<= rating grplens-maxrating)
@@ -701,7 +707,7 @@ recommend using both scores and grouplens predictions together."
   (gnus-set-mode-line 'summary))
 
 
-(defun get-current-id ()
+(defun bbb-get-current-id ()
   (if gnus-current-headers
       (aref gnus-current-headers 
 	    (nth 1 (assoc "message-id" gnus-header-index)))
@@ -727,10 +733,10 @@ recommend using both scores and grouplens predictions together."
   (setq grouplens-current-starting-time (current-time)))
 
 (defun grouplens-elapsed-time ()
-  (let ((et (time-float (current-time))))
-    (- et (time-float grouplens-current-starting-time))))
+  (let ((et (bbb-time-float (current-time))))
+    (- et (bbb-time-float grouplens-current-starting-time))))
 
-(defun time-float (timeval)
+(defun bbb-time-float (timeval)
   (+ (* (car timeval) 65536) 
 	(cadr timeval)))
 
@@ -745,13 +751,13 @@ recommend using both scores and grouplens predictions together."
 		  grouplens-rating-alist)
 	  (setcdr oldrating (cons (cadr oldrating) elapsed-time)))))
     (grouplens-start-timer)
-    (setq grouplens-previous-article (get-current-id))))
+    (setq grouplens-previous-article (bbb-get-current-id))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          BUG REPORTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst gnus-gl-version "gnus-gl.el 2.5lars/rrh")
+(defconst gnus-gl-version "gnus-gl.el 2.9")
 (defconst gnus-gl-maintainer-address "grouplens-bug@cs.umn.edu")
 (defun gnus-gl-submit-bug-report ()
   "Submit via mail a bug report on gnus-gl"
@@ -820,13 +826,13 @@ recommend using both scores and grouplens predictions together."
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-grouplens-mode
       (if (not (fboundp 'make-local-hook))
-         (add-hook 'gnus-select-article-hook 'grouplens-do-time)
-       (make-local-hook 'gnus-select-article-hook)
-       (add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local))
+	  (add-hook 'gnus-select-article-hook 'grouplens-do-time)
+	(make-local-hook 'gnus-select-article-hook)
+	(add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local))
       (if (not (fboundp 'make-local-hook))
-         (add-hook 'gnus-exit-group-hook 'bbb-put-ratings)
-       (make-local-hook 'gnus-exit-group-hook)
-       (add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local))
+	  (add-hook 'gnus-exit-group-hook 'bbb-put-ratings)
+	(make-local-hook 'gnus-exit-group-hook)
+	(add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local))
       (make-local-variable 'gnus-score-find-score-files-function)
       (if gnus-grouplens-override-scoring
           (setq gnus-score-find-score-files-function 
@@ -852,3 +858,4 @@ recommend using both scores and grouplens predictions together."
 (provide 'gnus-gl)
 
 ;;; end gnus-gl.el
+

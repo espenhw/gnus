@@ -39,6 +39,7 @@
 (defalias 'gnus-extent-start-open 'ignore)
 (defalias 'gnus-set-text-properties 'set-text-properties)
 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
+(defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")

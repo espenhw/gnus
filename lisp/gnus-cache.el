@@ -356,6 +356,13 @@ Returns the list of articles removed."
 	       (nnheader-replace-chars-in-string group ?. ?/))))
 	  (if (stringp article) article (int-to-string article))))
 
+(defun gnus-cache-update-article (group article)
+  "If ARTICLE is in the cache, remove it and re-enter it."
+  (when (gnus-cache-possibly-remove-article article nil nil nil t)
+    (gnus-cache-possibly-enter-article 
+     gnus-newsgroup-name article (gnus-summary-article-header article)
+     nil nil nil t)))
+
 (defun gnus-cache-possibly-remove-article 
   (article ticked dormant unread &optional force)
   "Possibly remove ARTICLE from the cache."

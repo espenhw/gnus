@@ -478,7 +478,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	(narrow-to-region (car entry) (nth 3 entry))
 	(goto-char (point-min))
 	(when (looking-at " *\\*\\(.*\\)$")
-	  (setq subject (match-string 1)))
+	  (setq subject (match-string 1))
+	  (when (string-match "[ \t]+$" subject)
+	    (setq subject (substring subject 0 (match-beginning 0)))))
 	(when
 	    (let ((case-fold-search nil))
 	      (re-search-forward

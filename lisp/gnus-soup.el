@@ -223,7 +223,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
       ;; Find the "from".
       (goto-char (point-min))
       (setq from
-	    (mail-strip-quoted-names
+	    (gnus-mail-strip-quoted-names
 	     (or (mail-fetch-field "from")
 		 (mail-fetch-field "really-from")
 		 (mail-fetch-field "sender"))))

@@ -154,7 +154,8 @@
 (defun nndraft-request-update-info (group info &optional server)
   (setcar (cddr info) nil)
   (when (nth 3 info)
-    (setcar (nthcdr 3 info) nil)))
+    (setcar (nthcdr 3 info) nil))
+  t)
 
 (defun nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."

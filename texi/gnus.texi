@@ -3876,13 +3876,13 @@ newsreaders won't be gathered properly.  The choice is yours---plague or
 cholera:
 
 @table @code
-@item gnus-summary-gather-threads-by-subject
-@findex gnus-summary-gather-threads-by-subject
+@item gnus-gather-threads-by-subject
+@findex gnus-gather-threads-by-subject
 This function is the default gathering function and looks at
 @code{Subject}s exclusively.
 
-@item gnus-summary-gather-threads-by-references
-@findex gnus-summary-gather-threads-by-references
+@item gnus-gather-threads-by-references
+@findex gnus-gather-threads-by-references
 This function looks at @code{References} headers exclusively.
 @end table
 
@@ -3891,7 +3891,7 @@ something like:
 
 @lisp
 (setq gnus-summary-thread-gathering-function
-      'gnus-summary-gather-threads-by-references)
+      'gnus-gather-threads-by-references)
 @end lisp
 
 @item gnus-summary-make-false-root
@@ -4279,7 +4279,7 @@ increase memory usage some.
 If you set @code{gnus-keep-backlog} to a number @var{n}, Gnus will store
 at most @var{n} old articles in a buffer for later re-fetching.  If this
 variable is non-@code{nil} and is not a number, Gnus will store
-@emph{all} read articles, which means that your Emacs will group without
+@emph{all} read articles, which means that your Emacs will grow without
 bound before exploding and taking your machine down with you.  I put
 that in there just to keep y'all on your toes.  
 

@@ -1,5 +1,100 @@
+Sat Mar  2 11:38:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-vis.el (gnus-article-button-next-page): New function.
+	(gnus-article-button-prev-page): New function.
+	(gnus-insert-next-page-button): Use them.
+	(gnus-article-next-button): Wrong function name.
+
+	* gnus.el (gnus-get-unread-articles-in-group): Also reactivate
+	groups that alter their info.
+	(gnus-summary-next-thread): Would react badly to dummy roots. 
+
+	* nndraft.el (nndraft-request-update-info): Return success. 
+
+	* gnus.el (gnus-set-global-variables): Also copy the summary
+	buffer value.
+
+	* gnus-cite.el (gnus-cited-text-button-line-format): New default.
+	(gnus-article-hide-citation): Would add invisible buttons under
+	XEmacs. 
+
+Fri Mar  1 20:52:28 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-summary-resend-bounced-mail): Use
+ 	`mail-unsent-separator'.
+
+	* gnus.el (gnus-gather-threads-by-references): Change name.
+
+Fri Mar  1 20:25:21 1996  Brad Miller  <bmiller@cs.umn.edu>
+
+	* gnus-gl.el: New version.
+
+Fri Mar  1 20:04:51 1996  Robert Pluim  <pluim@xylint.co.uk>
+
+	* gnus-msg.el (gnus-mail-reply): Would handle Mail-Copies-To
+	`always'. 
+
+Fri Mar  1 08:17:01 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Autoload `gnus-binary-mode'.
+	(gnus-group-prefixed-name): Would append "+" to group methods.
+
+	* gnus-topic.el (gnus-topic-list-active): Use the `force' param.
+
+	* gnus.el (gnus-group-change-level): Would bug out on ranks.
+	(gnus-backlog-request-article): Would choke on Message-IDs.
+	(gnus-group-change-level): Would bug out sometimes.
+	(gnus-configure-frame): Just push newly-created frames on the list
+	of frames to be closed on exit.
+	(gnus-method-equal): New function.
+
+	* nndoc.el (nndoc-generate-clari-briefs-head): Peel off whitespace
+	from the subjects.
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Sorting entries were
+	wrong. 
+
+	* gnus-cache.el (gnus-cache-update-article): New function.
+
+	* gnus.el (gnus-article-prev-page): Put point at first line. 
+	(gnus-article-next-page): Ditto.
+	(gnus-get-unread-articles-in-group): Would bug out on dead
+	groups. 
+	(gnus-summary-edit-article-done): Update cache.
+
+Thu Feb 29 10:50:02 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-xmas.el (gnus-xmas-redefine): Add wrapper to
+	mail-strip-quoted-names.
+	(gnus-xmas-mail-strip-quoted-names): New function.
+
+	* gnus-msg.el (gnus-mail-reply): Use it.
+
+	* gnus-soup.el (gnus-soup-store): Use it.
+
+	* gnus-ems.el: mail-strip-quoted-names -> gnus-mail-strip-quoted-names.
+
+Fri Mar  1 07:12:38 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-read-newsrc-file): Make sure the .newsrc file
+	exists before reading it.
+	(gnus-group-restart): Ask before executing.
+
+Thu Feb 29 18:15:13 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-pick-menu-add,
+ 	gnus-xmas-binary-menu-add, gnus-xmas-tree-menu-add,
+ 	gnus-xmas-grouplens-menu-add): New functions.
+	(gnus-xmas-redefine): Use them.
+
+Thu Feb 29 18:10:05 1996  Brad Miller  <bmiller@cs.umn.edu>
+
+	* gnus-gl.el: New version.
+
 Thu Feb 29 14:28:06 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
 
+	* gnus.el: 0.48 is released.
+	
 	* gnus.el (gnus-read-active-file): Wouldn't work on `some'.
 
 Thu Feb 29 09:15:05 1996  Lars Ingebrigtsen  <lars@eyesore.no>

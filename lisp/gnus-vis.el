@@ -354,12 +354,12 @@ ticked: The number of ticked articles in the group.
 	 ["List active file" gnus-group-list-active t])
 	("Sort"
 	 ["Default sort" gnus-group-sort-groups t]
-	 ["Sort by method" gnus-group-sort-by-method t]
-	 ["Sort by rank" gnus-group-sort-by-rank t]
-	 ["Sort by score" gnus-group-sort-by-score t]
-	 ["Sort by level" gnus-group-sort-by-level t]
-	 ["Sort by unread" gnus-group-sort-by-unread t]
-	 ["Sort by name" gnus-group-sort-by-alphabet t])
+	 ["Sort by method" gnus-group-sort-groups-by-method t]
+	 ["Sort by rank" gnus-group-sort-groups-by-rank t]
+	 ["Sort by score" gnus-group-sort-groups-by-score t]
+	 ["Sort by level" gnus-group-sort-groups-by-level t]
+	 ["Sort by unread" gnus-group-sort-groups-by-unread t]
+	 ["Sort by name" gnus-group-sort-groups-by-alphabet t])
 	("Mark"
 	 ["Mark group" gnus-group-mark-group t]
 	 ["Unmark group" gnus-group-unmark-group t]
@@ -1227,7 +1227,7 @@ If N is negative, move forward instead."
   "Move point to N buttons forward.
 If N is negative, move backward instead."
   (interactive "p")
-  (let ((function (if (< n 0) 'prev-single-property-change
+  (let ((function (if (< n 0) 'previous-single-property-change
 		    'next-single-property-change))
 	(inhibit-point-motion-hooks t)
 	(limit (if (< n 0) (point-min) (point-max))))
@@ -1418,6 +1418,7 @@ specified by `gnus-button-alist'."
    from to
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))
+	  (list 'invisible nil)
 	  (list 'gnus-callback fun)
 	  (and data (list 'gnus-data data)))))
 
@@ -1502,7 +1503,7 @@ specified by `gnus-button-alist'."
     (gnus-eval-format 
      gnus-prev-page-line-format nil
      `(gnus-prev t local-map ,gnus-prev-page-map
-		 gnus-callback gnus-article-prev-page))))
+		 gnus-callback gnus-article-button-prev-page))))
 
 (defvar gnus-next-page-map nil)
 (unless gnus-next-page-map
@@ -1515,7 +1516,24 @@ specified by `gnus-button-alist'."
   (let ((buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
 		      `(gnus-next t local-map ,gnus-next-page-map
-				  gnus-callback gnus-article-prev-page))))
+				  gnus-callback 
+				  gnus-article-button-next-page))))
+
+(defun gnus-article-button-next-page (arg)
+  "Go to the next page."
+  (interactive "P")
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-next-page)
+    (select-window win)))
+
+(defun gnus-article-button-prev-page (arg)
+  "Go to the prev page."
+  (interactive "P")
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-prev-page)
+    (select-window win)))
 
 ;;; Compatibility Functions:
 

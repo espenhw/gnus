@@ -35,7 +35,7 @@
 
 ;;; Customization:
 
-(defvar gnus-cited-text-button-line-format "%(%{[...]%}%)"
+(defvar gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
   "Format of cited text buttons.")
 
 (defvar gnus-cited-lines-visible nil
@@ -325,7 +325,7 @@ always hide."
 	      (setq beg (point))))
 	  (when (and beg end)
 	    (add-text-properties beg end props)
-	    (goto-char beg)
+	    (goto-char (1- beg))
 	    (put-text-property beg end 'gnus-type 'cite)
 	    (gnus-article-add-button
 	     (point)
@@ -337,7 +337,7 @@ always hide."
   (let (buffer-read-only)
     (funcall
      (if (text-property-any
-	  (car region) (cdr region) 
+	  (car region) (1- (cdr region))
 	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
 	 'remove-text-properties 'add-text-properties)
      (car region) (cdr region) gnus-hidden-properties)))

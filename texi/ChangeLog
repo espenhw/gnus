@@ -1,3 +1,7 @@
+Fri Mar  1 20:52:50 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Customizing Threading): Change.
+
 Wed Feb 28 04:54:41 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Slow Terminal Connection): Addition.

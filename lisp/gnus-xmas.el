@@ -255,6 +255,18 @@ call it with the value of the `gnus-data' text property."
   (easy-menu-add gnus-article-article-menu)
   (easy-menu-add gnus-article-treatment-menu))
 
+(defun gnus-xmas-pick-menu-add ()
+  (easy-menu-add gnus-pich-menu))
+
+(defun gnus-xmas-binary-menu-add ()
+  (easy-menu-add gnus-binary-menu))
+
+(defun gnus-xmas-tree-menu-add ()
+  (easy-menu-add gnus-tree-menu))
+
+(defun gnus-xmas-grouplens-menu-add ()
+  (easy-menu-add gnus-grouplens-menu))
+
 (defun gnus-xmas-read-event-char ()
   "Get the next event."
   (let ((event (next-event)))
@@ -397,10 +409,16 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
   (fset 'gnus-appt-select-lowest-window 
 	'gnus-xmas-appt-select-lowest-window)
+  (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
   (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
+
+  (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
+  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
+  (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
+  (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar))
@@ -710,5 +728,11 @@ The buffer is not selected, just returned to the caller."
 	    (after-find-file error (not nowarn)))))
       buf)))
 
+(defun gnus-xmas-mail-strip-quoted-names (address)
+  "Protect mail-strip-quoted-names from NIL input.
+XEmacs compatibility workaround."
+  (if (null address)
+      nil
+    (mail-strip-quoted-names address)))
 
 ;;; gnus-xmas.el ends here

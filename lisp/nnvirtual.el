@@ -375,7 +375,7 @@ virtual group.")
 
 (defun nnvirtual-create-mapping ()
   "Create an article mapping for the current group."
-  (let* (div m marks article list
+  (let* (div m marks list article
 	 (map (sort
 	       (apply 
 		'nconc

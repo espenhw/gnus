@@ -466,13 +466,15 @@ articles in the topic and its subtopics."
       (gnus-delete-line))
     unread))
 
-(defun gnus-topic-grok-active (&optional force)
+(defun gnus-topic-grok-active (&optional force read-active)
   "Parse all active groups and create topic structures for them."
   ;; First we make sure that we have really read the active file. 
   (when (or force
 	    (not gnus-topic-active-alist))
-    (when (or force
-	      (not (member gnus-select-method gnus-have-read-active-file)))
+    (when (and read-active
+	       (or force
+		   (not (member gnus-select-method 
+				gnus-have-read-active-file))))
       (let ((gnus-read-active-file t))
 	(gnus-read-active-file)))
     (let (topology groups alist)
@@ -923,7 +925,7 @@ If UNINDENT, remove an indentation."
   "List all groups that Gnus knows about in a topicsified fashion.
 If FORCE, always re-read the active file."
   (interactive "P")
-  (gnus-topic-grok-active)
+  (gnus-topic-grok-active force)
   (let ((gnus-topic-topology gnus-topic-active-topology)
 	(gnus-topic-alist gnus-topic-active-alist)
 	gnus-killed-list gnus-zombie-list)

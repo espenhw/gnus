@@ -253,7 +253,10 @@ Two predefined functions are available:
    'undefined 'gnus-tree-read-summary-keys gnus-tree-mode-map))
 
 (defun gnus-tree-make-menu-bar ()
-  )
+  (unless (boundp 'gnus-tree-menu)
+    (easy-menu-define
+     gnus-tree-menu gnus-tree-mode-map ""
+     '("Tree"))))
 
 (defun gnus-tree-mode ()
   "Major mode for displaying thread trees."

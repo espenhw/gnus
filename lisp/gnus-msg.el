@@ -481,9 +481,9 @@ header line with the old Message-ID."
   (gnus-summary-select-article t)
   ;; Check whether the user owns the article that is to be superseded. 
   (unless (string-equal
-	   (downcase (mail-strip-quoted-names 
+	   (downcase (gnus-mail-strip-quoted-names 
 		      (mail-header-from gnus-current-headers)))
-	   (downcase (mail-strip-quoted-names (gnus-inews-user-name))))
+	   (downcase (gnus-mail-strip-quoted-names (gnus-inews-user-name))))
     (error "This article is not yours."))
   ;; Get a normal *Post News* buffer.
   (gnus-new-news gnus-newsgroup-name t)
@@ -1035,8 +1035,9 @@ called."
 	  ;; user id with value of its From: field.
 	  (if (not
 	       (string-equal
-		(downcase (mail-strip-quoted-names from))
-		(downcase (mail-strip-quoted-names (gnus-inews-user-name)))))
+		(downcase (gnus-mail-strip-quoted-names from))
+		(downcase (gnus-mail-strip-quoted-names
+			   (gnus-inews-user-name)))))
 	      (progn
 		(ding) (gnus-message 3 "This article is not yours.")
 		nil)
@@ -1882,7 +1883,7 @@ mailer."
 		       (string-match "<[^>]+>" gnus-warning))
 	      (setq message-id (match-string 0 gnus-warning)))
 	    
-	    (setq mctdo (not (equal mct "never")))
+	    (setq mctdo (and mct (not (equal mct "never"))))
 	    (when (and mct (string= (downcase mct) "always"))
 	      (setq mct (or reply-to from)))
 
@@ -1891,8 +1892,8 @@ mailer."
 		      new-cc 
 		      (if (and mctdo
 			       (not (string= 
-				     (mail-strip-quoted-names mct)
-				     (mail-strip-quoted-names
+				     (gnus-mail-strip-quoted-names mct)
+				     (gnus-mail-strip-quoted-names
 				      (or to-address 
 					  (if (and follow-to 
 						   (not (stringp follow-to)))
@@ -1917,7 +1918,7 @@ mailer."
 		  (setq ccalist
 			(mapcar
 			 (lambda (addr)
-			   (cons (mail-strip-quoted-names addr) addr))
+			   (cons (gnus-mail-strip-quoted-names addr) addr))
 			 (nreverse (gnus-mail-parse-comma-list))))
 		  (let ((s ccalist))
 		    (while s
@@ -2591,6 +2592,8 @@ The source file has to be in the Emacs load path."
 ;;; Treatment of rejected articles.
 ;;; Bounced mail.
 
+(defvar mail-unsent-separator)
+
 (defun gnus-summary-resend-bounced-mail (fetch)
   "Re-mail the current message.
 This only makes sense if the current message is a bounce message than
@@ -2599,13 +2602,14 @@ you.
 If FETCH, try to fetch the article that this is a reply to, if indeed
 this is a reply."
   (interactive "P")
+  (require 'rmail)
   (gnus-summary-select-article t)
   ;; Create a mail buffer.
   (gnus-new-empty-mail)
   (erase-buffer)
   (insert-buffer-substring gnus-article-buffer)
   (goto-char (point-min))
-  (or (re-search-forward "--- *Original message.*\n" nil t)
+  (or (re-search-forward mail-unsent-separator nil t)
       (and (search-forward "\n\n" nil t)
 	   (re-search-forward "^Return-Path:.*\n" nil t)))
   ;; We remove everything before the bounced mail.

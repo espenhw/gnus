@@ -15,7 +15,7 @@
 ;;       1) display the icons in its own buffer:
 ;;
 ;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-summary-display-hook 'gnus-group-display-picons t)
+;;          (add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
 ;;          (setq gnus-picons-display-where 'picons)
 ;;
 ;;          Then add the picons buffer to your display configuration:
@@ -37,13 +37,13 @@
 ;;       2) display the icons in the summary buffer
 ;;
 ;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-summary-display-hook 'gnus-group-display-picons t)
+;;          (add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
 ;;          (setq gnus-picons-display-where 'summary)
 ;;
 ;;       3) display the icons in the article buffer
 ;;
 ;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-article-display-hook 'gnus-group-display-picons t)
+;;          (add-hook 'gnus-article-prepare-hook 'gnus-group-display-picons t)
 ;;          (setq gnus-picons-display-where 'article)
 ;;
 ;;
