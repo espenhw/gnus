@@ -1,3 +1,13 @@
+2001-11-01 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* smiley-ems.el (smiley-update-cache): Auto detect file type.
+
+	* message.el (message-forward-rmail-make-body):
+	save-window-excursion.
+	(message-encode-message-body): no error.
+	(message-setup-1): compose-mail send-actions are different from
+	message-send-actions.
+
 2001-11-01  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el: Don't require easy-mmode. Suggested by Katsumi Yamaoka

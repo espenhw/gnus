@@ -57,7 +57,7 @@
     ("\\(:-{\\)\\W" 1 "frown.pbm"))
   "*A list of regexps to map smilies to images.
 The elements are (REGEXP MATCH FILE), where MATCH is the submatch in
-rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
+regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 `smiley-data-directory'."
   :type '(repeat (list regexp
 		       (integer :tag "Regexp match number")
@@ -75,7 +75,9 @@ rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 		   (symbol-value smiley-regexp-alist)
 		 smiley-regexp-alist))
     (let* ((data-directory smiley-data-directory)
-	   (image (find-image (list (list :type 'pbm
+	   (image (find-image (list (list :type 
+					  (image-type-from-file-header 
+					   (nth 2 elt)) 
 					  :file (nth 2 elt)
 					  :ascent 'center)))))
       (if image

@@ -18,6 +18,7 @@
 	       find-image font-create-object gnus-mule-get-coding-system
 	       font-lock-set-defaults
 	       image-size image-type-available-p insert-image
+	       image-type-from-file-header
 	       make-temp-file message-xmas-redefine
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image

@@ -4017,8 +4017,10 @@ than 988 characters long, and if they are not, trim them until they are."
 ;;;     (push '(message-mode (encrypt . mc-encrypt-message)
 ;;; 			 (sign . mc-sign-message))
 ;;; 	  mc-modes-alist))
-  (when actions
-    (setq message-send-actions actions))
+  (dolist (action actions)
+    (condition-case nil
+	(add-to-list 'message-send-actions
+		     `(apply ',(car action) ',(cdr action)))))
   (setq message-reply-buffer replybuffer)
   (goto-char (point-min))
   ;; Insert all the headers.
@@ -4732,7 +4734,8 @@ Optional DIGEST will use digest to forward."
 
 ;;;###autoload
 (defun message-forward-rmail-make-body (forward-buffer)
-  (with-current-buffer forward-buffer
+  (save-window-excursion
+    (set-buffer forward-buffer)
     (let (rmail-enable-mime)
       (rmail-toggle-header 0)))
   (message-forward-make-body forward-buffer))
@@ -5142,9 +5145,10 @@ regexp varstr."
       ;; /usr/bin/mail.
       (unless content-type-p
 	(goto-char (point-min))
-	(re-search-forward "^MIME-Version:")
-	(forward-line 1)
-	(insert "Content-Type: text/plain; charset=us-ascii\n")))))
+	;; For unknown reason, MIME-Version doesn't exist.
+	(when (re-search-forward "^MIME-Version:" nil t)
+	  (forward-line 1)
+	  (insert "Content-Type: text/plain; charset=us-ascii\n"))))))
 
 (defun message-read-from-minibuffer (prompt)
   "Read from the minibuffer while providing abbrev expansion."
