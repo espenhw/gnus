@@ -1,3 +1,73 @@
+Fri Aug 14 21:41:59 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.35 is released.
+
+1998-08-14 00:00:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-srvr.el (gnus-server-scan-server): Error better.
+
+	* nndir.el: Make independent of nnmh.
+	Revert.
+
+	* message.el (message-remove-text-with-property): New function.
+	(message-fix-before-sending): Check for invisible text.
+
+	* gnus.el (load): Create the Gnus buffer even when no splash.
+
+	* gnus-msg.el (gnus-setup-message): Add buffer to list.
+
+	* gnus-win.el (gnus-remove-some-windows): Use new buffer system. 
+	(gnus-delete-windows-in-gnusey-frames): Ditto.
+
+	* gnus.el (gnus-add-buffer): New function.
+
+1998-08-13 23:38:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-xmas.el (gnus-buffer-list): Removed.
+
+	* gnus.el (gnus-buffers): New variable.
+	(gnus-get-buffer-create): New function; used throughout.
+	(gnus-buffers): New function.
+
+	* gnus-msg.el (gnus-configure-posting-styles): Go to eoh
+	reliably. 
+
+	* message.el (message-goto-eoh): New command.
+
+1998-08-13 23:13:53  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-msg.el (gnus-setup-message): use message-setup-hook
+	instead
+	(gnus-configure-posting-styles): new posting-style 'body
+	(gnus-configure-posting-styles): insert headers immediately
+
+1998-08-13 13:05:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-summary-increase-score): Change thread to
+	"r". 
+
+	* gnus-sum.el (gnus-summary-scroll-down): New command and
+	keystroke. 
+
+	* gnus-agent.el (gnus-agent-expire): Check that directories
+	exist. 
+
+1998-08-12 20:56:41  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-cache.el (gnus-uncacheable-groups): doc change
+	(gnus-cacheable-groups): new variable
+	(gnus-cache-possibly-enter-article): use it
+
+1998-08-12 22:30:16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nntp.el (nntp-encode-text): Too much text.
+
+1998-08-12 21:58:50  Matt Pharr  <mmp@Graphics.Stanford.EDU>
+
+	* message.el (message-make-forward-subject-function): New
+	variable. 
+	(message-wash-forwarded-subjects): Ditto.
+
 Wed Aug 12 21:09:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.34 is released.

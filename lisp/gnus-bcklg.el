@@ -41,10 +41,9 @@
   "Return the backlog buffer."
   (or (get-buffer gnus-backlog-buffer)
       (save-excursion
-	(set-buffer (get-buffer-create gnus-backlog-buffer))
+	(set-buffer (gnus-get-buffer-create gnus-backlog-buffer))
 	(buffer-disable-undo (current-buffer))
 	(setq buffer-read-only t)
-	(gnus-add-current-to-buffer-list)
 	(get-buffer gnus-backlog-buffer))))
 
 (defun gnus-backlog-setup ()

@@ -188,7 +188,7 @@ Thank you for your help in stamping out bugs.
 	    (copy-sequence message-header-setup-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
-       (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
+       (add-hook 'message-setup-hook 'gnus-configure-posting-styles)
        (unwind-protect
 	   (progn
 	     ,@forms)
@@ -198,6 +198,7 @@ Thank you for your help in stamping out bugs.
 	      (cons ,group ,article))
 	 (make-local-variable 'gnus-newsgroup-name)
 	 (gnus-run-hooks 'gnus-message-setup-hook))
+       (gnus-add-buffer)
        (gnus-configure-windows ,config t)
        (set-buffer-modified-p nil))))
 
@@ -347,10 +348,8 @@ header line with the old Message-ID."
   ;; this copy is in the buffer gnus-article-copy.
   ;; if ARTICLE-BUFFER is nil, gnus-article-buffer is used
   ;; this buffer should be passed to all mail/news reply/post routines.
-  (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
+  (setq gnus-article-copy (gnus-get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
-  (or (memq gnus-article-copy gnus-buffer-list)
-      (push gnus-article-copy gnus-buffer-list))
   (let ((article-buffer (or article-buffer gnus-article-buffer))
 	end beg contents)
     (if (not (and (get-buffer article-buffer)
@@ -850,7 +849,7 @@ The source file has to be in the Emacs load path."
     (sit-for 0)
     ;; Go through all the files looking for non-default values for variables.
     (save-excursion
-      (set-buffer (get-buffer-create " *gnus bug info*"))
+      (set-buffer (gnus-get-buffer-create " *gnus bug info*"))
       (buffer-disable-undo (current-buffer))
       (while files
 	(erase-buffer)
@@ -1092,6 +1091,7 @@ this is a reply."
 		variable nil)
 	  ;; We find the variable that is to be modified.
 	  (if (and (not (stringp (car attribute)))
+                   (not (eq 'body (car attribute)))
 		   (not (setq variable (cdr (assq (car attribute) 
 						  gnus-posting-style-alist)))))
 	      (message "Couldn't find attribute %s" (car attribute))
@@ -1108,19 +1108,20 @@ this is a reply."
 			((listp value)
 			 (eval value))))
 	    (if variable
-		(progn
-		  ;; This is an ordinary variable.
-		  (make-local-variable variable)
-		  (set variable value-value))
-	      ;; This is a header to be added to the headers when
-	      ;; posting. 
-	      (when value-value
-		(make-local-variable 'message-required-mail-headers)
-		(make-local-variable 'message-required-news-headers)
-		(push (cons (car attribute) value-value) 
-		      message-required-mail-headers)
-		(push (cons (car attribute) value-value) 
-		      message-required-news-headers)))))))))
+		;; This is an ordinary variable.
+		(set (make-local-variable variable) value-value)
+              ;; This is either a body or a header to be inserted in the
+              ;; message
+              (when value-value
+                (let ((attr (car attribute)))
+                  (if (eq 'body attr)
+                      (save-excursion
+                        (goto-char (point-max))
+                        (insert value-value))
+                    (save-excursion
+		      (message-goto-eoh)
+                      (insert (if (stringp attr) attr (symbol-name attr))
+                              ": " value-value "\n"))))))))))))
 
 ;;; Allow redefinition of functions.
 

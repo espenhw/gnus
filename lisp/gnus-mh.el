@@ -64,7 +64,7 @@ Optional argument FOLDER specifies folder name."
 		   (funcall gnus-folder-save-name gnus-newsgroup-name
 			    gnus-current-headers gnus-newsgroup-last-folder)
 		   t))))
-	(errbuf (get-buffer-create " *Gnus rcvstore*"))
+	(errbuf (gnus-get-buffer-create " *Gnus rcvstore*"))
 	;; Find the rcvstore program.
 	(exec-path (if mh-lib (cons mh-lib exec-path) exec-path)))
     (gnus-eval-in-buffer-window gnus-original-article-buffer

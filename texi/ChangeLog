@@ -1,3 +1,20 @@
+1998-08-13 21:17:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Paging the Article): Addition.
+
+1998-08-13 00:13:47  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi (Mail Group Commands): Typo.
+
+1998-08-12 21:28:09  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi (Article Caching): gnus-cacheable-groups.
+	(Newest Features): remove gnus-cacheable-groups.
+
+1998-08-12 22:01:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Forwarding): Addition.
+
 1998-08-11 20:33:53  Justin Zaglio  <justin@caxton.com>
 
 	* gnus.texi (Group Maintenance): Fix.

@@ -228,7 +228,7 @@
   (let ((dir (nnheader-find-etc-directory "gnus"))
 	pixmap file height beg i)
     (save-excursion
-      (switch-to-buffer (get-buffer-create gnus-group-buffer))
+      (switch-to-buffer (gnus-get-buffer-create gnus-group-buffer))
       (let ((buffer-read-only nil))
 	(erase-buffer)
 	(when (and dir

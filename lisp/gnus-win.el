@@ -319,7 +319,7 @@ See the Gnus manual for an explanation of the syntax used.")
 			  (t (cdr (assq type gnus-window-to-buffer))))))
 	(unless buffer
 	  (error "Illegal buffer type: %s" type))
-	(switch-to-buffer (get-buffer-create
+	(switch-to-buffer (gnus-get-buffer-create
 			   (gnus-window-to-buffer-helper buffer)))
 	(when (memq 'frame-focus split)
 	  (setq gnus-window-frame-focus window))
@@ -453,13 +453,7 @@ See the Gnus manual for an explanation of the syntax used.")
 
 (defun gnus-delete-windows-in-gnusey-frames ()
   "Do a `delete-other-windows' in all frames that have Gnus windows."
-  (let ((buffers
-	 (mapcar
-	  (lambda (elem)
-	    (let ((buf (gnus-window-to-buffer-helper (cdr elem))))
-	      (if (not (null buf))
-		  (get-buffer buf))))
-	  gnus-window-to-buffer)))
+  (let ((buffers (gnus-buffers)))
     (mapcar
      (lambda (frame)
        (unless (eq (cdr (assq 'minibuffer
@@ -523,39 +517,22 @@ should have point."
   (nth 1 (window-edges window)))
 
 (defun gnus-remove-some-windows ()
-  (let ((buffers gnus-window-to-buffer)
+  (let ((buffers (gnus-buffers))
 	buf bufs lowest-buf lowest)
     (save-excursion
       ;; Remove windows on all known Gnus buffers.
-      (while buffers
-	(and (setq buf (gnus-window-to-buffer-helper (cdar buffers)))
-	     (get-buffer-window buf)
-	     (progn
-	       (push buf bufs)
-	       (pop-to-buffer buf)
-	       (when (or (not lowest)
-			 (< (gnus-window-top-edge) lowest))
-		 (setq lowest (gnus-window-top-edge))
-		 (setq lowest-buf buf))))
-	(setq buffers (cdr buffers)))
-      ;; Remove windows on *all* summary buffers.
-      (walk-windows
-       (lambda (win)
-	 (let ((buf (window-buffer win)))
-	   (when (string-match	"^\\*\\(Dead \\)?Summary" (buffer-name buf))
-	     (push buf bufs)
-	     (pop-to-buffer buf)
-	     (when (or (not lowest)
-		       (< (gnus-window-top-edge) lowest))
-	       (setq lowest-buf buf)
-	       (setq lowest (gnus-window-top-edge)))))))
+      (while (setq buf (pop buffers))
+	(when (get-buffer-window buf)
+	  (push buf bufs)
+	  (pop-to-buffer buf)
+	  (when (or (not lowest)
+		    (< (gnus-window-top-edge) lowest))
+	    (setq lowest (gnus-window-top-edge)
+		  lowest-buf buf))))
       (when lowest-buf
 	(pop-to-buffer lowest-buf)
 	(switch-to-buffer nntp-server-buffer))
-      (while bufs
-	(when (not (eq (car bufs) lowest-buf))
-	  (delete-windows-on (car bufs)))
-	(setq bufs (cdr bufs))))))
+      (mapcar (lambda (b) (delete-windows-on b t)) bufs))))
 
 (provide 'gnus-win)
 

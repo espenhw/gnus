@@ -1154,7 +1154,7 @@ FUNC will be called with the group name to determine the article number."
 	  (let ((trace (nreverse nnmail-split-trace))
 		(restore (current-buffer)))
 	    (nnheader-set-temp-buffer "*Split Trace*")
-	    (gnus-add-current-to-buffer-list)
+	    (gnus-add-buffer)
 	    (while trace
 	      (insert (car trace) "\n")
 	      (setq trace (cdr trace)))

@@ -406,7 +406,6 @@ Returns the number of articles marked as read."
 		()
 	      (gnus-message 6 "Processing kill file %s..." (car kill-files))
 	      (find-file (car kill-files))
-	      (gnus-add-current-to-buffer-list)
 	      (goto-char (point-min))
 
 	      (if (consp (ignore-errors (read (current-buffer))))
@@ -566,7 +565,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	       (not (consp (cdadr (nth 2 object))))))
       (concat "\n" (gnus-prin1-to-string object))
     (save-excursion
-      (set-buffer (get-buffer-create "*Gnus PP*"))
+      (set-buffer (gnus-get-buffer-create "*Gnus PP*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert (format "\n(%S %S\n  '(" (nth 0 object) (nth 1 object)))

@@ -3693,6 +3693,12 @@ Scroll the current article back one page (@code{gnus-summary-prev-page}).
 Scroll the current article one line forward
 (@code{gnus-summary-scroll-up}).
 
+@item M-RET
+@kindex M-RET (Summary)
+@findex gnus-summary-scroll-down
+Scroll the current article one line backward
+(@code{gnus-summary-scroll-down}).
+
 @item A g
 @itemx g
 @kindex A g (Summary)
@@ -5290,13 +5296,17 @@ to score unwanted articles down and have them marked as read.  They will
 not then be downloaded by this command.
 
 @vindex gnus-uncacheable-groups
-It is likely that you do not want caching on some groups.  For instance,
+@vindex gnus-cacheable-groups
+It is likely that you do not want caching on all groups.  For instance,
 if your @code{nnml} mail is located under your home directory, it makes no
 sense to cache it somewhere else under your home directory.  Unless you
-feel that it's neat to use twice as much space.  To limit the caching,
-you could set the @code{gnus-uncacheable-groups} regexp to
-@samp{^nnml}, for instance.  This variable is @code{nil} by
-default.
+feel that it's neat to use twice as much space.  
+
+To limit the caching, you could set @code{gnus-cacheable-groups} to a
+regexp of groups to cache, @samp{^nntp} for instance, or set the
+@code{gnus-uncacheable-groups} regexp to @samp{^nnml}, for instance.
+Both variables are @code{nil} by default. If a group matches both
+variables, the group is not cached.
 
 @findex gnus-cache-generate-nov-databases
 @findex gnus-cache-generate-active
@@ -7213,7 +7223,7 @@ name, a @code{From} header and a @code{Subject} header.
 @item B r
 @kindex B r (Summary)
 @findex gnus-summary-respool-article
-Respool the mail article (@code{gnus-summary-move-article}).
+Respool the mail article (@code{gnus-summary-respool-article}).
 @code{gnus-summary-respool-default-method} will be used as the default
 select method when respooling.  This variable is @code{nil} by default,
 which means that the current group select method will be used instead.
@@ -8378,9 +8388,10 @@ to @dfn{match}.
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @var{(name . value)} pair.  The attribute name
 can be one of @code{signature}, @code{signature-file},
-@code{organization}, @code{address} or @code{name}.  The attribute name
-can also be a string.  In that case, this will be used as a header name,
-and the value will be inserted in the headers of the article.
+@code{organization}, @code{address}, @code{name} or @code{body}.  The
+attribute name can also be a string.  In that case, this will be used as
+a header name, and the value will be inserted in the headers of the
+article.
 
 The attribute value can be a string (used verbatim), a function (the
 return value will be used), a variable (its value will be used) or a
@@ -8402,6 +8413,7 @@ So here's a new example:
         (posting-from-work-p
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
+         (body "You are fired.\n\nSincerely, your boss.")
          (organization "Important Work, Inc"))
         ("^nn.+:"
          (signature-file "~/.mail-signature"))))
@@ -17611,9 +17623,6 @@ Mac, MS (etc) characters into ISO 8859-1.
 numbers and match on the age of the article.
 
 @item
- gnus-cacheable-groups
-
-@item
 @example
 >  > > If so, I've got one gripe: It seems that when I fire up gnus 5.2.25
 >  > > under xemacs-19.14, it's creating a new frame, but is erasing the
@@ -17779,6 +17788,10 @@ summary buffer for each article.
 
 @item
 Implement gnus-batch-brew-soup.
+
+@item
+Group parameters and summary commands for un/subscribing to mailing
+lists. 
 
 @item
 Solve the halting problem.

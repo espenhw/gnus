@@ -540,7 +540,7 @@ Timezone package is used."
       (progn
 	(set-buffer gnus-work-buffer)
 	(erase-buffer))
-    (set-buffer (get-buffer-create gnus-work-buffer))
+    (set-buffer (gnus-get-buffer-create gnus-work-buffer))
     (kill-all-local-variables)
     (buffer-disable-undo (current-buffer))))
 
@@ -723,7 +723,7 @@ with potentially long computations."
   (setq filename (expand-file-name filename))
   (setq rmail-default-rmail-file filename)
   (let ((artbuf (current-buffer))
-	(tmpbuf (get-buffer-create " *Gnus-output*")))
+	(tmpbuf (gnus-get-buffer-create " *Gnus-output*")))
     (save-excursion
       (or (get-file-buffer filename)
 	  (file-exists-p filename)
@@ -771,7 +771,7 @@ with potentially long computations."
   "Append the current article to a mail file named FILENAME."
   (setq filename (expand-file-name filename))
   (let ((artbuf (current-buffer))
-	(tmpbuf (get-buffer-create " *Gnus-output*")))
+	(tmpbuf (gnus-get-buffer-create " *Gnus-output*")))
     (save-excursion
       ;; Create the file, if it doesn't exist.
       (when (and (not (get-file-buffer filename))

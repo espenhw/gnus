@@ -557,9 +557,8 @@ Two predefined functions are available:
 (defun gnus-get-tree-buffer ()
   "Return the tree buffer properly initialized."
   (save-excursion
-    (set-buffer (get-buffer-create gnus-tree-buffer))
+    (set-buffer (gnus-get-buffer-create gnus-tree-buffer))
     (unless (eq major-mode 'gnus-tree-mode)
-      (gnus-add-current-to-buffer-list)
       (gnus-tree-mode))
     (current-buffer)))
 
@@ -981,11 +980,10 @@ The following commands are available:
     (if (get-buffer buffer)
 	()
       (save-excursion
-	(set-buffer (get-buffer-create buffer))
+	(set-buffer (gnus-get-buffer-create buffer))
 	(gnus-carpal-mode)
 	(setq gnus-carpal-attached-buffer
 	      (intern (format "gnus-%s-buffer" type)))
-	(gnus-add-current-to-buffer-list)
 	(let ((buttons (symbol-value
 			(intern (format "gnus-carpal-%s-buffer-buttons"
 					type))))

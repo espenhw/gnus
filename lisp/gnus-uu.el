@@ -517,8 +517,8 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (gnus-setup-message 'forward
       (setq gnus-uu-digest-from-subject nil)
       (gnus-uu-decode-save n file)
-      (setq buf (switch-to-buffer (get-buffer-create " *gnus-uu-forward*")))
-      (gnus-add-current-to-buffer-list)
+      (setq buf (switch-to-buffer
+		 (gnus-get-buffer-create " *gnus-uu-forward*")))
       (erase-buffer)
       (insert-file file)
       (let ((fs gnus-uu-digest-from-subject))
@@ -834,10 +834,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	      (eq in-state 'first-and-last))
 	  (progn
 	    (setq state (list 'begin))
-	    (save-excursion (set-buffer (get-buffer-create "*gnus-uu-body*"))
+	    (save-excursion (set-buffer (gnus-get-buffer-create "*gnus-uu-body*"))
 			    (erase-buffer))
 	    (save-excursion
-	      (set-buffer (get-buffer-create "*gnus-uu-pre*"))
+	      (set-buffer (gnus-get-buffer-create "*gnus-uu-pre*"))
 	      (erase-buffer)
 	      (insert (format
 		       "Date: %s\nFrom: %s\nSubject: %s Digest\n\nTopics:\n"
@@ -970,7 +970,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	(if (not (re-search-forward gnus-uu-postscript-end-string nil t))
 	    (setq state (list 'wrong-type))
 	  (setq end-char (point))
-	  (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+	  (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
 	  (insert-buffer-substring process-buffer start-char end-char)
 	  (setq file-name (concat gnus-uu-work-dir
 				  (cdr gnus-article-current) ".ps"))
@@ -1025,7 +1025,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   ;; finally just replaces the next to last number with "[0-9]+".
   (let ((count 2))
     (save-excursion
-      (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+      (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert (regexp-quote string))
@@ -1126,7 +1126,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   (let ((out-list string-list)
 	string)
     (save-excursion
-      (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+      (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
       (buffer-disable-undo (current-buffer))
       (while string-list
 	(erase-buffer)
@@ -1419,7 +1419,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 		  (setq gnus-uu-uudecode-process
 			(start-process
 			 "*uudecode*"
-			 (get-buffer-create gnus-uu-output-buffer-name)
+			 (gnus-get-buffer-create gnus-uu-output-buffer-name)
 			 shell-file-name shell-command-switch
 			 (format "cd %s %s uudecode" gnus-uu-work-dir
 				 gnus-shell-command-separator))))
@@ -1485,7 +1485,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	(setq start-char (point))
 	(call-process-region
 	 start-char (point-max) shell-file-name nil
-	 (get-buffer-create gnus-uu-output-buffer-name) nil
+	 (gnus-get-buffer-create gnus-uu-output-buffer-name) nil
 	 shell-command-switch
 	 (concat "cd " gnus-uu-work-dir " "
 		 gnus-shell-command-separator  " sh"))))
@@ -1548,13 +1548,13 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (setq command (format "cd %s ; %s" dir (gnus-uu-command action file-path)))
 
     (save-excursion
-      (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+      (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
       (erase-buffer))
 
     (gnus-message 5 "Unpacking: %s..." (gnus-uu-command action file-path))
 
     (if (= 0 (call-process shell-file-name nil
-			   (get-buffer-create gnus-uu-output-buffer-name)
+			   (gnus-get-buffer-create gnus-uu-output-buffer-name)
 			   nil shell-command-switch command))
 	(message "")
       (gnus-message 2 "Error during unpacking of archive")
@@ -1912,7 +1912,7 @@ If no file has been included, the user will be asked for a file."
     (unwind-protect
 	(if (save-excursion
 	      (set-buffer (setq uubuf
-				(get-buffer-create uuencode-buffer-name)))
+				(gnus-get-buffer-create uuencode-buffer-name)))
 	      (erase-buffer)
 	      (funcall gnus-uu-post-encode-method file-path file-name))
 	    (insert-buffer-substring uubuf)
@@ -1945,7 +1945,7 @@ If no file has been included, the user will be asked for a file."
     (setq end-binary (point-max))
 
     (save-excursion
-      (set-buffer (setq uubuf (get-buffer-create encoded-buffer-name)))
+      (set-buffer (setq uubuf (gnus-get-buffer-create encoded-buffer-name)))
       (erase-buffer)
       (insert-buffer-substring post-buf beg-binary end-binary)
       (goto-char (point-min))
@@ -1977,7 +1977,7 @@ If no file has been included, the user will be asked for a file."
       (setq i 1)
       (setq beg 1)
       (while (not (> i parts))
-	(set-buffer (get-buffer-create send-buffer-name))
+	(set-buffer (gnus-get-buffer-create send-buffer-name))
 	(erase-buffer)
 	(insert header)
 	(when (and threaded gnus-uu-post-message-id)

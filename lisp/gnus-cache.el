@@ -50,11 +50,26 @@
   :group 'gnus-cache
   :type '(set (const ticked) (const dormant) (const unread) (const read)))
 
+(defcustom gnus-cacheable-groups nil
+  "*Groups that match this regexp will be cached.
+
+If you only want to cache your nntp groups, you could set this
+variable to \"^nntp\".
+
+If a group matches both gnus-cacheable-groups and gnus-uncacheable-groups
+it's not cached."
+  :group 'gnus-cache
+  :type '(choice (const :tag "off" nil)
+                regexp))
+
 (defcustom gnus-uncacheable-groups nil
   "*Groups that match this regexp will not be cached.
 
 If you want to avoid caching your nnml groups, you could set this
-variable to \"^nnml\"."
+variable to \"^nnml\".
+
+If a group matches both gnus-cacheable-groups and gnus-uncacheable-groups
+it's not cached."
   :group 'gnus-cache
   :type '(choice (const :tag "off" nil)
 		 regexp))
@@ -139,7 +154,9 @@ variable to \"^nnml\"."
       (when (and number
 		 (> number 0)		; Reffed article.
 		 (or force
-		     (and (or (not gnus-uncacheable-groups)
+                     (and (or (not gnus-cacheable-groups)
+                              (string-match gnus-cacheable-groups group))
+                          (or (not gnus-uncacheable-groups)
 			      (not (string-match
 				    gnus-uncacheable-groups group)))
 			  (gnus-cache-member-of-class
@@ -371,7 +388,7 @@ Returns the list of articles removed."
     (save-excursion
       (setq gnus-cache-buffer
 	    (cons group
-		  (set-buffer (get-buffer-create " *gnus-cache-overview*"))))
+		  (set-buffer (gnus-get-buffer-create " *gnus-cache-overview*"))))
       (buffer-disable-undo (current-buffer))
       ;; Insert the contents of this group's cache overview.
       (erase-buffer)
@@ -459,7 +476,7 @@ Returns the list of articles removed."
       articles)))
 
 (defun gnus-cache-braid-nov (group cached &optional file)
-  (let ((cache-buf (get-buffer-create " *gnus-cache*"))
+  (let ((cache-buf (gnus-get-buffer-create " *gnus-cache*"))
 	beg end)
     (gnus-cache-save-buffers)
     (save-excursion
@@ -491,7 +508,7 @@ Returns the list of articles removed."
     (kill-buffer cache-buf)))
 
 (defun gnus-cache-braid-heads (group cached)
-  (let ((cache-buf (get-buffer-create " *gnus-cache*")))
+  (let ((cache-buf (gnus-get-buffer-create " *gnus-cache*")))
     (save-excursion
       (set-buffer cache-buf)
       (buffer-disable-undo (current-buffer))

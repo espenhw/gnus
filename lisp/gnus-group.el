@@ -816,9 +816,8 @@ The following commands are available:
     (or level gnus-group-default-list-level gnus-level-subscribed))))
 
 (defun gnus-group-setup-buffer ()
-  (set-buffer (get-buffer-create gnus-group-buffer))
+  (set-buffer (gnus-get-buffer-create gnus-group-buffer))
   (unless (eq major-mode 'gnus-group-mode)
-    (gnus-add-current-to-buffer-list)
     (gnus-group-mode)
     (when gnus-carpal
       (gnus-carpal-setup-buffer 'group))))
@@ -3161,16 +3160,13 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   (interactive)
   (gnus-run-hooks 'gnus-suspend-gnus-hook)
   ;; Kill Gnus buffers except for group mode buffer.
-  (let* ((group-buf (get-buffer gnus-group-buffer))
-	 ;; Do this on a separate list in case the user does a ^G before we finish
-	 (gnus-buffer-list
-	  (delete group-buf (delete gnus-dribble-buffer
-				    (append gnus-buffer-list nil)))))
-    (while gnus-buffer-list
-      (gnus-kill-buffer (pop gnus-buffer-list)))
+  (let* ((group-buf (get-buffer gnus-group-buffer)))
+    (apply (lambda (buf)
+	     (unless (equal buf group-buf)
+	       (kill-buffer buf)))
+	   (gnus-buffers))
     (gnus-kill-gnus-frames)
     (when group-buf
-      (setq gnus-buffer-list (list group-buf))
       (bury-buffer group-buf)
       (delete-windows-on group-buf t))))
 

@@ -234,7 +234,7 @@ If this times out we give up and assume that something has died..." )
 (defun bbb-connect-to-bbbd (host port)
   (unless grouplens-bbb-buffer
     (setq grouplens-bbb-buffer
-	  (get-buffer-create (format " *BBBD trace: %s*" host)))
+	  (gnus-get-buffer-create (format " *BBBD trace: %s*" host)))
     (save-excursion
       (set-buffer grouplens-bbb-buffer)
       (make-local-variable 'bbb-read-point)

@@ -505,7 +505,7 @@ used as score."
 	    (?l "lines" nil nil number)
 	    (?d "date" nil nil date)
 	    (?f "followup" nil nil string)
-	    (?h "thread" nil nil string)))
+	    (?r "thread" nil nil string)))
 	 (char-to-type
 	  '((?s s "substring" string)
 	    (?e e "exact string" string)
@@ -671,7 +671,7 @@ used as score."
 (defun gnus-score-insert-help (string alist idx)
   (setq gnus-score-help-winconf (current-window-configuration))
   (save-excursion
-    (set-buffer (get-buffer-create "*Score Help*"))
+    (set-buffer (gnus-get-buffer-create "*Score Help*"))
     (buffer-disable-undo (current-buffer))
     (delete-windows-on (current-buffer))
     (erase-buffer)
@@ -1403,7 +1403,7 @@ SCORE is the score to add."
 			  gnus-scores-articles))))
 
 	  (save-excursion
-	    (set-buffer (get-buffer-create "*Headers*"))
+	    (set-buffer (gnus-get-buffer-create "*Headers*"))
 	    (buffer-disable-undo (current-buffer))
 	    (when (gnus-buffer-live-p gnus-summary-buffer)
 	      (message-clone-locals gnus-summary-buffer))
@@ -2289,7 +2289,6 @@ SCORE is the score to add."
 	   1 "No score rules apply to the current article (default score %d)."
 	   gnus-summary-default-score)
 	(set-buffer "*Score Trace*")
-	(gnus-add-current-to-buffer-list)
 	(while trace
 	  (insert (format "%S  ->  %s\n" (cdar trace)
 			  (if (caar trace)
@@ -2335,7 +2334,6 @@ SCORE is the score to add."
       (while rules
 	(insert (format "%-5d: %s\n" (caar rules) (cdar rules)))
 	(pop rules))
-      (gnus-add-current-to-buffer-list)
       (goto-char (point-min))
       (gnus-configure-windows 'score-words))))
 
@@ -2506,7 +2504,7 @@ GROUP using BNews sys file syntax."
 	 (trans (cdr (assq ?: nnheader-file-name-translation-alist)))
 	 ofiles not-match regexp)
     (save-excursion
-      (set-buffer (get-buffer-create "*gnus score files*"))
+      (set-buffer (gnus-get-buffer-create "*gnus score files*"))
       (buffer-disable-undo (current-buffer))
       ;; Go through all score file names and create regexp with them
       ;; as the source.

@@ -133,7 +133,7 @@ If N is nil and any articles have been marked with the process mark,
 move those articles instead."
   (interactive "P")
   (let* ((articles (gnus-summary-work-articles n))
-	 (tmp-buf (get-buffer-create "*soup work*"))
+	 (tmp-buf (gnus-get-buffer-create "*soup work*"))
 	 (area (gnus-soup-area gnus-newsgroup-name))
 	 (prefix (gnus-soup-area-prefix area))
 	 headers)
@@ -512,7 +512,7 @@ Return whether the unpacking was successful."
 				 ".MSG"))
 	       (msg-buf (and (file-exists-p msg-file)
 			     (nnheader-find-file-noselect msg-file)))
-	       (tmp-buf (get-buffer-create " *soup send*"))
+	       (tmp-buf (gnus-get-buffer-create " *soup send*"))
 	       beg end)
 	  (cond
 	   ((/= (gnus-soup-encoding-format

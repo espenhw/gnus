@@ -400,7 +400,7 @@ server there that you can connect to.  See also
     (if (re-search-forward "\n\\.\r?\n" nil t)
 	t
       nil))
-   ;; A result that startx with a 3xx or 4xx code is terminated
+   ;; A result that starts with a 3xx or 4xx code is terminated
    ;; by a newline.
    ((looking-at "[34]")
     (if (search-forward "\n" nil t)
@@ -585,7 +585,7 @@ server there that you can connect to.  See also
 	   (nnheader-message 6 "NNTP: Receiving articles...done"))
       
       ;; Now we have all the responses.  We go through the results,
-      ;; washes it and copies it over to the server buffer.
+      ;; wash it and copy it over to the server buffer.
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (setq last-point (point-min))
@@ -1001,10 +1001,7 @@ password contained in '~/.nntp-authinfo'."
     (while (not (eobp))
       (end-of-line)
       (delete-char 1)
-      (insert nntp-end-of-line))
-    (forward-char -1)
-    (unless (eq (char-after (1- (point))) ?\r)
-      (insert "\r"))))
+      (insert nntp-end-of-line))))
 
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
   (set-buffer nntp-server-buffer)

@@ -90,7 +90,6 @@ asynchronously.	 The compressed face will be piped to this command."
 (defvar gnus-active-hashtb)
 (defvar gnus-article-buffer)
 (defvar gnus-auto-center-summary)
-(defvar gnus-buffer-list)
 (defvar gnus-current-headers)
 (defvar gnus-level-killed)
 (defvar gnus-level-zombie)

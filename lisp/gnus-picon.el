@@ -184,7 +184,7 @@ arguments necessary for the job.")
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
-  (let ((buf (get-buffer-create (gnus-window-to-buffer-helper
+  (let ((buf (gnus-get-buffer-create (gnus-window-to-buffer-helper
 				 (cdr 
 				  (assq variable gnus-window-to-buffer))))))
     (and buf
@@ -211,10 +211,9 @@ arguments necessary for the job.")
     (save-excursion
       (if (get-buffer name)
 	  (set-buffer name)
-	(set-buffer (get-buffer-create name))
+	(set-buffer (gnus-get-buffer-create name))
 	(buffer-disable-undo)
 	(setq buffer-read-only t)
-	(gnus-add-current-to-buffer-list)
 	(add-hook 'gnus-summary-prepare-exit-hook 'gnus-picons-kill-buffer))
       (current-buffer))))
 

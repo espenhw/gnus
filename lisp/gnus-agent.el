@@ -107,7 +107,7 @@ If nil, only read articles will be expired."
   (gnus-agent-read-servers)
   (gnus-category-read)
   (setq gnus-agent-overview-buffer
-	(get-buffer-create " *Gnus agent overview*"))
+	(gnus-get-buffer-create " *Gnus agent overview*"))
   (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   (add-hook 'gnus-summary-mode-hook 'gnus-agent-mode)
   (add-hook 'gnus-server-mode-hook 'gnus-agent-mode))
@@ -573,7 +573,7 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-open-history ()
   (save-excursion
     (push (cons (gnus-agent-method)
-		(set-buffer (get-buffer-create
+		(set-buffer (gnus-get-buffer-create
 			     (format " *Gnus agent %s history*"
 				     (gnus-agent-method)))))
 	  gnus-agent-history-buffers)
@@ -715,7 +715,7 @@ the actual number of articles toggled is returned."
 	      gnus-agent-group-alist))
       (setcdr alist (cons (cons (cdar crosses) t) (cdr alist)))
       (save-excursion
-	(set-buffer (get-buffer-create (format " *Gnus agent overview %s*"
+	(set-buffer (gnus-get-buffer-create (format " *Gnus agent overview %s*"
 					       group)))
 	(when (= (point-max) (point-min))
 	  (push (cons group (current-buffer)) gnus-agent-buffer-alist)
@@ -1053,8 +1053,7 @@ The following commands are available:
 (defun gnus-category-setup-buffer ()
   (unless (get-buffer gnus-category-buffer)
     (save-excursion
-      (set-buffer (get-buffer-create gnus-category-buffer))
-      (gnus-add-current-to-buffer-list)
+      (set-buffer (gnus-get-buffer-create gnus-category-buffer))
       (gnus-category-mode))))
 
 (defun gnus-category-prepare ()
@@ -1262,7 +1261,7 @@ The following commands are available:
 	history overview file histories elem art nov-file low info
 	unreads marked article)
     (save-excursion
-      (setq overview (get-buffer-create " *expire overview*"))
+      (setq overview (gnus-get-buffer-create " *expire overview*"))
       (while (setq gnus-command-method (pop methods))
 	(let ((expiry-hashtb (gnus-make-hashtable 1023)))
 	(gnus-agent-open-history)
@@ -1338,6 +1337,7 @@ The following commands are available:
 		   (delete-file file))
 		 ;; Schedule the history line for nuking.
 		 (push (cdr elem) histories)))
+	     (gnus-make-directory (file-name-directory nov-file))
 	     (write-region (point-min) (point-max) nov-file nil 'silent)
 	     ;; Delete the unwanted entries in the alist.
 	     (setq gnus-agent-article-alist

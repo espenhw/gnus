@@ -195,7 +195,7 @@ The following commands are available:
   "Initialize the server buffer."
   (unless (get-buffer gnus-server-buffer)
     (save-excursion
-      (set-buffer (get-buffer-create gnus-server-buffer))
+      (set-buffer (gnus-get-buffer-create gnus-server-buffer))
       (gnus-server-mode)
       (when gnus-carpal
 	(gnus-carpal-setup-buffer 'server)))))
@@ -466,9 +466,12 @@ The following commands are available:
 (defun gnus-server-scan-server (server)
   "Request a scan from the current server."
   (interactive (list (gnus-server-server-name)))
-  (gnus-message 3 "Scanning %s...done" server)
-  (gnus-request-scan nil (gnus-server-to-method server))
-  (gnus-message 3 "Scanning %s...done" server))
+  (let ((method (gnus-server-to-method server)))
+    (if (not (gnus-get-function method 'request-scan))
+	(error "Server %s can't scan" (car method))
+      (gnus-message 3 "Scanning %s..." server)
+      (gnus-request-scan nil method)
+      (gnus-message 3 "Scanning %s...done" server))))
 
 (defun gnus-server-read-server (server)
   "Browse a server."
@@ -568,8 +571,7 @@ The following commands are available:
        1 "Couldn't request list: %s" (gnus-status-message method))
       nil)
      (t
-      (get-buffer-create gnus-browse-buffer)
-      (gnus-add-current-to-buffer-list)
+      (gnus-get-buffer-create gnus-browse-buffer)
       (when gnus-carpal
 	(gnus-carpal-setup-buffer 'browse))
       (gnus-configure-windows 'browse)

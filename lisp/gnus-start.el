@@ -586,6 +586,7 @@ the first newsgroup."
 (defvar gnus-newsgroup-unreads)
 (defvar nnoo-state-alist)
 (defvar gnus-current-select-method)
+
 (defun gnus-clear-system ()
   "Clear all variables and buffers."
   ;; Clear Gnus variables.
@@ -629,8 +630,9 @@ the first newsgroup."
     (kill-buffer (get-file-buffer (gnus-newsgroup-kill-file nil))))
   (gnus-kill-buffer nntp-server-buffer)
   ;; Kill Gnus buffers.
-  (while gnus-buffer-list
-    (gnus-kill-buffer (pop gnus-buffer-list)))
+  (let ((buffers (gnus-buffers)))
+    (when buffers
+      (mapcar 'kill-buffer buffers)))
   ;; Remove Gnus frames.
   (gnus-kill-gnus-frames))
 
@@ -780,9 +782,8 @@ prompt the user for the name of an NNTP server to use."
   (let ((dribble-file (gnus-dribble-file-name)))
     (save-excursion
       (set-buffer (setq gnus-dribble-buffer
-			(get-buffer-create
+			(gnus-get-buffer-create
 			 (file-name-nondirectory dribble-file))))
-      (gnus-add-current-to-buffer-list)
       (erase-buffer)
       (setq buffer-file-name dribble-file)
       (auto-save-mode t)
@@ -2267,13 +2268,12 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (gnus-gnus-to-newsrc-format)
 	    (gnus-message 8 "Saving %s...done" gnus-current-startup-file))
 	  ;; Save .newsrc.eld.
-	  (set-buffer (get-buffer-create " *Gnus-newsrc*"))
+	  (set-buffer (gnus-get-buffer-create " *Gnus-newsrc*"))
 	  (make-local-variable 'version-control)
 	  (setq version-control 'never)
 	  (setq buffer-file-name
 		(concat gnus-current-startup-file ".eld"))
 	  (setq default-directory (file-name-directory buffer-file-name))
-	  (gnus-add-current-to-buffer-list)
 	  (buffer-disable-undo (current-buffer))
 	  (erase-buffer)
 	  (gnus-message 5 "Saving %s.eld..." gnus-current-startup-file)
@@ -2415,7 +2415,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	()				; There are no slave files to read.
       (gnus-message 7 "Reading slave newsrcs...")
       (save-excursion
-	(set-buffer (get-buffer-create " *gnus slave*"))
+	(set-buffer (gnus-get-buffer-create " *gnus slave*"))
 	(buffer-disable-undo (current-buffer))
 	(setq slave-files
 	      (sort (mapcar (lambda (file)
