@@ -8,6 +8,21 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** The new variable `gnus-parameters' can be used to set group parameters.
+
+Earlier this was done only via `G p' (or `G c'), which stored the
+parameters in ~/.newsrc.eld, but via this variable you can enjoy the
+powers of customize, and simplified backups since you set the variable
+in ~/.emacs instead of ~/.newsrc.eld.  The variable maps regular
+expressions matching group names to group parameters, a'la:
+
+     (setq gnus-parameters
+           '(("mail\\..*"
+              (gnus-show-threads nil)
+              (gnus-use-scoring nil))
+             ("^nnimap:\\(foo.bar\\)$"
+              (to-group . "\\1"))))
+
 ** Smileys (":-)", ";-)" etc) are now iconized for Emacs too.
 
 Put (setq gnus-treat-display-smileys nil) in ~/.emacs to disable it.
