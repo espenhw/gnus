@@ -1,5 +1,8 @@
 2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-user-mail-address): Check whether
+	user-mail-address looks valid.
+
 	* gnus-msg.el (gnus-mailing-list-followup-to): New function.
 
 	* gnus-util.el (gnus-fetch-original-field): New function.

@@ -4481,7 +4481,8 @@ give as trustworthy answer as possible."
 
 (defun message-user-mail-address ()
   "Return the pertinent part of `user-mail-address'."
-  (when user-mail-address
+  (when (and user-mail-address
+	     (string-match "@.*\\." user-mail-address))
     (if (string-match " " user-mail-address)
 	(nth 1 (mail-extract-address-components user-mail-address))
       user-mail-address)))
