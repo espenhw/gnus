@@ -1933,6 +1933,14 @@ determines the number of articles Gnus will fetch.  If @var{N} is
 positive, Gnus fetches the @var{N} newest articles, if @var{N} is
 negative, Gnus fetches the @code{abs(@var{N})} oldest articles.
 
+Thus, @kbd{SPC} enters the group normally, @kbd{C-u SPC} offers old
+articles, @kbd{C-u 4 2 SPC} fetches the 42 newest articles, and @kbd{C-u
+- 4 2 SPC} fetches the 42 oldest ones.
+
+When you are in the group (in the Summary buffer), you can type
+@kbd{M-g} to fetch new articles, or @kbd{C-u M-g} to also show the old
+ones.
+
 @item RET
 @kindex RET (Group)
 @findex gnus-group-select-group

@@ -1,3 +1,10 @@
+2000-12-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Selecting a Group): Explain in more detail, what a
+	prefix arg means for SPC.  Refer people to M-g command from
+	summary buffer.  Kudos to Paul Repacholi <prep@prep.synonet.com>
+	and Dan Jacobson <jidanni@kimo.com.tw> for suggesting this.
+
 2000-12-29 21:43:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Spelling): New.
