@@ -1,3 +1,8 @@
+2003-06-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Fancy Mail Splitting): Explain some entries in
+	nnmail-split-abbrev-alist.
+
 2003-05-17  Adrian Aichner  <adrian@xemacs.org>
 
 	* emacs-mime.texi (Charset Translation): Ruthless typo fixing.

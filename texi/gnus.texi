@@ -13904,11 +13904,22 @@ field names or words.  In other words, all @var{value}'s are wrapped in
 @samp{\<} and @samp{\>} pairs.
 
 @vindex nnmail-split-abbrev-alist
-@var{field} and @var{value} can also be Lisp symbols, in that case they
-are expanded as specified by the variable
-@code{nnmail-split-abbrev-alist}.  This is an alist of cons cells, where
-the @code{car} of a cell contains the key, and the @code{cdr} contains the associated
-value.
+@var{field} and @var{value} can also be Lisp symbols, in that case
+they are expanded as specified by the variable
+@code{nnmail-split-abbrev-alist}.  This is an alist of cons cells,
+where the @code{car} of a cell contains the key, and the @code{cdr}
+contains the associated value.  Predefined entries in
+@code{nnmail-split-abbrev-alist} include:
+
+@table @code
+@item from
+Matches the @samp{From}, @samp{Sender} and @samp{Resent-From} fields.
+@item to
+Matches the @samp{To}, @samp{Cc}, @samp{Apparently-To},
+@samp{Resent-To} and @samp{Resent-Cc} fields.
+@item any
+Is the union of the @code{from} and @code{to} entries.
+@end table
 
 @vindex nnmail-split-fancy-syntax-table
 @code{nnmail-split-fancy-syntax-table} is the syntax table in effect
