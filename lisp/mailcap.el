@@ -40,11 +40,7 @@
   "A syntax table for parsing sgml attributes.")
 
 (defvar mailcap-mime-data
-  '(("multipart"
-     (".*"
-      ("viewer" . mailcap-save-binary-file)
-      ("type"   . "multipart/*")))
-    ("application"
+  '(("application"
      ("x-x509-ca-cert"
       ("viewer" . ssl-view-site-cert)
       ("test" . (fboundp 'ssl-view-site-cert))
@@ -121,7 +117,7 @@
       ("viewer" . "maplay %s")
       ("type"   . "audio/x-mpeg"))
      (".*"
-      ("viewer" . mailcap-play-sound-file)
+      ("viewer" . mm-play-sound-file)
       ("test"   . (or (featurep 'nas-sound)
 		      (featurep 'native-sound)))
       ("type"   . "audio/*"))
@@ -189,7 +185,7 @@
       ("test"   . (fboundp 'enriched-decode-region))
       ("type"   . "text/enriched"))
      ("html"
-      ("viewer" . w3-prepare-buffer)
+      ("viewer" . mm-w3-prepare-buffer)
       ("test"   . (fboundp 'w3-prepare-buffer))
       ("type"   . "text/html")))
     ("video"
@@ -270,20 +266,11 @@ not.")
       (expand-file-name fname mailcap-temporary-directory))))
 
 (defun mailcap-save-binary-file ()
-  ;; Ok, this is truly fucked.  In XEmacs, if you use the mouse to select
-  ;; a URL that gets saved via this function, read-file-name will pop up a
-  ;; dialog box for file selection.  For some reason which buffer we are in
-  ;; gets royally screwed (even with save-excursions and the whole nine
-  ;; yards).  SO, we just keep the old buffer name around and away we go.
-  (let ((old-buff (current-buffer))
-	(file (read-file-name "Filename to save as: "
-			      (or mailcap-download-directory "~/")
-			      (file-name-nondirectory (url-view-url t))
-			      nil
-			      (file-name-nondirectory (url-view-url t))))
+  (let ((file (read-file-name
+	       "Filename to save as: "
+	       (or mailcap-download-directory "~/")))
 	(require-final-newline nil))
-    (set-buffer old-buff)
-    (mule-write-region-no-coding-system (point-min) (point-max) file)
+    (write-region (point-min) (point-max) file)
     (kill-buffer (current-buffer))))
 
 (defun mailcap-maybe-eval ()
@@ -644,7 +631,7 @@ this type is returned."
 		 passed)
 	(setq viewer (car passed)))
       (cond
-       ((and (null viewer) (not (equal major "default")))
+       ((and (null viewer) (not (equal major "default")) request)
 	(mailcap-mime-info "default" request))
        ((or (null request) (equal request ""))
 	(mailcap-unescape-mime-test (cdr (assoc "viewer" viewer)) info))

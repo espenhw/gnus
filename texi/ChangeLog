@@ -3,6 +3,7 @@
 	* gnus.texi (Group Score Commands): Fix.
 	(Saving Articles): Fix.
 	(Agent Expiry): Fix.
+	(Using MIME): Change.
 
 1998-09-10 03:19:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -1,3 +1,21 @@
+Fri Sep 11 18:23:34 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.27 is released.
+
+1998-09-11 12:42:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-alternative-precedence): New variable.
+	(mm-preferred-alternative): New function.
+
+	* gnus-art.el (gnus-mime-copy-part): New command.
+
+	* mm-decode.el (mm-get-part): New function.
+
+	* mm-view.el: New file.
+
+	* mm-decode.el (mm-dissect-buffer): Downcase cte.
+	(mm-display-part): Default to mailcap-save-binary-file.
+
 Fri Sep 11 12:32:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.26 is released.

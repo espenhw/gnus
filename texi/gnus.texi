@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.26 Manual
+@settitle Pterodactyl Gnus 0.27 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.26 Manual
+@title Pterodactyl Gnus 0.27 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.26.
+This manual corresponds to Pterodactyl Gnus 0.27.
 
 @end ifinfo
 
@@ -7929,40 +7929,57 @@ while all newsreaders die of fear.
 of the characters, and it also makes it possible to embed pictures and
 other naughty stuff in innocent-looking articles.
 
-@vindex gnus-show-mime
-@vindex gnus-show-mime-method
-@vindex gnus-strict-mime
-@findex metamail-buffer
-Gnus handles @sc{mime} by pushing the articles through
-@code{gnus-show-mime-method}, which is @code{metamail-buffer} by
-default.  This function calls the external @code{metamail} program to
-actually do the work.  One common problem with this program is that is
-thinks that it can't display 8-bit things in the Emacs buffer.  To tell
-it the truth, put something like the following in your
-@file{.bash_profile} file.  (You do use @code{bash}, don't you?)
+@vindex gnus-display-mime-function
+@findex gnus-display-mime
+Gnus pushes @sc{mime} articles through @code{gnus-display-mime-function} 
+to display the @sc{mime} parts.  This is @code{gnus-display-mime} by
+default, which creates a bundle of clickable buttons that can be used to 
+display, save and manipulate the @sc{mime} objects.  
 
-@example
-export MM_CHARSET="iso-8859-1"
-@end example
+The following commands are available when you have placed point over a
+@sc{mime} button:
 
-For more information on @code{metamail}, see its manual page.
+@table @kbd
+@findex gnus-article-press-button
+@item RET (Article)
+@itemx BUTTON-2 (Article)
+Toggle displaying of the @sc{mime} object
+(@code{gnus-article-press-button}).
 
-Set @code{gnus-show-mime} to @code{t} if you want to use
-@sc{mime} all the time.  However, if @code{gnus-strict-mime} is
-non-@code{nil}, the @sc{mime} method will only be used if there are
-@sc{mime} headers in the article.  If you have @code{gnus-show-mime}
-set, then you'll see some unfortunate display glitches in the article
-buffer.  These can't be avoided.
+@findex gnus-mime-view-part
+@item M-RET (Article)
+@itemx v (Article)
+Prompt for a method, and then view the @sc{mime} object using this
+method (@code{gnus-mime-view-part}).
 
-It might be best to just use the toggling functions from the summary
-buffer to avoid getting nasty surprises. (For instance, you enter the
+@findex gnus-mime-save-part
+@item o (Article)
+Prompt for a file name, and then save the @sc{mime} object
+(@code{gnus-mime-save-part}).
+
+@findex gnus-mime-copy-part
+@item c (Article)
+Copy the @sc{mime} object to a fresh buffer and display this buffer
+(@code{gnus-mime-copy-part}).
+
+@findex gnus-mime-pipe-part
+@item | (Article)
+Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
+@end table
+
+Gnus will display some @sc{mime} objects automatically.  The way Gnus
+determines which parts to do this with is described in the Emacs MIME
+manual.  
+
+It might be best to just use the toggling functions from the article
+buffer to avoid getting nasty surprises.  (For instance, you enter the
 group @samp{alt.sing-a-long} and, before you know it, @sc{mime} has
 decoded the sound file in the article and some horrible sing-a-long song
-comes screaming out your speakers, and you can't find the volume
-button, because there isn't one, and people are starting to look at you,
-and you try to stop the program, but you can't, and you can't find the
-program to control the volume, and everybody else in the room suddenly
-decides to look at you disdainfully, and you'll feel rather stupid.)
+comes screaming out your speakers, and you can't find the volume button,
+because there isn't one, and people are starting to look at you, and you
+try to stop the program, but you can't, and you can't find the program
+to control the volume, and everybody else in the room suddenly decides
+to look at you disdainfully, and you'll feel rather stupid.)
 
 Any similarity to real events and people is purely coincidental.  Ahem.
 

@@ -51,7 +51,10 @@
     ("text/.*" . inline)))
 
 (defvar mm-user-automatic-display
-  '("text/plain" "image/gif"))
+  '("text/plain" "text/html" "image/gif"))
+
+(defvar mm-alternative-precedence '("text/plain" "text/html")
+  "List that describes the precedence of alternative parts.")
 
 (defvar mm-tmp-directory "/tmp/"
   "Where mm will store its temporary files.")
@@ -71,7 +74,8 @@
 		       (mail-fetch-field "mime-version"))
 		   (setq ct (mail-fetch-field "content-type")))
 	  (setq ctl (drums-parse-content-type ct))
-	  (setq cte (mail-fetch-field "content-transfer-encoding"))))
+	  (setq cte
+		(mail-fetch-field "content-transfer-encoding"))))
       (when ctl
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
@@ -80,8 +84,12 @@
 	 ((equal type "multipart")
 	  (mm-dissect-multipart ctl))
 	 (t
-	  (mm-dissect-singlepart ctl (and cte (intern cte))
-				 no-strict-mime)))))))
+	  (mm-dissect-singlepart
+	   ctl
+	   (and cte (intern (downcase (drums-remove-whitespace
+				       (drums-remove-comments
+					cte)))))
+	   no-strict-mime)))))))
 
 (defun mm-dissect-singlepart (ctl cte &optional force)
   (when (or force
@@ -136,7 +144,8 @@
 	    (progn
 	      (forward-line 1)
 	      (mm-display-inline handle))
-	  (mm-display-external handle (or user-method method)))))))
+	  (mm-display-external
+	   handle (or user-method method 'mailcap-save-binary-file)))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
@@ -162,25 +171,27 @@
 (defun mm-remove-part (handle)
   "Remove the displayed MIME part represented by HANDLE."
   (let ((object (nth 3 handle)))
-    (cond
-     ;; Internally displayed part.
-     ((mm-annotationp object)
-      (delete-annotation object))
-     ((or (functionp object)
-	  (and (listp object)
-	       (eq (car object) 'lambda)))
-      (funcall object))
-     ;; Externally displayed part.
-     ((consp object)
-      (condition-case ()
-	  (delete-file (car object))
-	(error nil))
-      (condition-case ()
-	  (kill-process (cdr object))
-	(error nil)))
-     ((bufferp object)
-      (when (buffer-live-p object)
-	(kill-buffer object))))
+    (condition-case ()
+	(cond
+	 ;; Internally displayed part.
+	 ((mm-annotationp object)
+	  (delete-annotation object))
+	 ((or (functionp object)
+	      (and (listp object)
+		   (eq (car object) 'lambda)))
+	  (funcall object))
+	 ;; Externally displayed part.
+	 ((consp object)
+	  (condition-case ()
+	      (delete-file (car object))
+	    (error nil))
+	  (condition-case ()
+	      (kill-process (cdr object))
+	    (error nil)))
+	 ((bufferp object)
+	  (when (buffer-live-p object)
+	    (kill-buffer object))))
+      (error nil))
     (setcar (nthcdr 3 handle) nil)))
 
 (defun mm-display-inline (handle)
@@ -247,52 +258,15 @@ This overrides entries in the mailcap file."
       (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
 
 ;;;
-;;; Functions for displaying various formats inline
-;;;
-
-(defun mm-inline-image (handle)
-  (let ((type (cadr (split-string (caadr handle) "/")))
-	image)
-    (mm-with-unibyte-buffer
-      (insert-buffer-substring (car handle))
-      (mm-decode-content-transfer-encoding (nth 2 handle))
-      (setq image (make-image-specifier
-		   (vector (intern type) :data (buffer-string)))))
-    (let ((annot (make-annotation image nil 'text)))
-      (set-extent-property annot 'mm t)
-      (set-extent-property annot 'duplicable t)
-      (setcar (nthcdr 3 handle) annot))))
-
-(defun mm-inline-text (handle)
-  (let ((type (cadr (split-string (caadr handle) "/")))
-	text buffer-read-only)
-    (mm-with-unibyte-buffer
-      (insert-buffer-substring (car handle))
-      (mm-decode-content-transfer-encoding (nth 2 handle))
-      (setq text (buffer-string)))
-    (cond
-     ((equal type "plain")
-      (let ((b (point)))
-	(insert text)
-	(save-restriction
-	  (narrow-to-region b (point))
-	  (let ((charset (drums-content-type-get (nth 1 handle) 'charset)))
-	    (when charset
-	      (mm-decode-body charset nil)))
-	  (setcar
-	   (nthcdr 3 handle)
-	   `(lambda ()
-	      (let (buffer-read-only)
-		(delete-region ,(set-marker (make-marker) (point-min))
-			       ,(set-marker (make-marker) (point-max)))))))))
-     )))
-
-(defun mm-inline-audio (handle)
-  (message "Not implemented"))
-
-;;;
 ;;; Functions for outputting parts
 ;;;
+
+(defun mm-get-part (handle)
+  "Return the contents of HANDLE as a string."
+  (mm-with-unibyte-buffer
+    (insert-buffer-substring (car handle))
+    (mm-decode-content-transfer-encoding (nth 2 handle))
+    (buffer-string)))
 
 (defun mm-save-part (handle)
   "Write HANDLE to a file."
@@ -325,6 +299,22 @@ This overrides entries in the mailcap file."
 		  (mailcap-mime-info type 'all)))
 	 (method (completing-read "Viewer: " methods)))
     (mm-display-external (copy-sequence handle) method)))
+
+(defun mm-preferred-alternative (handles &optional preferred)
+  "Say which of HANDLES are preferred."
+  (let ((prec (if preferred (list preferred) mm-alternative-precedence))
+	p h result type)
+    (while (setq p (pop prec))
+      (setq h handles)
+      (while h
+	(setq type (car (nth 1 (car h))))
+	(when (and (equal p type)
+		   (mm-automatic-display-p type))
+	  (setq result (car h)
+		h nil
+		prec nil))
+	(pop h)))
+    result))
 
 (provide 'mm-decode)
 
