@@ -69,8 +69,7 @@
 (defvar spam-use-whitelist nil
   "True if the whitelist should be used.")
 
-(defvar spam-use-blackholes nil
-  ;; FIXME!  Turned off for now.  The DNS routines are said to be flaky.
+(defvar spam-use-blackholes t
   "True if blackholes should be used.")
 
 (defvar spam-use-bogofilter nil

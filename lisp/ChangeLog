@@ -4,7 +4,7 @@
 	through dig.el
 	(spam-check-blackholes): added dig.el checking functionality and
 	more verbose reporting; query-dig is autoloaded from dig.el
-	
+	(spam-use-blackholes): enabled by default
 
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
