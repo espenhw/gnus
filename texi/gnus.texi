@@ -19729,6 +19729,11 @@ The adaptive score entries will be put into a file where the name is the
 group name with @code{gnus-adaptive-file-suffix} appended.  The default
 is @file{ADAPT}.
 
+@vindex gnus-adaptive-pretty-print
+Adaptive score files can get huge and are not meant to be edited by
+human hands.  If @code{gnus-adaptive-pretty-print} is @code{nil} (the
+deafult) those files will not be written in a human readable way.
+
 @vindex gnus-score-exact-adapt-limit
 When doing adaptive scoring, substring or fuzzy matching would probably
 give you the best results in most cases.  However, if the header one
