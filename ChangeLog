@@ -1,3 +1,7 @@
+2003-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* etc/gnus/gnus.xpm (oort): Make the color replaceable.
+
 2002-12-05  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* etc/smilies/*.pbm: Made them binary.
