@@ -6317,17 +6317,19 @@ With arg, turn line truncation on if arg is positive."
 	  (> (prefix-numeric-value arg) 0)))
   (redraw-display))
 
-(defun gnus-summary-find-uncancelled ()
-  "Return the number of an uncancelled article.
+(defun gnus-summary-find-for-reselect ()
+  "Return the number of an article to stay on across a reselect.
 The current article is considered, then following articles, then previous
-articles.  If all articles are cancelled then return a dummy 0."
+articles.  An article is sought which is not cancelled and isn't a temporary
+insertion from another group.  If there's no such then return a dummy 0."
   (let (found)
     (dolist (rev '(nil t))
       (unless found      ; don't demand the reverse list if we don't need it
         (let ((data (gnus-data-find-list
                      (gnus-summary-article-number) (gnus-data-list rev))))
           (while (and data (not found))
-            (if (not (eq gnus-canceled-mark (gnus-data-mark (car data))))
+            (if (and (< 0 (gnus-data-number (car data)))
+                     (not (eq gnus-canceled-mark (gnus-data-mark (car data)))))
                 (setq found (gnus-data-number (car data))))
             (setq data (cdr data))))))
     (or found 0)))
@@ -6338,7 +6340,7 @@ The prefix argument ALL means to select all articles."
   (interactive "P")
   (when (gnus-ephemeral-group-p gnus-newsgroup-name)
     (error "Ephemeral groups can't be reselected"))
-  (let ((current-subject (gnus-summary-find-uncancelled))
+  (let ((current-subject (gnus-summary-find-for-reselect))
 	(group gnus-newsgroup-name))
     (setq gnus-newsgroup-begin nil)
     (gnus-summary-exit)

@@ -1,3 +1,9 @@
+2003-03-26  Kevin Ryde <user42@zip.com.au>
+
+	* gnus-sum.el (gnus-summary-find-for-reselect): Renamed from
+	gnus-summary-find-uncancelled, skip temporary articles inserted by
+	"refer" functions.
+	
 2003-03-26  Vasily Korytov  <deskpot@myrealbox.com>
 
 	* smiley.el (smiley-buffer): New function.
