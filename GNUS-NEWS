@@ -1,2 +1,5 @@
 ** Gnus changes.
 
+*** gnus-auto-select-first can now be a function to be
+called to position point.
+

@@ -2473,8 +2473,8 @@ SCORE is the score to add."
 	seen out file)
     (while (setq file (pop files))
       (cond
-       ;; Ignore "." and "..".
-       ((member (file-name-nondirectory file) '("." ".."))
+       ;; Ignore files that start with a dot.
+       ((string-match "^\\." (file-name-nondirectory file))
 	nil)
        ;; Add subtrees of directory to also be searched.
        ((and (file-directory-p file)

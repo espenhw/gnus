@@ -426,7 +426,7 @@
     (save-excursion
       (set-buffer (setq nnmbox-mbox-buffer
 			(nnheader-find-file-noselect
-			 nnmbox-mbox-file nil 'raw)))
+			 nnmbox-mbox-file nil t)))
       (mm-enable-multibyte)
       (buffer-disable-undo)))
   (when (not nnmbox-group-alist)
@@ -514,7 +514,7 @@
 	    start end number)
 	(set-buffer (setq nnmbox-mbox-buffer
 			  (nnheader-find-file-noselect
-			   nnmbox-mbox-file nil 'raw)))
+			   nnmbox-mbox-file nil t)))
 	(mm-enable-multibyte)
 	(buffer-disable-undo)
 

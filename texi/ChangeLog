@@ -1,3 +1,12 @@
+1998-10-01 07:55:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Splitting Mail): Fix.
+	(Washing Mail): Fix.
+
+1998-09-30 05:54:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Selecting a Group): Addition.
+
 1998-09-13 08:58:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dir (File): Updated.

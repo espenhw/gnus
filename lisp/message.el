@@ -1022,7 +1022,9 @@ The cdr of ech entry is a function for applying the face to a region.")
   (let* ((inhibit-point-motion-hooks t)
 	 (value (mail-fetch-field header nil (not not-all))))
     (when value
-      (nnheader-replace-chars-in-string value ?\n ? ))))
+      (while (string-match "\n[\t ]+" value)
+	(setq value (replace-match " " t t value)))
+      value)))
 
 (defun message-narrow-to-field ()
   "Narrow the buffer to the header on the current line."
@@ -2002,7 +2004,7 @@ the user from the mailer."
   (message-check 'invisible-text
     (when (text-property-any (point-min) (point-max) 'invisible t)
       (put-text-property (point-min) (point-max) 'invisible nil)
-      (unless (yes-or-no-p "Invisible text found and made visible; continue posting?")
+      (unless (yes-or-no-p "Invisible text found and made visible; continue posting? ")
 	(error "Invisible text found and made visible")))))
 
 (defun message-add-action (action &rest types)

@@ -130,7 +130,7 @@
   `(((6) parse-time-weekdays)
     ((3) (1 31))
     ((4) parse-time-months)
-    ((5) (1970 2038))
+    ((5) (100 4038))
     ((2 1 0)
      ,#'(lambda () (and (stringp elt)
 			(= (length elt) 8)
@@ -167,7 +167,8 @@
 			(= (length elt) 7)
 			(= (aref elt 1) ?:)))
      [0 1] [2 4] [5 7])
-    ((5) (70 99) ,#'(lambda () (+ 1900 elt))))
+    ((5) (50 99) ,#'(lambda () (+ 1900 elt)))
+    ((5) (0 49) ,#'(lambda () (+ 2000 elt))))
   "(slots predicate extractor...)")
 
 (defun parse-time-string (string)

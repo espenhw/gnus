@@ -731,7 +731,7 @@ all.  This may very well take some time.")
     (let ((dirs (directory-files dir t nil t))
 	  dir)
       (while (setq dir (pop dirs))
-	(when (and (not (member (file-name-nondirectory dir) '("." "..")))
+	(when (and (not (string-match "^\\." (file-name-nondirectory dir)))
 		   (file-directory-p dir))
 	  (nnml-generate-nov-databases-1 dir seen))))
     ;; Do this directory.

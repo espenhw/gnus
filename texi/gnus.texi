@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.33 Manual
+@settitle Pterodactyl Gnus 0.34 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.33 Manual
+@title Pterodactyl Gnus 0.34 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.33.
+This manual corresponds to Pterodactyl Gnus 0.34.
 
 @end ifinfo
 
@@ -1495,7 +1495,25 @@ Select the first unread article when entering the group.
 @item best
 Select the highest scored article in the group when entering the
 group.
+
 @end table
+
+This variable can also be a function.  In that case, that function will
+be called to place point on a subject line, and/or select some article.
+Useful functions include:
+
+@table @code
+@item gnus-summary-first-unread-subject
+Place point on the subject line of the first unread article, but
+don't select the article.
+
+@item gnus-summary-first-unread-article
+Select the first unread article.
+
+@item gnus-summary-best-unread-article
+Select the highest-scored unread article.
+@end table
+
 
 If you want to prevent automatic selection in some group (say, in a
 binary group with Huge articles) you can set this variable to @code{nil}
@@ -3245,7 +3263,12 @@ variable as a function for getting the name and address parts of a
 fast, and too simplistic solution; and
 @code{mail-extract-address-components}, which works very nicely, but is
 slower.  The default function will return the wrong answer in 5% of the
-cases.  If this is unacceptable to you, use the other function instead.
+cases.  If this is unacceptable to you, use the other function instead:
+
+@lisp
+(setq gnus-extract-address-components
+      'mail-extract-address-components)
+@end lisp
 
 @vindex gnus-summary-same-subject
 @code{gnus-summary-same-subject} is a string indicating that the current
@@ -4175,7 +4198,7 @@ You can set a bookmark in the current article.  Say you are reading a
 long thesis on cats' urinary tracts, and have to go home for dinner
 before you've finished reading the thesis.  You can then set a bookmark
 in the article, and Gnus will jump to this bookmark the next time it
-encounters the article.  @xref{Setting Marks}
+encounters the article.  @xref{Setting Marks}.
 
 @item
 @vindex gnus-replied-mark
@@ -4186,7 +4209,7 @@ answered) will be marked with an @samp{A} in the second column
 @item
 @vindex gnus-cached-mark
 Articles stored in the article cache will be marked with an @samp{*} in
-the second column (@code{gnus-cached-mark}).  @xref{Article Caching}
+the second column (@code{gnus-cached-mark}).  @xref{Article Caching}.
 
 @item
 @vindex gnus-saved-mark
@@ -4243,7 +4266,7 @@ article as unread.
 @kindex M t (Summary)
 @findex gnus-summary-tick-article-forward
 Tick the current article (@code{gnus-summary-tick-article-forward}).
-@xref{Article Caching}
+@xref{Article Caching}.
 
 @item M ?
 @itemx ?
@@ -4251,7 +4274,7 @@ Tick the current article (@code{gnus-summary-tick-article-forward}).
 @kindex M ? (Summary)
 @findex gnus-summary-mark-as-dormant
 Mark the current article as dormant
-(@code{gnus-summary-mark-as-dormant}).  @xref{Article Caching}
+(@code{gnus-summary-mark-as-dormant}).  @xref{Article Caching}.
 
 @item M d
 @itemx d
@@ -6513,7 +6536,7 @@ last.
 @kindex W b (Summary)
 @findex gnus-article-add-buttons
 Add clickable buttons to the article (@code{gnus-article-add-buttons}).
-@xref{Article Buttons}
+@xref{Article Buttons}.
 
 @item W B
 @kindex W B (Summary)
@@ -6802,6 +6825,11 @@ prefix, which will prompt for the charset to decode as.  In regional
 groups where people post using some common encoding (but do not include
 MIME headers), you can set the @code{charset} group/topic parameter to
 the required charset (@pxref{Group Parameters}).
+
+@item W M v
+@kindex W M v (Summary)
+View all the @sc{mime} parts in the current article
+(@code{gnus-mime-view-all-parts}). 
 
 @end table
 
@@ -9521,7 +9549,7 @@ contain @samp{\\1} forms, like the ones used by @code{replace-match} to
 insert sub-expressions from the matched text.  For instance:
 
 @lisp
-("list.\\1" "From:.*\\(.*\\)-list@@majordomo.com")
+("list.\\1" "From:.* \\(.*\\)-list@@majordomo.com")
 @end lisp
 
 The second element can also be a function.  In that case, it will be
@@ -9639,11 +9667,6 @@ When a mail backend reads a spool file, mail is first moved to this
 file, which is @file{~/.gnus-crash-box} by default.  If this file
 already exists, it will always be read (and incorporated) before any
 other spool files.
-
-@vindex nnmail-prepare-incoming-hook
-@item nnmail-prepare-incoming-hook
-This is run in a buffer that holds all the new incoming mail, and can be
-used for, well, anything, really.
 
 @vindex nnmail-split-hook
 @item nnmail-split-hook
@@ -10129,7 +10152,8 @@ various functions that can be put in these hooks.
 @item nnmail-prepare-incoming-hook
 @vindex nnmail-prepare-incoming-hook
 This hook is called before doing anything with the mail and is meant for
-grand, sweeping gestures.  Functions to be used include:
+grand, sweeping gestures.  It is called in a buffer that contains all
+the new, incoming mail.  Functions to be used include:
 
 @table @code
 @item nnheader-ms-strip-cr
@@ -11485,6 +11509,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Variables::        Customizing is fun.
 * Example Setup::          An example @file{.gnus.el} file for offline people.
 * Batching Agents::        How to fetch news from a @code{cron} job.
+* Agent Caveats::          What you think it'll do and what it does.
 @end menu
 
 
@@ -11547,7 +11572,7 @@ Agent (@pxref{Server Agent Commands}).  This will typically be only the
 primary select method, which is listed on the bottom in the buffer.
 
 @item
-Decide on download policy.  @xref{Agent Categories}
+Decide on download policy.  @xref{Agent Categories}.
 
 @item
 Uhm... that's it.
@@ -11753,7 +11778,6 @@ if it's to be specific to that group.
 In both of these places the @code{download score rule} can take one of
 three forms:
 
-@table @code
 @enumerate
 @item 
 Score rule
@@ -11849,7 +11873,6 @@ Group Parameter specification
 @end lisp
 @end itemize
 @end enumerate
-@end table
  
 @node The Category Buffer
 @subsubsection The Category Buffer
@@ -12001,7 +12024,7 @@ Fetch all eligible articles in all groups
 @kindex J S (Agent Group)
 @findex gnus-group-send-drafts
 Send all sendable messages in the draft group
-(@code{gnus-agent-fetch-session}).  @xref{Drafts}
+(@code{gnus-agent-fetch-session}).  @xref{Drafts}.
 
 @item J a
 @kindex J a (Agent Group)
@@ -12182,6 +12205,29 @@ following shell script will do everything that is necessary:
 emacs -batch -l ~/.emacs -f gnus-agent-batch >/dev/null
 @end example
 
+
+@node Agent Caveats
+@subsection Agent Caveats
+
+The Gnus Agent doesn't seem to work like most other offline
+newsreaders.  Here are some common questions that some imaginary people
+may ask:
+
+@table @dfn
+@item If I read an article while plugged, do they get entered into the
+Agent?
+
+@strong{No.}
+
+@item If I read an article while plugged, and the article already exists
+in the Agent, will it get downloaded once more?
+
+@strong{Yes.}
+
+@end table
+
+In short, when Gnus is unplugged, it only looks into the locally stored
+articles; when it's plugged, it only talks to your ISP.
 
 
 @node Scoring
@@ -18148,6 +18194,10 @@ like.
 
 @item
 Bouncing articles should do MIME.
+
+@item
+Crossposted articles should "inherit" the % or @ mark from the other
+groups it has been crossposted to, or something.  (Agent.)
 
 @item
 Solve the halting problem.

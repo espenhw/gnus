@@ -206,7 +206,8 @@ See also `with-temp-file' and `with-output-to-string'."
 	       (get-buffer-create (generate-new-buffer-name " *temp*")))
 	 (unwind-protect
 	     (with-current-buffer ,temp-buffer
-	       ,@forms)
+	       (let (buffer-file-coding-system)
+		 ,@forms))
 	   (and (buffer-name ,temp-buffer)
 		(kill-buffer ,temp-buffer))
 	   (setq-default enable-multibyte-characters ,multibyte))))))

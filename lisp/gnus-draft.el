@@ -135,13 +135,15 @@
 	(message-remove-header gnus-agent-meta-information-header)))
     ;; Then we send it.  If we have no meta-information, we just send
     ;; it and let Message figure out how.
-    (when (if type
-	      (let ((message-this-is-news (eq type 'news))
-		    (message-this-is-mail (eq type 'mail))
-		    (gnus-post-method method)
-		    (message-post-method method))
-		(message-send-and-exit))
-	    (message-send-and-exit))
+    (when (and (or (gnus-server-opened method)
+		   (gnus-open-server method))
+	       (if type
+		   (let ((message-this-is-news (eq type 'news))
+			 (message-this-is-mail (eq type 'mail))
+			 (gnus-post-method method)
+			 (message-post-method method))
+		     (message-send-and-exit))
+		 (message-send-and-exit)))
       (let ((gnus-verbose-backends nil))
 	(gnus-request-expire-articles
 	 (list article) (or group "nndraft:queue") t)))))

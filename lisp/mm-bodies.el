@@ -30,6 +30,7 @@
 (require 'mm-util)
 (require 'rfc2047)
 (require 'qp)
+(require 'uudecode)
 
 (defun mm-encode-body ()
   "Encode a body.
@@ -93,18 +94,27 @@ If no encoding was done, nil is returned."
 ;;; Functions for decoding
 ;;;
 
-(defun mm-decode-content-transfer-encoding (encoding)
+(defun mm-decode-content-transfer-encoding (encoding &optional type)
   (cond
    ((eq encoding 'quoted-printable)
     (quoted-printable-decode-region (point-min) (point-max)))
    ((eq encoding 'base64)
-    (condition-case ()
-	(base64-decode-region (point-min) (point-max))
-      (error nil)))
+    (prog1
+	(condition-case ()
+	    (base64-decode-region (point-min) (point-max))
+	  (error nil))
+      (when (equal type "text/plain")
+	(goto-char (point-min))
+	(while (search-forward "\r\n" nil t)
+	  (replace-match "\n" t t)))))
    ((memq encoding '(7bit 8bit binary))
     )
    ((null encoding)
     )
+   ((eq encoding 'x-uuencode)
+    (condition-case ()
+	(uu-decode-region (point-min) (point-max))
+      (error nil)))
    (t
     (error "Can't decode encoding %s" encoding))))
 

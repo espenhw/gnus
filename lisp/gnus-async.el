@@ -213,11 +213,13 @@ It should return non-nil if the article is to be prefetched."
        (when arg
 	 (gnus-async-set-buffer)
 	 (gnus-async-with-semaphore
-	  (push (list ',(intern (format "%s-%d" group article)
-				gnus-asynch-obarray)
-		      ,mark (set-marker (make-marker) (point-max))
-		      ,group ,article)
-		gnus-async-article-alist)))
+	  (setq
+	   gnus-async-article-alist
+	   (cons (list ',(intern (format "%s-%d" group article)
+				 gnus-asynch-obarray)
+		       ,mark (set-marker (make-marker) (point-max))
+		       ,group ,article)
+		 gnus-async-article-alist))))
        (if (not (gnus-buffer-live-p ,summary))
 	   (gnus-async-with-semaphore
 	    (setq gnus-async-fetch-list nil))

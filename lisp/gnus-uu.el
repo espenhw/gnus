@@ -834,8 +834,9 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	      (eq in-state 'first-and-last))
 	  (progn
 	    (setq state (list 'begin))
-	    (save-excursion (set-buffer (gnus-get-buffer-create "*gnus-uu-body*"))
-			    (erase-buffer))
+	    (save-excursion
+	      (set-buffer (gnus-get-buffer-create "*gnus-uu-body*"))
+	      (erase-buffer))
 	    (save-excursion
 	      (set-buffer (gnus-get-buffer-create "*gnus-uu-pre*"))
 	      (erase-buffer)

@@ -568,7 +568,7 @@
 	    start end number)
 	(set-buffer (setq nnbabyl-mbox-buffer
 			  (nnheader-find-file-noselect
-			   nnbabyl-mbox-file nil 'raw)))
+			   nnbabyl-mbox-file nil t)))
 	;; Save previous buffer mode.
 	(setq nnbabyl-previous-buffer-mode
 	      (cons (cons (point-min) (point-max))

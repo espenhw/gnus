@@ -40,6 +40,7 @@
     ("text/enriched" mm-inline-text t)
     ("text/richtext" mm-inline-text t)
     ("text/html" mm-inline-text (featurep 'w3))
+    ("message/delivery-status" mm-inline-text t)
     ("audio/wav" mm-inline-audio
      (and (or (featurep 'nas-sound) (featurep 'native-sound))
 	  (device-sound-enabled-p)))
@@ -177,6 +178,10 @@
       (insert-buffer-substring obuf beg)
       (current-buffer))))
 
+(defun mm-inlinable-part-p (type)
+  "Say whether TYPE can be displayed inline."
+  (eq (mm-user-method type) 'inline))
+
 (defun mm-display-part (handle &optional no-default)
   "Display the MIME part represented by HANDLE."
   (save-excursion
@@ -200,7 +205,8 @@
   "Display HANDLE using METHOD."
   (mm-with-unibyte-buffer
     (insert-buffer-substring (mm-handle-buffer handle))
-    (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+    (mm-decode-content-transfer-encoding
+     (mm-handle-encoding handle) (car (mm-handle-type handle)))
     (if (functionp method)
 	(let ((cur (current-buffer)))
 	  (switch-to-buffer (generate-new-buffer "*mm*"))
@@ -220,7 +226,8 @@
 	(make-directory dir)
 	(set-file-modes dir 448)
 	(if filename
-	    (setq file (expand-file-name (or filename "mm.") dir))
+	    (setq file (expand-file-name (file-name-nondirectory filename)
+					 dir))
 	  (setq file (make-temp-name (expand-file-name "mm." dir))))
 	(write-region (point-min) (point-max)
 		      file nil 'nomesg nil 'no-conversion)
@@ -228,10 +235,13 @@
 	      (if needsterm
 		  (start-process "*display*" nil
 				 "xterm"
-				 "-e" (format method file))
+				 "-e" shell-file-name "-c"
+				 (format method
+					 (mm-quote-arg file)))
 		(start-process "*display*" (generate-new-buffer "*mm*")
 			       shell-file-name
-			       "-c" (format method file))))
+			       "-c" (format method
+					    (mm-quote-arg file)))))
 	(mm-handle-set-undisplayer handle (cons file process))
 	(message "Displaying %s..." (format method file))))))
 
@@ -318,7 +328,7 @@ This overrides entries in the mailcap file."
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)
     ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[!`\"$\\& \t{}]" arg pos))
+    (while (setq new-pos (string-match "[!`\"$\\& \t{} ]" arg pos))
       (push (substring arg pos new-pos) accum)
       (push "\\" accum)
       (push (list (aref arg new-pos)) accum)
@@ -335,7 +345,9 @@ This overrides entries in the mailcap file."
   "Return the contents of HANDLE as a string."
   (mm-with-unibyte-buffer
     (insert-buffer-substring (mm-handle-buffer handle))
-    (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+    (mm-decode-content-transfer-encoding
+     (mm-handle-encoding handle)
+     (car (mm-handle-type handle)))
     (buffer-string)))
 
 (defvar mm-default-directory nil)
@@ -356,7 +368,9 @@ This overrides entries in the mailcap file."
     (setq mm-default-directory (file-name-directory file))
     (mm-with-unibyte-buffer
       (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+      (mm-decode-content-transfer-encoding
+       (mm-handle-encoding handle)
+       (car (mm-handle-type handle)))
       (when (or (not (file-exists-p file))
 		(yes-or-no-p (format "File %s already exists; overwrite? "
 				     file)))
@@ -369,7 +383,9 @@ This overrides entries in the mailcap file."
 	  (read-string "Shell command on MIME part: " mm-last-shell-command)))
     (mm-with-unibyte-buffer
       (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+      (mm-decode-content-transfer-encoding
+       (mm-handle-encoding handle)
+       (car (mm-handle-type handle)))
       (shell-command-on-region (point-min) (point-max) command nil))))
 
 (defun mm-interactively-view-part (handle)

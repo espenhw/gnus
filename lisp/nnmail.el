@@ -487,11 +487,12 @@ parameter.  It should return nil, `warn' or `delete'."
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."
   (set-buffer nntp-server-buffer)
-  (erase-buffer)
+  (delete-region (point-min) (point-max))
   (let ((format-alist nil)
         (after-insert-file-functions nil))
     (condition-case ()
 	(let ((coding-system-for-read nnmail-file-coding-system)
+	      (auto-mode-alist (nnheader-auto-mode-alist))
 	      (pathname-coding-system nnmail-file-coding-system))
 	  (insert-file-contents file)
 	  t)
@@ -1094,8 +1095,7 @@ FUNC will be called with the group name to determine the article number."
 		       ;; group twice.
 		       (not (assoc (car method) group-art)))
 		  (push (cons (if regrepp
-				  (replace-match
-				   (car method) nil nil (car method))
+				  (nnmail-expand-newtext (car method))
 				(car method))
 			      (funcall func (car method)))
 			group-art))

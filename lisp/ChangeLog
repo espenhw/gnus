@@ -1,3 +1,130 @@
+Sun Oct 11 02:28:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.34 is released.
+
+1998-10-11 02:15:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-media-tests): delivery-status.
+
+	* mm-view.el (mm-inline-text): Provide default.
+
+1998-10-11 01:01:37  Lloyd Zusman  <ljz@asfast.com>
+
+	* mailcap.el (mailcap-possible-viewers): Fix nils.
+
+1998-10-11 00:03:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-edit-exit): Don't do updates.
+	(article-update-date-lapsed): Record the buffer.
+	(article-update-date-lapsed): Do all windows that display article
+	buffers. 
+
+	* nnml.el (nnml-generate-nov-databases-1): Ditto.
+
+	* gnus-score.el (gnus-score-score-files-1): Ignore dotted files. 
+
+	* gnus-art.el (gnus-insert-mime-button): Mark buttons as
+	annoations. 
+
+	* gnus-msg.el (gnus-summary-mail-forward): Decode properly.
+
+1998-10-10 22:07:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-category-add): Change default category to
+	'false. 
+
+	* nnvirtual.el (nnvirtual-update-read-and-marked): Don't nix out
+	scores. 
+
+	* gnus-draft.el (gnus-draft-send): Check server more.
+
+	* gnus-art.el (gnus-article-view-part): New command and keystroke.
+	(gnus-article-goto-part): New function.
+
+	* mm-view.el (mm-inline-text): Insert richtext properly.
+
+	* gnus-art.el (gnus-insert-mime-button): Store handle in alist. 
+
+1998-10-03 15:04:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* parse-time.el (parse-time-rules): Accept dates far into the past
+	and the future, and parse single-digit numbers as years.
+
+1998-10-02 04:46:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-display-external): Chop off directories.
+
+1998-10-01 07:33:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* uudecode.el (uu-decode-region-external): Use
+	insert-file-contents-literally. 
+
+	* gnus-cache.el (gnus-cache-generate-active): Translate _ to :.
+
+1998-10-01 07:02:11  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* uudecode.el: New file.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Do
+	x-uuencode. 
+
+1998-10-01 05:19:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-alternative): Set faces.
+
+	* message.el (message-fetch-field): Unfold properly.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Replace CRLF
+	in text/plain.
+
+1998-09-30 05:47:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-first-unread-subject): New command.
+	(gnus-auto-select-first): Removed.
+	(gnus-auto-select-first): Extended.
+	(gnus-summary-read-group-1): Use new value.
+
+1998-09-29 13:21:06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-fix-before-sending): Space.
+
+	* nnmail.el (nnmail-find-file): Don't erase.
+
+Wed Sep 30 23:49:03 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Do not decode headers.
+
+Wed Sep 30 23:46:29 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-soup.el (gnus-soup-add-article): Do not decode headers.
+
+Wed Sep 30 23:44:08 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-soup.el (gnus-soup-pack-packet): Pack only if necesary.
+
+Sat Sep 26 03:04:18 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte-buffer): Make it work in XEmacs
+ 	20.4.
+
+1998-09-29 11:35:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-view-all-parts): New command and
+	keystroke. 
+
+	* mm-decode.el (mm-display-external): Translate slashes.
+
+	* nnmail.el (nnmail-find-file): Restrict auto-mode-alist.
+
+	* nndraft.el (nndraft-retrieve-headers): Don't copy so much. 
+
+	* mm-decode.el (mm-quote-arg): Quote spaces.
+	(mm-display-external): Quote args.
+
+1998-09-24 22:27:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inlinable-part-p): New function.
+
 Thu Sep 24 20:28:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.33 is released.

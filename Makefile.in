@@ -41,7 +41,7 @@ distclean:
 	make clean
 	rm -rf *~
 	for i in lisp texi; do (cd $$i; make distclean); done
-	rm -f config.log config.status Makefile
+	rm -f config.log config.status config.cache Makefile
 
 osome:
 	make EMACS=xemacs21 some

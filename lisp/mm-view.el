@@ -36,7 +36,9 @@
 	buffer-read-only image)
     (mm-with-unibyte-buffer
       (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+      (mm-decode-content-transfer-encoding
+       (mm-handle-encoding handle)
+       (car (mm-handle-type handle)))
       (setq image (make-image-specifier
 		   (vector (intern type) :data (buffer-string)))))
     (let ((annot (make-annotation image nil 'text)))
@@ -52,7 +54,9 @@
      ((equal type "plain")
       (with-temp-buffer
 	(insert-buffer-substring (mm-handle-buffer handle))
-	(mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+	(mm-decode-content-transfer-encoding
+	 (mm-handle-encoding handle)
+	 (car (mm-handle-type handle)))
 	(setq text (buffer-string)))
       (let ((b (point)))
 	(insert text)
@@ -74,7 +78,9 @@
 	(w3-do-setup)
 	(mm-with-unibyte-buffer
 	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+	  (mm-decode-content-transfer-encoding
+	   (mm-handle-encoding handle)
+	   (car (mm-handle-type handle)))
 	  (require 'url)
 	  (save-window-excursion
 	    (w3-region (point-min) (point-max))
@@ -85,12 +91,22 @@
       (save-excursion
 	(mm-with-unibyte-buffer
 	  (insert-buffer-substring (mm-handle-buffer handle))
-	  (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
+	  (mm-decode-content-transfer-encoding
+	   (mm-handle-encoding handle)
+	   (car (mm-handle-type handle)))
 	  (save-window-excursion
 	    (enriched-decode (point-min) (point-max))
-	    (setq text (buffer-string))))
-	(mm-insert-inline handle text)))
-     )))
+	    (setq text (buffer-string)))))
+      (mm-insert-inline handle text))
+     (t
+      (save-excursion
+	(mm-with-unibyte-buffer
+	  (insert-buffer-substring (mm-handle-buffer handle))
+	  (mm-decode-content-transfer-encoding
+	   (mm-handle-encoding handle)
+	   (car (mm-handle-type handle)))
+	  (setq text (buffer-string))))
+      (mm-insert-inline handle text)))))
 
 (defun mm-insert-inline (handle text)
   "Insert TEXT inline from HANDLE."

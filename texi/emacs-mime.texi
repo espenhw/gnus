@@ -1,6 +1,6 @@
 \input texinfo                  @c -*-texinfo-*-
 
-@setfilename message
+@setfilename emacs-mime
 @settitle Emacs MIME Manual
 @synindex fn cp
 @synindex vr cp
@@ -639,7 +639,7 @@ higher level.
 
 The main idea is to first analyze a @sc{mime} article, and then allow
 other programs to do things based on the list of @dfn{handles} that are
-returned as a result of this analyzation.
+returned as a result of this analysis.
 
 @menu
 * Dissection::  Analyzing a @sc{mime} message.

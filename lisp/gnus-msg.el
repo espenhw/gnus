@@ -615,10 +615,16 @@ If FULL-HEADERS (the prefix), include full headers when forwarding."
   (interactive "P")
   (gnus-setup-message 'forward
     (gnus-summary-select-article)
-    (set-buffer gnus-original-article-buffer)
-    (let ((message-included-forward-headers
-	   (if full-headers "" message-included-forward-headers)))
-      (message-forward post))))
+    (let (text)
+      (save-excursion
+	(set-buffer gnus-original-article-buffer)
+	(setq text (buffer-string)))
+      (set-buffer (gnus-get-buffer-create " *Gnus forward*"))
+      (insert text)
+      (run-hooks 'gnus-article-decode-hook)
+      (let ((message-included-forward-headers
+	     (if full-headers "" message-included-forward-headers)))
+	(message-forward post)))))
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."

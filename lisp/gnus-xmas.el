@@ -258,21 +258,6 @@ call it with the value of the `gnus-data' text property."
 		 (delete-extent extent)
 		 nil)))
 
-;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
-(defun gnus-xmas-article-add-button (from to fun &optional data)
-  "Create a button between FROM and TO with callback FUN and data DATA."
-  (when gnus-article-button-face
-    (gnus-overlay-put (gnus-make-overlay from to)
-		      'face gnus-article-button-face))
-  (gnus-add-text-properties
-   from to
-   (nconc
-    (and gnus-article-mouse-face
-	 (list 'mouse-face gnus-article-mouse-face))
-    (list 'gnus-callback fun)
-    (and data (list 'gnus-data data))
-    (list 'highlight t))))
-
 (defun gnus-xmas-window-top-edge (&optional window)
   (nth 1 (window-pixel-edges window)))
 
@@ -465,7 +450,6 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
   (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
   (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
-  (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
   (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)
   (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
   (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)

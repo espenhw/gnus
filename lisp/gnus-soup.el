@@ -140,21 +140,19 @@ move those articles instead."
     (buffer-disable-undo tmp-buf)
     (save-excursion
       (while articles
-	;; Find the header of the article.
-	(set-buffer gnus-summary-buffer)
-	(when (setq headers (gnus-summary-article-header (car articles)))
 	  ;; Put the article in a buffer.
-	  (set-buffer tmp-buf)
-	  (when (gnus-request-article-this-buffer
-		 (car articles) gnus-newsgroup-name)
-	    (save-restriction
-	      (message-narrow-to-head)
-	      (message-remove-header gnus-soup-ignored-headers t))
-	    (gnus-soup-store gnus-soup-directory prefix headers
-			     gnus-soup-encoding-type
-			     gnus-soup-index-type)
-	    (gnus-soup-area-set-number
-	     area (1+ (or (gnus-soup-area-number area) 0)))))
+	(set-buffer tmp-buf)
+	(when (gnus-request-article-this-buffer
+	       (car articles) gnus-newsgroup-name)
+	  (setq headers (nnheader-parse-head t))
+	  (save-restriction
+	    (message-narrow-to-head)
+	    (message-remove-header gnus-soup-ignored-headers t))
+	  (gnus-soup-store gnus-soup-directory prefix headers
+			   gnus-soup-encoding-type
+			   gnus-soup-index-type)
+	  (gnus-soup-area-set-number
+	   area (1+ (or (gnus-soup-area-number area) 0))))
 	;; Mark article as read.
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-remove-process-mark (car articles))
@@ -168,11 +166,11 @@ move those articles instead."
   "Make a SOUP packet from the SOUP areas."
   (interactive)
   (gnus-soup-read-areas)
-  (unless (file-exists-p gnus-soup-directory)
-    (message "No such directory: %s" gnus-soup-directory))
-  (when (null (directory-files gnus-soup-directory nil "\\.MSG$"))
-    (message "No files to pack."))
-  (gnus-soup-pack gnus-soup-directory gnus-soup-packer))
+  (if (file-exists-p gnus-soup-directory)
+      (if (directory-files gnus-soup-directory nil "\\.MSG$")
+	  (gnus-soup-pack gnus-soup-directory gnus-soup-packer)
+	(message "No files to pack."))
+    (message "No such directory: %s" gnus-soup-directory)))
 
 (defun gnus-group-brew-soup (n)
   "Make a soup packet from the current group.

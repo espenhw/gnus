@@ -252,8 +252,12 @@ equal will be included."
 (defcustom gnus-auto-select-first t
   "*If nil, don't select the first unread article when entering a group.
 If this variable is `best', select the highest-scored unread article
-in the group.  If neither nil nor `best', select the first unread
-article.
+in the group.  If t, select the first unread article.
+
+This variable can also be a function to place point on a likely
+subject line.  Useful values include `gnus-summary-first-unread-subject', 
+`gnus-summary-first-unread-article' and 
+`gnus-summary-best-unread-article'.
 
 If you want to prevent automatic selection of the first unread article
 in some newsgroups, set the variable to nil in
@@ -261,7 +265,10 @@ in some newsgroups, set the variable to nil in
   :group 'gnus-group-select
   :type '(choice (const :tag "none" nil)
 		 (const best)
-		 (sexp :menu-tag "first" t)))
+		 (sexp :menu-tag "first" t)
+		 (function-item gnus-summary-first-unread-subject)
+		 (function-item gnus-summary-first-unread-article)
+		 (function-item gnus-summary-best-unread-article)))
 
 (defcustom gnus-auto-select-next t
   "*If non-nil, offer to go to the next group from the end of the previous.
@@ -1242,7 +1249,8 @@ increase the score of each group you read."
     "L" gnus-summary-lower-score
     "\M-i" gnus-symbolic-argument
     "h" gnus-summary-select-article-buffer
-
+    "b" gnus-article-view-part
+    
     "V" gnus-summary-score-map
     "X" gnus-uu-extract-map
     "S" gnus-summary-send-map)
@@ -1401,7 +1409,9 @@ increase the score of each group you read."
 
   (gnus-define-keys (gnus-summary-wash-mime-map "M" gnus-summary-wash-map)
     "w" gnus-article-decode-mime-words
-    "c" gnus-article-decode-charset)
+    "c" gnus-article-decode-charset
+    "v" gnus-mime-view-all-parts
+    "b" gnus-article-view-part)
 
   (gnus-define-keys (gnus-summary-wash-time-map "T" gnus-summary-wash-map)
     "z" gnus-article-date-ut
@@ -1505,7 +1515,8 @@ increase the score of each group you read."
 	     ("MIME"
 	      ["Words" gnus-article-decode-mime-words t]
 	      ["Charset" gnus-article-decode-charset t]
-	      ["QP" gnus-article-de-quoted-unreadable t])
+	      ["QP" gnus-article-de-quoted-unreadable t]
+	      ["View all" gnus-mime-view-all-parts])
              ("Date"
               ["Local" gnus-article-date-local t]
               ["ISO8601" gnus-article-date-iso8601 t]
@@ -2685,10 +2696,15 @@ If NO-DISPLAY, don't generate a summary buffer."
 		 (not no-display)
 		 gnus-newsgroup-unreads
 		 gnus-auto-select-first)
-	    (unless (if (eq gnus-auto-select-first 'best)
-			(gnus-summary-best-unread-article)
-		      (gnus-summary-first-unread-article))
-	      (gnus-configure-windows 'summary))
+	    (progn
+	      (gnus-configure-windows 'summary)
+	      (cond
+	       ((eq gnus-auto-select-first 'best)
+		(gnus-summary-best-unread-article))
+	       ((eq gnus-auto-select-first t)
+		(gnus-summary-first-unread-article))
+	       ((gnus-functionp gnus-auto-select-first)
+		(funcall gnus-auto-select-first))))
 	  ;; Don't select any articles, just move point to the first
 	  ;; article in the group.
 	  (goto-char (point-min))
@@ -5822,6 +5838,16 @@ Return nil if there are no unread articles."
 	(gnus-summary-show-thread)
 	(gnus-summary-first-subject t)
 	(gnus-summary-display-article (gnus-summary-article-number)))
+    (gnus-summary-position-point)))
+
+(defun gnus-summary-first-unread-subject ()
+  "Place the point on the subject line of the first unread article.
+Return nil if there are no unread articles."
+  (interactive)
+  (prog1
+      (when (gnus-summary-first-subject t)
+	(gnus-summary-show-thread)
+	(gnus-summary-first-subject t))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-first-article ()

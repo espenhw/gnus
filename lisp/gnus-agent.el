@@ -768,7 +768,8 @@ the actual number of articles toggled is returned."
  		       (gnus-uncompress-range
  			(cons (1+ (caar (last gnus-agent-article-alist)))
  			      (cdr (gnus-active group)))))
- 		    (gnus-list-of-unread-articles group))))
+ 		    (gnus-list-of-unread-articles group)))
+	(gnus-decode-encoded-word-function 'identity)) 
     ;; Fetch them.
     (when articles
       (gnus-message 7 "Fetching headers for %s..." group)
@@ -931,9 +932,10 @@ the actual number of articles toggled is returned."
 				     (gnus-agent-false nil))))))
 	;; No, we need to decide what we want.
 	(setq score-param
-	      (let ((score-method (or 
-				   (gnus-group-get-parameter group 'agent-score t)
-				   (caddr category))))
+	      (let ((score-method
+		     (or 
+		      (gnus-group-get-parameter group 'agent-score t)
+		      (caddr category))))
 		(when score-method
 		  (require 'gnus-score)
 		  (if (eq score-method 'file)
@@ -1197,7 +1199,7 @@ The following commands are available:
   (interactive "SCategory name: ")
   (when (assq category gnus-category-alist)
     (error "Category %s already exists" category))
-  (push (list category 'true nil nil)
+  (push (list category 'false nil nil)
 	gnus-category-alist)
   (gnus-category-write)
   (gnus-category-list))
