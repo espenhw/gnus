@@ -1226,17 +1226,27 @@ This can be added to `gnus-select-article-hook' or
 	(let ((range (nth 0 action))
 	      (what  (nth 1 action))
 	      (marks (nth 2 action)))
-	  (when (memq 'read marks)
-	    (gnus-info-set-read 
-	     info
-	     (funcall (if (eq what 'add)
-			  'gnus-range-add
-			'gnus-remove-from-range)
-		      (gnus-info-read info)
-		      range))
-	    (gnus-get-unread-articles-in-group 
-	     info
-	     (gnus-active (gnus-info-group info)))))))
+	  (dolist (mark marks)
+	    (cond ((eq mark 'read)
+		   (gnus-info-set-read 
+		    info
+		    (funcall (if (eq what 'add)
+				 'gnus-range-add
+			       'gnus-remove-from-range)
+			     (gnus-info-read info)
+			     range))
+		   (gnus-get-unread-articles-in-group 
+		    info
+		    (gnus-active (gnus-info-group info))))
+		  ((memq mark '(tick))
+		   (let ((info-marks (assoc mark (gnus-info-marks info))))
+		     (unless info-marks
+		       (gnus-info-marks info (cons (setq info-marks (list mark)) (gnus-info-marks info))))
+		     (setcdr info-marks (funcall (if (eq what 'add)
+				  'gnus-range-add
+				'gnus-remove-from-range)
+			      (cdr info-marks)
+			      range)))))))))
     nil))
 
 (defun gnus-agent-save-active (method)

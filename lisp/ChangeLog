@@ -1,3 +1,8 @@
+2004-10-01  Kevin Greiner  <kgreiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-synchronize-group-flags): Added
+	support for sync'ing tick marks.
+
 2004-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-toggle-header): Make it work even if
