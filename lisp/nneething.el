@@ -64,7 +64,6 @@ included.")
 
 (defvoo nneething-status-string "")
 
-(defvoo nneething-message-id-number 0)
 (defvoo nneething-work-buffer " *nneething work*")
 
 (defvoo nneething-group nil)
@@ -289,7 +288,7 @@ included.")
   (let ((pos 0) buf)
     (setq file (mm-encode-coding-string
 		file (or coding-system nnmail-pathname-coding-system)))
-    (while (string-match "[^-a-zA-Z_:/.]" file pos)
+    (while (string-match "[^-0-9a-zA-Z_:/.]" file pos)
       (setq buf (cons (format "%%%02x" (aref file (match-beginning 0)))
 		      (cons (substring file pos (match-beginning 0)) buf))
 	    pos (match-end 0)))
@@ -310,7 +309,7 @@ included.")
 
 (defun nneething-get-file-name (id)
   "Extract the file name from the message ID string."
-  (when (string-match "\\`<nneething\\-[0-9]+\\-\\([^@]+\\)@.*>\\'" id)
+  (when (string-match "\\`<nneething-\\([^@]+\\)@.*>\\'" id)
     (nneething-decode-file-name (match-string 1 id))))
 
 (defun nneething-make-head (file &optional buffer extra-msg
@@ -319,9 +318,7 @@ included.")
   (let ((atts (file-attributes file)))
     (insert
      "Subject: " (file-name-nondirectory file) (or extra-msg "") "\n"
-     "Message-ID: <nneething-"
-     (int-to-string (incf nneething-message-id-number))
-     "-" (nneething-encode-file-name file)
+     "Message-ID: <nneething-" (nneething-encode-file-name file)
      "@" (system-name) ">\n"
      (if (equal '(0 0) (nth 5 atts)) ""
        (concat "Date: " (current-time-string (nth 5 atts)) "\n"))
