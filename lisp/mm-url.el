@@ -253,10 +253,12 @@ This is taken from RFC 2396.")
 
 (defun mm-url-load-url ()
   "Load `url-insert-file-contents'."
-  (condition-case ()
-      (require 'url-handlers)
-    (error nil))
-  (require 'url))
+  (unless (condition-case ()
+	      (require 'url-handlers)
+	    (error nil))
+    ;; w3-4.0pre0.46 or earlier version.
+    (require 'w3-vars)
+    (require 'url)))
 
 (defun mm-url-insert-file-contents (url)
   (if mm-url-use-external
