@@ -10162,6 +10162,9 @@ Here's the method for a public spool:
       (nnmh-get-new-mail nil))
 @end lisp
 
+@cindex proxy
+@cindex firewall
+
 If you are behind a firewall and only have access to the @sc{nntp}
 server from the firewall machine, you can instruct Gnus to @code{rlogin}
 on the firewall machine and telnet from there to the @sc{nntp} server.
