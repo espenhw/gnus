@@ -1,3 +1,7 @@
+2000-11-20 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Add.
+
 2000-11-12  Florian Weimer  <fw@deneb.enyo.de>
 
 	* message.texi (Security): Fixed typo, change "PGP" to "OpenPGP".

@@ -364,7 +364,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.8.7.
+This manual corresponds to pre-Oort Gnus.
 
 @end ifinfo
 
@@ -503,6 +503,7 @@ The Summary Buffer
 * Exiting the Summary Buffer::  Returning to the Group buffer.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
+* Security::                    Decrypt and Verify.
 
 Summary Buffer Format
 
@@ -2804,6 +2805,22 @@ List all groups with cached articles (@code{gnus-group-list-cached}).
 @findex gnus-group-list-dormant
 List all groups with dormant articles (@code{gnus-group-list-dormant}).
 
+@item A /
+@kindex A / (Group)
+@findex gnus-group-list-limit
+List groups limited within the current selection
+(@code{gnus-group-list-limit}).
+
+@item A f
+@kindex A f (Group)
+@findex gnus-group-list-flush
+Flush groups from the current selection (@code{gnus-group-list-flush}).
+
+@item A p
+@kindex A p (Group)
+@findex gnus-group-list-plus
+List groups plus the current selection (@code{gnus-group-list-plus}).
+
 @end table
 
 @vindex gnus-permanently-visible-groups
@@ -3842,6 +3859,7 @@ You can have as many summary buffers open as you wish.
 * Exiting the Summary Buffer::  Returning to the Group buffer.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
+* Security::                    Decrypt and Verify.
 @end menu
 
 
@@ -9024,6 +9042,33 @@ so that means that if you stop and start Gnus often, you should set
 @code{gnus-save-duplicate-list} to @code{nil}.  Uhm.  I'll leave this up
 to you to figure out, I think.
 
+@node Security
+@section Security
+
+Gnus is able to verify PGP or S/MIME signed messages or decrypt PGP
+encrypted messages.
+
+@enumerate
+@item 
+To verify or decrypt PGP messages, you have to install mailcrypt or
+gpg.el.
+
+@end enumerate
+
+@table @code
+@item mm-verify-option
+@vindex mm-verify-option
+Option of verifying signed parts.  @code{never}, not verify;
+@code{always}, always verify; @code{known}, only verify known
+protocols. Otherwise, ask user.
+
+@item mm-decrypt-option
+@vindex mm-decrypt-option
+Option of decrypting encrypted parts.  @code{never}, not verify;
+@code{always}, always verify; @code{known}, only verify known
+protocols. Otherwise, ask user.
+
+@end table
 
 @node The Article Buffer
 @chapter The Article Buffer
@@ -12557,6 +12602,10 @@ your @file{.emacs} file:
 Hook run in a buffer narrowed to the message that is to be deleted.
 This function can be used to copy the message to somewhere else, or to
 extract some information from it before removing it.
+
+@item nnfolder-nov-is-evil
+@vindex nnfolder-nov-is-evil
+If non-@code{nil}, this backend will ignore any @sc{nov} files.
 
 @end table
 
