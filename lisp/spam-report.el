@@ -119,7 +119,8 @@ Reports is as ham when HAM is set."
   (spam-report-resend articles t))
 
 (defun spam-report-gmane (&rest articles)
-  "Report an article as spam through Gmane"
+  "Report an article as spam through Gmane."
+  (interactive (gnus-summary-work-articles prefix-arg))
   (dolist (article articles)
     (when (and gnus-newsgroup-name
 	       (or (null spam-report-gmane-regex)
