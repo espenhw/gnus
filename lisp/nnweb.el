@@ -336,22 +336,24 @@ and `altavista'.")
     (funcall callback t)
     (gnus-kill-buffer url-working-buffer)))
 
+(defun nnweb-url-retrieve-asynch (url callback &rest data)
+  (let ((url-request-method "GET")
+	(old-asynch url-be-asynchronous)
+	(url-request-data nil)
+	(url-request-extra-headers nil)
+	(url-working-buffer (generate-new-buffer-name " *nnweb*")))
+    (setq-default url-be-asynchronous t)
+    (save-excursion
+      (set-buffer (get-buffer-create url-working-buffer))
+      (setq url-current-callback-data data
+	    url-be-asynchronous t
+	    url-current-callback-func callback)
+      (url-retrieve url nil))
+    (setq-default url-be-asynchronous old-asynch)))
+
 (if (fboundp 'url-retrieve-synchronously)
-    (defalias 'nnweb-url-retrieve-asynch 'url-retrieve)
-  (defun nnweb-url-retrieve-asynch (url callback &rest data)
-    (let ((url-request-method "GET")
-	  (old-asynch url-be-asynchronous)
-	  (url-request-data nil)
-	  (url-request-extra-headers nil)
-	  (url-working-buffer (generate-new-buffer-name " *nnweb*")))
-      (setq-default url-be-asynchronous t)
-      (save-excursion
-	(set-buffer (get-buffer-create url-working-buffer))
-	(setq url-current-callback-data data
-	      url-be-asynchronous t
-	      url-current-callback-func callback)
-	(url-retrieve url nil))
-      (setq-default url-be-asynchronous old-asynch))))
+    (defun nnweb-url-retrieve-asynch (url callback &rest data)
+      (url-retrieve url callback data)))
 
 ;;;
 ;;; DejaNews functions.

@@ -1,3 +1,7 @@
+2000-10-08 13:05:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (dgnushack-compile): Delete old elc files first.
+
 2000-10-08 10:59:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ems.el (gnus-kill-all-overlays): Move here.

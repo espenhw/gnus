@@ -115,7 +115,6 @@ You also then need to add the following to the lisp/dgnushack.el file:
 
 Modify to suit your needs."))
   (let ((files (directory-files srcdir nil "^[^=].*\\.el$"))
-	(xemacs (featurep 'xemacs))
 	;;(byte-compile-generate-call-tree t)
 	file elc)
     (dolist (file '("dgnushack.el" "lpath.el"))
@@ -128,19 +127,25 @@ Modify to suit your needs."))
        (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
 		       "nnslashdot.el" "nnwarchive.el" "webmail.el"))
 	 (setq files (delete file files)))))
+    (dolist (file 
+	     (if (featurep 'xemacs)
+		 '("md5.el" "smiley-ems.el")
+	       '("gnus-xmas.el" "gnus-picon.el" "messagexmas.el" 
+		 "nnheaderxm.el" "smiley.el")))
+      (setq files (delete file files)))
+
+    (dolist (file files)
+      (setq file (expand-file-name file srcdir))
+      (when (and (file-exists-p (setq elc (concat file "c")))
+		 (file-newer-than-file-p file elc))
+	(delete-file elc)))
+    
     (while (setq file (pop files))
       (setq file (expand-file-name file srcdir))
-      (when (or (and (not xemacs)
- 		     (not (member (file-name-nondirectory file)
- 				  '("gnus-xmas.el" "gnus-picon.el"
- 				    "messagexmas.el" "nnheaderxm.el" 
-				    "smiley.el"))))
- 		(and xemacs
-		     (not (member file '("md5.el" "smiley-ems.el")))))
-	(when (or (not (file-exists-p (setq elc (concat file "c"))))
-		  (file-newer-than-file-p file elc))
-	  (ignore-errors
-	    (byte-compile-file file)))))))
+      (when (or (not (file-exists-p (setq elc (concat file "c"))))
+		(file-newer-than-file-p file elc))
+	(ignore-errors
+	  (byte-compile-file file))))))
 
 (defun dgnushack-recompile ()
   (require 'gnus)
