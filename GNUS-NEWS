@@ -8,17 +8,18 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
-** Nnml stores marks in the file ".marks" for each groups.
+** The nnml and nnfolder backends store marks for each groups.
 
-This makes it possible to take backup of nnml servers independently of
-.newsrc.eld.  It also makes it possible to share articles and marks
-between users (without sharing .newsrc.eld) within e.g. a department.
+This makes it possible to take backup of nnml/nnfolder servers/groups
+separately of .newsrc.eld, while preserving marks.  It also makes it
+possible to share articles and marks between users (without sharing
+.newsrc.eld) within e.g. a department.
 
 ** The menu bar (in Group and Summary buffer) named "Misc" has been
    renamed to "Gnus".
 
 ** The menu bar (in Message mode) named "MML" has been renamed to
-   "Attachment".
+   "Attachments".
 
 ** gnus-group-charset-alist and gnus-group-ignored-charsets-alist
 
