@@ -753,6 +753,8 @@ be set in `.emacs' instead."
 	 (let ((image (find-image '((:type xpm :file "gnus.xpm")
 				    (:type xbm :file "gnus.xbm")))))
 	   (when image
+	     (newline)			; Have somewhere for cursor to
+					; go, not stretched over image.
 	     (insert-image image " ")
 	     (goto-char (point-min))
 	     (while (not (eobp))
