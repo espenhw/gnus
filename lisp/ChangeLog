@@ -1,5 +1,33 @@
 2002-01-01  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-treat-buttonize, gnus-treat-buttonize-head) 
+	(gnus-treat-emphasize, gnus-treat-strip-cr) 
+	(gnus-treat-leading-whitespace, gnus-treat-hide-headers) 
+	(gnus-treat-hide-boring-headers, gnus-treat-hide-signature) 
+	(gnus-treat-fill-article, gnus-treat-hide-citation) 
+	(gnus-treat-hide-citation-maybe) 
+	(gnus-treat-strip-list-identifiers, gnus-treat-strip-pgp) 
+	(gnus-treat-strip-pem, gnus-treat-strip-banner) 
+	(gnus-treat-highlight-headers, gnus-treat-highlight-citation) 
+	(gnus-treat-date-ut, gnus-treat-date-local) 
+	(gnus-treat-date-english, gnus-treat-date-lapsed) 
+	(gnus-treat-date-original, gnus-treat-date-iso8601) 
+	(gnus-treat-date-user-defined, gnus-treat-strip-headers-in-body) 
+	(gnus-treat-strip-trailing-blank-lines) 
+	(gnus-treat-strip-leading-blank-lines) 
+	(gnus-treat-strip-multiple-blank-lines) 
+	(gnus-treat-unfold-headers, gnus-treat-fold-headers) 
+	(gnus-treat-fold-newsgroups, gnus-treat-overstrike) 
+	(gnus-treat-display-xface, gnus-treat-display-smileys) 
+	(gnus-treat-from-picon, gnus-treat-mail-picon) 
+	(gnus-treat-newsgroups-picon, gnus-treat-body-boundary) 
+	(gnus-treat-capitalize-sentences, gnus-treat-fill-long-lines) 
+	(gnus-treat-play-sounds, gnus-treat-translate) 
+	(gnus-treat-x-pgp-sig): Doc fix, add link to manual.
+
+	* gnus-art.el (gnus-body-boundary-delimiter): New variable.
+	(gnus-article-treat-body-boundary): Use it.
+
 	* message.el (message-mode): Fix doc.
 	(message-mode-menu): Fix names.
 

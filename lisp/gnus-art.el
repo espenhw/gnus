@@ -701,6 +701,13 @@ To see e.g. security buttons you could set this to
   :group 'gnus-article-mime
   :type '(repeat regexp))
 
+(defcustom gnus-body-boundary-delimiter "-"
+  "String used to delimit header and body.
+This variable is used by `gnus-article-treat-body-boundary' which can
+be controled by `gnus-treat-body-boundary'."
+  :group 'gnus-article-various
+  :type 'string)
+
 (defcustom gnus-article-mime-part-function nil
   "Function called with a MIME handle as the argument.
 This is meant for people who want to do something automatic based
@@ -808,7 +815,7 @@ See Info node `(gnus)Customizing Articles'."
 (defcustom gnus-treat-buttonize 100000
   "Add buttons.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles'."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 (put 'gnus-treat-buttonize 'highlight t)
@@ -816,7 +823,7 @@ See the manual for details."
 (defcustom gnus-treat-buttonize-head 'head
   "Add buttons to the head.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-buttonize-head 'highlight t)
@@ -828,7 +835,7 @@ See the manual for details."
        50000)
   "Emphasize text.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 (put 'gnus-treat-emphasize 'highlight t)
@@ -836,63 +843,63 @@ See the manual for details."
 (defcustom gnus-treat-strip-cr nil
   "Remove carriage returns.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-leading-whitespace nil
   "Remove leading whitespace in headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-hide-headers 'head
   "Hide headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-boring-headers nil
   "Hide boring headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-signature nil
   "Hide the signature.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-fill-article nil
   "Fill the article.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-hide-citation nil
   "Hide cited text.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-hide-citation-maybe nil
   "Hide cited text.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-list-identifiers 'head
   "Strip list identifiers from `gnus-list-identifiers`.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -900,14 +907,14 @@ See the manual for details."
 (defcustom gnus-treat-strip-pgp t
   "Strip PGP signatures.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-pem nil
   "Strip PEM signatures.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
@@ -915,14 +922,14 @@ See the manual for details."
   "Strip banners from articles.
 The banner to be stripped is specified in the `banner' group parameter.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-highlight-headers 'head
   "Highlight the headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-highlight-headers 'highlight t)
@@ -930,7 +937,7 @@ See the manual for details."
 (defcustom gnus-treat-highlight-citation t
   "Highlight cited text.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 (put 'gnus-treat-highlight-citation 'highlight t)
@@ -938,42 +945,42 @@ See the manual for details."
 (defcustom gnus-treat-date-ut nil
   "Display the Date in UT (GMT).
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-local nil
   "Display the Date in the local timezone.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-english nil
   "Display the Date in a format that can be read aloud in English.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-lapsed nil
   "Display the Date header in a way that says how much time has elapsed.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-original nil
   "Display the date in the original timezone.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-iso8601 nil
   "Display the date in the ISO8601 format.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
@@ -982,14 +989,14 @@ See the manual for details."
   "Display the date in a user-defined format.
 The format is defined by the `gnus-article-time-format' variable.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-strip-headers-in-body t
   "Strip the X-No-Archive header line from the beginning of the body.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -997,49 +1004,49 @@ See the manual for details."
 (defcustom gnus-treat-strip-trailing-blank-lines nil
   "Strip trailing blank lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-leading-blank-lines nil
   "Strip leading blank lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-strip-multiple-blank-lines nil
   "Strip multiple blank lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-unfold-headers 'head
   "Unfold folded header lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-fold-headers nil
   "Fold headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-fold-newsgroups 'head
   "Fold the Newsgroups and Followup-To headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-overstrike t
   "Treat overstrike highlighting.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
@@ -1053,7 +1060,8 @@ See the manual for details."
        'head)
   "Display X-Face headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)X-Face' for details."
   :group 'gnus-article-treat
   :version "21.1"
   :type gnus-article-treat-head-custom)
@@ -1067,7 +1075,8 @@ See the manual for details."
       t nil)
   "Display smileys.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)Smileys' for details."
   :group 'gnus-article-treat
   :version "21.1"
   :type gnus-article-treat-custom)
@@ -1078,7 +1087,8 @@ See the manual for details."
       'head nil)
   "Display picons in the From header.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)Picons' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-from-picon 'highlight t)
@@ -1088,7 +1098,8 @@ See the manual for details."
       'head nil)
   "Display picons in To and Cc headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)Picons' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-mail-picon 'highlight t)
@@ -1098,7 +1109,8 @@ See the manual for details."
       'head nil)
   "Display picons in the Newsgroups and Followup-To headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)Picons' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-newsgroups-picon 'highlight t)
@@ -1110,7 +1122,7 @@ See the manual for details."
       'head nil)
   "Draw a boundary at the end of the headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -1118,7 +1130,7 @@ See the manual for details."
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -1126,14 +1138,14 @@ See the manual for details."
 (defcustom gnus-treat-fill-long-lines nil
   "Fill long lines.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
 (defcustom gnus-treat-play-sounds nil
   "Play sounds.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -1141,7 +1153,7 @@ See the manual for details."
 (defcustom gnus-treat-translate nil
   "Translate articles from one language to another.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -1150,7 +1162,7 @@ See the manual for details."
   "Verify X-PGP-Sig.
 To automatically treat X-PGP-Sig, set it to head.
 Valid values are nil, t, `head', `last', an integer or a predicate.
-See the manual for details."
+See Info node `(gnus)Customizing Articles' for details."
   :group 'gnus-article-treat
   :group 'mime-security
   :type gnus-article-treat-custom)
@@ -1698,10 +1710,14 @@ unfolded."
   (gnus-with-article-headers
     (goto-char (point-max))
     (let ((start (point)))
-    (insert "X-Boundary: ")
-    (gnus-add-text-properties start (point) '(invisible t intangible t))
-    (insert (make-string (1- (window-width)) ?-)
-	    "\n"))))
+      (insert "X-Boundary: ")
+      (gnus-add-text-properties start (point) '(invisible t intangible t))
+      (insert (let (str)
+		(while (and gnus-body-boundary-delimiter
+			    (>= (1- (window-width)) (length str)))
+		  (setq str (concat str gnus-body-boundary-delimiter)))
+		(substring str 0 (1- (window-width))))
+	      "\n"))))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."
