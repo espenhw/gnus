@@ -1,5 +1,9 @@
 2002-02-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-articles-to-read): `gnus-large-newsgroup' is
+	used as the default answer of the question, "How many articles?".
+	From TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+
 	* nnagent.el (nnagent-retrieve-headers): Remove articles with
 	small numbers.
 

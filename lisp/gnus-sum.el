@@ -4960,14 +4960,17 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		 ((and (or (<= scored marked) (= scored number))
 		       (numberp gnus-large-newsgroup)
 		       (> number gnus-large-newsgroup))
-		  (let ((input
-			 (read-string
-			  (format
-			   "How many articles from %s (default %d): "
-			   (gnus-limit-string
-			    (gnus-group-decoded-name gnus-newsgroup-name)
-			    35)
-			   number))))
+		  (let* ((cursor-in-echo-area nil)
+			 (input
+			  (read-string
+			   (format
+			    "How many articles from %s (max %d): "
+			    (gnus-limit-string
+			     (gnus-group-decoded-name gnus-newsgroup-name)
+			     35)
+			    number)
+			   (cons (number-to-string gnus-large-newsgroup)
+				 0))))
 		    (if (string-match "^[ \t]*$" input) number input)))
 		 ((and (> scored marked) (< scored number)
 		       (> (- scored number) 20))
