@@ -26,8 +26,6 @@
 ;; XEmacs has a buggy version of run-at-time.  This file defines a
 ;; non-buggy version of the same.
 
-(defvar run-at-time-saved (symbol-function 'run-at-time))
-
 (require 'itimer)
 
 (eval-and-compile
@@ -95,6 +93,8 @@ or `cancel-timer'."
 			   (append (list itimer function) args)))))
 		    1e-9 (if time (max time 1e-9) 1e-9)
 		    nil t itimers repeat function args))))))))
+
+(defvar run-at-time-saved (symbol-function 'run-at-time))
 
 (provide 'run-at-time)
 
