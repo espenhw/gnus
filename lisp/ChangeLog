@@ -1,5 +1,9 @@
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
+	* nntp.el (nntp-open-connection-function): Mention
+	nntp-open-tls-stream.
+	(nntp-open-tls-stream): New function.
+
 	* tls.el: New file.
 
 	* nnimap.el (nnimap-server-port, nnimap-stream): Say TLS/SSL

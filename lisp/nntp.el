@@ -75,6 +75,7 @@ host.
 Direct connections:
 - `nntp-open-network-stream' (the default),
 - `nntp-open-ssl-stream',
+- `nntp-open-tls-stream',
 - `nntp-open-telnet-stream'.
 
 Indirect connections:
@@ -1161,7 +1162,19 @@ password contained in '~/.nntp-authinfo'."
     (process-kill-without-query proc)
     (save-excursion
       (set-buffer buffer)
-      (nntp-wait-for-string "^\r*20[01]")
+      (let ((nntp-connection-alist (list proc buffer nil)))
+	(nntp-wait-for-string "^\r*20[01]"))
+      (beginning-of-line)
+      (delete-region (point-min) (point))
+      proc)))
+
+(defun nntp-open-tls-stream (buffer)
+  (let ((proc (open-tls-stream "nntpd" buffer nntp-address nntp-port-number)))
+    (process-kill-without-query proc)
+    (save-excursion
+      (set-buffer buffer)
+      (let ((nntp-connection-alist (list proc buffer nil)))
+	(nntp-wait-for-string "^\r*20[01]"))
       (beginning-of-line)
       (delete-region (point-min) (point))
       proc)))
