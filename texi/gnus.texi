@@ -3345,6 +3345,11 @@ subscribe to it (@code{gnus-browse-unsubscribe-current-group}).
 @findex gnus-browse-exit
 Exit browse mode (@code{gnus-browse-exit}).
 
+@item d
+@kindex d (Browse)
+@findex gnus-browse-describe-group
+Describe the current group (@code{gnus-browse-describe-group}).
+
 @item ?
 @kindex ? (Browse)
 @findex gnus-browse-describe-briefly

@@ -1,3 +1,7 @@
+2002-09-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Browse Foreign Server): Addition.
+
 2002-09-04  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Mail Source Specifiers): Fix.
