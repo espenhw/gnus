@@ -94,9 +94,13 @@ The group names are matched, they don't have to be fully qualified."
 		  from
 		  to)
 
-    (cond
-     ((equal 'delete action) (gnus-registry-delete-group id from))
-     (t (gnus-registry-add-group id to)))))
+    ;; All except copy will need a delete
+    (gnus-registry-delete-group id from)
+
+    (when (equal 'copy action) 
+      (gnus-registry-add-group id from)) ; undo the delete
+
+    (gnus-registry-add-group id to)))
 
 (defun gnus-register-spool-action (id group)
   ;; do not process the draft IDs
@@ -139,9 +143,28 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			   nnmail-split-fancy-with-parent-ignore-groups))
 		  (setq res nil)))
 	      references)
-      (gnus-message 5 "gnus-registry-split-fancy-with-parent traced %s to group %s"
-		    refstr (if res res "nil"))
+      (gnus-message 
+       5 
+       "gnus-registry-split-fancy-with-parent traced %s to group %s"
+       refstr (if res res "nil"))
       res)))
+
+(defun gnus-registry-register-message-ids ()
+  "Register the Message-ID of every article in the group"
+  (dolist (article gnus-newsgroup-articles)
+    (let ((id (gnus-registry-fetch-message-id-fast article)))
+      (unless (gnus-registry-fetch-group id)
+	(gnus-message 9 "Registry: Registering article %d with group %s" 
+		      article gnus-newsgroup-name)
+	(gnus-registry-add-group (gnus-registry-fetch-message-id-fast article)
+				 gnus-newsgroup-name)))))
+
+(defun gnus-registry-fetch-message-id-fast (article)
+  "Fetch the Message-ID quickly, using the internal gnus-data-list function"
+  (if (and (numberp article)
+	   (assoc article (gnus-data-list nil)))
+      (mail-header-id (gnus-data-header (assoc article (gnus-data-list nil))))
+    nil))
 
 (defun gnus-registry-grep-in-list (word list)
   (when word
@@ -155,35 +178,40 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (defun gnus-registry-fetch-group (id)
   "Get the group of a message, based on the message ID.
 Returns the first place where the trail finds a spool action."
-  (let ((trail (gethash id gnus-registry-hashtb)))
-    (if trail
-	(car trail)
-      nil)))
+  (when id
+    (let ((trail (gethash id gnus-registry-hashtb)))
+      (if trail
+	  (car trail)
+	nil))))
 
 (defun gnus-registry-delete-group (id group)
   "Get the group of a message, based on the message ID.
 Returns the first place where the trail finds a spool action."
-  (let ((trail (gethash id gnus-registry-hashtb))
-	(group (gnus-group-short-name group)))
-    (puthash id (if trail
-		    (delete group trail)
-		  nil)
-    gnus-registry-hashtb))
-  ;; now, clear the entry if it's empty
-  (unless (gethash id gnus-registry-hashtb)
-    (remhash id gnus-registry-hashtb)))
+  (when group
+    (when id
+      (let ((trail (gethash id gnus-registry-hashtb))
+	    (group (gnus-group-short-name group)))
+	(puthash id (if trail
+			(delete group trail)
+		      nil)
+		 gnus-registry-hashtb))
+      ;; now, clear the entry if it's empty
+      (unless (gethash id gnus-registry-hashtb)
+	(remhash id gnus-registry-hashtb)))))
 
 (defun gnus-registry-add-group (id group)
   "Get the group of a message, based on the message ID.
 Returns the first place where the trail finds a spool action."
   ;; make sure there are no duplicate entries
-  (let ((group (gnus-group-short-name group)))
-    (gnus-registry-delete-group id group)	
-    (let ((trail (gethash id gnus-registry-hashtb)))
-      (puthash id (if trail
-		      (cons group trail)
-		    (list group))
-	       gnus-registry-hashtb))))
+  (when group
+    (when id
+      (let ((group (gnus-group-short-name group)))
+	(gnus-registry-delete-group id group)	
+	(let ((trail (gethash id gnus-registry-hashtb)))
+	  (puthash id (if trail
+			  (cons group trail)
+			(list group))
+		   gnus-registry-hashtb))))))
 
 (defun gnus-registry-clear ()
   "Clear the Gnus registry."
@@ -200,6 +228,8 @@ Returns the first place where the trail finds a spool action."
 
 (add-hook 'gnus-save-newsrc-hook 'gnus-registry-translate-to-alist)
 (add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-translate-from-alist)
+
+(add-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids)
 
 ;; TODO: a lot of things
 

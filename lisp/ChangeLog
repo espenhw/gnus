@@ -3,6 +3,12 @@
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent): added
 	diagnostic message
 	(gnus-registry-grep-in-list): don't run when word is nil
+	(gnus-registry-fetch-message-id-fast): new function
+	(gnus-registry-delete-group, gnus-registry-add-group): make sure
+	the id and group are not nil
+	(gnus-registry-register-message-ids): new function
+	(gnus-register-action): optimized logical flow
+	(gnus-summary-prepare-hook): added gnus-registry-register-message-ids
 
 2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
