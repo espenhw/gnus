@@ -31,6 +31,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'canlock)
   (require 'cl)
   (defvar gnus-list-identifiers)) ; gnus-sum is required where necessary
 (require 'mailheader)
@@ -2769,6 +2770,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 
 (defun message-insert-canlock ()
   (when message-insert-canlock
+    (require 'canlock)
     (message-canlock-password)
     (canlock-insert-header)))
 
