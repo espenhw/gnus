@@ -1,3 +1,11 @@
+2000-11-06 18:17:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-encrypt): New function.
+	(gnus-article-encrypt-protocol-alist): New variable.
+	(gnus-article-encrypt-protocol): New variable.
+	* mml2015.el (mml2015-self-encrypt): New function.
+	(mml2015-mailcrypt-encrypt): Set mc-pgp-always-sign.
+
 2000-11-06 16:02:52  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-gpg-key-skip-to-last): New function.

@@ -171,19 +171,21 @@
     (goto-char (point-max))))
 
 (defun mml2015-mailcrypt-encrypt (cont)
-  (mc-encrypt-generic 
-   (or (message-options-get 'message-recipients)
-       (message-options-set 'message-recipients
-			    (mc-cleanup-recipient-headers 
-			     (read-string "Recipients: "))))
-   nil nil nil
-   (message-options-get 'message-sender)
-   (or mc-pgp-always-sign
-       (eq t
-	   (or (message-options-get 'message-sign-encrypt)
-	       (message-options-set 'message-sign-encrypt
-				    (or (y-or-n-p "Sign the message? ")
-					'not))))))
+  (let ((mc-pgp-always-sign
+	 (or mc-pgp-always-sign
+	     (eq t (or (message-options-get 'message-sign-encrypt)
+		       (message-options-set 
+			'message-sign-encrypt
+			(or (y-or-n-p "Sign the message? ")
+			    'not))))
+	     'never)))
+    (mc-encrypt-generic 
+     (or (message-options-get 'message-recipients)
+	 (message-options-set 'message-recipients
+			      (mc-cleanup-recipient-headers 
+			       (read-string "Recipients: "))))
+     nil nil nil
+     (message-options-get 'message-sender)))
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
     (goto-char (point-min))
@@ -382,6 +384,10 @@
     (if func
 	(funcall func cont)
       (error "Cannot find sign function."))))
+
+;;;###autoload
+(defun mml2015-self-encrypt ()
+  (mml2015-encrypt nil))
 
 (provide 'mml2015)
 

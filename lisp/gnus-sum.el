@@ -1654,6 +1654,7 @@ increase the score of each group you read."
     "c" gnus-article-copy-part
     "C" gnus-article-view-part-as-charset
     "e" gnus-article-externalize-part
+    "E" gnus-article-encrypt
     "i" gnus-article-inline-part
     "|" gnus-article-pipe-part))
 
@@ -1713,7 +1714,8 @@ increase the score of each group you read."
 	      ["QP" gnus-article-de-quoted-unreadable t]
 	      ["Base64" gnus-article-de-base64-unreadable t]
 	      ["View all" gnus-mime-view-all-parts t]
-	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt])
+	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt]
+	      ["Encrypt" gnus-article-encrypt])
              ("Date"
               ["Local" gnus-article-date-local t]
               ["ISO8601" gnus-article-date-iso8601 t]
