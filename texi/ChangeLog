@@ -1,3 +1,7 @@
+2002-10-04  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.texi: New file.
+
 2002-10-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Information): Mention prefix argument for
