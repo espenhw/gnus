@@ -71,7 +71,9 @@
 		    chinese-cns11643-3 chinese-cns11643-4
 		    chinese-cns11643-5 chinese-cns11643-6
 		    chinese-cns11643-7)
-    ,(if (or (charsetp 'unicode-a)
+    ,(if (or (not (fboundp 'charsetp)) ;; non-Mule case
+	     (not (fboundp 'coding-system-p))
+	     (charsetp 'unicode-a)
 	     (not (coding-system-p 'mule-utf-8)))
 	 '(utf-8 unicode-a unicode-b unicode-c unicode-d unicode-e)
        ;; If we have utf-8 we're in Mule 5+.
