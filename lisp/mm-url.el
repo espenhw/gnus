@@ -32,19 +32,20 @@
 (eval-when-compile (require 'cl))
 
 (require 'mm-util)
+;;(require 'url)
+(require 'w3)
 
 (eval-and-compile
   (autoload 'executable-find "executable")
-  (autoload 'url-insert-file-contents "url-handlers"))
+  ;;(autoload 'url-insert-file-contents "url-handlers")
+  (autoload 'url-insert-file-contents "url")
+  )
 
 (defgroup mm-url nil
   "A wrapper of url package and external url command for Gnus."
   :group 'gnus)
 
-(defcustom mm-url-use-external (not
-				(condition-case nil
-				    (require 'url-handlers)
-				  (error nil)))
+(defcustom mm-url-use-external nil
   "*If not-nil, use external grab program `mm-url-program'."
   :type 'boolean
   :group 'mm-url)
@@ -251,7 +252,7 @@ This is taken from RFC 2396.")
       (if (string-match "^file:/+" url)
 	  (insert-file-contents (substring url (1- (match-end 0))))
 	(mm-url-insert-file-contents-external url))
-    (require 'url-handlers)
+    ;;(require 'url-handlers)
     (let ((name buffer-file-name))
       (prog1
 	  (url-insert-file-contents url)
@@ -344,7 +345,7 @@ spaces.  Die Die Die."
 
 (defun mm-url-fetch-form (url pairs)
   "Fetch a form from URL with PAIRS as the data using the POST method."
-  (require 'url-handlers)
+  ;;(require 'url-handlers)
   (let ((url-request-data (mm-url-encode-www-form-urlencoded pairs))
 	(url-request-method "POST")
 	(url-request-extra-headers
@@ -354,7 +355,7 @@ spaces.  Die Die Die."
   t)
 
 (defun mm-url-fetch-simple (url content)
-  (require 'url-handlers)
+  ;;(require 'url-handlers)
   (let ((url-request-data content)
 	(url-request-method "POST")
 	(url-request-extra-headers

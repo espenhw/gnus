@@ -37,6 +37,7 @@
 (require 'nnmail)
 (require 'mm-util)
 (require 'mm-url)
+(require 'url)
 (autoload 'w3-parse-buffer "w3-parse")
 
 (nnoo-declare nnweb)
@@ -50,13 +51,9 @@ Valid types include `google', `dejanews', `dejanewsold', `reference',
 and `altavista'.")
 
 (defvar nnweb-type-definition
-  '(
-    (google
-     ;;(article . nnweb-google-wash-article)
-     ;;(id . "http://groups.google.com/groups?as_umsgid=%s")
+  '((google
      (article . ignore)
      (id . "http://groups.google.com/groups?selm=%s&output=gplain")
-     ;;(reference . nnweb-google-reference)
      (reference . identity)
      (map . nnweb-google-create-mapping)
      (search . nnweb-google-search)
@@ -73,19 +70,6 @@ and `altavista'.")
      (search . nnweb-google-search)
      (address . "http://groups.google.com/groups")
      (identifier . nnweb-google-identity))
-;;;     (dejanews
-;;;      (article . ignore)
-;;;      (id . "http://search.dejanews.com/msgid.xp?MID=%s&fmt=text")
-;;;      (map . nnweb-dejanews-create-mapping)
-;;;      (search . nnweb-dejanews-search)
-;;;      (address . "http://www.deja.com/=dnc/qs.xp")
-;;;      (identifier . nnweb-dejanews-identity))
-;;;     (dejanewsold
-;;;      (article . ignore)
-;;;      (map . nnweb-dejanews-create-mapping)
-;;;      (search . nnweb-dejanewsold-search)
-;;;      (address . "http://www.deja.com/dnquery.xp")
-;;;      (identifier . nnweb-dejanews-identity))
     (reference
      (article . nnweb-reference-wash-article)
      (map . nnweb-reference-create-mapping)

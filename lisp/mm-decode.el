@@ -22,14 +22,6 @@
 
 ;;; Commentary:
 
-;; Jaap-Henk Hoepman (jhh@xs4all.nl):
-;;
-;; Added support for delayed destroy of external MIME viewers. All external
-;; viewers for mime types in mm-keep-viewer-alive-types will remain active
-;; after switching articles or groups, and will only be removed when exiting
-;; gnus.
-;;
-
 ;;; Code:
 
 (require 'mail-parse)

@@ -1429,6 +1429,7 @@ slower."
     ("nnfolder" mail respool address)
     ("nngateway" post-mail address prompt-address physical-address)
     ("nnweb" none)
+    ("nngoogle" post)
     ("nnslashdot" post)
     ("nnultimate" none)
     ("nnrss" none)
@@ -2918,7 +2919,7 @@ The function `gnus-group-find-parameter' will do that for you."
 						     symbol allow-list))
 	    (when result
 	      ;; Expand if necessary.
-	      (if (and (stringp result) (string-match "\\\\" result))
+	      (if (and (stringp result) (string-match "\\\\[0-9&]" result))
 		  (setq result (gnus-expand-group-parameter (car head)
 							    result group)))
 	      ;; Exit the loop early.

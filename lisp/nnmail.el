@@ -1022,8 +1022,8 @@ FUNC will be called with the group name to determine the article number."
 		       (or (funcall nnmail-split-methods)
 			   '("bogus"))
 		     (error
-		      (nnheader-message 5
-					"Error in `nnmail-split-methods'; using `bogus' mail group")
+		      (nnheader-message
+		       5 "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
 	      (setq split (gnus-remove-duplicates split))
@@ -1292,7 +1292,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	      (let ((value (nth 1 split)))
 		(if (symbolp value)
 		    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
-	;; Someone might want to do a \N sub on this match, so get the
+		;; Someone might want to do a \N sub on this match, so get the
 		;; correct match positions.
 		(re-search-backward value start-of-value))
 	      (dolist (sp (nnmail-split-it (car split-rest)))

@@ -1,3 +1,38 @@
+2002-01-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el (nnheader-parse-overview-file): New function.
+	(nnheader-write-overview-file): New function.
+
+2002-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-group-fast-parameter): Check better if expansion
+	in wanted.
+
+	* nnweb.el (nnweb-type-definition): Clean up.
+
+2002-01-21  Alastair Burt  <burt@dfki.de>
+
+	* gnus-art.el (gnus-mm-display-part): Make sure that the summary
+	buffer exists before jumping to it.
+
+2002-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-wash-html-with-w3): Made into own
+	function.
+	(article-wash-html): Use it.
+	(gnus-article-wash-function): New variable.
+	(gnus-article-wash-html-with-w3m): New function.
+
+2002-01-20  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
+
+	* dgnushack.el (dgnushack-compile): Compile smiley-ems for
+	XEmacs. 
+
+2002-01-20  John H. Palmieri  <palmieri@math.washington.edu>
+
+	* gnus-fun.el (gnus-convert-image-to-gray-x-face): More standard
+	command line.
+
 2002-01-21  Simon Josefsson  <jas@extundo.com>
 
 	* canlock.el (base64-encode-string): Autoload it from base64.

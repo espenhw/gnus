@@ -399,6 +399,22 @@ on your system, you could say something like:
       (delete-char 1))
     (forward-line 1)))
 
+(defun nnheader-parse-overview-file (file)
+  "Parse FILE and return a list of headers."
+  (mm-with-unibyte-buffer
+    (nnheader-insert-file-contents file)
+    (goto-char (point-min))
+    (let (headers)
+      (while (not (eobp))
+	(push (nnheader-parse-nov) headers)
+	(forward-line 1))
+      (nreverse headers))))
+
+(defun nnheader-write-overview-file (file headers)
+  "Write HEADERS to FILE."
+  (with-temp-file file
+    (mapcar 'nnheader-insert-nov headers)))
+
 (defun nnheader-insert-header (header)
   (insert
    "Subject: " (or (mail-header-subject header) "(none)") "\n"

@@ -93,7 +93,8 @@
 	      (insert (if (zerop (logand bits mask)) "0 " "1 ")))
 	    (shell-command-on-region
 	     (point-min) (point-max)
-	     "pbmtoxbm | compface"
+	     ;; the following is taken from xbmtoikon:
+	     "pbmtoicon | sed '/^[ 	]*[*\\\\/]/d; s/[ 	]//g; s/,$//' | tr , '\\012' | sed 's/^0x//; s/^/0x/' | pr -l1 -t -w22 -3 -s, | sed 's/,*$/,/' | compface"
 	     (current-buffer) t)
 	    (push (buffer-string) x-faces))))
       (dotimes (i (length x-faces))

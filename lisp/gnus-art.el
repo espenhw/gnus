@@ -1192,6 +1192,12 @@ It is a string, such as \"PGP\". If nil, ask user."
   :type 'string
   :group 'mime-security)
 
+(defcustom gnus-article-wash-function 'gnus-article-wash-html-with-w3
+  "Function used for converting HTML into text."
+  :type '(radio (function-item gnus-article-wash-html-with-w3)
+		(function-item gnus-article-wash-html-with-w3m))
+  :group 'gnus-article)
+
 ;;; Internal variables
 
 (defvar gnus-english-month-names
@@ -2063,15 +2069,24 @@ If READ-CHARSET, ask for a coding system."
       (save-window-excursion
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
-	  (mm-setup-w3)
-	  (let ((w3-strict-width (window-width))
-		(url-standalone-mode t)
-		(w3-honor-stylesheets nil)
-		(w3-delay-image-loads t))
-	    (condition-case var
-		(w3-region (point-min) (point-max))
-	      (error))))))))
+	  (funcall gnus-article-wash-function))))))
 
+(defun gnus-article-wash-html-with-w3 ()
+  "Wash the current buffer with w3."
+  (mm-setup-w3)
+  (let ((w3-strict-width (window-width))
+	(url-standalone-mode t)
+	(w3-honor-stylesheets nil)
+	(w3-delay-image-loads t))
+    (condition-case var
+	(w3-region (point-min) (point-max))
+      (error))))
+
+(defun gnus-article-wash-html-with-w3m ()
+  "Wash the current buffer with w3m."
+  (shell-command-on-region
+   (point) (point-max) "w3m -T text/html" t t))
+  
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
 The `gnus-list-identifiers' variable specifies what to do."
@@ -3935,8 +3950,11 @@ If no internal viewer is available, use an external viewer."
 	(let ((window (selected-window))
 	      (mail-parse-charset gnus-newsgroup-charset)
 	      (mail-parse-ignored-charsets
-	       (save-excursion (set-buffer gnus-summary-buffer)
-			       gnus-newsgroup-ignored-charsets)))
+	       (if (gnus-buffer-live-p gnus-summary-buffer)
+		   (save-excursion
+		     (set-buffer gnus-summary-buffer)
+		     gnus-newsgroup-ignored-charsets)
+		 nil)))
 	  (save-excursion
 	    (unwind-protect
 		(let ((win (gnus-get-buffer-window (current-buffer) t))
