@@ -493,84 +493,85 @@ noticing asynchronous data.")
   "Retrieve group info on GROUPS."
   (nntp-possibly-change-group nil server)
   (when (nntp-find-connection-buffer nntp-server-buffer)
-    (save-excursion
-      ;; Erase nntp-server-buffer before nntp-inhibit-erase.
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
-      ;; The first time this is run, this variable is `try'.  So we
-      ;; try.
-      (when (eq nntp-server-list-active-group 'try)
-	(nntp-try-list-active (car groups)))
-      (erase-buffer)
-      (let ((count 0)
-	    (received 0)
-	    (last-point (point-min))
-	    (nntp-inhibit-erase t)
-	    (buf (nntp-find-connection-buffer nntp-server-buffer))
-	    (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
-	(while groups
-	  ;; Send the command to the server.
-	  (nntp-send-command nil command (pop groups))
-	  (incf count)
-	  ;; Every 400 requests we have to read the stream in
-	  ;; order to avoid deadlocks.
-	  (when (or (null groups)	;All requests have been sent.
-		    (zerop (% count nntp-maximum-request)))
-	    (nntp-accept-response)
+    (catch 'done
+      (save-excursion
+	;; Erase nntp-server-buffer before nntp-inhibit-erase.
+	(set-buffer nntp-server-buffer)
+	(erase-buffer)
+	(set-buffer (nntp-find-connection-buffer nntp-server-buffer))
+	;; The first time this is run, this variable is `try'.  So we
+	;; try.
+	(when (eq nntp-server-list-active-group 'try)
+	  (nntp-try-list-active (car groups)))
+	(erase-buffer)
+	(let ((count 0)
+	      (received 0)
+	      (last-point (point-min))
+	      (nntp-inhibit-erase t)
+	      (buf (nntp-find-connection-buffer nntp-server-buffer))
+	      (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
+	  (while groups
+	    ;; Send the command to the server.
+	    (nntp-send-command nil command (pop groups))
+	    (incf count)
+	    ;; Every 400 requests we have to read the stream in
+	    ;; order to avoid deadlocks.
+	    (when (or (null groups)	;All requests have been sent.
+		      (zerop (% count nntp-maximum-request)))
+	      (nntp-accept-response)
+	      (while (and (gnus-buffer-live-p buf)
+			  (progn
+			    ;; Search `blue moon' in this file for the
+			    ;; reason why set-buffer here.
+			    (set-buffer buf)
+			    (goto-char last-point)
+			    ;; Count replies.
+			    (while (re-search-forward "^[0-9]" nil t)
+			      (incf received))
+			    (setq last-point (point))
+			    (< received count)))
+		(nntp-accept-response))))
+	  
+	  ;; Wait for the reply from the final command.
+	  (unless (gnus-buffer-live-p buf)
+	    (nnheader-report 'nntp "Connection to %s is closed." server)
+	    (throw 'done nil))
+	  (set-buffer buf)
+	  (goto-char (point-max))
+	  (re-search-backward "^[0-9]" nil t)
+	  (when (looking-at "^[23]")
 	    (while (and (gnus-buffer-live-p buf)
 			(progn
-			  ;; Search `blue moon' in this file for the
-			  ;; reason why set-buffer here.
 			  (set-buffer buf)
-			  (goto-char last-point)
-			  ;; Count replies.
-			  (while (re-search-forward "^[0-9]" nil t)
-			    (incf received))
-			  (setq last-point (point))
-			  (< received count)))
-	      (nntp-accept-response))))
-
-	;; Wait for the reply from the final command.
-	(unless (gnus-buffer-live-p buf)
-	  (error
-	   (nnheader-report 'nntp "Connection to %s is closed." server)))
-	(set-buffer buf)
-	(goto-char (point-max))
-	(re-search-backward "^[0-9]" nil t)
-	(when (looking-at "^[23]")
-	  (while (and (gnus-buffer-live-p buf)
-		      (progn
-			(set-buffer buf)
-			(goto-char (point-max))
-			(if (not nntp-server-list-active-group)
-			    (not (re-search-backward "\r?\n" (- (point) 3) t))
-			  (not (re-search-backward "^\\.\r?\n"
-						   (- (point) 4) t)))))
-		      (nntp-accept-response)))
-
-	;; Now all replies are received.  We remove CRs.
-	(unless (gnus-buffer-live-p buf)
-	  (error
-	   (nnheader-report 'nntp "Connection to %s is closed." server)))
-	(set-buffer buf)
-	(goto-char (point-min))
-	(while (search-forward "\r" nil t)
-	  (replace-match "" t t))
-
-	(if (not nntp-server-list-active-group)
-	    (progn
-	      (copy-to-buffer nntp-server-buffer (point-min) (point-max))
-	      'group)
-	  ;; We have read active entries, so we just delete the
-	  ;; superfluous gunk.
+			  (goto-char (point-max))
+			  (if (not nntp-server-list-active-group)
+			      (not (re-search-backward "\r?\n" (- (point) 3) t))
+			    (not (re-search-backward "^\\.\r?\n"
+						     (- (point) 4) t)))))
+	      (nntp-accept-response)))
+	  
+	  ;; Now all replies are received.  We remove CRs.
+	  (unless (gnus-buffer-live-p buf)
+	    (nnheader-report 'nntp "Connection to %s is closed." server)
+	    (throw 'done nil))
+	  (set-buffer buf)
 	  (goto-char (point-min))
-	  (while (re-search-forward "^[.2-5]" nil t)
-	    (delete-region (match-beginning 0)
-			   (progn (forward-line 1) (point))))
-	  (copy-to-buffer nntp-server-buffer (point-min) (point-max))
-	  'active)))))
-
+	  (while (search-forward "\r" nil t)
+	    (replace-match "" t t))
+	  
+	  (if (not nntp-server-list-active-group)
+	      (progn
+		(copy-to-buffer nntp-server-buffer (point-min) (point-max))
+		'group)
+	    ;; We have read active entries, so we just delete the
+	    ;; superfluous gunk.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^[.2-5]" nil t)
+	      (delete-region (match-beginning 0)
+			     (progn (forward-line 1) (point))))
+	    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+	    'active))))))
+  
 (deffoo nntp-retrieve-articles (articles &optional group server)
   (nntp-possibly-change-group group server)
   (save-excursion

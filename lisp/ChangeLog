@@ -1,3 +1,7 @@
+2001-04-30 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-retrieve-groups): Use throw instead of error.
+
 2001-04-29 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-insert-w3): Use cache before I figure out how to
