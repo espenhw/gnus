@@ -1,3 +1,14 @@
+2001-10-17 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnml.el (nnml-request-expire-articles): Make sure it is back to
+	the server.
+	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
+	* nnfolder.el (nnfolder-request-expire-articles): Ditto.
+	* nnbabyl.el (nnbabyl-request-expire-articles): Ditto.
+	* nndiary.el (nndiary-request-expire-articles): Ditto.
+	(nndiary-schedule): Defsubst it before use it.
+	(nndiary-error): eval-and-compile.
+
 2001-10-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-msg.el (gnus-post-method): Changed two instances of

@@ -296,7 +296,8 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 					     (current-buffer))
 		    (let ((nnml-current-directory nil))
 		      (nnmail-expiry-target-group
-		       nnmail-expiry-target newsgroup))))
+		       nnmail-expiry-target newsgroup)))
+		  (nnbabyl-possibly-change-newsgroup newsgroup server))
 		(nnheader-message 5 "Deleting article %d in %s..."
 				  (car articles) newsgroup)
 		(nnbabyl-delete-mail))

@@ -333,7 +333,9 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 		(let (nnml-current-directory
 		      nnml-current-group
 		      nnml-article-file-alist)
-		  (nnmail-expiry-target-group nnmail-expiry-target group))))
+		  (nnmail-expiry-target-group nnmail-expiry-target group)))
+	      ;; Maybe directory is changed during nnmail-expiry-target-group.
+	      (nnml-possibly-change-directory group server))
 	    (nnheader-message 5 "Deleting article %s in %s"
 			      number group)
 	    (condition-case ()

@@ -211,11 +211,12 @@
 
 ;; Compatibility Functions  =================================================
 
-(if (fboundp 'signal-error)
+(eval-and-compile
+  (if (fboundp 'signal-error)
+      (defun nndiary-error (&rest args)
+	(apply #'signal-error 'nndiary args))
     (defun nndiary-error (&rest args)
-      (apply #'signal-error 'nndiary args))
-  (defun nndiary-error (&rest args)
-    (apply #'error args)))
+      (apply #'error args))))
 
 
 ;; Backend behavior customization ===========================================
@@ -371,7 +372,6 @@ all.  This may very well take some time.")
   (interactive)
   (message "NNDiary version %s" nndiary-version))
 
-
 (defvoo nndiary-nov-file-name ".overview")
 
 (defvoo nndiary-current-directory nil)
@@ -479,6 +479,19 @@ all.  This may very well take some time.")
   ;; the (relative) number of seconds ahead GMT.
   )
 
+(defsubst nndiary-schedule ()
+  (let (head)
+    (condition-case arg
+	(mapcar
+	 (lambda (elt)
+	   (setq head (nth 0 elt))
+	   (nndiary-parse-schedule (nth 0 elt) (nth 1 elt) (nth 2 elt)))
+	 nndiary-headers)
+      (t
+       (nnheader-report 'nndiary "X-Diary-%s header parse error: %s."
+			head (cdr arg))
+       nil))
+    ))
 
 ;;; Interface functions =====================================================
 
@@ -691,7 +704,8 @@ all.  This may very well take some time.")
 	      (with-temp-buffer
 		(nndiary-request-article number group server (current-buffer))
 		(let ((nndiary-current-directory nil))
-		  (nnmail-expiry-target-group nnmail-expiry-target group))))
+		  (nnmail-expiry-target-group nnmail-expiry-target group)))
+	      (nndiary-possibly-change-directory group server))
 	    (nnheader-message 5 "Deleting article %s in %s" number group)
 	    (condition-case ()
 		(funcall nnmail-delete-file-function article)
@@ -1335,20 +1349,6 @@ all.  This may very well take some time.")
 	(nndiary-error "header missing")
       ;; else
       (nndiary-parse-schedule-value (match-string 1) min-or-values max))
-    ))
-
-(defsubst nndiary-schedule ()
-  (let (head)
-    (condition-case arg
-	(mapcar
-	 (lambda (elt)
-	   (setq head (nth 0 elt))
-	   (nndiary-parse-schedule (nth 0 elt) (nth 1 elt) (nth 2 elt)))
-	 nndiary-headers)
-      (t
-       (nnheader-report 'nndiary "X-Diary-%s header parse error: %s."
-			head (cdr arg))
-       nil))
     ))
 
 (defun nndiary-max (spec)
