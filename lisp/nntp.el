@@ -981,7 +981,7 @@ It will prompt for a password."
 	  ;; order to avoid deadlocks.
 	  (when (or (null articles)	;All requests have been sent.
 		    (zerop (% count nntp-maximum-request)))
-	    (accept-process-output nntp-server-process)
+	    (accept-process-output nntp-server-process 1)
 	    ;; On some Emacs versions the preceding function has
 	    ;; a tendency to change the buffer. Perhaps. It's
 	    ;; quite difficult to reproduce, because it only

@@ -1,3 +1,15 @@
+Tue Jul 16 20:05:49 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-send-mail): Bugged out under Emacs.
+	(message-send-news): Ditto.
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Would hang
+	sometimes. 
+
+Sun Jul 14 20:01:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.35 is released.
+
 Sun Jul 14 18:21:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-uu.el (gnus-uu-mark-over): Would bug out.

@@ -1320,7 +1320,10 @@ the user from the mailer."
 	  (set-buffer tembuf)
 	  (erase-buffer)
 	  ;; Avoid copying text props.
-	  (insert (format "%s" (buffer-string nil nil mailbuf)))
+	  (insert (format 
+		   "%s" (save-excursion
+			  (set-buffer mailbuf)
+			  (buffer-string))))
 	  ;; Remove some headers.
 	  (save-restriction
 	    (message-narrow-to-headers)
@@ -1437,7 +1440,10 @@ the user from the mailer."
 	    (buffer-disable-undo (current-buffer))
 	    (erase-buffer) 
 	    ;; Avoid copying text props.
-	    (insert (format "%s" (buffer-string nil nil messbuf)))
+	  (insert (format 
+		   "%s" (save-excursion
+			  (set-buffer messbuf)
+			  (buffer-string))))
 	    ;; Remove some headers.
 	    (save-restriction
 	      (message-narrow-to-headers)
