@@ -47,6 +47,8 @@
     (iso-2022-jp-2 . 7bit)
     ;; We MUST encode UTF-16 because it can contain \0's which is
     ;; known to break servers.
+    ;; Note: UTF-16 variants are invalid for text parts [RFC 2781],
+    ;; so this can't happen :-/.
     (utf-16 . base64)
     (utf-16be . base64)
     (utf-16le . base64))
@@ -63,9 +65,9 @@ Valid encodings are `7bit', `8bit', `quoted-printable' and `base64'."
 (defun mm-encode-body (&optional charset)
   "Encode a body.
 Should be called narrowed to the body that is to be encoded.
-If there is more than one non-ASCII MULE charset, then list of found
-MULE charsets are returned.
-If CHARSET is non-nil, it is used.
+If there is more than one non-ASCII MULE charset in the body, then the
+list of MULE charsets found is returned.
+If CHARSET is non-nil, it is used as the MIME charset to encode the body.
 If successful, the MIME charset is returned.
 If no encoding was done, nil is returned."
   (if (not (mm-multibyte-p))
@@ -79,7 +81,7 @@ If no encoding was done, nil is returned."
 		    (message-options-get 'mm-encody-body-charset)
 		    (message-options-set
 		     'mm-encody-body-charset
-		     (mm-read-charset "Charset used in the article: ")))
+		     (mm-read-coding-system "Charset used in the article: ")))
 	      ;; The logic in `mml-generate-mime-1' confirms that it's OK
 	      ;; to return nil here.
 	      nil)))
@@ -150,31 +152,18 @@ If no encoding was done, nil is returned."
 
 (defun mm-body-7-or-8 ()
   "Say whether the body is 7bit or 8bit."
-  (cond
-   ((not (featurep 'mule))
-    (if (save-excursion
-	  (goto-char (point-min))
-	  (skip-chars-forward mm-7bit-chars)
-	  (eobp))
-	'7bit
-      '8bit))
-   (t
-    ;; Mule version
-    (if (and (null (delq 'ascii
-			 (mm-find-charset-region (point-min) (point-max))))
-	     ;;!!!The following is necessary because the function
-	     ;;!!!above seems to return the wrong result under
-	     ;;!!!Emacs 20.3.  Sometimes.
-	     (save-excursion
-	       (goto-char (point-min))
-	       (skip-chars-forward mm-7bit-chars)
-	       (eobp)))
-	'7bit
-      '8bit))))
+  (if (save-excursion
+	(goto-char (point-min))
+	(skip-chars-forward mm-7bit-chars)
+	(eobp))
+      '7bit
+    '8bit))
 
 ;;;
 ;;; Functions for decoding
 ;;;
+
+(eval-when-compile (defvar mm-uu-yenc-decode-function))
 
 (defun mm-decode-content-transfer-encoding (encoding &optional type)
   "Decodes buffer encoded with ENCODING, returning success status.
@@ -235,9 +224,10 @@ If TYPE is `text/plain' CRLF->LF translation may occur."
 	(replace-match "\n" t t)))))
 
 (defun mm-decode-body (charset &optional encoding type)
-  "Decode the current article that has been encoded with ENCODING.
-The characters in CHARSET should then be decoded.  If FORCE is non-nil
-use the supplied charset unconditionally."
+  "Decode the current article that has been encoded with ENCODING to CHARSET.
+ENCODING is a MIME content transfer encoding.
+CHARSET is the MIME charset with which to decode the data after transfer
+decoding.  If it is nil, default to `mail-parse-charset'."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
   (when (or (not charset)
@@ -248,7 +238,7 @@ use the supplied charset unconditionally."
   (save-excursion
     (when encoding
       (mm-decode-content-transfer-encoding encoding type))
-    (when (featurep 'mule)
+    (when (featurep 'mule)  ; Fixme: Wrong test for unibyte session.
       (let ((coding-system (mm-charset-to-coding-system charset)))
 	(if (and (not coding-system)
 		 (listp mail-parse-ignored-charsets)
