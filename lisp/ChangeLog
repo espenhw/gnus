@@ -1,3 +1,10 @@
+2002-08-15  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus-art.el (article-make-date-line): Refer to the value for
+	`gnus-article-time-format' in the summary buffer.
+
+	* message.el (message-cite-prefix-regexp): Exclude ":" and ",A;(B".
+
 2002-08-14  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-button-alist): Use ' not ` for default value
