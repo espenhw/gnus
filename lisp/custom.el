@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.993
+;; Version: 0.995
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -19,7 +19,7 @@
 
 (require 'widget)
 
-(define-widget-keywords :type :group)
+(define-widget-keywords :options :type :group)
 
 ;; These autoloads should be deleted when the file is added to Emacs
 (autoload 'customize "custom-edit" nil t)
@@ -48,13 +48,21 @@
 			(color-instance-name
 			 (specifier-instance
 			  (face-background 'default))))
-		  (error nil))))
-    (cond (bg-resource (intern (downcase bg-resource)))
-	  ((and color
-		(< (apply '+ (custom-x-color-values color))
-		   (/ (apply '+ (custom-x-color-values "white")) 3)))
-	   'dark)
-	  (t 'light))))
+		  (error nil)))
+	 (mode (cond (bg-resource (intern (downcase bg-resource)))
+		     ((and color
+			   (< (apply '+ (custom-x-color-values color))
+			      (/ (apply '+ (custom-x-color-values "white"))
+				 3)))
+		      'dark)
+		     (t 'light))))
+    (if (fboundp 'set-frame-property)
+	;; `modify-frame-properties' is borken on XEmacs 19.14.
+	(set-frame-property (selected-frame) 'background-mode mode)
+      ;; `set-frame-property' is unimplemented in Emacs 19.34.
+      (modify-frame-parameters (selected-frame)
+			       (cons (cons 'background-mode mode) params)))
+    mode))
 
 ;;; The `defcustom' Macro.
 
@@ -80,6 +88,9 @@
 	(setq args (cdr args))
 	(cond ((eq keyword :type)
 	       (put symbol 'custom-type value))
+	      ((eq keyword :options)
+	       (put symbol 'custom-options 
+		    (append value (get symbol 'custom-options))))
 	      ((eq keyword :group)
 	       (custom-add-to-group value symbol 'custom-variable))
 	      (t
@@ -98,7 +109,8 @@ The remaining arguments should have the form
 
 The following KEYWORD's are defined:
 
-:type	VALUE should be a sexp widget.
+:type	VALUE should be a widget type.
+:options VALUE should be a list of valid members of the widget type.
 :group  VALUE should be a customization group.  
         Add SYMBOL to that group.
 
@@ -113,10 +125,11 @@ information."
 (defun custom-declare-face (face spec doc &rest args)
   "Like `defface', but FACE is evaluated as a normal argument."
   (put face 'factory-face spec)
-  (unless (facep face)
-    ;; If the user has already created the face, respect that.
-    (let ((value (or (get face 'saved-face) spec)))
-      (custom-face-display-set face value)))
+  (when (fboundp 'facep)
+    (unless (facep face)
+      ;; If the user has already created the face, respect that.
+      (let ((value (or (get face 'saved-face) spec)))
+	(custom-face-display-set face value))))
   (when doc
     (put face 'face-documentation doc))
   (while args 
@@ -274,7 +287,7 @@ examine the brightness for you."
 (defun custom-display-match-frame (display frame)
   "Non-nil iff DISPLAY matches FRAME.
 If FRAME is nil, the current FRAME is used."
-  ;; This is a kludge to get started, we realle should use specifiers!
+  ;; This is a kludge to get started, we really should use specifiers!
   (unless frame 
     (setq frame (selected-frame)))
   (if (eq display t)
@@ -287,9 +300,10 @@ If FRAME is nil, the current FRAME is used."
 	       (options (cdr entry)))
 	  (setq display (cdr display))
 	  (cond ((eq req 'type)
-		 (setq match (if (fboundp 'device-type)
+		 (let ((type (if (fboundp 'device-type)
 				 (device-type frame)
-			       (memq window-system options))))
+			       window-system)))
+		   (setq match (memq type options))))
 		((eq req 'class)
 		 (let ((class (if (fboundp 'device-class)
 				  (device-class frame)

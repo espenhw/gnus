@@ -220,37 +220,41 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 
 (defun gnus-demon-scan-nocem ()
   "Scan NoCeM groups for NoCeM messages."
-  (gnus-nocem-scan-groups))
+  (save-window-excursion
+    (gnus-nocem-scan-groups)))
 
 (defun gnus-demon-add-disconnection ()
   "Add daemonic server disconnection to Gnus."
   (gnus-demon-add-handler 'gnus-demon-close-connections nil 30))
 
 (defun gnus-demon-close-connections ()
-  (gnus-close-backends))
+  (save-window-excursion
+    (gnus-close-backends)))
 
 (defun gnus-demon-add-scanmail ()
   "Add daemonic scanning of mail from the mail backends."
   (gnus-demon-add-handler 'gnus-demon-scan-mail 120 60))
 
 (defun gnus-demon-scan-mail ()
-  (let ((servers gnus-opened-servers)
-	server)
-    (while (setq server (car (pop servers)))
-      (and (gnus-check-backend-function 'request-scan (car server))
-	   (or (gnus-server-opened server)
-	       (gnus-open-server server))
-	   (gnus-request-scan nil server)))))
+  (save-window-excursion
+    (let ((servers gnus-opened-servers)
+	  server)
+      (while (setq server (car (pop servers)))
+	(and (gnus-check-backend-function 'request-scan (car server))
+	     (or (gnus-server-opened server)
+		 (gnus-open-server server))
+	     (gnus-request-scan nil server))))))
 
 (defun gnus-demon-add-rescan ()
   "Add daemonic scanning of new articles from all backends."
   (gnus-demon-add-handler 'gnus-demon-scan-news 120 60))
 
 (defun gnus-demon-scan-news ()
-  (when (gnus-alive-p)
-    (save-excursion
-      (set-buffer gnus-group-buffer)
-      (gnus-group-get-new-news))))
+  (save-window-excursion
+    (when (gnus-alive-p)
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(gnus-group-get-new-news)))))
 
 (provide 'gnus-demon)
 

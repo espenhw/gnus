@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.993
+;; Version: 0.995
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -15,6 +15,7 @@
 
 (require 'custom)
 (require 'widget-edit)
+(require 'easymenu)
 
 (define-widget-keywords :custom-show :custom-magic
   :custom-state :custom-level :custom-form
@@ -285,10 +286,14 @@ The list should be sorted most significant first."
 	 (form (widget-get widget :custom-form))
 	 (state (widget-get widget :custom-state))
 	 (symbol (widget-get widget :value))
+	 (options (get symbol 'custom-options))
 	 (child-type (or (get symbol 'custom-type) 'sexp))
-	 (type (if (listp child-type)
-		   child-type
-		 (list child-type)))
+	 (type (let ((tmp (if (listp child-type)
+			      child-type
+			    (list child-type))))
+		 (when options
+		   (widget-put tmp :options options))
+		 tmp))
 	 (conv (widget-convert type))
 	 (value (if (boundp symbol)
 		    (symbol-value symbol)
@@ -668,6 +673,27 @@ Optional EVENT is the location for the menu."
       (widget-value-set widget (intern answer))
       (widget-apply widget :notify widget event)
       (widget-setup))))
+
+;;; The `hook' Widget.
+
+(define-widget 'hook 'list
+  "A emacs lisp hook"
+  :convert-widget 'custom-hook-convert-widget
+  :tag "Hook")
+
+(defun custom-hook-convert-widget (widget)
+  ;; Handle `:custom-options'.
+  (let* ((options (widget-get widget :options))
+	 (other `(editable-list :inline t (function :format "%v")))
+	 (args (if options
+		   (list `(checklist :inline t
+				     ,@(mapcar (lambda (entry)
+						 `(function-item ,entry))
+					       options))
+			 other)
+		 (list other))))
+    (widget-put widget :args args)
+    widget))
 
 ;;; The `custom-group' Widget.
 

@@ -1,9 +1,9 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.1 1996/09/22 12:07:55 steve Exp $
+@c $Id: widget.texi,v 1.2 1996/10/30 19:27:41 steve Exp $
 
 @c %**start of header
-@setfilename widget.info
+@setfilename widget
 @settitle The Emacs Widget Library
 @iftex
 @afourpaper
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 0.9
+Version: 0.995
 
 @menu
 * Introduction::                
@@ -47,21 +47,21 @@ The basic widgets are:
 @item link
 Areas of text with an associated action.  Intended for hypertext links
 embedded in text.
-@item push 
+@item push-button 
 Like link, but intended for stand-alone buttons.
-@item field
+@item editable-field
 An editable text field.  It can be either variable or fixed length.
-@item choice
+@item menu-choice
 Allows the user to choose one of multiple options from a menu, each
 option is itself a widget.  Only the selected option will be visible in
 the buffer.
-@item radio
+@item radio-button-choice
 Allows the user to choose one of multiple options by pushing radio
 buttons.  The options are implemented as widgets.  All options will be
 visible in the buffer.
 @item item
-A simple constant widget intended to be used in the @code{choice} and
-@code{radio} widgets. 
+A simple constant widget intended to be used in the @code{menu-choice} and
+@code{radio-button-choice} widgets. 
 @item choice-item
 An button item only intended for use in choices.  When pushed, the user
 will be asked to select another option from the choice widget.
@@ -69,7 +69,7 @@ will be asked to select another option from the choice widget.
 A simple @samp{on}/@samp{off} switch.
 @item checkbox
 A checkbox (@samp{[ ]}/@samp{[X]}). 
-@item repeat
+@item editable-list
 Create an editable list.  The user can insert or delete items in the
 list.  Each list item is itself a widget.
 @end table
@@ -178,7 +178,7 @@ change you make must be contained within a single editable text field.
 For example, capitalizing all text from the middle of one field to the
 middle of another field is prohibited.
 
-Editing text fields are created by the @code{field} widget.
+Editing text fields are created by the @code{editable-field} widget.
 
 The editing text fields are highlighted with the
 @code{widget-field-face} face, making them easy to find.
@@ -217,11 +217,11 @@ the example:
 @item The Option Field Tags.
 When you activate one of these buttons, you will be asked to choose
 between a number of different options.  This is how you edit an option
-field.  Option fields are created by the @code{choice} widget.  In
+field.  Option fields are created by the @code{menu-choice} widget.  In
 the example, @samp{@b{Choose}} is an option field tag.
 @item The @samp{@b{[INS]}} and @samp{@b{[DEL]}} buttons.
 Activating these will insert or delete elements from a editable list.
-The list is created by the @code{repeat} widget. 
+The list is created by the @code{editable-list} widget. 
 @item Embedded Buttons.
 The @samp{@b{_other work_}} is an example of an embedded
 button. Embedded buttons are not associated with a fields, but can serve
@@ -231,11 +231,11 @@ usually created by the @code{link} widget.
 Activating one of these will convert it to the other.  This is useful
 for implementing multiple-choice fields.  You can create it wit
 @item The @samp{@b{( )}} and @samp{@b{(*)}} buttons.
-Only one radio button in a @code{radio} widget can be selected at any
+Only one radio button in a @code{radio-button-choice} widget can be selected at any
 time.  When you push one of the unselected radio buttons, it will be
 selected and the previous selected radio button will become unselected. 
 @item The @samp{@b{[Apply Form]}} @samp{@b{[Reset Form]}} buttons.
-These are explicit buttons made with the @code{push} widget.  The main
+These are explicit buttons made with the @code{push-button} widget.  The main
 difference from the @code{link} widget is that the buttons are intended
 to be displayed more like buttons in a GUI, once Emacs grows powerful
 enough. 
@@ -277,6 +277,9 @@ Interface}).
 @lisp
 (require 'widget)
 
+(eval-when-compile
+  (require 'widget-edit))
+
 (defvar widget-example-repeat)
 
 (defun widget-example ()
@@ -288,10 +291,10 @@ Interface}).
   (let ((inhibit-read-only t))
     (erase-buffer))
   (widget-insert "Here is some documentation.\n\nName: ")
-  (widget-create 'field
+  (widget-create 'editable-field
 		 :size 13
 		 "My Name")
-  (widget-create 'choice
+  (widget-create 'menu-choice
 		 :tag "Choose"
 		 :value "This"
 		 :help-echo "Choose me, please!"
@@ -300,9 +303,9 @@ Interface}).
 				    (widget-value widget)))
 		 '(item :tag "This option" :value "This")
 		 '(choice-item "That option")
-		 '(field :menu-tag "No option" "Thus option"))
+		 '(editable-field :menu-tag "No option" "Thus option"))
   (widget-insert "Address: ")
-  (widget-create 'field
+  (widget-create 'editable-field
 		 "Some Place\nIn some City\nSome country.")
   (widget-insert "\nSee also ")
   (widget-create 'link
@@ -313,7 +316,7 @@ Interface}).
 		 "other work")
   (widget-insert " for more information.\n\nNumbers: count to three below\n")
   (setq widget-example-repeat
-	(widget-create 'repeat
+	(widget-create 'editable-list
 		       :entry-format "%i %d %v"
 		       :notify (lambda (widget &rest ignore)
 				 (let ((old (widget-get widget
@@ -323,7 +326,7 @@ Interface}).
 				     (widget-put widget ':example-length new)
 				     (message "You can count to %d." new))))
 		       :value '("One" "Eh, two?" "Five!")
-		       '(field :value "three")))
+		       '(editable-field :value "three")))
   (widget-insert "\n\nSelect multiple:\n\n")
   (widget-create 'checkbox t)
   (widget-insert " This\n")
@@ -333,13 +336,14 @@ Interface}).
 		 :notify (lambda (&rest ignore) (message "Tickle"))
 		 t)
   (widget-insert " Thus\n\nSelect one:\n\n")
-  (widget-create 'radio
+  (widget-create 'radio-button-choice
 		 :value "One"
 		 :notify (lambda (widget &rest ignore)
-			   (message "You selected %s" (widget-value widget)))
+			   (message "You selected %s"
+				    (widget-value widget)))
 		 '(item "One") '(item "Anthor One.") '(item "A Final One."))
   (widget-insert "\n")
-  (widget-create 'push
+  (widget-create 'push-button
 		 :notify (lambda (&rest ignore) 
 			   (if (= (length (widget-value widget-example-repeat))
 				  3)
@@ -347,7 +351,7 @@ Interface}).
 			     (error "Three was the count!")))
 		 "Apply Form")
   (widget-insert " ")
-  (widget-create 'push
+  (widget-create 'push-button
 		 :notify (lambda (&rest ignore)
 			   (widget-example))
 		 "Reset Form")
@@ -446,6 +450,15 @@ value.  What this is depends on the widget type.
 @item %d
 Insert the string specified by @code{:doc} here.
 
+@item %h
+Like @samp{%d}, with the following modifications: If the documentation
+string is more than one line, it will add a button which will toggle
+between showing only the first line, and showing the full text.
+Furthermore, if there is no @code{:doc} property in the widget, it will
+instead examine the @code{:documentation-property} property.  If it is a
+lambda expression, it will be called with the widget's value as an
+argument, and the result will be used as the documentation text.
+
 @item %t
 Insert the string specified by @code{:tag} here, or the @code{princ}
 representation of the value if there is no tag.
@@ -469,6 +482,18 @@ string.
 Message displayed whenever you move to the widget with either
 @code{widget-forward} or @code{widget-backward}.
 
+@item :indent
+An integer indicating the absolute number of spaces to indent children
+of this widget.
+
+@item :offset
+An integer indicating how many extra spaces to add to the widget's
+grandchildren compared to this widget.
+
+@item :extra-offset
+An integer indicating how many extra spaces to add to the widget's
+children compared to this widget.
+
 @item :notify
 A function called each time the widget or a nested widget is changed.
 The function is called with two or three arguments.  The first argument
@@ -478,11 +503,11 @@ any.
 
 @item :menu-tag
 Tag used in the menu when the widget is used as an option in a
-@code{choice} widget.
+@code{menu-choice} widget.
 
 @item :menu-tag-get
 Function used for finding the tag when the widget is used as an option
-in a @code{choice} widget.  By default, the tag used will be either the
+in a @code{menu-choice} widget.  By default, the tag used will be either the
 @code{:menu-tag} or @code{:tag} property if present, or the @code{princ}
 representation of the @code{:value} property if not.
 
@@ -497,26 +522,26 @@ return the widget containing the invalid data, and set that widgets
 @code{:error} property to a string explaining the error.
 
 @item :parent
-The parent of a nested widget (e.g. a @code{choice} item or an element of a
-@code{repeat} widget). 
+The parent of a nested widget (e.g. a @code{menu-choice} item or an element of a
+@code{editable-list} widget). 
 @end table
 
 @menu
 * link::                        
-* push::                        
-* field::                       
+* push-button::                        
+* editable-field::                       
 * text::                        
-* choice::                      
-* radio::                       
+* menu-choice::                      
+* radio-button-choice::                       
 * item::                        
 * choice-item::                 
 * toggle::                      
 * checkbox::                    
 * checklist::                   
-* repeat::                      
+* editable-list::                      
 @end menu
 
-@node link, push, Basic Types, Basic Types
+@node link, push-button, Basic Types, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{link} Widget
 
@@ -530,28 +555,28 @@ The @var{value}, if present, is used to initialize the @code{:value}
 property.  The value should be a string, which will be inserted in the
 buffer. 
 
-@node  push, field, link, Basic Types
+@node  push-button, editable-field, link, Basic Types
 @comment  node-name,  next,  previous,  up
-@subsection The @code{push} Widget
+@subsection The @code{push-button} Widget
 
 Syntax:
 
 @example
-TYPE ::= (push [KEYWORD ARGUMENT]...  [ VALUE ])
+TYPE ::= (push-button [KEYWORD ARGUMENT]...  [ VALUE ])
 @end example
 
 The @var{value}, if present, is used to initialize the @code{:value}
 property. The value should be a string, which will be inserted in the
 buffer. 
 
-@node field, text, push, Basic Types
+@node editable-field, text, push-button, Basic Types
 @comment  node-name,  next,  previous,  up
-@subsection The @code{field} Widget
+@subsection The @code{editable-field} Widget
 
 Syntax:
 
 @example
-TYPE ::= (field [KEYWORD ARGUMENT]... [ VALUE ])
+TYPE ::= (editable-field [KEYWORD ARGUMENT]... [ VALUE ])
 @end example
 
 The @var{value}, if present, is used to initialize the @code{:value}
@@ -571,26 +596,47 @@ Face used for highlighting the editable field.  Default is
 
 @item :keymap
 Keymap used in the editable field.  @code{widget-keymap} will allow you
-to use normal editing commands, even if these has been supressed in the
+to use normal editing commands, even if these has been suppressed in the
 current buffer.
+
+@item :hide-front-space
+@itemx :hide-rear-space
+In order to keep track of the editable field, emacs places an invisible
+space character in front of the field, and for fixed sized fields also
+in the rear end of the field.  For fields that extent to the end of the
+line, the terminating linefeed serves that purpose instead.  
+
+Emacs will try to make the spaces intangible when it is safe to do so.
+Intangible means that the cursor motion commands will skip over the
+character as if it didn't exist.  This is safe to do when the text
+preceding or following the widget cannot possible change during the
+lifetime of the @code{editable-field} widget.  The preferred way to tell
+Emacs this, is to add text to the @code{:format} property around the
+value.  For example @code{:format "Tag: %v "}.  
+
+You can overwrite the internal safety check by setting the
+@code{:hide-front-space} or @code{:hide-rear-space} properties to
+non-nil.  This is not recommended.  For example, @emph{all} text that
+belongs to a widget (i.e. is created from its @code{:format} string) will
+change whenever the widget changes its value.
 
 @end table
 
-@node text, choice, field, Basic Types
+@node text, menu-choice, editable-field, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{text} Widget
 
-This is just like @code{field}, but intended for multiline text
+This is just like @code{editable-field}, but intended for multiline text
 fields. 
 
-@node choice, radio, text, Basic Types
+@node menu-choice, radio-button-choice, text, Basic Types
 @comment  node-name,  next,  previous,  up
-@subsection The @code{choice} Widget
+@subsection The @code{menu-choice} Widget
 
 Syntax:
 
 @example
-TYPE ::= (choice [KEYWORD ARGUMENT]... TYPE ... )
+TYPE ::= (menu-choice [KEYWORD ARGUMENT]... TYPE ... )
 @end example
 
 The @var{type} arguments represents each possible choice.  The widgets
@@ -603,6 +649,10 @@ widget will match any value that matches at least one of the specified
 Widget type used as a fallback when the value does not match any of the
 specified @var{type} arguments.
 
+@item :case-fold
+Set this to nil if you don't want to ignore case when prompting for a
+choice through the minibuffer.
+
 @item :children
 A list whose car is the widget representing the currently chosen type in
 the buffer. 
@@ -614,14 +664,14 @@ The current chosen type
 The list of types. 
 @end table
 
-@node radio, item, choice, Basic Types
+@node radio-button-choice, item, menu-choice, Basic Types
 @comment  node-name,  next,  previous,  up
-@subsection The @code{radio} Widget
+@subsection The @code{radio-button-choice} Widget
 
 Syntax:
 
 @example
-TYPE ::= (radio [KEYWORD ARGUMENT]...  TYPE ... )
+TYPE ::= (radio-button-choice [KEYWORD ARGUMENT]...  TYPE ... )
 @end example
 
 The @var{type} arguments represents each possible choice.  The widgets
@@ -657,18 +707,20 @@ The current chosen type
 The list of types. 
 @end table
 
-You can add extra radio button items to a radio widget after it has been
-created with the function `widget-radio-add-item'.
+You can add extra radio button items to a @code{radio-button-choice}
+widget after it has been created with the function
+@code{widget-radio-add-item}. 
 
 @defun widget-radio-add-item widget type
-Add to radio widget @var{widget} a new radio button item of type @var{type}.
+Add to @code{radio-button-choice} widget @var{widget} a new radio button item of type
+@var{type}. 
 @end defun
 
-Please note that such items added after the radio widget has been
-created will @strong{not} be properly destructed when you call
-@code{widget-delete}. 
+Please note that such items added after the @code{radio-button-choice}
+widget has been created will @strong{not} be properly destructed when
+you call @code{widget-delete}.
 
-@node item, choice-item, radio, Basic Types
+@node item, choice-item, radio-button-choice, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{item} Widget
 
@@ -739,7 +791,7 @@ Syntax:
 TYPE ::= (checkbox [KEYWORD ARGUMENT]...)
 @end example
 
-@node checklist, repeat, checkbox, Basic Types
+@node checklist, editable-list, checkbox, Basic Types
 @comment  node-name,  next,  previous,  up
 @subsection The @code{checklist} Widget
 
@@ -779,14 +831,14 @@ The widgets representing each type.
 The list of types. 
 @end table
 
-@node repeat,  , checklist, Basic Types
+@node editable-list,  , checklist, Basic Types
 @comment  node-name,  next,  previous,  up
-@subsection The @code{repeat} Widget
+@subsection The @code{editable-list} Widget
 
 Syntax:
 
 @example
-TYPE ::= ([KEYWORD ARGUMENT]... TYPE)
+TYPE ::= (editable-list [KEYWORD ARGUMENT]... TYPE)
 @end example
 
 The value is a list, where each member represent one widget of type
@@ -795,10 +847,6 @@ The value is a list, where each member represent one widget of type
 The following extra properties are recognized.
 
 @table @code
-@item :indent
-Number of spaces inserted before each member of the list, except for the
-first. 
-
 @item :entry-format
 This string will be inserted for each entry in the list.
 The following @samp{%} escapes are available:
@@ -867,7 +915,7 @@ This will allow you to edit any valid s-expression in an editable buffer
 field. 
 
 The @code{sexp} widget takes the same keyword arguments as the
-@code{field} widget.
+@code{editable-field} widget.
 @end deffn
 
 @node atoms, composite, generic, Sexp Types
@@ -888,7 +936,7 @@ The @var{value}, if present, is used to initialize the @code{:value}
 property and must be an expression of the same type as the widget.
 I.e. the string widget can only be initialized with a string.
 
-All the atom widgets take the same keyword arguments as the @code{field}
+All the atom widgets take the same keyword arguments as the @code{editable-field}
 widget.
 
 @deffn Widget string
@@ -925,6 +973,12 @@ Allows you to edit an integer in an editable field.
 Allows you to edit a number in an editable field.
 @end deffn
 
+@deffn Widget boolean
+Allows you to edit a boolean.  In lisp this means a variable which is
+either nil meaning false, or non-nil meaning true.
+@end deffn
+
+
 @node composite,  , atoms, Sexp Types
 @comment  node-name,  next,  previous,  up
 @subsection Composite Sexp Widgets.
@@ -941,28 +995,28 @@ will be displayed in the buffer, and be editable to the user.
 @deffn Widget cons
 The value of a @code{cons} widget is a cons-cell where the car is the
 value of the first component and the cdr is the value of the second
-coponent.  There must be exactly two components. 
+component.  There must be exactly two components. 
 @end deffn
 
 @deffn Widget lisp
-The value of a @code{cons} widget is a list containing the value of
+The value of a @code{lisp} widget is a list containing the value of
 each of its component.
 @end deffn
 
 @deffn Widget vector
-The value of a @code{cons} widget is a vector containing the value of
+The value of a @code{vector} widget is a vector containing the value of
 each of its component.
 @end deffn
 
 The above suffice for specifying fixed size lists and vectors.  To get
 variable length lists and vectors, you can use a @code{choice},
-@code{radio}, @code{checklist} or @code{repeat} widget together with the
-@code{:inline} keyword.  If any component of a composite widget has the
-@code{:inline} keyword set, its value must be a list which will then be
-spliced into the composite.  For example, to specify a list whose first
-element must be a file name, and whose remaining arguments should either
-by the symbol @code{t} or two files, you can use the following widget
-specification: 
+@code{set} or @code{repeat} widgets together with the @code{:inline}
+keywords.  If any component of a composite widget has the @code{:inline}
+keyword set, its value must be a list which will then be spliced into
+the composite.  For example, to specify a list whose first element must
+be a file name, and whose remaining arguments should either by the
+symbol @code{t} or two files, you can use the following widget
+specification:
 
 @example
 (list file
@@ -978,6 +1032,25 @@ The value of a widget of this type will either have the form
 This concept of inline is probably hard to understand.  It was certainly
 hard to implement so instead of confuse you more by trying to explain it
 here, I'll just suggest you meditate over it for a while.
+
+@deffn Widget choice
+Allows you to edit a sexp which may have one of fixed set of types.  It
+is currently implemented with the @code{choice-menu} basic widget, and
+has a similar syntax.
+@end deffn
+
+@deffn Widget set
+Allows you to specify a type which must be a list whose elements all
+belong to given set.  The elements of the list is not significant.  This
+is implemented on top of the @code{checklist} basic widget, and has a
+similar syntax. 
+@end deffn
+
+@deffn Widget repeat
+Allows you to specify a variable length list whose members are all of
+the same type.  Implemented on top of the `editable-list' basic widget,
+and has a similar syntax.
+@end deffn
 
 @node Widget Properties, Defining New Widgets, Sexp Types, Top
 @comment  node-name,  next,  previous,  up
@@ -1111,6 +1184,10 @@ if such has been used.
 Function to handle unknown @samp{%} escapes in the format string.  It
 will be called with the widget and the escape character as arguments.
 You can set this to allow your widget to handle non-standard escapes.
+
+You should end up calling @code{widget-default-format-handler} to handle
+unknown escape sequences, which will handle the @samp{%h} and any future
+escape sequences, as well as give an error for unknown escapes.
 @end table
 
 If you want to define a new widget from scratch, use the @code{default}
@@ -1119,7 +1196,7 @@ widget as its base.
 @deffn Widget default [ keyword argument ]
 Widget used as a base for other widgets. 
 
-It provides most of the functionality that is refered to as ``by
+It provides most of the functionality that is referred to as ``by
 default'' in this text. 
 @end deffn
 
@@ -1158,23 +1235,15 @@ I.e. real radio buttons and checkmarks instead of their @sc{ascii}
 equivalents. 
 
 @item
-There should be a way to probe a widget to see if the user has modified
-it. 
-
-@item 
-The support for indentation of component widgets should be finished. 
-
-@item
 There should be support for browsing the widget documentation.
 
 @item
 There should be a way to specify that @key{RET} in a field will call the
 @code{:activate} function.  This should be used by widgets such as
-@code{file} and @code{symbol} prompt with completion.  This way, we
-could also get rid of the default tag for the @code{file} widget.
+@code{file} and @code{symbol} prompt with completion. 
 
 @item
-The @code{choice} tag should be prettier, something like the abbreviated
+The @code{menu-choice} tag should be prettier, something like the abbreviated
 menus in Open Look.
 
 @item
@@ -1183,11 +1252,11 @@ The functions used in many widgets, like
 specific to the first widget where I used them.
 
 @item 
-Unchecked items in a @code{radio} or @code{checklist} should be grayed
-out, and the subwidgets should somehow become inactive.  This could
-perhaps be implemented by binding @code{widget-inactive} to t when inserting
-the grayed out subwidget, and let the widget-specify functions check
-that variable.
+Unchecked items in a @code{radio-button-choice} or @code{checklist}
+should be grayed out, and the subwidgets should somehow become inactive.
+This could perhaps be implemented by binding @code{widget-inactive} to t
+when inserting the grayed out subwidget, and let the widget-specify
+functions check that variable.
 
 @end itemize
 

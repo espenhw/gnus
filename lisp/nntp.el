@@ -596,6 +596,7 @@ It will prompt for a password."
   ;; Wait for the status string to arrive.
   (setq nntp-server-type (buffer-string))
   (let ((alist nntp-server-action-alist)
+	(case-fold-search t)
 	entry)
     ;; Run server-specific commands.
     (while alist
@@ -638,7 +639,8 @@ It will prompt for a password."
 		(nntp-inside-change-function t))
 	    (setq nntp-process-callback nil)
 	    (save-excursion
-	      (funcall callback t))))))))
+	      (funcall callback (buffer-name
+				 (get-buffer nntp-process-to-buffer))))))))))
 
 (defun nntp-retrieve-data (command address port buffer
 				   &optional wait-for callback decode)
@@ -741,16 +743,19 @@ It will prompt for a password."
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."
   (goto-char (point-min))
-  (current-buffer)
+  ;; Remove \R's.
   (while (search-forward "\r" nil t)
     (delete-char -1))
   (unless cr-only
+    ;; Remove trailing ".\n" end-of-transfer marker.
     (goto-char (point-max))
     (forward-line -1)
     (when (looking-at ".\n")
       (delete-char 2))
+    ;; Delete status line.
     (goto-char (point-min))
     (delete-region (point) (progn (forward-line 1) (point)))
+    ;; Remove "." -> ".." encoding.
     (while (search-forward "\n.." nil t)
       (delete-char -1))))
 

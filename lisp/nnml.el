@@ -144,7 +144,7 @@ all.  This may very well take some time.")
   (when (not (file-exists-p nnml-directory))
     (condition-case ()
 	(make-directory nnml-directory t)
-      (error t)))
+      (error)))
   (cond 
    ((not (file-exists-p nnml-directory))
     (nnml-close-server)
@@ -235,7 +235,8 @@ all.  This may very well take some time.")
 (deffoo nnml-request-list (&optional server)
   (save-excursion
     (nnmail-find-file nnml-active-file)
-    (setq nnml-group-alist (nnmail-get-active))))
+    (setq nnml-group-alist (nnmail-get-active))
+    t))
 
 (deffoo nnml-request-newgroups (date &optional server)
   (nnml-request-list server))

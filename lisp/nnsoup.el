@@ -386,42 +386,43 @@ The SOUP packet file name will be inserted at the %s.")
     prefix))
 
 (defun nnsoup-read-areas ()
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (let ((areas (gnus-soup-parse-areas (concat nnsoup-tmp-directory "AREAS")))
-	  entry number area lnum cur-prefix file)
-      ;; Go through all areas in the new AREAS file.
-      (while (setq area (pop areas))
-	;; Change the name to the permanent name and move the files.
-	(setq cur-prefix (nnsoup-next-prefix))
-	(message "Incorporating file %s..." cur-prefix)
-	(when (file-exists-p 
-	       (setq file (concat nnsoup-tmp-directory
-				  (gnus-soup-area-prefix area) ".IDX")))
-	  (rename-file file (nnsoup-file cur-prefix)))
-	(when (file-exists-p 
-	       (setq file (concat nnsoup-tmp-directory 
-				  (gnus-soup-area-prefix area) ".MSG")))
-	  (rename-file file (nnsoup-file cur-prefix t))
-	  (gnus-soup-set-area-prefix area cur-prefix)
-	  ;; Find the number of new articles in this area.
-	  (setq number (nnsoup-number-of-articles area))
-	  (if (not (setq entry (assoc (gnus-soup-area-name area)
-				      nnsoup-group-alist)))
-	      ;; If this is a new area (group), we just add this info to
-	      ;; the group alist. 
-	      (push (list (gnus-soup-area-name area)
-			  (cons 1 number)
-			  (list (cons 1 number) area))
-		    nnsoup-group-alist)
-	    ;; There are already articles in this group, so we add this
-	    ;; info to the end of the entry.
-	    (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
-					   (+ lnum number))
-				     area)))
-	    (setcdr (cadr entry) (+ lnum number))))))
-    (nnsoup-write-active-file t)
-    (delete-file (concat nnsoup-tmp-directory "AREAS"))))
+  (when (file-exists-p (concat nnsoup-tmp-directory "AREAS"))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (let ((areas (gnus-soup-parse-areas (concat nnsoup-tmp-directory "AREAS")))
+	    entry number area lnum cur-prefix file)
+	;; Go through all areas in the new AREAS file.
+	(while (setq area (pop areas))
+	  ;; Change the name to the permanent name and move the files.
+	  (setq cur-prefix (nnsoup-next-prefix))
+	  (message "Incorporating file %s..." cur-prefix)
+	  (when (file-exists-p 
+		 (setq file (concat nnsoup-tmp-directory
+				    (gnus-soup-area-prefix area) ".IDX")))
+	    (rename-file file (nnsoup-file cur-prefix)))
+	  (when (file-exists-p 
+		 (setq file (concat nnsoup-tmp-directory 
+				    (gnus-soup-area-prefix area) ".MSG")))
+	    (rename-file file (nnsoup-file cur-prefix t))
+	    (gnus-soup-set-area-prefix area cur-prefix)
+	    ;; Find the number of new articles in this area.
+	    (setq number (nnsoup-number-of-articles area))
+	    (if (not (setq entry (assoc (gnus-soup-area-name area)
+					nnsoup-group-alist)))
+		;; If this is a new area (group), we just add this info to
+		;; the group alist. 
+		(push (list (gnus-soup-area-name area)
+			    (cons 1 number)
+			    (list (cons 1 number) area))
+		      nnsoup-group-alist)
+	      ;; There are already articles in this group, so we add this
+	      ;; info to the end of the entry.
+	      (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
+					     (+ lnum number))
+				       area)))
+	      (setcdr (cadr entry) (+ lnum number))))))
+      (nnsoup-write-active-file t)
+      (delete-file (concat nnsoup-tmp-directory "AREAS")))))
 
 (defun nnsoup-number-of-articles (area)
   (save-excursion
@@ -552,12 +553,17 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-pack-replies ()
   "Make an outbound package of SOUP replies."
   (interactive)
+  (unless (file-exists-p nnsoup-replies-directory)
+    (message "No such directory: %s" nnsoup-replies-directory))
   ;; Write all data buffers.
   (gnus-soup-save-areas)
   ;; Write the active file.
   (nnsoup-write-active-file)
   ;; Write the REPLIES file.
   (nnsoup-write-replies)
+  ;; Check whether there is anything here.
+  (when (null (directory-files nnsoup-replies-directory nil "\\.MSG$"))
+    (error "No files to pack."))
   ;; Pack all these files into a SOUP packet.
   (gnus-soup-pack nnsoup-replies-directory nnsoup-packer))
 

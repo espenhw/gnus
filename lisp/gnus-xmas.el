@@ -260,7 +260,6 @@ call it with the value of the `gnus-data' text property."
 (defmacro gnus-xmas-menu-add (type &rest menus)
   `(gnus-xmas-menu-add-1 ',type ',menus))
 (put 'gnus-xmas-menu-add 'lisp-indent-function 1)
-(put 'gnus-xmas-menu-add 'lisp-indent-hook 1)
 
 (defun gnus-xmas-menu-add-1 (type menus)
   (when (and menu-bar-mode
@@ -270,45 +269,49 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-group-menu-add ()
   (gnus-xmas-menu-add group
-		      gnus-group-reading-menu gnus-group-group-menu gnus-group-misc-menu))
+    gnus-group-reading-menu gnus-group-group-menu gnus-group-misc-menu))
 
 (defun gnus-xmas-summary-menu-add ()
   (gnus-xmas-menu-add summary
-		      gnus-summary-misc-menu gnus-summary-kill-menu
-		      gnus-summary-article-menu gnus-summary-thread-menu
-		      gnus-summary-post-menu ))
+    gnus-summary-misc-menu gnus-summary-kill-menu
+    gnus-summary-article-menu gnus-summary-thread-menu
+    gnus-summary-post-menu ))
 
 (defun gnus-xmas-article-menu-add ()
   (gnus-xmas-menu-add article
-		      gnus-article-article-menu gnus-article-treatment-menu))
+    gnus-article-article-menu gnus-article-treatment-menu))
 
 (defun gnus-xmas-score-menu-add ()
   (gnus-xmas-menu-add score
-		      gnus-score-menu))
+    gnus-score-menu))
 
 (defun gnus-xmas-pick-menu-add ()
   (gnus-xmas-menu-add pick
-		      gnus-pick-menu))
+    gnus-pick-menu))
+
+(defun gnus-xmas-topic-menu-add ()
+  (gnus-xmas-menu-add topic
+    gnus-topic-menu))
 
 (defun gnus-xmas-binary-menu-add ()
   (gnus-xmas-menu-add binary
-		      gnus-binary-menu))
+    gnus-binary-menu))
 
 (defun gnus-xmas-tree-menu-add ()
   (gnus-xmas-menu-add tree
-		      gnus-tree-menu))
+    gnus-tree-menu))
 
 (defun gnus-xmas-server-menu-add ()
   (gnus-xmas-menu-add menu
-		      gnus-server-server-menu gnus-server-connections-menu))
+    gnus-server-server-menu gnus-server-connections-menu))
 
 (defun gnus-xmas-browse-menu-add ()
   (gnus-xmas-menu-add browse
-		      gnus-browse-menu))
+    gnus-browse-menu))
 
 (defun gnus-xmas-grouplens-menu-add ()
   (gnus-xmas-menu-add grouplens
-		      gnus-grouplens-menu))
+    gnus-grouplens-menu))
 
 (defun gnus-xmas-read-event-char ()
   "Get the next event."
@@ -440,6 +443,7 @@ call it with the value of the `gnus-data' text property."
   (add-hook 'gnus-score-mode-hook 'gnus-xmas-score-menu-add)
 
   (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
+  (add-hook 'gnus-topic-mode-hook 'gnus-xmas-topic-menu-add)
   (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
   (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
   (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)

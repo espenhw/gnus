@@ -397,13 +397,14 @@ Returns the list of articles removed."
 (defun gnus-cache-file-name (group article)
   (concat (file-name-as-directory gnus-cache-directory)
 	  (file-name-as-directory
-	   (if (gnus-use-long-file-name 'not-cache)
-	       group 
-	     (let ((group (nnheader-replace-chars-in-string group ?/ ?_)))
-	       ;; Translate the first colon into a slash.
-	       (when (string-match ":" group)
-		 (aset group (match-beginning 0) ?/))
-	       (nnheader-replace-chars-in-string group ?. ?/))))
+	   (nnheader-translate-file-chars
+	    (if (gnus-use-long-file-name 'not-cache)
+		group
+	      (let ((group (nnheader-replace-chars-in-string group ?/ ?_)))
+		;; Translate the first colon into a slash.
+		(when (string-match ":" group)
+		  (aset group (match-beginning 0) ?/))
+		(nnheader-replace-chars-in-string group ?. ?/)))))
 	  (if (stringp article) article (int-to-string article))))
 
 (defun gnus-cache-update-article (group article)

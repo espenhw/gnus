@@ -52,7 +52,6 @@
 	 (select-window ,tempvar)))))
 
 (put 'gnus-eval-in-buffer-window 'lisp-indent-function 1)
-(put 'gnus-eval-in-buffer-window 'lisp-indent-hook 1)
 (put 'gnus-eval-in-buffer-window 'edebug-form-spec '(form body))
 
 (defmacro gnus-intern-safe (string hashtable)
@@ -275,18 +274,14 @@
   `(gnus-define-keys-1 (quote ,keymap) (quote ,plist) t))
 
 (put 'gnus-define-keys 'lisp-indent-function 1)
-(put 'gnus-define-keys 'lisp-indent-hook 1)
 (put 'gnus-define-keys-safe 'lisp-indent-function 1)
-(put 'gnus-define-keys-safe 'lisp-indent-hook 1)
 (put 'gnus-local-set-keys 'lisp-indent-function 1)
-(put 'gnus-local-set-keys 'lisp-indent-hook 1)
 
 (defmacro gnus-define-keymap (keymap &rest plist)
   "Define all keys in PLIST in KEYMAP."
   `(gnus-define-keys-1 ,keymap (quote ,plist)))
 
 (put 'gnus-define-keymap 'lisp-indent-function 1)
-(put 'gnus-define-keymap 'lisp-indent-hook 1)
 
 (defun gnus-define-keys-1 (keymap plist &optional safe)
   (when (null keymap)
@@ -349,18 +344,30 @@
 			 timezone-months-assoc))
 		   "???"))))))
 
-(defun gnus-time-iso8601 (time)
+(defmacro gnus-date-get-time (date)
+  "Convert DATE string to Emacs time.
+Cache the result as a text property stored in DATE."
+  ;; Either return the cached value...
+  `(let ((d ,date))
+     (or (get-text-property 0 'gnus-time d)
+	 ;; or compute the value...
+	 (let ((time (nnmail-date-to-time d)))
+	   ;; and store it back in the string.
+	   (put-text-property 0 1 'gnus-time time d)
+	   time))))
+
+(defsubst gnus-time-iso8601 (time)
   "Return a string of TIME in YYMMDDTHHMMSS format."
   (format-time-string "%Y%m%dT%H%M%S" time))
   
 (defun gnus-date-iso8601 (header)
   "Convert the date field in HEADER to YYMMDDTHHMMSS"
   (condition-case ()
-      (gnus-time-iso8601 (nnmail-date-to-time (mail-header-date header)))
+      (gnus-time-iso8601 (gnus-date-get-time (mail-header-date header)))
     (error "")))
 
 (defun gnus-mode-string-quote (string)
-  "Quote all \"%\" in STRING."
+  "Quote all \"%\"'s in STRING."
   (save-excursion
     (gnus-set-work-buffer)
     (insert string)

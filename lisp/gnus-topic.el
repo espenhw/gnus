@@ -437,8 +437,8 @@ articles in the topic and its subtopics."
       (while (and (zerop (forward-line 1))
 		  (> (or (gnus-group-topic-level) (1+ level)) level)))
       (delete-region beg (point))
-      (setcar (cdadr (gnus-topic-find-topology topic))
-	      (if insert 'visible 'invisible))
+      (setcdr (cadr (gnus-topic-find-topology topic))
+	      (if insert (list 'visible) (list 'invisible)))
       (when hide
 	(setcdr (cdadr (gnus-topic-find-topology topic))
 		(list hide)))
@@ -1033,7 +1033,8 @@ If COPYP, copy the groups instead."
       (let ((topic (gnus-group-topic-name)))
 	(gnus-topic-remove-topic nil t)
 	(push (gnus-topic-find-topology topic nil nil gnus-topic-topology)
-	      gnus-topic-killed-topics))
+	      gnus-topic-killed-topics)
+	(gnus-topic-enter-dribble))
     (gnus-group-kill-group n discard)
     (gnus-topic-update-topic)))
   
@@ -1048,6 +1049,7 @@ If COPYP, copy the groups instead."
 	(gnus-topic-create-topic
 	 (caar item) (gnus-topic-parent-topic previous) previous
 	 item)
+	(gnus-topic-enter-dribble)
 	(gnus-topic-goto-topic (caar item)))
     (let* ((prev (gnus-group-group-name))
 	   (gnus-topic-inhibit-change-level t)

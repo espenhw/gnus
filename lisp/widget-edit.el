@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.993
+;; Version: 0.995
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -23,18 +23,17 @@
     (require 'custom)
   (error nil))
 
-(eval-and-compile
-  (unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
-    ;; We have the old custom-library, hack around it!
-    (defmacro defgroup (&rest args) nil)
-    (defmacro defcustom (&rest args) nil)
-    (defmacro defface (&rest args) nil)
-    (when (fboundp 'copy-face)
-      (copy-face 'default 'widget-documentation-face)
-      (copy-face 'bold 'widget-button-face)
-      (copy-face 'italic 'widget-field-face))
-    (defvar widget-mouse-face 'highlight)
-    (defvar widget-menu-max-size 40)))
+(unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
+  ;; We have the old custom-library, hack around it!
+  (defmacro defgroup (&rest args) nil)
+  (defmacro defcustom (&rest args) nil)
+  (defmacro defface (&rest args) nil)
+  (when (fboundp 'copy-face)
+    (copy-face 'default 'widget-documentation-face)
+    (copy-face 'bold 'widget-button-face)
+    (copy-face 'italic 'widget-field-face))
+  (defvar widget-mouse-face 'highlight)
+  (defvar widget-menu-max-size 40))
 
 ;;; Compatibility.
 
@@ -214,6 +213,8 @@ minibuffer."
   (let ((face (widget-apply widget :button-face-get)))
     (add-text-properties from to (list 'button widget
 				       'mouse-face widget-mouse-face
+				       'start-open t
+				       'end-open t
 				       'face face))))
 
 (defun widget-specify-doc (widget from to)
@@ -1774,7 +1775,7 @@ It will read a directory name from the minibuffer when activated."
 			   (intern value)
 			 value)))
 
-(define-widget 'function 'symbol
+(define-widget 'function 'sexp
   ;; Should complete on functions.
   "A lisp function."
   :tag "Function")
@@ -1863,10 +1864,6 @@ It will read a directory name from the minibuffer when activated."
 			   (prin1-to-string value)
 			 value))
   :match (lambda (widget value) (numberp value)))
-
-(define-widget 'hook 'sexp 
-  "A emacs lisp hook"
-  :tag "Hook")
 
 (define-widget 'list 'group
   "A lisp list."

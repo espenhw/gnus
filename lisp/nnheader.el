@@ -518,7 +518,6 @@ If FILE is t, return the buffer contents as a string."
 	     (kill-buffer ,temp-buffer)))))))
 
 (put 'nnheader-temp-write 'lisp-indent-function 1)
-(put 'nnheader-temp-write 'lisp-indent-hook 1)
 (put 'nnheader-temp-write 'edebug-form-spec '(form body))
 
 (defvar jka-compr-compression-info-list)

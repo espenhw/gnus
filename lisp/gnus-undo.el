@@ -128,7 +128,6 @@ FORMS may use backtick quote syntax."
 	,@form))))
 
 (put 'gnus-undo-register 'lisp-indent-function 0)
-(put 'gnus-undo-register 'lisp-indent-hook 0)
 (put 'gnus-undo-register 'edebug-form-spec '(body))
 
 (defun gnus-undo-register-1 (function)

@@ -452,8 +452,8 @@
 		       (string-to-int f))
 		     (directory-files
 		      (nnmail-group-pathname group nnmh-directory)
-		      nil "^[0-9]+$")
-		     '>))))
+		      nil "^[0-9]+$"))
+		     '>)))
 	(when files
 	  (setcdr active (car files)))))
     (setcdr active (1+ (cdr active)))

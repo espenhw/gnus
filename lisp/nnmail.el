@@ -395,7 +395,8 @@ parameter.  It should return nil, `warn' or `delete'.")
       ;; If getting from mail spool directory,
       ;; use movemail to move rather than just renaming,
       ;; so as to interlock with the mailer.
-      (unless (setq popmail (string-match "^po:" (file-name-nondirectory inbox)))
+      (unless (setq popmail (string-match
+			     "^po:" (file-name-nondirectory inbox)))
 	(setq movemail t))
       (when popmail 
 	(setq inbox (file-name-nondirectory inbox)))
@@ -409,7 +410,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 	(if popmail
 	    (progn
 	      (setq nnmail-internal-password nnmail-pop-password)
-	      (when (and nnmail-pop-password-required (not nnmail-pop-password))
+	      (when (and nnmail-pop-password-required
+			 (not nnmail-pop-password))
 		(setq nnmail-internal-password
 		      (nnmail-read-passwd
 		       (format "Password for %s: "
@@ -458,7 +460,8 @@ parameter.  It should return nil, `warn' or `delete'.")
 		     'call-process
 		     (append
 		      (list
-		       (expand-file-name nnmail-movemail-program exec-directory)
+		       (expand-file-name nnmail-movemail-program
+					 exec-directory)
 		       nil errors nil inbox tofile)
 		      (when nnmail-internal-password
 			(list nnmail-internal-password))))))
@@ -1051,32 +1054,41 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 ;; already activated.
 (defun nnmail-activate (backend &optional force)
   (let (file timestamp file-time)
-    (when (or (not (symbol-value (intern (format "%s-group-alist" backend))))
-	      force
-	      (and (setq file (condition-case ()
-				  (symbol-value (intern (format "%s-active-file" 
-								backend)))
-				(error nil)))
-		   (setq file-time (nth 5 (file-attributes file)))
-		   (or (not
-			(setq timestamp
-			      (condition-case ()
-				  (symbol-value (intern
-						 (format "%s-active-timestamp" 
-							 backend)))
-				(error 'none))))
-		       (not (consp timestamp))
-		       (equal timestamp '(0 0))
-		       (> (nth 0 file-time) (nth 0 timestamp))
-		       (and (= (nth 0 file-time) (nth 0 timestamp))
-			    (> (nth 1 file-time) (nth 1 timestamp))))))
-      (save-excursion
-	(or (eq timestamp 'none)
-	    (set (intern (format "%s-active-timestamp" backend))
-		 (current-time)))
-	(funcall (intern (format "%s-request-list" backend)))
-	(set (intern (format "%s-group-alist" backend))
-	     (nnmail-get-active))))
+    (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
+	    force
+	    (and (setq file (condition-case ()
+				(symbol-value (intern (format "%s-active-file" 
+							      backend)))
+			      (error nil)))
+		 (setq file-time (nth 5 (file-attributes file)))
+		 (or (not
+		      (setq timestamp
+			    (condition-case ()
+				(symbol-value (intern
+					       (format "%s-active-timestamp" 
+						       backend)))
+			      (error 'none))))
+		     (not (consp timestamp))
+		     (equal timestamp '(0 0))
+		     (> (nth 0 file-time) (nth 0 timestamp))
+		     (and (= (nth 0 file-time) (nth 0 timestamp))
+			  (> (nth 1 file-time) (nth 1 timestamp))))))
+	(save-excursion
+	  (or (eq timestamp 'none)
+	      (set (intern (format "%s-active-timestamp" backend)) 
+;;; dmoore@ucsd.edu 25.10.96
+;;; it's not always the case that current-time
+;;; does correspond to changes in the file's time.  So just compare
+;;; the file's new time against its own previous time.
+;;;		   (current-time)
+		   file-time
+		   ))
+	  (funcall (intern (format "%s-request-list" backend)))
+;;; dmoore@ucsd.edu 25.10.96
+;;; BACKEND-request-list already does this itself!
+;;;	  (set (intern (format "%s-group-alist" backend)) 
+;;;	       (nnmail-get-active))
+	  ))
     t))
 
 (defun nnmail-message-id ()

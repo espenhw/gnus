@@ -323,9 +323,6 @@ of the last successful match.")
     ("followup" 2 gnus-score-followup)
     ("thread" 5 gnus-score-thread)))
 
-(eval-and-compile
-  (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap))
-
 ;;; Summary mode score maps.
 
 (gnus-define-keys (gnus-summary-score-map "V" gnus-summary-mode-map)
@@ -469,7 +466,7 @@ used as score."
 			       (if (eq (nth 4 entry)
 				       (nth 3 s))
 				   s nil))
-			     char-to-type ))
+			     char-to-type))
 	       2)))
 
 	  (gnus-score-kill-help-buffer)
@@ -499,6 +496,12 @@ used as score."
 	  (if mimic (message "%c %c %c" prefix hchar tchar pchar)
 	    (message ""))
 	  (unless (setq temporary (cadr (assq pchar char-to-perm)))
+	    ;; Deal with der(r)ided superannuated paradigms.
+	    (when (and (eq (1+ prefix) 77)
+		       (eq (+ hchar 12) 109)
+		       (eq tchar 114)
+		       (eq (- pchar 4) 111))
+	      (error "You rang?"))
 	    (if mimic 
 		(error "%c %c %c %c" prefix hchar tchar pchar)
 	      (error ""))))
@@ -524,8 +527,8 @@ used as score."
      (nth 1 entry)			; Header
      match				; Match
      type				; Type
-     (if (eq 's score) nil score)	; Score
-     (if (eq 'perm temporary)		; Temp
+     (if (eq score 's) nil score)	; Score
+     (if (eq temporary 'perm)		; Temp
 	 nil
        temporary)
      (not (nth 3 entry)))		; Prompt
@@ -1962,10 +1965,9 @@ SCORE is the score to add."
        (or gnus-newsgroup-adaptive-score-file
 	   (gnus-score-file-name 
 	    gnus-newsgroup-name gnus-adaptive-file-suffix))))
-    (cond
-     ;; Perform ordinary line scoring.
-     ((or (not (listp gnus-use-adaptive-scoring))
-	  (memq 'line gnus-use-adaptive-scoring))
+    ;; Perform ordinary line scoring.
+    (when (or (not (listp gnus-use-adaptive-scoring))
+	      (memq 'line gnus-use-adaptive-scoring))
       (save-excursion
 	(let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	       (alist malist)
@@ -2023,8 +2025,9 @@ SCORE is the score to add."
 		  (setq elem (cdr elem)))))
 	    (setq data (cdr data))))))
 
-     ;; Perform adaptive word scoring.
-     ((memq 'word gnus-use-adaptive-scoring)
+    ;; Perform adaptive word scoring.
+    (when (and (listp gnus-use-adaptive-scoring)
+	       (memq 'word gnus-use-adaptive-scoring))
       (nnheader-temp-write nil
 	(let* ((hashtb (gnus-make-hashtable 1000))
 	       (date (gnus-day-number (current-time-string)))
@@ -2033,7 +2036,7 @@ SCORE is the score to add."
 	       word d score val)
 	  (unwind-protect
 	      (progn
-		(set-syntax-table syntab)
+		(set-syntax-table gnus-adaptive-word-syntax-table)
 		;; Go through all articles.
 		(while (setq d (pop data))
 		  (when (and
@@ -2069,7 +2072,7 @@ SCORE is the score to add."
 	       (gnus-summary-score-entry
 		"subject" (symbol-name word) 'w (symbol-value word)
 		date nil t)))
-	   hashtb)))))))
+	   hashtb))))))
 
 (defun gnus-score-edit-done ()
   (let ((bufnam (buffer-file-name (current-buffer)))

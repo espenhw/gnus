@@ -1,3 +1,29 @@
+Mon Oct 28 15:50:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Startup Variables): Addition.
+
+Fri Oct 25 09:04:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Summary Mail Commands): Addition.
+
+Wed Oct 23 08:28:29 1996  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus.texi (Fancy Mail Splitting): Removed trailing garbage. 
+
+Tue Oct 22 07:36:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Converting Kill Files): New.
+
+Sat Oct 19 07:17:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Saving Articles): Addition.
+
+	* message.texi (Various Message Variables): Addition.
+
+Thu Oct 17 06:53:04 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Contributors): Added names.
+
 Fri Oct 11 12:38:59 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.texi (Adaptive Scoring): Addition.

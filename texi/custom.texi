@@ -1,7 +1,7 @@
 \input texinfo.tex
 
 @c %**start of header
-@setfilename custom.info
+@setfilename custom
 @settitle The Customization Library
 @iftex
 @afourpaper
@@ -9,11 +9,22 @@
 @end iftex
 @c %**end of header
 
+@menu
+* Introduction::                
+* User Commands::               
+* The Customization Buffer::    
+* Declaring Groups::            
+* Declaring Variables::         
+* Declaring Faces::             
+* The Init File::               
+* Wishlist::                    
+@end menu
+
 @node Top, Introduction, (dir), (dir)
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 0.9
+Version: 0.995
 
 @menu
 * Introduction::                
@@ -72,77 +83,332 @@ the @code{emacs} group.
 Create a customization buffer containing a single variable.  
 
 @item customize-face
-Create a customization buffer contaning a single face.
+Create a customization buffer containing a single face.
 
 @item customize-apropos
 Create a customization buffer containing all variables, faces, and
 groups that match a user specified regular expression.
 @end table
 
-@node  The Customization Buffer, Declaring Groups, User Commands, Top
+@node The Customization Buffer, Declaring Groups, User Commands, Top
 @comment  node-name,  next,  previous,  up
 @section The Customization Buffer.
 
-Here should be a description of how to use a customization buffer. 
-For now, try to press @kbd{C-h m} in the buffer, or read @ref{User
-Interface,,widget,The Widget Library}. 
+The customization buffer allows the user to make temporary or permanent
+changes to how specific aspects of emacs works, by setting and editing
+user options.  
 
-The interface will change, as it currently stinks.  Here is some hints
-about how to use it though:
+The customization buffer contains three types of text:
 
-@itemize @bullet
-@item
-Groups and user option start on a new line, and look like this
-@t{@b{name}:}.  If you move point above to the @t{@b{name}} and press
-@kbd{@key{RET}}, or move the mouse pointer above it and press
-@kbd{mouse-2}, you will be presented with a menu.  I call this the
-@dfn{tag menu} below. 
+@table @dfn
+@item informative text
+where the normal editing commands are disabled.
 
-@item
-For groups and faces, you need to activate @samp{Toggle Hide} from the
-tag menu to be able to see the content.
+@item editable fields
+where you can edit with the usual emacs commands.  Editable fields are
+usually displayed with a grey background if your terminal supports
+colors, or an italic font otherwise.
 
-@item
-After editing a variable or face, you must activate @samp{Apply} for the
-setting to take effect, and @samp{Set Default} for marking the widget
-value as the new default value.
+@item buttons
+which can be activated by either pressing the @kbd{@key{ret}} while
+point is located on the text, or pushing @kbd{mouse-2} while the mouse
+pointer is above the tex.  Buttons are usually displayed in a bold
+font. 
+@end table
 
-@item
-After setting new default values with @samp{Set Default}, you must
-activate the @samp{Save} button in the bottom of the screen to save the
-new defaults.  Otherwise the new defaults will be silently forgotten.
+You can move to the next the next editable field or button by pressing
+@kbd{@key{tab}} or the previous with @kbd{M-@key{tab}}.  Some buttons
+have a small helpful message about their purpose, which will be
+displayed when you move to it with the @key{tab} key.  
 
-@item
-Pushing @samp{Save} is a no-op unless you have activated @samp{Set Default}
-for some user option.
+The buffer is divided into three part, an introductory text, a list of
+customization options, and a line of customization buttons.  Each part
+will be described in the following. 
 
-@item
-The @code{face} widget never attempts to display the current value of a
-face.  Instead it allows you to specify how the face should be
-initialized.  This is done with a list of @dfn{display} and
-@dfn{attributes} pairs, where the first display that matches a frame
-specify the attributes to use for that frame.
+@menu
+* The Introductory Text::       
+* The Customization Options::   
+* The Variable Options::        
+* The Face Options::            
+* The Group Options::           
+* The State Button::            
+* The Customization Buttons::   
+@end menu
 
-A display can either match all frames, or only frames with a given
-@dfn{type}, @dfn{class}, and @dfn{background}.  The checkbox before each
-of these display parameters determine whether the parameter will be
-checked.  If the checkbox before @samp{Type} is unchecked, the display
-will match all types of frames.  If it is checked, it will match the
-type of frames specified on the rest of the line.
+@node  The Introductory Text, The Customization Options, The Customization Buffer, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection  The Introductory Text
 
-The attributes are specified next.  Each attribute line begins with a
-checkbox, if that checkbox is unchecked the face will not affect that
-particular attribute on the screen, otherwise the face will force the
-the text to have the value for attribute specified after the attrbute
-name.  This means that an attribute like @samp{bold} in effect have
-three states: If the first checkmark is unchecked, the face will not
-affect the boldness of the text.  If the first checkmark is checked, but
-the second is unchecked, the text will be forced to be unbold.  If both
-checkmarks are checked, the text will be forced to be bold.
+The start of the buffer contains a short explanation of what it is, and
+how to get help.  It will typically look like this:
 
-Think about this, and mail me a suggestion for how to make the face
-widget more intuitive. 
-@end itemize
+@example
+This is a customization buffer.
+Push RET or click mouse-2 on the word _help_ for more information.
+@end example
+
+Rather boring.  It is mostly just informative text, but the word
+@samp{help} is a button that will bring up this document when
+activated.  
+
+@node  The Customization Options, The Variable Options, The Introductory Text, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The Customization Options
+
+Each customization option looks similar to the following text:
+
+@example
+ *** custom-background-mode: default 
+ [ ] [?] The brightness of the background.
+@end example
+
+The option contains the parts described below.
+
+@table @samp
+@item ***
+The Level Button.  The customization options in the buffer are organized
+in a hierarchy, which is indicated by the number of stars in the level
+button.  The top level options will be shown as @samp{*}.  When they are
+expanded, the suboptions will be shown as @samp{**}.  The example option
+is thus a subsuboption.
+
+Activating the level buttons will toggle between hiding and exposing the
+content of that option.  The content can either be the value of the
+option, as in this example, or a list of suboptions.
+
+@item custom-background-mode
+This is the tag of the the option.  The tag is a name of a variable, a
+face, or customization group.  Activating the tag has an effect that
+depends on the exact type of the option.  In this particular case,
+activating the tag will bring up a menu that will allow you to choose
+from the three possible values of the `custom-background-mode'
+variable. 
+
+@item default
+After the tag, the options value is shown.  Depending on its type, you
+may be able to edit the value directly.  If an option should contain a
+file name, it is displayed in an editable field, i.e. you can edit it
+using the standard emacs editing commands.
+
+@item [ ]
+The state button.  This look of this button will indicate the state of
+the option, e.g. whether it is currently hidden, or whether it has been
+modified or not.  Activating the button will allow you to change the
+state, e.g. apply or reset the changes you have made.  This is explained
+in detail in the following sections.
+
+@item [?] 
+The documentation button.  If the documentation is more than one line,
+this button will be present.  Activating the button will toggle whether
+the complete documentation is shown, or only the first line.
+
+@item The brightness of the background.
+This is a documentation string explaining the purpose of this particular
+customization option.
+
+@end table
+
+@node  The Variable Options, The Face Options, The Customization Options, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The Variable Options
+
+The most common customization options are emacs lisp variables.  The
+actual editing of these variables depend on what type values the
+variable is expected to contain.  For example, a lisp variable whose
+value should be a string will typically be represented with an editable
+text field in the buffer, where you can change the string directly.  If
+the value is a list, each item in the list will be presented in the
+buffer buffer on a separate line, with buttons to insert new items in
+the list, or delete existing items from the list.  You may want to see 
+@ref{User Interface,,, widget, The Widget Library}, where some examples
+of editing are discussed.  
+
+You can either choose to edit the value directly, or edit the default
+value for that variable.  The default value is a lisp expression that
+will be evaluated when you start emacs.  The result of the evaluation
+will be used as the initial value for that variable.  Editing the
+default value is for experts only, but if the current value of the
+variable is of a wrong type (i.e. a symbol where a string is expected),
+the `edit default' mode will always be selected.
+
+You can see what mode is currently selected by looking at the state
+button.  If it uses parenthesises (like @samp{( )}) it is in `Edit
+default' mode, with square brackets (like @samp{[ ]}) it is normal edit
+mode.   You can switch mode by activating the state button, and select
+either @samp{Edit} or @samp{Edit default} from the menu.
+
+You can change the state of the variable with the other menu items:
+
+@table @samp
+@item Apply
+When you have made your modifications in the buffer, you need to
+activate this item to make the modifications take effect.  The
+modifications will be forgotten next time you run emacs.
+
+@item Set Default
+Unless you activate this item instead!  This will mark the modification
+as permanent, i.e. the changes will be remembered in the next emacs
+session.
+
+@item Reset
+If you have made some modifications and not yet applied them, you can
+undo the modification by activating this item.
+
+@item Reset to Default
+Activating this item will reset the value of the variable to the last
+value you marked as permanent with `Set Default'.
+
+@item Reset to Factory Settings
+Activating this item will undo all modifications you have made, and
+reset the value to the initial value specified by the program itself. 
+@end table
+
+By default, the value of large or complicated variables are hidden.   You
+can show the value by clicking on the level button.
+
+@node  The Face Options, The Group Options, The Variable Options, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The Face Options
+
+A face is an object that controls the appearance of some buffer text.
+The face has a number of possible attributes, such as boldness,
+foreground color, and more.  For each attribute you can specify whether
+this attribute is controlled by the face, and if so, what the value is.
+For example, if the attribute bold is not controlled by a face, using
+that face on some buffer text will not affect its boldness.  If the bold
+attribute is controlled by the face, it can be turned either on or of.
+
+It is possible to specify that a face should have different attributes
+on different device types.  For example, a face may make text red on a
+color device, and bold on a monochrome device.
+
+The way this is presented in the customization buffer is to have a list
+of display specifications, and for each display specification a list of
+face attributes.  For each face attribute, there is a checkbox
+specifying whether this attribute has effect and what the value is.
+Here is an example:
+
+@example
+ *** custom-invalid-face: (sample)
+ [ ] Face used when the customize item is invalid.
+ [INS] [DEL] Display: [ ] Type: [ ] X [ ] TTY
+                      [X] Class: [X] Color [ ] Grayscale [ ] Monochrome
+                      [ ] Background: [ ] Light [ ] Dark
+             Attributes: [ ] Bold: off 
+                         [ ] Italic: off 
+                         [ ] Underline: off 
+                         [X] Foreground: yellow (sample)
+                         [X] Background: red (sample)
+                         [ ] Stipple:  
+ [INS] [DEL] Display: all
+             Attributes: [X] Bold: on 
+                         [X] Italic: on 
+                         [X] Underline: on 
+                         [ ] Foreground: default (sample)
+                         [ ] Background: default (sample)
+                         [ ] Stipple:  
+ [INS]
+@end example
+
+This has two display specifications.  The first will match all color
+displays, independently on whether the device is X11 or a tty, and
+whether background color is dark or light.  For devices matching this
+specification, @samp{custom-invalid-face} will force text to be
+displayed in yellow on red, but leave all other attributes alone.
+
+The second display will simply match everything.  Since the list is
+prioritised, this means that it will match all non-color displays.  For
+these, the face will not affect the foreground or background color, but
+force the font to be both bold, italic, and underline.
+
+You can add or delete display specifications by activating the
+@samp{[INS]} and @samp{[DEL]} buttons, and modify them by clicking on
+the check boxes.  The first checkbox in each line in the display
+specification is special.  It specify whether this particular property
+will even be relevant.  By not checking the box in the first display, we
+match all device types, also device types other than X11 and tty, for
+example ms-windows, nextstep, and mac os.
+
+After modifying the face, you can activate the state button to make the
+changes take effect.  The menu items in the state button menu is similar
+to the state menu items for variables described in the previous section.
+
+@node  The Group Options, The State Button, The Face Options, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The Group Options
+
+Since Emacs has approximately a zillion configuration options, they have
+been organized in groups.  Each group can contain other groups, thus
+creating a customization hierarchy.  The nesting of the customization
+within the visible part of this hierarchy is indicated by the number of
+stars in the level button.
+
+Since there is really no customization needed for the group itself, the
+menu items in the groups state button will affect all modified group
+members recursively.  Thus, if you activate the @samp{Apply} menu item,
+all variables and faces that have been modified and belong to that group
+will be applied.  For those members that themselves are groups, it will
+work as if you had activated the @samp{Apply} menu item on them as well.
+
+@node  The State Button, The Customization Buttons, The Group Options, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The State Button
+
+The state button has two purposes.  The first is to hold the state menu,
+as described in the previous sections.  The second is to indicate the
+state of each customization item.  This is done by the character inside
+the brackets.  The following states have been defined, the first that
+applies to the current item will be used:
+
+@table @samp
+@item -
+The option is currently hidden.  For group options that means the
+members are not shown, for variables and faces that the value is not
+shown.  You cannot perform any of the state change operations on a
+hidden customization option.
+
+@item *
+The value if this option has been modified in the buffer, but not yet
+applied.  
+
+@item +
+The current value of this option is different from the default value.   
+
+@item !
+The default value of this option is different from the factory setting.
+
+@item @@
+The factory setting of this option is not known.  This occurs when you
+try to customize variables or faces that have not been explicitly
+declared as customizable.
+
+@item SPC
+The factory setting is still in effect.
+
+@end table
+
+For non-hidden group options, the state shown is the most severe state
+of its members, where more severe means that it appears earlier in the
+list above (except hidden members, which are ignored).
+
+@node  The Customization Buttons,  , The State Button, The Customization Buffer
+@comment  node-name,  next,  previous,  up
+@subsection The Customization Buttons
+
+The last part of the customization buffer looks like this:
+
+@example
+[Apply] [Set Default] [Reset] [Save]
+@end example
+
+Activating the @samp{[Apply]}, @samp{[Set Default]}, or @samp{[Reset]}
+button will affect all modified customization items that are visible in
+the buffer.
+
+Activating the @samp{[Save]} button will ensure that all customization
+options who are marked as persistent with @samp{Set default} (either
+with the button at the end of the buffer, or with any of the state
+button menus), will actually be saved in your initialization file.
 
 @node  Declaring Groups, Declaring Variables, The Customization Buffer, Top
 @comment  node-name,  next,  previous,  up
@@ -150,17 +416,17 @@ widget more intuitive.
 
 Use @code{defgroup} to declare new customization groups. 
 
-@defun defgroup symbol members [keyword value]... doc
+@defun defgroup symbol members doc [keyword value]...
 Declare @var{symbol} as a customization group containing @var{members}. 
 @var{symbol} does not need to be quoted.
+
+@var{doc} is the group documentation.
 
 @var{members} should be an alist of the form ((@var{name}
 @var{widget})...) where @var{name} is a symbol and @var{widget} is a
 widget for editing that symbol.  Useful widgets are
 @code{custom-variable} for editing variables, @code{custom-face} for
 editing faces, and @code{custom-group} for editing groups.@refill
-
-@var{doc} is the group documentation.
 
 The following @var{keyword}'s are defined:
 
@@ -181,7 +447,7 @@ documentation string.
 
 Use @code{defcustom} to declare user editable variables.
 
-@defun defcustom symbol [keyword value]... doc
+@defun defcustom symbol value doc [keyword value]...
 Declare @var{symbol} as a customizable variable that defaults to @var{value}.
 Neither @var{symbol} nor @var{value} needs to be quoted.
 If @var{symbol} is not already bound, initialize it to @var{value}.
@@ -192,13 +458,16 @@ The following @var{keyword}'s are defined:
 
 @table @code
 @item :type	
-@var{value} should be a sexp widget.
+@var{value} should be a widget type.
+@item :options
+@var{value} should be a list of possible members of the specified type.
+For hooks, this is a list of function names.
 @item :group
 @var{value} should be a customization group. 
 Add @var{symbol} to that group. 
 @end table
 
-@xref{Sexp Types,,widget,The Widget Library}, for information about
+@xref{Sexp Types,,,widget,The Widget Library}, for information about
 widgets to use together with the @code{:type} keyword.
 @end defun
 
@@ -215,7 +484,7 @@ string.
 
 Faces are declared with @code{defface}.
 
-@defun defface FACE SPEC [KEYWORD VALUE]... DOC
+@defun defface face spec doc [keyword value]... 
 
 Declare @var{face} as a customizable face that defaults to @var{spec}.
 @var{face} does not need to be quoted.
@@ -287,29 +556,13 @@ specified.
 
 @itemize @bullet
 @item
-The names of the menu items for the @code{custom-variable},
-@code{custom-face}, and @code{custom-group} tags should be rethought.
-Some of the actions may be better placed as buttons in the buffer.
-
-@item
-The menu items above should be grayed out when the information is
+The menu items should be grayed out when the information is
 missing.  I.e. if a variable doesn't have a factory setting, the user
 should not be allowed to select the @samp{Factory} menu item.
 
 @item 
 We need @strong{much} better support for keyboard operations in the
 customize buffer.
-
-@item
-There should be buttons that will apply, set, reset, etc. all the relevant
-widgets in a customize buffer.
-
-@item
-There should be a menu in the customize buffer.
-
-@item
-The group widget should allow you to apply, set, reset, etc. all the
-relevant members of the group.
 
 @item
 There should be a function to create a customize menu from a group.
@@ -326,28 +579,15 @@ menu.
 Support real specifiers under XEmacs.
 
 @item
-@code{customize-apropos} should only match user options that has either
-been declared with this library, or variables whose documentation start
-with @samp{*}.  With an prefix argument, also match all variables that
-has a documentation string.
-
-@item
-If there is only one line of documentation, the @samp{Documentation}
-tag-menu items should go from `first line only' to `none' without going
-over `full'.  I.e. it should have two states instead of three.
-
-@item
-@code{custom-face} should display the @code{face-documentation}
-property.
-
-@item
-@code{custom-face}, @code{custom-variable}, and @code{custom-group}
-should be derived from a common @code{custom} widget.
-
-@item
 Integrate with @file{w3} so you can customization buffers with much
 better formatting.  I'm thinking about adding a <custom>name</custom>
 tag. 
+
+@item
+Try to keep track of whether it is necessary to save or not.
+
+@item
+Offer to save if you exit emacs with unsaved customizations.
 
 @end itemize
 

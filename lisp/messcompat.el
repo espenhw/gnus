@@ -63,9 +63,6 @@ The function `message-setup' runs this hook.")
   "*Number of spaces to insert at the beginning of each cited line.
 Used by `message-yank-original' via `message-yank-cite'.")
 
-(defvar message-cite-function (car mail-citation-hook)
-  "*Function for citing an original message.")
-
 (defvar message-signature mail-signature
   "*String to be inserted at the end of the message buffer.
 If t, the `message-signature-file' file will be inserted instead.

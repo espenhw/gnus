@@ -115,6 +115,7 @@
 
 (deffoo nnmbox-open-server (server &optional defs)
   (nnoo-change-server 'nnmbox server defs)
+  (nnmbox-create-mbox)
   (cond 
    ((not (file-exists-p nnmbox-mbox-file))
     (nnmbox-close-server)
@@ -208,7 +209,8 @@
 (deffoo nnmbox-request-list (&optional server)
   (save-excursion
     (nnmail-find-file nnmbox-active-file)
-    (setq nnmbox-group-alist (nnmail-get-active))))
+    (setq nnmbox-group-alist (nnmail-get-active))
+    t))
 
 (deffoo nnmbox-request-newgroups (date &optional server)
   (nnmbox-request-list server))
@@ -481,10 +483,13 @@
 	    nnmbox-group-alist))
     (cdr active)))
 
+(defun nnmbox-create-mbox ()
+  (when (not (file-exists-p nnmbox-mbox-file))
+    (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg)))
+
 (defun nnmbox-read-mbox ()
   (nnmail-activate 'nnmbox)
-  (when (not (file-exists-p nnmbox-mbox-file))
-    (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg))
+  (nnmbox-create-mbox)
   (if (and nnmbox-mbox-buffer
 	   (buffer-name nnmbox-mbox-buffer)
 	   (save-excursion

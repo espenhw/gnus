@@ -872,6 +872,7 @@ ticked: The number of ticked articles."
      gnus-group-misc-menu gnus-group-mode-map ""
      '("Misc"
        ["Send a bug report" gnus-bug t]
+       ["Customize" gnus-group-customize t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
        ["Check for new news" gnus-group-get-new-news t]     
@@ -1004,6 +1005,8 @@ listed."
 	    (gnus-group-default-level nil t)
 	    gnus-group-default-list-level
 	    gnus-level-subscribed))))
+  ;; Just do this here, for no particular good reason.
+  (gnus-clear-inboxes-moved)
   (unless level
     (setq level (car gnus-group-list-mode)
 	  unread (cdr gnus-group-list-mode)))

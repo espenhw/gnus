@@ -278,7 +278,7 @@ current article is unread."
 In particular, if `vertical' do only vertical recentering.  If non-nil
 and non-`vertical', do both horizontal and vertical recentering."
   :group 'gnus-summary
-  :type '(choice (const "none" nil)
+  :type '(choice (const :tag "none" nil)
 		 (const vertical)
 		 (sexp :menu-tag "both" t)))
 
@@ -1494,6 +1494,7 @@ increase the score of each group you read."
   (gnus-define-keys (gnus-summary-save-map "O" gnus-summary-mode-map)
     "o" gnus-summary-save-article
     "m" gnus-summary-save-article-mail
+    "F" gnus-summary-write-article-file
     "r" gnus-summary-save-article-rmail
     "f" gnus-summary-save-article-file
     "b" gnus-summary-save-article-body-file
@@ -1685,6 +1686,7 @@ increase the score of each group you read."
 	["Save in default format" gnus-summary-save-article t]
 	["Save in file" gnus-summary-save-article-file t]
 	["Save in Unix mail format" gnus-summary-save-article-mail t]
+	["Write to file" gnus-summary-write-article-mail t]
 	["Save in MH folder" gnus-summary-save-article-folder t]
 	["Save in VM folder" gnus-summary-save-article-vm t]
 	["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
@@ -2293,7 +2295,6 @@ This is all marks except unread, ticked, dormant, and expirable."
 ;; Saving hidden threads.
 
 (put 'gnus-save-hidden-threads 'lisp-indent-function 0)
-(put 'gnus-save-hidden-threads 'lisp-indent-hook 0)
 (put 'gnus-save-hidden-threads 'edebug-form-spec '(body))
 
 (defmacro gnus-save-hidden-threads (&rest forms)
@@ -3269,9 +3270,9 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defsubst gnus-article-sort-by-date (h1 h2)
   "Sort articles by root article date."
-  (string-lessp
-   (inline (gnus-sortable-date (mail-header-date h1)))
-   (inline (gnus-sortable-date (mail-header-date h2)))))
+  (gnus-time-less
+   (gnus-date-get-time (mail-header-date h1))
+   (gnus-date-get-time (mail-header-date h2))))
 
 (defun gnus-thread-sort-by-date (h1 h2)
   "Sort threads by root article date."
@@ -4713,7 +4714,8 @@ displayed, no centering will be performed."
       (save-excursion
 	(while articles
 	  (gnus-summary-goto-subject (setq article (pop articles)))
-	  (command-execute func)
+	  (let (gnus-newsgroup-processable)
+	    (command-execute func))
 	  (gnus-summary-remove-process-mark article)))))
   (gnus-summary-position-point))
 
@@ -7981,6 +7983,17 @@ save those articles instead."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-file))
+    (gnus-summary-save-article arg)))
+
+(defun gnus-summary-write-article-file (&optional arg)
+  "Write the current article to a file, deleting the previous file.
+If N is a positive number, save the N next articles.
+If N is a negative number, save the N previous articles.
+If N is nil and any articles have been marked with the process mark,
+save those articles instead."
+  (interactive "P")
+  (gnus-set-global-variables)
+  (let ((gnus-default-article-saver 'gnus-summary-write-to-file))
     (gnus-summary-save-article arg)))
 
 (defun gnus-summary-save-article-body-file (&optional arg)

@@ -27,6 +27,8 @@
 
 (eval-when-compile (require 'cl))
 
+;;; Function aliases later to be redefined for XEmacs usage.
+
 (defvar gnus-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
   "Non-nil if running under XEmacs.")
 
@@ -79,8 +81,7 @@
       "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
       "String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command.")
-)
+asynchronously.	 The compressed face will be piped to this command."))
 
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)

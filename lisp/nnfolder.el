@@ -287,7 +287,8 @@ time saver for large mailboxes.")
   (nnfolder-possibly-change-group nil server)
   (save-excursion
     (nnmail-find-file nnfolder-active-file)
-    (setq nnfolder-group-alist (nnmail-get-active))))
+    (setq nnfolder-group-alist (nnmail-get-active))
+    t))
 
 (deffoo nnfolder-request-newgroups (date &optional server)
   (nnfolder-possibly-change-group nil server)

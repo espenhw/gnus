@@ -158,11 +158,8 @@
   (setq message-cite-function 'sc-cite-original)
   (autoload 'sc-cite-original "supercite"))
 
-;;;### (autoloads (gnus-batch-score gnus-fetch-group gnus gnus-slave gnus-no-server gnus-update-format) "gnus" "lisp/gnus.el" (12473 2137))
+;;;### (autoloads (gnus gnus-slave gnus-no-server) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el
-
-(autoload 'gnus-update-format "gnus" "\
-Update the format specification near point." t nil)
 
 (autoload 'gnus-slave-no-server "gnus" "\
 Read network news as a slave without connecting to local server." t nil)
@@ -184,20 +181,25 @@ If ARG is non-nil and a positive number, Gnus will use that as the
 startup level.  If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use." t nil)
 
-(autoload 'gnus-fetch-group "gnus" "\
+;;;***
+
+;;; These have moved out of gnus.el into other files.
+;;; FIX FIX FIX: should other things be in gnus-setup? or these not in it?
+(autoload 'gnus-update-format "gnus-spec" "\
+Update the format specification near point." t nil)
+
+(autoload 'gnus-fetch-group "gnus-group" "\
 Start Gnus if necessary and enter GROUP.
 Returns whether the fetching was successful or not." t nil)
 
 (defalias 'gnus-batch-kill 'gnus-batch-score)
 
-(autoload 'gnus-batch-score "gnus" "\
+(autoload 'gnus-batch-score "gnus-kill" "\
 Run batched scoring.
 Usage: emacs -batch -l gnus -f gnus-batch-score <newsgroups> ...
 Newsgroups is a list of strings in Bnews format.  If you want to score
 the comp hierarchy, you'd say \"comp.all\".  If you would not like to
 score the alt hierarchy, you'd say \"!alt.all\"." t nil)
-
-;;;***
 
 (provide 'gnus-setup)
 

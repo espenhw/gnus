@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.52 Manual
+@settitle Red Gnus 0.53 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.52 Manual
+@title Red Gnus 0.53 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -961,12 +961,23 @@ in a while from the group buffer instead (@pxref{Group Maintenance}).
 @item gnus-inhibit-startup-message
 @vindex gnus-inhibit-startup-message
 If non-@code{nil}, the startup message won't be displayed.  That way,
-your boss might not notice as easily that you are reading news instead of doing
-your job.
+your boss might not notice as easily that you are reading news instead
+of doing your job.  Note that this variable is used before
+@file{.gnus.el} is loaded, so it should be set in @code{.emacs} instead.
 
 @item gnus-no-groups-message
 @vindex gnus-no-groups-message
 Message displayed by Gnus when no groups are available.
+
+@item gnus-play-startup-jingle
+@vindex gnus-play-startup-jingle
+If non-@code{nil}, play the Gnus jingle at startup.
+
+@item gnus-startup-jingle
+@vindex gnus-startup-jingle
+Jingle to be played if the above variable is non-@code{nil}.  The
+default is @samp{Tuxedomoon.Jingle4.au}.
+
 @end table
 
 
@@ -3521,7 +3532,8 @@ command uses the process/prefix convention.
 @kindex S o m (Summary)
 @findex gnus-summary-mail-forward
 Forward the current article to some other person
-(@code{gnus-summary-mail-forward}). 
+(@code{gnus-summary-mail-forward}).  If given a prefix, include the full
+headers of the forwarded article.
 
 @item S m
 @itemx m
@@ -3623,7 +3635,8 @@ process/prefix convention.
 @kindex S o p (Summary)
 @findex gnus-summary-post-forward
 Forward the current article to a newsgroup
-(@code{gnus-summary-post-forward}).
+(@code{gnus-summary-post-forward}).  If given a prefix, include the full
+headers of the forwarded article.
 
 @item S O p
 @kindex S O p (Summary)
@@ -4937,6 +4950,12 @@ Save the current article in rmail format
 @findex gnus-summary-save-article-file
 Save the current article in plain file format
 (@code{gnus-summary-save-article-file}). 
+
+@item O F
+@kindex O F (Summary)
+@findex gnus-summary-write-article-file
+Write the current article in plain file format, overwriting any previous
+file contents (@code{gnus-summary-write-article-file}). 
 
 @item O b
 @kindex O b (Summary)
@@ -8577,7 +8596,7 @@ Let's look at an example value of this variable first:
       ;; People...
       (any "larsi@@ifi\\.uio\\.no" "people.Lars Magne Ingebrigtsen"))
    ;; Unmatched mail goes to the catch all group.
-   "misc.misc"))")
+   "misc.misc")
 @end lisp
 
 This variable has the format of a @dfn{split}.  A split is a (possibly)
@@ -10154,6 +10173,7 @@ silently to help keep the sizes of the score files down.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
+* Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -11354,6 +11374,26 @@ kill files to be processed, you should set this variable to @code{nil}.
 A hook called in kill-file mode buffers.
 
 @end table
+
+
+@node Converting Kill Files
+@section Converting Kill Files
+@cindex kill files
+@cindex converting kill files
+
+If you have loads of old kill files, you may want to convert them into
+score files.  If they are ``regular'', you can use
+the @file{gnus-kill-to-score.el} package; if not, you'll have to do it
+by hand.
+
+The kill to score conversion package isn't included in Gnus by default.
+You can fetch it from
+@file{http://www.ifi.uio.no/~larsi/ding-other/gnus-kill-to-score}.  
+
+If your old kill files are very complex---if they contain more
+non-@code{gnus-kill} forms than not, you'll have to convert them by
+hand.  Or just let them be as they are.  Gnus will still use them as
+before. 
 
 
 @node GroupLens
@@ -13166,6 +13206,13 @@ released under the name ``Gnus 5.2''.
 
 On July 28th 1996 work on Red Gnus was begun.
 
+If you happen upon a version of Gnus that has a name that is prefixed --
+``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Mamey Sapote Gnus''
+-- don't panic.  Don't let it know that you're frightened.  Back away.
+Slowly.  Whatever you do, don't run.  Walk away, calmly, until you're
+out of its reach.  Find a proper released version of Gnus and snuggle up
+to that instead.
+
 @menu
 * Why?::                What's the point of Gnus?
 * Compatibility::       Just how compatible is Gnus with @sc{gnus}?
@@ -13406,6 +13453,9 @@ well as numerous other things).
 @item 
 Luis Fernandes---design and graphics.
 
+@item
+Erik Naggum---help, ideas, support, code and stuff.
+
 @item 
 Wes Hardaker---@file{gnus-picon.el} and the manual section on
 @dfn{picons} (@pxref{Picons}).
@@ -13476,16 +13526,19 @@ Peter Arius,
 Marc Auslander,
 Mark Borges,
 Lance A. Brown,
+Kees de Bruin,
 Martin Buchholz,
+Kevin Buhr,
 Alastair Burt,
 Joao Cachopo,
 Massimo Campostrini,
-Michael Cook,
+Michael R. Cook,
 Glenn Coombs, 
 Frank D. Cringle, 
 Geoffrey T. Dairiki,
 Ulrik Dickow,
 Dave Disser,
+Joev Dubach,
 Paul Eggert,
 Michael Ernst,
 Luc Van Eycken,
@@ -13499,20 +13552,28 @@ Marc Horowitz,
 Ishikawa Ichiro, @c Ishikawa
 Francois Felix Ingrand,
 Lee Iverson, 
+Randell Jesup,
 Fred Johansen, 
 Thor Kristoffersen,
 Jens Lautenbacher,
+Carsten Leonhardt,
 Christian Limpach,
+Tonny Madsen,
+Shlomo Mahlab,
 Nat Makarevitch,
 Timo Metzemakers,
 Richard Mlynarik,
+David Moore,
 Lantz Moore,
 Morioka Tomohiko, @c Morioka
 Hrvoje Niksic,
 Andy Norman,
+Alexandre Oliva,
 Ken Olstad,
 Masaharu Onishi, @c Onishi
 Hideki Ono, @c Ono
+William Perry,
+Stephen Peters,
 Ulrich Pfeifer,
 Colin Rafferty,
 Bart Robinson,
@@ -13549,7 +13610,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 @menu
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
-* Red Gnus::           The future.
+* Red Gnus::           The future---Gnus 5.4/5.5.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the

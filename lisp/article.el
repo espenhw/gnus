@@ -252,7 +252,9 @@ always hide."
 	    ;; Then treat the rest of the header lines.
 	    (narrow-to-region
 	     (point)
-	     (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
+	     (if (search-forward "\n\n" nil t) ; if there's a body
+		 (progn (forward-line -1) (point))
+	       (point-max)))
 	    ;; Then we use the two regular expressions
 	    ;; `gnus-ignored-headers' and `gnus-visible-headers' to
 	    ;; select which header lines is to remain visible in the
@@ -632,7 +634,7 @@ always hide."
 (defvar mime::preview/content-list)
 (defvar mime::preview-content-info/point-min)
 (defun article-narrow-to-signature ()
-  "Narrow to the signature."
+  "Narrow to the signature; return t if a signature is found, else nil."
   (widen)
   (when (and (boundp 'mime::preview/content-list)
 	     mime::preview/content-list)

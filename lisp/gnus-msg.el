@@ -183,7 +183,6 @@ Thank you for your help in stamping out bugs.
    'send))
 
 (put 'gnus-setup-message 'lisp-indent-function 1)
-(put 'gnus-setup-message 'lisp-indent-hook 1)
 (put 'gnus-setup-message 'edebug-form-spec '(form body))
 
 ;;; Post news commands of Gnus group mode and summary mode
@@ -563,14 +562,17 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (interactive "P")
   (gnus-summary-reply (gnus-summary-work-articles n)))
 
-(defun gnus-summary-mail-forward (&optional post)
-  "Forward the current message to another user."
+(defun gnus-summary-mail-forward (&optional full-headers post)
+  "Forward the current message to another user.
+If FULL-HEADERS (the prefix), include full headers when forwarding."
   (interactive "P")
   (gnus-set-global-variables)
   (gnus-setup-message 'forward
     (gnus-summary-select-article)
     (set-buffer gnus-original-article-buffer)
-    (message-forward post)))
+    (let ((message-included-forward-headers
+	   (if full-headers "" message-included-forward-headers)))
+      (message-forward post))))
 
 (defun gnus-summary-resend-message (address)
   "Resend the current article to ADDRESS."
@@ -580,10 +582,11 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (set-buffer gnus-original-article-buffer)
     (message-resend address)))
 
-(defun gnus-summary-post-forward ()
-  "Forward the current article to a newsgroup."
-  (interactive)
-  (gnus-summary-mail-forward t))
+(defun gnus-summary-post-forward (&optional full-headers)
+  "Forward the current article to a newsgroup.
+If FULL-HEADERS (the prefix), include full headers when forwarding."
+  (interactive "P")
+  (gnus-summary-mail-forward full-headers t))
 
 (defvar gnus-nastygram-message 
   "The following article was inappropriately posted to %s.\n\n"

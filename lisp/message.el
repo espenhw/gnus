@@ -301,7 +301,11 @@ nil means use indentation.")
 Used by `message-yank-original' via `message-yank-cite'.")
 
 ;;;###autoload
-(defvar message-cite-function 'message-cite-original
+(defvar message-cite-function
+  (if (and (boundp 'mail-citation-hook)
+	   mail-citation-hook)
+      mail-citation-hook
+    'message-cite-original)
   "*Function for citing an original message.")
 
 ;;;###autoload
@@ -429,6 +433,12 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-send-hook nil
   "Hook run before sending messages.")
 
+(defvar message-send-mail-hook nil
+  "Hook run before sending mail messages.")
+
+(defvar message-send-news-hook nil
+  "Hook run before sending news messages.")
+
 (defvar message-sent-hook nil
   "Hook run after sending messages.")
 
@@ -545,34 +555,36 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defun message-tokenize-header (header &optional separator)
   "Split HEADER into a list of header elements.
 \",\" is used as the separator."
-  (let ((regexp (format "[%s]+" (or separator ",")))
-	(beg 1)
-	(first t)
-	quoted elems paren)
-    (save-excursion
-      (message-set-work-buffer)
-      (insert header)
-      (goto-char (point-min))
-      (while (not (eobp))
-	(if first
-	    (setq first nil)
-	  (forward-char 1))
-	(cond ((and (> (point) beg)
-		    (or (eobp)
-			(and (looking-at regexp)
-			     (not quoted)
-			     (not paren))))
-	       (push (buffer-substring beg (point)) elems)
-	       (setq beg (match-end 0)))
-	      ((= (following-char) ?\")
-	       (setq quoted (not quoted)))
-	      ((and (= (following-char) ?\()
-		    (not quoted))
-	       (setq paren t))
-	      ((and (= (following-char) ?\))
-		    (not quoted))
-	       (setq paren nil))))
-      (nreverse elems))))
+  (if (not header)
+      nil
+    (let ((regexp (format "[%s]+" (or separator ",")))
+	  (beg 1)
+	  (first t)
+	  quoted elems paren)
+      (save-excursion
+	(message-set-work-buffer)
+	(insert header)
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (if first
+	      (setq first nil)
+	    (forward-char 1))
+	  (cond ((and (> (point) beg)
+		      (or (eobp)
+			  (and (looking-at regexp)
+			       (not quoted)
+			       (not paren))))
+		 (push (buffer-substring beg (point)) elems)
+		 (setq beg (match-end 0)))
+		((= (following-char) ?\")
+		 (setq quoted (not quoted)))
+		((and (= (following-char) ?\()
+		      (not quoted))
+		 (setq paren t))
+		((and (= (following-char) ?\))
+		      (not quoted))
+		 (setq paren nil))))
+	(nreverse elems)))))
 
 (defun message-fetch-field (header)
   "The same as `mail-fetch-field', only remove all newlines."
@@ -981,20 +993,21 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   "Insert a signature.  See documentation for the `message-signature' variable."
   (interactive (list 0))
   (let* ((signature 
-	  (cond ((and (null message-signature)
-		      (eq force 0))
-		 (save-excursion
-		   (goto-char (point-max))
-		   (not (re-search-backward
-			 message-signature-separator nil t))))
-		((and (null message-signature)
-		      force)
-		 t)
-		((message-functionp message-signature)
-		 (funcall message-signature))
-		((listp message-signature)
-		 (eval message-signature))
-		(t message-signature)))
+	  (cond
+	   ((and (null message-signature)
+		 (eq force 0))
+	    (save-excursion
+	      (goto-char (point-max))
+	      (not (re-search-backward
+		    message-signature-separator nil t))))
+	   ((and (null message-signature)
+		 force)
+	    t)
+	   ((message-functionp message-signature)
+	    (funcall message-signature))
+	   ((listp message-signature)
+	    (eval message-signature))
+	   (t message-signature)))
 	 (signature
 	  (cond ((stringp signature)
 		 signature)
@@ -1356,7 +1369,7 @@ the user from the mailer."
 
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
-  (let ((tembuf (generate-new-buffer " message temp"))
+  (let ((tembuf (message-generate-new-buffer-clone-locals " message temp"))
 	(case-fold-search nil)
 	(news (message-news-p))
 	(mailbuf (current-buffer)))
@@ -1412,6 +1425,7 @@ the user from the mailer."
       (replace-match "\n")
       (backward-char 1)
       (setq delimline (point-marker))
+      (run-hooks 'message-send-mail-hook)
       ;; Insert an extra newline if we need it to work around
       ;; Sun's bug that swallows newlines.
       (goto-char (1+ delimline))
@@ -1463,6 +1477,7 @@ to find out how to use this."
   (re-search-forward
    (concat "^" (regexp-quote mail-header-separator) "\n"))
   (replace-match "\n")
+  (run-hooks 'message-send-mail-hook)
   ;; send the message
   (case
       (apply
@@ -1494,7 +1509,6 @@ to find out how to use this."
     ;; should never happen
     (t   (error "qmail-inject reported unknown failure."))))
 
-
 (defun message-send-mail-with-mh ()
   "Send the prepared message buffer with mh."
   (let ((mh-previous-window-config nil)
@@ -1511,11 +1525,12 @@ to find out how to use this."
 	      (concat "^" (symbol-name (car headers)) ": *") nil t)
 	     (message-delete-line))
 	(pop headers)))
+    (run-hooks 'message-send-mail-hook)
     ;; Pass it on to mh.
     (mh-send-letter)))
 
 (defun message-send-news (&optional arg)
-  (let ((tembuf (generate-new-buffer " *message temp*"))
+  (let ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
 	(case-fold-search nil)
 	(method (if (message-functionp message-post-method)
 		    (funcall message-post-method arg)
@@ -1536,7 +1551,7 @@ to find out how to use this."
     (message-cleanup-headers)
     (if (not (message-check-news-syntax))
 	(progn
-	  (message "Posting nor performed")
+	  ;;(message "Posting not performed")
 	  nil)
       (unwind-protect
 	  (save-excursion
@@ -1564,6 +1579,7 @@ to find out how to use this."
 	       (concat "^" (regexp-quote mail-header-separator) "\n"))
 	      (replace-match "\n")
 	      (backward-char 1))
+	    (run-hooks 'message-send-news-hook)
 	    (require (car method))
 	    (funcall (intern (format "%s-open-server" (car method)))
 		     (cadr method) (cddr method))
@@ -1581,249 +1597,14 @@ to find out how to use this."
 ;;; Header generation & syntax checking.
 ;;;
 
-(defun message-check-news-syntax ()
-  "Check the syntax of the message."
-  (and 
-   ;; We narrow to the headers and check them first.
-   (save-excursion
-     (save-restriction
-       (message-narrow-to-headers)
-       (and 
-	;; Check for commands in Subject.
-	(or 
-	 (message-check-element 'subject-cmsg)
-	 (save-excursion
-	   (if (string-match "^cmsg " (message-fetch-field "subject"))
-	       (y-or-n-p
-		"The control code \"cmsg \" is in the subject.  Really post? ")
-	     t)))
-	;; Check for multiple identical headers.
-	(or (message-check-element 'multiple-headers)
-	    (save-excursion
-	      (let (found)
-		(while (and (not found) 
-			    (re-search-forward "^[^ \t:]+: " nil t))
-		  (save-excursion
-		    (or (re-search-forward 
-			 (concat "^" (setq found
-					   (buffer-substring 
-					    (match-beginning 0) 
-					    (- (match-end 0) 2))))
-			 nil t)
-			(setq found nil))))
-		(if found
-		    (y-or-n-p 
-		     (format "Multiple %s headers.  Really post? " found))
-		  t))))
-	;; Check for Version and Sendsys.
-	(or (message-check-element 'sendsys)
-	    (save-excursion
-	      (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
-		  (y-or-n-p
-		   (format "The article contains a %s command.  Really post? "
-			   (buffer-substring (match-beginning 0) 
-					     (1- (match-end 0)))))
-		t)))
-	;; See whether we can shorten Followup-To.
-	(or (message-check-element 'shorten-followup-to)
-	    (let ((newsgroups (message-fetch-field "newsgroups"))
-		  (followup-to (message-fetch-field "followup-to"))
-		  to)
-	      (when (and newsgroups (string-match "," newsgroups)
-			 (not followup-to)
-			 (not
-			  (zerop
-			   (length
-			    (setq to (completing-read 
-				      "Followups to: (default all groups) " 
-				      (mapcar (lambda (g) (list g))
-					      (cons "poster" 
-						    (message-tokenize-header 
-						     newsgroups)))))))))
-		(goto-char (point-min))
-		(insert "Followup-To: " to "\n"))
-	      t))
-	;; Check "Shoot me".
-	(or (message-check-element 'shoot)
-	    (save-excursion
-	      (if (re-search-forward
-		   "Message-ID.*.i-have-a-misconfigured-system-so-shoot-me"
-		   nil t)
-		  (y-or-n-p
-		   "You appear to have a misconfigured system.  Really post? ")
-		t)))
-	;; Check for Approved.
-	(or (message-check-element 'approved)
-	    (save-excursion
-	      (if (re-search-forward "^Approved:" nil t)
-		  (y-or-n-p
-		   "The article contains an Approved header.  Really post? ")
-		t)))
-	;; Check the Message-ID header.
-	(or (message-check-element 'message-id)
-	    (save-excursion
-	      (let* ((case-fold-search t)
-		     (message-id (message-fetch-field "message-id")))
-		(or (not message-id)
-		    (and (string-match "@" message-id)
-			 (string-match "@[^\\.]*\\." message-id))
-		    (y-or-n-p
-		     (format 
-		      "The Message-ID looks strange: \"%s\".  Really post? "
-		      message-id))))))
-	;; Check the Subject header.
-	(or 
-	 (message-check-element 'subject)
-	 (save-excursion
-	   (let* ((case-fold-search t)
-		  (subject (message-fetch-field "subject")))
-	     (or
-	      (and subject
-		   (not (string-match "\\`[ \t]*\\'" subject)))
-	      (progn
-		(message 
-		 "The subject field is empty or missing.  Posting is denied.")
-		nil)))))
-	;; Check the Newsgroups & Followup-To headers.
-	(or
-	 (message-check-element 'existing-newsgroups)
-	 (let* ((case-fold-search t)
-		(newsgroups (message-fetch-field "newsgroups"))
-		(followup-to (message-fetch-field "followup-to"))
-		(groups (message-tokenize-header
-			 (if followup-to
-			     (concat newsgroups "," followup-to)
-			   newsgroups)))
-		(hashtb (and (boundp 'gnus-active-hashtb)
-			     gnus-active-hashtb))
-		errors)
-	   (if (not hashtb)
-	       t
-	     (while groups
-	       (when (and (not (boundp (intern (car groups) hashtb)))
-			  (not (equal (car groups) "poster")))
-		 (push (car groups) errors))
-	       (pop groups))
-	     (if (not errors)
-		 t
-	       (y-or-n-p
-		(format
-		 "Really post to %s unknown group%s: %s "
-		 (if (= (length errors) 1) "this" "these")
-		 (if (= (length errors) 1) "" "s")
-		 (mapconcat 'identity errors ", ")))))))
-	;; Check the Newsgroups & Followup-To headers for syntax errors.
-	(or
-	 (message-check-element 'valid-newsgroups)
-	 (let ((case-fold-search t)
-	       (headers '("Newsgroups" "Followup-To"))
-	       header error)
-	   (while (and headers (not error))
-	     (when (setq header (mail-fetch-field (car headers)))
-	       (if (or
-		    (not 
-		     (string-match
-		      "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-+_&.a-zA-Z0-9]+\\)*\\'"
-		      header))
-		    (memq 
-		     nil (mapcar 
-			  (lambda (g)
-			    (not (string-match "\\.\\'\\|\\.\\." g)))
-			  (message-tokenize-header header ","))))
-		   (setq error t)))
-	     (unless error
-	       (pop headers)))
-	   (if (not error)
-	       t
-	     (y-or-n-p
-	      (format "The %s header looks odd: \"%s\".  Really post? "
-		      (car headers) header)))))
-	;; Check the From header.
-	(or 
-	 (save-excursion
-	   (let* ((case-fold-search t)
-		  (from (message-fetch-field "from")))
-	     (cond
-	      ((not from)
-	       (message "There is no From line.  Posting is denied.")
-	       nil)
-	      ((not (string-match "@[^\\.]*\\." from))
-	       (message
-		"Denied posting -- the From looks strange: \"%s\"." from)
-	       nil)
-	      ((string-match "@[^@]*@" from)
-	       (message 
-		"Denied posting -- two \"@\"'s in the From header: %s." from)
-	       nil)
-	      ((string-match "(.*).*(.*)" from)
-	       (message
-		"Denied posting -- the From header looks strange: \"%s\"." 
-		from)
-	       nil)
-	      (t t))))))))
-   ;; Check for long lines.
-   (or (message-check-element 'long-lines)
+(defmacro message-check (type &rest forms)
+  "Eval FORMS if TYPE is to be checked."
+  `(or (message-check-element ,type)
        (save-excursion
-	 (goto-char (point-min))
-	 (re-search-forward
-	  (concat "^" (regexp-quote mail-header-separator) "$"))
-	 (while (and
-		 (progn
-		   (end-of-line)
-		   (< (current-column) 80))
-		 (zerop (forward-line 1))))
-	 (or (bolp)
-	     (eobp)
-	     (y-or-n-p
-	      "You have lines longer than 79 characters.  Really post? "))))
-   ;; Check whether the article is empty.
-   (or (message-check-element 'empty)
-       (save-excursion
-	 (goto-char (point-min))
-	 (re-search-forward
-	  (concat "^" (regexp-quote mail-header-separator) "$"))
-	 (forward-line 1)
-	 (let ((b (point)))
-	   (goto-char (point-max))
-	   (re-search-backward message-signature-separator nil t)
-	   (beginning-of-line)
-	   (or (re-search-backward "[^ \n\t]" b t)
-	       (y-or-n-p "Empty article.  Really post? ")))))
-   ;; Check for control characters.
-   (or (message-check-element 'control-chars)
-       (save-excursion
-	 (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
-	     (y-or-n-p 
-	      "The article contains control characters.  Really post? ")
-	   t)))
-   ;; Check excessive size.
-   (or (message-check-element 'size)
-       (if (> (buffer-size) 60000)
-	   (y-or-n-p
-	    (format "The article is %d octets long.  Really post? "
-		    (buffer-size)))
-	 t))
-   ;; Check whether any new text has been added.
-   (or (message-check-element 'new-text)
-       (not message-checksum)
-       (not (and (eq (message-checksum) (car message-checksum))
-		 (eq (buffer-size) (cdr message-checksum))))
-       (y-or-n-p
-	"It looks like no new text has been added.  Really post? "))
-   ;; Check the length of the signature.
-   (or
-    (message-check-element 'signature)
-    (progn
-      (goto-char (point-max))
-      (if (or (not (re-search-backward message-signature-separator nil t))
-	      (search-forward message-forward-end-separator nil t))
-	  t
-	(if (> (count-lines (point) (point-max)) 5)
-	    (y-or-n-p
-	     (format
-	      "Your .sig is %d lines; it should be max 4.  Really post? "
-	      (1- (count-lines (point) (point-max)))))
-	  t))))))
+	 ,@forms)))
+
+(put 'message-check 'lisp-indent-function 1)
+(put 'message-check 'edebug-form-spec '(form body))
 
 (defun message-check-element (type)
   "Returns non-nil if this type is not to be checked."
@@ -1832,6 +1613,236 @@ to find out how to use this."
     (let ((able (assq type message-syntax-checks)))
       (and (consp able)
 	   (eq (cdr able) 'disabled)))))
+
+(defun message-check-news-syntax ()
+  "Check the syntax of the message."
+  (save-excursion
+    (save-restriction
+      (widen)
+      (and 
+       ;; We narrow to the headers and check them first.
+       (save-excursion
+	 (save-restriction
+	   (message-narrow-to-headers)
+	   (message-check-news-header-syntax)))
+       ;; Check the body.
+       (message-check-news-body-syntax)))))
+
+(defun message-check-news-header-syntax ()
+  (and 
+   ;; Check for commands in Subject.
+   (message-check 'subject-cmsg
+     (if (string-match "^cmsg " (message-fetch-field "subject"))
+	 (y-or-n-p
+	  "The control code \"cmsg\" is in the subject.  Really post? ")
+       t))
+   ;; Check for multiple identical headers.
+   (message-check 'multiple-headers
+     (let (found)
+       (while (and (not found) 
+		   (re-search-forward "^[^ \t:]+: " nil t))
+	 (save-excursion
+	   (or (re-search-forward 
+		(concat "^" (setq found
+				  (buffer-substring
+				   (match-beginning 0) (- (match-end 0) 2))))
+		nil t)
+	       (setq found nil))))
+       (if found
+	   (y-or-n-p (format "Multiple %s headers.  Really post? " found))
+	 t)))
+   ;; Check for Version and Sendsys.
+   (message-check 'sendsys
+     (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
+	 (y-or-n-p
+	  (format "The article contains a %s command.  Really post? "
+		  (buffer-substring (match-beginning 0) 
+				    (1- (match-end 0)))))
+       t))
+   ;; See whether we can shorten Followup-To.
+   (message-check 'shorten-followup-to
+     (let ((newsgroups (message-fetch-field "newsgroups"))
+	   (followup-to (message-fetch-field "followup-to"))
+	   to)
+       (when (and newsgroups
+		  (string-match "," newsgroups)
+		  (not followup-to)
+		  (not
+		   (zerop
+		    (length
+		     (setq to (completing-read 
+			       "Followups to: (default all groups) " 
+			       (mapcar (lambda (g) (list g))
+				       (cons "poster" 
+					     (message-tokenize-header 
+					      newsgroups)))))))))
+	 (goto-char (point-min))
+	 (insert "Followup-To: " to "\n"))
+       t))
+   ;; Check "Shoot me".
+   (message-check 'shoot
+     (if (re-search-forward
+	  "Message-ID.*.i-have-a-misconfigured-system-so-shoot-me" nil t)
+	 (y-or-n-p "You appear to have a misconfigured system.  Really post? ")
+       t))
+   ;; Check for Approved.
+   (message-check 'approved
+     (if (re-search-forward "^Approved:" nil t)
+	 (y-or-n-p "The article contains an Approved header.  Really post? ")
+       t))
+   ;; Check the Message-ID header.
+   (message-check 'message-id
+     (let* ((case-fold-search t)
+	    (message-id (message-fetch-field "message-id")))
+       (or (not message-id)
+	   (and (string-match "@" message-id)
+		(string-match "@[^\\.]*\\." message-id))
+	   (y-or-n-p
+	    (format "The Message-ID looks strange: \"%s\".  Really post? "
+		    message-id)))))
+   ;; Check the Subject header.
+   (message-check 'subject
+     (let* ((case-fold-search t)
+	    (subject (message-fetch-field "subject")))
+       (or
+	(and subject
+	     (not (string-match "\\`[ \t]*\\'" subject)))
+	(ignore
+	 (message 
+	  "The subject field is empty or missing.  Posting is denied.")))))
+   ;; Check the Newsgroups & Followup-To headers.
+   (message-check 'existing-newsgroups
+     (let* ((case-fold-search t)
+	    (newsgroups (message-fetch-field "newsgroups"))
+	    (followup-to (message-fetch-field "followup-to"))
+	    (groups (message-tokenize-header
+		     (if followup-to
+			 (concat newsgroups "," followup-to)
+		       newsgroups)))
+	    (hashtb (and (boundp 'gnus-active-hashtb)
+			 gnus-active-hashtb))
+	    errors)
+       (if (not hashtb)
+	   t
+	 (while groups
+	   (when (and (not (boundp (intern (car groups) hashtb)))
+		      (not (equal (car groups) "poster")))
+	     (push (car groups) errors))
+	   (pop groups))
+	 (if (not errors)
+	     t
+	   (y-or-n-p
+	    (format
+	     "Really post to %s unknown group%s: %s "
+	     (if (= (length errors) 1) "this" "these")
+	     (if (= (length errors) 1) "" "s")
+	     (mapconcat 'identity errors ", ")))))))
+   ;; Check the Newsgroups & Followup-To headers for syntax errors.
+   (message-check 'valid-newsgroups
+     (let ((case-fold-search t)
+	   (headers '("Newsgroups" "Followup-To"))
+	   header error)
+       (while (and headers (not error))
+	 (when (setq header (mail-fetch-field (car headers)))
+	   (if (or
+		(not 
+		 (string-match
+		  "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-+_&.a-zA-Z0-9]+\\)*\\'"
+		  header))
+		(memq 
+		 nil (mapcar 
+		      (lambda (g)
+			(not (string-match "\\.\\'\\|\\.\\." g)))
+		      (message-tokenize-header header ","))))
+	       (setq error t)))
+	 (unless error
+	   (pop headers)))
+       (if (not error)
+	   t
+	 (y-or-n-p
+	  (format "The %s header looks odd: \"%s\".  Really post? "
+		  (car headers) header)))))
+   ;; Check the From header.
+   (message-check 'from
+     (let* ((case-fold-search t)
+	    (from (message-fetch-field "from"))
+	    (ad (nth 1 (mail-extract-address-components from))))
+       (cond
+	((not from)
+	 (message "There is no From line.  Posting is denied.")
+	 nil)
+	((or (not (string-match "@[^\\.]*\\." ad)) ;larsi@ifi
+	     (string-match "\\.\\." ad) ;larsi@ifi..uio
+	     (string-match "@\\." ad)	;larsi@.ifi.uio
+	     (string-match "\\.$" ad)	;larsi@ifi.uio.
+	     (not (string-match "^[^@]+@[^@]+$" ad)) ;larsi.ifi.uio
+	     (string-match "(.*).*(.*)" from)) ;(lars) (lars)
+	 (message
+	  "Denied posting -- the From looks strange: \"%s\"." from)
+	 nil)
+	(t t))))))
+
+(defun message-check-news-body-syntax ()
+  (and
+   ;; Check for long lines.
+   (message-check 'long-lines
+     (goto-char (point-min))
+     (re-search-forward
+      (concat "^" (regexp-quote mail-header-separator) "$"))
+     (while (and
+	     (progn
+	       (end-of-line)
+	       (< (current-column) 80))
+	     (zerop (forward-line 1))))
+     (or (bolp)
+	 (eobp)
+	 (y-or-n-p
+	  "You have lines longer than 79 characters.  Really post? ")))
+   ;; Check whether the article is empty.
+   (message-check 'empty
+     (goto-char (point-min))
+     (re-search-forward
+      (concat "^" (regexp-quote mail-header-separator) "$"))
+     (forward-line 1)
+     (let ((b (point)))
+       (goto-char (point-max))
+       (re-search-backward message-signature-separator nil t)
+       (beginning-of-line)
+       (or (re-search-backward "[^ \n\t]" b t)
+	   (y-or-n-p "Empty article.  Really post? "))))
+   ;; Check for control characters.
+   (message-check 'control-chars
+     (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
+	 (y-or-n-p 
+	  "The article contains control characters.  Really post? ")
+       t))
+   ;; Check excessive size.
+   (message-check 'size
+     (if (> (buffer-size) 60000)
+	 (y-or-n-p
+	  (format "The article is %d octets long.  Really post? "
+		  (buffer-size)))
+       t))
+   ;; Check whether any new text has been added.
+   (message-check 'new-text
+     (or
+      (not message-checksum)
+      (not (and (eq (message-checksum) (car message-checksum))
+		(eq (buffer-size) (cdr message-checksum))))
+      (y-or-n-p
+       "It looks like no new text has been added.  Really post? ")))
+   ;; Check the length of the signature.
+   (message-check 'signature
+     (goto-char (point-max))
+     (if (or (not (re-search-backward message-signature-separator nil t))
+	     (search-forward message-forward-end-separator nil t))
+	 t
+       (if (> (count-lines (point) (point-max)) 5)
+	   (y-or-n-p
+	    (format
+	     "Your .sig is %d lines; it should be max 4.  Really post? "
+	     (1- (count-lines (point) (point-max)))))
+	 t)))))
 
 (defun message-checksum ()
   "Return a \"checksum\" for the current buffer."
@@ -2272,7 +2283,7 @@ Headers already prepared in the buffer are not modified."
 			 (downcase secure-sender)))))
 	  (goto-char (point-min))    
 	  ;; Rename any old Sender headers to Original-Sender.
-	  (when (re-search-forward "^Sender:" nil t)
+	  (when (re-search-forward "^\\(Original-\\)*Sender:" nil t)
 	    (beginning-of-line)
 	    (insert "Original-")
 	    (beginning-of-line))
@@ -3117,6 +3128,25 @@ The following arguments may contain lists of values."
 	 (apply 'append (mapcar 'message-flatten-list-1 list)))
 	(list
 	 (list list))))
+
+(defun message-generate-new-buffer-clone-locals (name &optional varstr)
+  "Create and return a buffer with a name based on NAME using generate-new-buffer.
+Then clone the local variables and values from the old buffer to the
+new one, cloning only the locals having a substring matching the
+regexp varstr."
+  (let ((oldlocals (buffer-local-variables)))
+    (save-excursion
+      (set-buffer (generate-new-buffer name))
+      (mapcar (lambda (dude)
+		(when (and (car dude)
+			   (or (not varstr)
+			       (string-match varstr (symbol-name (car dude)))))
+		  (condition-case ()
+		      (set (make-local-variable (car dude))
+			   (cdr dude))
+		    (error))))
+	      oldlocals)
+      (current-buffer))))
 
 (run-hooks 'message-load-hook)
 

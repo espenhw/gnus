@@ -117,6 +117,7 @@
 
 (deffoo nnbabyl-open-server (server &optional defs)
   (nnoo-change-server 'nnbabyl server defs)
+  (nnbabyl-create-mbox)
   (cond 
    ((not (file-exists-p nnbabyl-mbox-file))
     (nnbabyl-close-server)
@@ -242,7 +243,8 @@
 (deffoo nnbabyl-request-list (&optional server)
   (save-excursion
     (nnmail-find-file nnbabyl-active-file)
-    (setq nnbabyl-group-alist (nnmail-get-active))))
+    (setq nnbabyl-group-alist (nnmail-get-active))
+    t))
 
 (deffoo nnbabyl-request-newgroups (date &optional server)
   (nnbabyl-request-list server))
@@ -523,8 +525,7 @@
 	    nnbabyl-group-alist))
     (cdr active)))
 
-(defun nnbabyl-read-mbox ()
-  (nnmail-activate 'nnbabyl)
+(defun nnbabyl-create-mbox ()
   (unless (file-exists-p nnbabyl-mbox-file)
     ;; Create a new, empty RMAIL mbox file.
     (save-excursion
@@ -533,7 +534,11 @@
       (setq buffer-file-name nnbabyl-mbox-file)
       (insert "BABYL OPTIONS:\n\n\^_")
       (nnmail-write-region
-       (point-min) (point-max) nnbabyl-mbox-file t 'nomesg)))
+       (point-min) (point-max) nnbabyl-mbox-file t 'nomesg))))
+
+(defun nnbabyl-read-mbox ()
+  (nnmail-activate 'nnbabyl)
+  (nnbabyl-create-mbox)
 
   (if (and nnbabyl-mbox-buffer
 	   (buffer-name nnbabyl-mbox-buffer)

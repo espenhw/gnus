@@ -42,14 +42,16 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.52"
+(defconst gnus-version-number "0.53"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
-  "*If non-nil, the startup message will not be displayed."
+  "*If non-nil, the startup message will not be displayed.
+This variable is used before `.gnus.el' is loaded, so it should
+be set in `.emacs' instead."
   :group 'gnus-start
   :type 'boolean)
 
@@ -68,6 +70,24 @@
 	 'facep)
 	(t
 	 'ignore)))
+
+(defalias 'gnus-make-overlay 'make-overlay)
+(defalias 'gnus-overlay-put 'overlay-put)
+(defalias 'gnus-move-overlay 'move-overlay)
+(defalias 'gnus-overlay-end 'overlay-end)
+(defalias 'gnus-extent-detached-p 'ignore)
+(defalias 'gnus-extent-start-open 'ignore)
+(defalias 'gnus-set-text-properties 'set-text-properties)
+(defalias 'gnus-group-remove-excess-properties 'ignore)
+(defalias 'gnus-topic-remove-excess-properties 'ignore)
+(defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
+(defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
+(defalias 'gnus-make-local-hook 'make-local-hook)
+(defalias 'gnus-add-hook 'add-hook)
+(defalias 'gnus-character-to-event 'identity)
+(defalias 'gnus-add-text-properties 'add-text-properties)
+(defalias 'gnus-put-text-property 'put-text-property)
+(defalias 'gnus-mode-line-buffer-identification 'identity)
 
 ;; The XEmacs people think this is evil, so it must go.
 (defun custom-face-lookup (&optional fg bg stipple bold italic underline)
@@ -810,6 +830,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("hexl" hexl-hex-string-to-integer)
      ("pp" pp pp-to-string pp-eval-expression)
      ("mail-extr" mail-extract-address-components)
+     ("message" :interactive t
+      message-send-and-exit message-yank-original)
      ("nnmail" nnmail-split-fancy nnmail-article-group nnmail-date-to-time)
      ("nnvirtual" nnvirtual-catchup-group nnvirtual-convert-headers)
      ("timezone" timezone-make-date-arpa-standard timezone-fix-time
@@ -823,7 +845,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-soup-send-replies gnus-soup-save-areas gnus-soup-pack-packet)
      ("nnsoup" nnsoup-pack-replies)
      ("score-mode" :interactive t gnus-score-mode)
-     ("gnus-mh" gnus-mh-mail-setup gnus-summary-save-article-folder
+     ("gnus-mh" gnus-summary-save-article-folder
       gnus-Folder-save-name gnus-folder-save-name)
      ("gnus-mh" :interactive t gnus-summary-save-in-folder)
      ("gnus-demon" gnus-demon-add-nocem gnus-demon-add-scanmail
@@ -849,20 +871,20 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-cache-retrieve-headers gnus-cache-possibly-alter-active
       gnus-cache-enter-remove-article gnus-cached-article-p
       gnus-cache-open gnus-cache-close gnus-cache-update-article)
-     ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
-      gnus-cache-remove-article gnus-summary-insert-cached-articles)
-     ("gnus-score" :interactive t
-      gnus-summary-increase-score gnus-summary-lower-score
-      gnus-score-flush-cache gnus-score-close
-      gnus-score-raise-same-subject-and-select
-      gnus-score-raise-same-subject gnus-score-default
-      gnus-score-raise-thread gnus-score-lower-same-subject-and-select
-      gnus-score-lower-same-subject gnus-score-lower-thread
-      gnus-possibly-score-headers gnus-summary-raise-score 
-      gnus-summary-set-score gnus-summary-current-score
-      gnus-score-followup-article)
-     ("gnus-score"
-      (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
+      ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
+       gnus-cache-remove-article gnus-summary-insert-cached-articles)
+      ("gnus-score" :interactive t
+       gnus-summary-increase-score gnus-summary-set-score
+       gnus-summary-raise-thread gnus-summary-raise-same-subject
+       gnus-summary-raise-score gnus-summary-raise-same-subject-and-select
+       gnus-summary-lower-thread gnus-summary-lower-same-subject
+       gnus-summary-lower-score gnus-summary-lower-same-subject-and-select
+       gnus-summary-current-score gnus-score-default
+       gnus-score-flush-cache gnus-score-close
+       gnus-possibly-score-headers gnus-score-followup-article
+       gnus-score-followup-thread)
+      ("gnus-score"
+       (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
       gnus-current-score-file-nondirectory gnus-score-adaptive
       gnus-score-find-trace gnus-score-file-name)
      ("gnus-cus" :interactive t gnus-group-customize gnus-score-customize)
@@ -882,17 +904,14 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-uu-decode-unshar-and-save-view gnus-uu-decode-save-view
       gnus-uu-decode-binhex-view)
      ("gnus-msg" (gnus-summary-send-map keymap)
-      gnus-mail-yank-original gnus-mail-send-and-exit
-      gnus-article-mail gnus-new-mail gnus-mail-reply
-      gnus-copy-article-buffer gnus-extended-version)
+      gnus-article-mail gnus-copy-article-buffer gnus-extended-version)
      ("gnus-msg" :interactive t
       gnus-group-post-news gnus-group-mail gnus-summary-post-news
       gnus-summary-followup gnus-summary-followup-with-original
       gnus-summary-cancel-article gnus-summary-supersede-article
-      gnus-post-news gnus-inews-news 
-      gnus-summary-reply gnus-summary-reply-with-original
+      gnus-post-news gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
-      gnus-summary-resend-message gnus-summary-bounced-mail
+      gnus-summary-resend-message gnus-summary-resend-bounced-mail
       gnus-bug)
      ("gnus-picon" :interactive t gnus-article-display-picons
       gnus-group-display-picons gnus-picons-article-display-x-face
@@ -900,7 +919,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p 
       gnus-grouplens-mode)
      ("smiley" :interactive t gnus-smiley-display)
-     ("gnus" gnus-add-current-to-buffer-list gnus-add-shutdown)
      ("gnus-win" gnus-configure-windows)
      ("gnus-sum" gnus-summary-insert-line gnus-summary-read-group
       gnus-list-of-unread-articles gnus-list-of-read-articles
@@ -915,9 +933,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-backlog-remove-article)
      ("gnus-art" gnus-article-read-summary-keys gnus-article-save
       gnus-article-prepare gnus-article-set-window-start
-      gnus-article-show-all-headers gnus-article-next-page
-      gnus-article-prev-page gnus-request-article-this-buffer
-      gnus-article-mode gnus-article-setup-buffer gnus-narrow-to-page)
+      gnus-article-next-page gnus-article-prev-page
+      gnus-request-article-this-buffer gnus-article-mode
+      gnus-article-setup-buffer gnus-narrow-to-page)
      ("gnus-art" :interactive t
       gnus-article-hide-headers gnus-article-hide-boring-headers
       gnus-article-treat-overstrike gnus-article-word-wrap
@@ -933,15 +951,14 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
       gnus-dribble-enter)
-     ("gnus-dup" gnus-dup-suppress-articles gnus-dup-enter-articles)
+     ("gnus-dup" gnus-dup-suppress-articles gnus-dup-unsuppress-article
+      gnus-dup-enter-articles)
      ("gnus-range" gnus-copy-sequence)
-     ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-eform" gnus-edit-form)
      ("gnus-move" :interactive t
       gnus-group-move-group-to-server gnus-change-server)
      ("gnus-logic" gnus-score-advanced)
-     ("gnus-undo" gnus-undo-mode gnus-undo-register 
-      gnus-dup-unsuppress-article)
+     ("gnus-undo" gnus-undo-mode gnus-undo-register)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group)
      ("article" article-decode-rfc1522)
@@ -1026,26 +1043,6 @@ This restriction may disappear in later versions of Gnus.")
 (defvar gnus-group-mode-map (make-keymap))
 (gnus-suppress-keymap gnus-group-mode-map)
 
-;;; Function aliases later to be redefined for XEmacs usage.
-
-(defalias 'gnus-make-overlay 'make-overlay)
-(defalias 'gnus-overlay-put 'overlay-put)
-(defalias 'gnus-move-overlay 'move-overlay)
-(defalias 'gnus-overlay-end 'overlay-end)
-(defalias 'gnus-extent-detached-p 'ignore)
-(defalias 'gnus-extent-start-open 'ignore)
-(defalias 'gnus-set-text-properties 'set-text-properties)
-(defalias 'gnus-group-remove-excess-properties 'ignore)
-(defalias 'gnus-topic-remove-excess-properties 'ignore)
-(defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
-(defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
-(defalias 'gnus-make-local-hook 'make-local-hook)
-(defalias 'gnus-add-hook 'add-hook)
-(defalias 'gnus-character-to-event 'identity)
-(defalias 'gnus-add-text-properties 'add-text-properties)
-(defalias 'gnus-put-text-property 'put-text-property)
-(defalias 'gnus-mode-line-buffer-identification 'identity)
-
 
 
 ;; Fix by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
@@ -1066,7 +1063,7 @@ This restriction may disappear in later versions of Gnus.")
 (defmacro gnus-sethash (string value hashtable)
   "Set hash value.  Arguments are STRING, VALUE, and HASHTABLE."
   `(set (intern ,string ,hashtable) ,value))
-(put 'nnheader-temp-write 'edebug-form-spec '(form form form))
+(put 'gnus-sethash 'edebug-form-spec '(form form form))
 
 (defmacro gnus-group-unread (group)
   "Get the currently computed number of unread articles in GROUP."
@@ -1583,8 +1580,7 @@ just the host name."
 					       ((< colon dot) colon)
 					       ((< dot colon) dot)))
 			      ":")
-		     group (substring group (+ 1 colon))
-		     )))
+		     group (substring group (+ 1 colon)))))
 	    (t
 	     (let* ((colon (string-match ":" group)))
 	       (setq foreign (concat (substring group 0 (+ 1 colon)))
@@ -1599,7 +1595,6 @@ just the host name."
 	(setq name (concat foreign name group)
 	      group nil)))
     name))
-
 
 
 ;;;

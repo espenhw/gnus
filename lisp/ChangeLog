@@ -1,3 +1,183 @@
+Tue Oct 29 20:42:07 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Fold properly.
+
+Tue Oct 29 19:45:25 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-generate-new-buffer-clone-locals): Bugged
+	out under XEmacs.
+
+Tue Oct 29 19:21:47 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus.el: Fixed autoloads.
+
+Tue Oct 29 17:21:42 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-art.el (gnus-url-mailto): `message-goto-subject' takes no
+	args. 
+
+Mon Oct 28 15:42:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Autoload gnus-score-followup-thread.
+	(gnus-inhibit-startup-message): Doc fix.
+
+Sat Oct 26 15:48:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-topic-menu-add): Add menu.
+
+	* gnus-topic.el (gnus-topic-kill-group): Enter into dribble.
+
+	* gnus-sum.el (gnus-summary-universal-argument): Bind
+	`gnus-newsgroup-process-marked' to nil before calling functions. 
+
+Sat Oct 26 15:31:18 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnmail.el (nnmail-activate): Faster version.
+
+Fri Oct 25 09:02:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnsoup.el (nnsoup-pack-replies): Error empty dirs.
+
+	* gnus-msg.el (gnus-summary-mail-forward): Allow prefix to forward
+	full headers. 
+
+Thu Oct 24 07:20:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-nocem.el (gnus-nocem-enter-article): Would enter unbound
+	symbols into hashtb.
+
+Thu Oct 24 07:12:23 1996  Michael R. Cook  <mcook@cognex.com>
+
+	* nnmh.el (nnmh-active-number): Misplaced paren.
+
+Thu Oct 24 07:02:54 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-list-groups): Clear inboxes.
+
+	* gnus-async.el (gnus-make-async-article-function): Use the
+	success param.
+
+	* nntp.el (nntp-after-change-function-callback): Pass along the
+	right success param.
+
+Wed Oct 23 18:33:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-summary-increase-score): Spud.
+
+Wed Oct 23 07:55:42 1996  William Perry  <wmperry@aventail.com>
+
+	* gnus-art.el (gnus-url-mailto): New function.
+
+Wed Oct 23 06:57:10 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnbabyl.el (nnbabyl-create-mbox): New function.
+	(nnbabyl-open-server): Create mbox.
+
+	* nnmbox.el (nnmbox-create-mbox): New function.
+
+Tue Oct 22 07:30:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-request-list): Always return t.
+
+Tue Oct 22 03:16:27 1996  Felix Lee  <flee@teleport.com>
+
+	* gnus-score.el (gnus-score-adaptive): Use the right syntax
+	table. 
+
+Tue Oct 22 03:08:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-generate-headers): Rename Original-Sender as
+	well.
+	(message-send-news): Typo.
+	(message-send-news): Don't message.
+
+Tue Oct 22 03:06:49 1996  Felix Lee  <flee@teleport.com>
+
+	* gnus-score.el (gnus-score-adaptive): gnus-score-adaptive will do
+ 	line scoring or word scoring, but not both.
+
+Tue Oct 22 02:48:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-send-news): Use it.
+	(message-send-mail): Ditto.
+
+Tue Oct 22 02:40:14 1996  Joev Dubach  <dubach1@husc.harvard.edu>
+
+	* message.el (message-generate-new-buffer-clone-locals): New
+	function. 
+
+Tue Oct 22 01:19:47 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el: Removed `lisp-indent-hook' throughout all files. 
+
+	* gnus.el (gnus-sethash): Fix edebug form spec.
+
+	* gnus-cache.el (gnus-cache-file-name): Translate file chars.
+
+Sun Oct 20 03:41:47 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-read-server-type): Fold case.
+
+Sat Oct 19 08:03:17 1996  Michael Ernst  <mernst@cs.washington.edu>
+
+	* article.el (article-hide-headers): Do the right thing on
+	articles with no bodies.
+	(article-narrow-to-signature): Doc fix.
+
+Sat Oct 19 07:53:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnsoup.el (nnsoup-pack-replies): Refuse to pack when there is
+	nothing to pack.
+	(nnsoup-read-areas): Don't bug out on empty packets.
+
+	* gnus-soup.el (gnus-soup-pack-packet): Refuse to pack empty
+	packets. 
+
+Sat Oct 19 07:43:33 1996  Kees de Bruin  <kees_de_bruin@tasking.nl>
+
+	* gnus-sum.el (gnus-auto-center-summary): Fix.
+
+Sat Oct 19 07:32:27 1996  Marc Horowitz  <marc@cygnus.com>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Would clobber
+	duplicates. 
+
+Sat Oct 19 07:01:14 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-send-mail-hook): New hook.
+	(message-send-news-hook): Ditto.
+
+	* gnus-art.el (gnus-summary-write-to-file): New function.
+
+Sat Oct 19 06:56:34 1996  Kees de Bruin  <kees_de_bruin@tasking.nl>
+
+	* gnus-sum.el (gnus-summary-save-article-mail-overwrite): New
+	command and keystroke.
+
+Thu Oct 17 06:25:55 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-article-sort-by-date): Use faster
+	implementation. 
+
+	* gnus-util.el (gnus-string-get-time): New macro.
+
+	* message.el (message-check-news-syntax): Check more thorougly the
+	From header.
+	(message-check): New macro.
+
+Thu Oct 17 06:03:56 1996  Carsten Leonhardt  <leo@arioch.tng.oche.de>
+
+	* gnus-ems.el (gnus-xemacs): Avoid clobbering functions.
+
+Thu Oct 17 05:34:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-cite-function): Initialize from
+	mail-citation-hook. 
+
+Thu Oct 17 02:45:47 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.52 is released.
+
 Wed Oct 16 21:01:41 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus-sum.el (gnus-summary-catchup): Return t.

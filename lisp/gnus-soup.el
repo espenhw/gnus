@@ -165,6 +165,10 @@ move those articles instead."
   "Make a SOUP packet from the SOUP areas."
   (interactive)
   (gnus-soup-read-areas)
+  (unless (file-exists-p gnus-soup-directory)
+    (message "No such directory: %s" gnus-soup-directory))
+  (when (null (directory-files gnus-soup-directory nil "\\.MSG$"))
+    (message "No files to pack."))
   (gnus-soup-pack gnus-soup-directory gnus-soup-packer))
 
 (defun gnus-group-brew-soup (n)

@@ -73,14 +73,16 @@ Gnus provides the following functions:
 * gnus-summary-save-in-rmail (Rmail format)
 * gnus-summary-save-in-mail (Unix mail format)
 * gnus-summary-save-in-folder (MH folder)
-* gnus-summary-save-in-file (article format).
-* gnus-summary-save-in-vm (use VM's folder format)."
+* gnus-summary-save-in-file (article format)
+* gnus-summary-save-in-vm (use VM's folder format)
+* gnus-summary-write-to-file (article format -- overwrite)."
   :group 'article
   :type '(radio (function-item gnus-summary-save-in-rmail)
 		(function-item gnus-summary-save-in-mail)
 		(function-item gnus-summary-save-in-folder)
 		(function-item gnus-summary-save-in-file)
-		(function-item gnus-summary-save-in-vm)))
+		(function-item gnus-summary-save-in-vm)
+		(function-item gnus-summary-write-to-file)))
 
 (defcustom gnus-rmail-save-name 'gnus-plain-save-name
   "A function generating a file name to save articles in Rmail format.
@@ -473,7 +475,7 @@ Directory to save to is default to `gnus-article-save-directory'."
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail filename)))
 
-(defun gnus-summary-save-in-file (&optional filename)
+(defun gnus-summary-save-in-file (&optional filename overwrite)
   "Append this article to file.
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
@@ -489,32 +491,19 @@ Directory to save to is default to `gnus-article-save-directory'."
       (save-excursion
 	(save-restriction
 	  (widen)
+	  (when (and overwrite
+		     (file-exists-p filename))
+	    (delete-file filename))
 	  (gnus-output-to-file filename))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-file filename)))
 
-(defun gnus-summary-save-body-in-file (&optional filename)
+(defun gnus-summary-write-to-file (&optional filename)
   "Append this article body to a file.
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
-  (gnus-set-global-variables)
-  (let ((default-name
-	  (funcall gnus-file-save-name gnus-newsgroup-name
-		   gnus-current-headers gnus-newsgroup-last-file)))
-    (setq filename (gnus-read-save-file-name
-		    "Save %s body in file:" default-name filename))
-    (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-original-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (goto-char (point-min))
-	  (when (search-forward "\n\n" nil t)
-	    (narrow-to-region (point) (point-max)))
-	  (gnus-output-to-file filename))))
-    ;; Remember the directory name to save articles.
-    (setq gnus-newsgroup-last-file filename)))
+  (gnus-summary-save-in-file nil t))
 
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."
@@ -1472,7 +1461,7 @@ groups."
      gnus-button-fetch-group 3)
     ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
-    ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-button-reply 2)
+    ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-url-mailto 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
@@ -1831,6 +1820,89 @@ specified by `gnus-button-alist'."
 	    (nntp-port-number ,(if (match-end 3)
 				   (match-string 3 address)
 				 "nntp"))))))
+
+(defun gnus-split-string (string pattern)
+  "Return a list of substrings of STRING which are separated by PATTERN."
+  (let (parts (start 0))
+    (while (string-match pattern string start)
+      (setq parts (cons (substring string start (match-beginning 0)) parts)
+	    start (match-end 0)))
+    (nreverse (cons (substring string start) parts))))
+ 
+(defun gnus-url-parse-query-string (query &optional downcase)
+  (let (retval pairs cur key val)
+    (setq pairs (gnus-split-string query "&"))
+    (while pairs
+      (setq cur (car pairs)
+            pairs (cdr pairs))
+      (if (not (string-match "=" cur))
+          nil                           ; Grace
+        (setq key (gnus-url-unhex-string (substring cur 0 (match-beginning 0)))
+              val (gnus-url-unhex-string (substring cur (match-end 0) nil)))
+        (if downcase
+            (setq key (downcase key)))
+        (setq cur (assoc key retval))
+        (if cur
+            (setcdr cur (cons val (cdr cur)))
+          (setq retval (cons (list key val) retval)))))
+    retval))
+ 
+(defun gnus-url-unhex (x)
+  (if (> x ?9)
+      (if (>= x ?a)
+          (+ 10 (- x ?a))
+        (+ 10 (- x ?A)))
+    (- x ?0)))
+ 
+(defun gnus-url-unhex-string (str &optional allow-newlines)
+  "Remove %XXX embedded spaces, etc in a url.
+If optional second argument ALLOW-NEWLINES is non-nil, then allow the
+decoding of carriage returns and line feeds in the string, which is normally
+forbidden in URL encoding."
+  (setq str (or str ""))
+  (let ((tmp "")
+        (case-fold-search t))
+    (while (string-match "%[0-9a-f][0-9a-f]" str)
+      (let* ((start (match-beginning 0))
+             (ch1 (gnus-url-unhex (elt str (+ start 1))))
+             (code (+ (* 16 ch1)
+                      (gnus-url-unhex (elt str (+ start 2))))))
+        (setq tmp (concat 
+                   tmp (substring str 0 start)
+                   (cond
+                    (allow-newlines
+                     (char-to-string code))
+                    ((or (= code ?\n) (= code ?\r))
+                     " ")
+                    (t (char-to-string code))))
+              str (substring str (match-end 0)))))
+    (setq tmp (concat tmp str))
+    tmp))
+ 
+(defun gnus-url-mailto (url)
+  ;; Send mail to someone
+  (if (not (string-match "mailto:/*\\(.*\\)" url))
+      (error "Malformed mailto link: %s" url))
+  (setq url (substring url (match-beginning 1) nil))
+  (let (to args source-url subject func)
+    (if (string-match (regexp-quote "?") url)
+        (setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))
+              args (gnus-url-parse-query-string
+                    (substring url (match-end 0) nil) t))
+      (setq to (gnus-url-unhex-string url)))
+    (setq args (cons (list "to" to) args)
+          subject (cdr-safe (assoc "subject" args)))
+    (message-mail)
+    (while args
+      (setq func (intern-soft (concat "message-goto-" (downcase (caar args)))))
+      (if (fboundp func)
+          (funcall func)
+        (message-position-on-field (caar args)))
+      (insert (mapconcat 'identity (cdar args) ", "))
+      (setq args (cdr args)))
+    (if subject
+        (message-goto-body)
+      (message-goto-subject))))
 
 (defun gnus-button-mailto (address)
   ;; Mail to ADDRESS.

@@ -104,7 +104,6 @@ It should return non-nil if the article is to be prefetched."
      (gnus-async-release-semaphore 'gnus-async-article-semaphore)))
 
 (put 'gnus-asynch-with-semaphore 'lisp-indent-function 0)
-(put 'gnus-asynch-with-semaphore 'lisp-indent-hook 0)
 (put 'gnus-asynch-with-semaphore 'edebug-form-spec '(body))
 	
 ;;;
@@ -199,13 +198,13 @@ It should return non-nil if the article is to be prefetched."
   "Return a callback function."
   `(lambda (arg)
      (save-excursion
-       (gnus-async-set-buffer)
-       (gnus-async-with-semaphore
-	(push (list ',(intern (format "%s-%d" group article))
-		    ,mark (set-marker (make-marker)
-				      (point-max))
-		    ,group ,article)
-	      gnus-async-article-alist))
+       (when arg
+	 (gnus-async-set-buffer)
+	 (gnus-async-with-semaphore
+	  (push (list ',(intern (format "%s-%d" group article))
+		      ,mark (set-marker (make-marker) (point-max))
+		      ,group ,article)
+		gnus-async-article-alist)))
        (if (not (gnus-buffer-live-p ,summary))
 	   (gnus-async-with-semaphore
 	    (setq gnus-async-fetch-list nil))

@@ -628,11 +628,11 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(eval form))))))
       did-kill)))
 
-(defun gnus-execute (field regexp form &optional backward ignore-marked)
+(defun gnus-execute (field regexp form &optional backward unread)
   "If FIELD of article header matches REGEXP, execute lisp FORM (or a string).
 If FIELD is an empty string (or nil), entire article body is searched for.
 If optional 1st argument BACKWARD is non-nil, do backward instead.
-If optional 2nd argument IGNORE-MARKED is non-nil, articles which are
+If optional 2nd argument UNREAD is non-nil, articles which are
 marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
@@ -658,8 +658,7 @@ marked as read or ticked are ignored."
 		   (setq article (gnus-summary-article-number)))
 	      ;; Find later articles.
 	      (setq article 
-		    (gnus-summary-search-forward 
-		     ignore-marked nil backward)))
+		    (gnus-summary-search-forward unread nil backward)))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
 	     (vectorp (setq header (gnus-summary-article-header article)))
