@@ -1,3 +1,8 @@
+2003-03-20  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* message.el (message-idna-to-ascii-rhs-1): Don't use replace-*
+	for highlight overlays.
+
 2003-03-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cache.el (gnus-cache-braid-nov): Test if a line looks like
