@@ -176,7 +176,7 @@
   (gnus-uu-mark-buffer)
   (gnus-draft-send-message))
 
-(defun gnus-group-send-drafts ()
+(defun gnus-group-send-queue ()
   "Send all sendable articles from the queue group."
   (interactive)
   (gnus-activate-group "nndraft:queue")

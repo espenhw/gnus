@@ -260,7 +260,7 @@ If this is `ask' the hook will query the user."
   "Jj" gnus-agent-toggle-plugged
   "Js" gnus-agent-fetch-session
   "JY" gnus-agent-synchronize-flags
-  "JS" gnus-group-send-drafts
+  "JS" gnus-group-send-queue
   "Ja" gnus-agent-add-group
   "Jr" gnus-agent-remove-group)
 
@@ -271,7 +271,7 @@ If this is `ask' the hook will query the user."
      '("Agent"
        ["Toggle plugged" gnus-agent-toggle-plugged t]
        ["List categories" gnus-enter-category-buffer t]
-       ["Send drafts" gnus-group-send-drafts gnus-plugged]
+       ["Send queue" gnus-group-send-queue gnus-plugged]
        ("Fetch"
 	["All" gnus-agent-fetch-session gnus-plugged]
 	["Group" gnus-agent-fetch-group gnus-plugged])))))
@@ -1751,7 +1751,7 @@ The following commands are available:
   (let ((init-file-user "")
 	(gnus-always-read-dribble-file t))
     (gnus))
-  (gnus-group-send-drafts)
+  (gnus-group-send-queue)
   (gnus-agent-fetch-session))
 
 (provide 'gnus-agent)

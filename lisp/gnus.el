@@ -1,6 +1,6 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 2001,
-;;        1997, 1998, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 
+;;        1997, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -2116,7 +2116,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-unplugged gnus-agentize gnus-agent-batch)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm)
-     ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-drafts)
+     ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-queue)
      ("gnus-mlspl" gnus-group-split gnus-group-split-fancy)
      ("gnus-mlspl" :interactive t gnus-group-split-setup
       gnus-group-split-update))))

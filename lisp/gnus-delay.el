@@ -26,7 +26,7 @@
 
 ;;; Todo:
 
-;; * `gnus-delay-send-drafts' barfs when group does not exist.
+;; * `gnus-delay-send-queue' barfs when group does not exist.
 ;; * Integrate gnus-delay.el into the rest of Gnus automatically.  How
 ;;   should this be done?  Basically, we need to do what
 ;;   `gnus-delay-initialize' does.  But in which files?
@@ -138,7 +138,7 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (message-do-actions message-postpone-actions))
 
 ;;;###autoload
-(defun gnus-delay-send-drafts ()
+(defun gnus-delay-send-queue ()
   "Send all the delayed messages that are due now."
   (interactive)
   (save-excursion
@@ -176,7 +176,7 @@ This tells Gnus to look for delayed messages after getting new news.
 The optional arg NO-KEYMAP is ignored.
 Checking delayed messages is skipped if optional arg NO-CHECK is non-nil."
   (unless no-check
-    (add-hook 'gnus-get-new-news-hook 'gnus-delay-send-drafts)))
+    (add-hook 'gnus-get-new-news-hook 'gnus-delay-send-queue)))
 
 (provide 'gnus-delay)
 
