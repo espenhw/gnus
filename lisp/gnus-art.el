@@ -4681,9 +4681,10 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist
-  `(("<\\(url:[>\n\t ]*?\\)?news:[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
-     0 t gnus-button-message-id 2)
-    ("\\bnews:\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t gnus-button-message-id 1)
+  `(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
+     0 t gnus-button-handle-news 3)
+    ("\\b\\(nntp\\|news\\):\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t
+     gnus-button-handle-news 2)
     ("\\(\\b<\\(url:[>\n\t ]*\\)?news:[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
      1 t
      gnus-button-fetch-group 4)
@@ -5023,6 +5024,45 @@ specified by `gnus-button-alist'."
        (t
 	(gnus-message 1 "You must define `%S' to use this button"
 		      (cons fun args)))))))
+
+(defun gnus-parse-news-url (url)
+  (let (scheme server group message-id articles)
+    (with-temp-buffer
+      (insert url)
+      (goto-char (point-min))
+      (when (looking-at "\\([A-Za-z]+\\):")
+	(setq scheme (match-string 1))
+	(goto-char (match-end 0)))
+      (when (looking-at "//\\([^/]+\\)/")
+	(setq server (match-string 1))
+	(goto-char (match-end 0)))
+	
+      (cond
+       ((looking-at "\\(.*@.*\\)")
+	(setq message-id (match-string 1)))
+       ((looking-at "\\([^/]+\\)/\\([-0-9]+\\)")
+	(setq group (match-string 1)
+	      articles (split-string (match-string 2) "-")))
+       ((looking-at "\\([^/]+\\)/?")
+	(setq group (match-string 1)))
+       (t
+	(error "Unknown news URL syntax"))))
+    (list scheme server group message-id articles)))
+
+(defun gnus-button-handle-news (url)
+  "Fetch a news URL."
+  (destructuring-bind (scheme server group message-id articles)
+      (gnus-parse-news-url url)
+    (cond
+     (message-id
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(if server
+	    (let ((gnus-refer-article-method (list (list 'nntp server))))
+	      (gnus-summary-refer-article message-id))
+	  (gnus-summary-refer-article message-id))))
+     (group
+      (gnus-button-fetch-group url)))))
 
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."
