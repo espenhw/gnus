@@ -22,7 +22,7 @@ uninstall:
 	cd texi && $(MAKE) uninstall
 	cd etc && $(MAKE) uninstall
 
-GNUS-NEWS:
+GNUS-NEWS: texi/gnus-news.texi
 	cd texi && $(MAKE) GNUS-NEWS
 
 # Rule for Lars and nobody else.
