@@ -1,5 +1,11 @@
 2002-02-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-article-edit-done): Kill-all-local-variables.
+	Call edit-done-function first, then change the window
+	configuration.
+	(gnus-article-edit-mode-map): Add message key bindings. Add menu.
+	(gnus-article-edit-mode): mml-mode.
+
 	* gnus-util.el (gnus-byte-compile): Work around a bug in XEmacs
 	21.4. Suggested by Russ Allbery <rra@stanford.edu> .
 
