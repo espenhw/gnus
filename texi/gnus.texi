@@ -19871,6 +19871,9 @@ to avoid having to re-fetch them all if Emacs should crash while
 fetching. 
 
 @item
+Be able to forward groups of messages as MIME digests.
+
+@item
 Solve the halting problem.
 
 @c TODO
