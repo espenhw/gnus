@@ -9371,12 +9371,13 @@ If displaying "text/html" is discouraged, see
 @code{mm-discouraged-alternatives} in @ref{Display Customization,
 Display Customization, , emacs-mime, Emacs-Mime Manual}.  Images or
 other material inside a "multipart/related" part might be overlooked
-when this variable is nil.
+when this variable is @code{nil}.
 
 @vindex gnus-mime-display-multipart-as-mixed
 @item gnus-mime-display-multipart-as-mixed
-Display "multipart" parts as "multipart/mixed".  If t, it overrides nil
-values of @code{gnus-mime-display-multipart-alternative-as-mixed} and
+Display "multipart" parts as "multipart/mixed".  If @code{t}, it
+overrides @code{nil} values of
+@code{gnus-mime-display-multipart-alternative-as-mixed} and
 @code{gnus-mime-display-multipart-related-as-mixed}.
 
 @vindex mm-file-name-rewrite-functions
@@ -22534,7 +22535,7 @@ that is needed.  It can also contain @samp{(@var{addr} @var{string}
 @item hashcash-path
 @vindex hashcash-path
 Where the @code{hashcash} binary is installed.  This variable should
-be automatically set by @code{executable-find}, but if it's nil
+be automatically set by @code{executable-find}, but if it's @code{nil}
 (usually because the @code{hashcash} binary is not in your path)
 you'll get a warning when you check hashcash payments and an error
 when you generate hashcash payments.

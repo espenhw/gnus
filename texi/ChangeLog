@@ -1,3 +1,7 @@
+2004-11-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (MIME Commands, Hashcash): Markup fix.
+
 2004-11-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi: replaced @file{spam.el} with @code{spam.el}
