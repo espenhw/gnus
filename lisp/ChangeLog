@@ -1,3 +1,8 @@
+2000-10-25  Dirk Meyer <dischi@tzi.de>
+
+	* gnus-demon.el (gnus-demon-time-to-step): theHour was set to
+	seconds instead of hour.
+
 2000-10-25  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* mail-source.el (mail-sources): Better `:type'.
