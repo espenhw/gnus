@@ -348,7 +348,7 @@ the first unread article."
 (defcustom gnus-auto-goto-ignores 'unfetched
   "*Says how to handle unfetched articles when maneuvering.
 
-This variable can either be the symbols `nil' (maneuver to any
+This variable can either be the symbols nil (maneuver to any
 article), `undownloaded' (maneuvering while unplugged ignores articles
 that have not been fetched), `always-undownloaded' (maneuvering always
 ignores articles that have not been fetched), `unfetched' (maneuvering
