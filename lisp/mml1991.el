@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.11 2002/10/05 05:31:37 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.12 2002/10/09 22:43:59 jas Exp $
 
 ;;; Code:
 
@@ -82,8 +82,17 @@
       (insert-buffer signature)
       (goto-char (point-max)))))
 
-(defun mml1991-mailcrypt-encrypt (cont)
+(defun mml1991-mailcrypt-encrypt (cont &optional sign)
   (let ((text (current-buffer))
+	(mc-pgp-always-sign
+	 (or mc-pgp-always-sign
+	     sign
+	     (eq t (or (message-options-get 'message-sign-encrypt)
+		       (message-options-set
+			'message-sign-encrypt
+			(or (y-or-n-p "Sign the message? ")
+			    'not))))
+	     'never))
 	cipher
 	(result-buffer (get-buffer-create "*GPG Result*")))
     ;; Strip MIME Content[^ ]: headers since it will be ASCII ARMOURED
@@ -158,7 +167,7 @@
       (insert-buffer signature)
       (goto-char (point-max)))))
 
-(defun mml1991-gpg-encrypt (cont)
+(defun mml1991-gpg-encrypt (cont &optional sign)
   (let ((text (current-buffer))
 	cipher
 	(result-buffer (get-buffer-create "*GPG Result*")))
@@ -170,21 +179,32 @@
 	  (kill-region (point-min) (point))))
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
-	(unless (gpg-sign-encrypt
-		 text (setq cipher (current-buffer))
-		 result-buffer
-		 (split-string
-		  (or
-		   (message-options-get 'message-recipients)
-		   (message-options-set 'message-recipients
-					(read-string "Recipients: ")))
-		  "[ \f\t\n\r\v,]+")
-		 nil
-		 (message-options-get 'message-sender)
-		 t t) ; armor & textmode
-	  (unless (> (point-max) (point-min))
-	    (pop-to-buffer result-buffer)
-	    (error "Encrypt error")))
+	(flet ((gpg-encrypt-func 
+		(sign plaintext ciphertext result recipients &optional
+		      passphrase sign-with-key armor textmode)
+		(if sign
+		    (gpg-sign-encrypt
+		     plaintext ciphertext result recipients passphrase
+		     sign-with-key armor textmode)
+		  (gpg-encrypt
+		   plaintext ciphertext result recipients passphrase
+		   armor textmode))))
+	  (unless (gpg-encrypt-func
+		   sign
+		   text (setq cipher (current-buffer))
+		   result-buffer
+		   (split-string
+		    (or
+		     (message-options-get 'message-recipients)
+		     (message-options-set 'message-recipients
+					  (read-string "Recipients: ")))
+		    "[ \f\t\n\r\v,]+")
+		   nil
+		   (message-options-get 'message-sender)
+		   t t) ; armor & textmode
+	    (unless (> (point-max) (point-min))
+	      (pop-to-buffer result-buffer)
+	      (error "Encrypt error"))))
 	(goto-char (point-min))
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
@@ -224,7 +244,7 @@
     (insert "\n")
     t))
 
-(defun mml1991-pgg-encrypt (cont)
+(defun mml1991-pgg-encrypt (cont &optional sign)
   (let (headers)
     ;; Don't sign headers.
     (goto-char (point-min))
@@ -241,7 +261,8 @@
 	       (message-options-get 'message-recipients)
 	       (message-options-set 'message-recipients
 				    (read-string "Recipients: ")))
-	      "[ \f\t\n\r\v,]+"))
+	      "[ \f\t\n\r\v,]+")
+	     sign)
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (kill-region (point-min) (point-max))
@@ -251,10 +272,10 @@
     t))
 
 ;;;###autoload
-(defun mml1991-encrypt (cont)
+(defun mml1991-encrypt (cont &optional sign)
   (let ((func (nth 2 (assq mml1991-use mml1991-function-alist))))
     (if func
-	(funcall func cont)
+	(funcall func cont sign)
       (error "Cannot find encrypt function"))))
 
 ;;;###autoload

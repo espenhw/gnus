@@ -1,5 +1,10 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* mml1991.el (mml1991-mailcrypt-encrypt): Support combined signing.
+	(mml1991-gpg-encrypt): Ditto.
+	(mml1991-pgg-encrypt): Ditto.
+	(mml1991-encrypt): Pass sign parameter.
+
 	* mml-sec.el (mml-signencrypt-style-alist): Defcustom.
 	(mml-signencrypt-style): Mention the variable.
 
