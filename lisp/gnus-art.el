@@ -5229,6 +5229,15 @@ groups."
   :group 'gnus-article-buttons
   :type 'regexp)
 
+(defcustom gnus-button-man-handler 'man
+  "Function to use for displaying man pages.
+The function must take at least one argument with a string naming the
+man page."
+  :type '(choice (function :tag "Man" man)
+		 (function :tag "Woman" woman)
+		 function)
+  :group 'gnus-article-buttons)
+
 (defcustom gnus-button-alist
   '(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
      0 t gnus-button-handle-news 3)
@@ -5251,7 +5260,7 @@ groups."
     ;; Raw URLs.
     (gnus-button-url-regexp 0 t browse-url 0)
     ;; man pages
-    ("\\b\\([a-z]+\\)([0-9])\\W" 0 t man 1))
+    ("\\b\\([a-z]+\\)([0-9])\\W" 0 t gnus-button-handle-man 1))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -5624,6 +5633,10 @@ specified by `gnus-button-alist'."
 	  (gnus-summary-refer-article message-id))))
      (group
       (gnus-button-fetch-group url)))))
+
+(defun gnus-button-handle-man (url)
+  "Fetch a man page."
+  (funcall gnus-button-man-handler url))
 
 (defun gnus-button-handle-info (url)
   "Fetch an info URL."
