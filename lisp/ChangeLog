@@ -1,5 +1,7 @@
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-inews-make-draft): Quote article-reply. 
+
 	* gnus-group.el (gnus-number-of-unseen-articles-in-group):
 	Protect against unactive groups.
 
