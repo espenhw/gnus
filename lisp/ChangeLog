@@ -1,5 +1,7 @@
 2004-01-13  Jesper Harder  <harder@ifa.au.dk>
 
+	* message.el (message-expand-name): Silence the byte compiler.
+
 	* lpath.el: Add detect-coding-system.
 
 	* dgnushack.el (dgnushack-compile): Remove obsolete check for

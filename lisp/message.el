@@ -6626,7 +6626,7 @@ those headers."
 	    (delete-region (point) (progn (forward-line 3) (point))))))))))
 
 (defun message-expand-name ()
-  (cond ((and (boundp 'eudc-protocol) eudc-protocol)
+  (cond ((when (boundp 'eudc-protocol) eudc-protocol)
 	 (eudc-expand-inline))
 	((fboundp 'bbdb-complete-name)
 	 (bbdb-complete-name))
