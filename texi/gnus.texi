@@ -647,6 +647,7 @@ Composing Messages
 
 * Mail::                        Mailing and replying.
 * Posting Server::              What server should you post and mail via?
+* POP before SMTP::             You cannot send a mail unless you read a mail.
 * Mail and Post::               Mailing and posting at the same time.
 * Archived Messages::           Where Gnus stores the messages you've sent.
 * Posting Styles::              An easier way to specify who you are.
@@ -11406,6 +11407,7 @@ on your setup (@pxref{Posting Server}).
 @menu
 * Mail::                        Mailing and replying.
 * Posting Server::              What server should you post and mail via?
+* POP before SMTP::             You cannot send a mail unless you read a mail.
 * Mail and Post::               Mailing and posting at the same time.
 * Archived Messages::           Where Gnus stores the messages you've sent.
 * Posting Styles::              An easier way to specify who you are.
@@ -11509,13 +11511,40 @@ package correctly.  An example:
 @end lisp
 
 To the thing similar to this, there is
-@code{message-smtpmail-send-it}.  It is useful if your ISP requires
-the @acronym{POP}-before-@acronym{SMTP} authentication.  See the
-documentation for the function @code{mail-source-touch-pop}.
+@code{message-smtpmail-send-it}.  It is useful if your @acronym{ISP}
+requires the @acronym{POP}-before-@acronym{SMTP} authentication.
+@xref{POP before SMTP}.
 
 Other possible choices for @code{message-send-mail-function} includes
 @code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
 and @code{feedmail-send-it}.
+
+@node POP before SMTP
+@section POP before SMTP
+@cindex pop before smtp
+@findex message-smtpmail-send-it
+@findex mail-source-touch-pop
+
+Does your @acronym{ISP} require the @acronym{POP}-before-@acronym{SMTP}
+authentication?  It is whether you need to connect to the @acronym{POP}
+mail server within a certain time before sending mails.  If so, there is
+a convenient way.  To do that, put the following lines in your
+@file{~/.gnus.el} file:
+
+@lisp
+(setq message-send-mail-function 'message-smtpmail-send-it)
+(add-hook 'message-send-mail-hook 'mail-source-touch-pop)
+@end lisp
+
+@noindent
+It means to let Gnus connect to the @acronym{POP} mail server in advance
+whenever you send a mail.  The @code{mail-source-touch-pop} function
+does only a @acronym{POP} authentication according to the value of
+@code{mail-sources} without fetching mails, just before sending a mail.
+Note that you have to use @code{message-smtpmail-send-it} which runs
+@code{message-send-mail-hook} rather than @code{smtpmail-send-it} and
+set the value of @code{mail-sources} for a @acronym{POP} connection
+(@pxref{Mail Sources}) correctly.
 
 @node Mail and Post
 @section Mail and Post
