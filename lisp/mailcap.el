@@ -303,8 +303,8 @@ Gnus might fail to display all of it.")
 (defun mailcap-maybe-eval ()
   "Maybe evaluate a buffer of emacs lisp code."
   (let ((lisp-buffer (current-buffer)))
+    (goto-char (point-min))
     (when
- 	(goto-char (point-min))
 	(save-window-excursion
 	  (delete-other-windows)
 	  (let ((buffer (get-buffer-create (generate-new-buffer-name

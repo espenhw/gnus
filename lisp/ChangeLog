@@ -1,3 +1,8 @@
+2000-05-07  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* mailcap.el (mailcap-maybe-eval): Honor user request not to
+	evaluate the Lisp code.
+
 2000-05-06 17:40:20  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-wash-html): New function.
