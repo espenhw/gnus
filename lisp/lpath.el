@@ -1,4 +1,3 @@
-;; A test line.
 ;; Shut up.
 
 (defvar byte-compile-default-warnings)
