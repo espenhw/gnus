@@ -3272,14 +3272,12 @@ that that variable is buffer-local to the summary buffers."
               (let (match)
                 (mapcar 
                  (lambda (info)
-                   (let* ((info-method (gnus-info-method info))
-                          (info-server 
-                           (if (stringp info-method)
-                               info-method
-                             (gnus-method-to-server info-method))))
-                     (setq match (or (equal server info-server)
-                                     match))))
-                        (cdr gnus-newsrc-alist))
+                   (let ((info-method (gnus-info-method info)))
+                     (unless (stringp info-method)
+                       (let ((info-server (gnus-method-to-server info-method)))
+                         (when (equal server info-server)
+                           (setq match info-method))))))
+                 (cdr gnus-newsrc-alist))
                 match))))
         (when result
           (push (cons server result) gnus-server-method-cache))
