@@ -1,5 +1,9 @@
 2005-02-14  Simon Josefsson  <jas@extundo.com>
 
+	* smime-ldap.el: Use require instead of load-library for ldap.
+	(smime-ldap-search): Indent.
+	(smime-ldap-search-internal): Shorten line.
+
 	* smime.el (smime-cert-by-dns): Add doc-string.
 	(smime-cert-by-ldap-1): Indent.
 

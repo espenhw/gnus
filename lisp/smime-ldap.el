@@ -42,19 +42,19 @@
 
 ;;; Code:
 
-(load-library "net/ldap")
+(require 'ldap)
 
 (defun smime-ldap-search (filter &optional host attributes attrsonly withdn)
   "Perform an LDAP search.
 FILTER is the search filter in RFC1558 syntax.
 HOST is the LDAP host on which to perform the search.
-ATTRIBUTES are the specific attributes to retrieve, nil means 
+ATTRIBUTES are the specific attributes to retrieve, nil means
 retrieve all.
-ATTRSONLY, if non-nil, retrieves the attributes only, without 
+ATTRSONLY, if non-nil, retrieves the attributes only, without
 the associated values.
 If WITHDN is non-nil, each entry in the result will be prepended with
 its distinguished name WITHDN.
-Additional search parameters can be specified through 
+Additional search parameters can be specified through
 `ldap-host-parameters-alist', which see."
   (interactive "sFilter:")
   (if (>= emacs-major-version 22)
@@ -64,12 +64,13 @@ Additional search parameters can be specified through
 	(error "No LDAP host specified"))
     (let ((host-plist (cdr (assoc host ldap-host-parameters-alist)))
 	  result)
-      (setq result (smime-ldap-search-internal (append host-plist
-						       (list 'host host
-							     'filter filter
-							     'attributes attributes
-							     'attrsonly attrsonly
-							     'withdn withdn))))
+      (setq result (smime-ldap-search-internal
+		    (append host-plist
+			    (list 'host host
+				  'filter filter
+				  'attributes attributes
+				  'attrsonly attrsonly
+				  'withdn withdn))))
       (if ldap-ignore-attribute-codings
 	  result
 	(mapcar (function
@@ -81,21 +82,21 @@ Additional search parameters can be specified through
   "Perform a search on a LDAP server.
 SEARCH-PLIST is a property list describing the search request.
 Valid keys in that list are:
-  `host' is a string naming one or more (blank-separated) LDAP servers to
+`host' is a string naming one or more (blank-separated) LDAP servers to
 to try to connect to.  Each host name may optionally be of the form HOST:PORT.
-  `filter' is a filter string for the search as described in RFC 1558.
-  `attributes' is a list of strings indicating which attributes to retrieve
+`filter' is a filter string for the search as described in RFC 1558.
+`attributes' is a list of strings indicating which attributes to retrieve
 for each matching entry. If nil, return all available attributes.
-  `attrsonly', if non-nil, indicates that only attributes are retrieved,
+`attrsonly', if non-nil, indicates that only attributes are retrieved,
 not their associated values.
-  `base' is the base for the search as described in RFC 1779.
-  `scope' is one of the three symbols `sub', `base' or `one'.
-  `binddn' is the distinguished name of the user to bind as (in RFC 1779 syntax).
-  `passwd' is the password to use for simple authentication.
-  `deref' is one of the symbols `never', `always', `search' or `find'.
-  `timelimit' is the timeout limit for the connection in seconds.
-  `sizelimit' is the maximum number of matches to return.
-  `withdn' if non-nil each entry in the result will be prepended with
+`base' is the base for the search as described in RFC 1779.
+`scope' is one of the three symbols `sub', `base' or `one'.
+`binddn' is the distinguished name of the user to bind as (in RFC 1779 syntax).
+`passwd' is the password to use for simple authentication.
+`deref' is one of the symbols `never', `always', `search' or `find'.
+`timelimit' is the timeout limit for the connection in seconds.
+`sizelimit' is the maximum number of matches to return.
+`withdn' if non-nil each entry in the result will be prepended with
 its distinguished name DN.
 The function returns a list of matching entries.  Each entry is itself
 an alist of attribute/value pairs."
@@ -178,7 +179,8 @@ an alist of attribute/value pairs."
 					       (end-of-line)
 					       (point))))
 	  (forward-line 1)
-	  (while (looking-at "^\\(\\w*\\)\\(;\\w*\\)?[=:\t ]+\\(<[\t ]*file://\\)?\\(.*\\)$")
+	  (while (looking-at (concat "^\\(\\w*\\)\\(;\\w*\\)?[=:\t ]+"
+				     "\\(<[\t ]*file://\\)?\\(.*\\)$"))
 	    (setq name (match-string 1)
 		  value (match-string 4))
 	    (save-excursion
