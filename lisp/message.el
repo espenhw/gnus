@@ -1520,11 +1520,11 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (make-local-variable 'auto-fill-inhibit-regexp)
   (let ((quote-prefix-regexp
          (concat
-          "[ \t]*"                      ; possible initial space
-          "\\(\\(" 
-          message-cite-prefix-regexp    "\\|" ; various citation prefix
+	  "\\("
 	  (regexp-quote message-yank-prefix)  ; user's prefix
-          "\\)[ \t]*\\)+")))            ; possible space after each prefix
+	  "\\)?\\("
+	  message-cite-prefix-regexp    ; various prefix
+          "\\)[ \t]*")))                ; possible space after each prefix
     (setq paragraph-start
           (concat
            (regexp-quote mail-header-separator) "$\\|"
