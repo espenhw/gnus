@@ -1,5 +1,9 @@
 2004-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* nnimap.el (nnimap-remove-server-from-buffer-alist): new function
+	to remove a server from the nnimap-server-buffer-alist
+	(nnimap-open-connection, nnimap-close-server): use it
+
 	* gnus-encrypt.el: removed in favor of encrypt.el
 
 2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>

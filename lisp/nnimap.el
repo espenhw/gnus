@@ -475,6 +475,14 @@ An example plist would be '(\"name\" \"Gnus\" \"version\" gnus-version-number
   "Return buffer for SERVER, if nil use current server."
   (cadr (assoc (or server nnimap-current-server) nnimap-server-buffer-alist)))
 
+(defun nnimap-remove-server-from-buffer-alist (server list)
+  "Remove SERVER from LIST."
+  (let (l)
+    (dolist (e list)
+      (unless (equal server (car-safe e))
+	(push e l)))
+    l))
+
 (defun nnimap-possibly-change-server (server)
   "Return buffer for SERVER, changing the current server as a side-effect.
 If SERVER is nil, uses the current server."
@@ -781,6 +789,10 @@ If EXAMINE is non-nil the group is selected read-only."
 		    (list "imap" "imaps"))))
       (if (imap-authenticate user passwd nnimap-server-buffer)
 	  (prog1
+	      (setq nnimap-server-buffer-alist
+		    (nnimap-remove-server-from-buffer-alist 
+		     server
+		     nnimap-server-buffer-alist))
 	      (push (list server nnimap-server-buffer)
 		    nnimap-server-buffer-alist)
 	    (imap-id nnimap-id nnimap-server-buffer)
@@ -837,7 +849,9 @@ Return nil if the server couldn't be closed for some reason."
       (setq nnimap-server-buffer nil
 	    nnimap-current-server nil
 	    nnimap-server-buffer-alist
-	    (delq server nnimap-server-buffer-alist)))
+	    (nnimap-remove-server-from-buffer-alist 
+	     server
+	     nnimap-server-buffer-alist)))
     (nnoo-close-server 'nnimap server)))
 
 (deffoo nnimap-request-close ()
