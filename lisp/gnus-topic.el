@@ -1000,6 +1000,7 @@ articles in the topic and its subtopics."
     "\r" gnus-topic-select-group
     " " gnus-topic-read-group
     "\C-c\C-x" gnus-topic-expire-articles
+    "c" gnus-topic-catchup-articles
     "\C-k" gnus-topic-kill-group
     "\C-y" gnus-topic-yank-group
     "\M-g" gnus-topic-get-new-news-this-topic
@@ -1152,6 +1153,18 @@ If performed over a topic line, toggle folding the topic."
 		     (gnus-topic-find-groups topic gnus-level-killed t))))
 	(gnus-group-expire-articles nil))
       (gnus-message 5 "Expiring groups in %s...done" topic))))
+
+(defun gnus-topic-catchup-articles (topic)
+  "Catchup this topic or group.
+Also see `gnus-group-catchup'."
+  (interactive (list (gnus-group-topic-name)))
+  (if (not topic)
+      (call-interactively 'gnus-group-catchup-current)
+    (save-excursion
+      (let ((gnus-group-marked
+	     (mapcar (lambda (entry) (car (nth 2 entry)))
+		     (gnus-topic-find-groups topic gnus-level-killed t))))
+	(gnus-group-catchup-current)))))
 
 (defun gnus-topic-read-group (&optional all no-article group)
   "Read news in this newsgroup.

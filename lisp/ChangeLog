@@ -1,3 +1,9 @@
+2001-09-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-topic.el (gnus-topic-mode-map): Add catchup.
+	(gnus-topic-catchup-articles): New function. Suggested by Robin
+	S. Socha <robin-dated-1001857693.185e29@socha.net>.
+
 2001-09-27 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Gerd M,Av(Bllmann <gerd@gnu.org>.
 
