@@ -15623,9 +15623,12 @@ regexp to match component groups.
 
 All marks in the virtual group will stick to the articles in the
 component groups.  So if you tick an article in a virtual group, the
-article will also be ticked in the component group from whence it came.
-(And vice versa---marks from the component groups will also be shown in
-the virtual group.)
+article will also be ticked in the component group from whence it
+came.  (And vice versa---marks from the component groups will also be
+shown in the virtual group.). To create an empty virtual group, run
+@kbd{G V} (@code{gnus-group-make-empty-virtual}) in the group buffer
+and edit the method regexp with @kbd{M-e}
+(@code{gnus-group-edit-group-method})
 
 Here's an example @code{nnvirtual} method that collects all Andrea Dworkin
 newsgroups into one, big, happy newsgroup:
