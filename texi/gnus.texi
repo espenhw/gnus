@@ -23159,6 +23159,22 @@ the bug report.
 If you would like to contribute a patch to fix bugs or make
 improvements, please produce the patch using @samp{diff -u}.
 
+@cindex edebug
+If you want to debug your problem further before reporting, possibly
+in order to solve the problem yourself and send a patch, you can use
+edebug.  Debugging lisp code is documented in the Elisp manual
+(@pxref{Debugging, , Debugging Lisp Programs, elisp, The GNU Emacs
+Lisp Reference Manual}).  To get you started with edebug, consider if
+you discover some weird behaviour when pressing @kbd{c}, the first
+step is to do @kbd{C-h k c} and click on the hyperlink (Emacs only) in
+the documentation buffer that leads you to the function definition,
+then press @kbd{M-x edebug-defun RET} with point inside that function,
+return to Gnus and press @kbd{c} to invoke the code.  You will be
+placed in the lisp buffer and can single step using @kbd{SPC} and
+evaluate expressions using @kbd{M-:} or inspect variables using
+@kbd{C-h v}, abort execution with @kbd{q}, and resume execution with
+@kbd{c} or @kbd{g}.
+
 If you just need help, you are better off asking on
 @samp{gnu.emacs.gnus}.  I'm not very helpful.
 
