@@ -3493,6 +3493,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	;; Mark this buffer as "prepared".
 	(setq gnus-newsgroup-prepared t)
 	(gnus-run-hooks 'gnus-summary-prepared-hook)
+	(gnus-group-update-group group)
 	t)))))
 
 (defun gnus-summary-auto-select-subject ()
@@ -6308,6 +6309,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
   (gnus-async-halt-prefetch)
   (let* ((group gnus-newsgroup-name)
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
+	 (gnus-group-is-exiting-p t)
 	 (mode major-mode)
 	 (group-point nil)
 	 (buf (current-buffer)))

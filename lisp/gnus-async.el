@@ -278,13 +278,14 @@ It should return non-nil if the article is to be prefetched."
 	    (incf tries)
 	    (when (nntp-accept-process-output proc 1)
 	      (setq tries 0))
-	    (when (and (not nntp-have-messaged) (eq 3 tries))
+	    (when (and (not nntp-have-messaged)
+		       (= tries 3))
 	      (gnus-message 5 "Waiting for async article...")
 	      (setq nntp-have-messaged t)))
 	(quit
 	 ;; if the user interrupted on a slow/hung connection,
 	 ;; do something friendly.
-	 (when (< 3 tries)
+	 (when (> tries 3)
 	   (setq gnus-async-current-prefetch-article nil))
 	 (signal 'quit nil)))
       (when nntp-have-messaged

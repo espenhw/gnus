@@ -1,3 +1,14 @@
+2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-exit): Bind gnus-group-is-exiting-p. 
+	(gnus-summary-read-group-1): Update group line.
+
+	* gnus-group.el (gnus-group-line-format): Add %*.
+	(gnus-group-line-format-alist): Ditto.
+	(gnus-group-insert-group-line): Set it.
+	(gnus-group-is-exiting-p): New variable.
+	(gnus-group-insert-group-line): Use it.
+
 2003-01-03  Teodor Zlatanov  <tzz@beld.net>
 
 	* spam.el (spam-enter-ham-BBDB, spam-BBDB-register-routine):
@@ -29,6 +40,9 @@
 	all the spam-*-register-routine functions
 
 2003-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* pop3.el (pop3-retr): Wait 500 msecs.
+	(pop3-read-response): Ditto.
 
 	* gnus-msg.el (gnus-setup-message): Get the evaliation order
 	right. 

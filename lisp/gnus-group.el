@@ -143,7 +143,7 @@ list."
 			 (function-item gnus-group-sort-by-rank)
 			 (function :tag "other" nil))))
 
-(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l %O\n"
+(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y:%B%(%g%)%l %O\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -166,6 +166,7 @@ with some simple extensions.
 %s    Select method (string)
 %o    Moderated group (char, \"m\")
 %p    Process mark (char)
+%B    Whether a summary buffer for the group is open (char, \"*\")
 %O    Moderated group (string, \"(m)\" or \"\")
 %P    Topic indentation (string)
 %m    Whether there is new(ish) mail in the group (char, \"%\")
@@ -442,6 +443,7 @@ simple manner.")
 
 ;;; Internal variables
 
+(defvar gnus-group-is-exiting-p nil)
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
   "Function for sorting the group buffer.")
 
@@ -486,6 +488,7 @@ simple manner.")
     (?n gnus-tmp-news-method ?s)
     (?P gnus-group-indentation ?s)
     (?E gnus-tmp-group-icon ?s)
+    (?B gnus-tmp-summary-live ?c)
     (?l gnus-tmp-grouplens ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?m (gnus-group-new-mail gnus-tmp-group) ?c)
@@ -1358,6 +1361,11 @@ if it is a string, only list groups matching REGEXP."
 	  (if (and (numberp number)
 		   (zerop number)
 		   (cdr (assq 'tick gnus-tmp-marked)))
+	      ?* ? ))
+	 (gnus-tmp-summary-live
+	  (if (and (not gnus-group-is-exiting-p)
+		   (gnus-buffer-live-p (gnus-summary-buffer-name
+					gnus-tmp-group)))
 	      ?* ? ))
 	 (gnus-tmp-process-marked
 	  (if (member gnus-tmp-group gnus-group-marked)
