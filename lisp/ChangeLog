@@ -1,3 +1,10 @@
+2000-07-19  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el: Defalias some dummy funcs to `ignore'.
+	(gnus-x-splash): Use expand-file-name.  Remove redundant facep
+	check.
+	(gnus-article-display-xface): Special-case for dark backgrounds.
+
 2000-07-19  Kim-Minh Kaplan <kmkaplan@galaxy.fr>
 
 	* imap.el (imap-calculate-literal-size-first): New variable.
