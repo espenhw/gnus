@@ -1,3 +1,11 @@
+2000-10-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* mail-source.el (defvar mail-source-keyword-map): Use
+	`rmail-spool-directory' as a default directory for the `file'
+	source, if the variable is defined.  Fall back to hardcoded
+	"/usr/spool/mail/", as before.  Suggestion by Steven E. Harris
+	<seh@speakeasy.org>.
+
 2000-10-13 12:01:15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially): Replace the header
