@@ -1,3 +1,30 @@
+2001-09-07 Raja R Harinath  <harinath@cs.umn.edu>
+
+	* nnml.el (nnml-filenames-are-evil): New variable.
+	(nnml-article-to-file-alist): Rename to ...
+	(nnml-current-group-article-to-file-alist): ... this.  
+	Respect `nnml-filenames-are-evil'.
+	(nnml-active-number): Update.
+	(nnml-update-file-alist): Update.
+	(nnml-request-article): Use nnheader-article-to-file-alist.
+	(nnml-request-rename-group): Likewise.
+	
+2001-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-insert-line): Fix.
+	
+2001-09-06  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
+
+	* gnus-sum.el: Bind g-s-t-s to "W g".
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add g-s-t-s.
+	* gnus-sum.el (gnus-summary-toggle-smiley): New function. Toggles
+	display of graphical smilies.
+
+2001-09-07 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-setup-news): A typo.
+	From Bill White <billw@wolfram.com>.
+
 2001-09-06  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-insert-line): Insert forwarded, recent

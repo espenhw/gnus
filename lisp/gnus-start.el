@@ -902,14 +902,14 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (when gnus-message-archive-method
       (unless (assoc "archive" gnus-server-alist)
 	(push `("archive"
-		(nnfolder
-		 "archive"
-		 (nnfolder-directory
-		  ,(nnheader-concat message-directory "archive"))
-		 (nnfolder-active-file
-		  ,(nnheader-concat message-directory "archive/active"))
-		 (nnfolder-get-new-mail nil)
-		 (nnfolder-inhibit-expiry t)))
+		nnfolder
+		"archive"
+		(nnfolder-directory
+		 ,(nnheader-concat message-directory "archive"))
+		(nnfolder-active-file
+		 ,(nnheader-concat message-directory "archive/active"))
+		(nnfolder-get-new-mail nil)
+		(nnfolder-inhibit-expiry t))
 	      gnus-server-alist)))
 
     ;; If we don't read the complete active file, we fill in the

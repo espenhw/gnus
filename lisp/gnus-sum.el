@@ -1700,6 +1700,7 @@ increase the score of each group you read."
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
     "t" gnus-summary-toggle-header
+    "g" gnus-summary-toggle-smiley
     "v" gnus-summary-verbose-headers
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
@@ -1894,6 +1895,7 @@ increase the score of each group you read."
 	      ["Stop page breaking" gnus-summary-stop-page-breaking t]
 	      ["Verbose header" gnus-summary-verbose-headers t]
 	      ["Toggle header" gnus-summary-toggle-header t]
+	      ["Toggle smiley" gnus-summary-toggle-smiley t]
 	      ["Html" gnus-article-wash-html t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t])
@@ -2945,6 +2947,7 @@ buffer that was in action when the last article was fetched."
 	      ?                         ;Whitespace
 	    (if (< gnus-tmp-score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
+	 (gnus-tmp-number (mail-header-number gnus-tmp-header))
 	 (gnus-tmp-replied
 	  (cond (gnus-tmp-process gnus-process-mark)
 		((memq gnus-tmp-current gnus-newsgroup-cached)
@@ -2954,9 +2957,9 @@ buffer that was in action when the last article was fetched."
 		 gnus-forwarded-mark)
 		((memq gnus-tmp-current gnus-newsgroup-saved)
 		 gnus-saved-mark)
-		((memq number gnus-newsgroup-recent)
+		((memq gnus-tmp-number gnus-newsgroup-recent)
 		 gnus-recent-mark)
-		((memq number gnus-newsgroup-unseen)
+		((memq gnus-tmp-number gnus-newsgroup-unseen)
 		 gnus-unseen-mark)
 		(t gnus-no-mark)))
 	 (gnus-tmp-from (mail-header-from gnus-tmp-header))
@@ -2972,7 +2975,6 @@ buffer that was in action when the last article was fetched."
 		       (1+ (match-beginning 0)) (1- (match-end 0))))
 	   (t gnus-tmp-from)))
 	 (gnus-tmp-subject (mail-header-subject gnus-tmp-header))
-	 (gnus-tmp-number (mail-header-number gnus-tmp-header))
 	 (gnus-tmp-opening-bracket (if gnus-tmp-dummy ?\< ?\[))
 	 (gnus-tmp-closing-bracket (if gnus-tmp-dummy ?\> ?\]))
 	 (buffer-read-only nil))
@@ -8601,6 +8603,15 @@ groups."
   (gnus-summary-edit-article)
   (execute-kbd-macro (concat (this-command-keys) key))
   (gnus-article-edit-done))
+
+
+(defun gnus-summary-toggle-smiley (&optional arg)
+  "Toggle the display of smilies as small graphical icons."
+  (interactive "P")
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (gnus-smiley-display arg)
+    ))
 
 ;;; Respooling
 
