@@ -1,5 +1,7 @@
 2003-01-13  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (X-Face): Fix.
+
 	* message.texi (Security): Fix.
 
 	* gnus.texi (Security): Fix.
