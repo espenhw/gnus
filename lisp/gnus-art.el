@@ -3242,7 +3242,6 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-trailing-space
      article-strip-blank-lines
      article-strip-all-blank-lines
-     article-replace-with-quoted-text
      article-date-local
      article-date-english
      article-date-iso8601
