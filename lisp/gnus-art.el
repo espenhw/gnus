@@ -1560,27 +1560,48 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
     (when (process-status "article-x-face")
       (delete-process "article-x-face"))
     (let ((inhibit-point-motion-hooks t)
+	  x-faces
 	  (case-fold-search t)
-	  (x-faces "")
 	  from last)
-      (when (gnus-buffer-live-p gnus-original-article-buffer)
-	(with-current-buffer gnus-original-article-buffer
-	  (save-restriction
-	    (article-narrow-to-head)
-	    (while (re-search-forward "^X-Face:" nil t)
-	      (setq x-faces
-		    (concat
-		     x-faces
-		     (buffer-substring (match-beginning 0)
-				       (1- (re-search-forward
-					    "^\\($\\|[^ \t]\\)" nil t)))))))))
       (save-restriction
 	(article-narrow-to-head)
+	(when (and buffer-read-only ;; When type `W f'
+		   (progn 
+		     (goto-char (point-min))
+		     (not (re-search-forward "^X-Face:[\t ]*" nil t)))
+		   (gnus-buffer-live-p gnus-original-article-buffer))
+	  (with-current-buffer gnus-original-article-buffer
+	    (save-restriction
+	      (article-narrow-to-head)
+	      (while (re-search-forward "^X-Face:" nil t)
+		(setq x-faces
+		      (concat
+		       (or x-faces "")
+		       (buffer-substring 
+			(match-beginning 0)
+			(1- (re-search-forward
+			     "^\\($\\|[^ \t]\\)" nil t))))))))
+	  (if x-faces
+	      (let (point start bface eface buffer-read-only)
+		(goto-char (point-max))
+		(forward-line -1)
+		(setq bface (get-text-property (gnus-point-at-bol) 'face)
+		      eface (get-text-property (1- (gnus-point-at-eol)) 'face))
+		(goto-char (point-max))
+		(setq point (point))
+		(insert x-faces)
+		(goto-char point)
+		(while (looking-at "\\([^:]+\\): *")
+		  (put-text-property (match-beginning 1) (1+ (match-end 1))
+				     'face bface)
+		  (setq start (match-end 0))
+		  (forward-line 1)
+		  (while (looking-at "[\t ]")
+		    (forward-line 1))
+		  (put-text-property start (point)
+				     'face eface)))))
+	(goto-char (point-min))
 	(setq from (message-fetch-field "from"))
-	(when (gnus-buffer-live-p gnus-original-article-buffer)
-	  (message-remove-header "X-Face")
-	  (goto-char (point-min))
-	  (insert x-faces))
 	(goto-char (point-min))
 	(while (and gnus-article-x-face-command
 		    (not last)

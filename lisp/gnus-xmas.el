@@ -685,17 +685,20 @@ XEmacs compatibility workaround."
   "Face to show X face"
   :group 'gnus-xmas)
 
-(defun gnus-xmas-article-display-xface (beg end)
-  "Display any XFace headers in the current article."
+(defun gnus-xmas-article-display-xface (beg end &optional buffer)
+  "Display any XFace headers in BUFFER."
   (save-excursion
     (let ((xface-glyph
 	   (cond
 	    ((featurep 'xface)
 	     (make-glyph (vector 'xface :data
 				 (concat "X-Face: "
-					 (buffer-substring beg end)))))
+					 (if buffer
+					     (with-current-buffer buffer
+					       (buffer-substring beg end))
+					   (buffer-substring beg end))))))
 	    ((featurep 'xpm)
-	     (let ((cur (current-buffer)))
+	     (let ((cur (or buffer (current-buffer))))
 	       (save-excursion
 		 (gnus-set-work-buffer)
 		 (insert-buffer-substring cur beg end)

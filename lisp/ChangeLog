@@ -1,3 +1,11 @@
+2001-01-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ems.el (gnus-article-display-xface): Add BUFFER.
+	* gnus-xmas.el (gnus-xmas-article-display-xface): Ditto.
+
+	* gnus-art.el (article-display-x-face): Insert X-Face if there is
+	not.
+
 2001-01-18 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-read-group-1): Don't test dead
