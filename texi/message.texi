@@ -1340,7 +1340,23 @@ responding to a message:
 
 @lisp
 (setq message-subject-re-regexp
-     "^\\(\\(\\([Rr][Ee]\\|[Ss][Vv]\\|[Aa][Ww]\\): *\\)+\\)")
+      (concat
+       "^[ \t]*"
+         "\\("
+           "\\("
+             "[Aa][Nn][Tt][Ww]\\.?\\|"     ; antw
+             "[Aa][Ww]\\|"                 ; aw
+             "[Ff][Ww][Dd]?\\|"            ; fwd
+             "[Oo][Dd][Pp]\\|"             ; odp
+             "[Rr][Ee]\\|"                 ; re
+             "[Rr][\311\351][Ff]\\.?\\|"   ; ref
+             "[Ss][Vv]"                    ; sv
+           "\\)"
+           "\\(\\[[0-9]*\\]\\)"
+           "*:[ \t]*"
+         "\\)"
+       "*[ \t]*"
+       ))
 @end lisp
 
 @item message-subject-trailing-was-query
