@@ -3647,7 +3647,7 @@ If you always want Gnus to send messages in one piece, set
 			(if resend-to-addresses
 			    (list resend-to-addresses)
 			  '("-t"))))))
-	    (unless (or (null cpr) (zerop cpr))
+	    (unless (or (null cpr) (and (numberp cpr) (zerop cpr)))
 	      (error "Sending...failed with exit value %d" cpr)))
 	  (when message-interactive
 	    (save-excursion

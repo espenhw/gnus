@@ -1,5 +1,8 @@
 2003-07-06  Jesper Harder  <harder@ifa.au.dk>
 
+	* message.el (message-send-mail-with-sendmail): Handle
+	non-numeric return values.
+
 	* gnus-sum.el (gnus-print-buffer): Apply emphasis.
 	From Michael Piotrowski <mxp@dynalabs.de> (tiny change).
 
