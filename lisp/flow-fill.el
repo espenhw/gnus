@@ -60,7 +60,7 @@ This can be a lisp expression or an integer."
 		 (sexp)
 		 (integer)))
 
-(defcustom fill-flowed-encode-columnq 66
+(defcustom fill-flowed-encode-column 66
   "Column beyond which format=flowed lines are wrapped, in outgoing messages.
 This can be a lisp expression or an integer.
 RFC 2646 suggests 66 characters for readability."
