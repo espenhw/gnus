@@ -1,3 +1,13 @@
+2001-09-01  Simon Josefsson  <jas@extundo.com>
+
+	* nnml.el (nnml-request-expire-articles): Also bind
+	`nnml-current-group' and `nnml-article-file-alist' when using
+	expiry-target. (Otherwise nnml will be in a inconsistent internal
+	state causing all kind of problems.)
+	(nnml-request-expire-articles): If `nnml-article-to-file' or
+	`file-attributes' failes, return article as un-expirable instead
+	of treating it as expired.
+
 2001-08-31  Sam Steingold  <sds@gnu.org>
 
 	* imap.el (imap-mailbox-examine, imap-mailbox-examine-1): Fix a

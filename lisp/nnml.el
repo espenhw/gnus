@@ -309,30 +309,29 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
     (setq articles (gnus-sorted-intersection articles active-articles))
 
     (while (and articles is-old)
-      (when (setq article (nnml-article-to-file (setq number (pop articles))))
-	(when (setq mod-time (nth 5 (file-attributes article)))
-	  (if (and (nnml-deletable-article-p group number)
-		   (setq is-old
-			 (nnmail-expired-article-p group mod-time force
-						   nnml-inhibit-expiry)))
-	      (progn
-		;; Allow a special target group.
-		(unless (eq nnmail-expiry-target 'delete)
-		  (with-temp-buffer
-		    (nnml-request-article number group server
-					  (current-buffer))
-		    (let ((nnml-current-directory nil))
-		      (nnmail-expiry-target-group
-		       nnmail-expiry-target group))))
-		(nnheader-message 5 "Deleting article %s in %s"
-				  number group)
-		(condition-case ()
-		    (funcall nnmail-delete-file-function article)
-		  (file-error
-		   (push number rest)))
-		(setq active-articles (delq number active-articles))
-		(nnml-nov-delete-article group number))
-	    (push number rest)))))
+      (if (and (setq article (nnml-article-to-file (setq number (pop articles))))
+	       (setq mod-time (nth 5 (file-attributes article)))
+	       (nnml-deletable-article-p group number)
+	       (setq is-old (nnmail-expired-article-p group mod-time force
+						      nnml-inhibit-expiry)))
+	  (progn
+	    ;; Allow a special target group.
+	    (unless (eq nnmail-expiry-target 'delete)
+	      (with-temp-buffer
+		(nnml-request-article number group server (current-buffer))
+		(let (nnml-current-directory
+		      nnml-current-group
+		      nnml-article-file-alist)
+		  (nnmail-expiry-target-group nnmail-expiry-target group))))
+	    (nnheader-message 5 "Deleting article %s in %s"
+			      number group)
+	    (condition-case ()
+		(funcall nnmail-delete-file-function article)
+	      (file-error
+	       (push number rest)))
+	    (setq active-articles (delq number active-articles))
+	    (nnml-nov-delete-article group number))
+	(push number rest)))
     (let ((active (nth 1 (assoc group nnml-group-alist))))
       (when active
 	(setcar active (or (and active-articles
