@@ -702,7 +702,7 @@ Mail Sources
 Choosing a Mail Back End
 
 * Unix Mail Box::               Using the (quite) standard Un*x mbox.
-* Rmail Babyl::                 Emacs programs use the rmail babyl format.
+* Rmail Babyl::                 Emacs programs use the Rmail Babyl format.
 * Mail Spool::                  Store your mail in a private spool?
 * MH Spool::                    An mhspool-like back end.
 * Maildir::                     Another one-file-per-message format.
@@ -7257,7 +7257,7 @@ Save the current article in mail format
 @item O r
 @kindex O r (Summary)
 @findex gnus-summary-save-article-rmail
-Save the current article in rmail format
+Save the current article in Rmail format
 (@code{gnus-summary-save-article-rmail}).
 
 @item O f
@@ -7339,7 +7339,7 @@ functions below, or you can create your own.
 @findex gnus-summary-save-in-rmail
 @vindex gnus-rmail-save-name
 @findex gnus-plain-save-name
-This is the default format, @dfn{babyl}.  Uses the function in the
+This is the default format, @dfn{Babyl}.  Uses the function in the
 @code{gnus-rmail-save-name} variable to get a file name to save the
 article in.  The default is @code{gnus-plain-save-name}.
 
@@ -14488,7 +14488,7 @@ mail, which should help.
 @vindex nnmh-get-new-mail
 @vindex nnfolder-get-new-mail
 This might be too much, if, for instance, you are reading mail quite
-happily with @code{nnml} and just want to peek at some old @sc{rmail}
+happily with @code{nnml} and just want to peek at some old Rmail
 file you have stashed away with @code{nnbabyl}.  All back ends have
 variables called back-end-@code{get-new-mail}.  If you want to disable
 the @code{nnbabyl} mail reading, you edit the virtual server for the
@@ -14513,7 +14513,7 @@ Spool}).
 
 @menu
 * Unix Mail Box::               Using the (quite) standard Un*x mbox.
-* Rmail Babyl::                 Emacs programs use the rmail babyl format.
+* Rmail Babyl::                 Emacs programs use the Rmail Babyl format.
 * Mail Spool::                  Store your mail in a private spool?
 * MH Spool::                    An mhspool-like back end.
 * Maildir::                     Another one-file-per-message format.
@@ -14556,11 +14556,11 @@ into groups.  Default is @code{t}.
 @node Rmail Babyl
 @subsubsection Rmail Babyl
 @cindex nnbabyl
-@cindex rmail mbox
+@cindex Rmail mbox
 
 @vindex nnbabyl-active-file
 @vindex nnbabyl-mbox-file
-The @dfn{nnbabyl} back end will use a babyl mail box (aka. @dfn{rmail
+The @dfn{nnbabyl} back end will use a Babyl mail box (aka. @dfn{Rmail
 mbox}) to store mail.  @code{nnbabyl} will add extra headers to each
 mail article to say which group it belongs in.
 
@@ -14569,7 +14569,7 @@ Virtual server settings:
 @table @code
 @item nnbabyl-mbox-file
 @vindex nnbabyl-mbox-file
-The name of the rmail mbox file.  The default is @file{~/RMAIL}
+The name of the Rmail mbox file.  The default is @file{~/RMAIL}
 
 @item nnbabyl-active-file
 @vindex nnbabyl-active-file
@@ -15145,12 +15145,12 @@ was used for mail landing on the system, but Babyl had its own internal
 format to which mail was converted, primarily involving creating a
 spool-file-like entity with a scheme for inserting Babyl-specific
 headers and status bits above the top of each message in the file.
-RMAIL was Emacs' first mail reader, it was written by Richard Stallman,
-and Stallman came out of that TOPS/Babyl environment, so he wrote RMAIL
+Rmail was Emacs' first mail reader, it was written by Richard Stallman,
+and Stallman came out of that TOPS/Babyl environment, so he wrote Rmail
 to understand the mail files folks already had in existence.  Gnus (and
 VM, for that matter) continue to support this format because it's
 perceived as having some good qualities in those mailer-specific
-headers/status bits stuff.  RMAIL itself still exists as well, of
+headers/status bits stuff.  Rmail itself still exists as well, of
 course, and is still maintained by Stallman.
 
 Both of the above forms leave your mail in a single file on your
@@ -16401,11 +16401,11 @@ Name of the map files.
 as a newsgroup.  Several files types are supported:
 
 @table @code
-@cindex babyl
-@cindex rmail mbox
+@cindex Babyl
+@cindex Rmail mbox
 
 @item babyl
-The babyl (rmail) mail box.
+The Babyl (Rmail) mail box.
 @cindex mbox
 @cindex Unix mbox
 

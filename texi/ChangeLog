@@ -1,6 +1,7 @@
 2003-04-22  Jesper Harder  <harder@ifa.au.dk>
 
-	* gnus.texi: nil -> @code{nil}
+	* gnus.texi: nil -> @code{nil}.  Capitalize "Rmail" and "Babyl"
+	consistently.
 
 2003-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
