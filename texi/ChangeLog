@@ -1,3 +1,8 @@
+2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Optional Back End Functions): Addition.
+	(Positioning Point): Changed to %~.
+
 2003-01-08  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (MIME Commands): Add.

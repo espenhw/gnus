@@ -19616,8 +19616,8 @@ You can redefine the function that moves the point to the colon.  The
 function is called @code{gnus-goto-colon}.
 
 But perhaps the most convenient way to deal with this, if you don't want
-to have a colon in your line, is to use the @samp{%C} specifier.  If you
-put a @samp{%C} somewhere in your format line definition, Gnus will
+to have a colon in your line, is to use the @samp{%~} specifier.  If you
+put a @samp{%~} somewhere in your format line definition, Gnus will
 place point there.
 
 
@@ -24817,6 +24817,9 @@ this function in short order.
 
 The function should return a cons where the @code{car} is the group name and
 the @code{cdr} is the article number that the article was entered as.
+
+The group should exist before the backend is asked to accept the
+article for that group.
 
 There should be no data returned.
 
