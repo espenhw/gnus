@@ -185,13 +185,6 @@ If nil, use system defaults."
 		 string)
   :group 'smime)
 
-(defcustom smime-extra-arguments nil
-  "*List of additional arguments passed to OpenSSL.
-For instance, if you don't have a /dev/random you might be forced
-to set this to e.g. `(\"-rand\" \"/etc/entropy\")'."
-  :type '(repeat string)
-  :group 'smime)
-
 (defvar smime-details-buffer "*OpenSSL output*")
 
 ;; Password dialog function
@@ -208,8 +201,7 @@ to set this to e.g. `(\"-rand\" \"/etc/entropy\")'."
 ;; OpenSSL wrappers.
 
 (defun smime-call-openssl-region (b e buf &rest args)
-  (case (apply 'call-process-region b e smime-openssl-program nil
-	       buf nil (append smime-extra-arguments args))
+  (case (apply 'call-process-region b e smime-openssl-program nil buf nil args)
     (0 t)
     (1 (message "OpenSSL: An error occurred parsing the command options.") nil)
     (2 (message "OpenSSL: One of the input files could not be read.") nil)

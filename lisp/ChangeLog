@@ -1,5 +1,10 @@
 2001-08-02  Simon Josefsson  <jas@extundo.com>
 
+	* smime.el (smime-extra-arguments): Removed.
+	(smime-call-openssl-region): Don't use it.
+
+2001-08-02  Simon Josefsson  <jas@extundo.com>
+
 	* smime.el (smime-sign-region): Handle stderr.
 	(smime-encrypt-region): Ditto.
 
