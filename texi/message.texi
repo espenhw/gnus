@@ -1097,6 +1097,11 @@ The text is killed and replaced with the contents of the variable
 @code{message-elide-ellipsis}.  The default value is to use an ellipsis
 (@samp{[...]}).
 
+@item C-c M-k
+@kindex C-c M-k
+@findex message-kill-address
+Kill the address under point.
+
 @item C-c C-z
 @kindex C-c C-x
 @findex message-kill-to-signature
