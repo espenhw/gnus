@@ -1,3 +1,13 @@
+Sun Dec  6 19:36:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.65 is released.
+
+1998-12-06 20:11:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-prepare-display): Don't init w3.
+
+	* mm-view.el (mm-inline-text): Bind url-standalone-mode here. 
+
 Sat Dec  5 18:35:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.64 is released.

@@ -69,6 +69,7 @@
       (mm-setup-w3)
       (setq text (mm-get-part handle))
       (let ((b (point))
+	    (url-standalone-mode t)
 	    (width (window-width)))
 	(save-excursion
 	  (insert text)

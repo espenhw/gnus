@@ -2287,9 +2287,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-run-hooks 'gnus-tmp-internal-hook)
     (gnus-run-hooks 'gnus-article-prepare-hook)
     (when gnus-display-mime-function
-      (mm-setup-w3)
-      (let ((url-standalone-mode (not gnus-plugged)))
-	(funcall gnus-display-mime-function)))
+      (funcall gnus-display-mime-function))
     ;; Perform the article display hooks.
     (gnus-run-hooks 'gnus-article-display-hook)))
 
@@ -2386,9 +2384,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Interactively choose a view method for the MIME part under point."
   (interactive)
   (gnus-article-check-buffer)
-  (mm-setup-w3)
-  (let ((data (get-text-property (point) 'gnus-data))
-	(url-standalone-mode (not gnus-plugged)))
+  (let ((data (get-text-property (point) 'gnus-data)))
     (mm-interactively-view-part data)))
 
 (defun gnus-mime-copy-part (&optional handle)
@@ -2418,10 +2414,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Insert the MIME part under point into the current buffer."
   (interactive "P") ; For compatibility reasons we are not using "z".
   (gnus-article-check-buffer)
-  (mm-setup-w3)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 contents
-	 (url-standalone-mode (not gnus-plugged))
 	 (b (point))
 	 buffer-read-only)
     (if (mm-handle-undisplayer data)
@@ -2439,9 +2433,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "View the MIME part under point with an external viewer."
   (interactive)
   (gnus-article-check-buffer)
-  (mm-setup-w3)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 (url-standalone-mode (not gnus-plugged))
 	 (mm-user-display-methods nil)
 	 (mm-all-images-fit t)
 	 (rfc2047-default-charset gnus-newsgroup-default-charset)
@@ -2454,9 +2446,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "View the MIME part under point with an internal viewer."
   (interactive)
   (gnus-article-check-buffer)
-  (mm-setup-w3)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 (url-standalone-mode (not gnus-plugged))
 	 (mm-user-display-methods '((".*" . inline)))
 	 (mm-all-images-fit t)
 	 (rfc2047-default-charset gnus-newsgroup-default-charset)
@@ -2595,9 +2585,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-widget-press-button (elems el)
   (goto-char (widget-get elems :from))
-  (mm-setup-w3)
-  (let ((url-standalone-mode (not gnus-plugged)))
-    (gnus-article-press-button)))
+  (gnus-article-press-button))
 
 (defun gnus-display-mime (&optional ihandles)
   "Insert MIME buttons in the buffer."
