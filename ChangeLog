@@ -1,3 +1,7 @@
+2004-01-04  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add IMAP ID (RFC 2971) support.
+
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Update copyright.
