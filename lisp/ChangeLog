@@ -1,3 +1,8 @@
+2001-09-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-tab-body-function): New variable.
+	* message.el (message-tab): Use it.
+
 2001-09-19  Sam Steingold  <sds@gnu.org>
 
 	* gnus-win.el (gnus-buffer-configuration): Respect

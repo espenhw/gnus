@@ -4832,6 +4832,9 @@ which specify the range to operate on."
 	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name))
   "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE.")
 
+(defvar message-tab-body-function 'indent-relative
+  "*Function to execute when `message-tab' (TAB) is executed in the body.")
+
 (defun message-tab ()
   "Complete names according to `message-completion-alist'.
 Do an `indent-relative' if not in those headers."
@@ -4841,7 +4844,7 @@ Do an `indent-relative' if not in those headers."
 		(let ((mail-abbrev-mode-regexp (caar alist)))
 		  (not (mail-abbrev-in-expansion-header-p))))
       (setq alist (cdr alist)))
-    (funcall (or (cdar alist) 'indent-relative))))
+    (funcall (or (cdar alist) message-tab-body-function))))
 
 (defun message-expand-group ()
   "Expand the group name under point."
