@@ -27,6 +27,8 @@
 
 ;; This module defines some utility functions for STARTTLS profiles.
 
+;; Get "starttls" from ftp://ftp.opaopa.org/pub/elisp/.
+
 ;; [RFC 2595] "Using TLS with IMAP, POP3 and ACAP"
 ;;	by Chris Newman <chris.newman@innosoft.com> (1999/06)
 
