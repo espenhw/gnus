@@ -995,6 +995,7 @@ that were fetched.  Say, for nnultimate groups."
 
 ;;; Internal variables
 
+(defvar gnus-summary-display-cache nil)
 (defvar gnus-article-mime-handles nil)
 (defvar gnus-article-decoded-p nil)
 (defvar gnus-article-charset nil)
@@ -1027,6 +1028,7 @@ that were fetched.  Say, for nnultimate groups."
 (defvar gnus-current-move-group nil)
 (defvar gnus-current-copy-group nil)
 (defvar gnus-current-crosspost-group nil)
+(defvar gnus-newsgroup-display nil)
 
 (defvar gnus-newsgroup-dependencies nil)
 (defvar gnus-newsgroup-adaptive nil)
@@ -1239,7 +1241,7 @@ the type of the variable (string, integer, character, etc).")
     gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits
-    gnus-newsgroup-charset)
+    gnus-newsgroup-charset gnus-newsgroup-display)
   "Variables that are buffer-local to the summary buffers.")
 
 (defvar gnus-newsgroup-variables nil
@@ -4504,16 +4506,28 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (error "Couldn't request group %s: %s"
 	     group (gnus-status-message group)))
 
-    (setq gnus-newsgroup-name group)
-    (setq gnus-newsgroup-unselected nil)
-    (setq gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
+    (setq gnus-newsgroup-name group
+	  gnus-newsgroup-unselected nil
+	  gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
+    
+    (setq gnus-newsgroup-display (gnus-group-find-parameter group 'display))
+    (setq gnus-newsgroup-display
+	  (cond
+	   ((eq gnus-newsgroup-display 'all)
+	    (setq gnus-newsgroup-display 'identity))
+	   ((arrayp gnus-newsgroup-display)
+	    (gnus-summary-display-make-predicate
+	     (mapcar 'identity gnus-newsgroup-display)))
+	   (t
+	    nil)))
+      
     (gnus-summary-setup-default-charset)
 
     ;; Adjust and set lists of article marks.
     (when info
       (gnus-adjust-marked-articles info))
 
-;; Kludge to avoid having cached articles nixed out in virtual groups.
+    ;; Kludge to avoid having cached articles nixed out in virtual groups.
     (when (gnus-virtual-group-p group)
       (setq cached gnus-newsgroup-cached))
 
@@ -4535,7 +4549,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
     (cond
      ((null articles)
-;;(gnus-message 3 "Couldn't select newsgroup -- no articles to display")
+      ;;(gnus-message 3 "Couldn't select newsgroup -- no articles to display")
       'quit)
      ((eq articles 0) nil)
      (t
@@ -4546,7 +4560,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; Retrieve the headers and read them in.
       (setq gnus-newsgroup-headers (gnus-fetch-headers articles))
 
-;; Kludge to avoid having cached articles nixed out in virtual groups.
+      ;; Kludge to avoid having cached articles nixed out in virtual groups.
       (when cached
 	(setq gnus-newsgroup-cached cached))
 
@@ -4594,6 +4608,58 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; GROUP is successfully selected.
       (or gnus-newsgroup-headers t)))))
 
+(defun gnus-summary-display-make-predicate (display)
+  (require 'gnus-agent)
+  (when (= (length display) 1)
+    (setq display (car display)))
+  (unless gnus-summary-display-cache
+    (dolist (elem gnus-article-mark-lists)
+	(push (cons (cdr elem)
+		    (gnus-byte-compile
+		     `(lambda () (gnus-article-marked-p ',(cdr elem)))))
+	      gnus-summary-display-cache)))
+  (let ((gnus-category-predicate-alist gnus-summary-display-cache))
+    (gnus-get-predicate display)))
+
+;; Uses the dynamically bound `number' variable.
+(defvar number)
+(defun gnus-article-marked-p (type &optional article)
+  (let ((article (or article number)))
+    (cond
+     ((eq type 'tick)
+      (memq article gnus-newsgroup-marked))
+     ((eq type 'unsend)
+      (memq article gnus-newsgroup-unsendable))
+     ((eq type 'undownload)
+      (memq article gnus-newsgroup-undownloaded))
+     ((eq type 'download)
+      (memq article gnus-newsgroup-downloadable))
+     ((eq type 'unread)
+      (memq article gnus-newsgroup-unreads))
+     ((eq type 'read)
+      (memq article gnus-newsgroup-reads))
+     ((eq type 'dormant)
+      (memq article gnus-newsgroup-dormant) )
+     ((eq type 'expire)
+      (memq article gnus-newsgroup-expirable))
+     ((eq type 'reply)
+      (memq article gnus-newsgroup-replied))
+     ((eq type 'killed)
+      (memq article gnus-newsgroup-killed))
+     ((eq type 'bookmark)
+      (assq article gnus-newsgroup-bookmarks))
+     ((eq type 'score)
+      (assq article gnus-newsgroup-scored))
+     ((eq type 'save)
+      (memq article gnus-newsgroup-saved))
+     ((eq type 'cache)
+      (memq article gnus-newsgroup-cached))
+     ((eq type 'forward)
+      (memq article gnus-newsgroup-forwarded))
+     ((eq type 'recent)
+      (memq article gnus-newsgroup-recent))
+     (t t))))
+
 (defun gnus-articles-to-read (group &optional read-all)
   "Find out what articles the user wants to read."
   (let* ((articles
@@ -4602,11 +4668,15 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  (if (or read-all
 		  (and (zerop (length gnus-newsgroup-marked))
 		       (zerop (length gnus-newsgroup-unreads)))
-		  (eq (gnus-group-find-parameter group 'display)
-		      'all))
+		  gnus-newsgroup-display)
+	      ;; We want to select the headers for all the articles in
+	      ;; the group, so we select either all the active
+	      ;; articles in the group, or (if that's nil), the
+	      ;; articles in the cache.
 	      (or
 	       (gnus-uncompress-range (gnus-active group))
 	       (gnus-cache-articles-in-group group))
+	    ;; Select only the "normal" subset of articles.
 	    (sort (append gnus-newsgroup-dormant gnus-newsgroup-marked
 			  (copy-sequence gnus-newsgroup-unreads))
 		  '<)))
@@ -7023,6 +7093,7 @@ fetch-old-headers verbiage, and so on."
   ;; Most groups have nothing to remove.
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
+	       (eq gnus-newsgroup-display 'identity)
 	       (not (eq gnus-fetch-old-headers 'some))
 	       (not (numberp gnus-fetch-old-headers))
 	       (not (eq gnus-fetch-old-headers 'invisible))
@@ -7072,7 +7143,7 @@ fetch-old-headers verbiage, and so on."
       (if (and
 	   (not (memq number gnus-newsgroup-marked))
 	   (or
-	   ;; If this article is dormant and has absolutely no visible
+	    ;; If this article is dormant and has absolutely no visible
 	    ;; children, then this article isn't visible.
 	    (and (memq number gnus-newsgroup-dormant)
 		 (zerop children))
@@ -7086,7 +7157,7 @@ fetch-old-headers verbiage, and so on."
 	    ;; we don't want this article.
 	    (and (eq gnus-fetch-old-headers 'invisible)
 		 (gnus-summary-article-ancient-p number))
-	   ;; If this is a sparsely inserted article with no children,
+	    ;; If this is a sparsely inserted article with no children,
 	    ;; we don't want it.
 	    (and (eq gnus-build-sparse-threads 'some)
 		 (gnus-summary-article-sparse-p number)
@@ -7111,6 +7182,9 @@ fetch-old-headers verbiage, and so on."
 		  (push (cons number gnus-low-score-mark)
 			gnus-newsgroup-reads)))
 	      t)
+	    ;; Do the `display' group parameter.
+	    (and gnus-newsgroup-display
+		 (not (funcall gnus-newsgroup-display)))
 	    ;; Check NoCeM things.
 	    (if (and gnus-use-nocem
 		     (gnus-nocem-unwanted-article-p
@@ -7121,7 +7195,7 @@ fetch-old-headers verbiage, and so on."
 		  t))))
 	  ;; Nope, invisible article.
 	  0
-       ;; Ok, this article is to be visible, so we add it to the limit
+	;; Ok, this article is to be visible, so we add it to the limit
 	;; and return 1.
 	(push number gnus-newsgroup-limit)
 	1))))

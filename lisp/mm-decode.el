@@ -965,8 +965,6 @@ like underscores."
 
 (defun mm-save-part-to-file (handle file)
   (mm-with-unibyte-buffer
-    (or (mm-insert-part handle)
-	(error "Error with message"))
     (let ((coding-system-for-write 'binary)
 	  ;; Don't re-compress .gz & al.  Arguably we should make
 	  ;; `file-name-handler-alist' nil, but that would chop
