@@ -5,9 +5,10 @@
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
-@c @direntry
-@c * Gnus: (gnus).         The newsreader Gnus.
-@c @end direntry
+@dircategory Editors
+@direntry
+* Gnus: (gnus).         The newsreader Gnus.
+@end direntry
 @iftex
 @finalout
 @end iftex
@@ -3221,6 +3222,18 @@ Go to a topic (@code{gnus-topic-jump-to-topic}).
 Copy the current group to some other topic
 (@code{gnus-topic-copy-group}).  This command uses the process/prefix
 convention (@pxref{Process/Prefix}).
+
+@itek T h
+@kindex T h (Topic)
+@findex gnus-topic-hide-topic
+Hide the current topic (@code{gnus-topic-hide-topic}).  If given
+a prefix, hide the topic permanently.
+
+@itek T s
+@kindex T s (Topic)
+@findex gnus-topic-show-topic
+Show the current topic (@code{gnus-topic-show-topic}).  If given
+a prefix, show the topic permanently.
 
 @item T D
 @kindex T D (Topic)
@@ -7732,6 +7745,8 @@ Translate the article from one language to another
 @node MIME Commands
 @section @sc{mime} Commands
 @cindex MIME decoding
+@cindex attachments
+@cindex viewing attachments
 
 The following commands all understand the numerical prefix.  For
 instance, @kbd{3 b} means ``view the third @sc{mime} part''.
@@ -20983,6 +20998,9 @@ Allow mail splitting on bodies when using advanced mail splitting.
 @lisp
   (body "whatever.text")
 @end lisp
+
+@item
+Be able to run `J u' from summary buffers.
 
 @item
 Solve the halting problem.

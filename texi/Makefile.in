@@ -61,7 +61,7 @@ clean:
 	rm -f gnus.*.bak *.ky *.cp *.fn *.cps *.kys *.log *.aux *.dvi *.vr \
 	*.pdf *.tp *.toc *.pg gnus.latexi *.aux *.[cgk]idx \
 	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
-	gnus.tmptexi *.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
+	gnustmp.texi *.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
 	gnus.latexi*~* tmp/*.ps xface.tex picons.tex smiley.tex *.latexi
 
 makeinfo:

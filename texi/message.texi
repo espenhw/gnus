@@ -5,9 +5,10 @@
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
-@c @direntry
-@c * Message: (message).   Mail and news composition mode that goes with Gnus.
-@c @end direntry
+@dircategory Editors
+@direntry
+* Message: (message).   Mail and news composition mode that goes with Gnus.
+@end direntry
 @iftex
 @finalout
 @end iftex
