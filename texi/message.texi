@@ -1049,7 +1049,7 @@ solution is to use PGP 2.x instead (i.e., if you use @code{pgg}, set
 @code{pgg-default-scheme} to @code{pgp}).  If you do want to use
 GnuPG, you can use a compatibility script called @code{gpg-2comp}
 available from
-@url{http://muppet.faveve.uni-stuttgart.de/~gero/gpg-2comp/}.  You
+@uref{http://muppet.faveve.uni-stuttgart.de/~gero/gpg-2comp/}.  You
 could also convince your fellow PGP 2.x users to convert to GnuPG.
 @vindex mml-signencrypt-style-alist
 As a final workaround, you can make the sign and encryption work in
@@ -1067,7 +1067,7 @@ to change this behavior you can customize the
 This causes to sign and encrypt in two passes, thus generating a
 message that can be understood by PGP version 2.
 
-(Refer to @url{http://www.gnupg.org/gph/en/pgp2x.html} for more
+(Refer to @uref{http://www.gnupg.org/gph/en/pgp2x.html} for more
 information about the problem.)
 
 @node Various Commands
