@@ -5987,7 +5987,9 @@ positives are possible."
     ("\\bmailto:\\([^ \n\t]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ;; CTAN
-    ("\\bCTAN:[ \t\n]*\\([^>)!;:,'\n\t ]*\\)"
+    ((concat "\\bCTAN:[ \t\n]?[^>)!;:,'\n\t ]*\\("
+	     gnus-button-ctan-directory-regexp
+	     "[^][>)!;:,'\n\t ]+\\)")
      0 (>= gnus-button-tex-level 1) gnus-button-handle-ctan 1)
     ((concat "\\btex-archive/\\("
 	     gnus-button-ctan-directory-regexp
@@ -6027,9 +6029,9 @@ positives are possible."
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
     ("`\\([a-z][-a-z0-9]+\\.el\\)'"
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
-    ("`\\([a-z]+-[a-z]+-[-a-z]+\\|\\(gnus\\|message\\)-[-a-z]+\\)'"
+    ("`\\([a-z][a-z0-9]+-[a-z]+-[-a-z]+\\|\\(gnus\\|message\\)-[-a-z]+\\)'"
      0 (>= gnus-button-emacs-level 8) gnus-button-handle-symbol 1)
-    ("`\\([a-z]+-[a-z]+\\)'"
+    ("`\\([a-z][a-z0-9]+-[a-z]+\\)'"
      0 (>= gnus-button-emacs-level 9) gnus-button-handle-symbol 1)
     ("(setq[ \t\n]+\\([a-z][a-z0-9]+-[-a-z0-9]+\\)[ \t\n]+.+)"
      1 (>= gnus-button-emacs-level 7) gnus-button-handle-describe-variable 1)

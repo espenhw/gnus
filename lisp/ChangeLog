@@ -1,3 +1,7 @@
+2003-04-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-alist): Fixed CTAN regexp.
+
 2003-04-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam-report.el (spam-report-gmane): gnus-summary-article-number
