@@ -15241,6 +15241,9 @@ A digest of Clarinet brief news items.
 
 @item slack-digest
 Non-standard digest format---matches most things, but does it badly.
+
+@item mail-in-mail
+The last resort.
 @end table
 
 You can also use the special ``file type'' @code{guess}, which means
@@ -15271,8 +15274,8 @@ Virtual server variables:
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @code{news}, @code{rnews}, @code{mmdf}, @code{forward}, @code{rfc934},
 @code{rfc822-forward}, @code{mime-parts}, @code{standard-digest},
-@code{slack-digest}, @code{clari-briefs}, @code{nsmail},
-@code{outlook}, @code{oe-dbx}, and @code{mailman} or @code{guess}.
+@code{slack-digest}, @code{clari-briefs}, @code{nsmail}, @code{outlook},
+@code{oe-dbx}, @code{mailman}, and @code{mail-in-mail} or @code{guess}.
 
 @item nndoc-post-type
 @vindex nndoc-post-type

@@ -1,3 +1,7 @@
+2002-02-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Document Groups): Addition.
+
 2002-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi (Security): Fix @findex for the key `C-c C-m s p'.
