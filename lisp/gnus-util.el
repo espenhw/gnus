@@ -950,7 +950,8 @@ ARG is passed to the first function."
 			 (if full-names
 			     (symbol-name sym)
 			   (gnus-group-real-name (symbol-name sym)))
-			 (cdr (symbol-value sym))
+			 (or (cdr (symbol-value sym))
+			     (car (symbol-value sym)))
 			 (car (symbol-value sym))))))
      hashtb)))
 
