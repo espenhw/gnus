@@ -95,7 +95,7 @@
 (defalias 'define-mail-user-agent 'ignore)
 
 (eval-and-compile
-  (unless (string-match "XEmacs" emacs-version)
+  (unless (featurep 'xemacs)
     (fset 'get-popup-menu-response 'ignore)
     (fset 'event-object 'ignore)
     (fset 'x-defined-colors 'ignore)
@@ -115,7 +115,7 @@ You also then need to add the following to the lisp/dgnushack.el file:
 
 Modify to suit your needs."))
   (let ((files (directory-files srcdir nil "^[^=].*\\.el$"))
-	(xemacs (string-match "XEmacs" emacs-version))
+	(xemacs (featurep 'xemacs))
 	;;(byte-compile-generate-call-tree t)
 	file elc)
     (condition-case ()

@@ -1,3 +1,8 @@
+2000-10-01 13:07:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-netscape-open, webmail-hotmail-article,
+	webmail-hotmail-list): Update.
+
 2000-10-01 08:36:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-report-new-mail): Use
@@ -6,7 +11,7 @@
 2000-10-01 08:35:38  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el (overlay-*): Shut up.
-	* dgnushack.el: Two implementation of smiley.
+	* dgnushack.el: Two implementations of smiley.
 
 2000-10-01 08:32:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

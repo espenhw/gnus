@@ -129,8 +129,8 @@
      (login-url
       content 
       ("http://ureg.netscape.com/iiop/UReg2/login/loginform")
-      "%s&U2_USERNAME=%s&U2_PASSWORD=%s"
-      webmail-aux user password)
+      "U2_USERNAME=%s&U2_PASSWORD=%s%s"
+      user password webmail-aux)
      (login-snarf . webmail-netaddress-login)
      (list-url 
       "http://webmail.netscape.com/tpl/Mail/%s/List?FolderID=-4&SortUseCase=True"
@@ -213,9 +213,9 @@
 (defun webmail-error (str)
   (if webmail-error-function
       (funcall webmail-error-function str))
-  (message "%s HTML has changed; please get a new version of webmail (%s)"
+  (message "%s HTML has changed or your w3 package is too old.(%s)"
 	   webmail-type str)
-  (error "%s HTML has changed; please get a new version of webmail (%s)"
+  (error "%s HTML has changed or your w3 package is too old.(%s)"
 	 webmail-type str))
 
 (defun webmail-setdefault (type)
@@ -410,62 +410,71 @@
       (webmail-error "login@2"))))
 
 (defun webmail-hotmail-list ()
-  (let (site url newp)
-    (goto-char (point-min))
-    (if (re-search-forward "[0-9]+ new" nil t) 
-	(message "Found %s" (match-string 0))
-      (webmail-error "maybe your w3 version is too old"))
-    (goto-char (point-min))
-    (if (re-search-forward 
+  (goto-char (point-min))
+  (skip-chars-forward " \t\n\r")
+  (let (site url newp (total "0"))
+    (if (eobp)
+	(setq total "0"))
+    (if (re-search-forward "\\([0-9]+\\) *<b>(\\([0-9]+\\) new)" nil t) 
+	(message "Found %s (%s new)" (setq total (match-string 1)) 
+		 (match-string 2))
+      (if (re-search-forward "\\([0-9]+\\) new" nil t) 
+	  (message "Found %s new" (setq total (match-string 1)))
+	(webmail-error "list@0")))
+    (unless (equal total "0")
+      (goto-char (point-min))
+      (if (re-search-forward 
 	 "https?://\\([^/]+hotmail\\.msn\\.com\\)/cgi-bin/" nil t)
-	(setq site (match-string 1))
-      (webmail-error "list@1"))
-    (goto-char (point-min))
-    (if (re-search-forward "disk=\\([^&]+\\)&" nil t)
-	(setq webmail-aux 
-	      (concat "http://" site "/cgi-bin/HoTMaiL?disk=" 
-		      (match-string 1)))
-      (webmail-error "list@2"))
-    (goto-char (point-max))
-    (while (re-search-backward 
-	    "newmail\\.gif\\|href=\"\\(/cgi-bin/getmsg\\?[^\"]+\\)\"" 
-	    nil t)
-      (if (setq url (match-string 1))
-	  (progn
-	    (if (or newp (not webmail-newmail-only))
-		(let (id)
-		  (if (string-match "msg=\\([^&]+\\)" url)
-		      (setq id (match-string 1 url)))
-		  (push (cons id (concat "http://" site url "&raw=0")) 
-			webmail-articles)))
-	    (setq newp nil))
-	(setq newp t)))))
+	  (setq site (match-string 1))
+	(webmail-error "list@1"))
+      (goto-char (point-min))
+      (if (re-search-forward "disk=\\([^&]+\\)&" nil t)
+	  (setq webmail-aux 
+		(concat "http://" site "/cgi-bin/HoTMaiL?disk=" 
+			(match-string 1)))
+	(webmail-error "list@2"))
+      (goto-char (point-max))
+      (while (re-search-backward 
+	      "newmail\\.gif\\|href=\"\\(/cgi-bin/getmsg\\?[^\"]+\\)\"" 
+	      nil t)
+	(if (setq url (match-string 1))
+	    (progn
+	      (if (or newp (not webmail-newmail-only))
+		  (let (id)
+		    (if (string-match "msg=\\([^&]+\\)" url)
+			(setq id (match-string 1 url)))
+		    (push (cons id (concat "http://" site url "&raw=0")) 
+			  webmail-articles)))
+	      (setq newp nil))
+	  (setq newp t))))))
 
 ;; Thank victor@idaccr.org (Victor S. Miller) for raw=0
 
 (defun webmail-hotmail-article (file id)
   (goto-char (point-min))
-  (if (not (search-forward "<pre>" nil t))
-      (webmail-error "article@3"))
-  (skip-chars-forward "\n\r\t ")
-  (delete-region (point-min) (point))
-  (if (not (search-forward "</pre>" nil t))
-      (webmail-error "article@3.1"))
-  (delete-region (match-beginning 0) (point-max))
-  (nnweb-remove-markup)
-  (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-    (nnweb-decode-entities))
-  (goto-char (point-min))
-  (while (re-search-forward "\r\n?" nil t)
-    (replace-match "\n"))
-  (goto-char (point-min))
-  (insert "\n\n")
-  (if (not (looking-at "\n*From "))
-      (insert "From nobody " (current-time-string) "\n")
-    (forward-line))
-  (insert "X-Gnus-Webmail: " (symbol-value 'user)
-	  "@" (symbol-name webmail-type) "\n")
-  (mm-append-to-file (point-min) (point-max) file))
+  (skip-chars-forward " \t\n\r")
+  (unless (eobp) 
+    (if (not (search-forward "<pre>" nil t))
+	(webmail-error "article@3"))
+    (skip-chars-forward "\n\r\t ")
+    (delete-region (point-min) (point))
+    (if (not (search-forward "</pre>" nil t))
+	(webmail-error "article@3.1"))
+    (delete-region (match-beginning 0) (point-max))
+    (nnweb-remove-markup)
+    (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
+      (nnweb-decode-entities))
+    (goto-char (point-min))
+    (while (re-search-forward "\r\n?" nil t)
+      (replace-match "\n"))
+    (goto-char (point-min))
+    (insert "\n\n")
+    (if (not (looking-at "\n*From "))
+	(insert "From nobody " (current-time-string) "\n")
+      (forward-line))
+    (insert "X-Gnus-Webmail: " (symbol-value 'user)
+	    "@" (symbol-name webmail-type) "\n")
+    (mm-append-to-file (point-min) (point-max) file)))
 
 (defun webmail-hotmail-article-old (file id)
   (let (p attachment count mime hotmail-direct)
@@ -714,9 +723,12 @@
 
 (defun webmail-netscape-open ()
   (goto-char (point-min))
-  (if (re-search-forward "login/hint\\?\\([^\"]+\\)\"" nil t)
-      (setq webmail-aux (match-string 1))
-    (webmail-error "open@1")))
+  (setq webmail-aux "")
+  (while (re-search-forward 
+	  "TYPE=hidden *NAME=\\([^ ]+\\) *VALUE=\"\\([^\"]+\\)" 
+	  nil t)
+    (setq webmail-aux (concat webmail-aux "&" (match-string 1) "="
+			      (match-string 2)))))
 
 (defun webmail-netaddress-open ()
   (goto-char (point-min))
