@@ -1,3 +1,11 @@
+2003-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Article Buttons): Regexps are case insensitive here.
+
+2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Summary Generation Commands): Addition.
+
 2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Message Headers): Added example.
