@@ -63,7 +63,14 @@ See `hashcash-payment-alist'."
 Elements may consist of (ADDR AMOUNT) or (ADDR STRING AMOUNT), where
 ADDR is the email address of the intended recipient and AMOUNT is
 the value of hashcash payment to be made to that user.  STRING, if
-present, is the string to be hashed; if not present ADDR will be used.")
+present, is the string to be hashed; if not present ADDR will be used."
+  :type '(repeat (choice (list :tag "Normal"
+			       (string :name "Address")
+			       (integer :name "Amount"))
+			 (list :tag "Replace hash input"
+			       (string :name "Address")
+			       (string :name "Hash input")
+			       (integer :name "Amount")))))
 
 (defcustom hashcash-default-accept-payment 20
   "*The default minimum number of bits to accept on incoming payments."
