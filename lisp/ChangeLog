@@ -1,5 +1,12 @@
 2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): use
+	gnus-extract-references instead of gnus-split-references
+
+	* gnus-util.el (gnus-extract-references): new function, analogous
+	to gnus-split-references but extracts only the message-ID without
+	anything extra
+
 	* hashcash.el (hashcash-generate-payment)
 	(hashcash-check-payment): do the right thing if hashcash-path is
 	nil (because the hashcash program could not be found)

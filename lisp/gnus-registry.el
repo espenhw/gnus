@@ -371,7 +371,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	references res)
     (if refstr
 	(progn
-	  (setq references (nreverse (gnus-split-references refstr)))
+	  (setq references (nreverse (gnus-extract-references refstr)))
 	  (mapcar (lambda (x)
 		    (setq res (or (gnus-registry-fetch-group x) res))
 		    (when (or (gnus-registry-grep-in-list
