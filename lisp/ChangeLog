@@ -1,3 +1,9 @@
+2003-02-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-mark-spam-as-expired-and-move-routine)
+	(spam-ham-move-routine): unmark all articles before marking those
+	of interest and calling gnus-summary-move-article
+
 2003-02-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el (gnus-kill-buffer): Move to gnus.el because it's

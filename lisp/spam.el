@@ -415,26 +415,35 @@ your main source of newsgroup names."
 
 (defun spam-mark-spam-as-expired-and-move-routine (&optional group)
   (let ((articles gnus-newsgroup-articles)
-	article)
-    (while articles
-      (setq article (pop articles))
+	article tomove)
+    (dolist (article articles)
+      (gnus-summary-remove-process-mark article)
       (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
 	(gnus-summary-mark-article article gnus-expirable-mark)
-	(when (stringp group)
-	  (gnus-summary-set-process-mark article)
-	  (gnus-summary-move-article nil group))))))
+	(push article tomove)))
+
+    ;; now do the actual move
+    (when (stringp group)
+      (dolist (article tomove)
+	(gnus-summary-set-process-mark article))
+      (gnus-summary-move-article nil group))))
  
 (defun spam-ham-move-routine (&optional group)
   (let ((articles gnus-newsgroup-articles)
-	article ham-mark-values mark)
+	article ham-mark-values mark tomove)
+    (when (stringp group)		; this routine will do nothing
+					; without a valid group
+      (dolist (mark spam-ham-marks)
+	(push (symbol-value mark) ham-mark-values))
+      (dolist (article articles)
+	(gnus-summary-remove-process-mark article)
+	(when (memq (gnus-summary-article-mark article) ham-mark-values)
+	  (push article tomove)))
 
-    (dolist (mark spam-ham-marks)
-      (push (symbol-value mark) ham-mark-values))
-    (dolist (article articles)      
-      (when (and (memq (gnus-summary-article-mark article) ham-mark-values)
-		 (stringp group))
-	(gnus-summary-set-process-mark article)
-	(gnus-summary-move-article nil group)))))
+      ;; now do the actual move
+      (dolist (article tomove)
+	(gnus-summary-set-process-mark article))
+      (gnus-summary-move-article nil group))))
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)
