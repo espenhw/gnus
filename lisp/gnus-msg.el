@@ -1105,12 +1105,29 @@ this is a reply."
 		  (sit-for 2))
 		(when (and group-art gnus-inews-mark-gcc-as-read)
 		  (let ((active (gnus-active group)))
-		    (when active
-		      (if (< (cdr active) (cdr group-art))
-			  (gnus-set-active group (cons (car active) 
-						       (cdr group-art))))
+		    (if active
+			(if (< (cdr active) (cdr group-art))
+			    (gnus-set-active group (cons (car active) 
+							 (cdr group-art))))
+		      (gnus-activate-group group)))
+		  (let ((buffer (concat "*Summary " group "*"))
+			(mark gnus-read-mark)
+			(article (cdr group-art)))
+		    (unless 
+			(and 
+			 (get-buffer buffer)
+			 (with-current-buffer buffer
+			   (when gnus-newsgroup-prepared
+			     (when (and gnus-newsgroup-auto-expire
+					(memq mark gnus-auto-expirable-marks))
+			       (setq mark gnus-expirable-mark))
+			     (setq mark (gnus-request-update-mark 
+					 group article mark))
+			     (gnus-mark-article-as-read article mark)
+			     (setq gnus-newsgroup-active (gnus-active group))
+			     t)))
 		      (gnus-group-make-articles-read group 
-						     (list (cdr group-art))))))
+						     (list article)))))
 		(kill-buffer (current-buffer))))))))))
 
 (defun gnus-inews-insert-gcc ()

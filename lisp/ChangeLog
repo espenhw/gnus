@@ -1,3 +1,8 @@
+2000-11-14 10:12:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Update summary data when the
+	group is open.
+
 2000-11-14 00:48:52  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-bcklg.el (gnus-backlog-enter-article): Don't enter
