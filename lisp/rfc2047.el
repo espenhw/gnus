@@ -289,10 +289,10 @@ Dynamically bind `rfc2047-encoding-type' to change that."
   (save-restriction
     (narrow-to-region b e)
     (let ((encodable-regexp (if rfc2047-encode-encoded-words
-				"[^\000-\177]\\|=\\?"
-			      "[^\000-\177]"))
+				"[^\000-\177]+\\|=\\?"
+			      "[^\000-\177]+"))
 	  start				; start of current token
-	  end				; end of current token
+	  end begin
 	  ;; Whether there's an encoded word before the current token,
 	  ;; either immediately or separated by space.
 	  last-encoded)
@@ -335,27 +335,27 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (setq end (point))
 		  ;; Does it need encoding?
 		  (goto-char start)
-		  (skip-chars-forward "\000-\177" end)
-		  (if (= end (point))
-		      (setq last-encoded  nil)
-		    ;; It needs encoding.  Strip the quotes first,
-		    ;; since encoded words can't occur in quotes.
-		    (goto-char end)
-		    (delete-backward-char 1)
-		    (goto-char start)
-		    (delete-char 1)
-		    (when last-encoded
-		      ;; There was a preceding quoted word.  We need
-		      ;; to include any separating whitespace in this
-		      ;; word to avoid it getting lost.
-		      (skip-chars-backward " \t")
-		      ;; A space is needed between the encoded words.
-		      (insert ? )
-		      (setq start (point)
-			    end (1+ end)))
-		    ;; Adjust the end position for the deleted quotes.
-		    (rfc2047-encode start (- end 2))
-		    (setq last-encoded t))) ; record that it was encoded
+		  (if (re-search-forward encodable-regexp end 'move)
+		      ;; It needs encoding.  Strip the quotes first,
+		      ;; since encoded words can't occur in quotes.
+		      (progn
+			(goto-char end)
+			(delete-backward-char 1)
+			(goto-char start)
+			(delete-char 1)
+			(when last-encoded
+			  ;; There was a preceding quoted word.  We need
+			  ;; to include any separating whitespace in this
+			  ;; word to avoid it getting lost.
+			  (skip-chars-backward " \t")
+			  ;; A space is needed between the encoded words.
+			  (insert ? )
+			  (setq start (point)
+				end (1+ end)))
+			;; Adjust the end position for the deleted quotes.
+			(rfc2047-encode start (- end 2))
+			(setq last-encoded t)) ; record that it was encoded
+		    (setq last-encoded  nil)))
 		 ((eq ?. (char-syntax (char-after)))
 		  ;; Skip other delimiters, but record that they've
 		  ;; potentially separated quoted words.
@@ -363,8 +363,10 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (setq last-encoded nil))
 		 (t		    ; normal token/whitespace sequence
 		  ;; Find the end.
-		  (skip-chars-backward " \t\n")
-		  (if (and (eq (char-before) ?\()
+		  (if (and (prog2
+			       (skip-chars-backward " \t\n")
+			       (eq (char-before) ?\()
+			     (goto-char start))
 			   ;; Look for the end of parentheses.
 			   (let ((string (buffer-substring (point)
 							   (point-max)))
@@ -376,30 +378,37 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 			       (condition-case nil
 				   (progn
 				     (forward-list 1)
-				     (setq end (- (point) 3)))
+				     (setq end (+ start (point) -3)))
 				 (error nil)))))
 		      ;; Encode text as an unstructured field.
 		      (let ((rfc2047-encoding-type 'mime))
-			(rfc2047-encode-region start (+ (point) end))
+			(rfc2047-encode-region start end)
 			(forward-char))
 		    ;; Skip one ASCII word, or encode continuous words
 		    ;; in which all those contain non-ASCII characters.
-		    (skip-chars-forward " \t\n")
 		    (setq end nil)
 		    (while (not end)
 		      (when (looking-at "[\000-\177]+")
-			(setq end (match-end 0))
-			(if (re-search-forward "[ \t\n]\\|\\Sw" end t)
-			    (goto-char (match-beginning 0))
-			  (goto-char end)
+			(setq begin (point)
+			      end (match-end 0))
+			(if (re-search-forward "[ \t\n]\\|\\Sw" end 'move)
+			    (progn
+			      (setq end (match-beginning 0))
+			      (if rfc2047-encode-encoded-words
+				  (progn
+				    (goto-char begin)
+				    (when (search-forward "=?" end 'move)
+				      (goto-char (match-beginning 0))
+				      (setq end nil)))
+				(goto-char end)))
 			  (setq end nil)))
 		      (unless end
 			(setq end t)
-			(when (looking-at "[^\000-\177]+")
+			(when (looking-at encodable-regexp)
 			  (goto-char (match-end 0))
 			  (while (and (looking-at "[ \t\n]+\\([^ \t\n]+\\)")
 				      (setq end (match-end 0))
-				      (string-match "[^\000-\177]"
+				      (string-match encodable-regexp
 						    (match-string 1)))
 			    (goto-char end))
 			  (when (looking-at "[^ \t\n]+")
@@ -409,7 +418,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 				;; to be encoded so that MTAs may parse
 				;; them safely.
 				(cond ((= end (point)))
-				      ((looking-at "[^\000-\177]")
+				      ((looking-at encodable-regexp)
 				       (setq end nil))
 				      (t
 				       (goto-char (1- (match-end 0)))
@@ -418,18 +427,18 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 			      (goto-char end)
 			      (skip-chars-forward " \t\n")
 			      (if (and (looking-at "[^ \t\n]+")
-				       (string-match "[^\000-\177]"
+				       (string-match encodable-regexp
 						     (match-string 0)))
 				  (setq end nil)
 				(goto-char end)))))))
 		    (skip-chars-backward " \t\n")
 		    (setq end (point))
 		    (goto-char start)
-		    (skip-chars-forward "\000-\177" end)
-		    (if (= end (point))
-			(setq last-encoded nil)
-		      (rfc2047-encode start end)
-		      (setq last-encoded t))))))
+		    (if (re-search-forward encodable-regexp end 'move)
+			(progn
+			  (rfc2047-encode start end)
+			  (setq last-encoded t))
+		      (setq last-encoded nil))))))
 	    (error
 	     (error "Invalid data for rfc2047 encoding: %s"
 		    (buffer-substring b e)))))))
