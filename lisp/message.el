@@ -337,40 +337,40 @@ If nil, don't insert any text in the body."
 ;; inspired by JoH-followup-to by Jochem Huhman <joh  at gmx.de>
 ;; new suggestions by R. Weikusat <rw at another.de>
 
-(defvar message-xpost-old-target nil
+(defvar message-cross-post-old-target nil
   "Old target for cross-posts or follow-ups.")
-(make-variable-buffer-local 'message-xpost-old-target)
+(make-variable-buffer-local 'message-cross-post-old-target)
 
 ;;;###autoload
-(defcustom message-xpost-default t
-  "When non-nil `message-xpost-fup2' will normally perform a crosspost.
-If nil, `message-xpost-fup2' will only do a followup.  Note that you
-can explicitly override this setting by calling `message-xpost-fup2'
-with a prefix."
+(defcustom message-cross-post-default t
+  "When non-nil `message-cross-post-followup-to' will normally perform a
+crosspost.  If nil, `message-cross-post-followup-to' will only do a followup.
+Note that you can explicitly override this setting by calling
+`message-cross-post-followup-to' with a prefix."
   :type 'boolean
   :group 'message-various)
 
 ;;;###autoload
-(defcustom message-xpost-note
+(defcustom message-cross-post-note
   "Crosspost & Followup-To: "
-  "Note to insert before signature to notify of xpost and follow-up."
+  "Note to insert before signature to notify of cross-post and follow-up."
   :type 'string
   :group 'message-various)
 
 ;;;###autoload
-(defcustom message-fup2-note
+(defcustom message-followup-to-note
   "Followup-To: "
   "Note to insert before signature to notify of follow-up only."
   :type 'string
   :group 'message-various)
 
 ;;;###autoload
-(defcustom message-xpost-note-function
-  'message-xpost-insert-note
+(defcustom message-cross-post-note-function
+  'message-cross-post-insert-note
   "Function to use to insert note about Crosspost or Followup-To.  
 The function will be called with four arguments.  The function should not only
 insert a note, but also ensure old notes are deleted.  See the documentation
-for `message-xpost-insert-note'. "
+for `message-cross-post-insert-note'. "
   :type 'function
   :group 'message-various)
 
@@ -1659,7 +1659,7 @@ body, set  `message-archive-note' to nil."
       (message-sort-headers)))
 
 ;;;###autoload
-(defun message-xpost-fup2-header (target-group)
+(defun message-cross-post-followup-to-header (target-group)
   "Mangles FollowUp-To and Newsgroups header to point to TARGET-GROUP.
 With prefix-argument just set Follow-Up, don't cross-post."
   (interactive
@@ -1674,19 +1674,19 @@ With prefix-argument just set Follow-Up, don't cross-post."
   (message-goto-newsgroups)
   (beginning-of-line)
   ;; if we already did a crosspost before, kill old target
-  (if (and message-xpost-old-target
+  (if (and message-cross-post-old-target
 	   (re-search-forward
-	    (regexp-quote (concat "," message-xpost-old-target))
+	    (regexp-quote (concat "," message-cross-post-old-target))
 	    nil t))
       (replace-match ""))
   ;; unless (followup is to poster or user explicitly asked not
   ;; to cross-post, or target-group is already in Newsgroups)
   ;; add target-group to Newsgroups line.
   (cond ((and (or
-	       ;; def: xpost, req:no
-	       (and message-xpost-default (not current-prefix-arg))  
-	       ;; def: no-xpost, req:yes
-	       (and (not message-xpost-default) current-prefix-arg))
+	       ;; def: cross-post, req:no
+	       (and message-cross-post-default (not current-prefix-arg))  
+	       ;; def: no-cross-post, req:yes
+	       (and (not message-cross-post-default) current-prefix-arg))
 	      (not (string-match "poster" target-group))
 	      (not (string-match (regexp-quote target-group)
 				 (message-fetch-field "Newsgroups"))))
@@ -1700,13 +1700,14 @@ With prefix-argument just set Follow-Up, don't cross-post."
 				 "[ \t]*$")
 			 (message-fetch-field "Newsgroups")))
       (insert (concat "\nFollowup-To: " target-group)))
-  (setq message-xpost-old-target target-group))
+  (setq message-cross-post-old-target target-group))
 
 ;;;###autoload
-(defun message-xpost-insert-note (target-group xpost in-old old-groups)
+(defun message-cross-post-insert-note (target-group cross-post in-old
+						    old-groups)
   "Insert a in message body note about a set Followup or Crosspost.
 If there have been previous notes, delete them.  TARGET-GROUP specifies the
-group to Followup-To.  When XPOST is t, insert note about
+group to Followup-To.  When CROSS-POST is t, insert note about
 crossposting.  IN-OLD specifies whether TARGET-GROUP is a member of
 OLD-GROUPS.  OLD-GROUPS lists the old-groups the posting would have
 been made to before the user asked for a Crosspost."
@@ -1717,25 +1718,25 @@ been made to before the user asked for a Crosspost."
 	       nil t))) ; just search in body
     (message-goto-signature)
     (while (re-search-backward
-	    (concat "^" (regexp-quote message-xpost-note) ".*")
+	    (concat "^" (regexp-quote message-cross-post-note) ".*")
 	    head t)
       (message-delete-line))
     (message-goto-signature)
     (while (re-search-backward
-	    (concat "^" (regexp-quote message-fup2-note) ".*")
+	    (concat "^" (regexp-quote message-followup-to-note) ".*")
 	    head t)
       (message-delete-line))
     ;; insert new note
     (if (message-goto-signature)
 	(re-search-backward message-signature-separator))
     (if (or in-old
-	    (not xpost)
+	    (not cross-post)
 	    (string-match "^[ \t]*poster[ \t]*$" target-group))
-	(insert (concat message-fup2-note target-group "\n"))
-      (insert (concat message-xpost-note target-group "\n")))))
+	(insert (concat message-followup-to-note target-group "\n"))
+      (insert (concat message-cross-post-note target-group "\n")))))
 
 ;;;###autoload
-(defun message-xpost-fup2 (target-group)
+(defun message-cross-post-followup-to (target-group)
   "Crossposts message and sets Followup-To to TARGET-GROUP.
 With prefix-argument just set Follow-Up, don't cross-post."
   (interactive
@@ -1764,13 +1765,13 @@ With prefix-argument just set Follow-Up, don't cross-post."
 				      "[ \t]*$")
 			      old-groups)))
 		    ;; yes, Newsgroups line must change
-		    (message-xpost-fup2-header target-group)
-		    ;; insert note whether we do xpost or fup2
-		    (funcall message-xpost-note-function
+		    (message-cross-post-followup-to-header target-group)
+		    ;; insert note whether we do cross-post or fup2
+		    (funcall message-cross-post-note-function
 			     target-group
-			     (if (or (and message-xpost-default
+			     (if (or (and message-cross-post-default
 					  (not current-prefix-arg))
-				     (and (not message-xpost-default)
+				     (and (not message-cross-post-default)
 					  current-prefix-arg)) t)
 			     in-old old-groups))))))))
 
@@ -1989,8 +1990,8 @@ Point is left at the beginning of the narrowed-to region."
   ;; modify headers (and insert notes in body)
   (define-key message-mode-map "\C-c\C-fs"    'message-change-subject)
   ;;
-  (define-key message-mode-map "\C-c\C-fx"    'message-xpost-fup2)
-  ;; prefix+message-xpost-fup2 = same w/o xpost
+  (define-key message-mode-map "\C-c\C-fx"    'message-cross-post-followup-to)
+  ;; prefix+message-cross-post-followup-to = same w/o cross-post
   (define-key message-mode-map "\C-c\C-ft"    'message-reduce-to-to-cc)
   (define-key message-mode-map "\C-c\C-fa"    'message-add-archive-header)
   ;; mark inserted text
@@ -2103,8 +2104,8 @@ Point is left at the beginning of the narrowed-to region."
     ["Keywords" message-goto-keywords t]
     ["Newsgroups" message-goto-newsgroups t]
     ["Followup-To" message-goto-followup-to t]
-    ;; ["Followup-To (with note in body)" message-xpost-fup2 t]
-    ["Crosspost / Followup-To..." message-xpost-fup2 t]
+    ;; ["Followup-To (with note in body)" message-cross-post-followup-to t]
+    ["Crosspost / Followup-To..." message-cross-post-followup-to t]
     ["Distribution" message-goto-distribution t]
     ["X-No-Archive:" message-add-archive-header t ]
     "----"
@@ -3396,6 +3397,7 @@ It should typically alter the sending method in some way or other."
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)
 	      (insert ?\n))
+	  (message-cleanup-headers)
 	  (when
 	      (save-restriction
 		(message-narrow-to-headers)

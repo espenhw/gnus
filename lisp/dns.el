@@ -296,6 +296,9 @@ If TCP-P, the first two bytes of the package with be the length field."
 	    :host server
 	    :service "domain"
 	    :type 'datagram)
+	 ;; Older versions of Emacs doesn't have
+	 ;; `make-network-process', so we fall back on opening a TCP
+	 ;; connection to the DNS server.
 	 (open-network-stream "dns" (current-buffer) server "domain")))))
 
 (defun query-dns (name &optional type fullp)

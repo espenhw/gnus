@@ -1,4 +1,27 @@
+2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el: Renamed functions and variables: "xpost" ->
+	"cross-post", "-fup2" -> "-followup-to".
+	(message-cross-post-old-target, message-cross-post-default,
+	message-cross-post-note, message-followup-to-note,
+	message-cross-post-note-function): New variables names.
+	(message-xpost-old-target, message-xpost-default,
+	message-xpost-note, message-fup2-note,
+	message-xpost-note-function): Removed variable names.
+	(message-cross-post-followup-to-header,
+	message-cross-post-insert-note, message-cross-post-followup-to):
+	New function names.
+	(message-xpost-fup2-header, message-xpost-insert-note,
+	message-xpost-fup2): Removed function names.
+
+2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-send-mail): Added message-cleanup-headers to
+	prevent newlines in headers.
+
 2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (dns-make-network-process): Comment.
 
 	* gnus-sum.el (gnus-summary-display-while-building): Default to
 	nil. 
