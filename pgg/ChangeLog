@@ -1,5 +1,7 @@
 2002-10-01  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-pgp5.el (pgg-pgp5-process-region): Don't use binary-funcall.
+
 	* pgg-gpg.el (pgg-gpg-process-region): Use expand-file-name
 	instead of concat.
 
