@@ -107,4 +107,7 @@
 (defun md5 (a &optional b c)
   )
 
+(defun nnkiboze-score-file (a)
+)
+
 (provide 'lpath)

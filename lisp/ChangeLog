@@ -1,3 +1,7 @@
+2000-09-21 21:54:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el: Bind nnkiboze-score-file.
+
 2000-09-21 16:15:25  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-score-use-all-scores): New variable.
