@@ -1,4 +1,32 @@
-Sat Aug 12 15:09:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+Sun Aug 13 17:15:22 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-groups-to-gnus-format): Don't skip everything if a
+	simple error occurs; just ignore the buggy line.
+
+	* gnus-vis.el (gnus-netscape-start-url): Don't use shell-command. 
+	(gnus-button-alist): Didn't match mailto urls.
+
+	* gnus.el (gnus-group-select-group-all): New command and menu-bar
+	entry. 
+	('gnus-article-display-hook): Do some article highlighting by
+	default. 
+
+	* gnus-score.el (gnus-default-adaptive-score-alist): Changed to
+	Jason's defaults. 
+
+	* gnus.el (gnus-summary-mode-map): Completele redesign of article
+	wash map. 
+	(gnus-summary-caesar-message): Don't use recenter.
+
+Sat Aug 12 23:23:45 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-vis.el (gnus-button-url): Changed default slightly.
+
+	* gnus.el: Removed gnus-soup.el and nnsoup.el from distribution.
+
+Sat Aug 12 15:09:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.10 is released.
 
 	* nnml.el (nnml-request-create-group): Would create new groups
 	with 0 0 instead of 1 0.

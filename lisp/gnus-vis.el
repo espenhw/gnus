@@ -34,6 +34,30 @@
 
 (defvar gnus-summary-selected-face 'underline
   "*Face used for highlighting the current article in the summary buffer.")
+ 
+(defvar gnus-summary-highlight-properties
+  '((unread "ForestGreen" "green")
+    (ticked "Firebrick" "pink")
+    (read "black" "white")
+    (low italic italic)
+    (high bold bold)
+    (canceled "yellow/black" "black/yellow")))
+
+(defvar gnus-summary-highlight-translation
+  '(((unread (= mark gnus-unread-mark))
+     (ticked (or (= mark gnus-ticked-mark) (= mark gnus-dormant-mark)))
+     (read (not (or (= mark gnus-unread-mark) (= mark gnus-dormant-mark)
+		    (= mark gnus-ticked-mark) (= mark gnus-canceled-mark))))
+     (canceled (= mark gnus-canceled-mark)))
+    ((low (< score gnus-summary-default-score))
+     (high (> score gnus-summary-default-score)))))
+
+(defun gnus-visual-map-face-translation ()
+  (let ((props gnus-summary-highlight-properties)
+	(trans gnus-summary-highlight-translation)
+	map)
+    (while props)))
+      
 
 (defvar gnus-summary-highlight
   (cond ((not (eq gnus-display-type 'color))
@@ -62,11 +86,11 @@
 		     (custom-face-lookup "SkyBlue" nil nil nil nil nil))
 
 	       (cons '(and (> score default) (= mark gnus-unread-mark))
-		     (custom-face-lookup "green" nil nil t nil nil))
+		     (custom-face-lookup "white" nil nil t nil nil))
 	       (cons '(and (< score default) (= mark gnus-unread-mark))
-		     (custom-face-lookup "green" nil nil nil t nil))
+		     (custom-face-lookup "white" nil nil nil t nil))
 	       (cons '(= mark gnus-unread-mark)
-		     (custom-face-lookup "green" nil nil nil nil nil))
+		     (custom-face-lookup "white" nil nil nil nil nil))
 
 	       (cons '(> score default) 'bold)
 	       (cons '(< score default) 'italic)))
@@ -92,11 +116,11 @@
 	       (cons '(= mark gnus-ancient-mark)
 		     (custom-face-lookup "RoyalBlue" nil nil nil nil nil))
 
-	       (cons '(and (> score default) (= mark gnus-unread-mark))
+	       (cons '(and (> score default) (/= mark gnus-unread-mark))
 		     (custom-face-lookup "DarkGreen" nil nil t nil nil))
-	       (cons '(and (< score default) (= mark gnus-unread-mark))
+	       (cons '(and (< score default) (/= mark gnus-unread-mark))
 		     (custom-face-lookup "DarkGreen" nil nil nil t nil))
-	       (cons '(= mark gnus-unread-mark)
+	       (cons '(/= mark gnus-unread-mark)
 		     (custom-face-lookup "DarkGreen" nil nil nil nil nil))
 
 	       (cons '(> score default) 'bold)
@@ -137,9 +161,9 @@ The latter can be used like this:
 	       (list "Subject" nil 
 		     (custom-face-lookup "firebrick" nil nil t t nil))
 	       (list "Newsgroups:.*," nil
-		     (custom-face-lookup "dark orange" nil nil t t nil))
+		     (custom-face-lookup "red" nil nil t t nil))
 	       (list ""
-		     (custom-face-lookup "purple" nil nil t nil nil)
+		     (custom-face-lookup "DarkGreen" nil nil t nil nil)
 		     (custom-face-lookup "DarkGreen" nil nil nil t nil)))))
   "Alist of headers and faces used for highlighting them.
 The entries in the list has the form `(REGEXP NAME CONTENT)', where
@@ -174,7 +198,7 @@ will be used.")
     ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
+    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in an article.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -188,10 +212,14 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
 
-(defvar gnus-button-url 
-  (if window-system 'gnus-netscape-open-url
-    (and (fboundp 'w3-fetch) 'w3-fetch))
-  "Function to fetch URL.  
+(eval-when-compile
+  (defvar browse-url-browser-function))
+
+(defvar gnus-button-url
+  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
+	((eq window-system 'x) 'gnus-netscape-open-url)
+	((fboundp 'w3-fetch) 'w3-fetch))
+  "*Function to fetch URL.
 The function will be called with one argument, the URL to fetch.
 Useful values of this function are:
 
@@ -230,6 +258,7 @@ gnus-netscape-start-url:
       '("Group"
 	["Read" gnus-group-read-group t]
 	["Select" gnus-group-select-group t]
+	["See old articles" gnus-group-select-group-all t]
 	["Catch up" gnus-group-catchup-current t]
 	["Catch up all articles" gnus-group-catchup-current-all t]
 	["Check for new articles" gnus-group-get-new-news-this-group t]
@@ -717,7 +746,8 @@ gnus-netscape-start-url:
     (let ((face (and list (cdr (car list)))))
       (or (eobp)
 	  (eq face (get-text-property beg 'face))
-	  (put-text-property beg end 'face face)))
+	  (put-text-property beg end 'face 
+			     (if (boundp face) (symbol-value face) face))))
     (goto-char p)))
 
 ;;;
@@ -954,6 +984,16 @@ do the highlighting.  See the documentation for those functions."
   (gnus-article-highlight-signature)
   (gnus-article-add-buttons))
 
+(defun gnus-article-highlight-some ()
+  "Highlight current article.
+This function calls `gnus-article-highlight-headers',
+`gnus-article-highlight-signature', and `gnus-article-add-buttons' to
+do the highlighting.  See the documentation for those functions."
+  (interactive)
+  (gnus-article-highlight-headers)
+  (gnus-article-highlight-signature)
+  (gnus-article-add-buttons))
+
 (defun gnus-article-hide ()
   "Hide current article.
 This function calls `gnus-article-hide-headers',
@@ -1086,7 +1126,7 @@ External references are things like message-ids and URLs, as specified by
 
 (defun gnus-netscape-start-url (url)
   "Start netscape with URL."
-  (shell-command (concat "netscape " url "&")))
+  (start-process (concat "netscape" url) nil "netscape" url))
 
 ;;; External functions:
 

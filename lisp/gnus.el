@@ -1092,6 +1092,7 @@ buffer. Typical functions that this hook may contain are
 `gnus-article-treat-overstrike' (turn \"^H_\" into bold characters).")
 (add-hook 'gnus-article-display-hook 'gnus-article-hide-headers-if-wanted)
 (add-hook 'gnus-article-display-hook 'gnus-article-treat-overstrike)
+(add-hook 'gnus-article-display-hook 'gnus-article-maybe-highlight)
 
 (defvar gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
@@ -1305,10 +1306,11 @@ variable (string, integer, character, etc).")
 
 (defvar gnus-have-read-active-file nil)
 
-(defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
+(defconst gnus-maintainer
+  "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.10"
+(defconst gnus-version "(ding) Gnus v0.99.11"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1591,6 +1593,7 @@ Thank you for your help in stamping out bugs.
   (autoload 'gnus-article-push-button "gnus-vis" nil t)
   (autoload 'gnus-article-press-button "gnus-vis" nil t)
   (autoload 'gnus-article-highlight "gnus-vis" nil t)
+  (autoload 'gnus-article-highlight-some "gnus-vis" nil t)
   (autoload 'gnus-article-hide "gnus-vis" nil t)
   (autoload 'gnus-article-hide-signature "gnus-vis" nil t)
   (autoload 'gnus-article-highlight-headers "gnus-vis" nil t)
@@ -3815,6 +3818,11 @@ If argument ALL is non-nil, already read articles become readable."
   (interactive "P")
   (gnus-group-read-group all t))
 
+(defun gnus-group-select-group-all ()
+  "Select the current group and display all articles in it."
+  (interactive)
+  (gnus-group-select-group 'all))
+
 ;; Enter a group that is not in the group buffer. Non-nil is returned
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group 
@@ -5123,12 +5131,14 @@ buffer.
 (defvar gnus-summary-thread-map nil)
 (defvar gnus-summary-goto-map nil)
 (defvar gnus-summary-exit-map nil)
-(defvar gnus-summary-various-map nil)
 (defvar gnus-summary-interest-map nil)
 (defvar gnus-summary-sort-map nil)
 (defvar gnus-summary-backend-map nil)
 (defvar gnus-summary-save-map nil)
 (defvar gnus-summary-wash-map nil)
+(defvar gnus-summary-wash-hide-map nil)
+(defvar gnus-summary-wash-highlight-map nil)
+(defvar gnus-summary-wash-time-map nil)
 (defvar gnus-summary-help-map nil)
 
 (put 'gnus-summary-mode 'mode-class 'special)
@@ -5337,30 +5347,38 @@ buffer.
 
   (define-prefix-command 'gnus-summary-wash-map)
   (define-key gnus-summary-mode-map "W" 'gnus-summary-wash-map)
-  (define-key gnus-summary-wash-map "h" 'gnus-article-hide-headers)
-  (define-key gnus-summary-wash-map "s" 'gnus-article-hide-signature)
-  (define-key gnus-summary-wash-map "c" 'gnus-article-hide-citation)
-  (define-key gnus-summary-wash-map "\C-c" 'gnus-article-hide-citation-maybe)
+
+  (define-prefix-command 'gnus-summary-wash-hide-map)
+  (define-key gnus-summary-wash-map "W" 'gnus-summary-wash-hide-map)
+  (define-key gnus-summary-wash-hide-map "a" 'gnus-article-hide)
+  (define-key gnus-summary-wash-hide-map "h" 'gnus-article-hide-headers)
+  (define-key gnus-summary-wash-hide-map "s" 'gnus-article-hide-signature)
+  (define-key gnus-summary-wash-hide-map "c" 'gnus-article-hide-citation)
+  (define-key gnus-summary-wash-hide-map "\C-c" 'gnus-article-hide-citation-maybe)
+
+  (define-prefix-command 'gnus-summary-wash-highlight-map)
+  (define-key gnus-summary-wash-map "H" 'gnus-summary-wash-highlight-map)
+  (define-key gnus-summary-wash-highlight-map "a" 'gnus-article-highlight)
+  (define-key gnus-summary-wash-highlight-map "h" 'gnus-article-highlight-headers)
+  (define-key gnus-summary-wash-highlight-map "c" 'gnus-article-highlight-citation)
+  (define-key gnus-summary-wash-highlight-map "s" 'gnus-article-highlight-signature)
+
+  (define-prefix-command 'gnus-summary-wash-time-map)
+  (define-key gnus-summary-wash-map "T" 'gnus-summary-wash-time-map)
+  (define-key gnus-summary-wash-map "u" 'gnus-article-date-ut)
+  (define-key gnus-summary-wash-map "l" 'gnus-article-date-local)
+  (define-key gnus-summary-wash-map "e" 'gnus-article-date-lapsed)
+
+  (define-key gnus-summary-wash-map "b" 'gnus-article-add-buttons)
   (define-key gnus-summary-wash-map "o" 'gnus-article-treat-overstrike)
   (define-key gnus-summary-wash-map "w" 'gnus-article-word-wrap)
-  (define-key gnus-summary-wash-map "M" 'gnus-article-remove-cr)
+  (define-key gnus-summary-wash-map "c" 'gnus-article-remove-cr)
   (define-key gnus-summary-wash-map "q" 'gnus-article-de-quoted-unreadable)
   (define-key gnus-summary-wash-map "f" 'gnus-article-display-x-face)
-  (define-key gnus-summary-wash-map "t" 'gnus-article-date-ut)
-  (define-key gnus-summary-wash-map "\C-t" 'gnus-article-date-local)
-  (define-key gnus-summary-wash-map "T" 'gnus-article-date-lapsed)
-
-  (define-key gnus-summary-wash-map "L" 'gnus-summary-stop-page-breaking)
+  (define-key gnus-summary-wash-map "l" 'gnus-summary-stop-page-breaking)
   (define-key gnus-summary-wash-map "r" 'gnus-summary-caesar-message)
-  (define-key gnus-summary-wash-map "G" 'gnus-summary-toggle-header)
+  (define-key gnus-summary-wash-map "t" 'gnus-summary-toggle-header)
   (define-key gnus-summary-wash-map "m" 'gnus-summary-toggle-mime)
-
-  (define-key gnus-summary-wash-map "A" 'gnus-article-highlight)
-  (define-key gnus-summary-wash-map "a" 'gnus-article-hide)
-  (define-key gnus-summary-wash-map "H" 'gnus-article-highlight-headers)
-  (define-key gnus-summary-wash-map "C" 'gnus-article-highlight-citation)
-  (define-key gnus-summary-wash-map "S" 'gnus-article-highlight-signature)
-  (define-key gnus-summary-wash-map "b" 'gnus-article-add-buttons)
 
 
   (define-prefix-command 'gnus-summary-help-map)
@@ -5399,9 +5417,7 @@ buffer.
 
   (define-key gnus-summary-mode-map "X" 'gnus-uu-extract-map)
 
-  (define-prefix-command 'gnus-summary-various-map)
-  (define-key gnus-summary-mode-map "V" 'gnus-summary-various-map)
-    (define-key gnus-summary-mode-map "\M-&" 'gnus-summary-universal-argument)
+  (define-key gnus-summary-mode-map "\M-&" 'gnus-summary-universal-argument)
 ;  (define-key gnus-summary-various-map "\C-s" 'gnus-summary-search-article-forward)
 ;  (define-key gnus-summary-various-map "\C-r" 'gnus-summary-search-article-backward)
 ;  (define-key gnus-summary-various-map "r" 'gnus-summary-refer-article)
@@ -5412,7 +5428,7 @@ buffer.
 ;  (define-key gnus-summary-various-map "k" 'gnus-summary-edit-local-kill)
 ;  (define-key gnus-summary-various-map "K" 'gnus-summary-edit-global-kill)
 
-  (define-key gnus-summary-various-map "S" 'gnus-summary-score-map)
+  (define-key gnus-summary-mode-map "V" 'gnus-summary-score-map)
 
 ;  (define-prefix-command 'gnus-summary-sort-map)
 ;  (define-key gnus-summary-various-map "s" 'gnus-summary-sort-map)
@@ -5881,7 +5897,6 @@ If NO-ARTICLE is non-nil, no article is selected initially."
   ;; Generate the summary buffer.
   (let ((buffer-read-only nil))
     (erase-buffer)
-    (gnus-message 5 "Threading...")
     (gnus-summary-prepare-threads 
      (if gnus-show-threads
 	 (gnus-gather-threads 
@@ -5892,7 +5907,6 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	     (gnus-make-threads))))
        gnus-newsgroup-headers)
      'cull)
-    (gnus-message 5 "Threading...done")
     (gnus-summary-update-lines)
     ;; Remove the final newline.
     ;;(goto-char (point-max))
@@ -5941,6 +5955,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
   ;; `gnus-get-newsgroup-headers' and builds the trees. First we go
   ;; through the dependecies in the hash table and finds all the
   ;; roots. Roots do not refer back to any valid articles.
+  (gnus-message 6 "Threading...")
   (let (roots new-roots)
     (and gnus-fetch-old-headers
 	 (eq gnus-headers-retrieved-by 'nov)
@@ -5980,17 +5995,21 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	(setq r (cdr r))))
 
     (setq roots (nconc new-roots roots))
-    
-    (mapcar 'gnus-trim-thread
-	    (apply 'append
-		   (mapcar 'gnus-cut-thread
-			   (mapcar 'gnus-make-sub-thread roots))))))
+
+    (prog1
+	(mapcar 'gnus-trim-thread
+		(apply 'append
+		       (mapcar 'gnus-cut-thread
+			       (mapcar 'gnus-make-sub-thread roots))))
+      (gnus-message 6 "Threading...done"))))
+
   
 (defun gnus-make-threads-and-expunge ()
   ;; This function takes the dependencies already made by 
   ;; `gnus-get-newsgroup-headers' and builds the trees. First we go
   ;; through the dependecies in the hash table and finds all the
   ;; roots. Roots do not refer back to any valid articles.
+  (gnus-message 6 "Threading...")
   (let ((default (or gnus-summary-default-score 0))
 	(below gnus-summary-expunge-below)
 	roots article new-roots)
@@ -6096,11 +6115,14 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	(setq r (cdr r))))
 
     (setq roots (nconc new-roots roots))
-    
-    (mapcar 'gnus-trim-thread
-	    (apply 'append
-		   (mapcar 'gnus-cut-thread
-			   (mapcar 'gnus-make-sub-thread roots))))))
+
+    (prog1
+	(mapcar 'gnus-trim-thread
+		(apply 'append
+		       (mapcar 'gnus-cut-thread
+			       (mapcar 'gnus-make-sub-thread roots))))
+      (gnus-message 6 "Threading...done"))))
+
   
 (defun gnus-cut-thread (thread)
   ;; Remove leaf dormant or ancient articles from THREAD.
@@ -6306,6 +6328,7 @@ Unscored articles will be counted as having a score of zero."
   "Prepare summary buffer from THREADS and indentation LEVEL.  
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'  
 or a straight list of headers."
+  (message "Generating summary...")
   (let ((level 0)
 	thread header number subject stack state gnus-tmp-gathered)
     (if (vectorp (car threads))
@@ -6428,7 +6451,9 @@ or a straight list of headers."
 	(if (nth 1 thread) 
 	    (setq stack (cons (cons (max 0 level) (nthcdr 1 thread)) stack)))
 	(setq level (1+ level))
-	(setq threads (cdr (car thread)))))))
+	(setq threads (cdr (car thread))))))
+  (message "Generating summary...done"))
+
 
 
 (defun gnus-summary-prepare-unthreaded (headers &optional cull)
@@ -8578,10 +8603,9 @@ forward."
      gnus-article-buffer
      (save-restriction
        (widen)
-       (let ((last (point)))
+       (let ((start (window-start)))
 	 (news-caesar-buffer-body arg)
-	 (goto-char last)
-	 (recenter 0))))))
+	 (set-window-start (get-buffer-window (current-buffer)) start))))))
 
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
@@ -11085,7 +11109,7 @@ how much time has lapsed since DATE."
   (gnus-article-date-ut 'lapsed))
 
 (defun gnus-article-maybe-highlight ()
-  (if gnus-visual (gnus-article-highlight)))
+  (if gnus-visual (gnus-article-highlight-some)))
 
 ;; Article savers.
 
@@ -12638,8 +12662,7 @@ Returns whether the updating was successful."
 	  (gnus-check-news-server method)
 	  (cond 
 	   ((and (eq gnus-read-active-file 'some)
-		 (gnus-check-backend-function
-		  'retrieve-groups (car method)))
+		 (gnus-check-backend-function 'retrieve-groups (car method)))
 	    (let ((newsrc (cdr gnus-newsrc-alist))
 		  (gmethod (gnus-server-get-method nil method))
 		  groups)
@@ -12789,34 +12812,36 @@ Returns whether the updating was successful."
 		     (gnus-group-prefixed-name "" method))))
 
     (goto-char (point-min))
-    (condition-case ()
-	;; We split this into to separate loops, one with the prefix
-	;; and one without to speed the reading up somewhat.
-	(if prefix
-	    (let (min max opoint)
-	      (while (not (eobp))
-		(read cur) (read cur)
-		(setq min (read cur)
-		      max (read cur)
-		      opoint (point))
-		(skip-chars-forward " \t")
-		(insert prefix)
-		(goto-char opoint)
-		(set (let ((obarray hashtb)) (read cur)) 
-		     (cons min max))
-		(forward-line 1)))
-	  (let (min max)
-	    (while (not (eobp))
+    ;; We split this into to separate loops, one with the prefix
+    ;; and one without to speed the reading up somewhat.
+    (if prefix
+	(let (min max opoint group)
+	  (while (not (eobp))
+	    (condition-case ()
+		(progn
+		  (read cur) (read cur)
+		  (setq min (read cur)
+			max (read cur)
+			opoint (point))
+		  (skip-chars-forward " \t")
+		  (insert prefix)
+		  (goto-char opoint)
+		  (set (let ((obarray hashtb)) (read cur)) 
+		       (cons min max)))
+	      (error (if group (set group nil))))
+	    (forward-line 1)))
+      (let (min max group)
+	(while (not (eobp))
+	  (condition-case ()
 	      (if (= (following-char) ?2)
 		  (progn
 		    (read cur) (read cur)
 		    (setq min (read cur)
 			  max (read cur))
-		    (set (let ((obarray hashtb)) (read cur)) 
+		    (set (setq group (let ((obarray hashtb)) (read cur)))
 			 (cons min max))))
-	      (forward-line 1))))
-      (error 
-       (progn (ding) (gnus-message 3 "Possible error in active file."))))))
+	    (error (if group (set group nil))))
+	  (forward-line 1))))))
 
 (defun gnus-read-newsrc-file (&optional force)
   "Read startup file.

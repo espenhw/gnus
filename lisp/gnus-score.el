@@ -33,17 +33,14 @@
 (defvar gnus-orphan-score nil
   "*All orphans get this score added. Set in the score file.")
 
-(defvar gnus-default-adaptive-score-alist
-  '((gnus-unread-mark)
-    (gnus-ticked-mark)
-    (gnus-dormant-mark (from 5))
-    (gnus-del-mark (from -4) (subject -1))
-    (gnus-read-mark (from 4) (subject 2))
-    (gnus-expirable-mark (from -1) (subject -1))
-    (gnus-killed-mark (from -1) (subject -3))
-    (gnus-kill-file-mark)
-    (gnus-catchup-mark (from -1) (subject -1)))
-  "*Alist of marks and scores.")
+(defvar gnus-default-adaptive-score-alist  
+  '((gnus-kill-file-mark)
+    (gnus-unread-mark)
+    (gnus-read-mark (from  3) (subject  30))
+    (gnus-catchup-mark (subject -10))
+    (gnus-killed-mark (from -1) (subject -20))
+    (gnus-del-mark (from -2) (subject -15)))
+"*Alist of marks and scores.")
 
 (defvar gnus-score-mimic-keymap nil
   "*Have the score entry functions pretend that they are a keymap.")
@@ -97,7 +94,7 @@ of the last successful match.")
 (defvar gnus-summary-score-map nil)
 
 (define-prefix-command 'gnus-summary-score-map)
-(define-key gnus-summary-various-map "S" 'gnus-summary-score-map)
+(define-key gnus-summary-mode-map "V" 'gnus-summary-score-map)
 (define-key gnus-summary-score-map "s" 'gnus-summary-set-score)
 (define-key gnus-summary-score-map "a" 'gnus-summary-score-entry)
 (define-key gnus-summary-score-map "S" 'gnus-summary-current-score)

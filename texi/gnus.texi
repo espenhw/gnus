@@ -4870,8 +4870,8 @@ Why isn't anything real anymore? How did we get here?
 @section Various Article Stuff 
 
 @table @kbd
-@item W L
-@kindex W L (Summary)
+@item W l
+@kindex W l (Summary)
 @findex gnus-summary-stop-page-breaking
 Remove page breaks from the current article
 (@code{gnus-summary-stop-page-breaking}).
@@ -4892,8 +4892,8 @@ Do a Caesar rotate (rot13) on the article buffer
 given a prefix, don't actually refetch any articles, just jump to the
 current article and configure the windows to display the current
 article.
-@item W G
-@kindex W G (Summary)
+@item W t
+@kindex W t (Summary)
 @findex gnus-summary-toggle-header
 Toggle whether to display all headers in the article buffer
 (@code{gnus-summary-toggle-header}). 
@@ -4907,16 +4907,16 @@ Toggle whether to run the article through @sc{mime} before displaying
 There's a battery of commands for washing the article buffer:
 
 @table @kbd
-@item W h
-@kindex W h (Summary)
+@item W W h
+@kindex W W h (Summary)
 @findex gnus-article-hide-headers
 Hide headers (@code{gnus-article-hide-headers}).
-@item W s
-@kindex W s (Summary)
+@item W W s
+@kindex W W s (Summary)
 @findex gnus-article-hide-signature
 Hide signature (@code{gnus-article-hide-signature}).
-@item W c
-@kindex W c (Summary)
+@item W W c
+@kindex W W c (Summary)
 @findex gnus-article-hide-citation
 Hide citation (@code{gnus-article-hide-citation}).
 @item W o
@@ -4927,8 +4927,8 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @kindex W w (Summary)
 @findex gnus-article-word-wrap
 Do word wrap (@code{gnus-article-word-wrap}).
-@item W M
-@kindex W M (Summary)
+@item W c
+@kindex W c (Summary)
 @findex gnus-article-remove-cr
 Remove CR (@code{gnus-article-remove-cr}).
 @item W q
@@ -4949,6 +4949,45 @@ this variable is a string, this string will be executed in a sub-shell.
 If it is a function, this function will be called with the face as the
 argument. If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
 matches the @code{From} header, the face will not be shown.
+
+@item W H a
+@kindex W H a
+@findex gnus-article-highlight
+Highlight the current article (@code{gnus-article-highlight}).
+
+@item W H h
+@kindex W H h
+@findex gnus-article-highlight-headers
+Highlight the headers (@code{gnus-article-highlight-headers}).
+
+@item W H c
+@kindex W H c
+@findex gnus-article-highlight-citation
+Highlight cited text (@code{gnus-article-highlight-citation}).
+
+@item W H s
+@kindex W H s
+@findex gnus-article-highlight-signature
+Highlight the signature (@code{gnus-article-highlight-signature}).
+
+@item W T u
+@kindex W T u
+@findex gnus-article-date-ut
+Display the date in UT (aka. GMT, aka ZULU)
+(@code{gnus-article-date-ut}). 
+
+@item W T l
+@kindex W T l
+@findex gnus-article-date-local
+Display the date in the local timezone (@code{gnus-article-date-local}).
+
+@item W T e
+@kindex W T e
+@findex gnus-article-date-lapsed
+Say how much time has (e)lapsed between the article was posted and now
+(@code{gnus-article-date-lapsed}).
+
+
 @end table
 
 @node Summary Sorting
@@ -5078,38 +5117,38 @@ score file the current one.
 General score commands that don't actually change the score file:
 
 @table @kbd
-@item V S s
-@kindex V S s (Summary)
+@item V s
+@kindex V s (Summary)
 @findex gnus-summary-set-score
 Set the score of the current article (@code{gnus-summary-set-score}).  
-@item V S S
-@kindex V S S (Summary)
+@item V S
+@kindex V S (Summary)
 @findex gnus-summary-current-score
 Display the score of the current article
 (@code{gnus-summary-current-score}).   
-@item V S t
-@kindex V S t (Summary)
+@item V t
+@kindex V t (Summary)
 @findex gnus-score-find-trace
 Display all score rules that have been used on the current article
 (@code{gnus-score-find-trace}).   
-@item V S a
-@kindex V S a (Summary)
+@item V a
+@kindex V a (Summary)
 @findex gnus-summary-score-entry
 Add a new score entry, and allow specifying all elements 
 (@code{gnus-summary-score-entry}).
-@item V S c
-@kindex V S c (Summary)
+@item V c
+@kindex V c (Summary)
 @findex gnus-score-change-score-file
 Make a different score file the current
 (@code{gnus-score-change-score-file}). 
-@item V S e
-@kindex V S e (Summary)
+@item V e
+@kindex V e (Summary)
 @findex gnus-score-edit-alist
 Edit the current score file (@code{gnus-score-edit-alist}).  You will be
 popped into a @code{gnus-score-mode} buffer (@pxref{Score File
 Editing}).
-@item V S f
-@kindex V S f (Summary)
+@item V f
+@kindex V f (Summary)
 @findex gnus-score-edit-file
 Edit a score file and make this score file the current one
 (@code{gnus-score-edit-file}).
@@ -5128,13 +5167,13 @@ Lower the score of the current article
 The rest of these commands modify the local score file.
 
 @table @kbd
-@item V S m
-@kindex V S m (Summary)
+@item V m
+@kindex V m (Summary)
 @findex gnus-score-set-mark-below
 Prompt for a score, and mark all articles with a score below this as
 read (@code{gnus-score-set-mark-below}).
-@item V S E
-@kindex V S E (Summary)
+@item V E
+@kindex V E (Summary)
 @findex gnus-score-set-expunge-below
 Expunge all articles with a score below the default score (or the
 numeric prefix) (@code{gnus-score-set-expunge-below}).

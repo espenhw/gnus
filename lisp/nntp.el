@@ -316,14 +316,14 @@ instead call function `nntp-status-message' to get status message.")
 	;; Now all replies are received. We remove CRs.
 	(goto-char (point-min))
 	(while (search-forward "\r" nil t)
-	  (replace-match ""))
+	  (replace-match "" t t))
 
 	(if nntp-server-list-active-group
 	    (progn
 	      ;; We have read active entries, so we just delete the
 	      ;; superfluos gunk.
 	      (goto-char (point-min))
-	      (while (re-search-forward "^[\\.234]" nil t)
+	      (while (re-search-forward "^[.2-5]" nil t)
 		(delete-region (match-beginning 0) 
 			       (progn (forward-line 1) (point))))
 	      'active)
