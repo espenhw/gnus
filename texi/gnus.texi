@@ -53,6 +53,8 @@
 
 \newcommand{\gnustt}[1]{{\gnusselectttfont{}#1}}
 \newcommand{\gnuscode}[1]{\gnustt{#1}}
+\newcommand{\gnusasis}[1]{\gnustt{#1}}
+\newcommand{\gnusurl}[1]{\gnustt{#1}}
 \newcommand{\gnuscommand}[1]{\gnustt{#1}}
 \newcommand{\gnusenv}[1]{\gnustt{#1}}
 \newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\gnusselectttfont{}#1}''}
@@ -150,6 +152,11 @@
 }
 
 \newenvironment{codelist}%
+{\begin{list}{}{
+}
+}{\end{list}}
+
+\newenvironment{asislist}%
 {\begin{list}{}{
 }
 }{\end{list}}

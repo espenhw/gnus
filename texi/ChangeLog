@@ -1,3 +1,7 @@
+2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi: Define gnusasis and gnusurl.
+
 2003-10-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Mail Splitting): Markup fix.
