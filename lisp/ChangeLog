@@ -1,3 +1,8 @@
+2003-07-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-process-ham-in-nonham-groups): new variable
+	(spam-summary-prepare-exit): use spam-process-ham-in-nonham-groups
+
 2003-07-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-header-encoding-alist): Add Mail-Followup-To

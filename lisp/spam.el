@@ -80,6 +80,11 @@ spam groups."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-process-ham-in-nonham-groups nil
+  "Whether ham should be processed in non-ham groups."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-mark-only-unseen-as-spam t
   "Whether only unseen articles should be marked as spam in spam
 groups.  When nil, all unread articles in a spam group are marked as
@@ -212,6 +217,7 @@ the spam-use-* variables is set."
   :type 'string
   :group 'spam)
 
+;;; TODO: deprecate this variable, it's confusing since it's a list of strings, not regular expressions
 (defcustom spam-junk-mailgroups (cons spam-split-group '("mail.junk" "poste.pourriel"))
   "Mailgroups with spam contents.
 All unmarked article in such group receive the spam mark on group entry."
@@ -478,7 +484,8 @@ spamoracle database."
     (gnus-message 5 "Marking spam as expired without moving it")
     (spam-mark-spam-as-expired-and-move-routine nil)
 
-    (when (spam-group-ham-contents-p gnus-newsgroup-name)
+    (when (or (spam-group-ham-contents-p gnus-newsgroup-name)
+	      spam-process-ham-in-nonham-groups)
       (when (spam-group-ham-processor-whitelist-p gnus-newsgroup-name)
 	(gnus-message 5 "Registering ham with the whitelist")
 	(spam-whitelist-register-routine))
