@@ -1,3 +1,7 @@
+2000-01-03  Karl Kleinpaste <karl@justresearch.com>
+
+	* gnus.texi (Splitting in IMAP): Add '.' after @xref.
+
 2000-01-02 08:39:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Closing paren.

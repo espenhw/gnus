@@ -13014,7 +13014,7 @@ Nnmail equivalent: @code{nnmail-split-methods}.
 
 It's possible to set @code{nnimap-split-rule} to
 @code{nnmail-split-fancy} if you want to use fancy
-splitting. @xref{Fancy Mail Splitting}
+splitting. @xref{Fancy Mail Splitting}.
 
 However, to be able to have different fancy split rules for nnmail and
 nnimap backends you can set @code{nnimap-split-rule} to
