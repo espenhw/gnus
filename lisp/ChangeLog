@@ -1,3 +1,10 @@
+2002-07-21  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Jochen Hein <jochen@jochen.org>.
+
+	* gnus-art.el (gnus-emphasis-alist): Add strikethrough and
+	correct typo.
+	(gnus-emphasis-strikethru): New face.
+
 2002-07-20  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Jason Merrill <jason@redhat.com>.
 

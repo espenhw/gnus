@@ -286,6 +286,7 @@ directly.")
 	 '(("\\*" "\\*" bold)
 	   ("_" "_" underline)
 	   ("/" "/" italic)
+	   ("-" "-" strikethru)
 	   ("_/" "/_" underline-italic)
 	   ("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
@@ -351,7 +352,11 @@ and the latter avoids underlining any whitespace at all."
 (defface gnus-emphasis-underline-bold-italic
   '((t (:bold t :italic t :underline t)))
   "Face used for displaying underlined bold italic emphasized text.
-Esample: (_/*word*/_)."
+Example: (_/*word*/_)."
+  :group 'gnus-article-emphasis)
+
+(defface gnus-emphasis-strikethru '((t (:strikethru t)))
+  "Face used for displaying strike-through text (-word-)."
   :group 'gnus-article-emphasis)
 
 (defface gnus-emphasis-highlight-words
