@@ -2183,6 +2183,10 @@ Return nil if no complete line has arrived."
 	pos)
     (while (setq pos (string-match "\\\\" str (and pos (+ 2 pos))))
       (setq str (replace-match "\\\\" nil t str)))
+    ;; xxx ugly. rewrite not to use `read' at all.
+    (when (= (length (symbol-name (read "A?A"))) 1)
+      (while (setq pos (string-match "\\?" str (and pos (+ 2 pos))))
+	(setq str (replace-match "\\?" nil t str))))
     (mapcar 'symbol-name (read str))))
 
 ;;   envelope        = "(" env-date SP env-subject SP env-from SP env-sender SP
