@@ -33,6 +33,7 @@
 (require 'gnus-ems)
 (require 'message)
 (require 'gnus-art)
+(require 'gnus-util)
 
 (defcustom gnus-post-method 'current
   "*Preferred method for posting USENET news.
@@ -1781,9 +1782,7 @@ this is a reply."
 		     group)))
 		(if (not (eq gcc-self-val 'none))
 		    (insert "\n")
-		  (progn
-		    (beginning-of-line)
-		    (kill-line))))
+		  (gnus-delete-line)))
 	    ;; Use the list of groups.
 	    (while (setq name (pop groups))
 	      (let ((str (if (string-match ":" name)
