@@ -1,3 +1,11 @@
+2003-07-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-archive-header)
+	(message-subscribed-address-functions)
+	(message-subscribed-addresses, message-subscribed-regexps)
+	(message-canlock-generate)
+	(message-generate-new-buffer-clone-locals): Docstring fixes.
+
 2003-07-07  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* imap.el (imap-wait-for-tag): After the process has died, look

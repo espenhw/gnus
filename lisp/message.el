@@ -330,7 +330,7 @@ few false positives here."
 (defcustom message-archive-header
   "X-No-Archive: Yes\n"
   "Header to insert when you don't want your article to be archived.
-Archives \(such as groups.googgle.com\) respect this header."
+Archives \(such as groups.google.com\) respect this header."
   :type 'string
   :group 'message-various)
 
@@ -602,7 +602,7 @@ always use the value."
 
 (defcustom message-subscribed-address-functions nil
   "*Specifies functions for determining list subscription.
-If nil, do not attempt to determine list subscribtion with functions.
+If nil, do not attempt to determine list subscription with functions.
 If non-nil, this variable contains a list of functions which return
 regular expressions to match lists.  These functions can be used in
 conjunction with `message-subscribed-regexps' and
@@ -620,7 +620,7 @@ non-nil, each line of this file should be a mailing list address."
 (defcustom message-subscribed-addresses nil
   "*Specifies a list of addresses the user is subscribed to.
 If nil, do not use any predefined list subscriptions.  This list of
-addresses can be used in conjuction with
+addresses can be used in conjunction with
 `message-subscribed-address-functions' and `message-subscribed-regexps'."
   :group 'message-interface
   :type '(repeat string))
@@ -628,7 +628,7 @@ addresses can be used in conjuction with
 (defcustom message-subscribed-regexps nil
   "*Specifies a list of addresses the user is subscribed to.
 If nil, do not use any predefined list subscriptions.  This list of
-regular expressions can be used in conjuction with
+regular expressions can be used in conjunction with
 `message-subscribed-address-functions' and `message-subscribed-addresses'."
   :group 'message-interface
   :type '(repeat regexp))
@@ -3733,7 +3733,7 @@ documentation for the function `mail-source-touch-pop'."
   (smtpmail-send-it))
 
 (defun message-canlock-generate ()
-  "Return a string that is non-trival to guess.
+  "Return a string that is non-trivial to guess.
 Do not use this for anything important, it is cryptographically weak."
   (let (sha1-maximum-internal-length)
     (sha1 (concat (message-unique-id)
@@ -6426,10 +6426,10 @@ The following arguments may contain lists of values."
 	 (list list))))
 
 (defun message-generate-new-buffer-clone-locals (name &optional varstr)
-  "Create and return a buffer with name based on NAME using `generate-new-buffer.'
+  "Create and return a buffer with name based on NAME using `generate-new-buffer'.
 Then clone the local variables and values from the old buffer to the
 new one, cloning only the locals having a substring matching the
-regexp varstr."
+regexp VARSTR."
   (let ((oldbuf (current-buffer)))
     (save-excursion
       (set-buffer (generate-new-buffer name))
