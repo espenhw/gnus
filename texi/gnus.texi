@@ -665,6 +665,8 @@ Browsing the Web
 * Slashdot::              Reading the Slashdot comments.
 * Ultimate::              The Ultimate Bulletin Board systems.
 * Web Archive::           Reading mailing list archived on web.
+* RSS::                   Reading RDF site summary.
+* Customizing w3::        Doing stuff to Emacs/w3 from Gnus.
 
 Other Sources
 
@@ -12904,6 +12906,7 @@ interfaces to these sources.
 * Slashdot::              Reading the Slashdot comments.
 * Ultimate::              The Ultimate Bulletin Board systems.
 * Web Archive::           Reading mailing list archived on web.
+* RSS::                   Reading RDF site summary.
 * Customizing w3::        Doing stuff to Emacs/w3 from Gnus.
 @end menu
 
@@ -13165,6 +13168,29 @@ The account name on the web server.
 The password for your account on the web server.
 @end table
 
+@node RSS
+@subsection RSS
+@cindex nnrss
+@cindex RSS
+
+Some sites have RDF site summary (RSS)
+@uref{http://purl.org/rss/1.0/spec}.  It has a quite regular and nice
+interface, and it's possible to get the information Gnus needs to keep
+groups updated.
+
+The easiest way to get started with @code{nnrss} is to say something
+like the following in the group buffer: @kbd{B nnrss RET RET}, then
+subscribe groups.
+
+The following @code{nnrss} variables can be altered:
+
+@table @code
+@item nnrss-directory
+@vindex nnrss-directory
+The directory where @code{nnrss} stores its files.  The default is
+@samp{~/News/rss/}.
+
+@end table
 
 @node Customizing w3
 @subsection Customizing w3
