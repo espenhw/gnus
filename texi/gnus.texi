@@ -14953,7 +14953,7 @@ Unlike Parmenides the @sc{imap} designers has decided that things that
 doesn't exist actually does exist.  More specifically, @sc{imap} has
 this concept of marking articles @code{Deleted} which doesn't actually
 delete them, and this (marking them @code{Deleted}, that is) is what
-nnimap does when you delete a article in Gnus (with @kbd{G DEL} or
+nnimap does when you delete a article in Gnus (with @kbd{B DEL} or
 similar).
 
 Since the articles aren't really removed when we mark them with the
