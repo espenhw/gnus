@@ -12,21 +12,10 @@ need to a directory which is in load-path.
 
 Here is an overview of the files:
 
-base64.el
-
-        As of Emacs 21, base64 encoding and decoding is available
-        natively.  So this file appears to be needed for Emacs 20
-        only.
-
 gpg-ring.el
 gpg.el
 
 hashcash.el
-
-md5.el
-
-	MD5 encoding is part of Emacs as of Emacs 21.2.  Hence, this
-	file is not needed for those Emacs versions.
 
 one-line-cookie.diff
 
