@@ -302,9 +302,10 @@
     (nnmh-possibly-create-directory group)
     (condition-case ()
 	(progn
-	  (write-region (point-min) (point-max)
-			(concat nnmh-current-directory (int-to-string article))
-			nil (if (nnheader-be-verbose 5) nil 'nomesg))
+	  (write-region 
+	   (point-min) (point-max)
+	   (concat nnmh-current-directory (int-to-string article))
+	   nil (if (nnheader-be-verbose 5) nil 'nomesg))
 	  t)
       (error nil))))
 

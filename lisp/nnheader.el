@@ -415,15 +415,28 @@ on your system, you could say something like:
     (string-match nnheader-numerical-short-files file)
     (string-to-int (match-string 0 file))))
 
+(defun nnheader-directory-files-safe (&rest args)
+  ;; It has been reported numerous times that `directory-files'
+  ;; fails with an alarming frequency on NFS mounted file systems.
+  ;; This function executes that function twice and returns 
+  ;; the longest result.
+  (let ((first (apply 'directory-files args))
+	(second (apply 'directory-files args)))
+    (if (> (length first) (length second))
+	first
+      second)))
+
 (defun nnheader-directory-articles (dir)
   "Return a list of all article files in a directory."
   (mapcar 'nnheader-file-to-number
-	  (directory-files dir nil nnheader-numerical-short-files t)))
+	  (nnheader-directory-files-safe
+	   dir nil nnheader-numerical-short-files t)))
 
 (defun nnheader-article-to-file-alist (dir)
   "Return an alist of article/file pairs in DIR."
   (mapcar (lambda (file) (cons (nnheader-file-to-number file) file))
-	  (directory-files dir nil nnheader-numerical-short-files t)))
+	  (nnheader-directory-files-safe
+	   dir nil nnheader-numerical-short-files t)))
 
 (defun nnheader-fold-continuation-lines ()
   "Fold continuation lines in the current buffer."
@@ -437,10 +450,14 @@ on your system, you could say something like:
       file 
     ;; We translate -- but only the file name.  We leave the directory
     ;; alone.
-    (let* ((new (file-name-nondirectory file))
+    (let* ((new (if (string-match "/[^/]+\\'" file)
+		    ;; This is needed on NT's and stuff.
+		    (substring file (1+ (match-beginning 0)))
+		  ;; Fall back on this.
+		  (file-name-nondirectory file)))
 	   (len (length new))
 	   (i 0)
-	  trans)
+	   trans)
       (while (< i len)
 	(when (setq trans (cdr (assq (aref new i)
 				     nnheader-file-name-translation-alist)))

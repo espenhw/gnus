@@ -364,20 +364,28 @@ Two predefined functions are available:
 (defun gnus-tree-minimize ()
   (when (and gnus-tree-minimize-window
 	     (not (one-window-p)))
-    (let* ((window-min-height 2)
-	   (height (count-lines (point-min) (point-max)))
-	   (min (max (1- window-min-height) height))
-	   (tot (if (numberp gnus-tree-minimize-window)
-		    (min gnus-tree-minimize-window min)
-		  min))
-	   (win (get-buffer-window (current-buffer)))
-	   (wh (and win (1- (window-height win)))))
-      (when (and win
-		 (not (eq tot wh)))
-	(let ((selected (selected-window)))
-	  (select-window win)
-	  (enlarge-window (- tot wh))
-	  (select-window selected))))))
+    (let ((windows 0)
+	  tot-win-height)
+      (walk-windows (lambda (window) (incf windows)))
+      (setq tot-win-height 
+	    (- (frame-height) 
+	       (* window-min-height (1- windows))
+	       2))
+      (let* ((window-min-height 2)
+	     (height (count-lines (point-min) (point-max)))
+	     (min (max (1- window-min-height) height))
+	     (tot (if (numberp gnus-tree-minimize-window)
+		      (min gnus-tree-minimize-window min)
+		    min))
+	     (win (get-buffer-window (current-buffer)))
+	     (wh (and win (1- (window-height win)))))
+	(setq tot (min tot tot-win-height))
+	(when (and win
+		   (not (eq tot wh)))
+	  (let ((selected (selected-window)))
+	    (select-window win)
+	    (enlarge-window (- tot wh))
+	    (select-window selected)))))))
 
 ;;; Generating the tree.
 

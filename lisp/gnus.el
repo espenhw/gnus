@@ -191,6 +191,7 @@ instead.")
 (defvar gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
     "/ftp@sunsite.auc.dk:/pub/usenet/"
+    "/ftp@sunsite.doc.ic.ac.uk:/pub/usenet/news-faqs/"
     "/ftp@src.doc.ic.ac.uk:/usenet/news-FAQS/"
     "/ftp@ftp.seas.gwu.edu:/pub/rtfm/"
     "/ftp@rtfm.mit.edu:/pub/usenet/"
@@ -1240,7 +1241,7 @@ with some simple extensions:
     ("nneething" none address prompt-address)
     ("nndoc" none address prompt-address)
     ("nnbabyl" mail address respool)
-    ("nnkiboze" post address virtual)
+    ("nnkiboze" post virtual)
     ("nnsoup" post-mail address)
     ("nndraft" post-mail)
     ("nnfolder" mail respool address))
@@ -1730,7 +1731,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.22"
+(defconst gnus-version-number "5.2.23"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3228,10 +3229,14 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
   (while gnus-buffer-list
     (gnus-kill-buffer (pop gnus-buffer-list)))
   ;; Remove Gnus frames.
+  (gnus-kill-gnus-frames))
+
+(defun gnus-kill-gnus-frames ()
+  "Kill all frames Gnus has created."
   (while gnus-created-frames
     (when (frame-live-p (car gnus-created-frames))
       ;; We slap a condition-case around this `delete-frame' to ensure 
-      ;; agains errors if we try do delete the single frame that's left.
+      ;; against errors if we try do delete the single frame that's left.
       (condition-case ()
 	  (delete-frame (car gnus-created-frames))
 	(error nil)))
@@ -6733,19 +6738,18 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   (interactive)
   (run-hooks 'gnus-suspend-gnus-hook)
   ;; Kill Gnus buffers except for group mode buffer.
-  (let ((group-buf (get-buffer gnus-group-buffer)))
-    ;; Do this on a separate list in case the user does a ^G before we finish
-    (let ((gnus-buffer-list
-	   (delq group-buf (delq gnus-dribble-buffer
-				 (append gnus-buffer-list nil)))))
-      (while gnus-buffer-list
-	(gnus-kill-buffer (car gnus-buffer-list))
-	(setq gnus-buffer-list (cdr gnus-buffer-list))))
-    (if group-buf
-	(progn
-	  (setq gnus-buffer-list (list group-buf))
-	  (bury-buffer group-buf)
-	  (delete-windows-on group-buf t)))))
+  (let* ((group-buf (get-buffer gnus-group-buffer))
+	 ;; Do this on a separate list in case the user does a ^G before we finish
+	 (gnus-buffer-list
+	  (delete group-buf (delete gnus-dribble-buffer
+				    (append gnus-buffer-list nil)))))
+    (while gnus-buffer-list
+      (gnus-kill-buffer (pop gnus-buffer-list)))
+    (gnus-kill-gnus-frames)
+    (when group-buf
+      (setq gnus-buffer-list (list group-buf))
+      (bury-buffer group-buf)
+      (delete-windows-on group-buf t))))
 
 (defun gnus-group-clear-dribble ()
   "Clear all information from the dribble buffer."
@@ -9894,7 +9898,7 @@ The prefix argument ALL means to select all articles."
       (save-excursion
 	(gnus-group-get-new-news-this-group 1)))
     (gnus-group-read-group all t)
-    (gnus-summary-goto-subject current-subject)))
+    (gnus-summary-goto-subject current-subject nil t)))
 
 (defun gnus-summary-rescan-group (&optional all)
   "Exit the newsgroup, ask for new articles, and select the newsgroup."
@@ -13149,8 +13153,11 @@ save those articles instead."
 	  (gnus-activate-group to-newsgroup)
 	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
 				     to-newsgroup))
-	      (or (gnus-request-create-group 
-		   to-newsgroup (gnus-group-name-to-method to-newsgroup))
+	      (or (and (gnus-request-create-group 
+			to-newsgroup (gnus-group-name-to-method to-newsgroup))
+		       (gnus-activate-group to-newsgroup nil nil
+					    (gnus-group-name-to-method
+					     to-newsgroup)))
 		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
@@ -16040,10 +16047,10 @@ newsgroup."
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 
-(defun gnus-activate-group (group &optional scan dont-check)
+(defun gnus-activate-group (group &optional scan dont-check &optional method)
   ;; Check whether a group has been activated or not.
   ;; If SCAN, request a scan of that group as well.
-  (let ((method (gnus-find-method-for-group group))
+  (let ((method (or method (gnus-find-method-for-group group)))
 	active)
     (and (gnus-check-server method)
 	 ;; We escape all bugs and quit here to make it possible to

@@ -1514,7 +1514,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.
-  (message-reply))
+  (message-reply address))
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."

@@ -293,7 +293,8 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	    (fill-region (point-min) (point-max)))
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))
-	(set-marker (caar marks) nil)))))
+	(when marks
+	  (set-marker (caar marks) nil))))))
 
 (defun gnus-article-hide-citation (&optional arg force)
   "Toggle hiding of all cited text except attribution lines.

@@ -834,6 +834,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (if (fboundp 'mail-abbrevs-setup)
       (mail-abbrevs-setup)
     (funcall (intern "mail-aliases-setup")))
+  (define-key message-mode-map "\C-n" 'abbrev-hacking-next-line)
+  (define-key message-mode-map "\M->" 'abbrev-hacking-end-of-buffer)
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -964,12 +966,14 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 		      (file-exists-p message-signature-file))
 		 signature))))
     (when signature
-      ;; Remove blank lines at the end of the message.
+;      ;; Remove blank lines at the end of the message.
       (goto-char (point-max))
-      (skip-chars-backward " \t\n")
-      (delete-region (point) (point-max))
+;      (skip-chars-backward " \t\n")
+;      (delete-region (point) (point-max))
       ;; Insert the signature.
-      (insert "\n\n-- \n")
+      (unless (bolp)
+	(insert "\n"))
+      (insert "\n-- \n")
       (if (eq signature t)
 	  (insert-file-contents message-signature-file)
 	(insert signature))
@@ -1107,7 +1111,7 @@ prefix, and don't delete any headers."
       (unless (bolp)
 	(insert ?\n))
       (unless modified
-	(setq message-checksum (message-checksum))))))
+	(setq message-checksum (cons (message-checksum) (buffer-size)))))))
 
 (defun message-cite-original ()    
   (let ((start (point))
@@ -1684,7 +1688,8 @@ the user from the mailer."
    ;; Check whether any new text has been added.
    (or (message-check-element 'new-text)
        (not message-checksum)
-       (not (eq (message-checksum) message-checksum))
+       (not (and (eq (message-checksum) (car message-checksum))
+		 (eq (buffer-size) (cdr message-checksum))))
        (y-or-n-p
 	"It looks like no new text has been added.  Really post? "))
    ;; Check the length of the signature.
@@ -1718,7 +1723,8 @@ the user from the mailer."
       (re-search-forward
        (concat "^" (regexp-quote mail-header-separator) "$"))
       (while (not (eobp))
-	(setq sum (logxor sum (following-char)))
+	(when (not (looking-at "[ \t\n]"))
+	  (setq sum (logxor (ash sum 1) (following-char))))
 	(forward-char 1)))
     sum))
 

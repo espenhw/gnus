@@ -188,24 +188,6 @@ displayed, no centering will be performed."
 		 (set-extent-property extent 'start-open t))
 	       nil point (min (1+ (point)) (point-max))))
 		  
-(defun gnus-xmas-copy-article-buffer (&optional article-buffer)
-  (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
-  (buffer-disable-undo gnus-article-copy)
-  (or (memq gnus-article-copy gnus-buffer-list)
-      (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
-  (let ((article-buffer (or article-buffer gnus-article-buffer))
-	buf)
-    (if (and (get-buffer article-buffer)
-	     (buffer-name (get-buffer article-buffer)))
-	(save-excursion
-	  (set-buffer article-buffer)
-	  (widen)
-	  (setq buf (buffer-substring (point-min) (point-max)))
-	  (set-buffer gnus-article-copy)
-	  (erase-buffer)
-	  (insert (format "%s" buf))))
-    gnus-article-copy))
-
 (defun gnus-xmas-article-push-button (event)
   "Check text under the mouse pointer for a callback function.
 If the text under the mouse pointer has a `gnus-callback' property,
@@ -483,7 +465,6 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
   (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
-  (fset 'gnus-copy-article-buffer 'gnus-xmas-copy-article-buffer)
   (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
   (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
   (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)

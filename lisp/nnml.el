@@ -343,17 +343,17 @@ all. This may very well take some time.")
   (save-excursion
     (set-buffer buffer)
     (nnml-possibly-create-directory group)
-    (when (condition-case ()
-		 (progn
-		   (write-region 
-		    (point-min) (point-max)
-		    (concat nnml-current-directory (int-to-string article))
-		    nil (if (nnheader-be-verbose 5) nil 'nomesg))
-		   t)
-	       (error nil))
-      (let ((chars (nnmail-insert-lines))
-	    (art (concat (int-to-string article) "\t"))
-	    headers)
+    (let ((chars (nnmail-insert-lines))
+	  (art (concat (int-to-string article) "\t"))
+	  headers)
+      (when (condition-case ()
+		(progn
+		  (write-region 
+		   (point-min) (point-max)
+		   (concat nnml-current-directory (int-to-string article))
+		   nil (if (nnheader-be-verbose 5) nil 'nomesg))
+		  t)
+	      (error nil))
 	(setq headers (nnml-parse-head chars article))
 	;; Replace the NOV line in the NOV file.
 	(save-excursion 
