@@ -875,8 +875,8 @@ function is generally only called when Gnus is shutting down."
   "Update the unseen count in `nnimap-mailbox-info'."
   (gnus-sethash
    (gnus-group-prefixed-name group server)
-   (let ((old (gnus-gethash (gnus-group-prefixed-name group server) 
-			    nnimap-mailbox-info)))
+   (let ((old (gnus-gethash-safe (gnus-group-prefixed-name group server) 
+				 nnimap-mailbox-info)))
      (list (nth 0 old) (nth 1 old)
 	   (imap-mailbox-status group 'unseen nnimap-server-buffer)
 	   (nth 3 old)))

@@ -1,5 +1,7 @@
 2002-09-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnimap.el (nnimap-update-unseen): Use gnus-gethash-safe.
+
 	* mm-view.el (mm-w3m-mode-ignored-keys): New variable.
 	(mm-setup-w3m): Use it.
 
