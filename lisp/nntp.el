@@ -1,7 +1,7 @@
 ;;; nntp.el --- nntp access for Gnus
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993, 1994, 1995, 1996,
-;; 1997, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; 1997, 1998, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -80,6 +80,7 @@ Direct connections:
 
 Indirect connections:
 - `nntp-open-via-rlogin-and-telnet',
+- `nntp-open-via-rlogin-and-netcat',
 - `nntp-open-via-telnet-and-telnet'.")
 
 (defvoo nntp-pre-command nil
@@ -88,10 +89,21 @@ This is where you would put \"runsocks\" or stuff like that.")
 
 (defvoo nntp-telnet-command "telnet"
   "*Telnet command used to connect to the nntp server.
-This command is used by the various nntp-open-via-* methods.")
+This command is used by the methods `nntp-open-telnet-stream',
+`nntp-open-via-rlogin-and-telnet' and `nntp-open-via-telnet-and-telnet'.
+
+See `nntp-netcat-command' for the `nntp-open-via-rlogin-and-netcat'
+method.")
 
 (defvoo nntp-telnet-switches '("-8")
   "*Switches given to the telnet command `nntp-telnet-command'.")
+
+(defvoo nntp-netcat-command "nc"
+  "*Netcat command used to connect to the nntp server.
+This command is used by the `nntp-open-via-rlogin-and-netcat' method.")
+
+(defvoo nntp-netcat-switches nil
+  "*Switches given to the netcat command `nntp-netcat-command'.")
 
 (defvoo nntp-end-of-line "\r\n"
   "*String to use on the end of lines when talking to the NNTP server.
@@ -100,8 +112,9 @@ using and indirect connection method (nntp-open-via-*).")
 
 (defvoo nntp-via-rlogin-command "rsh"
   "*Rlogin command used to connect to an intermediate host.
-This command is used by the `nntp-open-via-rlogin-and-telnet' method.
-The default is \"rsh\", but \"ssh\" is a popular alternative.")
+This command is used by the methods `nntp-open-via-rlogin-and-telnet'
+and `nntp-open-via-rlogin-and-netcat'.  The default is \"rsh\", but \"ssh\"
+is a popular alternative.")
 
 (defvoo nntp-via-rlogin-command-switches nil
   "*Switches given to the rlogin command `nntp-via-rlogin-command'.
@@ -119,7 +132,7 @@ This command is used by the `nntp-open-via-telnet-and-telnet' method.")
 
 (defvoo nntp-via-user-name nil
   "*User name to log in on an intermediate host with.
-This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
+This variable is used by the various nntp-open-via-* methods.")
 
 (defvoo nntp-via-user-password nil
   "*Password to use to log in on an intermediate host with.
@@ -127,8 +140,7 @@ This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
 
 (defvoo nntp-via-address nil
   "*Address of an intermediate host to connect to.
-This variable is used by the `nntp-open-via-rlogin-and-telnet' and
-`nntp-open-via-telnet-and-telnet' methods.")
+This variable is used by the various nntp-open-via-* methods.")
 
 (defvoo nntp-via-envuser nil
   "*Whether both telnet client and server support the ENVIRON option.
@@ -1791,6 +1803,36 @@ Please refer to the following variables to customize the connection:
       (forward-line 1)
       (delete-region (point) (point-max)))
     proc))
+
+(defun nntp-open-via-rlogin-and-netcat (buffer)
+  "Open a connection to an nntp server through an intermediate host.
+First rlogin to the remote host, and then connect to the real news
+server from there using the netcat command.
+
+Please refer to the following variables to customize the connection:
+- `nntp-pre-command',
+- `nntp-via-rlogin-command',
+- `nntp-via-rlogin-command-switches',
+- `nntp-via-user-name',
+- `nntp-via-address',
+- `nntp-netcat-command',
+- `nntp-netcat-switches',
+- `nntp-address',
+- `nntp-port-number',
+- `nntp-end-of-line'."
+  (let ((command `(,@(when nntp-pre-command
+		       (list nntp-pre-command))
+		   ,nntp-via-rlogin-command
+		   ,@(when nntp-via-rlogin-command-switches
+		       nntp-via-rlogin-command-switches)
+		   ,@(when nntp-via-user-name
+		       (list "-l" nntp-via-user-name))
+		   ,nntp-via-address
+		   ,nntp-netcat-command
+		   ,@nntp-netcat-switches
+		   ,nntp-address
+		   ,nntp-port-number)))
+    (apply 'start-process "nntpd" buffer command)))
 
 (defun nntp-open-via-telnet-and-telnet (buffer)
   "Open a connection to an nntp server through an intermediate host.
