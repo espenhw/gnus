@@ -8427,20 +8427,21 @@ forward."
   "Morse decode the current article."
   (interactive "P")
   (gnus-summary-select-article)
-  (let ((mail-header-separator ""))
-    (gnus-eval-in-buffer-window gnus-article-buffer
-      (save-excursion
-	(save-restriction
-	  (widen)
-	  (let ((start (window-start))
-		(end (window-end))
-		buffer-read-only)
-	    (goto-char start)
-	    (while (re-search-forward "·" end t)
-	      (replace-match "."))
-	    (unmorse-region start end)
-	    (set-window-start (get-buffer-window (current-buffer)) 
-			      start)))))))
+  (when (ignore-errors (require 'morse))
+    (let ((mail-header-separator ""))
+      (gnus-eval-in-buffer-window gnus-article-buffer
+	(save-excursion
+	  (save-restriction
+	    (widen)
+	    (let ((start (window-start))
+		  (end (window-end))
+		  buffer-read-only)
+	      (goto-char start)
+	      (while (re-search-forward "·" end t)
+		(replace-match "."))
+	      (unmorse-region start end)
+	      (set-window-start (get-buffer-window (current-buffer)) 
+				start))))))))
 
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
