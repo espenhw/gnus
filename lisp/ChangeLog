@@ -3,6 +3,8 @@
 	* pgg-gpg.el (pgg-gpg-recipient-arg): Add.
 	(pgg-gpg-encrypt-region): Use it.  Tiny patch from Lloyd Zusman
 	<ljz@asfast.com>.
+	(pgg-gpg-recipient-argument): Doc fix.  Renamed fro p-g-r-a.
+	(pgg-gpg-encrypt-region): Update.
 
 2003-12-07  Jesper Harder  <harder@ifa.au.dk>
 
