@@ -3601,7 +3601,7 @@ commands:
       (set (make-local-variable 'tool-bar-map) gnus-summary-tool-bar-map)))
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
-  (make-local-variable 'gnus-page-broken)
+  (set (make-local-variable 'gnus-page-broken) nil)
   (make-local-variable 'gnus-button-marker-list)
   (make-local-variable 'gnus-article-current-summary)
   (make-local-variable 'gnus-article-mime-handles)
@@ -3785,10 +3785,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (gnus-article-prepare-display)
 	      ;; Do page break.
 	      (goto-char (point-min))
-	      (setq gnus-page-broken
-		    (when gnus-break-pages
-		      (gnus-narrow-to-page)
-		      t)))
+	      (when gnus-break-pages
+		(gnus-narrow-to-page)))
 	    (let ((gnus-article-mime-handle-alist-1
 		   gnus-article-mime-handle-alist))
 	      (gnus-set-mode-line 'article))
@@ -4939,6 +4937,7 @@ If given a numerical ARG, move forward ARG pages."
 	       (re-search-backward page-delimiter nil 'move (1+ (abs arg))))
 	      ((> arg 0)
 	       (re-search-forward page-delimiter nil 'move arg)))
+      (setq gnus-page-broken t)
       (goto-char (match-end 0)))
     (narrow-to-region
      (point)

@@ -1,3 +1,9 @@
+2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-mode): Set gnus-page-broken to nil.
+	(gnus-article-prepare): Don't set to t.
+	(gnus-narrow-to-page): Set to t if we break.
+
 2003-06-11  Daniel N,Ai(Bri  <dne@mayonnaise.net>
 
 	* message.el (message-resend): Generate Resent-Message-ID header.
