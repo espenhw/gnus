@@ -1,3 +1,8 @@
+2003-11-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): added
+	some clarifications
+
 2003-10-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Fancy Mail Splitting): added mention of

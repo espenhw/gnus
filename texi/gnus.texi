@@ -22330,13 +22330,16 @@ non-spam messages.
 
 First of all, you @strong{must} run the function
 @code{spam-initialize} to autoload @code{spam.el} and to install the
-@code{spam.el} hooks:
+@code{spam.el} hooks.  There is one exception: if you use the
+@code{spam-use-stat} (@pxref{spam-stat spam filtering}) setting, you
+should turn it on before @code{spam-initialize}:
 
 @example
+(setq spam-use-stat t) ;; if needed
 (spam-initialize)
 @end example
 
-So, what happens when you load @file{spam.el}?  
+So, what happens when you load @file{spam.el}?
 
 You get the following keyboard commands:
 
@@ -22453,9 +22456,12 @@ determined by either the @code{ham-process-destination} group
 parameter or a match in the @code{gnus-ham-process-destinations}
 variable, which is a list of regular expressions matched with group
 names (it's easiest to customize this variable with
-@code{customize-variable gnus-ham-process-destinations}).  The ultimate
-location is a group name.  If the @code{ham-process-destination}
-parameter is not set, ham articles are left in place.  If the
+@code{customize-variable gnus-ham-process-destinations}).  Each
+newsgroup specification has the format (REGEXP PROCESSOR) in a
+standard Lisp list, if you prefer to customize the variable manually.
+The ultimate location is a group name.  If the
+@code{ham-process-destination} parameter is not set, ham articles are
+left in place.  If the
 @code{spam-mark-ham-unread-before-move-from-spam-group} parameter is
 set, the ham articles are marked as unread before being moved.
 
@@ -22482,9 +22488,12 @@ the @code{spam-process-destination} group parameter or a match in the
 @code{gnus-spam-process-destinations} variable, which is a list of
 regular expressions matched with group names (it's easiest to
 customize this variable with @code{customize-variable
-gnus-spam-process-destinations}).  The ultimate location is a group
-name.  If the @code{spam-process-destination} parameter is not set,
-the spam articles are only expired.
+gnus-spam-process-destinations}).  Each newsgroup specification has
+the repeated format (REGEXP PROCESSOR) and they are all in a standard
+Lisp list, if you prefer to customize the variable manually.  The
+ultimate location is a group name.  If the
+@code{spam-process-destination} parameter is not set, the spam
+articles are only expired.
 
 To use the @file{spam.el} facilities for incoming mail filtering, you
 must add the following to your fancy split list
@@ -22501,7 +22510,14 @@ nnimap back ends to retrieve your mail.
 The @code{spam-split} function will process incoming mail and send the
 mail considered to be spam into the group name given by the variable
 @code{spam-split-group}.  By default that group name is @samp{spam},
-but you can customize @code{spam-split-group}.
+but you can customize @code{spam-split-group}.  Make sure the contents
+of @code{spam-split-group} are an @emph{unqualified} group name, for
+instance in an @code{nnimap} server @samp{your-server} the value
+@samp{spam} will turn out to be @samp{nnimap+your-server:spam}.  The
+value @samp{nnimap+server:spam}, therefore, is wrong and will
+actually give you the group
+@samp{nnimap+your-server:nnimap+server:spam} which may or may not
+work depending on your server's tolerance for strange group names.
 
 You can also give @code{spam-split} a parameter,
 e.g. @samp{'spam-use-regex-headers} or @samp{"maybe-spam"}.  Why is
