@@ -351,8 +351,7 @@ noticing asynchronous data.")
 	     (t t)))
 	(error 
 	 (nnheader-report 'nntp "Couldn't open connection to %s: %s" 
-			  address err))
-	(quit nil)))))
+			  address err))))))
 
 (defsubst nntp-send-command (wait-for &rest strings)
   "Send STRINGS to server and wait until WAIT-FOR returns."
