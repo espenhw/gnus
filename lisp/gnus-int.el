@@ -56,6 +56,7 @@ server denied."
 (defcustom gnus-servers-that-use-local-marks '(nntp)
   "A list of backends that store marks locally.  This means that
   the backend is used to set its marks even when unplugged."
+  :version "21.4"
   :group 'gnus-start
   :type '(repeat symbol))
 
