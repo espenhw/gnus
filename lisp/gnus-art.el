@@ -6301,6 +6301,8 @@ variable it the real callback function."
      0 (>= gnus-button-browse-level 0) browse-url 0)
     ("^[^:]+:" gnus-button-url-regexp
      0 (>= gnus-button-browse-level 0) browse-url 0)
+    ("^OpenPGP:.*url=" gnus-button-url-regexp
+     0 (>= gnus-button-browse-level 0) gnus-button-openpgp 0)
     ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?&/]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("^[^:]+:" "\\(<\\(url: \\)?\\(nntp\\|news\\):\\([^>\n ]*\\)>\\)"
@@ -6662,6 +6664,13 @@ specified by `gnus-button-alist'."
   (info)
   (Info-directory)
   (Info-menu url))
+
+(defun gnus-button-openpgp (url)
+  "Retrieve and add an OpenPGP key given URL from an OpenPGP header."
+  (with-temp-buffer
+    (mm-url-insert-file-contents-external url)
+    (pgg-snarf-keys-region (point-min) (point-max))
+    (pgg-display-output-buffer nil nil nil)))
 
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."

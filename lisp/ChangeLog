@@ -1,3 +1,10 @@
+2004-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-header-button-alist): Handle URLs in OpenPGP:
+	headers separately.
+	(gnus-button-openpgp): New function, inspired by Jochen K,A|(Bpper
+	<jochen-+It19tn3Rl9sbm7dSapR3bNAH6kLmebB@public.gmane.org>.
+
 2004-11-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-start.el (gnus-convert-old-newsrc): Assign
