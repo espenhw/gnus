@@ -515,4 +515,3 @@
 (provide 'nnslashdot)
 
 ;;; nnslashdot.el ends here
-
