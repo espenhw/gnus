@@ -7756,6 +7756,9 @@ groups."
 		 (gnus-group-read-only-p))
 	(error "The current newsgroup does not support article editing"))
       (gnus-summary-show-article t)
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(with-current-buffer gnus-article-buffer
+	  (mm-enable-multibyte)))
       (gnus-article-edit-article
        'mime-to-mml
        `(lambda (no-highlight)
