@@ -1,16 +1,36 @@
-\input texinfo                  @c -*-texinfo-*-\input texinfo
-
+@c Insert  "\input texinfo" at 1st line before texing this file alone.
+@c -*-texinfo-*-
+@c Copyright (C) 1995, 2001, 2003 Free Software Foundation, Inc.
 @setfilename gnus-faq.info
-@settitle The Gnus FAQ.
-@dircategory Emacs
-@direntry
-* Frequently Asked Questions: (gnus-faq).   The new FAQ for Gnus.
-@end direntry
+
+@c Frequently Asked Questions, FAQ - Introduction, Emacs for Heathens, Top
+
+@node Frequently Asked Questions
+@comment  node-name,  next,  previous,  up
+
+@c @chapter Frequently Asked Questions
+@section Frequently Asked Questions
+
+@c - Uncomment @chapter, comment @section
+@c - run (texinfo-every-node-update)
+@c - revert it.
+
+@menu
+* FAQ - Introduction::                    About Gnus and this FAQ.
+* FAQ 1 - Installation::                  Installation of Gnus.
+* FAQ 2 - Startup / Group buffer::        Start up questions and the first buffer Gnus shows you.
+* FAQ 3 - Getting messages::              Making Gnus read your mail and news.
+* FAQ 4 - Reading messages::              How to efficiently read messages.
+* FAQ 5 - Composing messages::            Composing mails or Usenet postings.
+* FAQ 6 - Old messages::                  Importing, archiving, searching and deleting messages.
+* FAQ 7 - Gnus in a dial-up environment:: Reading mail and news while offline.
+* FAQ 8 - Getting help::                  When this FAQ isn't enough.
+* FAQ 9 - Tuning Gnus::                   How to make Gnus faster.
+* FAQ - Glossary::                        Terms used in the FAQ explained.
+@end menu
 
 
-@node Top, Introduction, , (dir)
-@top Frequently Asked Questions
-@chapheading Abstract
+@subheading Abstract
 
  This is the new Gnus Frequently Asked Questions list.
  If you have a Web browser, the official hypertext version is at
@@ -28,33 +48,9 @@
  @uref{mailto:faq-discuss-subscribe@@my.gnus.org,faq-discuss-subscribe@@my.gnus.org}
  and @uref{http://mail1.kens.com/cgi-bin/ezmlm-browse?command=monthbythread%26list=faq-discuss,browse  the archive}. 
  
- 
-
-@menu
-* Introduction::                                About Gnus and this FAQ.
-* Frequently Asked Questions with Answers::     This is what you are probably after.
-* Glossary::                                    Terms used in the FAQ explained.
-
-@detailmenu
- --- The Detailed Node Listing ---
-
-Frequently Asked Questions with Answers
-
-* [1] Installation FAQ::                    Installation of Gnus.
-* [2] Startup / Group buffer::              Start up questions and the first buffer Gnus shows you.
-* [3] Getting messages::                    Making Gnus read your mail and news.
-* [4] Reading messages::                    How to efficiently read messages.
-* [5] Composing messages::                  Composing mails or Usenet postings.
-* [6] Old messages::                        Importing, archiving, searching and deleting messages.
-* [7] Gnus in a dial-up environment::       Reading mail and news while offline.
-* [8] Getting help::                        When this FAQ isn't enough.
-* [9] Tuning Gnus::                         How to make Gnus faster.
-
-@end detailmenu
-@end menu
-
-@node Introduction, Frequently Asked Questions with Answers, Top, Top
-@chapter Introduction
+@node FAQ - Introduction, FAQ 1 - Installation, Frequently Asked Questions, Frequently Asked Questions
+@comment  node-name,  next,  previous,  up
+@heading Introduction
 
 This is the Gnus Frequently Asked Questions list.
 
@@ -92,39 +88,27 @@ Gnus is a Usenet Newsreader and Electronic Mail User Agent implemented
  The information contained here was compiled with the assistance
  of the Gnus development mailing list, and any errors or
  misprints are the my.gnus.org team's fault, sorry.
- 
 
-@node Frequently Asked Questions with Answers, Glossary, Introduction, Top
-@chapter Frequently Asked Questions with Answers
 
-@menu
-* [1] Installation FAQ::                    Installation of Gnus.
-* [2] Startup / Group buffer::              Start up questions and the first buffer Gnus shows you.
-* [3] Getting messages::                    Making Gnus read your mail and news.
-* [4] Reading messages::                    How to efficiently read messages.
-* [5] Composing messages::                  Composing mails or Usenet postings.
-* [6] Old messages::                        Importing, archiving, searching and deleting messages.
-* [7] Gnus in a dial-up environment::       Reading mail and news while offline.
-* [8] Getting help::                        When this FAQ isn't enough.
-* [9] Tuning Gnus::                         How to make Gnus faster.
-@end menu
-
-@node [1] Installation FAQ
-@section [1] Installation FAQ
+@ifnottex
+@node FAQ 1 - Installation, FAQ 2 - Startup / Group buffer, FAQ - Introduction, Frequently Asked Questions
+@end ifnottex
+@section Installation
 
 @menu
-* [1.1]:: What is the latest version of Gnus?
-* [1.2]:: What's new in 5.10.0?
-* [1.3]:: Where and how to get Gnus?
-* [1.4]:: What to do with the tarball now? 
-* [1.5]:: Which version of Emacs do I need?
-* [1.6]:: How do I run Gnus on both Emacs and XEmacs?
+* [1.1]::                       What is the latest version of Gnus?
+* [1.2]::                       What's new in 5.10.0?
+* [1.3]::                       Where and how to get Gnus?
+* [1.4]::                       What to do with the tarball now? 
+* [1.5]::                       Which version of Emacs do I need?
+* [1.6]::                       How do I run Gnus on both Emacs and XEmacs?
 @end menu
 
 
-@node [1.1]
-@subsection [1.1]
-Question 1.1: 
+@ifnottex
+@node [1.1], [1.2], FAQ 1 - Installation, FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.1: 
 
 What is the latest version of Gnus?
 
@@ -137,9 +121,10 @@ Answer:
  prefer to stay with 5.8.8 respectively 5.9 (they are
  basically the same) until some bugfix releases are out.
  
-@node [1.2]
-@subsection [1.2]
-Question 1.2: 
+@ifnottex
+@node [1.2], [1.3], [1.1], FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.2: 
 
 What's new in 5.10.0?
 
@@ -176,9 +161,10 @@ Answer:
  
 @end itemize
  
-@node [1.3]
-@subsection [1.3]
-Question 1.3: 
+@ifnottex
+@node [1.3], [1.4], [1.2], FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.3: 
 
 Where and how to get Gnus?
 
@@ -192,9 +178,10 @@ Answer:
  or via anonymous FTP from 
  @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz,ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}.
  
-@node [1.4]
-@subsection [1.4]
-Question 1.4: 
+@ifnottex
+@node [1.4], [1.5], [1.3], FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.4: 
 
  What to do with the tarball now?
  
@@ -228,9 +215,10 @@ Answer:
  before this line, on MS Windows use something like
  "C:/path/to/lisp" (yes, "/").
  
-@node [1.5]
-@subsection [1.5]
-Question 1.5: 
+@ifnottex
+@node [1.5], [1.6], [1.4], FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.5: 
 
 Which version of Emacs do I need?
 
@@ -239,9 +227,10 @@ Answer:
  Gnus 5.10.0 requires an Emacs version that is greater
  than or equal to Emacs 20.3 or XEmacs 20.1.
  
-@node [1.6]
-@subsection [1.6]
-Question 1.6: 
+@ifnottex
+@node [1.6],  , [1.5], FAQ 1 - Installation
+@end ifnottex
+@subheading Question 1.6: 
 
 How do I run Gnus on both Emacs and XEmacs?
 
@@ -252,20 +241,23 @@ Answer:
  depending on which Emacs did the compilation. Get one copy
  of Gnus for Emacs and one for XEmacs.
  
-@node [2] Startup / Group buffer
-@section [2] Startup / Group buffer
+@ifnottex
+@node FAQ 2 - Startup / Group buffer, FAQ 3 - Getting messages, FAQ 1 - Installation, Frequently Asked Questions
+@end ifnottex
+@section Startup / Group buffer
 
 @menu
-* [2.1]:: Every time I start Gnus I get a message "Gnus auto-save file exists. Do you want to read it?", what does this mean and how to prevent it? 
-* [2.2]:: Gnus doesn't remember which groups I'm subscribed to, what's this? 
-* [2.3]:: How to change the format of the lines in Group buffer? 
-* [2.4]:: My group buffer becomes a bit crowded, is there a way to sort my groups into categories so I can easier browse through them? 
-* [2.5]:: How to manually sort the groups in Group buffer? How to sort the groups in a topic? 
+* [2.1]::                       Every time I start Gnus I get a message "Gnus auto-save file exists. Do you want to read it?", what does this mean and how to prevent it? 
+* [2.2]::                       Gnus doesn't remember which groups I'm subscribed to, what's this? 
+* [2.3]::                       How to change the format of the lines in Group buffer? 
+* [2.4]::                       My group buffer becomes a bit crowded, is there a way to sort my groups into categories so I can easier browse through them? 
+* [2.5]::                       How to manually sort the groups in Group buffer? How to sort the groups in a topic? 
 @end menu
 
-@node [2.1]
-@subsection [2.1]
-Question 2.1: 
+@ifnottex
+@node [2.1], [2.2], FAQ 2 - Startup / Group buffer, FAQ 2 - Startup / Group buffer
+@end ifnottex
+@subheading Question 2.1: 
 
  Every time I start Gnus I get a message "Gnus auto-save
  file exists. Do you want to read it?", what does this mean
@@ -285,7 +277,9 @@ Answer:
  via @samp{q} in group buffer instead of
  just killing Emacs.
  
-@node [2.2]
+@ifnottex
+@node [2.2], [2.3], [2.1], FAQ 2 - Startup / Group buffer
+@end ifnottex
 @subsection [2.2]
 Question: 2.2 
 
@@ -299,9 +293,10 @@ Answer:
  starting Gnus, right? It's an other symptom for the same
  problem, so read the answer above.
  
-@node [2.3]
-@subsection [2.3]
-Question 2.3: 
+@ifnottex
+@node [2.3], [2.4], [2.2], FAQ 2 - Startup / Group buffer
+@end ifnottex
+@subheading Question 2.3: 
 
  How to change the format of the lines in Group buffer?
  
@@ -320,9 +315,10 @@ Answer:
             
 @end example
  
-@node [2.4]
-@subsection [2.4]
-Question 2.4: 
+@ifnottex
+@node [2.4], [2.5], [2.3], FAQ 2 - Startup / Group buffer
+@end ifnottex
+@subheading Question 2.4: 
 
  My group buffer becomes a bit crowded, is there a way to
  sort my groups into categories so I can easier browse
@@ -346,9 +342,10 @@ Answer:
  beginning of your gnus-group-line-format variable to have
  the groups nicely indented.
  
-@node [2.5]
-@subsection [2.5]
-Question 2.5: 
+@ifnottex
+@node [2.5],  , [2.4], FAQ 2 - Startup / Group buffer
+@end ifnottex
+@subheading Question 2.5: 
 
  How to manually sort the groups in Group buffer? How to
  sort the groups in a topic?
@@ -361,26 +358,29 @@ Answer:
  place where you want the group to be and
  hit @samp{C-y}.
  
-@node [3] Getting messages
-@section [3] Getting messages
+@ifnottex
+@node FAQ 3 - Getting messages, FAQ 4 - Reading messages, FAQ 2 - Startup / Group buffer, Frequently Asked Questions
+@end ifnottex
+@section Getting messages
 
 @menu
-* [3.1]:: I just installed Gnus, started it via M-x gnus but it only says "nntp (news) open error", what to do? 
-* [3.2]:: I'm working under Windows and have no idea what ~/.gnus means. 
-* [3.3]:: My news server requires authentication, how to store user name and password on disk? 
-* [3.4]:: Gnus seems to start up OK, but I can't find out how to subscribe to a group. 
-* [3.5]:: Gnus doesn't show all groups / Gnus says I'm not allowed to post on this server as well as I am, what's that?
-* [3.6]:: I want Gnus to fetch news from several servers, is this possible? 
-* [3.7]:: And how about local spool files? 
-* [3.8]:: OK, reading news works now, but I want to be able to read my mail with Gnus, too. How to do it? 
-* [3.9]:: And what about IMAP? 
-* [3.10]:: At the office we use one of those MS Exchange servers, can I use Gnus to read my mail from it? 
-* [3.11]:: Can I tell Gnus not to delete the mails on the server it retrieves via POP3? 
+* [3.1]::                       I just installed Gnus, started it via M-x gnus but it only says "nntp (news) open error", what to do? 
+* [3.2]::                       I'm working under Windows and have no idea what ~/.gnus means. 
+* [3.3]::                       My news server requires authentication, how to store user name and password on disk? 
+* [3.4]::                       Gnus seems to start up OK, but I can't find out how to subscribe to a group. 
+* [3.5]::                       Gnus doesn't show all groups / Gnus says I'm not allowed to post on this server as well as I am, what's that?
+* [3.6]::                       I want Gnus to fetch news from several servers, is this possible? 
+* [3.7]::                       And how about local spool files? 
+* [3.8]::                       OK, reading news works now, but I want to be able to read my mail with Gnus, too. How to do it? 
+* [3.9]::                       And what about IMAP? 
+* [3.10]::                      At the office we use one of those MS Exchange servers, can I use Gnus to read my mail from it? 
+* [3.11]::                      Can I tell Gnus not to delete the mails on the server it retrieves via POP3? 
 @end menu
 
-@node [3.1]
-@subsection [3.1]
-Question 3.1: 
+@ifnottex
+@node [3.1], [3.2], FAQ 3 - Getting messages, FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.1: 
 
  I just installed Gnus, started it via 
  @samp{M-x gnus} 
@@ -402,9 +402,10 @@ Answer:
 	    
 @end example
  
-@node [3.2]
-@subsection [3.2]
-Question 3.2: 
+@ifnottex
+@node [3.2], [3.3], [3.1], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.2: 
 
  I'm working under Windows and have no idea what ~/.gnus means.
  
@@ -448,9 +449,10 @@ SET HOME=C:\myhome
  @samp{C-x C-f ~/.gnus RET C-x C-s}.
  in Emacs. 
  
-@node [3.3]
-@subsection [3.3]
-Question 3.3: 
+@ifnottex
+@node [3.3], [3.4], [3.2], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.3: 
 
  My news server requires authentication, how to store
  user name and password on disk?
@@ -478,9 +480,10 @@ chmod 600 ~/.authinfo
 @noindent
  in a shell.)
  
-@node [3.4]
-@subsection [3.4]
-Question 3.4: 
+@ifnottex
+@node [3.4], [3.5], [3.3], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.4: 
 
  Gnus seems to start up OK, but I can't find out how to
  subscribe to a group.
@@ -497,9 +500,10 @@ Answer:
  you want to subscribe to and say @samp{u}
  to subscribe to it.
  
-@node [3.5]
-@subsection [3.5]
-Question 3.5: 
+@ifnottex
+@node [3.5], [3.6], [3.4], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.5: 
 
  Gnus doesn't show all groups / Gnus says I'm not allowed to
  post on this server as well as I am, what's that?
@@ -520,9 +524,10 @@ force yes
 @noindent
  to the line for those servers in ~/.authinfo.
  
-@node [3.6]
-@subsection [3.6]
-Question 3.6: 
+@ifnottex
+@node [3.6], [3.7], [3.5], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.6: 
 
  I want Gnus to fetch news from several servers, is this possible?
  
@@ -541,9 +546,10 @@ Answer:
 	    
 @end example
  
-@node [3.7]
-@subsection [3.7]
-Question 3.7: 
+@ifnottex
+@node [3.7], [3.8], [3.6], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.7: 
 
  And how about local spool files?
  
@@ -587,9 +593,10 @@ Answer:
  You might have to specify more stuff like the program used
  to post articles, see the Gnus manual on how to do this.
  
-@node [3.8]
-@subsection [3.8]
-Question 3.8: 
+@ifnottex
+@node [3.8], [3.9], [3.7], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.8: 
 
  OK, reading news works now, but I want to be able to read my mail
  with Gnus, too. How to do it?
@@ -708,9 +715,10 @@ Answer:
 	    
 @end example
  
-@node [3.9]
-@subsection [3.9]
-Question 3.9: 
+@ifnottex
+@node [3.9], [3.10], [3.8], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.9: 
 
  And what about IMAP?
  
@@ -763,9 +771,10 @@ Answer:
  server if Gnus can't guess the correct way, see the Manual
  Node "IMAP" for detailed information.
  
-@node [3.10]
-@subsection [3.10]
-Question 3.10: 
+@ifnottex
+@node [3.10], [3.11], [3.9], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.10: 
 
  At the office we use one of those MS Exchange servers, can I use
  Gnus to read my mail from it?
@@ -777,9 +786,10 @@ Answer:
  activating IMAP on the server and follow the instructions
  above.
  
-@node [3.11]
-@subsection [3.11]
-Question 3.11: 
+@ifnottex
+@node [3.11],  , [3.10], FAQ 3 - Getting messages
+@end ifnottex
+@subheading Question 3.11: 
 
  Can I tell Gnus not to delete the mails on the server it
  retrieves via POP3?
@@ -817,30 +827,33 @@ Answer:
  it.
  
 
-@node [4] Reading messages
-@section [4] Reading messages
+@ifnottex
+@node FAQ 4 - Reading messages, FAQ 5 - Composing messages, FAQ 3 - Getting messages, Frequently Asked Questions
+@end ifnottex
+@section Reading messages
 
 @menu
-* [4.1]:: When I enter a group, all read messages are gone. How to view them again? 
-* [4.2]:: How to tell Gnus to show an important message every time I enter a group, even when it's read? 
-* [4.3]:: How to view the headers of a message? 
-* [4.4]:: How to view the raw unformatted message? 
-* [4.5]:: How can I change the headers Gnus displays by default at the top of the article buffer? 
-* [4.6]:: I'd like Gnus NOT to render HTML-mails but show me the text part if it's available. How to do it? 
-* [4.7]:: Can I use some other browser than w3 to render my HTML-mails? 
-* [4.8]:: Is there anything I can do to make poorly formatted mails more readable? 
-* [4.9]:: Is there a way to automatically ignore posts by specific authors or with specific words in the subject? And can I highlight more interesting ones in some way? 
-* [4.10]:: How can I disable threading in some (e.g. mail-) groups, or set other variables specific for some groups? 
-* [4.11]:: Can I highlight messages written by me and follow-ups to those? 
-* [4.12]:: The number of total messages in a group which Gnus displays in group buffer is by far to high, especially in mail groups. Is this a bug? 
-* [4.13]:: I don't like the layout of summary and article buffer, how to change it? Perhaps even a three pane display? 
-* [4.14]:: I don't like the way the Summary buffer looks, how to tweak it? 
-* [4.15]:: How to split incoming mails in several groups? 
+* [4.1]::                       When I enter a group, all read messages are gone. How to view them again? 
+* [4.2]::                       How to tell Gnus to show an important message every time I enter a group, even when it's read? 
+* [4.3]::                       How to view the headers of a message? 
+* [4.4]::                       How to view the raw unformatted message? 
+* [4.5]::                       How can I change the headers Gnus displays by default at the top of the article buffer? 
+* [4.6]::                       I'd like Gnus NOT to render HTML-mails but show me the text part if it's available. How to do it? 
+* [4.7]::                       Can I use some other browser than w3 to render my HTML-mails? 
+* [4.8]::                       Is there anything I can do to make poorly formatted mails more readable? 
+* [4.9]::                       Is there a way to automatically ignore posts by specific authors or with specific words in the subject? And can I highlight more interesting ones in some way? 
+* [4.10]::                      How can I disable threading in some (e.g. mail-) groups, or set other variables specific for some groups? 
+* [4.11]::                      Can I highlight messages written by me and follow-ups to those? 
+* [4.12]::                      The number of total messages in a group which Gnus displays in group buffer is by far to high, especially in mail groups. Is this a bug? 
+* [4.13]::                      I don't like the layout of summary and article buffer, how to change it? Perhaps even a three pane display? 
+* [4.14]::                      I don't like the way the Summary buffer looks, how to tweak it? 
+* [4.15]::                      How to split incoming mails in several groups? 
 @end menu
 
-@node [4.1]
-@subsection [4.1]
-Question 4.1: 
+@ifnottex
+@node [4.1], [4.2], FAQ 4 - Reading messages, FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.1: 
 
  When I enter a group, all read messages are gone. How to view them again?
  
@@ -880,9 +893,10 @@ Answer:
  you can say @samp{^}, if you want to retrieve the whole thread
  the message you're just reading belongs to, @samp{A T} is your friend.
  
-@node [4.2]
-@subsection [4.2]
-Question 4.2: 
+@ifnottex
+@node [4.2], [4.3], [4.1], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.2: 
 
  How to tell Gnus to show an important message every time I
  enter a group, even when it's read?
@@ -897,9 +911,10 @@ Answer:
  mark and set's unread mark) or @samp{M c}
  (which deletes all marks for the message).
  
-@node [4.3]
-@subsection [4.3]
-Question 4.3: 
+@ifnottex
+@node [4.3], [4.4], [4.2], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.3: 
 
  How to view the headers of a message?
  
@@ -911,9 +926,10 @@ Answer:
  @samp{t} 
  hides them again.
  
-@node [4.4]
-@subsection [4.4]
-Question 4.4: 
+@ifnottex
+@node [4.4], [4.5], [4.3], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.4: 
 
  How to view the raw unformatted message?
  
@@ -926,9 +942,10 @@ Answer:
  @samp{g} 
  returns to normal view.
  
-@node [4.5]
-@subsection [4.5]
-Question 4.5: 
+@ifnottex
+@node [4.5], [4.6], [4.4], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.5: 
 
  How can I change the headers Gnus displays by default at
  the top of the article buffer?
@@ -950,9 +967,10 @@ Answer:
 	    
 @end example
  
-@node [4.6]
-@subsection [4.6]
-Question 4.6: 
+@ifnottex
+@node [4.6], [4.7], [4.5], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.6: 
 
  I'd like Gnus NOT to render HTML-mails but show me the
  text part if it's available. How to do it?
@@ -985,9 +1003,10 @@ Answer:
 @noindent
  too.
  
-@node [4.7]
-@subsection [4.7]
-Question 4.7: 
+@ifnottex
+@node [4.7], [4.8], [4.6], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.7: 
 
  Can I use some other browser than w3 to render my HTML-mails?
  
@@ -1007,9 +1026,10 @@ Answer:
 	    
 @end example
  
-@node [4.8]
-@subsection [4.8]
-Question 4.8: 
+@ifnottex
+@node [4.8], [4.9], [4.7], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.8: 
 
  Is there anything I can do to make poorly formatted mails
  more readable?
@@ -1030,9 +1050,10 @@ Answer:
  have a look at the menus for other deuglifications).
  Outlook deuglify is only available since Gnus 5.10.0.
  
-@node [4.9]
-@subsection [4.9]
-Question 4.9: 
+@ifnottex
+@node [4.9], [4.10], [4.8], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.9: 
 
  Is there a way to automatically ignore posts by specific
  authors or with specific words in the subject? And can I
@@ -1111,9 +1132,10 @@ Answer:
 @noindent
  in ~/.gnus.
  
-@node [4.10]
-@subsection [4.10]
-Question 4.10: 
+@ifnottex
+@node [4.10], [4.11], [4.9], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.10: 
 
  How can I disable threading in some (e.g. mail-) groups, or
  set other variables specific for some groups?
@@ -1130,9 +1152,10 @@ Answer:
  value. Hit button done at the top of the buffer when
  you're ready.
  
-@node [4.11]
-@subsection [4.11]
-Question 4.11: 
+@ifnottex
+@node [4.11], [4.12], [4.10], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.11: 
 
  Can I highlight messages written by me and follow-ups to
  those?
@@ -1148,9 +1171,10 @@ Answer:
  faces. You can find detailed instructions on how to do it on
  @uref{http://my.gnus.org/Members/dzimmerm/HowTo%2C2002-07-25%2C1027619165012198456/view,my.gnus.org}
  
-@node [4.12]
-@subsection [4.12]
-Question 4.12: 
+@ifnottex
+@node [4.12], [4.13], [4.11], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.12: 
 
  The number of total messages in a group which Gnus
  displays in group buffer is by far to high, especially in
@@ -1174,9 +1198,10 @@ Answer:
  right again (until you delete and move your mail to other
  groups again).
  
-@node [4.13]
-@subsection [4.13]
-Question 4.13: 
+@ifnottex
+@node [4.13], [4.14], [4.12], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.13: 
 
  I don't like the layout of summary and article buffer, how
  to change it? Perhaps even a three pane display?
@@ -1226,9 +1251,10 @@ Answer:
 	    
 @end example
  
-@node [4.14]
-@subsection [4.14]
-Question 4.14: 
+@ifnottex
+@node [4.14], [4.15], [4.13], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.14: 
 
  I don't like the way the Summary buffer looks, how to tweak it?
  
@@ -1279,9 +1305,10 @@ Answer:
 	    
 @end example
  
-@node [4.15]
-@subsection [4.15]
-Question 4.15: 
+@ifnottex
+@node [4.15],  , [4.14], FAQ 4 - Reading messages
+@end ifnottex
+@subheading Question 4.15: 
 
  How to split incoming mails in several groups?
  
@@ -1356,27 +1383,30 @@ Answer:
 @end example
  
 
-@node [5] Composing messages
-@section [5] Composing messages
+@ifnottex
+@node FAQ 5 - Composing messages, FAQ 6 - Old messages, FAQ 4 - Reading messages, Frequently Asked Questions
+@end ifnottex
+@section Composing messages
 
 @menu
-* [5.1]:: What are the basic commands I need to know for sending mail and postings? 
-* [5.2]:: How to enable automatic word-wrap when composing messages? 
-* [5.3]:: How to set stuff like From, Organization, Reply-To, signature...? 
-* [5.4]:: Can I set things like From, Signature etc group based on the group I post too? 
-* [5.5]:: Is there a spell-checker? Perhaps even on-the-fly spell-checking? 
-* [5.6]:: Can I set the dictionary based on the group I'm posting to? 
-* [5.7]:: Is there some kind of address-book, so I needn't remember all those email addresses? 
-* [5.8]:: Sometimes I see little images at the top of article buffer. What's that and how can I send one with my postings, too? 
-* [5.9]:: Sometimes I accidentally hit r instead of f in newsgroups. Can Gnus warn me, when I'm replying by mail in newsgroups? 
-* [5.10]:: How to tell Gnus not to generate a sender header? 
-* [5.11]:: I want gnus to locally store copies of my send mail and news, how to do it? 
-* [5.12]:: People tell me my Message-IDs are not correct, why aren't they and how to fix it? 
+* [5.1]::                       What are the basic commands I need to know for sending mail and postings? 
+* [5.2]::                       How to enable automatic word-wrap when composing messages? 
+* [5.3]::                       How to set stuff like From, Organization, Reply-To, signature...? 
+* [5.4]::                       Can I set things like From, Signature etc group based on the group I post too? 
+* [5.5]::                       Is there a spell-checker? Perhaps even on-the-fly spell-checking? 
+* [5.6]::                       Can I set the dictionary based on the group I'm posting to? 
+* [5.7]::                       Is there some kind of address-book, so I needn't remember all those email addresses? 
+* [5.8]::                       Sometimes I see little images at the top of article buffer. What's that and how can I send one with my postings, too? 
+* [5.9]::                       Sometimes I accidentally hit r instead of f in newsgroups. Can Gnus warn me, when I'm replying by mail in newsgroups? 
+* [5.10]::                      How to tell Gnus not to generate a sender header? 
+* [5.11]::                      I want gnus to locally store copies of my send mail and news, how to do it? 
+* [5.12]::                      People tell me my Message-IDs are not correct, why aren't they and how to fix it? 
 @end menu
 
-@node [5.1]
-@subsection [5.1]
-Question 5.1: 
+@ifnottex
+@node [5.1], [5.2], FAQ 5 - Composing messages, FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.1: 
 
  What are the basic commands I need to know for sending mail and postings?
  
@@ -1407,9 +1437,10 @@ Answer:
  can start editing it again by saying @samp{D
  e}.
  
-@node [5.2]
-@subsection [5.2]
-Question 5.2: 
+@ifnottex
+@node [5.2], [5.3], [5.1], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.2: 
 
  How to enable automatic word-wrap when composing messages?
  
@@ -1432,9 +1463,10 @@ Answer:
  in ~/.gnus. You can reformat a paragraph by hitting
  @samp{M-q} (as usual)
  
-@node [5.3]
-@subsection [5.3]
-Question 5.3: 
+@ifnottex
+@node [5.3], [5.4], [5.2], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.3: 
 
  How to set stuff like From, Organization, Reply-To, signature...?
  
@@ -1471,9 +1503,10 @@ Answer:
  then the function foo will be evaluated with argument bar
  and the result will be thrown away.
  
-@node [5.4]
-@subsection [5.4]
-Question 5.4: 
+@ifnottex
+@node [5.4], [5.5], [5.3], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.4: 
 
  Can I set things like From, Signature etc group based on the group I post too?
  
@@ -1528,9 +1561,10 @@ Answer:
 	    
 @end example
  
-@node [5.5]
-@subsection [5.5]
-Question 5.5: 
+@ifnottex
+@node [5.5], [5.6], [5.4], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.5: 
 
  Is there a spell-checker? Perhaps even on-the-fly spell-checking?
  
@@ -1578,9 +1612,10 @@ Answer:
 (add-hook 'message-mode-hook (lambda () (flyspell-mode 1)))
 @end example
  
-@node [5.6]
-@subsection [5.6]
-Question 5.6: 
+@ifnottex
+@node [5.6], [5.7], [5.5], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.6: 
 
  Can I set the dictionary based on the group I'm posting to?
  
@@ -1608,9 +1643,10 @@ Answer:
  in ~/.gnus. Change "^de\\." and "deutsch8" to something
  that suits your needs.
  
-@node [5.7]
-@subsection [5.7]
-Question 5.7:
+@ifnottex
+@node [5.7], [5.8], [5.6], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.7:
 
  Is there some kind of address-book, so I needn't remember
  all those email addresses?
@@ -1684,9 +1720,10 @@ alias al	"Al <al@@english-heritage.bla>"
  hit @samp{TAB} to cycle through know
  recipients.
  
-@node [5.8]
-@subsection [5.8]
-Question 5.8: 
+@ifnottex
+@node [5.8], [5.9], [5.7], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.8: 
 
  Sometimes I see little images at the top of article
  buffer. What's that and how can I send one with my
@@ -1735,9 +1772,10 @@ cat ./file.face | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g' > ./file.face.quoted
 @noindent
  in ~/.gnus.
  
-@node [5.9]
-@subsection [5.9]
-Question 5.9: 
+@ifnottex
+@node [5.9], [5.10], [5.8], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.9: 
 
  Sometimes I accidentally hit r instead of f in
  newsgroups. Can Gnus warn me, when I'm replying by mail in
@@ -1770,9 +1808,10 @@ Answer:
 	    
 @end example
  
-@node [5.10]
-@subsection [5.10]
-Question 5.10: 
+@ifnottex
+@node [5.10], [5.11], [5.9], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.10: 
 
  How to tell Gnus not to generate a sender header?
  
@@ -1791,9 +1830,10 @@ Answer:
 @end example
  
  
-@node [5.11]
-@subsection [5.11]
-Question 5.11: 
+@ifnottex
+@node [5.11], [5.12], [5.10], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.11: 
 
  I want gnus to locally store copies of my send mail and
  news, how to do it?
@@ -1818,9 +1858,10 @@ Answer:
 @end example
  
  
-@node [5.12]
-@subsection [5.12]
-Question 5.12: 
+@ifnottex
+@node [5.12],  , [5.11], FAQ 5 - Composing messages
+@end ifnottex
+@subheading Question 5.12: 
 
  People tell me my Message-IDs are not correct, why
  aren't they and how to fix it?
@@ -1886,21 +1927,24 @@ Answer:
  correctly by sending yourself a Mail and looking at the Message-ID.
  
 
-@node [6] Old messages
-@section [6] Old messages
+@ifnottex
+@node FAQ 6 - Old messages, FAQ 7 - Gnus in a dial-up environment, FAQ 5 - Composing messages, Frequently Asked Questions
+@end ifnottex
+@section Old messages
 
 @menu
-* [6.1]:: How to import my old mail into Gnus? 
-* [6.2]:: How to archive interesting messages? 
-* [6.3]:: How to search for a specific message? 
-* [6.4]:: How to get rid of old unwanted mail? 
-* [6.5]:: I want that all read messages are expired (at least in some groups). How to do it? 
-* [6.6]:: I don't want expiration to delete my mails but to move them to another group. 
+* [6.1]::                       How to import my old mail into Gnus? 
+* [6.2]::                       How to archive interesting messages? 
+* [6.3]::                       How to search for a specific message? 
+* [6.4]::                       How to get rid of old unwanted mail? 
+* [6.5]::                       I want that all read messages are expired (at least in some groups). How to do it? 
+* [6.6]::                       I don't want expiration to delete my mails but to move them to another group. 
 @end menu
 
-@node [6.1]
-@subsection [6.1]
-Question 6.1: 
+@ifnottex
+@node [6.1], [6.2], FAQ 6 - Old messages, FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.1: 
 
  How to import my old mail into Gnus?
  
@@ -1928,9 +1972,10 @@ Answer:
  through nnmail-split-methods (respool them) by saying
  @samp{B r}.
  
-@node [6.2]
-@subsection [6.2]
-Question 6.2: 
+@ifnottex
+@node [6.2], [6.3], [6.1], FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.2: 
 
  How to archive interesting messages?
  
@@ -1988,9 +2033,10 @@ more then one article."
  mark for articles you want to keep, setting the read
  mark will remove them from cache.
  
-@node [6.3]
-@subsection [6.3]
-Question 6.3: 
+@ifnottex
+@node [6.3], [6.4], [6.2], FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.3: 
 
  How to search for a specific message?
  
@@ -2034,9 +2080,10 @@ Answer:
  or @uref{ftp://ftp.is.informatik.uni-duisburg.de/pub/src/emacs/,ftp://ftp.is.informatik.uni-duisburg.de/pub/src/emacs/}.
  Instructions on how to use it are at the top of the file.
  
-@node [6.4]
-@subsection [6.4]
-Question 6.4: 
+@ifnottex
+@node [6.4], [6.5], [6.3], FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.4: 
 
  How to get rid of old unwanted mail?
  
@@ -2062,9 +2109,10 @@ Answer:
  expirable before and if they are old enough (default is
  older than a week) they are deleted. 
  
-@node [6.5]
-@subsection [6.5]
-Question 6.5: 
+@ifnottex
+@node [6.5], [6.6], [6.4], FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.5: 
 
  I want that all read messages are expired (at least in
  some groups). How to do it?
@@ -2103,9 +2151,10 @@ Answer:
  can also set the read mark (hit
  @samp{d}).
  
-@node [6.6]
-@subsection [6.6]
-Question 6.6: 
+@ifnottex
+@node [6.6],  , [6.5], FAQ 6 - Old messages
+@end ifnottex
+@subheading Question 6.6: 
 
  I don't want expiration to delete my mails but to move them
  to another group.
@@ -2129,19 +2178,23 @@ Answer:
  variables specific for some groups?")
  
 
-@node [7] Gnus in a dial-up environment
-@section [7] Gnus in a dial-up environment
+@ifnottex
+@node FAQ 7 - Gnus in a dial-up environment, FAQ 8 - Getting help, FAQ 6 - Old messages, Frequently Asked Questions
+@end ifnottex
+@section Gnus in a dial-up environment
 
 @menu
-* [7.1]:: I don't have a permanent connection to the net, how can I minimize the time I've got to be connected? 
-* [7.2]:: So what was this thing about the Agent? 
-* [7.3]:: I want to store article bodies on disk, too. How to do it? 
-* [7.4]:: How to tell Gnus not to try to send mails / postings while I'm offline? 
+* [7.1]::                       I don't have a permanent connection to the net, how can I minimize the time I've got to be connected? 
+* [7.2]::                       So what was this thing about the Agent? 
+* [7.3]::                       I want to store article bodies on disk, too. How to do it? 
+* [7.4]::                       How to tell Gnus not to try to send mails / postings while I'm offline? 
 @end menu
 
-@node [7.1]
-@subsection [7.1]
-Question 7.1: 
+
+@ifnottex
+@node [7.1], [7.2], FAQ 7 - Gnus in a dial-up environment, FAQ 7 - Gnus in a dial-up environment
+@end ifnottex
+@subheading Question 7.1: 
 
  I don't have a permanent connection to the net, how can
  I minimize the time I've got to be connected?
@@ -2190,9 +2243,10 @@ Answer:
  respectively POP3 or IMAP. It also includes a smtp
  server for receiving mails from Gnus.
  
-@node [7.2]
-@subsection [7.2]
-Question 7.2: 
+@ifnottex
+@node [7.2], [7.3], [7.1], FAQ 7 - Gnus in a dial-up environment
+@end ifnottex
+@subheading Question 7.2: 
 
  So what was this thing about the Agent?
  
@@ -2227,9 +2281,10 @@ Answer:
  server, the headers will be stored on disk and read from
  there the next time you enter the group.
  
-@node [7.3]
-@subsection [7.3]
-Question 7.3: 
+@ifnottex
+@node [7.3], [7.4], [7.2], FAQ 7 - Gnus in a dial-up environment
+@end ifnottex
+@subheading Question 7.3: 
 
  I want to store article bodies on disk, too. How to do it?
  
@@ -2265,9 +2320,10 @@ Answer:
  server. Depending on the volume of headers, the initial
  fetch session could take hours.
  
-@node [7.4]
-@subsection [7.4]
-Question 7.4: 
+@ifnottex
+@node [7.4],  , [7.3], FAQ 7 - Gnus in a dial-up environment
+@end ifnottex
+@subheading Question 7.4: 
 
  How to tell Gnus not to try to send mails / postings
  while I'm offline?
@@ -2285,21 +2341,24 @@ Answer:
  work, the agent must be active.
  
 
-@node [8] Getting help
-@section [8] Getting help
+@ifnottex
+@node FAQ 8 - Getting help, FAQ 9 - Tuning Gnus, FAQ 7 - Gnus in a dial-up environment, Frequently Asked Questions
+@end ifnottex
+@section Getting help
 
 @menu
-* [8.1]:: How to find information and help inside Emacs? 
-* [8.2]:: I can't find anything in the Gnus manual about X (e.g. attachments, PGP, MIME...), is it not documented? 
-* [8.3]:: Which websites should I know? 
-* [8.4]:: Which mailing lists and newsgroups are there? 
-* [8.5]:: Where to report bugs? 
-* [8.6]:: I need real-time help, where to find it? 
+* [8.1]::                       How to find information and help inside Emacs? 
+* [8.2]::                       I can't find anything in the Gnus manual about X (e.g. attachments, PGP, MIME...), is it not documented? 
+* [8.3]::                       Which websites should I know? 
+* [8.4]::                       Which mailing lists and newsgroups are there? 
+* [8.5]::                       Where to report bugs? 
+* [8.6]::                       I need real-time help, where to find it? 
 @end menu
 
-@node [8.1]
-@subsection [8.1]
-Question 8.1: 
+@ifnottex
+@node [8.1], [8.2], FAQ 8 - Getting help, FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.1: 
 
  How to find information and help inside Emacs?
  
@@ -2317,9 +2376,10 @@ Answer:
  search through all available functions and @samp{M-x
  apropos} searches the bound variables.
  
-@node [8.2]
-@subsection [8.2]
-Question 8.2: 
+@ifnottex
+@node [8.2], [8.3], [8.1], FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.2: 
 
  I can't find anything in the Gnus manual about X
  (e.g. attachments, PGP, MIME...), is it not documented?
@@ -2334,9 +2394,10 @@ Answer:
  different info files, you should have a look in those
  manuals, too.
  
-@node [8.3]
-@subsection [8.3]
-Question 8.3: 
+@ifnottex
+@node [8.3], [8.4], [8.2], FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.3: 
 
  Which websites should I know?
  
@@ -2353,9 +2414,10 @@ Answer:
 
  Tell me about other sites which are interesting.
  
-@node [8.4]
-@subsection [8.4]
-Question 8.4: 
+@ifnottex
+@node [8.4], [8.5], [8.3], FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.4: 
 
  Which mailing lists and newsgroups are there?
  
@@ -2375,9 +2437,10 @@ Answer:
  the above groups) and if you speak German, there's
  de.comm.software.gnus.
  
-@node [8.5]
-@subsection [8.5]
-Question 8.5: 
+@ifnottex
+@node [8.5], [8.6], [8.4], FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.5: 
 
  Where to report bugs?
  
@@ -2390,9 +2453,10 @@ Answer:
  including information about your environment which make
  it easier to help you.
  
-@node [8.6]
-@subsection [8.6]
-Question 8.6: 
+@ifnottex
+@node [8.6],  , [8.5], FAQ 8 - Getting help
+@end ifnottex
+@subheading Question 8.6: 
 
  I need real-time help, where to find it?
  
@@ -2405,18 +2469,21 @@ Answer:
  English when people from outside Germany enter.
  
 
-@node [9] Tuning Gnus
-@section [9] Tuning Gnus
+@ifnottex
+@node FAQ 9 - Tuning Gnus, FAQ - Glossary, FAQ 8 - Getting help, Frequently Asked Questions
+@end ifnottex
+@section Tuning Gnus
 
 @menu
-* [9.1]:: Starting Gnus is really slow, how to speed it up? 
-* [9.2]:: How to speed up the process of entering a group? 
-* [9.3]:: Sending mail becomes slower and slower, what's up? 
+* [9.1]::                       Starting Gnus is really slow, how to speed it up? 
+* [9.2]::                       How to speed up the process of entering a group? 
+* [9.3]::                       Sending mail becomes slower and slower, what's up? 
 @end menu
 
-@node [9.1]
-@subsection [9.1]
-Question 9.1: 
+@ifnottex
+@node [9.1], [9.2], FAQ 9 - Tuning Gnus, FAQ 9 - Tuning Gnus
+@end ifnottex
+@subheading Question 9.1: 
 
  Starting Gnus is really slow, how to speed it up?
  
@@ -2457,9 +2524,10 @@ Answer:
 @noindent
  it's loaded when it's needed.
  
-@node [9.2]
-@subsection [9.2]
-Question 9.2: 
+@ifnottex
+@node [9.2], [9.3], [9.1], FAQ 9 - Tuning Gnus
+@end ifnottex
+@subheading Question 9.2: 
 
  How to speed up the process of entering a group?
  
@@ -2513,9 +2581,10 @@ Answer:
  5.10.0 since there quite some work on improving it has
  been done.
  
-@node [9.3]
-@subsection [9.3]
-Question 9.3: 
+@ifnottex
+@node [9.3],  , [9.2], FAQ 9 - Tuning Gnus
+@end ifnottex
+@subheading Question 9.3: 
 
  Sending mail becomes slower and slower, what's up?
  
@@ -2529,8 +2598,10 @@ Answer:
  to normal speed.
  
 
-@node Glossary, , Frequently Asked Questions with Answers, Top
-@chapter Glossary
+@ifnottex
+@node FAQ - Glossary,  , FAQ 9 - Tuning Gnus, Frequently Asked Questions
+@end ifnottex
+@section Glossary
 
 @table @asis
 
