@@ -338,7 +338,7 @@ name.  The method this group uses will be queried."
     (when (stringp gnus-command-method)
       (setq gnus-command-method
 	    (inline (gnus-server-to-method gnus-command-method))))
-    (funcall (inline (gnus-get-function gnus-command-method 'request-group))
+	 (funcall (inline (gnus-get-function gnus-command-method 'request-group))
 	     (gnus-group-real-name group) (nth 1 gnus-command-method)
 	     dont-check)))
 
@@ -641,15 +641,25 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 	     (gnus-group-real-name group) (nth 1 gnus-command-method) args)))
 
 (defun gnus-request-delete-group (group &optional force)
-  (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (funcall (gnus-get-function gnus-command-method 'request-delete-group)
-	     (gnus-group-real-name group) force (nth 1 gnus-command-method))))
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (result
+	  (funcall (gnus-get-function gnus-command-method 'request-delete-group)
+		   (gnus-group-real-name group) force (nth 1 gnus-command-method))))
+    (when result
+      (gnus-cache-delete-group group)
+      (gnus-agent-delete-group group))
+    result))
 
 (defun gnus-request-rename-group (group new-name)
-  (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (funcall (gnus-get-function gnus-command-method 'request-rename-group)
-	     (gnus-group-real-name group)
-	     (gnus-group-real-name new-name) (nth 1 gnus-command-method))))
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (result
+	  (funcall (gnus-get-function gnus-command-method 'request-rename-group)
+		   (gnus-group-real-name group)
+		   (gnus-group-real-name new-name) (nth 1 gnus-command-method))))
+    (when result
+      (gnus-cache-rename-group group new-name)
+      (gnus-agent-rename-group group new-name))
+    result))
 
 (defun gnus-close-backends ()
   ;; Send a close request to all backends that support such a request.
