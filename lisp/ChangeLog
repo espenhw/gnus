@@ -1,3 +1,12 @@
+2003-11-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-insert-to): Do error out when the user
+	requested no Cc.  Don't insert empty To.  Can be added to
+	`message-setup-hook' now.  From Sam Steingold <sds@gnu.org>.
+	(message-mode-field-menu): Moved some entries, added
+	`message-insert-wide-reply'.
+	(message-change-subject): Fixed comment.
+
 2003-11-10  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-def.el (pgg-encrypt-for-me): Change default from nil to t.

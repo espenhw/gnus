@@ -1680,10 +1680,7 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 ;;;###autoload
 (defun message-change-subject (new-subject)
   "Ask for NEW-SUBJECT header, append (was: <Old Subject>)."
-  ;; <URL:http://www.karlsruhe.org/rfc/son1036.txt>
-  ;; <URL:http://www.karlsruhe.org/rfc/draft-ietf-usefor-article-09.txt>
-  ;; But not mentioned in...
-  ;; <URL:http://www.karlsruhe.org/rfc/draft-ietf-usefor-article-11.txt>
+  ;; <URL:http://www.landfield.com/usefor/drafts/draft-ietf-usefor-useage--1.02.unpaged>
   (interactive
    (list
     (read-from-minibuffer "New subject: ")))
@@ -2193,9 +2190,6 @@ Point is left at the beginning of the narrowed-to region."
 (easy-menu-define
   message-mode-field-menu message-mode-map ""
   `("Field"
-    ["Fetch To" message-insert-to t]
-    ["Fetch Newsgroups" message-insert-newsgroups t]
-    "----"
     ["To" message-goto-to t]
     ["From" message-goto-from t]
     ["Subject" message-goto-subject t]
@@ -2219,6 +2213,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Summary" message-goto-summary t]
     ["Keywords" message-goto-keywords t]
     ["Newsgroups" message-goto-newsgroups t]
+    ["Fetch Newsgroups" message-insert-newsgroups t]
     ["Followup-To" message-goto-followup-to t]
     ;; ["Followup-To (with note in body)" message-cross-post-followup-to t]
     ["Crosspost / Followup-To..." message-cross-post-followup-to t]
@@ -2226,6 +2221,14 @@ Point is left at the beginning of the narrowed-to region."
     ["X-No-Archive:" message-add-archive-header t ]
     "----"
     ;; (typical) mailing-lists stuff
+    ["Fetch To" message-insert-to
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Insert a To header that points to the author."))]
+    ["Fetch To and Cc" message-insert-wide-reply
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help
+	   "Insert To and Cc headers as if you were doing a wide reply."))]
+    "----"
     ["Send to list only" message-to-list-only t]
     ["Mail-Followup-To" message-goto-mail-followup-to t]
     ["Unsubscribed list post" message-generate-unsubscribed-mail-followup-to
@@ -2569,22 +2572,25 @@ Cc: header are also put into the MFT."
 
 (defun message-insert-to (&optional force)
   "Insert a To header that points to the author of the article being replied to.
-If the original author requested not to be sent mail, the function signals
-an error.
-With the prefix argument FORCE, insert the header anyway."
+If the original author requested not to be sent mail, don't insert unless the
+prefix FORCE is given."
   (interactive "P")
-  (let ((co (message-fetch-reply-field "mail-copies-to")))
-    (when (and (null force)
-	       co
-	       (or (equal (downcase co) "never")
-		   (equal (downcase co) "nobody")))
-      (error "The user has requested not to have copies sent via mail")))
-  (message-carefully-insert-headers
-   (list (cons 'To
-	       (or (message-fetch-reply-field "mail-reply-to")
-		   (message-fetch-reply-field "reply-to")
-		   (message-fetch-reply-field "from")
-		   "")))))
+  (let* ((mct (message-fetch-reply-field "mail-copies-to"))
+         (dont (and mct (or (equal (downcase mct) "never")
+			    (equal (downcase mct) "nobody"))))
+         (to (or (message-fetch-reply-field "mail-reply-to")
+                 (message-fetch-reply-field "reply-to")
+                 (message-fetch-reply-field "from"))))
+    (when (and dont to)
+      (gnus-message
+       3
+       (if force
+	   "Ignoring the user request not to have copies sent via mail"
+	 "Complying with the user request not to have copies sent via mail")))
+    (when (and force (not to))
+      (error "No mail address in the article"))
+    (when (and to (or force (not dont)))
+      (message-carefully-insert-headers (list (cons 'To to))))))
 
 (defun message-insert-wide-reply ()
   "Insert To and Cc headers as if you were doing a wide reply."
