@@ -1,3 +1,7 @@
+2003-02-08 23:23:27 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.15 is released.
+
 2003-02-08  Michael Welsh Duggan  <md5i@cs.cmu.edu>
 
 	* nnmail.el (nnmail-split-it): If a message ends up matching the
