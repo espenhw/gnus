@@ -1642,7 +1642,6 @@ see `message-narrow-to-headers-or-head'."
     (when value
       (while (string-match "\n[\t ]+" value)
 	(setq value (replace-match " " t t value)))
-      (set-text-properties 0 (length value) nil value)
       value)))
 
 (defun message-field-value (header &optional not-all)
@@ -4565,24 +4564,8 @@ Otherwise, generate and save a value for `canlock-password' first."
 (defun message-make-date (&optional now)
   "Make a valid data header.
 If NOW, use that time instead."
-  (let* ((now (or now (current-time)))
-	 (zone (nth 8 (decode-time now)))
-	 (sign "+"))
-    (when (< zone 0)
-      (setq sign "-")
-      (setq zone (- zone)))
-    (concat
-     ;; The day name of the %a spec is locale-specific.  Pfff.
-     (format "%s, " (capitalize (car (rassoc (nth 6 (decode-time now))
-					     parse-time-weekdays))))
-     (format-time-string "%d" now)
-     ;; The month name of the %b spec is locale-specific.  Pfff.
-     (format " %s "
-	     (capitalize (car (rassoc (nth 4 (decode-time now))
-				      parse-time-months))))
-     (format-time-string "%Y %H:%M:%S " now)
-     ;; We do all of this because XEmacs doesn't have the %z spec.
-     (format "%s%02d%02d" sign (/ zone 3600) (/ (% zone 3600) 60)))))
+  (let ((system-time-locale "C"))
+    (format-time-string "%a, %d %b %Y %T %z" now)))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."

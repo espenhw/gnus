@@ -1,3 +1,17 @@
+2004-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-time-format): Exchange the order of
+	day and month in the default value; fix customization type.
+	(article-date-ut): Use add-text-properties.
+	(article-make-date-line): Use message-make-date instead of
+	current-time-string.
+
+	* message.el (message-fetch-field): Don't use set-text-properties.
+	(message-make-date): Simplify.
+
+	* messagexmas.el (message-xmas-make-date): New function.
+	(message-xmas-redefine): Defalias message-make-date to it.
+
 2004-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-syntax-table): Treat `(' and `)' as is.

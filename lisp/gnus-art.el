@@ -408,14 +408,14 @@ Example: (_/*word*/_)."
   "Face used for displaying highlighted words."
   :group 'gnus-article-emphasis)
 
-(defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
+(defcustom gnus-article-time-format "%a, %d %b %Y %T %Z"
   "Format for display of Date headers in article bodies.
 See `format-time-string' for the possible values.
 
 The variable can also be function, which should return a complete Date
 header.  The function is called with one argument, the time, which can
 be fed to `format-time-string'."
-  :type '(choice string symbol)
+  :type '(choice string function)
   :link '(custom-manual "(gnus)Article Date")
   :group 'gnus-article-washing)
 
@@ -2837,10 +2837,8 @@ should replace the \"Date:\" one, or should be added below it."
 	    ;; Do highlighting.
 	    (beginning-of-line)
 	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
-	      (put-text-property (match-beginning 1) (1+ (match-end 1))
-				 'original-date date)
-	      (put-text-property (match-beginning 1) (1+ (match-end 1))
-				 'face bface)
+	      (add-text-properties (match-beginning 1) (1+ (match-end 1))
+				   (list 'original-date date 'face bface))
 	      (put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
 
@@ -2853,22 +2851,21 @@ should replace the \"Date:\" one, or should be added below it."
 	(cond
 	 ;; Convert to the local timezone.
 	 ((eq type 'local)
-	  (let ((tz (car (current-time-zone time))))
-	    (format "Date: %s %s%02d%02d" (current-time-string time)
-		    (if (> tz 0) "+" "-") (/ (abs tz) 3600)
-		    (/ (% (abs tz) 3600) 60))))
+	  (concat "Date: " (message-make-date time)))
 	 ;; Convert to Universal Time.
 	 ((eq type 'ut)
 	  (concat "Date: "
-		  (current-time-string
-		   (let* ((e (parse-time-string date))
-			  (tm (apply 'encode-time e))
-			  (ms (car tm))
-			  (ls (- (cadr tm) (car (current-time-zone time)))))
-		     (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
-			   ((> ls 65535) (list (1+ ms) (- ls 65536)))
-			   (t (list ms ls)))))
-		  " UT"))
+		  (substring
+		   (message-make-date
+		    (let* ((e (parse-time-string date))
+			   (tm (apply 'encode-time e))
+			   (ms (car tm))
+			   (ls (- (cadr tm) (car (current-time-zone time)))))
+		      (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
+			    ((> ls 65535) (list (1+ ms) (- ls 65536)))
+			    (t (list ms ls)))))
+		   0 -5)
+		  "UT"))
 	 ;; Get the original date from the article.
 	 ((eq type 'original)
 	  (concat "Date: " (if (string-match "\n+$" date)

@@ -1,6 +1,6 @@
 ;;; messagexmas.el --- XEmacs extensions to message
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2003, 2004
 ;;      Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -114,6 +114,21 @@ If it is non-nil, it must be a toolbar.  The five valid values are
      (substring table a (+ a n))
      (substring table (+ a 26) 255))))
 
+(defun message-xmas-make-date (&optional now)
+  "Make a valid data header.
+If NOW, use that time instead."
+  (let ((zone (car (current-time-zone)))
+	sign)
+    (if (>= zone 0)
+	(setq sign "+")
+      (setq sign "-"
+	    zone (- zone)))
+    (format "%s %s%02d%02d"
+	    (format-time-string "%a, %d %b %Y %T" now)
+	    sign
+	    (/ zone 3600)
+	    (/ (% zone 3600) 60))))
+
 (add-hook 'message-mode-hook 'message-xmas-maybe-fontify)
 
 (defun message-xmas-redefine ()
@@ -126,7 +141,8 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     'message-xmas-make-caesar-translation-table)
   (defalias 'message-make-overlay 'make-extent)
   (defalias 'message-delete-overlay 'delete-extent)
-  (defalias 'message-overlay-put 'set-extent-property))
+  (defalias 'message-overlay-put 'set-extent-property)
+  (defalias 'message-make-date 'message-xmas-make-date))
 
 (message-xmas-redefine)
 
