@@ -1,3 +1,8 @@
+2000-09-07  Tadashi Watanabe  <watanabe@sigmaitec.co.jp>
+
+	* smiley.el (smiley-buffer, smiley-create-glyph): Work with GTK
+	XEmacs as well.
+
 2000-09-06  Francis Litterio <franl-removethis@world.omitthis.std.com>
 
 	* gnus-group.el (gnus-group-insert-group-line): Fix.

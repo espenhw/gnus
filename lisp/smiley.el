@@ -180,7 +180,8 @@ above them."
 			 xpm-color-symbols)))
 	   (glyph (make-glyph
 		   (list
-		    (cons 'x (expand-file-name pixmap smiley-data-directory))
+		    (cons (if (featurep 'gtk) 'gtk 'x)
+			  (expand-file-name pixmap smiley-data-directory))
 		    (cons 'mswindows
 			  (expand-file-name pixmap smiley-data-directory))
 		    (cons 'tty smiley)))))
@@ -230,7 +231,7 @@ above them."
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
   (interactive)
-  (when (featurep '(or x mswindows))
+  (when (featurep '(or x gtk mswindows))
     (save-excursion
       (when buffer
 	(set-buffer buffer))
