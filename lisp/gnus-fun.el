@@ -134,7 +134,8 @@ Output to the current buffer, replace text, and don't mingle error."
 (defun gnus-convert-face-to-png (face)
   (mm-with-unibyte-buffer
     (insert face)
-    (base64-decode-region (point-min) (point-max))
+    (ignore-errors
+      (base64-decode-region (point-min) (point-max)))
     (buffer-string)))
 
 (defun gnus-convert-image-to-gray-x-face (file depth)
