@@ -665,7 +665,7 @@ But this is very much a corner case, so don't worry about it."
 
 (defmacro mm-xemacs-find-mime-charset (begin end)
   (when (featurep 'xemacs)
-    `(mm-xemacs-find-mime-charset-1 ,begin ,end)))
+    `(and (featurep 'mule) (mm-xemacs-find-mime-charset-1 ,begin ,end))))
 
 (defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.

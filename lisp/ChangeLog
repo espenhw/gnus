@@ -1,3 +1,9 @@
+2005-03-19  Aidan Kehoe  <kehoea@parhasard.net>
+
+	* lisp/mm-util.el (mm-xemacs-find-mime-charset): Only call
+	mm-xemacs-find-mime-charset-1 if we have the mule feature
+	available at runtime.
+
 2005-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnimap.el (nnimap-open-connection): Print which authinfo file is
