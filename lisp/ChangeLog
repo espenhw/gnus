@@ -1,3 +1,8 @@
+2002-02-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el: Move uu key map here.
+	(gnus-summary-make-menu-bar): Add gnus-summary-save-parts.
+
 2002-02-21  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-expire-articles): Use

@@ -1857,7 +1857,54 @@ increase the score of each group you read."
     "e" gnus-article-view-part-externally
     "E" gnus-article-encrypt-body
     "i" gnus-article-inline-part
-    "|" gnus-article-pipe-part))
+    "|" gnus-article-pipe-part)
+
+  (gnus-define-keys (gnus-uu-mark-map "P" gnus-summary-mark-map)
+    "p" gnus-summary-mark-as-processable
+    "u" gnus-summary-unmark-as-processable
+    "U" gnus-summary-unmark-all-processable
+    "v" gnus-uu-mark-over
+    "s" gnus-uu-mark-series
+    "r" gnus-uu-mark-region
+    "g" gnus-uu-unmark-region
+    "R" gnus-uu-mark-by-regexp
+    "G" gnus-uu-unmark-by-regexp
+    "t" gnus-uu-mark-thread
+    "T" gnus-uu-unmark-thread
+    "a" gnus-uu-mark-all
+    "b" gnus-uu-mark-buffer
+    "S" gnus-uu-mark-sparse
+    "k" gnus-summary-kill-process-mark
+    "y" gnus-summary-yank-process-mark
+    "w" gnus-summary-save-process-mark
+    "i" gnus-uu-invert-processable)
+
+  (gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
+    ;;"x" gnus-uu-extract-any
+    "m" gnus-summary-save-parts
+    "u" gnus-uu-decode-uu
+    "U" gnus-uu-decode-uu-and-save
+    "s" gnus-uu-decode-unshar
+    "S" gnus-uu-decode-unshar-and-save
+    "o" gnus-uu-decode-save
+    "O" gnus-uu-decode-save
+    "b" gnus-uu-decode-binhex
+    "B" gnus-uu-decode-binhex
+    "p" gnus-uu-decode-postscript
+    "P" gnus-uu-decode-postscript-and-save)
+
+  (gnus-define-keys
+      (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
+    "u" gnus-uu-decode-uu-view
+    "U" gnus-uu-decode-uu-and-save-view
+    "s" gnus-uu-decode-unshar-view
+    "S" gnus-uu-decode-unshar-and-save-view
+    "o" gnus-uu-decode-save-view
+    "O" gnus-uu-decode-save-view
+    "b" gnus-uu-decode-binhex-view
+    "B" gnus-uu-decode-binhex-view
+    "p" gnus-uu-decode-postscript-view
+    "P" gnus-uu-decode-postscript-and-save-view))
 
 (defvar gnus-article-post-menu nil)
 
@@ -1918,7 +1965,8 @@ increase the score of each group you read."
 	      ["Base64" gnus-article-de-base64-unreadable t]
 	      ["View all" gnus-mime-view-all-parts t]
 	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt t]
-	      ["Encrypt body" gnus-article-encrypt-body t])
+	      ["Encrypt body" gnus-article-encrypt-body t]
+	      ["Extract all parts" gnus-summary-save-parts t])
 	     ("Date"
 	      ["Local" gnus-article-date-local t]
 	      ["ISO8601" gnus-article-date-iso8601 t]
@@ -2015,7 +2063,8 @@ increase the score of each group you read."
 	      ["Unshar and save" gnus-uu-decode-unshar-and-save t]
 	      ["Save" gnus-uu-decode-save t]
 	      ["Binhex" gnus-uu-decode-binhex t]
-	      ["Postscript" gnus-uu-decode-postscript t])
+	      ["Postscript" gnus-uu-decode-postscript t]
+	      ["all MIME parts" gnus-summary-save-parts t])
 	     ("Cache"
 	      ["Enter article" gnus-cache-enter-article t]
 	      ["Remove article" gnus-cache-remove-article t])

@@ -353,56 +353,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defvar gnus-uu-digest-from-subject nil)
 (defvar gnus-uu-digest-buffer nil)
 
-;; Keymaps
-
-(gnus-define-keys (gnus-uu-mark-map "P" gnus-summary-mark-map)
-  "p" gnus-summary-mark-as-processable
-  "u" gnus-summary-unmark-as-processable
-  "U" gnus-summary-unmark-all-processable
-  "v" gnus-uu-mark-over
-  "s" gnus-uu-mark-series
-  "r" gnus-uu-mark-region
-  "g" gnus-uu-unmark-region
-  "R" gnus-uu-mark-by-regexp
-  "G" gnus-uu-unmark-by-regexp
-  "t" gnus-uu-mark-thread
-  "T" gnus-uu-unmark-thread
-  "a" gnus-uu-mark-all
-  "b" gnus-uu-mark-buffer
-  "S" gnus-uu-mark-sparse
-  "k" gnus-summary-kill-process-mark
-  "y" gnus-summary-yank-process-mark
-  "w" gnus-summary-save-process-mark
-  "i" gnus-uu-invert-processable)
-
-(gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
-  ;;"x" gnus-uu-extract-any
-  "m" gnus-summary-save-parts
-  "u" gnus-uu-decode-uu
-  "U" gnus-uu-decode-uu-and-save
-  "s" gnus-uu-decode-unshar
-  "S" gnus-uu-decode-unshar-and-save
-  "o" gnus-uu-decode-save
-  "O" gnus-uu-decode-save
-  "b" gnus-uu-decode-binhex
-  "B" gnus-uu-decode-binhex
-  "p" gnus-uu-decode-postscript
-  "P" gnus-uu-decode-postscript-and-save)
-
-(gnus-define-keys
-    (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
-  "u" gnus-uu-decode-uu-view
-  "U" gnus-uu-decode-uu-and-save-view
-  "s" gnus-uu-decode-unshar-view
-  "S" gnus-uu-decode-unshar-and-save-view
-  "o" gnus-uu-decode-save-view
-  "O" gnus-uu-decode-save-view
-  "b" gnus-uu-decode-binhex-view
-  "B" gnus-uu-decode-binhex-view
-  "p" gnus-uu-decode-postscript-view
-  "P" gnus-uu-decode-postscript-and-save-view)
-
-
 ;; Commands.
 
 (defun gnus-uu-decode-uu (&optional n)
