@@ -879,7 +879,8 @@ check twice.")
 				       'gnus-remove-from-range)
 				     (cdr (assoc mark nnml-marks)) range)
 			    nnml-marks)))))
-    (nnml-save-marks group server)))
+    (nnml-save-marks group server))
+  nil)
 
 (deffoo nnml-request-update-info (group info &optional server)
   (nnml-possibly-change-directory group server)
@@ -907,35 +908,34 @@ check twice.")
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	(file (expand-file-name nnml-marks-file-name
 				(nnmail-group-pathname group nnml-directory))))
-    (gnus-make-directory (file-name-directory file))
+    (nnml-possibly-create-directory group)
     (with-temp-file file
       (erase-buffer)
       (princ nnml-marks (current-buffer))
       (insert "\n"))))
 
 (defun nnml-open-marks (group server)
-  (with-temp-buffer
-    (let ((file (expand-file-name 
-		 nnml-marks-file-name 
-		 (nnmail-group-pathname group nnml-directory))))
-      (if (file-exists-p file)
-	  (setq nnml-marks (condition-case err
-			       (progn
-				 (nnheader-insert-file-contents file)
-				 (read (current-buffer)))
-			     (error (or (gnus-yes-or-no-p
-					 (format "Error reading nnml marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
-					(error "Cannot read nnml marks file %s (%s)" file err)))))
-	;; User didn't have a .marks file.  Probably first time
-	;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
-	(let ((info (gnus-get-info
-		     (gnus-group-prefixed-name
-		      group
-		      (gnus-server-to-method (format "nnml:%s" server))))))
-	  (nnheader-message 6 "Boostrapping nnml marks...")
-	  (setq nnml-marks (gnus-info-marks info))
-	  (push (cons 'read (gnus-info-read info)) nnml-marks)
-	  (nnml-save-marks group server))))))
+  (let ((file (expand-file-name 
+	       nnml-marks-file-name 
+	       (nnmail-group-pathname group nnml-directory))))
+    (if (file-exists-p file)
+	(setq nnml-marks (condition-case err
+			     (with-temp-buffer
+			       (nnheader-insert-file-contents file)
+			       (read (current-buffer)))
+			   (error (or (gnus-yes-or-no-p
+				       (format "Error reading nnml marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
+				      (error "Cannot read nnml marks file %s (%s)" file err)))))
+      ;; User didn't have a .marks file.  Probably first time
+      ;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
+      (let ((info (gnus-get-info
+		   (gnus-group-prefixed-name
+		    group
+		    (gnus-server-to-method (format "nnml:%s" server))))))
+	(nnheader-message 6 "Boostrapping nnml marks...")
+	(setq nnml-marks (gnus-info-marks info))
+	(push (cons 'read (gnus-info-read info)) nnml-marks)
+	(nnml-save-marks group server)))))
 
 (provide 'nnml)
 
