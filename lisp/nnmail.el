@@ -123,6 +123,15 @@ If nil, the first match found will be used."
 		 (regexp :value ".*")
 		 (repeat :value (".*") regexp)))
 
+(defcustom nnmail-cache-ignore-groups nil
+  "Regexp that matches group names to be ignored when inserting message
+ids into the cache (`nnmail-cache-insert'). This can also be a list
+of regexps."
+  :group 'nnmail-split
+  :type '(choice (const :tag "none" nil)
+		 (regexp :value ".*")
+		 (repeat :value (".*") regexp)))
+
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defcustom nnmail-keep-last-article nil
   "If non-nil, nnmail will never delete/move a group's last article.
@@ -1477,7 +1486,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (if (and grp (not (string= "" grp))
 	       (gnus-methods-equal-p gnus-command-method
 				     (nnmail-cache-primary-mail-backend)))
-	  (insert id "\t" grp "\n")
+	  (let ((regexp (if (consp nnmail-cache-ignore-groups)
+			    (mapconcat 'identity nnmail-cache-ignore-groups
+				       "\\|")
+			  nnmail-cache-ignore-groups)))
+	    (unless (and regexp (string-match regexp grp))
+	      (insert id "\t" grp "\n")))
 	(insert id "\n")))))
 
 (defun nnmail-cache-primary-mail-backend ()

@@ -2425,7 +2425,7 @@ with a `subscribed' parameter."
 		       (or (gnus-group-fast-parameter group 'to-address)
 			   (gnus-group-fast-parameter group 'to-list))))
 	(when address
-	  (push address addresses))))
+	  (add-to-list 'addresses address))))
     (when addresses
       (list (mapconcat 'regexp-quote addresses "\\|")))))
 
