@@ -50,6 +50,10 @@
   ;; executable-find is not autoloaded in Emacs 20
   (autoload 'executable-find "executable"))
 
+;; autoload ietf-drums-parse-addresses
+(eval-and-compile
+  (autoload 'ietf-drums-parse-addresses "ietf-drums"))
+
 ;; autoload query-dig
 (eval-and-compile
   (autoload 'query-dig "dig"))
@@ -998,20 +1002,24 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	(while (not (eobp))
 	  (setq address (buffer-substring (point) (spam-point-at-eol)))
 	  (forward-line 1)
-	  (unless (zerop (length address))
-	    (setq address (regexp-quote address))
-	    (while (string-match "\\\\\\*" address)
-	      (setq address (replace-match ".*" t t address)))
-	    (push address contents))))
+	  ;; insert the e-mail address if detected, otherwise the raw data
+	  (let ((pure-address (car (ietf-drums-parse-addresses address))))
+	    (push (or pure-address address) contents))))
       (nreverse contents))))
 
 (defun spam-from-listed-p (cache)
   (let ((from (message-fetch-field "from"))
 	found)
     (while cache
-      (when (string-match (pop cache) from)
-	(setq found t
-	      cache nil)))
+      (let* ((address (pop cache)))
+	(unless (zerop (length address)) ; 0 for a nil address too
+	  (setq address (regexp-quote address))
+	  ;; fix regexp-quote's treatment of user-intended regexes
+	  (while (string-match "\\\\\\*" address)
+	    (setq address (replace-match ".*" t t address))))
+	(when (and address (string-match address from))
+	  (setq found t
+		cache nil))))
     found))
 
 (defun spam-blacklist-register-routine ()

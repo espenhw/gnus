@@ -1,3 +1,9 @@
+2003-06-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-from-listed-p, spam-parse-list): use
+	ietf-drums-parse-addresses to extract the address portion of the
+	whitelist/blacklist file if it looks like an address can be found
+
 2003-06-23  Didier Verna  <didier@xemacs.org>
 
 	* gnus-ems.el (gnus-put-image): New argument CATEGORY. Add it as a
