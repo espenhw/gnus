@@ -1,3 +1,8 @@
+2001-02-25 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From NAGY Andras <nagya@inf.elte.hu>.
+
+	* gnus.el (gnus-parameters): Typo.
+
 2001-02-24 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-read-method): Remove redundancy.

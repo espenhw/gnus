@@ -857,7 +857,7 @@ For example:
                   (gnus-summary-line-format
                         \"%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\\n\")
                   (gcc-self . t)
-                  (dispaly . all))
+                  (display . all))
      (\"mail\\\\.me\" (gnus-use-scoring  t))
      (\"list\\\\..*\" (total-expire . t)
                   (broken-reply-to . t)))")
