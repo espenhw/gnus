@@ -32,6 +32,7 @@
 (require 'timezone)
 (require 'nnheader)
 (require 'message)
+(require 'nnmail)
 
 (eval-when-compile (require 'cl))
 
@@ -1722,7 +1723,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.94"
+(defconst gnus-version "September Gnus v0.95"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4264,7 +4265,7 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
   (setq buffer-read-only t)
-  (make-local-hook 'post-command-hook)
+  (gnus-make-local-hook 'post-command-hook)
   (add-hook 'post-command-hook 'gnus-clear-inboxes-moved)
   (run-hooks 'gnus-group-mode-hook))
 
@@ -7407,6 +7408,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 
 (put 'gnus-save-hidden-threads 'lisp-indent-function 0)
 (put 'gnus-save-hidden-threads 'lisp-indent-hook 0)
+(put 'gnus-save-hidden-threads 'edebug-form-spec '(body))
 
 (defmacro gnus-save-hidden-threads (&rest forms)
   "Save hidden threads, eval FORMS, and restore the hidden threads."
@@ -9414,7 +9416,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 
 (defun gnus-summary-insert-subject (id &optional old-header)
   "Find article ID and insert the summary line for that article."
-  (let ((header (gnus-read-header id))
+  (let ((header (or old-header (gnus-read-header id)))
 	(number (and (numberp id) id))
 	pos)
     (when header
@@ -9430,10 +9432,11 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
       (when old-header
 	(mail-header-set-number header (mail-header-number old-header)))
       (setq gnus-newsgroup-sparse
-	    (delq (mail-header-number header) gnus-newsgroup-sparse))
+	    (delq (setq number (mail-header-number header)) 
+		  gnus-newsgroup-sparse))
+      (setq gnus-newsgroup-ancient (delq number gnus-newsgroup-ancient))
       (gnus-rebuild-thread (mail-header-id header))
-      (gnus-summary-goto-subject (setq number (mail-header-number header))
-				 nil t))
+      (gnus-summary-goto-subject number nil t))
     (when (and (numberp number)
 	       (> number 0))
       ;; We have to update the boundaries even if we can't fetch the
@@ -9532,12 +9535,14 @@ If EXCLUDE-GROUP, do not go to this group."
 	(gnus-data-number result)))))
 
 (defun gnus-summary-find-prev (&optional unread article)
-  (let* ((article (or article (gnus-summary-article-number)))
+  (let* ((eobp (eobp))
+	 (article (or article (gnus-summary-article-number)))
 	 (arts (gnus-data-find-list article (gnus-data-list 'rev)))
 	 result)
-    (when (or (not gnus-summary-check-current)
-	      (not unread)
-	      (not (gnus-data-unread-p (car arts))))
+    (when (and (not eobp)
+	       (or (not gnus-summary-check-current)
+		   (not unread)
+		   (not (gnus-data-unread-p (car arts)))))
       (setq arts (cdr arts)))
     (if (setq result
 	      (if unread
@@ -10192,7 +10197,7 @@ If FORCE, also allow jumping to articles not currently shown."
     ;; We read in the article if we have to.
     (and (not data)
 	 force
-	 (gnus-summary-insert-subject article)
+	 (gnus-summary-insert-subject article (and (vectorp force) force))
 	 (setq data (gnus-data-find article)))
     (goto-char b)
     (if (not data)
@@ -10797,21 +10802,27 @@ If ALL, mark even excluded ticked and dormants as read."
     ;; buffer as a result of the new limit.
     (- total (length gnus-newsgroup-data))))
 
+(defsubst gnus-invisible-cut-children (threads)
+  (let ((num 0))
+    (while threads
+      (when (memq (mail-header-number (caar threads)) gnus-newsgroup-limit)
+	(incf num))
+      (pop threads))
+    (< num 2)))
+
 (defsubst gnus-cut-thread (thread)
   "Go forwards in the thread until we find an article that we want to display."
-  (when (eq gnus-fetch-old-headers 'some)
-    ;; Deal with old-fetched headers.
-    (while (and thread
-		(memq (mail-header-number (car thread)) 
-		      gnus-newsgroup-ancient)
-		(<= (length (cdr thread)) 1))
-      (setq thread (cadr thread))))
-  ;; Deal with sparse threads.
-  (when (or (eq gnus-build-sparse-threads 'some)
+  (when (or (eq gnus-fetch-old-headers 'some)
+	    (eq gnus-build-sparse-threads 'some)
 	    (eq gnus-build-sparse-threads 'more))
-    (while (and thread
-		(memq (mail-header-number (car thread)) gnus-newsgroup-sparse)
-		(= (length (cdr thread)) 1))
+    ;; Deal with old-fetched headers and sparse threads.
+    (while (and
+	    thread
+	    (or
+	     (memq (mail-header-number (car thread)) gnus-newsgroup-sparse)
+	     (memq (mail-header-number (car thread)) gnus-newsgroup-ancient))
+	    (or (<= (length (cdr thread)) 1)
+		(gnus-invisible-cut-children (cdr thread))))
       (setq thread (cadr thread))))
   thread)
 
@@ -10883,7 +10894,7 @@ fetch-old-headers verbiage, and so on."
 	   ;; children, then this article isn't visible.
 	   (and (memq number gnus-newsgroup-dormant)
 		(= children 0))
-	   ;; If this is a "fetch-old-headered" and there is only one
+	   ;; If this is "fetch-old-headered" and there is only one
 	   ;; visible child (or less), then we don't want this article.
 	   (and (eq gnus-fetch-old-headers 'some)
 		(memq number gnus-newsgroup-ancient)
@@ -11006,11 +11017,10 @@ Return how many articles were fetched."
       (setq message-id (concat "<" message-id)))
     (unless (string-match ">$" message-id)
       (setq message-id (concat message-id ">")))
-    (let ((header (car (gnus-gethash message-id
-				     gnus-newsgroup-dependencies))))
+    (let ((header (gnus-id-to-header message-id)))
       (if header
 	  ;; The article is present in the buffer, to we just go to it.
-	  (gnus-summary-goto-article (mail-header-number header) nil t)
+	  (gnus-summary-goto-article (mail-header-number header) nil header)
 	;; We fetch the article
 	(let ((gnus-override-method 
 	       (and (gnus-news-group-p gnus-newsgroup-name)
@@ -11089,9 +11099,7 @@ If BACKWARD, search backward instead."
   (if (string-equal regexp "")
       (setq regexp (or gnus-last-search-regexp ""))
     (setq gnus-last-search-regexp regexp))
-  (if (gnus-summary-search-article regexp backward)
-      (gnus-article-set-window-start
-       (cdr (assq (gnus-summary-article-number) gnus-newsgroup-bookmarks)))
+  (unless (gnus-summary-search-article regexp backward)
     (error "Search failed: \"%s\"" regexp)))
 
 (defun gnus-summary-search-article-backward (regexp)
@@ -11130,7 +11138,9 @@ Optional argument BACKWARD means do search for backward.
 	      (beginning-of-line)
 	      (set-window-start
 	       (get-buffer-window (current-buffer))
-	       (point)))
+	       (point))
+	      (forward-line 1)
+	      (set-buffer sum))
 	  ;; We didn't find it, so we go to the next article.
 	  (set-buffer sum)
 	  (if (not (if backward (gnus-summary-find-prev)
@@ -11142,7 +11152,6 @@ Optional argument BACKWARD means do search for backward.
 	    (set-buffer gnus-article-buffer)
 	    (widen)
 	    (goto-char (if backward (point-max) (point-min))))))
-      (set-buffer sum)
       (gnus-message 7 ""))
     ;; Return whether we found the regexp.
     (when (eq found 'found)
@@ -12830,7 +12839,7 @@ Argument REVERSE means reverse order."
 Timezone package is used."
   (setq date (timezone-fix-time date nil nil))
   (timezone-make-sortable-date
-   (aref date 0) (aref date 2) (aref date 2)
+   (aref date 0) (aref date 1) (aref date 2)
    (timezone-make-time-string
     (aref date 3) (aref date 4) (aref date 5))))
 
@@ -16659,6 +16668,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (setq version-control 'never)
 	  (setq buffer-file-name
 		(concat gnus-current-startup-file ".eld"))
+	  (setq default-directory (file-name-directory buffer-file-name))
 	  (gnus-add-current-to-buffer-list)
 	  (buffer-disable-undo (current-buffer))
 	  (erase-buffer)
@@ -16703,6 +16713,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (standard-output (current-buffer))
 	  info ranges range method)
       (setq buffer-file-name gnus-current-startup-file)
+      (setq default-directory (file-name-directory buffer-file-name))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       ;; Write options.

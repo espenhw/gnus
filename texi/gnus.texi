@@ -2519,7 +2519,8 @@ variable as a function for getting the name and address parts of a
 @code{gnus-extract-address-components}, which is the default, quite
 fast, and too simplistic solution; and
 @code{mail-extract-address-components}, which works very nicely, but is
-slower.
+slower.  The default function will return the wrong answer in 5% of the
+cases.  If this is unacceptable to you, use the other function instead.
 
 @vindex gnus-summary-same-subject
 @code{gnus-summary-same-subject} is a string indicating that the current
