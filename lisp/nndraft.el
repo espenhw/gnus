@@ -33,9 +33,7 @@
 (require 'nnoo)
 (require 'mm-util)
 (eval-when-compile
-  (require 'cl)
-  ;; This is just to shut up the byte-compiler.
-  (defalias 'nndraft-request-group 'ignore))
+  (require 'cl))
 
 (nnoo-declare nndraft
   nnmh)

@@ -1,3 +1,14 @@
+2001-03-01 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Katsumi Yamaoka <yamaoka@jpl.org>.
+	
+	* dgnushack.el (coerce, merge, subseq): defmacro.
+	
+2001-03-01 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el (nndraft-request-group): Move it here from nndraft.el.
+	A fake defalias in nndraft.el results a not-activated bug in
+	uncompiled versions.
+
 2001-02-26 11:27:27  Paul Jarc  <prj@po.cwru.edu>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
