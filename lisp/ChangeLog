@@ -1,3 +1,8 @@
+2003-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (merge, copy-list): Remove compiler macros.
+	(butlast): Add a compiler macro.
+
 2003-04-22  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-util.el (gnus-merge): Added "type" argument to match CL
