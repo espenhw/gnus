@@ -1147,7 +1147,7 @@ If COPYP, copy the groups instead."
   "Remove the process mark from all groups in the topic."
   (interactive (list (gnus-group-topic-name)))
   (if (not topic)
-      (call-interactively 'gnus-group-mark-group)
+      (call-interactively 'gnus-group-unmark-group)
     (gnus-topic-mark-topic topic t)))
 
 (defun gnus-topic-get-new-news-this-topic (&optional n)

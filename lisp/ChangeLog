@@ -1,3 +1,79 @@
+Sat Feb  1 14:19:54 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.9 is released.
+
+Sat Feb  1 13:30:33 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Insert
+	"-*- emacs-lisp -*-" at the first line.
+
+Sat Feb  1 13:23:19 1997  Mark Borges  <mdb@cdc.noaa.gov>
+
+	* gnus-xmas.el (gnus-xmas-define): Do the right characterp thing. 
+
+Sat Feb  1 12:28:33 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* smiley.el (smiley-mouse-face): New variable.
+	(smiley-buffer): Use it.
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Use gnus-prin1.
+
+	* gnus-util.el (gnus-prin1): Bind print-level and print-length to
+	nil 
+
+	* gnus-art.el (gnus-button-alist): Let mailto: be less greedy.
+	(gnus-button-alist): Ditto with news:.
+
+	* gnus-topic.el (gnus-topic-unmark-topic): Let groups be unmarked.
+
+	* gnus.el (gnus-read-group): Place point at bol.
+
+	* gnus-util.el ((fboundp 'point-at-bol)): Use the functions if
+	they exist. 
+
+	* gnus-msg.el (gnus-summary-supersede-article): Mark article as
+	canceled. 
+
+Wed Jan 29 22:28:44 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el (gnus-xmas-define): Correct XEmacs version test to
+	handle v20.
+
+Sat Feb  1 12:19:14 1997  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnml.el (nnml-generate-active-info): Don't bug out.
+
+Sat Feb  1 00:52:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-fcc-handler-function): Changed default.
+	(message-output): New function.
+	(message-do-fcc): Use it.
+
+	* gnus-util.el (gnus-convert-article-to-rmail,
+	gnus-output-to-rmail): Moved here.
+
+	* message.el (message-check-news-header-syntax): Allow trailing
+	periods. 
+	(message-check-news-header-syntax): Don't allow trailing periods. 
+
+Fri Jan 31 22:18:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-resend): Rename "From ".
+
+	* nntp.el (nntp-accept-process-output): Use nnheader-message.
+
+Fri Jan 31 11:51:18 1997  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnml.el (nnml-generate-nov-databases-1): Sort the file alist. 
+
+Thu Jan 30 13:13:39 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el: More cleanup of customization groups.
+
+Thu Jan 30 04:33:01 1997  Sudish Joseph  <sudish@mindspring.com>
+
+	* gnus-xmas.el (gnus-xmas-define): Use `char-or-char-int-p'. 
+
 Thu Jan 30 04:15:28 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.8 is released.

@@ -102,21 +102,25 @@
      (when (gnus-buffer-exists-p buf)
        (kill-buffer buf))))
 
-(defsubst gnus-point-at-bol ()
-  "Return point at the beginning of the line."
-  (let ((p (point)))
-    (beginning-of-line)
-    (prog1
-	(point)
-      (goto-char p))))
+(if (fboundp 'point-at-bol)
+    (fset 'gnus-point-at-bol 'point-at-bol)
+  (defsubst gnus-point-at-bol ()
+    "Return point at the beginning of the line."
+    (let ((p (point)))
+      (beginning-of-line)
+      (prog1
+	  (point)
+	(goto-char p)))))
 
-(defsubst gnus-point-at-eol ()
-  "Return point at the end of the line."
-  (let ((p (point)))
-    (end-of-line)
-    (prog1
-	(point)
-      (goto-char p))))
+(if (fboundp 'point-at-eol)
+    (fset 'gnus-point-at-eol 'point-at-eol)
+  (defsubst gnus-point-at-eol ()
+    "Return point at the end of the line."
+    (let ((p (point)))
+      (end-of-line)
+      (prog1
+	  (point)
+	(goto-char p)))))
 
 (defun gnus-delete-first (elt list)
   "Delete by side effect the first occurrence of ELT as a member of LIST."
@@ -570,7 +574,8 @@ Timezone package is used."
 (defun gnus-prin1 (form)
   "Use `prin1' on FORM in the current buffer.
 Bind `print-quoted' to t while printing."
-  (let ((print-quoted t))
+  (let ((print-quoted t)
+	print-level print-length)
     (prin1 form (current-buffer))))
 
 (defun gnus-prin1-to-string (form)
@@ -696,6 +701,105 @@ with potentially long computations."
 
 ;(put 'gnus-atomic-setq 'edebug-form-spec '(body))
 
+
+;;; Functions for saving to babyl/mail files.
+
+(defun gnus-output-to-rmail (filename &optional ask)
+  "Append the current article to an Rmail file named FILENAME."
+  (require 'rmail)
+  ;; Most of these codes are borrowed from rmailout.el.
+  (setq filename (expand-file-name filename))
+  (setq rmail-default-rmail-file filename)
+  (let ((artbuf (current-buffer))
+	(tmpbuf (get-buffer-create " *Gnus-output*")))
+    (save-excursion
+      (or (get-file-buffer filename)
+	  (file-exists-p filename)
+	  (if (or (not ask)
+		  (gnus-yes-or-no-p
+		   (concat "\"" filename "\" does not exist, create it? ")))
+	      (let ((file-buffer (create-file-buffer filename)))
+		(save-excursion
+		  (set-buffer file-buffer)
+		  (rmail-insert-rmail-file-header)
+		  (let ((require-final-newline nil))
+		    (gnus-write-buffer filename)))
+		(kill-buffer file-buffer))
+	    (error "Output file does not exist")))
+      (set-buffer tmpbuf)
+      (erase-buffer)
+      (insert-buffer-substring artbuf)
+      (gnus-convert-article-to-rmail)
+      ;; Decide whether to append to a file or to an Emacs buffer.
+      (let ((outbuf (get-file-buffer filename)))
+	(if (not outbuf)
+	    (append-to-file (point-min) (point-max) filename)
+	  ;; File has been visited, in buffer OUTBUF.
+	  (set-buffer outbuf)
+	  (let ((buffer-read-only nil)
+		(msg (and (boundp 'rmail-current-message)
+			  (symbol-value 'rmail-current-message))))
+	    ;; If MSG is non-nil, buffer is in RMAIL mode.
+	    (when msg
+	      (widen)
+	      (narrow-to-region (point-max) (point-max)))
+	    (insert-buffer-substring tmpbuf)
+	    (when msg
+	      (goto-char (point-min))
+	      (widen)
+	      (search-backward "\^_")
+	      (narrow-to-region (point) (point-max))
+	      (goto-char (1+ (point-min)))
+	      (rmail-count-new-messages t)
+	      (rmail-show-message msg))))))
+    (kill-buffer tmpbuf)))
+
+(defun gnus-output-to-mail (filename &optional ask)
+  "Append the current article to a mail file named FILENAME."
+  (setq filename (expand-file-name filename))
+  (let ((artbuf (current-buffer))
+	(tmpbuf (get-buffer-create " *Gnus-output*")))
+    (save-excursion
+      ;; Create the file, if it doesn't exist.
+      (when (and (not (get-file-buffer filename))
+		 (not (file-exists-p filename)))
+	(if (or (not ask)
+		(gnus-yes-or-no-p
+		 (concat "\"" filename "\" does not exist, create it? ")))
+	    (let ((file-buffer (create-file-buffer filename)))
+	      (save-excursion
+		(set-buffer file-buffer)
+		(let ((require-final-newline nil))
+		  (gnus-write-buffer filename)))
+	      (kill-buffer file-buffer))
+	  (error "Output file does not exist")))
+      (set-buffer tmpbuf)
+      (erase-buffer)
+      (insert-buffer-substring artbuf)
+      (goto-char (point-min))
+      (unless (looking-at "From ")
+	(insert "From nobody " (current-time-string) "\n"))
+      ;; Decide whether to append to a file or to an Emacs buffer.
+      (let ((outbuf (get-file-buffer filename)))
+	(if (not outbuf)
+	    (append-to-file (point-min) (point-max) filename)
+	  ;; File has been visited, in buffer OUTBUF.
+	  (set-buffer outbuf)
+	  (let ((buffer-read-only nil))
+	    (goto-char (point-max))
+	    (insert-buffer-substring tmpbuf)))))
+    (kill-buffer tmpbuf)))
+
+(defun gnus-convert-article-to-rmail ()
+  "Convert article in current buffer to Rmail message format."
+  (let ((buffer-read-only nil))
+    ;; Convert article directly into Babyl format.
+    (goto-char (point-min))
+    (insert "\^L\n0, unseen,,\n*** EOOH ***\n")
+    (while (search-forward "\n\^_" nil t) ;single char
+      (replace-match "\n^_" t t))	;2 chars: "^" and "_"
+    (goto-char (point-max))
+    (insert "\^_")))
 
 (provide 'gnus-util)
 

@@ -46,8 +46,7 @@
   :group 'gnus-group-foreign
   :type 'directory)
 
-;; Suggested by Andrew Eskilsson <pi92ae@lelle.pt.hk-r.se>.
-(defcustom gnus-no-groups-message "No news is horrible news"
+(defcustom gnus-no-groups-message "No news is no news"
   "*Message displayed by Gnus when no groups are available."
   :group 'gnus-start
   :type 'string)
@@ -1827,15 +1826,14 @@ and NEW-NAME will be prompted for."
       (unless (gnus-check-backend-function
 	       'request-rename-group (gnus-group-group-name))
 	(error "This backend does not support renaming groups"))
-      (gnus-read-group "Rename group to: " (gnus-group-group-name)))))
+      (gnus-read-group "Rename group to: "
+		       (gnus-group-real-name (gnus-group-group-name))))))
 
   (unless (gnus-check-backend-function 'request-rename-group group)
     (error "This backend does not support renaming groups"))
   (unless group 
     (error "No group to rename"))
-  (when (string-match "^[ \t]*$" new-name)
-    (error "Not a valid group name"))
-  (when (equal group new-name)
+  (when (equal (gnus-group-real-name group) new-name)
     (error "Can't rename to the same name"))
 
   ;; We find the proper prefixed name.

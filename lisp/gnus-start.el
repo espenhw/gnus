@@ -2183,6 +2183,7 @@ If FORCE is non-nil, the .newsrc file is read."
 (defun gnus-gnus-to-quick-newsrc-format ()
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
   (let ((print-quoted t))
+    (insert ";; -*- emacs-lisp -*-\n")
     (insert ";; Gnus startup file.\n")
     (insert
      ";; Never delete this file - touch .newsrc instead to force Gnus\n")
@@ -2201,15 +2202,13 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
 	   ;; Peel off the "dummy" group.
 	   (gnus-newsrc-alist (cdr gnus-newsrc-alist))
-	   ;; Make sure the printing isn't abbreviated.
-	   (print-length nil)
 	   variable)
       ;; Insert the variables into the file.
       (while variables
 	(when (and (boundp (setq variable (pop variables)))
 		   (symbol-value variable))
 	  (insert "(setq " (symbol-name variable) " '")
-	  (prin1 (symbol-value variable) (current-buffer))
+	  (gnus-prin1 (symbol-value variable))
 	  (insert ")\n"))))))
 
 (defun gnus-strip-killed-list ()

@@ -710,7 +710,8 @@ all.  This may very well take some time.")
 		   (file-directory-p dir))
 	  (nnml-generate-nov-databases-1 dir seen))))
     ;; Do this directory.
-    (let ((files (nreverse (nnheader-article-to-file-alist dir))))
+    (let ((files (sort (nnheader-article-to-file-alist dir)
+		       (lambda (a b) (< (car a) (car b))))))
       (when files
 	(funcall nnml-generate-active-function dir)
 	;; Generate the nov file.
@@ -724,10 +725,10 @@ all.  This may very well take some time.")
     (setq nnml-group-alist
 	  (delq (assoc group nnml-group-alist) nnml-group-alist))
     (push (list group
-		(cons (cdaar files)
+		(cons (caar files)
 		      (let ((f files))
 			(while (cdr f) (setq f (cdr f)))
-			(cdaar f))))
+			(caar f))))
 	  nnml-group-alist)))
 
 (defun nnml-generate-nov-file (dir files)

@@ -1453,10 +1453,10 @@ Directory to save to is default to `gnus-article-save-directory'."
       (save-excursion
 	(save-restriction
 	  (widen)
-	  (if (and (file-readable-p filename) (mail-file-babyl-p filename))
-	      (gnus-output-to-rmail filename)
-	    (let ((mail-use-rfc822 t))
-	      (rmail-output filename 1 t t))))))
+	  (if (and (file-readable-p filename)
+		   (mail-file-babyl-p filename))
+	      (gnus-output-to-rmail filename t)
+	    (gnus-output-to-mail filename t)))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail filename)))
 
@@ -1953,56 +1953,6 @@ Provided for backwards compatibility."
 
 ;;; Article savers.
 
-(defun gnus-output-to-rmail (file-name)
-  "Append the current article to an Rmail file named FILE-NAME."
-  (require 'rmail)
-  ;; Most of these codes are borrowed from rmailout.el.
-  (setq file-name (expand-file-name file-name))
-  (setq rmail-default-rmail-file file-name)
-  (let ((artbuf (current-buffer))
-	(tmpbuf (get-buffer-create " *Gnus-output*")))
-    (save-excursion
-      (or (get-file-buffer file-name)
-	  (file-exists-p file-name)
-	  (if (gnus-yes-or-no-p
-	       (concat "\"" file-name "\" does not exist, create it? "))
-	      (let ((file-buffer (create-file-buffer file-name)))
-		(save-excursion
-		  (set-buffer file-buffer)
-		  (rmail-insert-rmail-file-header)
-		  (let ((require-final-newline nil))
-		    (gnus-write-buffer file-name)))
-		(kill-buffer file-buffer))
-	    (error "Output file does not exist")))
-      (set-buffer tmpbuf)
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (insert-buffer-substring artbuf)
-      (gnus-convert-article-to-rmail)
-      ;; Decide whether to append to a file or to an Emacs buffer.
-      (let ((outbuf (get-file-buffer file-name)))
-	(if (not outbuf)
-	    (append-to-file (point-min) (point-max) file-name)
-	  ;; File has been visited, in buffer OUTBUF.
-	  (set-buffer outbuf)
-	  (let ((buffer-read-only nil)
-		(msg (and (boundp 'rmail-current-message)
-			  (symbol-value 'rmail-current-message))))
-	    ;; If MSG is non-nil, buffer is in RMAIL mode.
-	    (when msg
-	      (widen)
-	      (narrow-to-region (point-max) (point-max)))
-	    (insert-buffer-substring tmpbuf)
-	    (when msg
-	      (goto-char (point-min))
-	      (widen)
-	      (search-backward "\^_")
-	      (narrow-to-region (point) (point-max))
-	      (goto-char (1+ (point-min)))
-	      (rmail-count-new-messages t)
-	      (rmail-show-message msg))))))
-    (kill-buffer tmpbuf)))
-
 (defun gnus-output-to-file (file-name)
   "Append the current article to a file named FILE-NAME."
   (let ((artbuf (current-buffer)))
@@ -2013,18 +1963,6 @@ Provided for backwards compatibility."
       (goto-char (point-max))
       (insert "\n")
       (append-to-file (point-min) (point-max) file-name))))
-
-(defun gnus-convert-article-to-rmail ()
-  "Convert article in current buffer to Rmail message format."
-  (let ((buffer-read-only nil))
-    ;; Convert article directly into Babyl format.
-    ;; Suggested by Rob Austein <sra@lcs.mit.edu>
-    (goto-char (point-min))
-    (insert "\^L\n0, unseen,,\n*** EOOH ***\n")
-    (while (search-forward "\n\^_" nil t) ;single char
-      (replace-match "\n^_" t t))	;2 chars: "^" and "_"
-    (goto-char (point-max))
-    (insert "\^_")))
 
 (defun gnus-narrow-to-page (&optional arg)
   "Narrow the article buffer to a page.
@@ -2517,13 +2455,16 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("\\(\\b<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
+  `(("\\(\\b<\\(url: ?\\)?news:\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-message-id 3)
-    ("\\(\\b<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
+    ("\\bnews:\\([^\n\t ]+\\)" 0 t gnus-button-message-id 1)
+    ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
+    ("\\bnews:\\(//\\)?\\([^>\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
     ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
-    ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-url-mailto 2)
+    ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 1)
+    ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
     ;; Raw URLs.

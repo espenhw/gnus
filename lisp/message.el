@@ -109,7 +109,7 @@
   :type 'function)
 
 ;;;###autoload
-(defcustom message-fcc-handler-function 'rmail-output
+(defcustom message-fcc-handler-function 'message-output
   "*A function called to save outgoing articles.
 This function will be called with the name of the file to store the
 article in.  The default function is `rmail-output' which saves in Unix
@@ -725,7 +725,9 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
-  (autoload 'mh-send-letter "mh-comp"))
+  (autoload 'mh-send-letter "mh-comp")
+  (autoload 'gnus-output-to-mail "gnus-util")
+  (autoload 'gnus-output-to-rmail "gnus-util"))
 
 
 
@@ -2139,14 +2141,16 @@ to find out how to use this."
 	  (setq file (expand-file-name file))
 	  (unless (file-exists-p (file-name-directory file))
 	    (make-directory (file-name-directory file) t))
-	  (if (and message-fcc-handler-function
-		   (not (eq message-fcc-handler-function 'rmail-output)))
-	      (funcall message-fcc-handler-function file)
-	    (if (and (file-readable-p file) (mail-file-babyl-p file))
-		(rmail-output file 1 nil t)
-	      (let ((mail-use-rfc822 t))
-		(rmail-output file 1 t t))))))
+	  (funcall message-fcc-handler-function file)))
+      
       (kill-buffer (current-buffer)))))
+
+(defun message-output (filename)
+  "Append this article to Unix/babyl mail file.."
+  (if (and (file-readable-p filename)
+	   (mail-file-babyl-p filename))
+      (gnus-output-to-rmail filename t)
+    (gnus-output-to-mail filename t)))
 
 (defun message-cleanup-headers ()
   "Do various automatic cleanups of the headers."
@@ -3183,6 +3187,10 @@ Optional NEWS will use news to forward instead of mail."
       (while (re-search-backward "^\\(Also-\\)?Resent-" beg t)
 	(beginning-of-line)
 	(insert "Also-"))
+      ;; Quote any "From " lines at the beginning.
+      (goto-char beg)
+      (when (looking-at "From ")
+	(replace-match "X-From-Line: "))
       ;; Send it.
       (message-send-mail)
       (kill-buffer (current-buffer)))

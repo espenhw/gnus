@@ -381,7 +381,14 @@ call it with the value of the `gnus-data' text property."
   (unless (face-differs-from-default-p 'underline)
     (funcall (intern "set-face-underline-p") 'underline t))
 
-  (fset 'gnus-characterp 'characterp)
+  (cond
+   ((fboundp 'char-or-char-int-p)
+    ;; Handle both types of marks for XEmacs-20.x.
+    (fset 'gnus-characterp 'char-or-char-int-p))
+   ;; V19 of XEmacs, probably.
+   (t
+    (fset 'gnus-characterp 'characterp)))
+
   (fset 'gnus-make-overlay 'make-extent)
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
@@ -391,8 +398,9 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
       
   (require 'text-props)
-  (when (< emacs-minor-version 14)
-    (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
+  (if (and (<= emacs-major-version 19)
+ 	   (< emacs-minor-version 14))
+      (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
   (when (fboundp 'turn-off-scroll-in-place)
     (add-hook 'gnus-article-mode-hook 'turn-off-scroll-in-place))

@@ -225,8 +225,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	      (and (numberp nntp-large-newsgroup)
 		   (> number nntp-large-newsgroup)
 		   (zerop (% received 20))
-		   (message "NNTP: Receiving headers... %d%%"
-			    (/ (* received 100) number)))
+		   (nnheader-message 6 "NNTP: Receiving headers... %d%%"
+				     (/ (* received 100) number)))
 	      (nntp-accept-response))))
 	;; Wait for text of last command.
 	(goto-char (point-max))
@@ -238,7 +238,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
-	     (message "NNTP: Receiving headers...done"))
+	     (nnheader-message 6 "NNTP: Receiving headers...done"))
 
 	;; Now all of replies are received.  Fold continuation lines.
 	(nnheader-fold-continuation-lines)
@@ -353,12 +353,12 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (and (numberp nntp-large-newsgroup)
 		 (> number nntp-large-newsgroup)
 		 (zerop (% received 20))
-		 (message "NNTP: Receiving articles... %d%%"
-			  (/ (* received 100) number)))
+		 (nnheader-message 6 "NNTP: Receiving articles... %d%%"
+				   (/ (* received 100) number)))
 	    (nntp-accept-response))))
       (and (numberp nntp-large-newsgroup)
 	   (> number nntp-large-newsgroup)
-	   (message "NNTP: Receiving headers...done"))
+	   (nnheader-message 6 "NNTP: Receiving headers...done"))
 
       ;; Now we have all the responses.  We go through the results,
       ;; washes it and copies it over to the server buffer.
@@ -823,7 +823,7 @@ It will prompt for a password."
     (let ((len (/ (point-max) 1024)))
       (unless (< len 10)
 	(setq nntp-have-messaged t)
-	(message "nntp read: %dk" len)))
+	(nnheader-message 7 "nntp read: %dk" len)))
     (accept-process-output process 1)))
 
 (defun nntp-accept-response ()

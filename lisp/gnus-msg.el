@@ -309,6 +309,13 @@ header line with the old Message-ID."
       (push
        `((lambda ()
 	   (gnus-cache-possibly-remove-article ,article nil nil nil t)))
+       message-send-actions)
+      (push
+       `((lambda ()
+	   (when (buffer-name (get-buffer ,gnus-summary-buffer))
+	     (save-excursion
+	       (set-buffer (get-buffer ,gnus-summary-buffer))
+	       (gnus-summary-mark-as-read ,article gnus-canceled-mark)))))
        message-send-actions))))
 
 

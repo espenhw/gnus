@@ -131,6 +131,15 @@ If this is a symbol, take its value."
   :type 'string
   :group 'smiley)
 
+(defcustom smiley-mouse-face 'highlight
+  "Face used for mouse highlighting in the smiley buffer.
+
+Smiley buttons will be displayed in this face when the cursor is
+above them."
+  :type 'face
+  :group 'smiley)
+
+
 (defvar smiley-glyph-cache nil)
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))
 
@@ -215,10 +224,10 @@ If this is a symbol, take its value."
 		  (set-extent-property ext 'start-open t)
 		  (set-extent-property ext 'invisible t)
 		  (set-extent-property ext 'keymap smiley-map)
-		  (set-extent-property ext 'mouse-face gnus-article-mouse-face)
+		  (set-extent-property ext 'mouse-face 'smiley-mouse-face)
 		  (set-extent-property ext 'intangible t)
 		  ;; set annotation params
-		  (set-extent-property ant 'mouse-face gnus-article-mouse-face)
+		  (set-extent-property ant 'mouse-face 'smiley-mouse-face)
 		  (set-extent-property ant 'keymap smiley-map)
 		  ;; remember each other
 		  (set-extent-property ant 'smiley-extent ext)
