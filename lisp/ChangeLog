@@ -1,5 +1,8 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-summary-mail-forward): Clean up.
+	(gnus-summary-mail-forward): To many lists of lists. 
+
 	* gnus-art.el (article-wash-html): Clean up.
 
 2003-01-02  pete-temp  <pete-temp-12-29-2002@kazmier.com>

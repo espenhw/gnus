@@ -1156,38 +1156,41 @@ If POST, post instead of mail.
 For the `inline' alternatives, also see the variable
 `message-forward-ignored-headers'."
   (interactive "P")
-  (if (null (cdr (gnus-summary-work-articles nil)))
-      (let ((message-forward-as-mime message-forward-as-mime)
-	    (message-forward-show-mml message-forward-show-mml))
-	(cond
-	 ((null arg))
-	 ((eq arg 1)
-	  (setq message-forward-as-mime nil
-		message-forward-show-mml t))
-	 ((eq arg 2)
-	  (setq message-forward-as-mime t
-		message-forward-show-mml nil))
-	 ((eq arg 3)
-	  (setq message-forward-as-mime t
-		message-forward-show-mml t))
-	 ((eq arg 4)
-	  (setq message-forward-as-mime nil
-		message-forward-show-mml nil))
-	 (t
-	  (setq message-forward-as-mime (not message-forward-as-mime))))
-	(let* ((gnus-article-reply (gnus-summary-article-number))
-	       (gnus-article-yanked-articles (list (list gnus-article-reply))))
-	  (gnus-setup-message 'forward
-	    (gnus-summary-select-article)
-	    (let ((mail-parse-charset
-		   (or (and (gnus-buffer-live-p gnus-article-buffer)
-			    (with-current-buffer gnus-article-buffer
-			      gnus-article-charset))
-		       gnus-newsgroup-charset))
-		  (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
-	      (set-buffer gnus-original-article-buffer)
-	      (message-forward post)))))
-    (gnus-uu-digest-mail-forward arg post)))
+  (if (cdr (gnus-summary-work-articles nil))
+      ;; Process marks are given.
+      (gnus-uu-digest-mail-forward arg post)
+    ;; No process marks.
+    (let ((message-forward-as-mime message-forward-as-mime)
+	  (message-forward-show-mml message-forward-show-mml))
+      (cond
+       ((null arg))
+       ((eq arg 1)
+	(setq message-forward-as-mime nil
+	      message-forward-show-mml t))
+       ((eq arg 2)
+	(setq message-forward-as-mime t
+	      message-forward-show-mml nil))
+       ((eq arg 3)
+	(setq message-forward-as-mime t
+	      message-forward-show-mml t))
+       ((eq arg 4)
+	(setq message-forward-as-mime nil
+	      message-forward-show-mml nil))
+       (t
+	(setq message-forward-as-mime (not message-forward-as-mime))))
+      (let* ((gnus-article-reply (gnus-summary-article-number))
+	     (gnus-article-yanked-articles (list gnus-article-reply)))
+	(gnus-setup-message 'forward
+	  (gnus-summary-select-article)
+	  (let ((mail-parse-charset
+		 (or (and (gnus-buffer-live-p gnus-article-buffer)
+			  (with-current-buffer gnus-article-buffer
+			    gnus-article-charset))
+		     gnus-newsgroup-charset))
+		(mail-parse-ignored-charsets
+		 gnus-newsgroup-ignored-charsets))
+	    (set-buffer gnus-original-article-buffer)
+	    (message-forward post)))))))
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
