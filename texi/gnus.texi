@@ -13137,7 +13137,7 @@ There should be no data returned.
 
 
 @node Writing New Backends
-@subsection Writing New Backends
+@subsubsection Writing New Backends
 
 The various backends share many similarities.  @code{nnml} is just like
 @code{nnspool}, but it allows you to edit the articles on the server.
@@ -13152,15 +13152,6 @@ want to.  (You don't have to if you don't want to, of course.)
 
 All the backends declare their public variables and functions by using a
 package called @code{nnoo}.  
-
-@menu
-* Declaring Backends::     An overview of the @code{nnoo} mechanisms.
-* An Example Backend::     A complete backend.
-@end menu
-
-
-@node Declaring Backends
-@subsubsection Declaring Backends
 
 To inherit functions from other backends (and allow other backends to
 inherit functions from the current backend), you should use the
@@ -13247,10 +13238,6 @@ on to @code{nnmh-request-list}, while all public functions from
 defined now.
 
 @end table
-
-
-@node An Example Backend
-@subsubsection An Example Backend
 
 Below is a slightly shortened version of the @code{nndir} backend.
 

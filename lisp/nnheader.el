@@ -155,64 +155,20 @@ on your system, you could say something like:
     (setq case-fold-search t)		;Should ignore case.
     t))
 
-;;; Virtual server functions.
-
-(defun nnheader-set-init-variables (server defs)
-  (let ((s server)
-	val)
-    ;; First we set the server variables in the sequence required.  We
-    ;; use the definitions from the `defs' list where that is
-    ;; possible. 
-    (while s
-      (set (caar s) 
-	   (if (setq val (assq (caar s) defs))
-	       (nth 1 val)
-	     (nth 1 (car s))))
-      (setq s (cdr s)))
-    ;; The we go through the defs list and set any variables that were
-    ;; not set in the first sweep.
-    (while defs
-      (if (not (assq (caar defs) server))
-	  (set (caar defs) 
-	       (if (and (symbolp (nth 1 (car defs)))
-			(not (boundp (nth 1 (car defs)))))
-		   (nth 1 (car defs))
-		 (eval (nth 1 (car defs))))))
-      (setq defs (cdr defs)))))
-
-(defun nnheader-save-variables (server)
-  (let (out)
-    (while server
-      (push (list (caar server) (symbol-value (caar server))) out)
-      (setq server (cdr server)))
-    (nreverse out)))
-
-(defun nnheader-restore-variables (state)
-  (while state
-    (set (caar state) (nth 1 (car state)))
-    (setq state (cdr state))))
-
-(defun nnheader-change-server-old (backend server defs)
-  (nnheader-init-server-buffer)
-  (let ((current-server (intern (format "%s-current-server" backend)))
-	(alist (intern (format "%s-server-alist" backend)))
-	(variables (intern (format "%s-server-variables" backend))))
-
-    (when (and (symbol-value current-server)
-	       (not (equal server (symbol-value current-server))))
-      (set alist
-	   (cons (list (symbol-value current-server)
-		       (nnheader-save-variables (symbol-value variables)))
-		 (symbol-value alist))))
-    (let ((state (assoc server (symbol-value alist))))
-      (if (not state)
-	  (nnheader-set-init-variables (symbol-value variables) defs)
-	(nnheader-restore-variables (nth 1 state))
-	(set alist (delq state (symbol-value alist)))))
-    (set current-server server)
-    t))
 
 ;;; Various functions the backends use.
+
+(defun nnheader-file-error (file)
+  "Return a string that says what is wrong with FILE."
+  (format
+   (cond
+    ((not (file-exists-p file))
+     "%s does not exist")
+    ((file-directory-p file)
+     "%s is a directory")
+    ((not (file-readable-p file))
+     "%s is not readable"))
+   file))
 
 (defun nnheader-insert-head (file)
   "Insert the head of the article."

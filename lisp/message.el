@@ -78,7 +78,7 @@ a list, then those elements in that list will be checked.")
 
 ;;;###autoload
 (defvar message-required-news-headers
-  '(From Date Newsgroups Subject Message-ID 
+  '(From Newsgroups Subject Date Message-ID 
 	 (optional . Organization) Lines 
 	 (optional . X-Newsreader))
   "*Headers to be generated or prompted for when posting an article.
@@ -89,7 +89,7 @@ header, remove it from this list.")
 
 ;;;###autoload
 (defvar message-required-mail-headers 
-  '(From Date Subject (optional . In-Reply-To) Message-ID Lines
+  '(From Subject Date (optional . In-Reply-To) Message-ID Lines
 	 (optional . X-Mailer))
   "*Headers to be generated or prompted for when mailing a message.
 RFC822 required that From, Date, To, Subject and Message-ID be
@@ -204,10 +204,10 @@ variable `message-header-separator'.")
 ;;;###autoload
 (defvar message-use-followup-to 'ask
   "*Specifies what to do with Followup-To header.
-If nil, ignore the header. If it is t, use its value, but ignore
-\"poster\".  If it is the symbol `ask', query the user whether to
-ignore the \"poster\" value.  If it is the symbol `use', always use
-the value.")
+If nil, ignore the header. If it is t, use its value, but query before
+using the \"poster\" value.  If it is the symbol `ask', query the user
+whether to ignore the \"poster\" value.  If it is the symbol `use',
+always use the value.")
 
 (defvar gnus-post-method)
 (defvar gnus-select-method)
@@ -528,7 +528,49 @@ Return the number of headers removed."
       (or (mail-fetch-field "to")
 	  (mail-fetch-field "cc")
 	  (mail-fetch-field "bcc")))))
+
+(defun message-next-header ()
+  "Go to the beginning of the next header."
+  (beginning-of-line)
+  (or (eobp) (forward-char 1))
+  (not (if (re-search-forward "^[^ \t]" nil t)
+	   (beginning-of-line)
+	 (goto-char (point-max)))))
     
+(defun message-sort-headers-1 ()
+  "Sort the buffer as headers using `message-rank' text props."
+  (goto-char (point-min))
+  (sort-subr 
+   nil 'message-next-header 
+   (lambda ()
+     (message-next-header)
+     (unless (bobp)
+       (forward-char -1)))
+   (lambda ()
+     (or (get-text-property (point) 'message-rank)
+	 0))))
+
+(defun message-sort-headers ()
+  "Sort the headers of the current message according to `message-header-format-alist'."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (let ((max (1+ (length message-header-format-alist)))
+	    rank)
+	(message-narrow-to-headers)
+	(while (re-search-forward "^[^ ]+:" nil t)
+	  (put-text-property
+	   (match-beginning 0) (1+ (match-beginning 0))
+	   'message-rank
+	   (if (setq rank (length (memq (assq (intern (buffer-substring
+						       (match-beginning 0)
+						       (1- (match-end 0))))
+					      message-header-format-alist)
+					message-header-format-alist)))
+	       (- max rank)
+	     (1+ max)))))
+      (message-sort-headers-1))))
+
 
 
 ;;;
@@ -1884,12 +1926,16 @@ Headers already prepared in the buffer are not modified."
     (when message-default-news-headers
       (insert message-default-news-headers))
     (when message-generate-headers-first
-      (message-generate-headers message-required-news-headers)))
+      (message-generate-headers
+       (delq 'Lines
+	     (copy-sequence message-required-news-headers)))))
   (when (message-mail-p)
     (when message-default-mail-headers
       (insert message-default-mail-headers))
     (when message-generate-headers-first
-      (message-generate-headers message-required-mail-headers)))
+      (message-generate-headers
+       (delq 'Lines
+	     (copy-sequence message-required-mail-headers)))))
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction
@@ -2096,13 +2142,13 @@ Headers already prepared in the buffer are not modified."
 	    (cond 
 	     ((equal (downcase followup-to) "poster")
 	      (if (or (eq message-use-followup-to 'use)
-		      (yes-or-no-p "Use Followup-To \"poster\"? "))
+		      (y-or-n-p "Use Followup-To \"poster\"? "))
 		  (cons 'To (or reply-to from ""))
 		(cons 'Newsgroups newsgroups)))
 	     (t
 	      (if (or (equal followup-to newsgroups)
 		      (not (eq message-use-followup-to 'ask))
-		      (yes-or-no-p 
+		      (y-or-n-p 
 		       (format "Use Followup-To %s? " followup-to)))
 		  (cons 'Newsgroups followup-to)
 		(cons 'Newsgroups newsgroups))))))

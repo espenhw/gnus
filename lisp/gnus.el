@@ -1702,7 +1702,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.75"
+(defconst gnus-version "September Gnus v0.76"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -7602,10 +7602,15 @@ If NO-DISPLAY, don't generate a summary buffer."
       (when gnus-build-sparse-threads
 	(gnus-build-sparse-threads))
       ;; Find the initial limit.
-      (if show-all
-	  (let ((gnus-newsgroup-dormant nil))
+      (if gnus-show-threads
+	  (if show-all
+	      (let ((gnus-newsgroup-dormant nil))
+		(gnus-summary-initial-limit show-all))
 	    (gnus-summary-initial-limit show-all))
-	(gnus-summary-initial-limit show-all))
+	(setq gnus-newsgroup-limit 
+	      (mapcar 
+	       (lambda (header) (mail-header-number header))
+	       gnus-newsgroup-headers)))
       ;; Generate the summary buffer.
       (unless no-display
 	(gnus-summary-prepare))
@@ -8477,12 +8482,11 @@ or a straight list of headers."
   (let (header number mark)
 
     (while headers
-      (setq header (car headers)
-	    headers (cdr headers)
-	    number (mail-header-number header))
-
       ;; We may have to root out some bad articles...
-      (when (memq number gnus-newsgroup-limit)
+      (when (memq (setq number (mail-header-number
+				(setq header (pop headers))))
+		  gnus-newsgroup-limit)
+	;; Mark article as read when it has a low score.
 	(when (and gnus-summary-mark-below
 		   (< (or (cdr (assq number gnus-newsgroup-scored))
 			  gnus-summary-default-score 0)
@@ -13620,6 +13624,7 @@ always hide."
 	  (let ((buffer-read-only nil)
 		(props (nconc (list 'gnus-type 'headers)
 			      gnus-hidden-properties))
+		(max (1+ (length gnus-sorted-header-list)))
 		(ignored (when (not (stringp gnus-visible-headers))
 			   (cond ((stringp gnus-ignored-headers)
 				  gnus-ignored-headers)
@@ -13654,46 +13659,33 @@ always hide."
 	      (beginning-of-line)
 	      ;; We add the headers we want to keep to a list and delete
 	      ;; them from the buffer.
-	      (if (or (and visible (looking-at visible))
-		      (and ignored (not (looking-at ignored))))
-		  (progn
-		    (push (buffer-substring
-			   (setq beg (point))
-			   (progn
-			     (forward-line 1)
-			     ;; Be sure to get multi-line headers...
-			     (re-search-forward "^[^ \t]*:" nil t)
-			     (beginning-of-line)
-			     (point)))
-			  want-list)
-		    (delete-region beg (point)))
-		(forward-line 1)))
-	    ;; Sort the headers that we want to display.
-	    (setq want-list (sort want-list 'gnus-article-header-less))
-	    (goto-char (point-min))
-	    (while want-list
-	      (insert (pop want-list)))
-	    ;; We make the unwanted headers invisible.
-	    (if delete
-		(delete-region (point-min) (point-max))
-	      ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
-	      (gnus-hide-text-type (point) (point-max) 'headers))))))))
+	      (put-text-property 
+	       (point) (1+ (point)) 'message-rank
+	       (if (or (and visible (looking-at visible))
+		       (and ignored
+			    (not (looking-at ignored))))
+		   (gnus-article-header-rank) 
+		 (+ 2 max)))
+	      (forward-line 1))
+	    (message-sort-headers-1)
+	    (when (setq beg (text-property-any 
+			     (point-min) (point-max) 'message-rank (+ 2 max)))
+	      ;; We make the unwanted headers invisible.
+	      (if delete
+		  (delete-region beg (point-max))
+		;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
+		(gnus-hide-text-type beg (point-max) 'headers)))))))))
 
-(defsubst gnus-article-header-rank (header)
+(defsubst gnus-article-header-rank ()
   "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
   (let ((list gnus-sorted-header-list)
 	(i 0))
     (while list
-      (when (string-match (car list) header)
+      (when (looking-at (car list))
 	(setq list nil))
       (setq list (cdr list))
       (incf i))
     i))
-
-(defun gnus-article-header-less (h1 h2)
-  "Say whether string H1 is \"less\" than string H2."
-  (< (gnus-article-header-rank h1)
-     (gnus-article-header-rank h2)))
 
 (defun gnus-article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
@@ -15234,37 +15226,37 @@ the server for new groups."
 	  (setq hashtb (gnus-make-hashtable 100))
 	  (set-buffer nntp-server-buffer)
 	  ;; Enter all the new groups into a hashtable.
-	  (gnus-active-to-gnus-format method hashtb 'ignore)))
-      ;; Now all new groups from `method' are in `hashtb'.
-      (mapatoms
-       (lambda (group-sym)
-	 (if (or (null (setq group (symbol-name group-sym)))
-		 (not (boundp group-sym))
-		 (null (symbol-value group-sym))
-		 (gnus-gethash group gnus-newsrc-hashtb)
-		 (member group gnus-zombie-list)
-		 (member group gnus-killed-list))
-	     ;; The group is already known.
-	     ()
-	   ;; Make this group active.
-	   (when (symbol-value group-sym)
-	     (gnus-set-active group (symbol-value group-sym)))
-	   ;; Check whether we want it or not.
-	   (let ((do-sub (gnus-matches-options-n group)))
-	     (cond
-	      ((eq do-sub 'subscribe)
-	       (incf groups)
-	       (gnus-sethash group group gnus-killed-hashtb)
-	       (funcall gnus-subscribe-options-newsgroup-method group))
-	      ((eq do-sub 'ignore)
-	       nil)
-	      (t
-	       (incf groups)
-	       (gnus-sethash group group gnus-killed-hashtb)
-	       (if gnus-subscribe-hierarchical-interactive
-		   (push group new-newsgroups)
-		 (funcall gnus-subscribe-newsgroup-method group)))))))
-       hashtb)
+	  (gnus-active-to-gnus-format method hashtb 'ignore))
+	;; Now all new groups from `method' are in `hashtb'.
+	(mapatoms
+	 (lambda (group-sym)
+	   (if (or (null (setq group (symbol-name group-sym)))
+		   (not (boundp group-sym))
+		   (null (symbol-value group-sym))
+		   (gnus-gethash group gnus-newsrc-hashtb)
+		   (member group gnus-zombie-list)
+		   (member group gnus-killed-list))
+	       ;; The group is already known.
+	       ()
+	     ;; Make this group active.
+	     (when (symbol-value group-sym)
+	       (gnus-set-active group (symbol-value group-sym)))
+	     ;; Check whether we want it or not.
+	     (let ((do-sub (gnus-matches-options-n group)))
+	       (cond
+		((eq do-sub 'subscribe)
+		 (incf groups)
+		 (gnus-sethash group group gnus-killed-hashtb)
+		 (funcall gnus-subscribe-options-newsgroup-method group))
+		((eq do-sub 'ignore)
+		 nil)
+		(t
+		 (incf groups)
+		 (gnus-sethash group group gnus-killed-hashtb)
+		 (if gnus-subscribe-hierarchical-interactive
+		     (push group new-newsgroups)
+		   (funcall gnus-subscribe-newsgroup-method group)))))))
+	 hashtb))
       (when new-newsgroups
 	(gnus-subscribe-hierarchical-interactive new-newsgroups)))
     ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.

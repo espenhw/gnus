@@ -29,6 +29,7 @@
 (require 'rmail)
 (require 'timezone)
 (require 'sendmail)
+(require 'message)
 (eval-when-compile (require 'cl))
 
 (defvar nnmail-split-methods
@@ -945,30 +946,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     t))
 
 (defun nnmail-message-id ()
-  (concat "<" (nnmail-unique-id) "@totally-fudged-out-message-id>"))
-
-(defvar nnmail-unique-id-char nil)
-
-(defun nnmail-number-base36 (num len)
-  (if (if (< len 0) (<= num 0) (= len 0))
-      ""
-    (concat (nnmail-number-base36 (/ num 36) (1- len))
-	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
-				  (% num 36))))))
-
-(defun nnmail-unique-id ()
-  (setq nnmail-unique-id-char
-	(% (1+ (or nnmail-unique-id-char (logand (random t) (1- (lsh 1 20)))))
-	   ;; (current-time) returns 16-bit ints,
-	   ;; and 2^16*25 just fits into 4 digits i base 36.
-	   (* 25 25)))
-  (let ((tm (if (fboundp 'current-time)
-		(current-time) '(12191 46742 287898))))
-    (concat
-     (nnmail-number-base36 (+ (car   tm) 
-			      (lsh (% nnmail-unique-id-char 25) 16)) 4)
-     (nnmail-number-base36 (+ (nth 1 tm) 
-			      (lsh (/ nnmail-unique-id-char 25) 16)) 4))))
+  (concat "<" (message-unique-id) "@totally-fudged-out-message-id>"))
 
 ;;;
 ;;; nnmail duplicate handling

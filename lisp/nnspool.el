@@ -243,17 +243,22 @@ there.")
 (deffoo nnspool-request-list (&optional server)
   "List active newsgroups."
   (save-excursion
-    (nnspool-find-file nnspool-active-file)))
+    (or (nnspool-find-file nnspool-active-file)
+	(nnheader-report 'nnspool (nnheader-file-error nnspool-active-file)))))
 
 (deffoo nnspool-request-list-newsgroups (&optional server)
   "List newsgroups (defined in NNTP2)."
   (save-excursion
-    (nnspool-find-file nnspool-newsgroups-file)))
+    (or (nnspool-find-file nnspool-newsgroups-file)
+	(nnheader-report 'nnspool (nnheader-file-error 
+				   nnspool-newsgroups-file)))))
 
 (deffoo nnspool-request-list-distributions (&optional server)
   "List distributions (defined in NNTP2)."
   (save-excursion
-    (nnspool-find-file nnspool-distributions-file)))
+    (or (nnspool-find-file nnspool-distributions-file)
+	(nnheader-report 'nnspool (nnheader-file-error 
+				   nnspool-distributions-file)))))
 
 ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 (deffoo nnspool-request-newgroups (date &optional server)

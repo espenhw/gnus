@@ -64,7 +64,7 @@ server must be specified as follows:
 If you'd like to change something depending on the server in this
 hook, use the variable `nntp-address'.")
 
-(defvoo nntp-server-opened-hook nil
+(defvoo nntp-server-opened-hook '(nntp-send-mode-reader)
   "*Hook used for sending commands to the server at startup.  
 The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
@@ -738,11 +738,11 @@ It will prompt for a password."
    	       ((fboundp 'start-itimer)
    		;; Not sure if this will work or not, only one way to
    		;; find out
-   		(eval '(start-itimer "nntp-timeout"
-				     (lambda ()
-				       (nntp-kill-command 
-					(nnoo-current-server 'nntp)))
-				     nntp-command-timeout nil))))))
+		(start-itimer "nntp-timeout"
+			      (lambda ()
+				(nntp-kill-command 
+				 (nnoo-current-server 'nntp)))
+			      nntp-command-timeout nil)))))
 	(nntp-retry-command t)
 	result)
     (unwind-protect
@@ -769,7 +769,9 @@ It will prompt for a password."
 		      t))))
 	  result)
       (when timer 
-	(cancel-timer timer)))))
+	(if (fboundp 'run-at-time)
+	    (cancel-timer timer)
+	  (delete-itimer timer))))))
 
 (defun nntp-kill-command (server)
   "Kill and restart the connection to SERVER."
@@ -1111,7 +1113,10 @@ If SERVICE, this this as the port number."
 	    (t				; We couldn't open the server.
 	     (nnheader-report 
 	      'nntp (buffer-substring (point-min) (point-max)))))
-      (and timer (cancel-timer timer))
+      (when timer 
+	(if (fboundp 'run-at-time)
+	    (cancel-timer timer)
+	  (delete-itimer timer)))
       (message "")
       (unless status
 	(nnoo-close-server 'nntp server)
