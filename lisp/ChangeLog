@@ -1,3 +1,8 @@
+2000-12-24 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-setup): Use cons. Suggested by Johan Vromans
+	<jvromans@squirrel.nl>.
+
 2000-12-24  Simon Josefsson  <sj@extundo.com>
 
 	* mm-bodies.el (mm-decode-content-transfer-encoding): Preserve
