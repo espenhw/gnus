@@ -168,10 +168,10 @@
 	  (narrow-to-region (point) (point))
 	  (mm-insert-part part)
 	  (goto-char (point-min))
-	  (if (re-search-forward "^-----\\([^-]+\\)-----$" nil t)
-	      (replace-match "BEGIN PGP SIGNATURE" t t nil 1))
-	  (if (re-search-forward "^-----\\([^-]+\\)-----$" nil t)
-	      (replace-match "END PGP SIGNATURE" t t nil 1)))
+	  (if (re-search-forward "^-----BEGIN PGP [^-]+-----\r?$" nil t)
+	      (replace-match "-----BEGIN PGP SIGNATURE-----" t t))
+	  (if (re-search-forward "^-----END PGP [^-]+-----\r?$" nil t)
+	      (replace-match "-----END PGP SIGNATURE-----" t t)))
 	(unless (condition-case err
 		    (funcall mml2015-verify-function)
 		  (error 
@@ -230,14 +230,14 @@
     (insert (format "\n--%s\n" boundary))
     (setq point (point))
     (goto-char (point-max))
-    (unless (re-search-backward "^-----END PGP \\(SIGNATURE\\)-----\r?$" nil t)
+    (unless (re-search-backward "^-----END PGP SIGNATURE-----\r?$" nil t)
       (error "Cannot find signature part." ))
-    (replace-match "MESSAGE" t t nil 1)
+    (replace-match "-----END PGP MESSAGE-----" t t)
     (goto-char (match-beginning 0))
-    (unless (re-search-backward "^-----BEGIN PGP \\(SIGNATURE\\)-----\r?$" 
+    (unless (re-search-backward "^-----BEGIN PGP SIGNATURE-----\r?$" 
 				nil t)
       (error "Cannot find signature part." ))
-    (replace-match "MESSAGE" t t nil 1)
+    (replace-match "-----BEGIN PGP MESSAGE-----" t t)
     (goto-char (match-beginning 0))
     (save-restriction
       (narrow-to-region point (point))
