@@ -1,3 +1,8 @@
+2003-09-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* rfc2047.el (rfc2047-header-encoding-alist): Add "Approved" to
+	address-mime.
+
 2003-09-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-encode): Restrict encoded-words to 75
