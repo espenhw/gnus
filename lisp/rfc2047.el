@@ -380,23 +380,22 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		    (when (looking-at "[\000-\177]+")
 		      (setq begin (point)
 			    end (match-end 0))
-		      (if (progn
-			    (while (and (re-search-forward "[ \t\n]\\|\\Sw"
-							   end 'move)
-					(eq ?\\ (char-syntax (char-before))))
-			      ;; Skip backslash-quoted characters.
-			      (forward-char))
-			    (< (point) end))
-			  (progn
-			    (setq end (match-beginning 0))
-			    (if rfc2047-encode-encoded-words
-				(progn
-				  (goto-char begin)
-				  (when (search-forward "=?" end 'move)
-				    (goto-char (match-beginning 0))
-				    (setq end nil)))
-			      (goto-char end)))
-			(setq end nil)))
+		      (when (progn
+			      (while (and (or (re-search-forward
+					       "[ \t\n]\\|\\Sw" end 'move)
+					      (setq end nil))
+					  (eq ?\\ (char-syntax (char-before))))
+				;; Skip backslash-quoted characters.
+				(forward-char))
+			      end)
+			(setq end (match-beginning 0))
+			(if rfc2047-encode-encoded-words
+			    (progn
+			      (goto-char begin)
+			      (when (search-forward "=?" end 'move)
+				(goto-char (match-beginning 0))
+				(setq end nil)))
+			  (goto-char end))))
 		    (unless end
 		      (setq end t)
 		      (when (looking-at encodable-regexp)
