@@ -535,17 +535,14 @@ This overrides entries in the mailcap file."
 	   (car (mm-handle-type handle)))
 	  (prog1
 	      (setq spec
-		    (make-image-specifier
-		     (vector (intern type) :data (buffer-string))))
+		    (make-glyph `[,(intern type) :data ,(buffer-string)]))
 	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
-  (let ((image (make-annotation (mm-get-image handle))))
-    (and (< (glyph-width (annotation-glyph image))
-	    (window-pixel-width))
-	 (< (glyph-height (annotation-glyph image))
-	    (window-pixel-height)))))
+  (let ((image (mm-get-image handle)))
+    (and (< (glyph-width image) (window-pixel-width))
+ 	 (< (glyph-height image) (window-pixel-height)))))
 
 (provide 'mm-decode)
 

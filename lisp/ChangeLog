@@ -1,3 +1,48 @@
+Tue Dec  1 00:46:20 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.58 is released.
+
+1998-11-30  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mm-decode.el (mm-get-image): Return a glyph, not an image
+ 	specifier.
+
+1998-11-29  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* rfc2047.el (rfc2047-decode): Bind mm-default-charset.
+
+1998-12-01 01:23:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-parse.el (rfc2045): Required.
+
+1998-12-01 00:59:53  William M. Perry  <wmperry@aventail.com>
+
+	* mm-view.el (mm-inline-text): Remove props.
+
+1998-12-01 00:18:47  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-setup-w3): Protect url-misc.
+
+	* message.el (message-ignored-resent-headers): Remove
+	Gnus-Warning. 
+
+	* mml.el (mml-insert-mime-headers): Use encoding.
+	(mml-parameter-string): Ditto.
+
+	* rfc2045.el: New file.
+	(rfc2045-encode-string): New function.
+
+1998-11-30 23:11:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-parse.el (mail-header-encode-parameter): New function.
+
+	* rfc2231.el (rfc2231-encode-string): New function.
+
+Mon Nov 30 13:52:50 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-string): New function.
+	* mm-view.el (mm-inline-text): Use mm-decode-string.
+
 Mon Nov 30 21:57:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.57 is released.

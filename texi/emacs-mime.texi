@@ -166,6 +166,12 @@ Returns the value of the attribute.
 @result{} "b980912.gif"
 @end example
 
+@item mail-header-encode-parameter
+@findex mail-header-encode-parameter
+Takes a parameter string and returns an encoded version of the string.
+This is used for parameters in headers like @code{Content-Type} and
+@code{Content-Disposition}.
+
 @item mail-header-remove-comments
 @findex mail-header-remove-comments
 Return a comment-free version of a header.
@@ -285,6 +291,7 @@ on.  High-level functionality is dealt with in the next chapter
 (@pxref{Decoding and Viewing}).
 
 @menu
+* rfc2045::      Encoding @code{Content-Type} headers.
 * rfc2231::      Parsing @code{Content-Type} headers.
 * ietf-drums::   Handling mail headers defined by RFC822bis.
 * rfc2047::      En/decoding encoded words in headers.
@@ -296,6 +303,24 @@ on.  High-level functionality is dealt with in the next chapter
 * rfc1843::      Decoding HZ-encoded text.
 * mailcap::      How parts are displayed is specified by the @file{.mailcap} file
 @end menu
+
+
+@node rfc2045
+@section rfc2045
+
+RFC2045 is the ``main'' @sc{mime} document, and as such, one would
+imagine that there would be a lot to implement.  But there isn't, since
+most of the implementation details are delegated to the subsequent
+RFCs.
+
+So @file{rfc2045.el} has only a single function:
+
+@table @code
+@item rfc2045-encode-string
+@findex rfc2045-encode-string
+Takes a parameter and a value and returns a @samp{PARAM=VALUE} string.
+@var{value} will be quoted if there are non-safe characters in it.
+@end table
 
 
 @node rfc2231
@@ -337,8 +362,13 @@ elements.
 
 @item rfc2231-get-value
 @findex rfc2231-get-value
-Takes one of the lists on the format above and return
+Takes one of the lists on the format above and returns
 the value of the specified attribute.
+
+@item rfc2231-encode-string
+@findex rfc2231-encode-string
+Encode a parameter in headers likes @code{Content-Type} and
+@code{Content-Disposition}. 
 
 @end table
 

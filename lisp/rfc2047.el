@@ -305,7 +305,8 @@ Return WORD if not."
   "Decode STRING that uses CHARSET with ENCODING.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
-  (let ((cs (mm-charset-to-coding-system charset)))
+  (let ((cs (let ((mm-default-charset rfc2047-default-charset))
+	      (mm-charset-to-coding-system charset))))
     (when cs
       (when (eq cs 'ascii)
 	(setq cs rfc2047-default-charset))

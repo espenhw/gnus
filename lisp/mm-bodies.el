@@ -26,7 +26,8 @@
 
 (eval-and-compile
   (or (fboundp  'base64-decode-region)
-      (require 'base64)))
+      (require 'base64))
+  (autoload 'binhex-decode-region "binhex"))
 
 (require 'mm-util)
 (require 'rfc2047)
@@ -93,24 +94,25 @@ If no encoding was done, nil is returned."
 
 (defun mm-body-encoding ()
   "Return the encoding of the current buffer."
-  (cond ((not (featurep 'mule))
-	 (if (save-excursion
+  (cond
+   ((not (featurep 'mule))
+    (if (save-excursion
+	  (goto-char (point-min))
+	  (re-search-forward mm-8bit-char-regexp nil t))
+	'8bit
+      '7bit))
+   (t
+    ;; Mule version
+    (if (and (null (delq 'ascii (find-charset-region (point-min) (point-max))))
+	     ;;!!!The following is necessary because the function
+	     ;;!!!above seems to return the wrong result under
+	     ;;!!!Emacs 20.3.  Sometimes.
+	     (save-excursion
 	       (goto-char (point-min))
-	       (re-search-forward mm-8bit-char-regexp nil t))
-	     '8bit
-	   '7bit))
-	(t
-	 ;; Mule version
-	 (if (and (null (delq 'ascii (find-charset-region (point-min) (point-max))))
-		  ;;!!!The following is necessary because the function
-		  ;;!!!above seems to return the wrong result under
-		  ;;!!!Emacs 20.3.  Sometimes.
-		  (save-excursion
-		    (goto-char (point-min))
-		    (skip-chars-forward "\0-\177")
-		    (eobp)))
-	     '7bit
-	   '8bit))))
+	       (skip-chars-forward "\0-\177")
+	       (eobp)))
+	'7bit
+      '8bit))))
 
 ;;;
 ;;; Functions for decoding
@@ -166,6 +168,18 @@ The characters in CHARSET should then be decoded."
 		   (or (not (eq mule-charset 'ascii))
 		       (setq mule-charset rfc2047-default-charset)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
+
+(defun mm-decode-string (string charset)
+  "Decode STRING with CHARSET."
+  (setq charset (or charset rfc2047-default-charset))
+  (when (featurep 'mule)
+    (let (mule-charset)
+      (when (and charset
+		 (setq mule-charset (mm-charset-to-coding-system charset))
+		 enable-multibyte-characters
+		 (or (not (eq mule-charset 'ascii))
+		     (setq mule-charset rfc2047-default-charset)))
+	(mm-decode-coding-string string mule-charset)))))
 
 (provide 'mm-bodies)
 

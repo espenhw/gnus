@@ -42,7 +42,7 @@ The list will be on the form
 	  attribute value type subtype number encoded
 	  prev-attribute)
       (ietf-drums-init (mail-header-remove-whitespace
-		   (mail-header-remove-comments string)))
+			(mail-header-remove-comments string)))
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
 	(modify-syntax-entry ?\' "w" table)
 	(set-syntax-table table))
@@ -136,6 +136,64 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	(mm-decode-coding-region (point-min) (point-max)
 				 (intern (car elems))))
       (buffer-string))))
+
+(defun rfc2231-encode-string (param value)
+  "Return and PARAM=VALUE string encoded according to RFC2231."
+  (let ((control (ietf-drums-token-to-list ietf-drums-no-ws-ctl-token))
+	(tspecial (ietf-drums-token-to-list ietf-drums-tspecials))
+	(special (ietf-drums-token-to-list "*'%\n\t"))
+	(ascii (ietf-drums-token-to-list ietf-drums-text-token))
+	(num -1)
+	spacep encodep charsetp charset broken)
+    (with-temp-buffer
+      (insert value)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(cond
+	 ((or (memq (following-char) control)
+	      (memq (following-char) tspecial)
+	      (memq (following-char) special))
+	  (setq encodep t))
+	 ((eq (following-char) ? )
+	  (setq spacep t))
+	 ((not (memq (following-char) ascii))
+	  (setq charsetp t)))
+	(forward-char 1))
+      (when charsetp
+	(setq charset (mm-encode-body)))
+      (cond
+       ((or encodep charsetp)
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (when (> (current-column) 60)
+	    (insert "\n")
+	    (setq broken t))
+	  (if (or (not (memq (following-char) ascii))
+		  (memq (following-char) control)
+		  (memq (following-char) tspecial)
+		  (memq (following-char) special)
+		  (eq (following-char) ? ))
+	      (progn
+		(insert "%" (format "%02x" (following-char)))
+		(delete-char 1))
+	    (forward-char 1)))
+	(goto-char (point-min))
+	(insert (or charset "ascii") "''")
+	(goto-char (point-min))
+	(if (not broken)
+	    (insert param "*=")
+	  (while (not (eobp))
+	    (insert param "*" (format "%d" (incf num)) "*=")
+	    (forward-line 1))))
+       (spacep
+	(goto-char (point-min))
+	(insert param "=\"")
+	(goto-char (point-max))
+	(insert "\""))
+       (t
+	(goto-char (point-min))
+	(insert param "=")))
+      (buffer-string))))	
 
 (provide 'rfc2231)
 

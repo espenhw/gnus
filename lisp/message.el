@@ -322,7 +322,7 @@ The provided functions are:
   :group 'message-forwarding
   :type 'boolean)
 
-(defcustom message-ignored-resent-headers "^Return-receipt\\|^X-Gnus"
+(defcustom message-ignored-resent-headers "^Return-receipt\\|^X-Gnus\\|^Gnus-Warning:"
   "*All headers that match this regexp will be deleted when resending a message."
   :group 'message-interface
   :type 'regexp)

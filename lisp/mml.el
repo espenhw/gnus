@@ -164,13 +164,15 @@
       (when name
 	(setq name (mml-parse-file-name name))
 	(if (stringp name)
-	    (insert ";\n name=\"" (prin1-to-string name)
+	    (insert ";\n " (mail-header-encode-parameter "name" name)
 		    "\";\n access-type=local-file")
 	  (insert
-	   (format ";\n name=%S;\n site=%S;\n directory=%S"
-		   (file-name-nondirectory (nth 2 name))
-		   (nth 1 name)
-		   (file-name-directory (nth 2 name))))
+	   (format ";\n "
+		   (mail-header-encode-parameter
+		    "name" (file-name-nondirectory (nth 2 name)))
+		   (mail-header-encode-parameter "site" (nth 1 name))
+		   (mail-header-encode-parameter
+		    "directory" (file-name-directory (nth 2 name)))))
 	  (insert ";\n access-type="
 		  (if (member (nth 0 name) '("ftp@" "anonymous@"))
 		      "anon-ftp"
@@ -246,7 +248,8 @@
 	      (not (equal type "text/plain")))
       (insert "Content-Type: " type)
       (when charset
-	(insert (format "; charset=\"%s\"" charset)))
+	(insert "; " (mail-header-encode-parameter
+		      "charset" (symbol-name charset))))
       (when parameters
 	(insert parameters))
       (insert "\n"))
@@ -262,18 +265,16 @@
     (unless (eq encoding '7bit)
       (insert (format "Content-Transfer-Encoding: %s\n" encoding)))
     (when (setq description (cdr (assq 'description cont)))
-      (insert "Content-Description: " description "\n"))
-    ))
+      (insert "Content-Description: " description "\n"))))
 
 (defun mml-parameter-string (cont types)
   (let ((string "")
 	value type)
     (while (setq type (pop types))
       (when (setq value (cdr (assq type cont)))
-	(setq string (concat string ";\n " (symbol-name type) "="
-			     (if (string-match "[^_0-9A-Za-z]" value)
-				 (prin1-to-string value)
-			       value)))))
+	(setq string (concat string ";\n "
+			     (mail-header-encode-parameter
+			      (symbol-name type) value)))))
     (when (not (zerop (length string)))
       string)))
 

@@ -1,3 +1,7 @@
+1998-12-01 00:27:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* emacs-mime.texi (rfc2045): New.
+
 1998-11-29 00:03:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* emacs-mime.texi (Composing): New chapter.

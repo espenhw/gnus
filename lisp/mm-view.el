@@ -45,7 +45,9 @@
     (w3-do-setup)
     (require 'url)
     (require 'w3-vars)
-    (load "url-misc.el")
+    (condition-case ()
+	(load "url-misc.el")
+      (error nil))
     (setq mm-w3-setup t)))
 
 (defun mm-inline-text (handle)
@@ -54,13 +56,12 @@
     (cond
      ((equal type "plain")
       (setq text (mm-get-part handle))
-      (let ((b (point)))
-	(insert text)
+      (let ((b (point))
+	    (charset (mail-content-type-get
+		      (mm-handle-type handle) 'charset)))
+	(insert (mm-decode-string text charset))
 	(save-restriction
 	  (narrow-to-region b (point))
-	  (let ((charset (mail-content-type-get
-			  (mm-handle-type handle) 'charset)))
-	    (mm-decode-body charset nil))
 	  (mm-handle-set-undisplayer
 	   handle
 	   `(lambda ()
@@ -84,6 +85,10 @@
 	   handle
 	   `(lambda ()
 	      (let (buffer-read-only)
+              (mapc (lambda (prop)
+		      (remove-specifier
+		       (face-property 'default prop) (current-buffer)))
+                    '(background background-pixmap foreground))
 		(delete-region
 		 ,(set-marker (make-marker) (point-min))
 		 ,(set-marker (make-marker) (point-max)))))))))

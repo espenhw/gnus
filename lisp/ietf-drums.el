@@ -87,6 +87,8 @@
        ((= i (length token))
 	(push (mm-make-char 'ascii c) out))
        (t
+	(when b
+	  (push (mm-make-char 'ascii b) out))
 	(setq b c))))
     (nreverse out)))
 
