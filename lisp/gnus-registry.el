@@ -413,9 +413,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     nil))
 
 (defun gnus-registry-simplify-subject (subject)
-  (if (null subject)
-      nil
-    (gnus-simplify-subject subject)))
+  (if (stringp subject)
+      (gnus-simplify-subject subject)
+    nil))
 
 (defun gnus-registry-fetch-simplified-message-subject-fast (article)
   "Fetch the Subject quickly, using the internal gnus-data-list function"
@@ -522,8 +522,18 @@ Returns the first place where the trail finds a group name."
       ;; now, clear the entry if there are no more groups
       (when gnus-registry-trim-articles-without-groups
 	(unless (gnus-registry-group-count id)
-	  (remhash id gnus-registry-hashtb)))
+	  (gnus-registry-delete-id id)))
       (gnus-registry-store-extra-entry id 'mtime (current-time)))))
+
+(defun gnus-registry-delete-id (id)
+  "Delete a message ID from the registry."
+  (when (stringp id)
+    (remhash id gnus-registry-hashtb)
+    (maphash
+     (lambda (key value)
+       (when (hash-table-p value)
+	 (remhash id value)))
+     gnus-registry-hashtb)))
 
 (defun gnus-registry-add-group (id group &optional subject)
   "Add a group for a message, based on the message ID."

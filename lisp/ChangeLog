@@ -1,3 +1,11 @@
+2003-09-08  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-delete-id): function to
+	completely delete an ID, including all the cache hashtables
+	(gnus-registry-delete-group): use gnus-registry-delete-id
+	(gnus-registry-simplify-subject): only run if the argument is a
+	string, return nil otherwise
+
 2003-09-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-summary-resend-bounced-mail): Docstring fix.
