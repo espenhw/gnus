@@ -321,7 +321,7 @@
   (let* ((node (assistant-find-node assistant-current-node))
 	 (nexts (assistant-get-list node "next"))
 	 next elem)
-    (while (and (setq elem (pop nexts))
+    (while (and (setq elem (cadr (pop nexts)))
 		(not next))
       (when (assistant-eval (car elem) node)
 	(setq next (cadr elem))))

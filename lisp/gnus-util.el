@@ -62,11 +62,6 @@
     (defun gnus-replace-in-string  (string regexp newtext &optional literal)
       (replace-regexp-in-string regexp newtext string nil literal)))))
 
-;;; bring in the netrc functions as aliases
-(defalias 'gnus-netrc-get 'netrc-get)
-(defalias 'gnus-netrc-machine 'netrc-machine)
-(defalias 'gnus-parse-netrc 'netrc-parse)
-
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
   (and (boundp variable)

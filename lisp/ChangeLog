@@ -1,5 +1,9 @@
 2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnimap.el (nnimap-open-connection): Use netrc.
+
+	* gnus-util.el (gnus-netrc-get): Remove aliases.
+	
 	* gnus-sum.el (gnus-auto-center-summary): Change default to 2.
 
 	* assistant.el (wid-edit): Fix compilation.
