@@ -1,5 +1,7 @@
 2004-08-06  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-news.el (gnus-news-header-disclaimer): Fix.
+
 	* gnus-news.texi: Add.
 
 2004-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
