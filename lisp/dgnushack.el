@@ -357,7 +357,19 @@ Modify to suit your needs."))
 ;;; no-byte-compile: t
 ;;; no-update-autoloads: t
 ;;; End:
-;;; gnus-load.el ends here\n"))
+;;; gnus-load.el ends here
+")
+    ;; Workaround the bug in some version of XEmacs.
+    (when (featurep 'xemacs)
+      (condition-case nil
+	  (require 'cus-load)
+	(error nil))
+      (goto-char (point-min))
+      (when (and (fboundp 'custom-add-loads)
+		 (not (search-forward "\n(autoload 'custom-add-loads " nil t)))
+	(search-forward "\n;;; Code:" nil t)
+	(forward-line 1)
+	(insert "\n(autoload 'custom-add-loads \"cus-load\")\n"))))
   (message (format "Compiling %s..." dgnushack-gnus-load-file))
   (byte-compile-file dgnushack-gnus-load-file))
 

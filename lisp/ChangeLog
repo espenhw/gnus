@@ -1,3 +1,8 @@
+2001-11-01 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (dgnushack-make-load): A workaround for
+	custom-add-loads bug in some versions of XEmacs.
+
 2001-11-01 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-charset-synonym-alist): Revert (some).
