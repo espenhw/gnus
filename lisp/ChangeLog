@@ -1,3 +1,14 @@
+Sat Aug 29 23:24:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.5 is released.
+
+1998-08-29 22:38:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-mode): Make article buffer multibyte. 
+	(gnus-hack-decode-rfc1522): Removed.
+
+	* mm-decode.el (mm-charset-coding-system-alist): Check better.
+
 Sat Aug 29 22:20:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v0.4 is released.

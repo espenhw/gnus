@@ -945,23 +945,12 @@ characters to translate to."
 		  (process-send-region "article-x-face" beg end)
 		  (process-send-eof "article-x-face"))))))))))
 
-(defun gnus-hack-decode-rfc1522 ()
-  "Emergency hack function for avoiding problems when decoding."
-  (let ((buffer-read-only nil))
-    (goto-char (point-min))
-    ;; Remove encoded TABs.
-    (while (search-forward "=09" nil t)
-      (replace-match " " t t))
-    ;; Remove encoded newlines.
-    (goto-char (point-min))
-    (while (search-forward "=10" nil t)
-      (replace-match " " t t))))
-
 (defun gnus-article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
   (interactive)
   (save-excursion
-    (let (buffer-read-only)
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
       (mm-decode-words-region (point-min) (point-max)))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
@@ -975,7 +964,7 @@ characters to translate to."
       (mm-decode-words-region (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
-  "Translation a quoted-printable-encoded article.
+  "Translate a quoted-printable-encoded article.
 If FORCE, decode the article whether it is marked as quoted-printable
 or not."
   (interactive (list 'force))
@@ -1946,6 +1935,7 @@ commands:
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
   (set-syntax-table gnus-article-mode-syntax-table)
+  (set-buffer-multibyte t)
   (gnus-run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()

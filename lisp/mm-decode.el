@@ -99,10 +99,11 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
 	   (gb2312 . cn-gb-2312)
 	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
 	   (x-ctext . ctext)))
+	(systems (coding-system-list))
 	dest)
     (while rest
       (let ((pair (car rest)))
-	(unless (coding-system-p (car pair))
+	(unless (memq (car pair) systems)
 	  (setq dest (cons pair dest))))
       (setq rest (cdr rest)))
     dest)
