@@ -1,5 +1,5 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 
+;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 2002, 
 ;;        1997, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -2190,8 +2190,9 @@ possible.
 
 This restriction may disappear in later versions of Gnus.
 
-General format specifiers can also be used.  See
-(gnus)Formatting Variables."
+General format specifiers can also be used.  
+See (gnus)Formatting Variables."
+  :link '(custom-manual "(gnus)Formatting Variables")
   :type 'string
   :group 'gnus-summary-format)
 

@@ -573,8 +573,9 @@ with some simple extensions.
 
 %S  The subject
 
-General format specifiers can also be used.  See
-(gnus)Formatting Variables."
+General format specifiers can also be used.  
+See (gnus)Formatting Variables."
+  :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-threading
   :type 'string)
 

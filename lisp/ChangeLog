@@ -1,5 +1,11 @@
 2002-01-03  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* gnus.el (gnus-summary-line-format): Added :link.
+	* gnus-topic.el (gnus-topic-line-format): Ditto.
+	* gnus-sum.el (gnus-summary-dummy-line-format): Ditto.
+	* gnus-srvr.el (gnus-server-line-format): Ditto.
+	* gnus-group.el (gnus-group-line-format): Ditto.
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Use correct syntax for
 	:keys, it works on both Emacsen.
 

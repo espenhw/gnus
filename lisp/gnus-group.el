@@ -190,8 +190,9 @@ Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect.
 
-General format specifiers can also be used.  See
-(gnus)Formatting Variables."
+General format specifiers can also be used.  
+See (gnus)Formatting Variables."
+  :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-group-visual
   :type 'string)
 
