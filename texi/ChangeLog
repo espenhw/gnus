@@ -1,3 +1,8 @@
+2001-08-09  Simon Josefsson  <jas@extundo.com>
+	From Benjamin Rutt <brutt@bloomington.in.us>
+
+	* gnus.texi (Mail Backend Variables): Fix.
+
 2001-08-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Summary Buffer Lines): Mention `gnus-goto-colon'.

@@ -12053,10 +12053,10 @@ is done).  Here's and example of using these two hooks to change the
 default file modes the new mail files get:
 
 @lisp
-(add-hook 'gnus-pre-get-new-mail-hook
+(add-hook 'nnmail-pre-get-new-mail-hook
           (lambda () (set-default-file-modes 511)))
 
-(add-hook 'gnus-post-get-new-mail-hook
+(add-hook 'nnmail-post-get-new-mail-hook
           (lambda () (set-default-file-modes 551)))
 @end lisp
 
