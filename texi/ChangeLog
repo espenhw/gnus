@@ -1,3 +1,9 @@
+2003-12-04  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (SpamAssassin, Fancy Mail Splitting): add
+	save-restriction before (widen) in the example.  From Kevin Ryde
+	<user42@zip.com.au>.
+
 2003-12-03  Simon Josefsson  <jas@extundo.com>
 
 	* emacs-mime.texi (Flowed text): Fix.
