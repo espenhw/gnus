@@ -1432,6 +1432,9 @@ predicate on the elements."
 	  (push (pop list1) res)))
       (nconc (nreverse res) list1 list2))))
 
+(eval-when-compile
+  (defvar xemacs-codename))
+
 (defun gnus-emacs-version ()
   (let ((system-v
 	 (cond
