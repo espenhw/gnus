@@ -1,3 +1,10 @@
+2004-04-29  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-get-namespace-prefix): Use string= to compare
+	strings!  Reported by David D. Smith <davidsmith@acm.org>.
+	(nnrss-check-group, nnrss-read-group-data): Hash on Subject if
+	link is missing.
+
 2004-04-28  Jesper Harder  <harder@ifa.au.dk>
 
 	* html2text.el (html2text-replace-list): Add &amp; and &apos;.
