@@ -3545,7 +3545,8 @@ Argument LINES specifies lines to be scrolled up."
 	(end-of-line)
 	;; Redisplay before the visibility test; else we don't DTRT
 	;; with Emacs 21 images, for instance.
-	(sit-for 0)
+	;; Actually, the redisplay is annoying.  Fixme some other way.
+	;;(sit-for 0)
 	(and (pos-visible-in-window-p)	;Not continuation line.
 	     (eobp)))
       ;; Nothing in this page.
