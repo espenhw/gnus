@@ -607,7 +607,9 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
   (when (not (file-exists-p nnmbox-mbox-file))
     (let ((nnmail-file-coding-system
 	   (or nnmbox-file-coding-system-for-write
-	       nnmbox-file-coding-system)))
+	       nnmbox-file-coding-system))
+	  (dir (file-name-directory nnmbox-mbox-file)))
+      (and dir (gnus-make-directory dir))
       (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg))))
 
 (defun nnmbox-read-mbox ()
