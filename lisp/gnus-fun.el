@@ -108,6 +108,13 @@ Output to the current buffer, replace text, and don't mingle error."
 	    (buffer-string))
 	nil))))
 
+;;;###autoload
+(defun gnus-convert-face-to-png (face)
+  (mm-with-unibyte-buffer
+    (insert face)
+    (base64-decode-region (point-min) (point-max))
+    (buffer-string)))
+
 (defun gnus-convert-image-to-gray-x-face (file depth)
   (let* ((mapfile (mm-make-temp-file (expand-file-name "gnus." 
 						       mm-tmp-directory)))

@@ -1,5 +1,11 @@
 2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treat-display-face): New variable.
+	(article-display-face): New command.
+
+	* gnus-fun.el (gnus-face-from-file): New function.
+	(gnus-convert-face-to-png): Ditto.
+
 	* gnus-art.el (gnus-ignored-headers): Added Face.
 
 2003-01-10  Simon Josefsson  <jas@extundo.com>
