@@ -1,3 +1,8 @@
+2003-12-31  Jeremy Maitin-Shepard  <jbms@attbi.com>
+
+	* mml.el (mml-generate-mime-1): Use mml-compute-boundary (tiny
+	change). 
+
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el: Removed `(when t ...)' around `gnus-define-keys'.

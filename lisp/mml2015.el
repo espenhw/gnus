@@ -277,8 +277,7 @@
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
 		   nil nil nil nil)
-  (let ((boundary
-	 (funcall mml-boundary-function (incf mml-multipart-number)))
+  (let ((boundary (mml-compute-boundary cont))
 	hash point)
     (goto-char (point-min))
     (unless (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\r?$" nil t)
@@ -341,8 +340,7 @@
   (goto-char (point-min))
   (unless (looking-at "-----BEGIN PGP MESSAGE-----")
     (error "Fail to encrypt the message"))
-  (let ((boundary
-	 (funcall mml-boundary-function (incf mml-multipart-number))))
+  (let ((boundary (mml-compute-boundary cont)))
     (insert (format "Content-Type: multipart/encrypted; boundary=\"%s\";\n"
 		    boundary))
     (insert "\tprotocol=\"application/pgp-encrypted\"\n\n")
@@ -544,8 +542,7 @@
      mm-security-handle 'gnus-info "Failed")))
 
 (defun mml2015-gpg-sign (cont)
-  (let ((boundary
-	 (funcall mml-boundary-function (incf mml-multipart-number)))
+  (let ((boundary (mml-compute-boundary cont))
 	(text (current-buffer)) signature)
     (goto-char (point-max))
     (unless (bolp)
@@ -578,8 +575,7 @@
       (goto-char (point-max)))))
 
 (defun mml2015-gpg-encrypt (cont &optional sign)
-  (let ((boundary
-	 (funcall mml-boundary-function (incf mml-multipart-number)))
+  (let ((boundary (mml-compute-boundary cont))
 	(text (current-buffer))
 	cipher)
     (mm-with-unibyte-current-buffer
@@ -807,7 +803,7 @@
 
 (defun mml2015-pgg-sign (cont)
   (let ((pgg-errors-buffer mml2015-result-buffer)
-	(boundary (funcall mml-boundary-function (incf mml-multipart-number)))
+	(boundary (mml-compute-boundary cont))
 	(pgg-default-user-id (or (message-options-get 'mml-sender)
 				 pgg-default-user-id)))
     (unless (pgg-sign-region (point-min) (point-max))
@@ -829,7 +825,7 @@
 
 (defun mml2015-pgg-encrypt (cont &optional sign)
   (let ((pgg-errors-buffer mml2015-result-buffer)
-	(boundary (funcall mml-boundary-function (incf mml-multipart-number))))
+	(boundary (mml-compute-boundary cont)))
     (unless (pgg-encrypt-region (point-min) (point-max)
 				(split-string
 				 (or
