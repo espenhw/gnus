@@ -2653,7 +2653,8 @@ If FORCE is non-nil, the .newsrc file is read."
     (princ "(setq gnus-newsrc-file-version ")
     (princ (gnus-prin1-to-string gnus-version))
     (princ ")\n")
-    (let* ((gnus-killed-list
+    (let* ((print-length nil)
+	   (gnus-killed-list
 	    (if (and gnus-save-killed-list
 		     (stringp gnus-save-killed-list))
 		(gnus-strip-killed-list)
