@@ -2,6 +2,7 @@
 
 	* gnus-namazu.el (gnus-namazu/make-directory-table): Treat drive
 	letters when calcurating pathnames of remote groups.
+	From KOSEKI Yoshinori <kose@meadowy.org> (tiny change).
 
 2004-05-27  Simon Josefsson  <jas@extundo.com>
 
