@@ -1,3 +1,7 @@
+2003-05-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnusref.tex (subsection*{Notes}): Fix.
+
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Anti-Spam Basics): Removed mention of gnus-junk. 
