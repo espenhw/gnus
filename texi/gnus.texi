@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.46 Manual
+@settitle Gnus 5.4.47 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.46 Manual
+@title Gnus 5.4.47 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.46.
+This manual corresponds to Gnus 5.4.47.
 
 @end ifinfo
 
@@ -8453,20 +8453,58 @@ This hook is run as the last step when connecting to an @sc{nntp}
 server.
 
 @findex nntp-open-rlogin
+@findex nntp-open-telnet
 @findex nntp-open-network-stream
 @item nntp-open-connection-function
 @vindex nntp-open-connection-function
-This function is used to connect to the remote system.  Two pre-made
+This function is used to connect to the remote system.  Three pre-made
 functions are @code{nntp-open-network-stream}, which is the default, and
 simply connects to some port or other on the remote system.  The other
-is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
-and then does a telnet to the @sc{nntp} server available there.
+two are @code{nntp-open-rlogin}, which does an @samp{rlogin} on the
+remote system, and then does a @samp{telnet} to the @sc{nntp} server
+available there, and @code{nntp-open-telnet}, which does a @samp{telnet}
+to the remote system and then another @samp{telnet} to get to the
+@sc{nntp} server.
+
+@code{nntp-open-rlogin}-related variables:
+
+@table @code
 
 @item nntp-rlogin-parameters
 @vindex nntp-rlogin-parameters
-If you use @code{nntp-open-rlogin} as the
-@code{nntp-open-connection-function}, this list will be used as the
-parameter list given to @code{rsh}.
+This list will be used as the parameter list given to @code{rsh}.
+
+@item nntp-rlogin-user-name
+@vindex nntp-rlogin-user-name
+User name on the remote system.
+
+@end table
+
+@code{nntp-open-telnet}-related variables:
+
+@table @code
+@item nntp-telnet-command
+@vindex nntp-telnet-command
+Command used to start @samp{telnet}.
+
+@item nntp-telnet-switches
+@vindex nntp-telnet-switches
+List of strings to be used as the switches to the telnet command.
+
+@item nntp-telnet-user-name
+@vindex nntp-telnet-user-name
+User name to log in on the remote system as.
+
+@item nntp-telnet-passwd
+@vindex nntp-telnet-passwd
+Password to use when logging in.
+
+@item nntp-telnet-parameters
+@vindex nntp-telnet-parameters
+A list of strings that will be executed as a command after logging in
+via telnet.
+
+@end table
 
 @item nntp-end-of-line
 @vindex nntp-end-of-line
@@ -14035,6 +14073,7 @@ Raja R. Harinath,
 Hisashige Kenji, @c Hisashige
 Marc Horowitz,
 Gunnar Horrigmo,
+Brad Howes,
 François Felix Ingrand,
 Ishikawa Ichiro, @c Ishikawa
 Lee Iverson, 
@@ -14096,6 +14135,7 @@ Samuel Tardieu,
 Teddy,
 Chuck Thompson,
 Philippe Troin,
+Aaron M. Ucko,
 Jan Vroonhof,
 Barry A. Warsaw,
 Christoph Wedler,

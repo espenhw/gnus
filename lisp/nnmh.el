@@ -189,7 +189,7 @@
 
 (defvar nnmh-toplev)
 (defun nnmh-request-list-1 (dir)
-  (setq dir (expand-file-name dir))
+  (setq dir (file-truename (expand-file-name dir)))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
 		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)

@@ -28,6 +28,7 @@
 (require 'text-props)
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
+(require 'gnus-art)
 
 (defgroup gnus-xmas nil
   "XEmacsoid support for Gnus"

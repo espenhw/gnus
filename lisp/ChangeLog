@@ -1,3 +1,49 @@
+Sun Apr 27 12:32:13 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.47 is released.
+
+Sun Apr 27 10:42:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cache.el (gnus-cache-move-cache): Allow entering directory
+	name. 
+
+	* nntp.el (nntp-telnet-command, nntp-telnet-switches): New
+	variables. 
+
+	* gnus-score.el (gnus-summary-increase-score): Refuse illegal
+	match types.
+
+Fri Apr 25 06:16:05 1997  Arne Georg Gleditsch  <argggh@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-refer-article): Go to article when
+	expunged. 
+
+Wed Apr 23 19:48:43 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-ems.el (gnus-article-x-face-command): Removed bogus
+	declaration.
+
+Mon Apr 21 16:44:00 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* nnmail.el (nnmail-move-inbox): fewer (0?) file calls on inbox if
+	popmail.
+
+Thu Apr 24 14:04:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-font-lock-keywords): Be more conservative in
+	determining headers.
+
+	* nnmh.el (nnmh-request-list-1): Use truenames.
+
+	* gnus-undo.el (gnus-undo-mode): Don't infest
+	gnus-summary-exit-hook. 
+
+	* gnus-sum.el (gnus-update-read-articles): Force an undo
+	boundary. 
+
+	* nnweb.el (nnweb-fetch-url): Don't rely on return values from
+	url-insert-file-contents. 
+
 Sat Apr 19 06:11:31 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.46 is released.

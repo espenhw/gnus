@@ -98,6 +98,12 @@ via telnet.")
 (defvoo nntp-telnet-passwd nil
   "Password to use to log in via telnet with.")
 
+(defvoo nntp-telnet-command "telnet"
+  "Command used to start telnet.")
+
+(defvoo nntp-telnet-switches '("-8")
+  "Switches given to the telnet command.")
+
 (defvoo nntp-end-of-line "\r\n"
   "String to use on the end of lines when talking to the NNTP server.
 This is \"\\r\\n\" by default, but should be \"\\n\" when
@@ -1040,8 +1046,9 @@ This function is supposed to be called from `nntp-server-opened-hook'."
   (save-excursion
     (set-buffer buffer)
     (erase-buffer)
-    (let ((proc (start-process
-		 "nntpd" buffer "telnet" "-8"))
+    (let ((proc (apply
+		 'start-process
+		 "nntpd" buffer nntp-telnet-command nntp-telnet-switches))
 	  (case-fold-search t))
       (when (memq (process-status proc) '(open run))
 	(process-send-string proc "set escape \^X\n")

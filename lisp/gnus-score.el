@@ -1,4 +1,4 @@
-;;; gnus-score.el --- scoring code for Gnus
+1;;; gnus-score.el --- scoring code for Gnus
 ;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
@@ -534,36 +534,31 @@ used as score."
 	    (setq tchar (or tchar ?s)
 		  pchar (or pchar ?t)))
 
-	  ;; We continue reading - the type.
-	  (while (not tchar)
-	    (if mimic
-		(progn
-		  (sit-for 1) (message "%c %c-" prefix hchar))
-	      (message "%s header '%s' with match type (%s?): "
-		       (if increase "Increase" "Lower")
-		       (nth 1 entry)
-		       (mapconcat (lambda (s)
-				    (if (eq (nth 4 entry)
-					    (nth 3 s))
-					(char-to-string (car s))
-				      ""))
-				  char-to-type "")))
-	    (setq tchar (read-char))
-	    (when (or (= tchar ??) (= tchar ?\C-h))
-	      (setq tchar nil)
-	      (gnus-score-insert-help
-	       "Match type"
-	       (delq nil
-		     (mapcar (lambda (s)
-			       (if (eq (nth 4 entry)
-				       (nth 3 s))
-				   s nil))
-			     char-to-type))
-	       2)))
+	  (let ((legal-types
+		 (delq nil
+		       (mapcar (lambda (s)
+				 (if (eq (nth 4 entry)
+					 (nth 3 s))
+				     s nil))
+			       char-to-type))))
+	    ;; We continue reading - the type.
+	    (while (not tchar)
+	      (if mimic
+		  (progn
+		    (sit-for 1) (message "%c %c-" prefix hchar))
+		(message "%s header '%s' with match type (%s?): "
+			 (if increase "Increase" "Lower")
+			 (nth 1 entry)
+			 (mapconcat (lambda (s) (char-to-string (car s)))
+				    legal-types "")))
+	      (setq tchar (read-char))
+	      (when (or (= tchar ??) (= tchar ?\C-h))
+		(setq tchar nil)
+		(gnus-score-insert-help "Match type" legal-types 2)))
 
-	  (gnus-score-kill-help-buffer)
-	  (unless (setq type (nth 1 (assq (downcase tchar) char-to-type)))
-	    (if mimic (error "%c %c" prefix hchar) (error "")))
+	    (gnus-score-kill-help-buffer)
+	    (unless (setq type (nth 1 (assq (downcase tchar) legal-types)))
+	      (if mimic (error "%c %c" prefix hchar) (error ""))))
 
 	  (when (/= (downcase tchar) tchar)
 	    ;; It was a majuscule, so we end reading and use the default.

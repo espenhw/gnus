@@ -545,12 +545,11 @@ parameter.  It should return nil, `warn' or `delete'."
     (when (and (file-exists-p nnmail-crash-box)
 	       (zerop (nnheader-file-size (file-truename nnmail-crash-box))))
       (delete-file nnmail-crash-box))
-    (let ((inbox (file-truename (expand-file-name inbox)))
-	  (tofile (file-truename (expand-file-name nnmail-crash-box)))
-	  movemail popmail errors result)
-      (if (setq popmail (string-match
-			 "^po:" (file-name-nondirectory inbox)))
-	  (setq inbox (file-name-nondirectory inbox))
+    (let ((tofile (file-truename (expand-file-name nnmail-crash-box)))
+	  (popmail (string-match "^po:" inbox))
+	  movemail errors result)
+      (unless popmail
+	(setq inbox (file-truename (expand-file-name inbox)))
 	(setq movemail t)
 	;; On some systems, /usr/spool/mail/foo is a directory
 	;; and the actual inbox is /usr/spool/mail/foo/foo.

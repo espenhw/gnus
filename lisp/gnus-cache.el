@@ -650,7 +650,7 @@ If LOW, update the lower bound instead."
 
 (defun gnus-cache-move-cache (dir)
   "Move the cache tree to somewhere else."
-  (interactive "DMove the cache tree to: ")
+  (interactive "FMove the cache tree to: ")
   (rename-file gnus-cache-directory dir))
 
 (provide 'gnus-cache)

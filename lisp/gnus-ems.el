@@ -75,13 +75,7 @@
       nil
 
     (defvar gnus-mouse-face-prop 'mouse-face
-      "Property used for highlighting mouse regions.")
-
-    (defvar gnus-article-x-face-command
-      "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
-      "String or function to be executed to display an X-Face header.
-If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command."))
+      "Property used for highlighting mouse regions."))
 
   (cond
    ((string-match "XEmacs\\|Lucid" emacs-version)

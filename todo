@@ -662,3 +662,6 @@ candidates.
 * be able to select groups that have no articles in them
 to be able to post in them (using the current select method).
 
+* be able to post via DejaNews.
+
+* `x' should retain any sortings that have been performed.

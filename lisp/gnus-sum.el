@@ -6155,9 +6155,9 @@ or `gnus-select-method', no matter what backend the article comes from."
 			 (mail-header-number header)))))
       (if header
 	  (prog1
-	      ;; The article is present in the buffer, to we just go to it.
+              ;; The article is present in the buffer, so we just go to it.
 	      (gnus-summary-goto-article
-	       (mail-header-number header) nil header)
+               (mail-header-number header) nil t)
 	    (when sparse
 	      (gnus-summary-update-article (mail-header-number header))))
 	;; We fetch the article
@@ -8640,6 +8640,7 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (save-excursion
 	(set-buffer gnus-group-buffer)
+	(gnus-undo-boundary)
 	(gnus-undo-register
 	  `(progn
 	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)

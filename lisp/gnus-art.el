@@ -1124,6 +1124,7 @@ Put point at the beginning of the signature separator."
        (setq e (point-max)))
       (nnheader-temp-write nil
 	(insert-buffer-substring gnus-article-buffer b e)
+	(require 'url)
 	(save-window-excursion
 	  (setq buf (car (w3-parse-buffer (current-buffer))))))
       (when buf
