@@ -1,4 +1,4 @@
-\input texinfo                  @c -*- mode: texinfo; coding: iso-latin-1 -*-
+\input texinfo
 
 @setfilename gnus
 @settitle Gnus Manual
@@ -23573,6 +23573,9 @@ former).  The manual is unambiguous, but it can be confusing.
 @end iflatex
 @end iftex
 
+@c Local Variables:
+@c mode: texinfo
+@c buffer-file-coding-system: iso-latin-1
 @c End:
 % LocalWords:  BNF mucho detailmenu cindex kindex kbd
 % LocalWords:  findex Gnusae vindex dfn dfn samp nntp setq nnspool nntpserver

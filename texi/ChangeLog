@@ -1,3 +1,11 @@
+2001-12-17  Josh Huber  <huber@alum.wpi.edu>
+
+	* ChangeLog: changed coding to buffer-file-coding-system
+	* emacs-mime.texi: changed -*- magic cookie -*- to Local Variables
+	* gnus.texi: same
+	* gnus-ref.tex: same
+	* refcard.tex: same
+
 2001-12-16  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Saving Articles): Add muttprint.
@@ -1935,5 +1943,5 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 	* gnus.texi (Mail Folders): Addition.
 
 ;; Local Variables:
-;; coding: iso-2022-7bit
+;; buffer-file-coding-system: iso-2022-7bit
 ;; End:
