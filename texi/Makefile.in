@@ -75,7 +75,7 @@ makeinfo:
 texi2latex.elc: texi2latex.el
 	srcdir=$(srcdir)/../lisp $(EMACSCOMP) -l $(srcdir)/../lisp/dgnushack.el --eval '(byte-compile-file "$(srcdir)/texi2latex.el")'
 
-latex: gnus.latexi gnus-faq.latexi
+latex: gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi
 
 gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi $(srcdir)/message.texi $(srcdir)/emacs-mime.texi $(srcdir)/sieve.texi texi2latex.elc
 	srcdir=$(srcdir) $(EMACSCOMP) -l ./texi2latex.elc -f latexi-translate
@@ -117,10 +117,10 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi: $(src
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
 	mv gnus.pdf $@
 
-latexps: gnus.dvi-x
+latexps: latex gnus.dvi-x
 	TEXPICTS=$(srcdir) $(DVIPS) -t a4 -f $< > gnus.ps
 
-latexpdf: gnus.pdf-x
+latexpdf: latex gnus.pdf-x
 	mv gnus.pdf-x gnus.pdf
 
 gnus-manual-a4.latexi: gnus.latexi
