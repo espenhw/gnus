@@ -1,3 +1,8 @@
+2000-07-16  Daiki Ueno  <ueno@unixuser.org>
+
+	* gnus-sum.el (gnus-restore-hidden-threads-configuration): Save
+	excursion.
+
 2000-07-15  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-cus.el (gnus-group-parameters, banner): Type is regexp.

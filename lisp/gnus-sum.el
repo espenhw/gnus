@@ -2429,12 +2429,13 @@ marks of articles."
 
 (defun gnus-restore-hidden-threads-configuration (config)
   "Restore hidden threads configuration from CONFIG."
-  (let (point buffer-read-only)
-    (while (setq point (pop config))
-      (when (and (< point (point-max))
-		 (goto-char point)
-		 (eq (char-after) ?\n))
-	(subst-char-in-region point (1+ point) ?\n ?\r)))))
+  (save-excursion
+    (let (point buffer-read-only)
+      (while (setq point (pop config))
+	(when (and (< point (point-max))
+		   (goto-char point)
+		   (eq (char-after) ?\n))
+	  (subst-char-in-region point (1+ point) ?\n ?\r))))))
 
 ;; Various summary mode internalish functions.
 
