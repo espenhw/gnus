@@ -1,5 +1,14 @@
 2002-02-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus.el (gnus-server-to-method): Switch position with
+	gnus-server-get-method.
+	(gnus-agent): Add doc.
+
+	* gnus-sum.el (gnus-article-no-strict-mime): New variable.
+	(gnus-summary-save-parts): Use it.
+	* gnus-art.el (gnus-display-mime): Use it.
+	* mm-partial.el (mm-partial-find-parts): Use it.
+
 	* nnweb.el (nnweb-google-parse-1): Use a correct format of date.
 
 	* gnus-agent.el (gnus-agent-summary-make-menu-bar): Fix typo.

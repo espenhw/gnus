@@ -1013,8 +1013,19 @@ that were fetched.  Say, for nnultimate groups."
 
 (defcustom gnus-summary-muttprint-program "muttprint"
   "Command (and optional arguments) used to run Muttprint."
+  :version "21.3"
   :group 'gnus-summary
   :type 'string)
+
+(defcustom gnus-article-no-strict-mime nil
+  "If non-nil, don't require strict MIME.
+Some brain-damaged MUA/MTA, e.g. Lotus Domino 5.0.6 clients, does not
+supply the MIME-Version header or deliberately strip it From the mail.
+Set it to non-nil, Gnus will treat some articles as MIME even if
+the MIME-Version header is missed."
+  :version "21.3"
+  :type 'boolean
+  :group 'gnus-article)
 
 ;;; Internal variables
 
@@ -10304,7 +10315,9 @@ If REVERSE, save parts that do not match TYPE."
     (save-excursion
       (set-buffer gnus-article-buffer)
       (let ((handles (or gnus-article-mime-handles
-			 (mm-dissect-buffer) (mm-uu-dissect))))
+			 (mm-dissect-buffer
+			  gnus-article-no-strict-mime)
+			 (mm-uu-dissect))))
 	(when handles
 	  (gnus-summary-save-parts-1 type dir handles reverse)
 	  (unless gnus-article-mime-handles ;; Don't destroy this case.

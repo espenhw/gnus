@@ -1767,7 +1767,7 @@ face."
 
 (defcustom gnus-agent-cache t
   "Whether Gnus use agent cache."
-  :version "21.1"
+  :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
 
@@ -1780,8 +1780,9 @@ covered by that variable."
   :group 'gnus-charset)
 
 (defcustom gnus-agent nil
-  "Whether we want to use the Gnus agent or not."
-  :version "21.1"
+  "Whether we want to use the Gnus agent or not.
+Putting (gnus-agentize) in ~/.gnus is obsolete by (setq gnus-agent t)."
+  :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
 
@@ -2670,23 +2671,6 @@ that that variable is buffer-local to the summary buffers."
 				   (nth 1 method))))
       method)))
 
-(defsubst gnus-server-get-method (group method)
-  ;; Input either a server name, and extended server name, or a
-  ;; select method, and return a select method.
-  (cond ((stringp method)
-	 (gnus-server-to-method method))
-	((equal method gnus-select-method)
-	 gnus-select-method)
-	((and (stringp (car method))
-	      group)
-	 (gnus-server-extend-method group method))
-	((and method
-	      (not group)
-	      (equal (cadr method) ""))
-	 method)
-	(t
-	 (gnus-server-add-address method))))
-
 (defsubst gnus-server-to-method (server)
   "Map virtual server names to select methods."
   (or (and server (listp server) server)
@@ -2716,6 +2700,23 @@ that that variable is buffer-local to the summary buffers."
 		(car servers)))))
 	(push (cons server result) gnus-server-method-cache)
 	result)))
+
+(defsubst gnus-server-get-method (group method)
+  ;; Input either a server name, and extended server name, or a
+  ;; select method, and return a select method.
+  (cond ((stringp method)
+	 (gnus-server-to-method method))
+	((equal method gnus-select-method)
+	 gnus-select-method)
+	((and (stringp (car method))
+	      group)
+	 (gnus-server-extend-method group method))
+	((and method
+	      (not group)
+	      (equal (cadr method) ""))
+	 method)
+	(t
+	 (gnus-server-add-address method))))
 
 (defmacro gnus-method-equal (ss1 ss2)
   "Say whether two servers are equal."
