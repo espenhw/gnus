@@ -1,3 +1,10 @@
+2001-05-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Nevin Kapur <nevin@jhu.edu>.
+
+	* gnus-sum.el (gnus-summary-default-high-score,
+	gnus-summary-default-low-score): New variables.
+	(gnus-summary-highlight): Use them.
+
 2001-05-16  Didier Verna  <didier@lrde.epita.fr>
 
 	* message.el (message-mail): pass the 'send-actions argument to

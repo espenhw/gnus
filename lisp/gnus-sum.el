@@ -199,6 +199,20 @@ If this variable is nil, scoring will be disabled."
   :type '(choice (const :tag "disable")
 		 integer))
 
+(defcustom gnus-summary-default-high-score 0
+  "*Default threshold for a high scored article.
+An article will be highlighted as high scored if its score is greater
+than this score."
+  :group 'gnus-score-default
+  :type 'integer)
+
+(defcustom gnus-summary-default-low-score 0
+  "*Default threshold for a low scored article.
+An article will be highlighted as low scored if its score is smaller
+than this score."
+  :group 'gnus-score-default
+  :type 'integer)
+
 (defcustom gnus-summary-zcore-fuzz 0
   "*Fuzziness factor for the zcore in the summary buffer.
 Articles with scores closer than this to `gnus-summary-default-score'
@@ -791,33 +805,33 @@ automatically when it is selected."
 (defcustom gnus-summary-highlight
   '(((= mark gnus-canceled-mark)
      . gnus-summary-cancelled-face)
-    ((and (> score default)
+    ((and (> score default-high)
 	  (or (= mark gnus-dormant-mark)
 	      (= mark gnus-ticked-mark)))
      . gnus-summary-high-ticked-face)
-    ((and (< score default)
+    ((and (< score default-low)
 	  (or (= mark gnus-dormant-mark)
 	      (= mark gnus-ticked-mark)))
      . gnus-summary-low-ticked-face)
     ((or (= mark gnus-dormant-mark)
 	 (= mark gnus-ticked-mark))
      . gnus-summary-normal-ticked-face)
-    ((and (> score default) (= mark gnus-ancient-mark))
+    ((and (> score default-high) (= mark gnus-ancient-mark))
      . gnus-summary-high-ancient-face)
-    ((and (< score default) (= mark gnus-ancient-mark))
+    ((and (< score default-low) (= mark gnus-ancient-mark))
      . gnus-summary-low-ancient-face)
     ((= mark gnus-ancient-mark)
      . gnus-summary-normal-ancient-face)
-    ((and (> score default) (= mark gnus-unread-mark))
+    ((and (> score default-high) (= mark gnus-unread-mark))
      . gnus-summary-high-unread-face)
-    ((and (< score default) (= mark gnus-unread-mark))
+    ((and (< score default-low) (= mark gnus-unread-mark))
      . gnus-summary-low-unread-face)
     ((= mark gnus-unread-mark)
      . gnus-summary-normal-unread-face)
-    ((and (> score default) (memq mark (list gnus-downloadable-mark
+    ((and (> score default-high) (memq mark (list gnus-downloadable-mark
 					     gnus-undownloaded-mark)))
      . gnus-summary-high-unread-face)
-    ((and (< score default) (memq mark (list gnus-downloadable-mark
+    ((and (< score default-low) (memq mark (list gnus-downloadable-mark
 					     gnus-undownloaded-mark)))
      . gnus-summary-low-unread-face)
     ((and (memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
@@ -825,9 +839,9 @@ automatically when it is selected."
      . gnus-summary-normal-unread-face)
     ((memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
      . gnus-summary-normal-read-face)
-    ((> score default)
+    ((> score default-high)
      . gnus-summary-high-read-face)
-    ((< score default)
+    ((< score default-low)
      . gnus-summary-low-read-face)
     (t
      . gnus-summary-normal-read-face))
@@ -840,10 +854,12 @@ how those summary lines are displayed, by editing the face field.
 
 You can use the following variables in the FORM field.
 
-score:   The articles score
-default: The default article score.
-below:   The score below which articles are automatically marked as read.
-mark:    The articles mark."
+score:        The article's score
+default:      The default article score.
+default-high: The default score for high scored articles.
+default-low:  The default score for low scored articles.
+below:        The score below which articles are automatically marked as read.
+mark:         The articles mark."
   :group 'gnus-summary-visual
   :type '(repeat (cons (sexp :tag "Form" nil)
 		       face)))
@@ -9955,7 +9971,9 @@ If REVERSE, save parts that do not match TYPE."
 	 (mark (or (gnus-summary-article-mark) gnus-unread-mark))
 	 (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.
-    (let ((default gnus-summary-default-score))
+    (let ((default gnus-summary-default-score)
+	  (default-high gnus-summary-default-high-score)
+	  (default-low gnus-summary-default-low-score))
       (while (and list
 		  (not (eval (caar list))))
 	(setq list (cdr list))))
