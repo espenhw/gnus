@@ -850,21 +850,19 @@ XEmacs compatibility workaround."
 
 (defun gnus-group-icon-create-glyph (substring pixmap)
   "Create a glyph for insertion into a group line."
-  (and
-   gnus-group-running-xemacs
-   (or
-    (cdr-safe (assoc pixmap gnus-group-icon-cache))
-    (let* ((glyph (make-glyph
-		   (list
-		    (cons 'x
-			  (expand-file-name pixmap gnus-xmas-glyph-directory))
-		    (cons 'mswindows
-			  (expand-file-name pixmap gnus-xmas-glyph-directory))
-		    (cons 'tty substring)))))
-      (setq gnus-group-icon-cache
-	    (cons (cons pixmap glyph) gnus-group-icon-cache))
-      (set-glyph-face glyph 'default)
-      glyph))))
+  (or
+   (cdr-safe (assoc pixmap gnus-group-icon-cache))
+   (let* ((glyph (make-glyph
+		  (list
+		   (cons 'x
+			 (expand-file-name pixmap gnus-xmas-glyph-directory))
+		   (cons 'mswindows
+			 (expand-file-name pixmap gnus-xmas-glyph-directory))
+		   (cons 'tty substring)))))
+     (setq gnus-group-icon-cache
+	   (cons (cons pixmap glyph) gnus-group-icon-cache))
+     (set-glyph-face glyph 'default)
+     glyph)))
 
 (provide 'gnus-xmas)
 
