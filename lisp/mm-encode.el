@@ -1,5 +1,5 @@
 ;;; mm-encode.el --- Functions for encoding MIME things
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -88,7 +88,8 @@ This variable should never be set directly, but bound before a call to
 (defun mm-safer-encoding (encoding)
   "Return an encoding similar to ENCODING but safer than it."
   (cond
-   ((memq encoding '(7bit 8bit quoted-printable)) 'quoted-printable)
+   ((eq encoding '7bit) '7bit) ;; 7bit is considered safe.
+   ((memq encoding '(8bit quoted-printable)) 'quoted-printable)
    ;; The remaining encodings are binary and base64 (and perhaps some
    ;; non-standard ones), which are both turned into base64.
    (t 'base64)))
