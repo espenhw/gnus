@@ -346,4 +346,8 @@ With arg, turn displaying on if and only if arg is positive."
 
 (provide 'smiley)
 
+;; Local Variables:
+;; coding: iso-8859-1
+;; End:
+
 ;;; smiley.el ends here
