@@ -1,3 +1,11 @@
+Wed Mar 19 21:16:48 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.32 is released.
+
+Wed Mar 19 21:06:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-cache-accepted-message-ids): Bogus.
+
 Wed Mar 19 20:53:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.31 is released.

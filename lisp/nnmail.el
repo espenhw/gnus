@@ -162,8 +162,8 @@ Eg.:
 
 (defcustom nnmail-cache-accepted-message-ids nil
   "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
-  :group nnmail
-  :type boolean)
+  :group 'nnmail
+  :type 'boolean)
 
 (defcustom nnmail-spool-file
   (or (getenv "MAIL")
