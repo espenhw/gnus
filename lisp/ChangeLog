@@ -1,3 +1,7 @@
+2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el (gnus-draft-send): Add message-hidden-headers. 
+
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-next-page): Use

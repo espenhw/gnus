@@ -133,6 +133,7 @@
   "Send message ARTICLE."
   (let ((message-syntax-checks (if interactive message-syntax-checks
 				 'dont-check-for-anything-just-trust-me))
+	(message-hidden-headers nil)
 	(message-inhibit-body-encoding (or (not group)
 					   (equal group "nndraft:queue")
 					   message-inhibit-body-encoding))
