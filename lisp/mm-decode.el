@@ -250,7 +250,7 @@ to:
     ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" 
      mml-smime-verify-test)))
 
-(defcustom mm-verify-option nil
+(defcustom mm-verify-option 'never
   "Option of verifying signed parts.
 `never', not verify; `always', always verify; 
 `known', only verify known protocols. Otherwise, ask user."

@@ -1,5 +1,7 @@
 2000-11-21 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-decode.el (mm-verify-option): Default value.
+
 	* mml-sec.el (mml-secure-part): Error message.
 
 2000-11-20 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
