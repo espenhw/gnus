@@ -309,8 +309,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (if (and (symbolp script) (fboundp script))
 	(funcall script)
       (mail-source-call-script
-       (format-spec
-	script spec))))
+       (format-spec script spec))))
   (when delay
     (sleep-for delay)))
 
@@ -398,9 +397,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      (mail-source-callback callback server)
 	    (mail-source-run-script
 	     postscript
-	     (format-spec-make
-			      ?p password ?t mail-source-crash-box
-			      ?s server ?P port ?u user)))
+	     (format-spec-make ?p password ?t mail-source-crash-box
+			       ?s server ?P port ?u user)))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

@@ -1844,8 +1844,8 @@ should replace the \"Date:\" one, or should be added below it."
      ;; buggy dates.
      ((eq type 'local)
       (let ((tz (car (current-time-zone))))
-	(format "Date: %s %s%04d" (current-time-string time)
-		(if (> tz 0) "+" "-") (abs (/ tz 36)))))
+	(format "Date: %s %s%02d%02d" (current-time-string time)
+		(if (> tz 0) "+" "-") (/ tz 3600) (/ (% tz 3600) 60))))
      ;; Convert to Universal Time.
      ((eq type 'ut)
       (concat "Date: "

@@ -1,3 +1,18 @@
+Fri Jul  9 22:21:16 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.95 is released.
+
+1999-07-09 21:46:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-mailcap-command): New function.
+	(mm-display-external): Use it.
+
+	* gnus-art.el (article-make-date-line): Work for India.
+
+	* mm-encode.el (mm-qp-or-base64): Typo.
+
+	* gnus-topic.el (gnus-topic-goto-topic): Made into command.
+
 Fri Jul  9 19:28:29 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.94 is released.

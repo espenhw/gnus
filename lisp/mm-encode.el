@@ -141,9 +141,9 @@ The encoding used is returned."
 	    (unless (eobp)
 	      (forward-char 1)
 	      (incf 8bit)))))
-	(if (> (/ (* 8bit 1.0) (buffer-size)) 0.2)
-	    'quoted-base64
-	  'printable)))))
+	(if (> (/ (* 8bit 1.0) (buffer-size)) 0.166)
+	    'quoted-printable
+	  'base64)))))
 
 (provide 'mm-encode)
 

@@ -1,6 +1,7 @@
 1999-07-09 19:41:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Using MIME): Addition.
+	(Topic Commands): Addition.
 
 1999-07-06 05:37:46  Alexandre Oliva  <oliva@dcc.unicamp.br>
 

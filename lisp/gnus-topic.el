@@ -149,11 +149,20 @@ with some simple extensions.
       (gnus-group-topic group))))
 
 (defun gnus-topic-goto-topic (topic)
-  "Go to TOPIC."
   (when topic
     (gnus-goto-char (text-property-any (point-min) (point-max)
 				       'gnus-topic (intern topic)))))
 
+(defun gnus-topic-jump-to-topic (topic)
+  "Go to TOPIC."
+  (interactive
+   (list (completing-read "Go to topic: "
+			  (mapcar 'list (gnus-topic-list))
+			  nil t)))
+  (dolist (topic (gnus-current-topics topic))
+    (gnus-topic-fold t))
+  (gnus-topic-goto-topic topic))
+  
 (defun gnus-current-topic ()
   "Return the name of the current topic."
   (let ((result
@@ -507,9 +516,9 @@ articles in the topic and its subtopics."
    (car gnus-group-list-mode) (cdr gnus-group-list-mode)
    nil nil topic level))
 
-(defun gnus-topic-fold (&optional insert)
+(defun gnus-topic-fold (&optional insert topic)
   "Remove/insert the current topic."
-  (let ((topic (gnus-group-topic-name)))
+  (let ((topic (or topic (gnus-group-topic-name))))
     (when topic
       (save-excursion
 	(if (not (gnus-group-active-topic-p))
@@ -932,6 +941,7 @@ articles in the topic and its subtopics."
     "c" gnus-topic-copy-group
     "h" gnus-topic-hide-topic
     "s" gnus-topic-show-topic
+    "j" gnus-topic-jump-to-topic
     "M" gnus-topic-move-matching
     "C" gnus-topic-copy-matching
     "\C-i" gnus-topic-indent
@@ -963,6 +973,7 @@ articles in the topic and its subtopics."
 	["Copy matching" gnus-topic-copy-matching t]
 	["Move matching" gnus-topic-move-matching t])
        ("Topics"
+	["Goto" gnus-topic-jump-to-topic t]
 	["Show" gnus-topic-show-topic t]
 	["Hide" gnus-topic-hide-topic t]
 	["Delete" gnus-topic-delete t]
