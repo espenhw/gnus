@@ -443,7 +443,8 @@ Currently sends flag setting requests, if any."
 	      (write-file (gnus-agent-lib-file "flags"))
 	      (error "Couldn't set flags from file %s"
 		     (gnus-agent-lib-file "flags"))))
-	  (write-file (gnus-agent-lib-file "flags")))))))
+	  (write-file (gnus-agent-lib-file "flags")))
+        (kill-buffer nil)))))
 
 ;;;
 ;;; Server mode commands

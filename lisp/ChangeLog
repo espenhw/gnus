@@ -1,3 +1,7 @@
+2000-06-27  Paul Stodghill <stodghil@CS.Cornell.EDU>
+
+	* gnus-agent.el (gnus-agent-synchronize): Kill flags buffer.
+
 2000-06-26  Dave Love  <fx@gnu.org>
 
 	* mm-decode.el (mm-image-fit-p): Use `image-size' in Emacs. 
