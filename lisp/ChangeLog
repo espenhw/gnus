@@ -1,3 +1,8 @@
+2004-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* compface.el: Move the version of ELisp-based uncompface program
+	to the contrib directory because of the copyright problem.
+
 2004-10-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-kill-buffer): Raise the current frame.
