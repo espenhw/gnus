@@ -904,9 +904,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		  decision)
 	      (while (and list-of-checks (not decision))
 		(let ((pair (pop list-of-checks)))
-		  (when (and (symbol-value (car pair))
-			     (or (null specific-checks)
-				 (memq (car pair) specific-checks)))
+		  (when (or
+			 ;; either, given specific checks, this is one of them
+			 (and specific-checks (memq (car pair) specific-checks))
+			 ;; or, given no specific checks, spam-use-CHECK is set
+			 (and (null specific-checks) (symbol-value (car pair))))
 		    (gnus-message 5 "spam-split: calling the %s function"
 				  (symbol-name (cdr pair)))
 		    (setq decision (funcall (cdr pair)))
@@ -915,8 +917,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		      (setq spam-split-last-successful-check (car pair)))
 
 		    (when (eq decision 'spam)
-		      (if spam-split-symbolic-return
-			  (setq decision spam-split-group)
+		      (unless spam-split-symbolic-return
 			(gnus-error
 			 5
 			 (format "spam-split got %s but %s is nil"
@@ -945,35 +946,48 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
      (lambda (article)
        (let ((id (spam-fetch-field-message-id-fast article))
 	     (subject (spam-fetch-field-subject-fast article))
-	     (sender (spam-fetch-field-from-fast article)))
-	 (unless (and spam-log-to-registry
-		      (spam-log-registered-p id 'incoming))
-	   (let* ((spam-split-symbolic-return t)
-		  (spam-split-symbolic-return-positive t)
-		  (split-return
-		   (with-temp-buffer
-		     (gnus-request-article-this-buffer
-		      article
-		      group)
-		     (if (or (null first-method)
-			     (equal first-method 'default))
-			 (spam-split)
-		       (apply 'spam-split methods)))))
-	     (if (equal split-return 'spam)
-		 (gnus-summary-mark-article article gnus-spam-mark))
+	     (sender (spam-fetch-field-from-fast article))
+	     registry-lookup)
+	 
+	 (unless id
+	   (gnus-error 5 "Article %d has no message ID!" article))
+	 
+	 (when (and id spam-log-to-registry)
+	   (setq registry-lookup (spam-log-registration-type id 'incoming))
+	   (when registry-lookup
+	     (gnus-message 
+	      9 
+	      "spam-find-spam: message %s was already registered incoming"
+	      id)))
 
-	     (when (and split-return spam-log-to-registry)
-	       (when (zerop (gnus-registry-group-count id))
-		 (gnus-registry-add-group
-		  id group subject sender))
+	 (let* ((spam-split-symbolic-return t)
+		(spam-split-symbolic-return-positive t)
+		(split-return 
+		 (or registry-lookup
+		     (with-temp-buffer
+		       (gnus-request-article-this-buffer
+			article
+			group)
+		       (if (or (null first-method)
+			       (equal first-method 'default))
+			   (spam-split)
+			 (apply 'spam-split methods))))))
+	   (if (equal split-return 'spam)
+	       (gnus-summary-mark-article article gnus-spam-mark))
+	   
+	   (when (and id split-return spam-log-to-registry)
+	     (when (zerop (gnus-registry-group-count id))
+	       (gnus-registry-add-group
+		id group subject sender))
 	       
+	     (unless registry-lookup
 	       (spam-log-processing-to-registry
 		id
 		'incoming
 		split-return
 		spam-split-last-successful-check
 		group))))))
-     articles))))
+    articles))))
 
 (defvar spam-registration-functions
   ;; first the ham register, second the spam register function
@@ -1120,8 +1134,8 @@ functions")
 	   type
 	   cell-list))
 
-      (gnus-message 5 (format "%s called with bad ID, type, classification, check, or group"
-			      "spam-log-processing-to-registry")))))
+      (gnus-error 5 (format "%s called with bad ID, type, classification, check, or group"
+			    "spam-log-processing-to-registry")))))
 
 ;;; check if a ham- or spam-processor registration has been done
 (defun spam-log-registered-p (id type)
@@ -1130,9 +1144,25 @@ functions")
 	     (spam-process-type-valid-p type))
 	(cdr-safe (gnus-registry-fetch-extra id type))
       (progn
-	(gnus-message 5 (format "%s called with bad ID, type, classification, or check"
-				"spam-log-registered-p"))
+	(gnus-error 5 (format "%s called with bad ID, type, classification, or check"
+			      "spam-log-registered-p"))
 	nil))))
+
+;;; check what a ham- or spam-processor registration says
+;;; returns nil if conflicting registrations are found
+(defun spam-log-registration-type (id type)
+  (let ((count 0)
+	decision)
+    (dolist (reg (spam-log-registered-p id type))
+      (let ((classification (nth 0 reg)))
+	(when (spam-classification-valid-p classification)
+	  (when (and decision
+		     (not (eq classification decision)))
+	    (setq count (+ 1 count)))
+	  (setq decision classification))))
+    (if (< 0 count)
+	nil
+      decision)))
 
 ;;; check if a ham- or spam-processor registration needs to be undone
 (defun spam-log-unregistration-needed-p (id type classification check)
@@ -1150,8 +1180,8 @@ functions")
 		(setq found t))))
 	  found)
       (progn
-	(gnus-message 5 (format "%s called with bad ID, type, classification, or check"
-				"spam-log-unregistration-needed-p"))
+	(gnus-error 5 (format "%s called with bad ID, type, classification, or check"
+			      "spam-log-unregistration-needed-p"))
 	nil))))
 
 
@@ -1174,8 +1204,8 @@ functions")
 	   type
 	   new-cell-list))
       (progn
-	(gnus-message 5 (format "%s called with bad ID, type, check, or group"
-				"spam-log-undo-registration"))
+	(gnus-error 5 (format "%s called with bad ID, type, check, or group"
+			      "spam-log-undo-registration"))
 	nil))))
 
 ;;; set up IMAP widening if it's necessary
@@ -1337,19 +1367,26 @@ functions")
 	      (spam-split-group (if spam-split-symbolic-return
 				    'spam
 				  spam-split-group))
-	      bbdb-cache)
+	      bbdb-cache bbdb-hashtable)
 	  
 	  (when spam-cache-lookups
 	    (setq bbdb-cache (gethash 'spam-use-BBDB spam-caches))
 	    (unless bbdb-cache
-	      (setq bbdb-cache (bbdb-hashtable))
+	      (setq bbdb-cache
+		    ;; this is the expanded (bbdb-hashtable) macro
+		    ;; without the debugging support
+		    (with-current-buffer (bbdb-buffer)
+		      (save-excursion
+			(save-window-excursion
+			  (bbdb-records nil t)
+			  bbdb-hashtable))))
 	      (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
-
 	  (when who
 	    (setq who (nth 1 (gnus-extract-address-components who)))
 	    (if
 		(if spam-cache-lookups
-		    (bbdb-gethash who bbdb-cache)
+		    (symbol-value 
+		     (intern-soft who bbdb-cache))
 		  (bbdb-search-simple nil who))
 		t
 	      (if spam-use-BBDB-exclusive
@@ -1358,8 +1395,8 @@ functions")
 
   (file-error (progn
 		(defalias 'bbdb-search-simple 'ignore)
-		(defalias 'bbdb-hashtable 'ignore)
-		(defalias 'bbdb-gethash 'ignore)
+		(defalias 'bbdb-records 'ignore)
+		(defalias 'bbdb-buffer 'ignore)
 		(defalias 'spam-check-BBDB 'ignore)
 		(defalias 'spam-BBDB-register-routine 'ignore)
 		(defalias 'spam-enter-ham-BBDB 'ignore)

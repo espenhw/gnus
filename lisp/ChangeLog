@@ -1,3 +1,21 @@
+2004-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-split): do not require spam-use-CHECK to be
+	enabled if that check is passed to spam-split explicitly; also
+	fix so 'spam doesn't get converted to spam-split-group when
+	spam-split-symbolic-return is t
+	(spam-find-spam): find registrations of the article and use those
+	instead of re-running spam-split to find the spam/ham
+	classification of the article
+	(spam-log-processing-to-registry, spam-log-registered-p)
+	(spam-log-unregistration-needed-p, spam-log-undo-registration):
+	use gnus-error instead of gnus-message
+	(spam-log-registration-type): new function to determine the
+	classification of a message based on registry entries; will
+	return nil if both 'spam and 'ham are found
+	(spam-check-BBDB): expand all the BBDB macros here so we can have
+	a reasonably fast local cache without the loading errors
+
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-cite-prefix-regexp): Use with-syntax-table.
