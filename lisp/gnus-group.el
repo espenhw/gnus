@@ -1948,6 +1948,25 @@ Returns whether the fetching was successful or not."
 
 (defvar gnus-ephemeral-group-server 0)
 
+(defcustom gnus-large-ephemeral-newsgroup 200
+  "The number of articles which indicates a large ephemeral newsgroup.
+Same as `gnus-large-newsgroup', but only used for ephemeral newsgroups.
+
+If the number of articles in a newsgroup is greater than this value,
+confirmation is required for selecting the newsgroup.  If it is nil, no
+confirmation is required."
+  :group 'gnus-group-select
+  :type '(choice (const :tag "No limit" nil)
+		 integer))
+
+(defcustom gnus-fetch-old-ephemeral-headers nil
+  "Same as `gnus-fetch-old-headers', but only used for ephemeral newsgroups."
+  :group 'gnus-thread
+  :type '(choice (const :tag "off" nil)
+		 (const some)
+		 number
+		 (sexp :menu-tag "other" t)))
+
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group (group method &optional activate
@@ -1997,7 +2016,10 @@ Return the name of the group if selection was successful."
     (if request-only
 	group
       (condition-case ()
-	  (when (gnus-group-read-group t t group select-articles)
+	  (when (let ((gnus-large-newsgroup gnus-large-ephemeral-newsgroup)
+		      (gnus-fetch-old-headers
+		       gnus-fetch-old-ephemeral-headers))
+		  (gnus-group-read-group t t group select-articles))
 	    group)
 	;;(error nil)
 	(quit

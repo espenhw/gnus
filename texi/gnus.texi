@@ -2123,6 +2123,10 @@ number (@code{-n}), the @code{n} oldest articles will be fetched.  If it
 is positive, the @code{n} articles that have arrived most recently will
 be fetched.
 
+@vindex gnus-large-ephemeral-newsgroup
+Same as @code{gnus-large-newsgroup}, but only used for ephemeral
+newsgroups.
+
 @vindex gnus-select-group-hook
 @vindex gnus-auto-select-first
 @vindex gnus-auto-select-subject
@@ -6598,6 +6602,11 @@ about that.
 This variable can also be set to @code{invisible}.  This won't have any
 visible effects, but is useful if you use the @kbd{A T} command a lot
 (@pxref{Finding the Parent}).
+
+@item gnus-fetch-old-ephemeral-headers
+@vindex gnus-fetch-old-ephemeral-headers
+Same as @code{gnus-fetch-old-headers}, but only used for ephemeral
+newsgroups.
 
 @item gnus-build-sparse-threads
 @vindex gnus-build-sparse-threads
@@ -24756,6 +24765,7 @@ original.
 
 @item ephemeral groups
 @cindex ephemeral groups
+@cindex temporary groups
 Most groups store data on what articles you have read.  @dfn{Ephemeral}
 groups are groups that will have no data stored---when you exit the
 group, it'll disappear into the aether.

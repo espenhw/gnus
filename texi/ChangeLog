@@ -1,3 +1,9 @@
+2003-04-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Selecting a Group): Add gnus-large-ephemeral-newsgroup.
+	(Filling In Threads): Add gnus-fetch-old-ephemeral-headers.
+	(Terminology): Index.
+
 2003-04-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: nil -> @code{nil}.  Capitalize "Rmail" and "Babyl"

@@ -1,3 +1,9 @@
+2003-04-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-large-ephemeral-newsgroup) 
+	(gnus-fetch-old-ephemeral-headers): News variables.
+	(gnus-group-read-ephemeral-group): Use them.
+
 2003-04-24  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el (sieve-upload): Don't use replace-regexp-in-string.
