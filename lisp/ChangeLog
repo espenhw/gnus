@@ -1,3 +1,8 @@
+2001-07-27 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-image-type-from-buffer): New.
+	(mm-get-image): Use it.
+
 2001-07-27 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-large-newsgroup): If it is nil, ...

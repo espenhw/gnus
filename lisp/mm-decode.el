@@ -1024,6 +1024,35 @@ like underscores."
   "Return the handle(s) referred to by ID."
   (cdr (assoc id mm-content-id-alist)))
 
+(defconst mm-image-type-regexps
+  '(("/\\*.*XPM.\\*/" . xpm)
+    ("P[1-6]" . pbm)
+    ("GIF8" . gif)
+    ("\377\330" . jpeg)
+    ("\211PNG\r\n" . png)
+    ("#define" . xbm)
+    ("\\(MM\0\\*\\)\\|\\(II\\*\0\\)" . tiff)
+    ("%!PS" . postscript))
+  "Alist of (REGEXP . IMAGE-TYPE) pairs used to auto-detect image types.
+When the first bytes of an image file match REGEXP, it is assumed to
+be of image type IMAGE-TYPE.")
+
+;; Steal from image.el. image-type-from-data suffers multi-line matching bug.
+(defun mm-image-type-from-buffer ()
+  "Determine the image type from data in the current buffer.
+Value is a symbol specifying the image type or nil if type cannot
+be determined."
+  (let ((types mm-image-type-regexps)
+	type)
+    (goto-char (point-min))
+    (while (and types (null type))
+      (let ((regexp (car (car types)))
+	    (image-type (cdr (car types))))
+	(when (looking-at regexp)
+	  (setq type image-type))
+	(setq types (cdr types))))
+    type))
+
 (defun mm-get-image (handle)
   "Return an image instance based on HANDLE."
   (let ((type (mm-handle-media-subtype handle))
@@ -1047,10 +1076,10 @@ like underscores."
 		      ;; Avoid testing `make-glyph' since W3 may define
 		      ;; a bogus version of it.
 		      (if (fboundp 'create-image)
-			  (or
-			   (create-image (buffer-string) nil 'data-p)
-			   (create-image (buffer-string) (intern type) 
-					 'data-p))
+			  (create-image (buffer-string) 
+					(or (mm-image-type-from-buffer)
+					    (intern type))
+					'data-p)
 			(cond
 			 ((equal type "xbm")
 			  ;; xbm images require special handling, since
@@ -1069,7 +1098,10 @@ like underscores."
 				(delete-file file)))))
 			 (t
 			  (make-glyph
-			   (vector (intern type) :data (buffer-string))))))))
+			   (vector 
+			    (or (mm-image-type-from-buffer)
+				(intern type))
+			    :data (buffer-string))))))))
 	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)
