@@ -1,3 +1,12 @@
+Tue Feb 17 07:00:43 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.29 is released.
+
+Tue Feb 17 06:15:03 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-purge-split-history): List if alists, not
+	alist. 
+
 Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.28 is released.
