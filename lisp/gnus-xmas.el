@@ -1,6 +1,6 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -436,6 +436,7 @@ call it with the value of the `gnus-data' text property."
     'gnus-xmas-mode-line-buffer-identification)
   (defalias 'gnus-key-press-event-p 'key-press-event-p)
   (defalias 'gnus-region-active-p 'region-active-p)
+  (defalias 'gnus-mark-active-p 'region-exists-p)
   (defalias 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
   (defalias 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
   (defalias 'gnus-image-type-available-p 'gnus-xmas-image-type-available-p)

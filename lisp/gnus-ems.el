@@ -149,10 +149,8 @@
        mark-active))
 
 (defun gnus-mark-active-p ()
-"Non-nil means the mark and region are currently active in this buffer."
-  (if (boundp 'mark-active)
-      mark-active   ; Emacs
-    (mark)))        ; XEmacs
+  "Non-nil means the mark and region are currently active in this buffer."
+  mark-active) ; aliased to region-exists-p in XEmacs.
 
 (if (fboundp 'add-minor-mode)
     (defalias 'gnus-add-minor-mode 'add-minor-mode)
