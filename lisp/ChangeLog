@@ -1,4 +1,16 @@
-Mon Jun 10 03:08:10 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+Mon Jun 10 05:20:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cus.el (()): Display X face by default.
+
+	* gnus-xmas.el (gnus-article-x-face-command): New default.
+
+	* gnus-ems.el: Moved x-face.
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): New function.
+
+Mon Jun 10 03:08:10 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uido.no>
+
+	* gnus.el: Gnus v5.2.13 is released.
 
 	* gnus-cus.el (()): Changed LemonChiffon to Turquoise.
 

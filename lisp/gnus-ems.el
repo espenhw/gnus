@@ -88,6 +88,12 @@
     (defvar gnus-mouse-face-prop 'mouse-face
       "Property used for highlighting mouse regions.")
 
+    (defvar gnus-article-x-face-command
+      "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
+      "String or function to be executed to display an X-Face header.
+If it is a string, the command will be executed in a sub-shell
+asynchronously.	 The compressed face will be piped to this command.")
+
     ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
     (defvar gnus-display-type 
       (condition-case nil

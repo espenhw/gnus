@@ -57,6 +57,14 @@ automatically.")
   (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
+(defvar gnus-article-x-face-command
+  (if (featurep 'xface)
+      'gnus-xmas-article-display-xface
+    "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
+  "String or function to be executed to display an X-Face header.
+If it is a string, the command will be executed in a sub-shell
+asynchronously.	 The compressed face will be piped to this command.")
+
 ;;; Internal variables.
 
 ;; Don't warn about these undefined variables.
@@ -663,5 +671,20 @@ XEmacs compatibility workaround."
   (if (null address)
       nil
     (mail-strip-quoted-names address)))
+
+(defun gnus-xmas-article-display-xface (beg end)
+  "Display any XFace headers in the current article."
+  (save-excursion
+    (let (xface-glyph)
+      (when (featurep 'xface)
+	(setq xface-glyph
+	      (make-glyph (vector 'xface :data 
+				  (concat "X-Face: "
+					  (buffer-substring beg end)))))
+	(goto-char (point-min))
+	(re-search-forward "^From:" nil t)
+	(beginning-of-line)
+	(set-extent-begin-glyph 
+	 (make-extent (point) (point)) xface-glyph)))))
 
 ;;; gnus-xmas.el ends here

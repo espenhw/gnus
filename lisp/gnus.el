@@ -1426,12 +1426,6 @@ If you want to run a special decoding program like nkf, use this hook.")
 ;(add-hook 'gnus-article-display-hook 'gnus-article-treat-overstrike)
 ;(add-hook 'gnus-article-display-hook 'gnus-article-maybe-highlight)
 
-(defvar gnus-article-x-face-command
-  "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
-  "String or function to be executed to display an X-Face header.
-If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command.")
-
 (defvar gnus-article-x-face-too-ugly nil
   "Regexp matching posters whose face shouldn't be shown automatically.")
 
@@ -1732,7 +1726,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.13"
+(defconst gnus-version-number "5.2.14"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)

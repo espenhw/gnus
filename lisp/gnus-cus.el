@@ -123,10 +123,18 @@ parts of the article, making it easier to find the information you
 want.")
 	(name . gnus-article-display-hook)
 	(type . list)
-	(default . (gnus-article-hide-headers-if-wanted
-		    gnus-article-hide-boring-headers
-		    gnus-article-treat-overstrike
-		    gnus-article-maybe-highlight))
+	(calculate 
+	 . (if (and (string-match "xemacs" emacs-version)
+		    (featurep 'xface))
+	       '(gnus-article-hide-headers-if-wanted
+		gnus-article-hide-boring-headers
+		gnus-article-treat-overstrike
+		gnus-article-display-x-face
+		gnus-article-maybe-highlight)
+	     '(gnus-article-hide-headers-if-wanted
+	      gnus-article-hide-boring-headers
+	      gnus-article-treat-overstrike
+	      gnus-article-maybe-highlight)))
 	(data 
 	 ((type . repeat)
 	  (header . nil)
