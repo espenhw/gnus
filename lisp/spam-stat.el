@@ -186,6 +186,9 @@ been touched in this many days will be considered.  Without
 this filter, re-training spam-stat with several thousand messages
 will start to take a very long time.")
 
+(defvar spam-stat-last-saved-at nil
+  "Time stamp of last change of spam-stat-file on this run")
+
 (defvar spam-stat-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     (modify-syntax-entry ?- "w" table)
@@ -401,14 +404,25 @@ spam-stat (spam-stat-to-hash-table '(" spam-stat-ngood spam-stat-nbad))
 				  (spam-stat-bad entry))))
 		   spam-stat)
 	  (insert ")))"))))
-	(setq spam-stat-dirty nil)))
+    (message "Saved %s."  spam-stat-file)
+    (setq spam-stat-dirty nil
+          spam-stat-last-saved-at (nth 5 (file-attributes spam-stat-file)))))
 
 (defun spam-stat-load ()
   "Read the `spam-stat' hash table from disk."
   ;; TODO: maybe we should warn the user if spam-stat-dirty is t?
   (let ((coding-system-for-read spam-stat-coding-system))
-    (load-file spam-stat-file))
-  (setq spam-stat-dirty nil))
+    (cond (spam-stat-dirty (message "Spam stat not loaded: spam-stat-dirty t"))
+          ((or (not (boundp 'spam-stat-last-saved-at))
+               (null spam-stat-last-saved-at)
+               (not (equal spam-stat-last-saved-at
+                           (nth 5 (file-attributes spam-stat-file)))))
+           (progn 
+             (load-file spam-stat-file)
+             (setq spam-stat-dirty nil
+                   spam-stat-last-saved-at 
+                   (nth 5 (file-attributes spam-stat-file)))))
+          (t (message "Spam stat file not loaded: no change in disk..")))))
 
 (defun spam-stat-to-hash-table (entries)
   "Turn list ENTRIES into a hash table and store as `spam-stat'.

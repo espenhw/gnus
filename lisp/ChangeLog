@@ -1,3 +1,9 @@
+2004-12-05  Nelson Ferreira  <nelson.ferreira@ieee.org>
+
+	* spam-stat.el (spam-stat-save): Load the hashtable from disk only
+	if there is no hashtable in memory or file modification time is
+	newer than cached timestamp.
+
 2004-12-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-limit-to-recipient): Implement
