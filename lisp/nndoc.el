@@ -71,8 +71,8 @@ from the document.")
      (body-begin-function . nndoc-babyl-body-begin)
      (head-begin-function . nndoc-babyl-head-begin))
     (forward
-     (article-begin . "^-+ Start of forwarded message -+\n+")
-     (body-end . "^-+ End of forwarded message -+$")
+     (article-begin . "^-+ \\(Start of \\)?forwarded message -+\n+")
+     (body-end . "^-+ End \\(of \\)?forwarded message -+$")
      (prepare-body-function . nndoc-unquote-dashes))
     (rfc934
      (article-begin . "^--.*\n+")

@@ -1,3 +1,7 @@
+2000-04-27 23:23:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-type-alist): Change forward regexp. 
+
 2000-04-27 21:57:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially-limit): Change the
