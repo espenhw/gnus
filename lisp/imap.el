@@ -511,7 +511,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(unwind-protect
 	    (progn
 	      (set-process-filter imap-process 'imap-arrival-filter)
-	      (when (and (eq imap-stream 'tls)
+	      (when (and (eq imap-stream 'starttls)
 			 (imap-ok-p (imap-send-command-wait "STARTTLS")))
 		(starttls-negotiate imap-process)))
 	  (set-process-filter imap-process nil)))
