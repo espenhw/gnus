@@ -9478,6 +9478,10 @@ encode using quoted-printable) or @code{t} (always use 8bit).
 @cindex coding system aliases
 @cindex preferred charset
 
+@xref{Encoding Customization, , Encoding Customization, emacs-mime,
+The Emacs MIME Manual}, for additional variables that control which
+MIME charsets are used when sending messages.
+
 Other charset tricks that may be useful, although not Gnus-specific:
 
 If there are several @acronym{MIME} charsets that encode the same Emacs
