@@ -258,9 +258,7 @@ for XEmacs."
 	  (re-search-forward "^From:" nil 'move)
 	  (gnus-add-wash-type 'xface)
 	  (gnus-add-image 'xface image)
-	  (insert-image image " ")
-	  (put-text-property (1- (point)) (point) 
-			     'gnus-image-text-deletable t))))))
+	  (gnus-put-image image))))))
 
 ;;; Image functions.
 
@@ -272,7 +270,10 @@ for XEmacs."
   (create-image file type data-p))
 
 (defun gnus-put-image (glyph &optional string)
-  (insert-image glyph string))
+  (insert-image glyph (or string " "))
+  (unless string
+    (put-text-property (1- (point)) (point) 
+		       'gnus-image-text-deletable t)))
 
 (defun gnus-remove-image (image)
   (dolist (position (message-text-with-property 'display))

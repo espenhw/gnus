@@ -676,11 +676,7 @@ XEmacs compatibility workaround."
       (set-glyph-face xface-glyph 'gnus-x-face)
 
       (gnus-article-goto-header "from")
-      ;;(gnus-put-image xface-glyph " ")
-      (let ((extent (make-extent (1- (point)) (point))))
-	(set-extent-property extent 'gnus-image t)
-	(set-extent-property extent 'duplicable t)
-	(set-extent-property extent 'end-glyph xface-glyph))
+      (gnus-put-image xface-glyph)
       (gnus-add-wash-type 'xface)
       (gnus-add-image 'xface xface-glyph))))
 
@@ -847,11 +843,14 @@ XEmacs compatibility workaround."
 Warning: Don't insert text immediately after the image."
   (let ((begin (point))
 	extent)
-    (insert (or string " "))
+    (if string 
+	(insert string)
+      (setq begin (1- begin)))
     (setq extent (make-extent begin (point)))
     (set-extent-property extent 'gnus-image t)
     (set-extent-property extent 'duplicable t)
-    (set-extent-property extent 'invisible t)
+    (if string
+	(set-extent-property extent 'invisible t))
     (set-extent-property extent 'end-glyph glyph)))
 
 (defun gnus-xmas-remove-image (image)
