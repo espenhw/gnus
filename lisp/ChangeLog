@@ -1,3 +1,14 @@
+2003-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-sum.el (gnus-auto-goto-ignores): New variable. Provides
+	customization between new maneuvering (which permits selecting
+	undownloaded articles) and old maneuvering (which skipped over
+	undownloaded articles) behaviors.
+	(gnus-summary-find-next): Pass through the unread and subject
+	parameters when calling gnus-summary-find-prev.
+	(gnus-summary-find-next,gnus-summary-find-prev): Apply
+	gnus-auto-goto-ignores to filter out unacceptable articles.
+	
 2003-03-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* mail-source.el (mail-source-read-passwd): Remove. `read-passwd'
@@ -27,14 +38,14 @@
 
 	* pgg.el (pgg-read-passphrase): Simplify.
 	
-2003-03-03  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-mode): Fixed the mode line reports
 	'plugged' when actually 'unplugged' bug.
 	(gnus-category-read): Ignore nil values when converting an
 	old-format category so that the new-format category will default
 	those attributes to the global variables.
-
+	
 2003-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mail-source.el (mail-source-delete-old-incoming-confirm): Fixed
