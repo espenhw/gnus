@@ -1,3 +1,8 @@
+2003-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-split): allow a particular check as a parameter,
+	e.g. (: spam-split 'spam-use-bogofilter)
+
 2003-04-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.el (gnus-group-short-name, gnus-group-prefixed-p): new functions

@@ -599,10 +599,10 @@ definitely a spam.")
 "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.")
 
-(defun spam-split ()
+(defun spam-split (&rest specific-checks)
   "Split this message into the `spam' group if it is spam.
 This function can be used as an entry in `nnmail-split-fancy', for
-example like this: (: spam-split)
+example like this: (: spam-split).  It can take checks as parameters.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
@@ -619,7 +619,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    decision)
 	(while (and list-of-checks (not decision))
 	  (let ((pair (pop list-of-checks)))
-	    (when (symbol-value (car pair))
+	    (when (and (symbol-value (car pair))
+		       (or (null specific-checks)
+			   (memq (car pair) specific-checks)))
 	      (gnus-message 5 "spam-split: calling the %s function" (symbol-name (cdr pair)))
 	      (setq decision (funcall (cdr pair))))))
 	(if (eq decision t)
