@@ -1,6 +1,26 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treat-newsgroups-picon): New variable. 
+
+	* gnus-picon.el (gnus-treat-newsgroups-picon): New function.
+	(gnus-picon-transform-newsgroups): New function.
+
+	* ietf-drums.el (ietf-drums-parse-addresses): Accept a nil
+	string. 
+
+	* gnus-picon.el (gnus-treat-mail-picon): Renamed.
+
+	* gnus-art.el (gnus-treat-cc-picon): New variable.
+	(gnus-treat-mail-picon): Renamed.
+
 	* gnus-picon.el: New implementation.
+	(gnus-picon-find-face): Renamed.
+	(gnus-treat-from-picon): Use it.
+	(gnus-picon-transform-address): Renamed.
+	(gnus-treat-from-picon): Use it.
+	(gnus-picon-create-glyph): Renamed.
+	(gnus-picon-transform-address): Use it.
+	(gnus-treat-cc-picon): New command.
 
 	* mm-decode.el (mm-create-image-xemacs): Separated out into
 	function.  

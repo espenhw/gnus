@@ -1067,6 +1067,26 @@ See the manual for details."
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-from-picon 'highlight t)
 
+(defcustom gnus-treat-mail-picon
+  (if (gnus-image-type-available-p 'xpm)
+      'head nil)
+  "Display picons.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-head-custom)
+(put 'gnus-treat-mail-picon 'highlight t)
+
+(defcustom gnus-treat-newsgroups-picon
+  (if (gnus-image-type-available-p 'xpm)
+      'head nil)
+  "Display picons.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-head-custom)
+(put 'gnus-treat-newsgroups-picon 'highlight t)
+
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1169,8 +1189,10 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
-    (gnus-treat-from-picon gnus-treat-from-picon)
     (gnus-treat-emphasize gnus-article-emphasize)
+    (gnus-treat-from-picon gnus-treat-from-picon)
+    (gnus-treat-mail-picon gnus-treat-mail-picon)
+    (gnus-treat-newsgroups-picon gnus-treat-newsgroups-picon)
     (gnus-treat-play-sounds gnus-earcon-display)))
 
 (defvar gnus-article-mime-handle-alist nil)

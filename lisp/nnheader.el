@@ -268,7 +268,7 @@ on your system, you could say something like:
 	     (goto-char p)
 	     (if (search-forward "\nreferences:" nil t)
 		 (nnheader-header-value)
-	    ;; Get the references from the in-reply-to header if there
+	       ;; Get the references from the in-reply-to header if there
 	       ;; were no references and the in-reply-to header looks
 	       ;; promising.
 	       (if (and (search-forward "\nin-reply-to:" nil t)

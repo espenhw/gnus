@@ -102,7 +102,7 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 
 ;;; Functions:
 
-(defun gnus-picon-find-user (address directories &optional exact)
+(defun gnus-picon-find-face (address directories &optional exact)
   (let* ((databases gnus-picon-databases)
 	 (address (split-string address "[.@]"))
 	 (user (pop address))
@@ -134,27 +134,40 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	file
       nil)))
 
-(defun gnus-treat-from-picon ()
+(defun gnus-picon-insert-glyph (glyph)
+  "Insert GLYPH into the buffer.
+GLYPH can be either a glyph or a string."
+  (if (stringp glyph)
+      (insert glyph)
+    (gnus-put-image glyph)))
+
+(defun gnus-picon-create-glyph (file)
+  (gnus-create-image file))
+
+;;; Functions that does picon transformations:
+
+(defun gnus-picon-transform-address (header)
   (interactive)
   (gnus-with-article-headers
-    (let ((address
-	   (car (mail-header-parse-address (mail-fetch-field "from"))))
+    (let ((addresses
+	   (mail-header-parse-addresses (mail-fetch-field header)))
 	  (first t)
 	  spec file)
-      (when address
+      (dolist (address addresses)
+	(setq address (car address))
 	(setq spec (split-string address "[.@]"))
-	(when (setq file (gnus-picon-find-user
+	(when (setq file (gnus-picon-find-face
 			  address gnus-picon-user-directories))
-	  (setcar spec (gnus-picon-find-glyph file)))
+	  (setcar spec (gnus-picon-create-glyph file)))
 	(dotimes (i (1- (length spec)))
-	  (when (setq file (gnus-picon-find-user
+	  (when (setq file (gnus-picon-find-face
 			    (concat "unknown@"
 				    (mapconcat
 				     'identity (nthcdr (1+ i) spec) "."))
 			    gnus-picon-domain-directories t))
-	    (setcar (nthcdr (1+ i) spec) (gnus-picon-find-glyph file))))
+	    (setcar (nthcdr (1+ i) spec) (gnus-picon-create-glyph file))))
 	
-	(gnus-article-goto-header "from")
+	(gnus-article-goto-header header)
 	(mail-header-narrow-to-field)
 	(when (search-forward address nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
@@ -166,15 +179,49 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 		(insert "@")
 		(setq first nil)))))))))
 
-(defun gnus-picon-insert-glyph (glyph)
-  "Insert GLYPH into the buffer.
-GLYPH can be either a glyph or a string."
-  (if (stringp glyph)
-      (insert glyph)
-    (gnus-put-image glyph)))
+(defun gnus-picon-transform-newsgroups (header)
+  (interactive)
+  (gnus-with-article-headers
+    (let ((groups
+	   (sort
+	    (message-tokenize-header (mail-fetch-field header))
+	    (lambda (g1 g2) (> (length g1) (length g2)))))
+	  spec file)
+      (dolist (group groups)
+	(setq spec (nreverse (split-string group "[.]")))
+	(dotimes (i (length spec))
+	  (when (setq file (gnus-picon-find-face
+			    (concat "unknown@"
+				    (mapconcat
+				     'identity (nthcdr i spec) "."))
+			    gnus-picon-news-directories t))
+	    (setcar (nthcdr i spec) (gnus-picon-create-glyph file))))
+	
+	(gnus-article-goto-header header)
+	(mail-header-narrow-to-field)
+	(when (search-forward group nil t)
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (setq spec (nreverse spec))
+	  (while spec
+	    (gnus-picon-insert-glyph (pop spec))
+	    (when spec
+	      (insert "."))))))))
 
-(defun gnus-picon-find-glyph (file)
-  (gnus-create-image file))
+;;; Commands:
+
+(defun gnus-treat-from-picon ()
+  (interactive)
+  (gnus-picon-transform-address "from"))
+
+(defun gnus-treat-mail-picon ()
+  (interactive)
+  (gnus-picon-transform-address "cc")
+  (gnus-picon-transform-address "to"))
+
+(defun gnus-treat-newsgroups-picon ()
+  (interactive)
+  (gnus-picon-transform-newsgroups "newsgroups")
+  (gnus-picon-transform-newsgroups "followup-to"))
 
 (provide 'gnus-picon)
 
