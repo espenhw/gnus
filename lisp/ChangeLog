@@ -1,3 +1,20 @@
+2004-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-recompute-hierarchical-structure): Remove.
+	(gnus-mime-multipart-functions): Revert 2004-03-19 change.
+	(gnus-article-mime-hierarchy): Remove.
+	(gnus-article-mime-hierarchy-next): Remove.
+	(gnus-article-mode): Revert 2004-03-19 change.
+	(gnus-article-setup-buffer): Revert 2004-03-19 change.
+	(gnus-insert-mime-button): Revert 2004-03-19 change.
+	(gnus-mime-accumulate-hierarchy): Remove.
+	(gnus-mime-enter-multipart): Remove.
+	(gnus-mime-leave-multipart): Remove,
+	(gnus-mime-display-part): Revert 2004-03-19 change.
+	(gnus-mime-display-alternative): Revert 2004-03-19 change.
+
+	* mml.el (mml-preview): Revert 2004-03-19 change.
+
 2004-03-18  Helmut Waitzmann  <Helmut.Waitzmann@web.de>  (tiny change)
 
 	* gnus-sum.el (gnus-newsgroup-variables): Doc fix.
