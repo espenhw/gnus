@@ -6862,7 +6862,7 @@ in."
     (when current-prefix-arg
       (completing-read
        "FAQ dir: " (and (listp gnus-group-faq-directory)
-			(mapcar (lambda (file) (list file))
+			(mapcar 'list
 				gnus-group-faq-directory))))))
   (let (gnus-faq-buffer)
     (when (setq gnus-faq-buffer
@@ -11052,8 +11052,7 @@ save those articles instead."
 	   (t
 	    (gnus-completing-read-with-default
 	     nil prom
-	     (mapcar (lambda (el) (list el))
-		     (nreverse split-name))
+	     (mapcar 'list (nreverse split-name))
 	     nil nil nil
 	     'gnus-group-history))))
 	 (to-method (gnus-server-to-method (gnus-group-method to-newsgroup))))

@@ -1,3 +1,52 @@
+2004-04-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam-stat.el (spam-stat-score-buffer): Simplify mapcar usage.
+	Use mapc when appropriate.
+
+	* sieve-manage.el (sieve-manage-open): do.
+
+	* nnweb.el (nnweb-insert-html): do.
+
+	* nnvirtual.el (nnvirtual-catchup-group, nnvirtual-partition-sequence)
+	(nnvirtual-partition-sequence, nnvirtual-create-mapping): do.
+
+	* nnspool.el (nnspool-request-group): do.
+
+	* nnrss.el (nnrss-opml-export, nnrss-find-el, nnrss-order-hrefs):
+	do.
+
+	* nnml.el (nnml-request-update-info): do.
+
+	* nnmh.el (nnmh-request-group, nnmh-request-list-1, nnmh-active-number)
+	(nnmh-request-create-group, nnmh-update-gnus-unreads): do.
+
+	* nnimap.el (nnimap-request-close, nnimap-acl-edit)
+	(nnimap-request-set-mark): do.
+
+	* nnfolder.el (nnfolder-request-update-info): do.
+
+	* mm-view.el (mm-pkcs7-signed-magic, mm-pkcs7-enveloped-magic):
+	do.
+
+	* mml.el (mml-destroy-buffers, mml-compute-boundary-1): do.
+
+	* gnus-uu.el (gnus-uu-find-articles-matching): do.
+
+	* gnus-topic.el (gnus-topic-check-topology, gnus-topic-remove-group):
+	do.
+
+	* gnus-sum.el (gnus-summary-fetch-faq, gnus-read-move-group-name):
+	do.
+
+	* gnus-score.el (gnus-score-load-file, gnus-sort-score-files): do.
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): do.
+
+	* gnus-int.el (gnus-start-news-server): do.
+
+	* gnus-group.el (gnus-group-make-kiboze-group)
+	(gnus-group-browse-foreign-server): do.
+
 2004-04-22  Teodor Zlatanov  <tzz@bwh.harvard.edu>
 
 	* spam.el (spam-necessary-extra-headers): get the extra headers we

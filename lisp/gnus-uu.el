@@ -1150,7 +1150,7 @@ When called interactively, prompt for REGEXP."
 
 	;; Expand numbers, sort, and return the list of article
 	;; numbers.
-	(mapcar (lambda (sub) (cdr sub))
+	(mapcar 'cdr
 		(sort (gnus-uu-expand-numbers
 		       list-of-subjects
 		       (not do-not-translate))

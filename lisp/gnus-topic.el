@@ -840,8 +840,7 @@ articles in the topic and its subtopics."
       (pop topics)))
   ;; Go through all living groups and make sure that
   ;; they belong to some topic.
-  (let* ((tgroups (apply 'append (mapcar (lambda (entry) (cdr entry))
-					 gnus-topic-alist)))
+  (let* ((tgroups (apply 'append (mapcar 'cdr gnus-topic-alist)))
 	 (entry (last (assoc (caar gnus-topic-topology) gnus-topic-alist)))
 	 (newsrc (cdr gnus-newsrc-alist))
 	 group)
@@ -1313,7 +1312,7 @@ If COPYP, copy the groups instead."
   (let ((use-marked (and (not n) (not (gnus-region-active-p))
 			 gnus-group-marked t))
 	(groups (gnus-group-process-prefix n)))
-    (mapcar
+    (mapc
      (lambda (group)
        (gnus-group-remove-mark group use-marked)
        (let ((topicl (assoc (gnus-current-topic) gnus-topic-alist))

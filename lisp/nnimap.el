@@ -830,8 +830,8 @@ Return nil if the server couldn't be closed for some reason."
 All buffers that have been created by that
 backend should be killed.  (Not the nntp-server-buffer, though.) This
 function is generally only called when Gnus is shutting down."
-  (mapcar (lambda (server) (nnimap-close-server (car server)))
-	  nnimap-server-buffer-alist)
+  (mapc (lambda (server) (nnimap-close-server (car server)))
+	nnimap-server-buffer-alist)
   (setq nnimap-server-buffer-alist nil))
 
 (deffoo nnimap-status-message (&optional server)
@@ -1218,11 +1218,11 @@ function is generally only called when Gnus is shutting down."
 	      (if (memq 'dormant cmdmarks)
 		  (setq cmdmarks (cons 'tick cmdmarks))))
 	    ;; remove stuff we are forbidden to store
-	    (mapcar (lambda (mark)
-		      (if (imap-message-flag-permanent-p
-			   (nnimap-mark-to-flag mark))
-			  (setq marks (cons mark marks))))
-		    cmdmarks)
+	    (mapc (lambda (mark)
+		    (if (imap-message-flag-permanent-p
+			 (nnimap-mark-to-flag mark))
+			(setq marks (cons mark marks))))
+		  cmdmarks)
 	    (when (and range marks)
 	      (cond ((eq what 'del)
 		     (imap-message-flags-del
@@ -1551,21 +1551,21 @@ function is generally only called when Gnus is shutting down."
       (error "Your server does not support ACL editing"))
     (with-current-buffer nnimap-server-buffer
       ;; delete all removed identifiers
-      (mapcar (lambda (old-acl)
-		(unless (assoc (car old-acl) new-acls)
-		  (or (imap-mailbox-acl-delete (car old-acl) mailbox)
-		      (error "Can't delete ACL for %s" (car old-acl)))))
-	      old-acls)
+      (mapc (lambda (old-acl)
+	      (unless (assoc (car old-acl) new-acls)
+		(or (imap-mailbox-acl-delete (car old-acl) mailbox)
+		    (error "Can't delete ACL for %s" (car old-acl)))))
+	    old-acls)
       ;; set all changed acl's
-      (mapcar (lambda (new-acl)
-		(let ((new-rights (cdr new-acl))
-		      (old-rights (cdr (assoc (car new-acl) old-acls))))
-		  (unless (and old-rights new-rights
-			       (string= old-rights new-rights))
-		    (or (imap-mailbox-acl-set (car new-acl) new-rights mailbox)
-			(error "Can't set ACL for %s to %s" (car new-acl)
-			       new-rights)))))
-	      new-acls)
+      (mapc (lambda (new-acl)
+	      (let ((new-rights (cdr new-acl))
+		    (old-rights (cdr (assoc (car new-acl) old-acls))))
+		(unless (and old-rights new-rights
+			     (string= old-rights new-rights))
+		  (or (imap-mailbox-acl-set (car new-acl) new-rights mailbox)
+		      (error "Can't set ACL for %s to %s" (car new-acl)
+			     new-rights)))))
+	    new-acls)
       t)))
 
 

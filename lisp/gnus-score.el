@@ -1212,8 +1212,7 @@ If FORMAT, also format the current score file."
       ;; files.
       (when (and files (not global))
 	(setq lists (apply 'append lists
-			   (mapcar (lambda (file)
-				     (gnus-score-load-file file))
+			   (mapcar 'gnus-score-load-file
 				   (if adapt-file (cons adapt-file files)
 				     files)))))
       (when (and eval (not global))
@@ -2765,9 +2764,7 @@ Destroys the current buffer."
 	    (lambda (file)
 	      (cons (inline (gnus-score-file-rank file)) file))
 	    files)))
-      (mapcar
-       (lambda (f) (cdr f))
-       (sort alist 'car-less-than-car)))))
+      (mapcar 'cdr (sort alist 'car-less-than-car)))))
 
 (defun gnus-score-find-alist (group)
   "Return list of score files for GROUP.

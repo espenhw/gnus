@@ -244,8 +244,7 @@ there.")
 	;; Yes, completely empty spool directories *are* possible.
 	;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
 	(when (setq dir (directory-files pathname nil "^[0-9]+$" t))
-	  (setq dir
-		(sort (mapcar (lambda (name) (string-to-int name)) dir) '<)))
+	  (setq dir (sort (mapcar 'string-to-int dir) '<)))
 	(if dir
 	    (nnheader-insert
 	     "211 %d %d %d %s\n" (length dir) (car dir)

@@ -2690,7 +2690,7 @@ score file entries for articles to include in the group."
    (list
     (read-string "nnkiboze group name: ")
     (read-string "Source groups (regexp): ")
-    (let ((headers (mapcar (lambda (group) (list group))
+    (let ((headers (mapcar 'list
 			   '("subject" "from" "number" "date" "message-id"
 			     "references" "chars" "lines" "xref"
 			     "followup" "all" "body" "head")))
@@ -4016,8 +4016,7 @@ and the second element is the address."
 		     ;; Suggested by mapjph@bath.ac.uk.
 		     (completing-read
 		      "Address: "
-		      (mapcar (lambda (server) (list server))
-			      gnus-secondary-servers)))
+		      (mapcar 'list gnus-secondary-servers)))
 	     ;; We got a server name.
 	     how))))
   (gnus-browse-foreign-server method))

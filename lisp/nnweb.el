@@ -533,7 +533,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 	     (nth 1 parse)
 	     " "))
     (insert ">\n")
-    (mapcar 'nnweb-insert-html (nth 2 parse))
+    (mapc 'nnweb-insert-html (nth 2 parse))
     (insert "</" (symbol-name (car parse)) ">\n")))
 
 (defun nnweb-parse-find (type parse &optional maxdepth)

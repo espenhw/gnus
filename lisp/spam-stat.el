@@ -463,7 +463,7 @@ where DIFF is the difference between SCORE and 0.5."
 (defun spam-stat-score-buffer ()
   "Return a score describing the spam-probability for this buffer."
   (setq spam-stat-score-data (spam-stat-buffer-words-with-scores))
-  (let* ((probs (mapcar (lambda (e) (cadr e)) spam-stat-score-data))
+  (let* ((probs (mapcar 'cadr spam-stat-score-data))
 	 (prod (apply #'* probs)))
     (/ prod (+ prod (apply #'* (mapcar #'(lambda (x) (- 1 x))
 				       probs))))))

@@ -433,7 +433,7 @@ Optional variable BUFFER is buffer (buffer, or string naming buffer)
 to work in."
   (setq buffer (or buffer (format " *sieve* %s:%d" server (or port 2000))))
   (with-current-buffer (get-buffer-create buffer)
-    (mapcar 'make-variable-buffer-local sieve-manage-local-variables)
+    (mapc 'make-variable-buffer-local sieve-manage-local-variables)
     (sieve-manage-disable-multibyte)
     (buffer-disable-undo)
     (setq sieve-manage-server (or server sieve-manage-server))

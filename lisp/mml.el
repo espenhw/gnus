@@ -132,7 +132,7 @@ one charsets.")
 
 (defun mml-destroy-buffers ()
   (let (kill-buffer-hook)
-    (mapcar 'kill-buffer mml-buffer-list)
+    (mapc 'kill-buffer mml-buffer-list)
     (setq mml-buffer-list nil)))
 
 (defun mml-parse ()
@@ -596,7 +596,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 				      (incf mml-multipart-number)))
 	  (throw 'not-unique nil))))
      ((eq (car cont) 'multipart)
-      (mapcar 'mml-compute-boundary-1 (cddr cont))))
+      (mapc 'mml-compute-boundary-1 (cddr cont))))
     t))
 
 (defun mml-make-boundary (number)
