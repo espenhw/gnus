@@ -1,5 +1,7 @@
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
+	* sasl-ntlm.el, ntlm.el, md4.el: New files.
+
 	* hmac-md5.el (md5-binary): Fix byte compile warning.  (This
 	probably breaks emacs with DL patch, but do we care? Is anyone
 	still using the DL stuff?)
