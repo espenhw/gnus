@@ -1342,7 +1342,7 @@ EXTRA is the possible non-standard header."
       (while cache
 	(current-buffer)
 	(setq entry (pop cache)
-	      file (car entry)
+	      file (nnheader-translate-file-chars (car entry) t)
 	      score (cdr entry))
 	(if (or (not (equal (gnus-score-get 'touched score) '(t)))
 		(gnus-score-get 'read-only score)
