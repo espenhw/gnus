@@ -2621,7 +2621,7 @@ It should typically alter the sending method in some way or other."
   (message-check 'invisible-text
     (let ((points (message-text-with-property 'invisible)))
       (when points
-	(goto-char (car point))
+	(goto-char (car points))
 	(dolist (point points)
 	  (add-text-properties point (1+ point)
 			       '(invisible nil highlight t)))
