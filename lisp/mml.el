@@ -1098,9 +1098,11 @@ If RAW, don't highlight the article."
       (message-options-set-recipient)
       (when (boundp 'gnus-buffers)
 	(push mml-preview-buffer gnus-buffers))
-      (set-buffer mml-preview-buffer)
-      (erase-buffer)
-      (insert-buffer-substring buf)
+      (save-restriction
+	(widen)
+	(set-buffer mml-preview-buffer)
+	(erase-buffer)
+	(insert-buffer-substring buf))
       (mml-preview-insert-mail-followup-to)
       (let ((message-deletable-headers (if (message-news-p)
 					   nil
@@ -1113,6 +1115,7 @@ If RAW, don't highlight the article."
 	   (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 	  (replace-match "\n"))
       (let ((mail-header-separator ""));; mail-header-separator is removed.
+	(message-sort-headers)
 	(mml-to-mime))
       (if raw
 	  (when (fboundp 'set-buffer-multibyte)

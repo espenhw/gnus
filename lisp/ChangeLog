@@ -1,5 +1,8 @@
 2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mml.el (mml-preview): Widen the message buffer before copying
+	the contents to the preview buffer; sort headers before previewing.
+
 	* message.el (message-hidden-headers): Fix the way to avoid a bug
 	in the `repeat' widget in Emacs 21.3 or earlier.
 
