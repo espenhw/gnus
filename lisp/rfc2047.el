@@ -55,7 +55,7 @@ The values can be:
     (iso-8859-2 . Q)
     (iso-8859-3 . Q)
     (iso-8859-4 . Q)
-    (iso-8859-5 . Q)
+    (iso-8859-5 . B)
     (koi8-r . Q)
     (iso-8859-7 . Q)
     (iso-8859-8 . Q)
@@ -73,13 +73,13 @@ Valid encodings are nil, `Q' and `B'.")
 
 (defvar rfc2047-encoding-function-alist
   '((Q . rfc2047-q-encode-region)
-    (B . base64-encode-region)
+    (B . rfc2047-b-encode-region)
     (nil . ignore))
   "Alist of RFC2047 encodings to encoding functions.")
 
 (defvar rfc2047-q-encoding-alist
-  '(("\\(From\\|Cc\\|To\\|Bcc\||Reply-To\\):" . "[^-A-Za-z0-9!*+/=_]")
-    ("." . "[\000-\007\013\015-\037\200-\377=_?]"))
+  '(("\\(From\\|Cc\\|To\\|Bcc\||Reply-To\\):" . "-A-Za-z0-9!*+/=_")
+    ("." . "^\000-\007\013\015-\037\200-\377=_?"))
   "Alist of header regexps and valid Q characters.")
 
 ;;;
@@ -140,36 +140,36 @@ Should be called narrowed to the head of the message."
 	(setq found t)))
     found))
 
+(defun rfc2047-dissect-region (b e)
+  "Dissect the region between B and E."
+  (let (words)
+    (save-restriction
+      (narrow-to-region b e)
+      (goto-char (point-min))
+      (while (re-search-forward "[^ \t\n]+" nil t)
+	(push
+	 (list (match-beginning 0) (match-end 0)
+	       (car
+		(delq 'ascii
+		      (find-charset-region (match-beginning 0)
+					   (match-end 0)))))
+	 words))
+      words)))
+
 (defun rfc2047-encode-region (b e)
   "Encode all encodable words in REGION."
-  (let (prev c start qstart qprev qend)
-    (save-excursion
-      (goto-char b)
-      (while (re-search-forward "[^ \t\n]+" nil t)
-	(save-restriction
-	  (narrow-to-region (match-beginning 0) (match-end 0))
-	  (goto-char (setq start (point-min)))
-	  (setq prev nil)
-	  (while (not (eobp))
-	    (unless (eq (setq c (char-charset (following-char))) 'ascii)
-	      (cond
-	       ((eq c prev)
-		)
-	       ((null prev)
-		(setq qstart (or qstart start)
-		      qend (point-max)
-		      qprev c)
-		(setq prev c))
-	       (t
-		;(rfc2047-encode start (setq start (point)) prev)
-		(setq prev c))))
-	    (forward-char 1)))
-	(when (and (not prev) qstart)
-	  (rfc2047-encode qstart qend qprev)
-	  (setq qstart nil)))
-      (when qstart
-	(rfc2047-encode qstart qend qprev)
-	(setq qstart nil)))))
+  (let ((words (rfc2047-dissect-region b e))
+	beg end current word)
+    (while (setq word (pop words))
+      (if (equal (nth 2 word) current)
+	  (setq beg (nth 0 word))
+	(when current
+	  (rfc2047-encode beg end current))
+	(setq current (nth 2 word)
+	      beg (nth 0 word)
+	      end (nth 1 word))))
+    (when current
+      (rfc2047-encode beg end current))))
 
 (defun rfc2047-encode-string (string)
   "Encode words in STRING."
@@ -180,9 +180,15 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-encode (b e charset)
   "Encode the word in the region with CHARSET."
-  (let* ((mime-charset (mm-mule-charset-to-mime-charset charset))
-	 (encoding (cdr (assq mime-charset
-			      rfc2047-charset-encoding-alist)))
+  (let* ((mime-charset
+	  (or
+	   (coding-system-get
+	    (get-charset-property charset 'prefered-coding-system)
+	    'mime-charset)
+	   (car (memq charset (find-coding-systems-region b e)))))
+	 (encoding (or (cdr (assq mime-charset
+			      rfc2047-charset-encoding-alist))
+		       'B))
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
 		 (downcase (symbol-name encoding)) "?")))
@@ -203,6 +209,10 @@ Should be called narrowed to the head of the message."
 	(forward-char 73)
 	(insert "?=\n " start)
 	(end-of-line)))))
+
+(defun rfc2047-b-encode-region (b e)
+  "Encode the header contained in REGION with the B encoding."
+  (base64-encode-region b e t))
 
 (defun rfc2047-q-encode-region (b e)
   "Encode the header contained in REGION with the Q encoding."

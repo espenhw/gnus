@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.17 Manual
+@settitle Pterodactyl Gnus 0.18 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.17 Manual
+@title Pterodactyl Gnus 0.18 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.17.
+This manual corresponds to Pterodactyl Gnus 0.18.
 
 @end ifinfo
 
@@ -11564,11 +11564,21 @@ are eligible for downloading; and
 @item
 a score rule which (generally) gives you a finer granularity when
 deciding what articles to download.  (Note that this @dfn{download
-score} is wholly unrelated to normal scores.)
+score} is not necessarily related to normal scores.)
 @end enumerate
 
-A predicate consists of predicates with logical operators sprinkled in
-between.
+A predicate in its simplest form can be a single predicate such as
+@code{true} or @code{false}. These two will download every available
+article or nothing respectively. In the case of these two special
+predicates an additional score rule is superfluous.
+
+Predicates of @code{high} or @code{low} download articles in respect of
+their scores in relationship to @code{gnus-agent-high-score} and
+@code{gnus-agent-low-score} as descibed below.
+
+To gain even finer control of what is to be regarded eligible for
+download a predicate can consist of a number of predicates with logical
+operators sprinkled in between.
 
 Perhaps some examples are in order.
 
@@ -11636,14 +11646,186 @@ to know:  The functions are called with no parameters, but the
 @code{gnus-headers} and @code{gnus-score} dynamic variables are bound to
 useful values.
 
+For example, you could decide that you don't want to download articles
+that were posted more than a certain number of days ago (e.g. posted
+more than @code{gnus-agent-expire-days} ago) you might write a function
+something along the lines of the following:
+
+@lisp
+(defun my-article-old-p ()
+  "Say whether an article is old."
+  (< (time-to-day (date-to-time (mail-header-date gnus-headers)))
+     (- (time-to-day (current-time)) gnus-agent-expire-days)))
+@end lisp
+
+with the predicate then defined as:
+
+@lisp
+(not my-article-old-p)
+@end lisp
+
+or you could append your predicate to the predefined
+@code{gnus-category-predicate-alist} in your @file{~/.gnus.el} or
+wherever.  (Note: this would have to be at a point *after*
+@code{gnus-agent} has been loaded via @code{(gnus-agentize)})   
+
+@lisp
+(defvar  gnus-category-predicate-alist
+  (append gnus-category-predicate-alist
+	 '((old . my-article-old-p))))
+@end lisp
+
+and simply specify your predicate as:
+
+@lisp
+(not old)
+@end lisp
+
+If/when using something like the above, be aware that there are many
+misconfigured systems/mailers out there and so an article's date is not
+always a reliable indication of when it was posted. Hell, some people
+just don't give a damm.
+
+
+The above predicates apply to *all* the groups which belong to the
+category. However, if you wish to have a specific predicate for an
+individual group within a category, or you're just too lazy to set up a
+new category, you can enter a group's individual predicate in it's group 
+parameters like so:
+
+@lisp
+(agent-predicate . short)
+@end lisp
+
+This is the group parameter equivalent of the agent category
+default. Note that when specifying a single word predicate like this,
+the @code{agent-predicate} specification must be in dotted pair
+notation.
+
+The equivalent of the longer example from above would be:
+
+@lisp
+(agent-predicate or high (and (not low) (not long)))
+@end lisp
+
+The outer parenthesis required in the category specification are not
+entered here as, not being in dotted pair notation, the value of the
+predicate is assumed to be a list. 
+ 
+
 Now, the syntax of the download score is the same as the syntax of
 normal score files, except that all elements that require actually
 seeing the article itself are verboten.  This means that only the
-following headers can be scored on: @code{From}, @code{Subject},
-@code{Date}, @code{Xref}, @code{Lines}, @code{Chars}, @code{Message-ID},
-and @code{References}.
+following headers can be scored on: @code{Subject}, @code{From},
+@code{Date}, @code{Message-ID}, @code{References}, @code{Chars},
+@code{Lines}, and @code{Xref}.
 
+As with predicates, the specification of the @code{download score rule}
+to use in respect of a group can be in either the category definition if
+it's to be applicable to all groups in therein, or a group's parameters
+if it's to be specific to that group.
 
+In both of these places the @code{download score rule} can take one of
+three forms:
+
+@table @code
+@enumerate
+@item 
+Score rule
+
+This has the same syntax as a normal gnus score file except only a
+subset of scoring keywords are available as mentioned above.
+
+example:
+
+@itemize @bullet
+@item 
+Category specification
+
+@lisp
+(("from"        
+       ("Lars Ingebrigtsen" 1000000 nil s))
+("lines"
+       (500 -100 nil <)))
+@end lisp
+
+@item 
+Group Parameter specification
+
+@lisp
+(agent-score ("from"        
+                   ("Lars Ingebrigtsen" 1000000 nil s))
+             ("lines"
+                   (500 -100 nil <)))
+@end lisp
+
+Again, note the omission of the outermost parenthesis here.
+@end itemize
+
+@item 
+Agent score file
+
+These score files must *only* contain the permitted scoring keywords
+stated above.
+
+example:
+
+@itemize @bullet
+@item 
+Category specification
+
+@lisp
+("~/News/agent.SCORE")
+@end lisp
+
+or perhaps
+
+@lisp
+("~/News/agent.SCORE" "~/News/agent.group.SCORE")
+@end lisp
+
+@item 
+Group Parameter specification
+
+@lisp
+(agent-score "~/News/agent.SCORE")
+@end lisp
+
+Additional score files can be specified as above. Need I say anything
+about parenthesis.
+@end itemize
+
+@item 
+Use @code{normal} score files
+
+If you dont want to maintain two sets of scoring rules for a group, and
+your desired @code{downloading} criteria for a group are the same as your
+@code{reading} criteria then you can tell the agent to refer to your
+@code{normal} score files when deciding what to download.
+
+These directives in either the category definition or a group's
+parameters will cause the agent to read in all the applicable score
+files for a group, *filtering out* those those sections that do not
+relate to one of the permitted subset of scoring keywords.
+
+@itemize @bullet
+@item 
+Category Specification
+
+@lisp
+file
+@end lisp
+
+@item 
+Group Parameter specification
+
+@lisp
+(agent-score . file)
+@end lisp
+@end itemize
+@end enumerate
+@end table
+ 
 @node The Category Buffer
 @subsubsection The Category Buffer
 
@@ -17920,6 +18102,9 @@ Introduce nnmail-home-directory.
 @item
 gnus-fetch-group and friends should exit Gnus when the user
 exits the group.
+
+@item
+The jingle is only played on the second invocation of Gnus.
 
 @item
 Solve the halting problem.

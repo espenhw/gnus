@@ -279,7 +279,7 @@ there.")
 	(while (and (not (looking-at
 			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
 		    (zerop (forward-line -1))))
-	(let ((seconds (time-to-float (date-to-time date)))
+	(let ((seconds (time-to-seconds (date-to-time date)))
 	      groups)
 	  ;; Go through lines and add the latest groups to a list.
 	  (while (and (looking-at "\\([^ ]+\\) +[0-9]+ ")

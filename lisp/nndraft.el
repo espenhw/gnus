@@ -130,8 +130,6 @@
   (when (nndraft-request-article article group server (current-buffer))
     (message-remove-header "xref")
     (message-remove-header "lines")
-    (let ((gnus-verbose-backends nil))
-      (nndraft-request-expire-articles (list article) group server t))
     t))
 
 (deffoo nndraft-request-update-info (group info &optional server)

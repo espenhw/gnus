@@ -65,12 +65,13 @@ matched by that regexp."
     (save-restriction
       (narrow-to-region from to)
       (goto-char (point-min))
-      (while (re-search-forward
-	      (or class "[\000-\007\013\015-\037\200-\377=]") nil t)
+      (while (and (skip-chars-forward
+		   (or class "^\000-\007\013\015-\037\200-\377="))
+		  (not (eobp)))
 	(insert
 	 (prog1
-	     (upcase (format "=%x" (char-after (1- (point)))))
-	   (delete-char -1))))
+	     (upcase (format "=%x" (char-after (point))))
+	   (delete-char 1))))
       (when fold
 	;; Fold long lines.
 	(goto-char (point-min))

@@ -164,9 +164,9 @@
     (funcall type match (or (aref gnus-advanced-headers index) 0))))
 
 (defun gnus-advanced-date (index match type)
-  (let ((date (encode-time (parse-time-string
-			    (aref gnus-advanced-headers index))))
-	(match (encode-time (parse-time-string match))))
+  (let ((date (apply 'encode-time (parse-time-string
+				   (aref gnus-advanced-headers index))))
+	(match (apply 'encode-time (parse-time-string match))))
     (cond
      ((eq type 'at)
       (equal date match))

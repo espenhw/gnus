@@ -1,3 +1,50 @@
+Tue Sep  8 04:29:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.18 is released.
+
+1998-09-08 02:21:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-and-exit): Return t on success.
+	(message-make-date): Make a proper time zone.
+
+	* gnus-draft.el (gnus-draft-send): Only remove article if the
+	sending is successful.
+
+	* drums.el (drums-get-comment): Return the last comment.
+	(drums-parse-address): Parse old-style From headers.
+
+1998-09-07  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-sum.el (gnus-data-compute-positions): Move below
+	`gnus-save-hidden-threads' so the former is correctly detected as
+	a macro.
+
+1998-09-06  Dave Love  <fx@gnu.org>
+
+	* gnus/nnweb.el (require): Wrap requirement of w3 and url in
+	ignore-errors too, eval'd when compile.  Require w3 stuff at load
+	time for nicer failure if it's not available.
+
+1998-09-08 00:38:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* time-date.el (time-to-seconds): Renamed.
+
+	* parse-time.el (parse-time-string): Downcase before handling. 
+	(parse-time-rules): Times without seconds have 0 seconds.
+
+	* rfc2047.el (rfc2047-encode-region): New version.
+	(rfc2047-dissect-region): New function.
+
+1998-09-07 01:08:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-make-date): Use symbolic zone.
+
+1998-09-06 23:23:06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* time-date.el (parse-time): Always use parse-time.
+
+	* parse-time.el (parse-time-syntax): Use vectors.
+
 Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.17 is released.
@@ -82,6 +129,11 @@ Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	(mm-known-charsets): New variable.
 
 	* message.el (message-caesar-region): Bugged out.
+
+1998-09-06  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Allow lists when
+	specifying `agent-predicate' in a group's parameters.
 
 Sat Sep  5 21:55:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

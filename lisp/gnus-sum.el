@@ -2030,21 +2030,6 @@ The following commands are available:
     (setcar (nthcdr 2 (car data)) (+ offset (nth 2 (car data))))
     (setq data (cdr data))))
 
-(defun gnus-data-compute-positions ()
-  "Compute the positions of all articles."
-  (setq gnus-newsgroup-data-reverse nil)
-  (let ((data gnus-newsgroup-data))
-    (save-excursion
-      (gnus-save-hidden-threads
-	(gnus-summary-show-all-threads)
-	(goto-char (point-min))
-	(while data
-	  (while (get-text-property (point) 'gnus-intangible)
-	    (forward-line 1))
-	  (gnus-data-set-pos (car data) (+ (point) 3))
-	  (setq data (cdr data))
-	  (forward-line 1))))))
-
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
   (not (vectorp (gnus-data-header (gnus-data-find article)))))
@@ -2211,6 +2196,21 @@ marks of articles."
 	   (save-excursion
 	     ,@forms)
 	 (gnus-restore-hidden-threads-configuration ,config)))))
+
+(defun gnus-data-compute-positions ()
+  "Compute the positions of all articles."
+  (setq gnus-newsgroup-data-reverse nil)
+  (let ((data gnus-newsgroup-data))
+    (save-excursion
+      (gnus-save-hidden-threads
+	(gnus-summary-show-all-threads)
+	(goto-char (point-min))
+	(while data
+	  (while (get-text-property (point) 'gnus-intangible)
+	    (forward-line 1))
+	  (gnus-data-set-pos (car data) (+ (point) 3))
+	  (setq data (cdr data))
+	  (forward-line 1))))))
 
 (defun gnus-hidden-threads-configuration ()
   "Return the current hidden threads configuration."

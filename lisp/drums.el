@@ -56,6 +56,8 @@
     (modify-syntax-entry ?\\ "/" table)
     (modify-syntax-entry ?< "(" table)
     (modify-syntax-entry ?> ")" table)
+    (modify-syntax-entry ?( "(" table)
+    (modify-syntax-entry ?) ")" table)
     table))
 
 (defsubst drums-init (string)
@@ -110,8 +112,7 @@
 	  (setq result
 		(buffer-substring
 		 (1+ (point))
-		 (progn (forward-sexp 1) (1- (point)))))
-	  (goto-char (point-max)))
+		 (progn (forward-sexp 1) (1- (point))))))
 	 (t
 	  (forward-char 1))))
       result)))
@@ -119,7 +120,7 @@
 (defun drums-parse-address (string)
   "Parse STRING and return a MAILBOX / DISPLAY-NAME pair."
   (with-temp-buffer
-    (let (display-name mailbox c)
+    (let (display-name mailbox c display-string)
       (drums-init string)
       (while (not (eobp))
 	(setq c (following-char))
@@ -133,8 +134,8 @@
 	  (push (buffer-substring
 		 (1+ (point)) (progn (forward-sexp 1) (1- (point))))
 		display-name))
-	 ((looking-at (concat "[" drums-atext-token "]"))
-	  (push (buffer-substring (point) (progn (forward-word 1) (point)))
+	 ((looking-at (concat "[" drums-atext-token "@" "]"))
+	  (push (buffer-substring (point) (progn (forward-sexp 1) (point)))
 		display-name))
 	 ((eq c ?<)
 	  (setq mailbox
@@ -146,9 +147,14 @@
 	 (t (error "Unknown symbol: %c" c))))
       ;; If we found no display-name, then we look for comments.
       (if display-name
-	  (setq display-name (mapconcat 'identity (nreverse display-name) " "))
-	(setq display-name (drums-get-comment string)))
-      (when mailbox
+	  (setq display-string
+		(mapconcat 'identity (reverse display-name) " "))
+	(setq display-string (drums-get-comment string)))
+      (if (not mailbox)
+	  (when (string-match "@" display-string)
+	    (cons
+	     (mapconcat 'identity (nreverse display-name) "")
+	     (drums-get-comment string)))
 	(cons mailbox display-name)))))
 
 (defun drums-parse-addresses (string)
@@ -179,7 +185,7 @@
 
 (defun drums-parse-date (string)
   "Return an Emacs time spec from STRING."
-  (encode-time (parse-time-string string)))
+  (apply 'encode-time (parse-time-string string)))
     
 (provide 'drums)
 

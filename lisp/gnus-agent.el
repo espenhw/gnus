@@ -912,7 +912,7 @@ the actual number of articles toggled is returned."
       (setq category (gnus-group-category group))
       (setq predicate
 	    (gnus-get-predicate 
-	     (or (gnus-group-get-parameter group 'agent-predicate)
+	     (or (gnus-group-get-parameter group 'agent-predicate t)
 		 (cadr category))))
       ;; Do we want to download everything, or nothing?
       (if (or (eq (caaddr predicate) 'gnus-agent-true)

@@ -1340,80 +1340,83 @@ how much time has lapsed since DATE."
 
 (defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
-  (cond
-   ;; Convert to the local timezone.  We have to slap a
-   ;; `condition-case' round the calls to the timezone
-   ;; functions since they aren't particularly resistant to
-   ;; buggy dates.
-   ((eq type 'local)
-    (concat "Date: " (current-time-string (date-to-time date))))
-   ;; Convert to Universal Time.
-   ((eq type 'ut)
-    (concat "Date: "
-	    (current-time-string
-	     (let ((e (parse-time-string date)))
-	       (setcar (last e) 0)
-	       (encode-time e)))))
-   ;; Get the original date from the article.
-   ((eq type 'original)
-    (concat "Date: " date))
-   ;; Let the user define the format.
-   ((eq type 'user)
-    (if (gnus-functionp gnus-article-time-format)
-	(funcall gnus-article-time-format (date-to-time date))
+  (let ((time (condition-case ()
+		  (date-to-time date)
+		(error '(0 0)))))
+    (cond
+     ;; Convert to the local timezone.  We have to slap a
+     ;; `condition-case' round the calls to the timezone
+     ;; functions since they aren't particularly resistant to
+     ;; buggy dates.
+     ((eq type 'local)
+      (concat "Date: " (current-time-string time)))
+     ;; Convert to Universal Time.
+     ((eq type 'ut)
+      (concat "Date: "
+	      (current-time-string
+	       (let ((e (parse-time-string date)))
+		 (setcar (last e) 0)
+		 (apply 'encode-time e)))))
+     ;; Get the original date from the article.
+     ((eq type 'original)
+      (concat "Date: " date))
+     ;; Let the user define the format.
+     ((eq type 'user)
+      (if (gnus-functionp gnus-article-time-format)
+	  (funcall gnus-article-time-format time)
+	(concat
+	 "Date: "
+	 (format-time-string gnus-article-time-format time))))
+     ;; ISO 8601.
+     ((eq type 'iso8601)
       (concat
        "Date: "
-       (format-time-string gnus-article-time-format (date-to-time date)))))
-   ;; ISO 8601.
-   ((eq type 'iso8601)
-    (concat
-     "Date: "
-     (format-time-string "%Y%M%DT%h%m%s" (date-to-time date))))
-   ;; Do an X-Sent lapsed format.
-   ((eq type 'lapsed)
-    ;; If the date is seriously mangled, the timezone functions are
-    ;; liable to bug out, so we ignore all errors.
-    (let* ((now (current-time))
-	   (real-time (subtract-time now (date-to-time date)))
-	   (real-sec (and real-time
-			  (+ (* (float (car real-time)) 65536)
-			     (cadr real-time))))
-	   (sec (and real-time (abs real-sec)))
-	   num prev)
-      (cond
-       ((null real-time)
-	"X-Sent: Unknown")
-       ((zerop sec)
-	"X-Sent: Now")
-       (t
-	(concat
-	 "X-Sent: "
-	 ;; This is a bit convoluted, but basically we go
-	 ;; through the time units for years, weeks, etc,
-	 ;; and divide things to see whether that results
-	 ;; in positive answers.
-	 (mapconcat
-	  (lambda (unit)
-	    (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
-		;; The (remaining) seconds are too few to
-		;; be divided into this time unit.
-		""
-	      ;; It's big enough, so we output it.
-	      (setq sec (- sec (* num (cdr unit))))
-	      (prog1
-		  (concat (if prev ", " "") (int-to-string
-					     (floor num))
-			  " " (symbol-name (car unit))
-			  (if (> num 1) "s" ""))
-		(setq prev t))))
-	  article-time-units "")
-	 ;; If dates are odd, then it might appear like the
-	 ;; article was sent in the future.
-	 (if (> real-sec 0)
-	     " ago"
-	   " in the future"))))))
-   (t
-    (error "Unknown conversion type: %s" type))))
+       (format-time-string "%Y%M%DT%h%m%s" time)))
+     ;; Do an X-Sent lapsed format.
+     ((eq type 'lapsed)
+      ;; If the date is seriously mangled, the timezone functions are
+      ;; liable to bug out, so we ignore all errors.
+      (let* ((now (current-time))
+	     (real-time (subtract-time now time))
+	     (real-sec (and real-time
+			    (+ (* (float (car real-time)) 65536)
+			       (cadr real-time))))
+	     (sec (and real-time (abs real-sec)))
+	     num prev)
+	(cond
+	 ((null real-time)
+	  "X-Sent: Unknown")
+	 ((zerop sec)
+	  "X-Sent: Now")
+	 (t
+	  (concat
+	   "X-Sent: "
+	   ;; This is a bit convoluted, but basically we go
+	   ;; through the time units for years, weeks, etc,
+	   ;; and divide things to see whether that results
+	   ;; in positive answers.
+	   (mapconcat
+	    (lambda (unit)
+	      (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
+		  ;; The (remaining) seconds are too few to
+		  ;; be divided into this time unit.
+		  ""
+		;; It's big enough, so we output it.
+		(setq sec (- sec (* num (cdr unit))))
+		(prog1
+		    (concat (if prev ", " "") (int-to-string
+					       (floor num))
+			    " " (symbol-name (car unit))
+			    (if (> num 1) "s" ""))
+		  (setq prev t))))
+	    article-time-units "")
+	   ;; If dates are odd, then it might appear like the
+	   ;; article was sent in the future.
+	   (if (> real-sec 0)
+	       " ago"
+	     " in the future"))))))
+     (t
+      (error "Unknown conversion type: %s" type)))))
 
 (defun article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."

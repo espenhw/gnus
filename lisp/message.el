@@ -1889,7 +1889,8 @@ The text will also be indented the normal way."
 	(bury-buffer buf)
 	(when (eq buf (current-buffer))
 	  (message-bury buf)))
-      (message-do-actions actions))))
+      (message-do-actions actions)
+      t)))
 
 (defun message-dont-send ()
   "Don't send the message you have been editing."
@@ -2617,7 +2618,17 @@ to find out how to use this."
 (defun message-make-date (&optional now)
   "Make a valid data header.
 If NOW, use that time instead."
-  (format-time-string "%d %b %Y %H:%M:%S %z" (or now (current-time))))
+  (let* ((now (or now (current-time)))
+	 (zone (nth 8 (decode-time now)))
+	 (sign "+"))
+    ;; We do all of this because XEmacs doesn't have the %z spec.
+    (when (> (/ zone 3600) 12)
+      (setq sign "-"
+	    zone (- zone (* 3600 12))))
+    (concat (format-time-string "%d %b %Y %H:%M:%S " (or now (current-time)))
+	    (format "%s%02d%02d"
+		    sign (/ zone 3600)
+		    (% zone 3600)))))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."

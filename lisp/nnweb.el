@@ -34,11 +34,17 @@
 (require 'message)
 (require 'gnus-util)
 (require 'gnus)
-(require 'w3)
-(require 'url)
 (require 'nnmail)
-(ignore-errors
-  (require 'w3-forms))
+(eval-when-compile
+  (ignore-errors
+    (require 'w3)
+    (require 'url)
+    (require 'w3-forms)))
+;; Report failure to find w3 at load time if appropriate.
+(eval '(progn
+	 (require 'w3)
+	 (require 'url)
+	 (require 'w3-forms)))
 
 (nnoo-declare nnweb)
 
