@@ -1,3 +1,9 @@
+2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-cite.el (gnus-cite-unsightly-citation-regexp)
+	(gnus-cite-parse): Renamed `gnus-unsightly-citation-regexp' to
+	`gnus-cite-unsightly-citation-regexp'.
+
 2003-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-copy-article-buffer): Copy an article header

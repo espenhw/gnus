@@ -120,7 +120,7 @@ The text matching the first grouping will be used as a button."
   :group 'gnus-cite
   :type 'regexp)
 
-(defcustom gnus-unsightly-citation-regexp
+(defcustom gnus-cite-unsightly-citation-regexp
   "^-----Original Message-----\nFrom: \\(.+\n\\)+\n"
   "Regexp matching Microsoft-type rest-of-message citations."
   :group 'gnus-cite
@@ -749,7 +749,7 @@ See also the documentation for `gnus-article-highlight-citation'."
       (setq line (1+ line)))
     ;; Horrible special case for some Microsoft mailers.
     (goto-char (point-min))
-    (when (re-search-forward gnus-unsightly-citation-regexp max t)
+    (when (re-search-forward gnus-cite-unsightly-citation-regexp max t)
       (setq begin (count-lines (point-min) (point)))
       (setq end (count-lines (point-min) max))
       (setq entry nil)
