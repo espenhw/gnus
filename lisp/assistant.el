@@ -28,6 +28,9 @@
 (eval-when-compile
   (require 'cl))
 
+(require 'widget)
+(require 'wid-edit)
+
 (defvar assistant-readers
   '(("variable" assistant-variable-reader)
     ("validate" assistant-sexp-reader)
@@ -185,7 +188,8 @@
 
 (defun assistant-get-variable (node variable)
   (let ((variables (assistant-get-list node "variable"))
-	(result nil))
+	(result nil)
+	elem)
     (while (and (setq elem (pop variables))
 		(not result))
       (setq elem (cadr elem))
@@ -194,7 +198,8 @@
     result))
     
 (defun assistant-set-variable (node variable value)
-  (let ((variables (assistant-get-list node "variable")))
+  (let ((variables (assistant-get-list node "variable"))
+	elem)
     (while (setq elem (pop variables))
       (setq elem (cadr elem))
       (when (eq (intern variable) (car elem))

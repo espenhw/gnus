@@ -1,5 +1,7 @@
 2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* assistant.el (wid-edit): Fix compilation.
+
 	* gnus-util.el (gnus-set-file-modes): Just ignore errors. 
 
 2004-05-23  Paul Stodghill  <stodghil@cs.cornell.edu>
