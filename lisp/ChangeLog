@@ -1,5 +1,9 @@
 2001-08-23 18:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-select-newsgroup): Use it.
+
+	* gnus-util.el (gnus-not-ignore): New function.
+
 	* lpath.el (featurep): Don't fbind char-int.
 
 	* gnus-util.el (gnus-create-info-command): New function.

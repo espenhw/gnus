@@ -4533,7 +4533,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq gnus-newsgroup-display
 	    (cond
 	     ((eq display 'all)
-	      'identity)
+	      'gnus-not-ignore)
 	     ((arrayp display)
 	      (gnus-summary-display-make-predicate (mapcar 'identity display)))
 	     (t
@@ -4700,7 +4700,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  (if (or read-all
 		  (and (zerop (length gnus-newsgroup-marked))
 		       (zerop (length gnus-newsgroup-unreads)))
-		  (eq gnus-newsgroup-display 'identity))
+		  (eq gnus-newsgroup-display 'gnus-not-ignore))
 	      ;; We want to select the headers for all the articles in
 	      ;; the group, so we select either all the active
 	      ;; articles in the group, or (if that's nil), the
@@ -7149,7 +7149,7 @@ fetch-old-headers verbiage, and so on."
   ;; Most groups have nothing to remove.
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
-	       (eq gnus-newsgroup-display 'identity)
+	       (eq gnus-newsgroup-display 'gnus-not-ignore)
 	       (not (eq gnus-fetch-old-headers 'some))
 	       (not (numberp gnus-fetch-old-headers))
 	       (not (eq gnus-fetch-old-headers 'invisible))

@@ -1069,6 +1069,9 @@ sure of changing the value of `foo'."
      (setq gnus-info-buffer (current-buffer))
      (gnus-configure-windows 'info)))
 
+(defun gnus-not-ignore (&rest args)
+  t)
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here
