@@ -798,8 +798,7 @@ automatically when it is selected."
   :type 'hook)
 
 (defcustom gnus-summary-display-arrow
-  (and (string-match "GNU" (emacs-version))
-       (>= emacs-major-version 21)
+  (and (fboundp 'display-graphic-p)
        (display-graphic-p))
   "*If non-nil, display an arrow highlighting the current article."
   :version "21.1"
