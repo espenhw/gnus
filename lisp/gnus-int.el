@@ -502,7 +502,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 			  article (gnus-group-real-name group)
 			  (nth 1 gnus-command-method) accept-function last)))
     (when (and result gnus-agent gnus-agent-cache)
-      (gnus-agent-expire article group 'force))
+      (gnus-agent-expire (list article) group 'force))
     result))
     
 (defun gnus-request-accept-article (group &optional gnus-command-method last
