@@ -572,11 +572,12 @@ When called interactively, prompt for REGEXP."
 (defun gnus-uu-mark-series ()
   "Mark the current series with the process mark."
   (interactive)
-  (let ((articles (gnus-uu-find-articles-matching)))
+  (let* ((articles (gnus-uu-find-articles-matching))
+         (l (length articles)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
-    (message ""))
+    (message "Marked %d articles" l))
   (gnus-summary-position-point))
 
 (defun gnus-uu-mark-region (beg end &optional unmark)
@@ -1465,7 +1466,8 @@ When called interactively, prompt for REGEXP."
 			 "*uudecode*"
 			 (gnus-get-buffer-create gnus-uu-output-buffer-name)
 			 shell-file-name shell-command-switch
-			 (format "cd %s %s uudecode" gnus-uu-work-dir
+			 ;;;(format "cd %s %s uudecode" gnus-uu-work-dir
+			 (format "cd %s %s java com.compsol.Uu -d" gnus-uu-work-dir
 				 gnus-shell-command-separator))))
 	      (cd cdir)))
 	  (set-process-sentinel
@@ -1794,9 +1796,13 @@ Gnus might fail to display all of it.")
 	  (if (file-directory-p file)
 	      (gnus-uu-delete-work-dir file)
 	    (gnus-message 9 "Deleting file %s..." file)
-	    (delete-file file))))
-      (delete-directory dir)))
-  (gnus-message 7 ""))
+            (condition-case err
+                (delete-file file)
+              (error (gnus-message 3 "Deleting file %s failed... %s" file err))))))
+      (condition-case err
+          (delete-directory dir)
+        (error (gnus-message 3 "Deleting directory %s failed... %s" file err))))
+    (gnus-message 7 "")))
 
 ;; Initializing
 
