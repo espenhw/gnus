@@ -1,3 +1,9 @@
+2001-02-17  Paul Jarc <prj@po.cwru.edu>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-get-reply-headers): Fix bug with
+	Mail-Followup-To/to-address interaction.
+
 2001-02-17 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Match header in

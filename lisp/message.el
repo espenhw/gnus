@@ -3933,8 +3933,10 @@ OTHER-HEADERS is an alist of header/value pairs."
 		 (equal (downcase mct) "poster"))
 	     (setq mct (or mrt reply-to from)))))
 
-    (if (or (not wide)
-	    to-address)
+    (if (and (or (not message-use-followup-to)
+                 (not mft))
+             (or (not wide)
+                 to-address))
 	(progn
 	  (setq follow-to (list (cons 'To (or to-address mrt reply-to from))))
 	  (when (and (and wide (or mft mct))
