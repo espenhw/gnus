@@ -269,28 +269,29 @@ It should return non-nil if the article is to be prefetched."
 	  (nntp-server-buffer (current-buffer))
 	  (nntp-have-messaged nil)
 	  (tries 0))
-      (condition-case nil
-	  ;; FIXME: we could stop waiting after some
-	  ;; timeout, but this is the wrong place to do it.
-	  ;; rather than checking time-spent-waiting, we
-	  ;; should check time-since-last-output, which
-	  ;; needs to be done in nntp.el.
-	  (while (eq article gnus-async-current-prefetch-article)
-	    (incf tries)
-	    (when (nntp-accept-process-output proc)
-	      (setq tries 0))
-	    (when (and (not nntp-have-messaged)
-		       (= tries 3))
-	      (gnus-message 5 "Waiting for async article...")
-	      (setq nntp-have-messaged t)))
-	(quit
-	 ;; if the user interrupted on a slow/hung connection,
-	 ;; do something friendly.
-	 (when (> tries 3)
-	   (setq gnus-async-current-prefetch-article nil))
-	 (signal 'quit nil)))
-      (when nntp-have-messaged
-	(gnus-message 5 "")))))
+      (when proc
+	(condition-case nil
+	    ;; FIXME: we could stop waiting after some
+	    ;; timeout, but this is the wrong place to do it.
+	    ;; rather than checking time-spent-waiting, we
+	    ;; should check time-since-last-output, which
+	    ;; needs to be done in nntp.el.
+	    (while (eq article gnus-async-current-prefetch-article)
+	      (incf tries)
+	      (when (nntp-accept-process-output proc)
+		(setq tries 0))
+	      (when (and (not nntp-have-messaged)
+			 (= tries 3))
+		(gnus-message 5 "Waiting for async article...")
+		(setq nntp-have-messaged t)))
+	  (quit
+	   ;; if the user interrupted on a slow/hung connection,
+	   ;; do something friendly.
+	   (when (> tries 3)
+	     (setq gnus-async-current-prefetch-article nil))
+	   (signal 'quit nil)))
+	(when nntp-have-messaged
+	  (gnus-message 5 ""))))))
 
 (defun gnus-async-delete-prefetched-entry (entry)
   "Delete ENTRY from buffer and alist."

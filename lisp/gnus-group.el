@@ -3628,6 +3628,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 	  (gnus-get-unread-articles arg))
       (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
 	(gnus-get-unread-articles arg)))
+    (gnus-check-reasonable-setup)
     (gnus-run-hooks 'gnus-after-getting-new-news-hook)
     (gnus-group-list-groups (and (numberp arg)
 				 (max (car gnus-group-list-mode) arg)))))

@@ -3106,6 +3106,23 @@ Would otherwise be an alias for `display-time-event-handler'." nil))))
 	 (symbol-value 'nnimap-mailbox-info)
        (make-vector 1 0)))))
 
+(defun gnus-check-reasonable-setup ()
+  ;; Check whether nnml and nnfolder share a directory.
+  (let ((actives nil))
+    (dolist (server gnus-server-alist)
+      (let* ((method (gnus-server-to-method server))
+	     (active (intern (format "%s-active-file" (car method))))
+	     match)
+	(when (and (member (car method) '(nnml nnfolder))
+		   (gnus-server-opened method)
+		   (boundp active))
+	  (when (setq match (assoc (symbol-value active) actives))
+	    (display-warning
+	     :warning (format "%s and %s share the same active file %s"
+			      (car method)
+			      (cadr match)
+			      (car match))))
+	  (push (list (symbol-value active) method) actives))))))
 
 (provide 'gnus-start)
 
