@@ -1,3 +1,9 @@
+2003-04-15  Michael Shields  <shields@msrl.com>
+
+	* gnus-art.el (article-hide-boring-headers): Hide Reply-To: if
+	the broken-reply-to group parameter is set.  Idea from Vasily
+	Korytov <deskpot@myrealbox.com>.
+
 2003-04-17  Steve Youngs  <youngs@xemacs.org>
 
 	* dgnushack.el: Add a whole swag of autoloads and defaliases to

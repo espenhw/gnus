@@ -1667,15 +1667,18 @@ always hide."
 		     (message-fetch-field "newsgroups"))
 		(gnus-article-hide-header "followup-to")))
 	     ((eq elem 'reply-to)
-	      (let ((from (message-fetch-field "from"))
-		    (reply-to (message-fetch-field "reply-to")))
-		(when (and
-		       from reply-to
-		       (ignore-errors
-			 (gnus-string-equal
-			  (nth 1 (mail-extract-address-components from))
-			  (nth 1 (mail-extract-address-components reply-to)))))
-		  (gnus-article-hide-header "reply-to"))))
+	      (if (gnus-group-find-parameter
+		   gnus-newsgroup-name 'broken-reply-to)
+		  (gnus-article-hide-header "reply-to")
+		(let ((from (message-fetch-field "from"))
+		      (reply-to (message-fetch-field "reply-to")))
+		  (when (and
+			 from reply-to
+			 (ignore-errors
+			   (gnus-string-equal
+			    (nth 1 (mail-extract-address-components from))
+			    (nth 1 (mail-extract-address-components reply-to)))))
+		    (gnus-article-hide-header "reply-to")))))
 	     ((eq elem 'date)
 	      (let ((date (message-fetch-field "date")))
 		(when (and date
