@@ -1,4 +1,25 @@
+Thu May 16 07:40:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-topic-remove-excess-properties): Remove
+	more excess props.
+
+Thu May 16 04:31:59 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-vis.el (gnus-button-alist): Recognize more message-ids.
+
+	* nnheader.el (nnheader-parse-head): Wouldn't get the first line
+	of naked heads.
+
+	* gnus.el (gnus-summary-refer-article): Don't connect to the refer
+	method unless using a news method.
+
+Wed May 15 11:41:09 1996  Steven L Baur  <steve@miranova.com>
+
+	* nnmail.el (nnmail-get-spool-files): Fix typo.
+
 Wed May 15 03:52:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.85 is released.
 
 	* nnspool.el (nnspool-open-server): Use directory file name. 
 

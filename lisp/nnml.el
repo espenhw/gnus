@@ -340,15 +340,14 @@ all. This may very well take some time.")
   (save-excursion
     (set-buffer buffer)
     (nnml-possibly-create-directory group)
-    (if (not (condition-case ()
+    (when (condition-case ()
 		 (progn
-		   (write-region (point-min) (point-max)
-				 (concat nnml-current-directory 
-					 (int-to-string article))
-				 nil (if (nnheader-be-verbose 5) nil 'nomesg))
+		   (write-region 
+		    (point-min) (point-max)
+		    (concat nnml-current-directory (int-to-string article))
+		    nil (if (nnheader-be-verbose 5) nil 'nomesg))
 		   t)
-	       (error nil)))
-	()
+	       (error nil))
       (let ((chars (nnmail-insert-lines))
 	    (art (concat (int-to-string article) "\t"))
 	    headers)
@@ -712,7 +711,7 @@ all. This may very well take some time.")
   (let* ((dir (file-name-as-directory dir))
 	 (nov (concat dir nnml-nov-file-name))
 	 (nov-buffer (get-buffer-create " *nov*"))
-	 nov-line chars file)
+	 nov-line chars file headers)
     (save-excursion
       ;; Init the nov buffer.
       (set-buffer nov-buffer)

@@ -219,7 +219,7 @@
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
     (,gnus-button-url-regexp 0 t gnus-button-url 0)
-    ("\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
+    ("\\(<?\\(url: \\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
     ("\\(<URL: *\\)?mailto: *\\([^ \n\t]+\\)>?" 0 t gnus-button-reply 2))
   "Alist of regexps matching buttons in article bodies.

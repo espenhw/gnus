@@ -2982,7 +2982,7 @@ exposes any threads hidden under the selected article.
 @findex gnus-unread-mark
 This hook is called whenever an article is selected.  It is intended to
 be used for marking articles as read.  The default value is
-@code{gnus-summary-mark-unread-and-read-as-read}, and will change the
+@code{gnus-summary-mark-read-and-unread-as-read}, and will change the
 mark of almost any article you read to @code{gnus-unread-mark}.  The
 only articles not affected by this function are ticked, dormant, and
 expirable articles.  If you'd instead like to just have unread articles

@@ -1718,7 +1718,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.85"
+(defconst gnus-version "September Gnus v0.86"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -10914,7 +10914,8 @@ Return how many articles were fetched."
 		    gnus-refer-article-method))
 	      number)
 	  ;; Start the special refer-article method, if necessary.
-	  (when gnus-refer-article-method
+	  (when (and gnus-refer-article-method
+		     (gnus-news-group-p gnus-newsgroup-name))
 	    (gnus-check-server gnus-refer-article-method))
 	  ;; Fetch the header, and display the article.
 	  (if (setq number (gnus-summary-insert-subject message-id))

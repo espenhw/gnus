@@ -157,6 +157,7 @@ displayed, no centering will be performed."
   (let ((end (point))
 	(beg (progn (forward-line -1) (point))))
     (remove-text-properties beg end '(gnus-group nil gnus-unread nil))
+    (remove-text-properties (1+ beg) end '(gnus-topic nil))
     (goto-char end)))
 
 (defun gnus-xmas-extent-start-open (point)

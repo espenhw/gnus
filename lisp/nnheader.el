@@ -141,84 +141,91 @@ on your system, you could say something like:
 (defun nnheader-parse-head (&optional naked)
   (let ((case-fold-search t)
 	(cur (current-buffer))
+	(buffer-read-only nil)
 	end ref in-reply-to lines p)
     (goto-char (point-min))
+    (when naked
+      (insert "\n"))
     ;; Search to the beginning of the next header. Error messages
     ;; do not begin with 2 or 3.
-    (when (or naked (re-search-forward "^[23][0-9]+ " nil t))
-      ;; This implementation of this function, with nine
-      ;; search-forwards instead of the one re-search-forward and
-      ;; a case (which basically was the old function) is actually
-      ;; about twice as fast, even though it looks messier.	 You
-      ;; can't have everything, I guess.  Speed and elegance
-      ;; doesn't always go hand in hand.
-      (vector
-       ;; Number.
-       (if naked
+    (prog1
+	(when (or naked (re-search-forward "^[23][0-9]+ " nil t))
+	  ;; This implementation of this function, with nine
+	  ;; search-forwards instead of the one re-search-forward and
+	  ;; a case (which basically was the old function) is actually
+	  ;; about twice as fast, even though it looks messier.	 You
+	  ;; can't have everything, I guess.  Speed and elegance
+	  ;; doesn't always go hand in hand.
+	  (vector
+	   ;; Number.
+	   (if naked
+	       (progn
+		 (setq p (point-min))
+		 0)
+	     (prog1
+		 (read cur)
+	       (end-of-line)
+	       (setq p (point))
+	       (narrow-to-region (point)
+				 (or (and (search-forward "\n.\n" nil t)
+					  (- (point) 2))
+				     (point)))))
+	   ;; Subject.
 	   (progn
-	     (setq p (point-min))
-	     0)
-	 (prog1
-	     (read cur)
-	   (end-of-line)
-	   (setq p (point))
-	   (narrow-to-region (point)
-			     (or (and (search-forward "\n.\n" nil t)
-				      (- (point) 2))
-				 (point)))))
-       ;; Subject.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\nsubject: " nil t)
-	     (nnheader-header-value) "(none)"))
-       ;; From.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\nfrom: " nil t)
-	     (nnheader-header-value) "(nobody)"))
-       ;; Date.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\ndate: " nil t)
-	     (nnheader-header-value) ""))
-       ;; Message-ID.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\nmessage-id: " nil t)
-	     (nnheader-header-value)
-	   ;; If there was no message-id, we just fake one to make
-	   ;; subsequent routines simpler.
-	   (concat "none+"
-		   (int-to-string
-		    (incf nnheader-newsgroup-none-id)))))
-       ;; References.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\nreferences: " nil t)
-	     (nnheader-header-value)
-	   ;; Get the references from the in-reply-to header if there
-	   ;; were no references and the in-reply-to header looks
-	   ;; promising.
-	   (if (and (search-forward "\nin-reply-to: " nil t)
-		    (setq in-reply-to (nnheader-header-value))
-		    (string-match "<[^>]+>" in-reply-to))
-	       (substring in-reply-to (match-beginning 0)
-			  (match-end 0))
-	     "")))
-       ;; Chars.
-       0
-       ;; Lines.
-       (progn
-	 (goto-char p)
-	 (if (search-forward "\nlines: " nil t)
-	     (if (numberp (setq lines (read cur)))
-		 lines 0)
-	   0))
-       ;; Xref.
-       (progn
-	 (goto-char p)
-	 (and (search-forward "\nxref: " nil t)
-	      (nnheader-header-value)))))))
+	     (goto-char p)
+	     (if (search-forward "\nsubject: " nil t)
+		 (nnheader-header-value) "(none)"))
+	   ;; From.
+	   (progn
+	     (goto-char p)
+	     (if (search-forward "\nfrom: " nil t)
+		 (nnheader-header-value) "(nobody)"))
+	   ;; Date.
+	   (progn
+	     (goto-char p)
+	     (if (search-forward "\ndate: " nil t)
+		 (nnheader-header-value) ""))
+	   ;; Message-ID.
+	   (progn
+	     (goto-char p)
+	     (if (search-forward "\nmessage-id: " nil t)
+		 (nnheader-header-value)
+	       ;; If there was no message-id, we just fake one to make
+	       ;; subsequent routines simpler.
+	       (concat "none+"
+		       (int-to-string
+			(incf nnheader-newsgroup-none-id)))))
+	   ;; References.
+	   (progn
+	     (goto-char p)
+	     (if (search-forward "\nreferences: " nil t)
+		 (nnheader-header-value)
+	       ;; Get the references from the in-reply-to header if there
+	       ;; were no references and the in-reply-to header looks
+	       ;; promising.
+	       (if (and (search-forward "\nin-reply-to: " nil t)
+			(setq in-reply-to (nnheader-header-value))
+			(string-match "<[^>]+>" in-reply-to))
+		   (substring in-reply-to (match-beginning 0)
+			      (match-end 0))
+		 "")))
+	   ;; Chars.
+	   0
+	   ;; Lines.
+	   (progn
+	     (goto-char p)
+	     (if (search-forward "\nlines: " nil t)
+		 (if (numberp (setq lines (read cur)))
+		     lines 0)
+	       0))
+	   ;; Xref.
+	   (progn
+	     (goto-char p)
+	     (and (search-forward "\nxref: " nil t)
+		  (nnheader-header-value)))))
+      (when naked
+	(goto-char (point-min))
+	(delete-char 1)))))
 
 (defun nnheader-insert-nov (header)
   (princ (mail-header-number header) (current-buffer))

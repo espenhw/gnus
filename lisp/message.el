@@ -2268,39 +2268,39 @@ Headers already prepared in the buffer are not modified."
   (interactive)
   (unless (message-news-p)
     (error "This is not a news article; canceling is impossible"))
-  (when (yes-or-no-p "Do you really want to cancel this article? "))
-  (let (from newsgroups message-id distribution buf)
-    (save-excursion
-      ;; Get header info. from original article.
-      (save-restriction
-	(message-narrow-to-head)
-	(setq from (mail-fetch-field "from")
-	      newsgroups (mail-fetch-field "newsgroups")
-	      message-id (mail-fetch-field "message-id")
-	      distribution (mail-fetch-field "distribution")))
-      ;; Make sure that this article was written by the user.
-      (unless (string-equal
-	       (downcase (mail-strip-quoted-names from))
-	       (downcase (message-make-address)))
-	(error "This article is not yours"))
-      ;; Make control message.
-      (setq buf (set-buffer (get-buffer-create " *message cancel*")))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (insert "Newsgroups: " newsgroups "\n"
-	      "From: " (message-make-from) "\n"
-	      "Subject: cmsg cancel " message-id "\n"
-	      "Control: cancel " message-id "\n"
-	      (if distribution
-		  (concat "Distribution: " distribution "\n")
-		"")
-	      mail-header-separator "\n"
-	      "This is a cancel message from " from ".\n")
-      (message "Canceling your article...")
-      (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
-	(funcall message-send-news-function))
-      (message "Canceling your article...done")
-      (kill-buffer buf))))
+  (when (yes-or-no-p "Do you really want to cancel this article? ")
+    (let (from newsgroups message-id distribution buf)
+      (save-excursion
+	;; Get header info. from original article.
+	(save-restriction
+	  (message-narrow-to-head)
+	  (setq from (mail-fetch-field "from")
+		newsgroups (mail-fetch-field "newsgroups")
+		message-id (mail-fetch-field "message-id")
+		distribution (mail-fetch-field "distribution")))
+	;; Make sure that this article was written by the user.
+	(unless (string-equal
+		 (downcase (mail-strip-quoted-names from))
+		 (downcase (message-make-address)))
+	  (error "This article is not yours"))
+	;; Make control message.
+	(setq buf (set-buffer (get-buffer-create " *message cancel*")))
+	(buffer-disable-undo (current-buffer))
+	(erase-buffer)
+	(insert "Newsgroups: " newsgroups "\n"
+		"From: " (message-make-from) "\n"
+		"Subject: cmsg cancel " message-id "\n"
+		"Control: cancel " message-id "\n"
+		(if distribution
+		    (concat "Distribution: " distribution "\n")
+		  "")
+		mail-header-separator "\n"
+		"This is a cancel message from " from ".\n")
+	(message "Canceling your article...")
+	(let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
+	  (funcall message-send-news-function))
+	(message "Canceling your article...done")
+	(kill-buffer buf)))))
 
 ;;;###autoload
 (defun message-supersede ()
