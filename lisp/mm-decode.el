@@ -809,10 +809,12 @@ external if displayed external."
 	(or mm-inline-large-images
 	    (and (< (glyph-width image) (window-pixel-width))
 		 (< (glyph-height image) (window-pixel-height))))
-      ;; Let's just inline everything under Emacs 21, since the image
-      ;; specification there doesn't actually get the width/height
-      ;; until you render the image.
-      t)))
+      (let* ((size (image-size image))
+	     (w (car size))
+	     (h (cdr size)))
+	(or mm-inline-large-images
+	    (and (< h (1- (window-height))) ; Don't include mode line.
+		 (< w (window-width))))))))
 
 (defun mm-valid-image-format-p (format)
   "Say whether FORMAT can be displayed natively by Emacs."
