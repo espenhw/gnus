@@ -4697,7 +4697,7 @@ groups."
 
 ;;; Internal Variables:
 
-(defcustom gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)"
+(defcustom gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)"
   "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
@@ -4716,6 +4716,9 @@ groups."
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
     ("mailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
+    ;; This is info
+    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t
+     gnus-button-handle-info 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^<>]*\\)>" 0 t gnus-button-embedded-url 1)
     ;; Raw URLs.
@@ -5086,6 +5089,18 @@ specified by `gnus-button-alist'."
      (group
       (gnus-button-fetch-group url)))))
 
+(defun gnus-button-handle-info (url)
+  "Fetch an info URL."
+  (if (string-match 
+       "^\\([^:/]+\\)?/\\(.*\\)"
+       url)
+      (gnus-info-find-node
+       (concat "(" (or (gnus-url-unhex-string (match-string 1 url))
+		       "Gnus") 
+	       ")" 
+	       (gnus-url-unhex-string (match-string 2 url))))
+    (error "Can't parse %s" url)))
+
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."
   (save-excursion
@@ -5142,7 +5157,7 @@ specified by `gnus-button-alist'."
 If optional second argument ALLOW-NEWLINES is non-nil, then allow the
 decoding of carriage returns and line feeds in the string, which is normally
 forbidden in URL encoding."
-  (setq str (or str ""))
+  (setq str (or (mm-subst-char-in-string ?+ ?  str) ""))
   (let ((tmp "")
 	(case-fold-search t))
     (while (string-match "%[0-9a-f][0-9a-f]" str)

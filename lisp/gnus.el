@@ -2341,12 +2341,12 @@ If ARG, insert string at point."
 		   minor least)
 	 (format "%d.%02d%02d" major minor least))))))
 
-(defun gnus-info-find-node ()
+(defun gnus-info-find-node (&optional nodename)
   "Find Info documentation of Gnus."
   (interactive)
   ;; Enlarge info window if needed.
   (let (gnus-info-buffer)
-    (Info-goto-node (cadr (assq major-mode gnus-info-nodes)))
+    (Info-goto-node (or nodename (cadr (assq major-mode gnus-info-nodes))))
     (setq gnus-info-buffer (current-buffer))
     (gnus-configure-windows 'info)))
 
