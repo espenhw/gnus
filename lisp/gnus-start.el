@@ -450,12 +450,16 @@ Can be used to turn version control on or off."
 			(not (file-directory-p file)))
 		   (file-exists-p (concat file ".el"))
 		   (file-exists-p (concat file ".elc")))
-	       (condition-case var
+	       (if (or debug-on-error debug-on-quit)
 		   (let ((coding-system-for-read
 			  gnus-startup-file-coding-system))
 		     (load file nil t))
-		 (error
-		  (error "Error in %s: %s" file var)))))))))
+		 (condition-case var
+		     (let ((coding-system-for-read
+			    gnus-startup-file-coding-system))
+		       (load file nil t))
+		   (error
+		    (error "Error in %s: %s" file var))))))))))
 
 ;; For subscribing new newsgroup
 
@@ -1449,12 +1453,14 @@ newsgroup."
 		(gnus-check-backend-function 'request-scan (car method))
 		(gnus-request-scan group method))
 	   t)
-	 (condition-case ()
+	 (if (or debug-on-error debug-on-quit)
 	     (inline (gnus-request-group group dont-check method))
-	   ;;(error nil)
-	   (quit
-	    (message "Quit activating %s" group)
-	    nil))
+	   (condition-case ()
+	       (inline (gnus-request-group group dont-check method))
+	     ;;(error nil)
+	     (quit
+	      (message "Quit activating %s" group)
+	      nil)))
 	 (unless dont-check
 	   (setq active (gnus-parse-active))
 	   ;; If there are no articles in the group, the GROUP
@@ -1804,13 +1810,15 @@ newsgroup."
 	;; Only do each method once, in case the methods appear more
 	;; than once in this list.
 	(unless (member method methods)
-	  (condition-case ()
+	  (if (or debug-on-error debug-on-quit)
 	      (gnus-read-active-file-1 method force)
-	    ;; We catch C-g so that we can continue past servers
-	    ;; that do not respond.
-	    (quit
-	     (message "Quit reading the active file")
-	     nil)))))))
+	    (condition-case ()
+		(gnus-read-active-file-1 method force)
+	      ;; We catch C-g so that we can continue past servers
+	      ;; that do not respond.
+	      (quit
+	       (message "Quit reading the active file")
+	       nil))))))))
 
 (defun gnus-read-active-file-1 (method force)
   (let (where mesg)
@@ -2087,14 +2095,17 @@ If FORCE is non-nil, the .newsrc file is read."
     ;; We always, always read the .eld file.
     (gnus-message 5 "Reading %s..." ding-file)
     (let (gnus-newsrc-assoc)
-      (condition-case nil
+      (if (or debug-on-error debug-on-quit)
 	  (let ((coding-system-for-read gnus-ding-file-coding-system))
 	    (load ding-file t t t))
-	(error
-	 (ding)
-	 (unless (gnus-yes-or-no-p
-		  (format "Error in %s; continue? " ding-file))
-	   (error "Error in %s" ding-file))))
+	(condition-case nil
+	    (let ((coding-system-for-read gnus-ding-file-coding-system))
+	      (load ding-file t t t))
+	  (error
+	   (ding)
+	   (unless (gnus-yes-or-no-p
+		    (format "Error in %s; continue? " ding-file))
+	     (error "Error in %s" ding-file)))))
       ;; Older versions of `gnus-format-specs' are no longer valid
       ;; in Oort Gnus 0.01.
       (let ((version

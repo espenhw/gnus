@@ -3,6 +3,10 @@
 	* mail-source.el (mail-source-fetch): If debug, don't regain signals.
 	(mail-source-fetch-pop): Ditto.
 	(mail-source-check-pop): Ditto.
+	
+	* gnus-start.el (gnus-read-init-file): Ditto.
+	(gnus-activate-group): Ditto.
+	(gnus-read-newsrc-el-file): Ditto.
 
 2001-10-30 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
