@@ -1,3 +1,11 @@
+2002-08-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-msg.el (posting-charset-alist): Use
+	gnus-define-group-parameter instead of defcustom.
+	(gnus-put-message): Handle SPC in GCC.
+	(gnus-inews-insert-gcc): Ditto.
+	(gnus-inews-insert-archive-gcc): Ditto.
+
 2002-08-26  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-auto-agentize-methods): New variable.
