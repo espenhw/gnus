@@ -1,3 +1,14 @@
+2002-09-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-start.el (gnus-setup-news-hook): Add n-f-u-a-g-n-n.
+	(gnus-after-getting-new-news-hook): Ditto.
+
+	* nnimap.el (nnimap-retrieve-groups): Move the quick mail check
+	message into verboselevel 9.  Change slow mail check message.
+	(nnimap-retrieve-groups): Use prefixed names in n-mailbox-info.
+	(nnimap-fixup-unread-after-getting-new-news): New function, to be
+	used as a hook after getting new mail.
+
 2002-09-26  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-parse-resp-text-code): The UNSEEN value in

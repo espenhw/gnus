@@ -363,7 +363,7 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-setup-news-hook nil
+(defcustom gnus-setup-news-hook '(nnimap-fixup-unread-after-getting-new-news)
   "A hook after reading the .newsrc file, but before generating the buffer."
   :group 'gnus-start
   :type 'hook)
@@ -374,7 +374,8 @@ This hook is called as the first thing when Gnus is started."
   :type 'hook)
 
 (defcustom gnus-after-getting-new-news-hook
-  '(gnus-display-time-event-handler)
+  '(gnus-display-time-event-handler 
+    nnimap-fixup-unread-after-getting-new-news)
   "*A hook run after Gnus checks for new news when Gnus is already running."
   :group 'gnus-group-new
   :type 'hook)
