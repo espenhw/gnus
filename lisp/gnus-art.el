@@ -1088,9 +1088,6 @@ See Info node `(gnus)Customizing Articles' and Info node
 
 (defcustom gnus-treat-display-grey-xface
   (and (not noninteractive)
-       (or (featurep 'xemacs)
-	   (and (fboundp 'display-images-p)
-		(display-images-p)))
        (string-match "^0x" (shell-command-to-string "uncompface"))
        t)
   "Display grey X-Face headers.
