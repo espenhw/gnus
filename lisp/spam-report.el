@@ -35,8 +35,10 @@
   "Spam reporting configuration.")
 
 (defcustom spam-report-gmane-regex nil
-  "String matching Gmane newsgroups if wanted, e.g. \"^nntp+.*:gmane.\"
-This is probably handled better with group/topic parameters."
+  "Regexp matching Gmane newsgroups, e.g. \"^nntp\\+.*:gmane\\.\"
+If you are using spam.el, consider setting gnus-spam-process-newsgroups 
+or the gnus-group-spam-exit-processor-report-gmane group/topic parameter 
+instead."
   :type 'regexp
   :group 'spam-report)
 

@@ -1,5 +1,11 @@
 2003-05-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam-report.el (spam-report-gmane-regex): docstring fix.  From
+	Jon Ericson <Jon.Ericson@jpl.nasa.gov>
+
+	* gnus.el (gnus-install-group-spam-parameters): docstring fix.
+	From Jon Ericson <Jon.Ericson@jpl.nasa.gov>
+
 	* gnus-registry.el (gnus-registry-fetch-extra) 
 	(gnus-registry-store-extra, gnus-registry-group-count): new functions
 	(gnus-registry-fetch-group, gnus-registry-delete-group) 

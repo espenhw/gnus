@@ -1875,8 +1875,7 @@ Only applicable to non-spam (unclassified and ham) groups.")
    "*Groups in which to automatically process spam or ham articles with
 a backend on summary exit.  If non-nil, this should be a list of group
 name regexps that should match all groups in which to do automatic
-spam processing, associated with the appropriate processor.  This only makes sense
-for mail groups."
+spam processing, associated with the appropriate processor."
    :variable-group spam
    :variable-type '(repeat :tag "Spam/Ham Processors" 
 			   (list :tag "Spam Summary Exit Processor Choices"
