@@ -53,7 +53,10 @@ The first regexp group should match the SuperCite attribution.")
 (defvar gnus-cite-minimum-match-count 2
   "Minimal number of identical prefix'es before we believe it is a citation.")
 
-(defvar gnus-cite-face-list '(italic)
+(defvar gnus-cite-face-list 
+  (if (eq gnus-display-type 'color)
+      (if (eq gnus-background-mode 'dark) 'light 'dark)
+    '(italic))
   "Faces used for displaying different citations.
 It is either a list of face names, or one of the following special
 values:
@@ -89,7 +92,8 @@ It is merged with the face for the cited text belonging to the attribution.")
   "Names of light colors.")
 
 (defvar gnus-face-dark-name-list
-  '("blue" "dark salmon" "firebrick"
+  '("violetred3" "violetred2" "violetred1" "violetred3" "deepskyblue3" "deepskyblue2" "deepskyblue1" "deepskyblue"
+    "dark salmon" "firebrick"
     "dark green" "dark orange" "dark khaki" "dark violet"
     "dark turquoise")
   "Names of dark colors.")

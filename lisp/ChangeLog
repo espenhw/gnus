@@ -1,4 +1,81 @@
+Sat Jul  8 16:57:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-fetch-faq): Get the real name.
+	(gnus-summary-fetch-faq): Don't do the config thing unless the
+	fetch is successful. 
+	(gnus-group-group-unread): New function. 
+
+	* gnus-score.el (gnus-summary-header): Beep on pseudo-articles. 
+
+	* gnus.el (gnus-group-expire-all-groups): Don't move the cursor. 
+	(gnus-group-remove-mark): Don't be so verbose.
+	(gnus-summary-read-group): Return the the server buffer if
+	quitting a group entry from the server buffer. 
+
+	* gnus-score.el (gnus-score-add-followups): Local variable shadows
+	parameter. 
+
+	* gnus.el (gnus-summary-exit): Didn't update cache when proceeding
+	to the next group. 
+	(gnus-summary-next-group): Didn't respect `gnus-keep-same-level'. 
+	(gnus-summary-remove-lines-marked-as-read): Also remove canceled
+	articles. 
+
+	* gnus-score.el (gnus-score-insert-help): Make the summary buffer
+	the selected window. 
+
+	* gnus-vis.el (gnus-visual-score-map): New function to create a
+	gazillion menu bar entries. 
+
+	* gnus.el (gnus-summary-next-group): New implementation. 
+
+Fri Jul  7 12:55:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-cache.el (gnus-cache-possibly-remove-article): Don't barf
+	on corrupted .overview files. 
+
+	* gnus.el (gnus-summary-copy-article): Make sure to open
+	connection. 
+	(gnus-summary-move-article): Ditto.
+	(gnus-group-make-group): Initialized active entry with wrong data.
+	(gnus-summary-mark-article): Don't mark ancients as expirable. 
+
+	* nnbabyl.el (nnbabyl-request-create-group): New function. 
+
+	* gnus.el (gnus-group-make-group): Did not check to see whether
+	the backend was loaded. 
+
+	* gnus-vis.el (gnus-header-face-alist): New colours.
+
+Thu Jul  6 15:30:00 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+ 
+        * gnus-vis.el: Use `custom-face-lookup' to create faces for
+        concistency. 
+ 
+Thu Jul  6 14:17:34 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nntp.el (nntp-async-request-group): New function to save async
+	state between groups that are open at the same time. 
+
+	* nnbabyl.el (nnbabyl-retrieve-headers): Possible removal of
+	newlines. 
+
+	* nnmbox.el (nnmbox-retrieve-headers): Ditto.
+
+Wed Jul  5 18:21:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-mode): Set the name of the group here. 
+
+	* gnus-ems.el: `set-text-properties' doesn't work on strings. 
+	(gnus-ems-redefine): Require gnus-msg on startup.
+
+Mon Jul  3 12:04:43 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-group-startup-message): Tweaked message.
+
 Sun Jul  2 14:11:14 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.91 and 0.91.1 is released.
 
 	* nnvirtual.el (nnvirtual-catchup-group): Would kill the group
 	buffer. 

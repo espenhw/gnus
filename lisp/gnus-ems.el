@@ -50,9 +50,10 @@
   	(funcall 'set-face-underline-p 'underline t))
     (or (fboundp 'set-text-properties)
 	(defun set-text-properties (start end props &optional buffer)
-	  (if props
-	      (put-text-property start end (car props) (cdr props) buffer)
-	    (remove-text-properties start end ()))))
+	  (if (or (null buffer) (bufferp buffer))
+	      (if props
+		  (put-text-property start end (car props) (cdr props) buffer)
+		(remove-text-properties start end ())))))
     
     (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
     (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
@@ -134,9 +135,6 @@
     (fset 'gnus-set-mouse-face (lambda (string) string))
 
     (fset 'gnus-summary-make-display-table (lambda () nil))
-
-    (provide 'gnus)
-    (require 'gnus-vis)
 
     (defun gnus-highlight-selected-summary ()
       ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.

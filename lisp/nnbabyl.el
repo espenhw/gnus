@@ -116,6 +116,7 @@
 	     (message "nnbabyl: Receiving headers...done"))
 
 	;; Fold continuation lines.
+	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))
@@ -200,6 +201,16 @@
 	    t)))))
 
 (defun nnbabyl-close-group (group &optional server)
+  t)
+
+(defun nnbabyl-request-create-group (group &optional server) 
+  (nnbabyl-request-list)
+  (setq nnbabyl-group-alist (nnmail-get-active))
+  (or (assoc group nnbabyl-group-alist)
+      (let (active)
+	(setq nnbabyl-group-alist (cons (list group (setq active (cons 1 0)))
+					nnbabyl-group-alist))
+	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))
   t)
 
 (defun nnbabyl-request-list (&optional server)

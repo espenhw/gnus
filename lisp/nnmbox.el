@@ -120,6 +120,7 @@
 	     (message "nnmbox: Receiving headers...done"))
 
 	;; Fold continuation lines.
+	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))

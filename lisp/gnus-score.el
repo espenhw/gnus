@@ -276,14 +276,17 @@ of the last successful match.")
     (insert string ":\n\n")
     (while alist
       (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
-      (setq alist (cdr alist)))))
+      (setq alist (cdr alist)))
+    (select-window (get-buffer-window gnus-summary-buffer))))
 
 (defun gnus-summary-header (header)
   ;; Return HEADER for current articles, or error.
-  (let ((article (gnus-summary-article-number)))
+  (let ((article (gnus-summary-article-number))
+	header)
     (if article
-	(aref (gnus-get-header-by-number article)
-	      (nth 1 (assoc header gnus-header-index)))
+	(if (setq header (gnus-get-header-by-number article))
+	    (aref header (nth 1 (assoc header gnus-header-index)))
+	  (error "Pseudo-articles can't be scored"))
       (error "No article on current line"))))
 
 (defun gnus-summary-score-entry 
@@ -1170,7 +1173,6 @@ SCORE is the score to add."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (let ((id (header-id header))
-	  (score gnus-score-alist)
 	  dont)
       ;; Don't enter a score if there already is one.
       (while score
@@ -1178,7 +1180,7 @@ SCORE is the score to add."
 	     (or (null (nth 3 (car score)))
 		 (eq 's (nth 3 (car score))))
 	     (progn
-	       (or (assoc id (car score))
+	       (if (assoc id (car score))
 		   (setq dont t))
 	       (setq score nil)))
 	(setq score (cdr score)))

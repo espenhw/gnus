@@ -1,6 +1,6 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
-@setfilename gnus
+@setfilename gnus.info
 @settitle (ding) Gnus 0.84 Manual
 @synindex fn cp
 @synindex vr cp

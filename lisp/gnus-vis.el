@@ -27,11 +27,138 @@
 
 (require 'gnus)
 (require gnus-easymenu)
-
-;;; summary highligts
+(require 'custom)
+(require 'gnus-ems)
+  
+;;; Summary highlights.
 
 (defvar gnus-summary-selected-face 'underline
   "*Face used for highlighting the current article in the summary buffer.")
+
+(defvar gnus-summary-highlight
+  (cond ((not (eq gnus-display-type 'color))
+	 '(((> score default) . bold)
+	   ((< score default) . italic)))
+	((eq gnus-background-mode 'dark)
+	 (list (cons '(= mark gnus-canceled-mark)
+		     (custom-face-lookup "yellow" "black" nil nil nil nil))
+	       (cons '(and (> score default) 
+			   (or (= mark gnus-dormant-mark)
+			       (= mark gnus-ticked-mark)))
+	       (custom-face-lookup "red" nil nil t nil nil))
+	       (cons '(and (< score default) 
+			   (or (= mark gnus-dormant-mark)
+			       (= mark gnus-ticked-mark)))
+	       (custom-face-lookup "red" nil nil nil t nil))
+	       (cons '(or (= mark gnus-dormant-mark)
+			  (= mark gnus-ticked-mark))
+	       (custom-face-lookup "red" nil nil nil nil nil))
+
+	       (cons '(and (> score default) (= mark gnus-ancient-mark))
+	       (custom-face-lookup "blue" nil nil t nil nil))
+	       (cons '(and (< score default) (= mark gnus-ancient-mark))
+	       (custom-face-lookup "blue" nil nil nil t nil))
+	       (cons '(= mark gnus-ancient-mark)
+	       (custom-face-lookup "blue" nil nil nil nil nil))
+
+	       (cons '(and (> score default) (= mark gnus-unread-mark))
+	       (custom-face-lookup "green" nil nil t nil nil))
+	       (cons '(and (< score default) (= mark gnus-unread-mark))
+	       (custom-face-lookup "green" nil nil nil t nil))
+	       (cons '(= mark gnus-unread-mark)
+	       (custom-face-lookup "green" nil nil nil nil nil))
+
+	       (cons '(> score default) 'bold)
+	       (cons '(< score default) 'italic)))
+	(t
+	 (list (cons '(= mark gnus-canceled-mark)
+		     (custom-face-lookup "yellow" "black" nil nil nil nil))
+	       (cons '(and (> score default) 
+			   (or (= mark gnus-dormant-mark)
+			       (= mark gnus-ticked-mark)))
+	       (custom-face-lookup "firebrick" nil nil t nil nil))
+	       (cons '(and (< score default) 
+			   (or (= mark gnus-dormant-mark)
+			       (= mark gnus-ticked-mark)))
+	       (custom-face-lookup "firebrick" nil nil nil t nil))
+	       (cons '(or (= mark gnus-dormant-mark)
+			  (= mark gnus-ticked-mark))
+	       (custom-face-lookup "firebrick" nil nil nil nil nil))
+
+	       (cons '(and (> score default) (= mark gnus-ancient-mark))
+	       (custom-face-lookup "RoyalBlue" nil nil t nil nil))
+	       (cons '(and (< score default) (= mark gnus-ancient-mark))
+	       (custom-face-lookup "RoyalBlue" nil nil nil t nil))
+	       (cons '(= mark gnus-ancient-mark)
+	       (custom-face-lookup "RoyalBlue" nil nil nil nil nil))
+
+	       (cons '(and (> score default) (= mark gnus-unread-mark))
+	       (custom-face-lookup "DarkGreen" nil nil t nil nil))
+	       (cons '(and (< score default) (= mark gnus-unread-mark))
+	       (custom-face-lookup "DarkGreen" nil nil nil t nil))
+	       (cons '(= mark gnus-unread-mark)
+	       (custom-face-lookup "DarkGreen" nil nil nil nil nil))
+
+	       (cons '(> score default) 'bold)
+	       (cons '(< score default) 'italic))))
+	"*Alist of `(FORM . FACE)'.
+Summary lines are highlighted with the FACE for the first FORM which
+evaluate to a non-nil value.  
+
+Point will be at the beginning of the line when FORM is evaluated.
+The following can be used for convenience:
+
+score:   (gnus-summary-article-score)
+default: gnus-summary-default-score
+below:   gnus-summary-mark-below
+mark:    (gnus-summary-article-mark)
+
+The latter can be used like this:
+   ((= mark gnus-replied-mark) . underline)")
+
+;;; article highlights
+
+(defvar gnus-header-face-alist 
+  (cond ((not (eq gnus-display-type 'color))
+	 '(("" bold italic)))
+	((eq gnus-background-mode 'dark)
+	 (list (list "From" nil 
+		       (custom-face-lookup "blue" nil nil t t nil))
+		 (list "Subject" nil 
+		       (custom-face-lookup "red" nil nil t t nil))
+		 (list "Newsgroups:.*," nil
+		       (custom-face-lookup "firebrick" nil nil t t nil))
+		 (list "" 'bold
+		       (custom-face-lookup "green" nil nil nil t nil))))
+	(t
+	 (list (list "From" nil 
+		       (custom-face-lookup "red" nil nil t t nil))
+		 (list "Subject" nil 
+		       (custom-face-lookup "firebrick" nil nil t t nil))
+		 (list "Newsgroups:.*," nil
+		       (custom-face-lookup "firebrick" nil nil t t nil))
+		 (list "" 'bold
+		       (custom-face-lookup "DarkGreen" nil nil nil t nil)))))
+  "Alist of headers and faces used for highlighting them.
+The entries in the list has the form `(REGEXP NAME CONTENT)', where
+REGEXP is a regular expression matching the beginning of the header,
+NAME is the face used for highlighting the header name and CONTENT is
+the face used for highlighting the header content. 
+
+The first non-nil NAME or CONTENT with a matching REGEXP in the list
+will be used.")
+
+
+(defvar gnus-make-foreground t
+  "Non nil means foreground color to highlight citations.")
+
+(defvar gnus-article-button-face 'bold
+  "Face used for text buttons.")
+
+(defvar gnus-article-mouse-face (if (boundp 'gnus-mouse-face)
+				    gnus-mouse-face
+				  'highlight)
+  "Face used when the mouse is over the button.")
 
 (defvar gnus-summary-highlight
   '(((> score default) . bold)
@@ -51,29 +178,6 @@ To check for marks, e.g. to underline replied articles, use
 `gnus-summary-article-mark': 
 
    ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
-
-;;; article highlights
-
-(defvar gnus-make-foreground t
-  "Non nil means foreground color to highlight citations.")
-
-(defvar gnus-article-button-face 'bold
-  "Face used for text buttons.")
-
-(defvar gnus-article-mouse-face (if (boundp 'gnus-mouse-face)
-				    gnus-mouse-face
-				  'highlight)
-  "Face used when the mouse is over the button.")
-
-(defvar gnus-header-face-alist '(("" bold italic))
-  "Alist of headers and faces used for highlighting them.
-The entries in the list has the form `(REGEXP NAME CONTENT)', where
-REGEXP is a regular expression matching the beginning of the header,
-NAME is the face used for highlighting the header name and CONTENT is
-the face used for highlighting the header content. 
-
-The first non-nil NAME or CONTENT with a matching REGEXP in the list
-will be used.") 
 
 (defvar gnus-signature-face 'italic
   "Face used for signature.")
@@ -429,22 +533,98 @@ highlight-headers-follow-url-netscape:
    gnus-summary-kill-menu
    gnus-summary-mode-map
    ""
-   '("Score"
-     ["Enter score" gnus-summary-score-entry t]
-     ["Raise score" gnus-summary-increase-score t]
-     ["Lower score" gnus-summary-lower-score t]
-     ["Current score" gnus-summary-current-score t]
-     ["Set score" gnus-summary-set-score t]
-     ("Score file"
-      ["Customize score file" gnus-score-customize t]
-      ["Switch current score file" gnus-score-change-score-file t]
-      ["Set mark below" gnus-score-set-mark-below t]
-      ["Set expunge below" gnus-score-set-expunge-below t]
-      ["Edit current score file" gnus-score-edit-alist t]
-      ["Edit score file" gnus-score-edit-file t]
-      ["Trace score" gnus-score-find-trace t])
-     ))
+   (cons
+    "Score"
+    (nconc
+     (list
+      ["Enter score" gnus-summary-score-entry t])
+     (gnus-visual-score-map 'increase)
+     (gnus-visual-score-map 'lower)
+     '(["Current score" gnus-summary-current-score t]
+       ["Set score" gnus-summary-set-score t]
+       ("Score file"
+	 ["Customize score file" gnus-score-customize t]
+	 ["Switch current score file" gnus-score-change-score-file t]
+	 ["Set mark below" gnus-score-set-mark-below t]
+	 ["Set expunge below" gnus-score-set-expunge-below t]
+	 ["Edit current score file" gnus-score-edit-alist t]
+	 ["Edit score file" gnus-score-edit-file t]
+	 ["Trace score" gnus-score-find-trace t])
+       ))))
+
   )
+
+(defun gnus-visual-score-map (type)
+  (let ((headers '(("author" "from" string)
+		   ("subject" "subject" string)
+		   ("article body" "body" string)
+		   ("article head" "head" string)
+		   ("xref" "xref" string)
+		   ("lines" "lines" number)
+		   ("followups to author" "followup" string)))
+	(types '((number ("less than" <)
+			 ("greater than" >)
+			 ("equal" =))
+		 (string ("substring" s)
+			 ("exact string" e)
+			 ("fuzzy string" f)
+			 ("regexp" r))))
+	(perms '(("temporary" (current-time-string))
+		 ("permanent" nil)
+		 ("immediate" now)))
+	header)
+    (list 
+    (apply 
+     'nconc
+     (list
+      (if (eq type 'lower)
+	  "Lower score"
+	"Increase score"))
+     (let (outh)
+       (while headers
+	 (setq header (car headers))
+	 (setq outh 
+	       (cons 
+		(apply 
+		 'nconc
+		 (list (car header))
+		 (let ((ts (cdr (assoc (nth 2 header) types)))
+		       outt)
+		   (while ts
+		     (setq outt
+			   (cons 
+			     (apply 
+			      'nconc
+			      (list (car (car ts)))
+			      (let ((ps perms)
+				    outp)
+				(while ps
+				  (setq outp
+					(cons
+					 (vector
+					  (car (car ps)) 
+					  (list
+					   'gnus-summary-score-entry
+					   (nth 1 header)
+					   (if (or (string= (nth 1 header) "head")
+						   (string= (nth 1 header) "body"))
+					       ""
+					     (list 'gnus-summary-header 
+						   (nth 1 header)))
+					   (list 'quote (nth 1 (car ts)))
+					   (list 'gnus-score-default nil)
+					   (nth 1 (car ps))
+					   t)
+					  t)
+					 outp))
+				  (setq ps (cdr ps)))
+				(list (nreverse outp))))
+			     outt))
+		     (setq ts (cdr ts)))
+		   (list (nreverse outt))))
+		outh))
+	 (setq headers (cdr headers)))
+       (list (nreverse outh)))))))
  
 ;; Article buffer
 (defun gnus-article-make-menu-bar ()
@@ -911,13 +1091,10 @@ External references are things like message-ids and URLs, as specified by
 	(add-text-properties end (point-max) gnus-hidden-properties)))))
 
 (defun gnus-make-face (color)
-  ;; Create entry for face with background COLOR.
-  (let ((name (intern (concat "gnus " color))))
-    (make-face name)
-    (if gnus-make-foreground
-	(set-face-foreground name color)
-      (set-face-background name color))
-    name))
+  ;; Create entry for face with COLOR.
+  (if gnus-make-foreground
+      (custom-face-lookup color nil nil nil nil nil)
+    (custom-face-lookup nil color nil nil nil nil)))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.
@@ -976,6 +1153,8 @@ The value is actually the element of LIST whose cdr is ELT."
 	    (setq result nil
 		  list (cdr list))))
 	result)))
+
+(gnus-ems-redefine)
 
 (provide 'gnus-vis)
 

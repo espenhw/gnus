@@ -27,6 +27,7 @@
 
 (require 'gnus)
 (require 'sendmail)
+(require 'gnus-ems)
 
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
@@ -1602,7 +1603,7 @@ If YANK is non-nil, include the original article."
   (interactive)
   (let ((winconf (current-window-configuration)))
     (delete-other-windows)
-    (switch-to-buffer "*Gnus Bug Help*")
+    (switch-to-buffer "*Gnus Help Bug*")
     (erase-buffer)
     (insert gnus-bug-message)
     (goto-char (point-min))
@@ -1669,6 +1670,8 @@ The source file has to be in the Emacs load path."
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")))
+
+(gnus-ems-redefine)
 
 (provide 'gnus-msg)
 

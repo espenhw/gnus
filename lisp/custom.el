@@ -1527,7 +1527,7 @@ If the optional argument GET is non-nil, use that to get external data."
 (if custom-mode-map
     nil
   (setq custom-mode-map (make-sparse-keymap))
-  (define-key custom-mode-map [ mouse-2 ] 'custom-push-button)
+  (define-key custom-mode-map (if (string-match "XEmacs" emacs-version) [button2] [mouse-2]) 'custom-push-button)
   (define-key custom-mode-map "\t" 'custom-forward-field)
   (define-key custom-mode-map "\r" 'custom-enter-value)
   (define-key custom-mode-map "\C-k" 'custom-kill-line)

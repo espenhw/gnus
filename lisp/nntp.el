@@ -168,6 +168,8 @@ instead call function `nntp-status-message' to get status message.")
 (defvar nntp-async-buffer nil)
 (defvar nntp-async-articles nil)
 (defvar nntp-async-fetched nil)
+(defvar nntp-async-group-alist nil)
+
 
 
 (defvar nntp-current-server nil)
@@ -192,6 +194,7 @@ instead call function `nntp-status-message' to get status message.")
    '(nntp-async-buffer nil)
    '(nntp-async-articles nil)
    '(nntp-async-fetched nil)
+   '(nntp-async-group-alist nil)
    '(nntp-server-process nil)
    '(nntp-status-string nil)
    '(nntp-server-xover try)
@@ -393,7 +396,8 @@ instead call function `nntp-status-message' to get status message.")
 	   (buffer-name proc)
 	   (kill-buffer proc))
       (setq nntp-server-alist (cdr nntp-server-alist)))
-    (setq nntp-current-server nil)))
+    (setq nntp-current-server nil
+	  nntp-async-group-alist nil)))
 
 (defun nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
@@ -489,6 +493,7 @@ instead call function `nntp-status-message' to get status message.")
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
+  (and nntp-async-articles (nntp-async-request-group group))
   (nntp-send-command "^.*\r?\n" "GROUP" group)
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -1194,6 +1199,20 @@ defining this function as macro."
 	(nntp-async-open-server)
 	(error (nntp-status-message)))
     (process-send-string nntp-async-process cmd)))
+
+(defun nntp-async-request-group (group)
+  (if (string= group nntp-current-group)
+      ()
+    (let ((asyncs (assoc group nntp-async-group-alist)))
+      (if (not asyncs)
+	  ()
+	;; A new group has been selected, so we push the current state
+	;; of async articles on an alist, and pull the old state off.
+	(setq nntp-async-group-alist 
+	      (cons (list group nntp-async-articles nntp-async-fetched)
+		    (delq asyncs nntp-async-group-alist)))
+	(setq nntp-async-articles (nth 1 asyncs))
+	(setq nntp-async-fetched (nth 2 asyncs))))))
 
 (provide 'nntp)
 

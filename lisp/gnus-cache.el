@@ -174,7 +174,8 @@
 	(set-buffer (cdr gnus-cache-buffer))
 	(goto-char (point-min))
 	(if (or (looking-at (concat (int-to-string article) "\t"))
-		(search-forward (concat "\n" (int-to-string article) "\t")))
+		(search-forward (concat "\n" (int-to-string article) "\t")
+				(point-max) t))
 	    (delete-region (progn (beginning-of-line) (point))
 			   (progn (forward-line 1) (point))))))))
 

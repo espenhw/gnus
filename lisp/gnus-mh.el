@@ -173,7 +173,6 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
       (setq mail-buf (eval (cdr (assq 'mail gnus-window-to-buffer))))
       (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
       (switch-to-buffer draft)
-      (kill-buffer mail-buf) ;; mh-e don't use it!
       )
     (save-excursion
       (goto-char (point-max))
