@@ -1,3 +1,8 @@
+1999-11-14 15:21:06  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* base64.el (base64-encode-string): An alias for base64-encode for
+	compatibility.
+
 1999-11-14 01:58:18  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-groups): Erase nntp-sever-buffer before

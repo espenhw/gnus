@@ -271,5 +271,6 @@ base64-encoder-program.")
       (kill-buffer (current-buffer)))))
 
 (fset 'base64-decode-string 'base64-decode)
+(fset 'base64-encode-string 'base64-encode)
 
 (provide 'base64)
