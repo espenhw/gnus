@@ -446,7 +446,7 @@ Can be used to turn version control on or off."
 	    (condition-case var
 		(load file nil t)
 	      (error
-	       (error "Error in %s: %s" file var)))))))))
+	       (error "Error in %s: %s" file (cadr var))))))))))
 
 ;; For subscribing new newsgroup
 
@@ -1920,7 +1920,7 @@ newsgroup."
     (goto-char (point-min))
     (let (group max min)
       (while (not (eobp))
-	(condition-case err
+	(condition-case ()
 	    (progn
 	      (narrow-to-region (point) (gnus-point-at-eol))
 	      ;; group gets set to a symbol interned in the hash table

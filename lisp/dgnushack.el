@@ -242,18 +242,18 @@ Modify to suit your needs."))
     (condition-case code
 	(require 'w3-parse)
       (error
-       (message "No w3: %s %s" code (locate-library "w3-parse"))
+       (message "No w3: %s %s" (cadr code) (locate-library "w3-parse"))
        (dolist (file '("nnultimate.el" "webmail.el" "nnwfm.el"))
 	 (setq files (delete file files)))))
     (condition-case code
 	(require 'mh-e)
       (error
-       (message "No mh-e: %s %s" code (locate-library "mh-e"))
+       (message "No mh-e: %s %s" (cadr code) (locate-library "mh-e"))
        (setq files (delete "gnus-mh.el" files))))
     (condition-case code
 	(require 'xml)
       (error
-       (message "No xml: %s %s" code (locate-library "xml"))
+       (message "No xml: %s %s" (cadr code) (locate-library "xml"))
        (setq files (delete "nnrss.el" files))))
     (dolist (file
 	     (if (featurep 'xemacs)

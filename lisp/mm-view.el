@@ -145,7 +145,7 @@
 		  ;; Don't let w3 set the global version of
 		  ;; this variable.
 		  (fill-column fill-column))
-	      (condition-case var
+	      (condition-case ()
 		  (w3-region (point-min) (point-max))
 		(error
 		 (delete-region (point-min) (point-max))

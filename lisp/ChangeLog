@@ -1,5 +1,14 @@
 2002-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-start.el (gnus-read-init-file): Ditto.
+
+	* gnus-agent.el (gnus-agent-fetch-session): Ditto.
+
+	* dgnushack.el (dgnushack-make-load): Ditto.
+
+	* mail-source.el (mail-source-fetch): Extract the right error
+	code.
+
 	* message.el (message-fix-before-sending): Check illegible text.
 
 	* gnus-util.el (gnus-multiple-choice): New function.

@@ -2113,7 +2113,7 @@ If READ-CHARSET, ask for a coding system."
 	(url-standalone-mode t)
 	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil))
-    (condition-case var
+    (condition-case ()
 	(w3-region (point-min) (point-max))
       (error))))
 

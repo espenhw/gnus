@@ -1214,12 +1214,12 @@ the actual number of articles toggled is returned."
 		      (gnus-agent-fetch-group-1 group gnus-command-method))))))
 	  (error
 	   (unless (funcall gnus-agent-confirmation-function
-			    (format "Error (%s).  Continue? " err))
+			    (format "Error (%s).  Continue? " (cadr err)))
 	     (error "Cannot fetch articles into the Gnus agent")))
 	  (quit
 	   (unless (funcall gnus-agent-confirmation-function
 			    (format "Quit fetching session (%s).  Continue? "
-				    err))
+				    (cadr err)))
 	     (signal 'quit "Cannot fetch articles into the Gnus agent"))))
 	(pop methods))
       (run-hooks 'gnus-agent-fetch-hook)
