@@ -301,276 +301,172 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 
 (defun gnus-group-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'group)
-  (or 
-   (boundp 'gnus-group-reading-menu)
-   (progn
-     (easy-menu-define
-      gnus-group-reading-menu gnus-group-mode-map ""
-      '("Group"
-	["Read" gnus-group-read-group (gnus-group-group-name)]
-	["Select" gnus-group-select-group (gnus-group-group-name)]
-	["See old articles" (gnus-group-select-group 'all)
-	 :keys "C-u SPC" :active (gnus-group-group-name)]
-	["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
-	["Catch up all articles" gnus-group-catchup-current-all
-	 (gnus-group-group-name)]
-	["Check for new articles" gnus-group-get-new-news-this-group
-	 (gnus-group-group-name)]
-	["Toggle subscription" gnus-group-unsubscribe-current-group
-	 (gnus-group-group-name)]
-	["Kill" gnus-group-kill-group (gnus-group-group-name)]
-	["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
-	["Describe" gnus-group-describe-group (gnus-group-group-name)]
-	["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
-	["Edit kill file" gnus-group-edit-local-kill
-	 (gnus-group-group-name)]
-	;; Actually one should check, if any of the marked groups gives t for
-	;; (gnus-check-backend-function 'request-expire-articles ...)
-	["Expire articles" gnus-group-expire-articles
-	 (or (and (gnus-group-group-name)
-		  (gnus-check-backend-function
-		   'request-expire-articles
-		   (gnus-group-group-name))) gnus-group-marked)]
-	["Set group level" gnus-group-set-current-level
-	 (gnus-group-group-name)]
-	["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
-	))
-  
-     (easy-menu-define
-      gnus-group-group-menu gnus-group-mode-map ""
-      '("Groups"
-	("Listing"
-	 ["List unread subscribed groups" gnus-group-list-groups t]
-	 ["List (un)subscribed groups" gnus-group-list-all-groups t]
-	 ["List killed groups" gnus-group-list-killed gnus-killed-list]
-	 ["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
-	 ["List level..." gnus-group-list-level t]
-	 ["Describe all groups" gnus-group-describe-all-groups t]
-	 ["Group apropos..." gnus-group-apropos t]
-	 ["Group and description apropos..." gnus-group-description-apropos t]
-	 ["List groups matching..." gnus-group-list-matching t]
-	 ["List all groups matching..." gnus-group-list-all-matching t]
-	 ["List active file" gnus-group-list-active t])
-	("Sort"
-	 ["Default sort" gnus-group-sort-groups
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by method" gnus-group-sort-groups-by-method
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by rank" gnus-group-sort-groups-by-rank
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by score" gnus-group-sort-groups-by-score
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by level" gnus-group-sort-groups-by-level
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by unread" gnus-group-sort-groups-by-unread
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
-	 ["Sort by name" gnus-group-sort-groups-by-alphabet
-	  (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
-	("Mark"
-	 ["Mark group" gnus-group-mark-group
-	  (and (gnus-group-group-name)
-	       (not (memq (gnus-group-group-name) gnus-group-marked)))]
-	 ["Unmark group" gnus-group-unmark-group
-	  (and (gnus-group-group-name)
-	       (memq (gnus-group-group-name) gnus-group-marked))]
-	 ["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
-	 ["Mark regexp..." gnus-group-mark-regexp t]
-	 ["Mark region" gnus-group-mark-region t]
-	 ["Mark buffer" gnus-group-mark-buffer t]
-	 ["Execute command" gnus-group-universal-argument
-	  (or gnus-group-marked (gnus-group-group-name))])
-	("Subscribe"
-	 ["Subscribe to a group" gnus-group-unsubscribe-group t]
-	 ["Kill all newsgroups in region" gnus-group-kill-region t]
-	 ["Kill all zombie groups" gnus-group-kill-all-zombies
-	  gnus-zombie-list]
-	 ["Kill all groups on level..." gnus-group-kill-level t])
-	("Foreign groups"
-	 ["Make a foreign group" gnus-group-make-group t]
-	 ["Add a directory group" gnus-group-make-directory-group t]
-	 ["Add the help group" gnus-group-make-help-group t]
-	 ["Add the archive group" gnus-group-make-archive-group t]
-	 ["Make a doc group" gnus-group-make-doc-group t]
-	 ["Make a kiboze group" gnus-group-make-kiboze-group t]
-	 ["Make a virtual group" gnus-group-make-empty-virtual t]
-	 ["Add a group to a virtual" gnus-group-add-to-virtual t]
-	 ["Rename group" gnus-group-rename-group
-	  (gnus-check-backend-function
-	   'request-rename-group (gnus-group-group-name))]
-	 ["Delete group" gnus-group-delete-group
-	  (gnus-check-backend-function
-	   'request-delete-group (gnus-group-group-name))])
-	("Editing groups"
-	 ["Parameters" gnus-group-edit-group-parameters
-	  (gnus-group-group-name)]
-	 ["Select method" gnus-group-edit-group-method
-	  (gnus-group-group-name)]
-	 ["Info" gnus-group-edit-group (gnus-group-group-name)])
-	("Score file"
-	 ["Flush cache" gnus-score-flush-cache
-	  (or gnus-score-cache gnus-short-name-score-file-cache)])
-	("Move"
-	 ["Next" gnus-group-next-group t]
-	 ["Previous" gnus-group-prev-group t]
-	 ["Next unread" gnus-group-next-unread-group t]
-	 ["Previous unread" gnus-group-prev-unread-group t]
-	 ["Next unread same level" gnus-group-next-unread-group-same-level t]
-	 ["Previous unread same level"
-	  gnus-group-previous-unread-group-same-level t]
-	 ["Jump to group" gnus-group-jump-to-group t]
-	 ["First unread group" gnus-group-first-unread-group t]
-	 ["Best unread group" gnus-group-best-unread-group t])
-	["Transpose" gnus-group-transpose-groups
-	 (gnus-group-group-name)]
-	["Read a directory as a group..." gnus-group-enter-directory t]
-	))
+  (unless (boundp 'gnus-group-reading-menu)
 
-     (easy-menu-define
-      gnus-group-misc-menu gnus-group-mode-map ""
-      '("Misc"
-	["Send a bug report" gnus-bug t]
-	["Send a mail" gnus-group-mail t]
-	["Post an article..." gnus-group-post-news t]
-	["Customize score file" gnus-score-customize t]
-	["Check for new news" gnus-group-get-new-news t]     
-	["Activate all groups" gnus-activate-all-groups t]
-	["Delete bogus groups" gnus-group-check-bogus-groups t]
-	["Find new newsgroups" gnus-find-new-newsgroups t]
-	["Restart Gnus" gnus-group-restart t]
-	["Read init file" gnus-group-read-init-file t]
-	["Browse foreign server" gnus-group-browse-foreign-server t]
-	["Enter server buffer" gnus-group-enter-server-mode t]
-	["Expire all expirable articles" gnus-group-expire-all-groups t]
-	["Generate any kiboze groups" nnkiboze-generate-groups t]
-	["Gnus version" gnus-version t]
-	["Save .newsrc files" gnus-group-save-newsrc t]
-	["Suspend Gnus" gnus-group-suspend t]
-	["Clear dribble buffer" gnus-group-clear-dribble t]
-	["Exit from Gnus" gnus-group-exit t]
-	["Exit without saving" gnus-group-quit t]
-	["Edit global kill file" gnus-group-edit-global-kill t]
-	["Read manual" gnus-info-find-node t]
-	["Toggle topics" gnus-topic-mode t]
-	("SOUP"
-	 ["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
-	 ["Send replies" gnus-soup-send-replies
-	  (fboundp 'gnus-soup-pack-packet)]
-	 ["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
-	 ["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
-	 ["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
-	))
-     (run-hooks 'gnus-group-menu-hook)
-     )))
+    (easy-menu-define
+     gnus-group-reading-menu gnus-group-mode-map ""
+     '("Group"
+       ["Read" gnus-group-read-group (gnus-group-group-name)]
+       ["Select" gnus-group-select-group (gnus-group-group-name)]
+       ["See old articles" (gnus-group-select-group 'all)
+	:keys "C-u SPC" :active (gnus-group-group-name)]
+       ["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
+       ["Catch up all articles" gnus-group-catchup-current-all
+	(gnus-group-group-name)]
+       ["Check for new articles" gnus-group-get-new-news-this-group
+	(gnus-group-group-name)]
+       ["Toggle subscription" gnus-group-unsubscribe-current-group
+	(gnus-group-group-name)]
+       ["Kill" gnus-group-kill-group (gnus-group-group-name)]
+       ["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
+       ["Describe" gnus-group-describe-group (gnus-group-group-name)]
+       ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
+       ["Edit kill file" gnus-group-edit-local-kill
+	(gnus-group-group-name)]
+       ;; Actually one should check, if any of the marked groups gives t for
+       ;; (gnus-check-backend-function 'request-expire-articles ...)
+       ["Expire articles" gnus-group-expire-articles
+	(or (and (gnus-group-group-name)
+		 (gnus-check-backend-function
+		  'request-expire-articles
+		  (gnus-group-group-name))) gnus-group-marked)]
+       ["Set group level" gnus-group-set-current-level
+	(gnus-group-group-name)]
+       ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
+       ))
+  
+    (easy-menu-define
+     gnus-group-group-menu gnus-group-mode-map ""
+     '("Groups"
+       ("Listing"
+	["List unread subscribed groups" gnus-group-list-groups t]
+	["List (un)subscribed groups" gnus-group-list-all-groups t]
+	["List killed groups" gnus-group-list-killed gnus-killed-list]
+	["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
+	["List level..." gnus-group-list-level t]
+	["Describe all groups" gnus-group-describe-all-groups t]
+	["Group apropos..." gnus-group-apropos t]
+	["Group and description apropos..." gnus-group-description-apropos t]
+	["List groups matching..." gnus-group-list-matching t]
+	["List all groups matching..." gnus-group-list-all-matching t]
+	["List active file" gnus-group-list-active t])
+       ("Sort"
+	["Default sort" gnus-group-sort-groups
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by method" gnus-group-sort-groups-by-method
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by rank" gnus-group-sort-groups-by-rank
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by score" gnus-group-sort-groups-by-score
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by level" gnus-group-sort-groups-by-level
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by unread" gnus-group-sort-groups-by-unread
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by name" gnus-group-sort-groups-by-alphabet
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
+       ("Mark"
+	["Mark group" gnus-group-mark-group
+	 (and (gnus-group-group-name)
+	      (not (memq (gnus-group-group-name) gnus-group-marked)))]
+	["Unmark group" gnus-group-unmark-group
+	 (and (gnus-group-group-name)
+	      (memq (gnus-group-group-name) gnus-group-marked))]
+	["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
+	["Mark regexp..." gnus-group-mark-regexp t]
+	["Mark region" gnus-group-mark-region t]
+	["Mark buffer" gnus-group-mark-buffer t]
+	["Execute command" gnus-group-universal-argument
+	 (or gnus-group-marked (gnus-group-group-name))])
+       ("Subscribe"
+	["Subscribe to a group" gnus-group-unsubscribe-group t]
+	["Kill all newsgroups in region" gnus-group-kill-region t]
+	["Kill all zombie groups" gnus-group-kill-all-zombies
+	 gnus-zombie-list]
+	["Kill all groups on level..." gnus-group-kill-level t])
+       ("Foreign groups"
+	["Make a foreign group" gnus-group-make-group t]
+	["Add a directory group" gnus-group-make-directory-group t]
+	["Add the help group" gnus-group-make-help-group t]
+	["Add the archive group" gnus-group-make-archive-group t]
+	["Make a doc group" gnus-group-make-doc-group t]
+	["Make a kiboze group" gnus-group-make-kiboze-group t]
+	["Make a virtual group" gnus-group-make-empty-virtual t]
+	["Add a group to a virtual" gnus-group-add-to-virtual t]
+	["Rename group" gnus-group-rename-group
+	 (gnus-check-backend-function
+	  'request-rename-group (gnus-group-group-name))]
+	["Delete group" gnus-group-delete-group
+	 (gnus-check-backend-function
+	  'request-delete-group (gnus-group-group-name))])
+       ("Editing groups"
+	["Parameters" gnus-group-edit-group-parameters
+	 (gnus-group-group-name)]
+	["Select method" gnus-group-edit-group-method
+	 (gnus-group-group-name)]
+	["Info" gnus-group-edit-group (gnus-group-group-name)])
+       ("Score file"
+	["Flush cache" gnus-score-flush-cache
+	 (or gnus-score-cache gnus-short-name-score-file-cache)])
+       ("Move"
+	["Next" gnus-group-next-group t]
+	["Previous" gnus-group-prev-group t]
+	["Next unread" gnus-group-next-unread-group t]
+	["Previous unread" gnus-group-prev-unread-group t]
+	["Next unread same level" gnus-group-next-unread-group-same-level t]
+	["Previous unread same level"
+	 gnus-group-previous-unread-group-same-level t]
+	["Jump to group" gnus-group-jump-to-group t]
+	["First unread group" gnus-group-first-unread-group t]
+	["Best unread group" gnus-group-best-unread-group t])
+       ["Transpose" gnus-group-transpose-groups
+	(gnus-group-group-name)]
+       ["Read a directory as a group..." gnus-group-enter-directory t]
+       ))
+
+    (easy-menu-define
+     gnus-group-misc-menu gnus-group-mode-map ""
+     '("Misc"
+       ["Send a bug report" gnus-bug t]
+       ["Send a mail" gnus-group-mail t]
+       ["Post an article..." gnus-group-post-news t]
+       ["Customize score file" gnus-score-customize t]
+       ["Check for new news" gnus-group-get-new-news t]     
+       ["Activate all groups" gnus-activate-all-groups t]
+       ["Delete bogus groups" gnus-group-check-bogus-groups t]
+       ["Find new newsgroups" gnus-find-new-newsgroups t]
+       ["Restart Gnus" gnus-group-restart t]
+       ["Read init file" gnus-group-read-init-file t]
+       ["Browse foreign server" gnus-group-browse-foreign-server t]
+       ["Enter server buffer" gnus-group-enter-server-mode t]
+       ["Expire all expirable articles" gnus-group-expire-all-groups t]
+       ["Generate any kiboze groups" nnkiboze-generate-groups t]
+       ["Gnus version" gnus-version t]
+       ["Save .newsrc files" gnus-group-save-newsrc t]
+       ["Suspend Gnus" gnus-group-suspend t]
+       ["Clear dribble buffer" gnus-group-clear-dribble t]
+       ["Edit global kill file" gnus-group-edit-global-kill t]
+       ["Read manual" gnus-info-find-node t]
+       ["Toggle topics" gnus-topic-mode t]
+       ("SOUP"
+	["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
+	["Send replies" gnus-soup-send-replies
+	 (fboundp 'gnus-soup-pack-packet)]
+	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
+	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
+	["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
+       ["Exit from Gnus" gnus-group-exit t]
+       ["Exit without saving" gnus-group-quit t]
+       ))
+
+    (run-hooks 'gnus-group-menu-hook)
+    ))
 
 ;; Summary buffer
 (defun gnus-summary-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'summary)
 
   (unless (boundp 'gnus-summary-misc-menu)
-
-    (easy-menu-define
-     gnus-summary-misc-menu gnus-summary-mode-map ""
-     '("Misc"
-       ("Mark"
-	("Read"
-	 ["Mark as read" gnus-summary-mark-as-read-forward t]
-	 ["Mark same subject and select"
-	  gnus-summary-kill-same-subject-and-select t]
-	 ["Mark same subject" gnus-summary-kill-same-subject t]
-	 ["Catchup" gnus-summary-catchup t]
-	 ["Catchup all" gnus-summary-catchup-all t]
-	 ["Catchup to here" gnus-summary-catchup-to-here t]
-	 ["Catchup region" gnus-summary-mark-region-as-read t]
-	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
-	("Various"
-	 ["Tick" gnus-summary-tick-article-forward t]
-	 ["Mark as dormant" gnus-summary-mark-as-dormant t]
-	 ["Remove marks" gnus-summary-clear-mark-forward t]
-	 ["Set expirable mark" gnus-summary-mark-as-expirable t]
-	 ["Set bookmark" gnus-summary-set-bookmark t]
-	 ["Remove bookmark" gnus-summary-remove-bookmark t])
-	("Limit"
-	 ["Marks..." gnus-summary-limit-to-marks t]
-	 ["Subject..." gnus-summary-limit-to-subject t]
-	 ["Author..." gnus-summary-limit-to-author t]
-	 ["Score" gnus-summary-limit-to-score t]
-	 ["Unread" gnus-summary-limit-to-unread t]
-	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
-	 ["Articles" gnus-summary-limit-to-articles t]
-	 ["Pop limit" gnus-summary-pop-limit t]
-	 ["Show dormant" gnus-summary-limit-include-dormant t]
-	 ["Hide childless dormant" 
-	  gnus-summary-limit-exclude-childless-dormant t]
-	 ;;["Hide thread" gnus-summary-limit-exclude-thread t]
-	 ["Show expunged" gnus-summary-show-all-expunged t])
-	("Process mark"
-	 ["Set mark" gnus-summary-mark-as-processable t]
-	 ["Remove mark" gnus-summary-unmark-as-processable t]
-	 ["Remove all marks" gnus-summary-unmark-all-processable t]
-	 ["Mark above" gnus-uu-mark-over t]
-	 ["Mark series" gnus-uu-mark-series t]
-	 ["Mark region" gnus-uu-mark-region t]
-	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
-	 ["Mark all" gnus-uu-mark-all t]
-	 ["Mark buffer" gnus-uu-mark-buffer t]
-	 ["Mark sparse" gnus-uu-mark-sparse t]
-	 ["Mark thread" gnus-uu-mark-thread t]
-	 ["Unmark thread" gnus-uu-unmark-thread t]))
-       ("Scroll article"
-	["Page forward" gnus-summary-next-page t]
-	["Page backward" gnus-summary-prev-page t]
-	["Line forward" gnus-summary-scroll-up t])
-       ("Move"
-	["Next unread article" gnus-summary-next-unread-article t]
-	["Previous unread article" gnus-summary-prev-unread-article t]
-	["Next article" gnus-summary-next-article t]
-	["Previous article" gnus-summary-prev-article t]
-	["Next unread subject" gnus-summary-next-unread-subject t]
-	["Previous unread subject" gnus-summary-prev-unread-subject t]
-	["Next article same subject" gnus-summary-next-same-subject t]
-	["Previous article same subject" gnus-summary-prev-same-subject t]
-	["First unread article" gnus-summary-first-unread-article t]
-	["Best unread article" gnus-summary-best-unread-article t]
-	["Go to subject number..." gnus-summary-goto-subject t]
-	["Go to article number..." gnus-summary-goto-article t]
-	["Go to the last article" gnus-summary-goto-last-article t]
-	["Pop article off history" gnus-summary-pop-article t])	
-       ("Sort"
-	["Sort by number" gnus-summary-sort-by-number t]
-	["Sort by author" gnus-summary-sort-by-author t]
-	["Sort by subject" gnus-summary-sort-by-subject t]
-	["Sort by date" gnus-summary-sort-by-date t]
-	["Sort by score" gnus-summary-sort-by-score t])
-       ("Exit"
-	["Catchup and exit" gnus-summary-catchup-and-exit t]
-	["Catchup all and exit" gnus-summary-catchup-and-exit t]
-	["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
-	["Exit group" gnus-summary-exit t]
-	["Exit group without updating" gnus-summary-exit-no-update t]
-	["Exit and goto next group" gnus-summary-next-group t]
-	["Exit and goto prev group" gnus-summary-prev-group t]
-	["Reselect group" gnus-summary-reselect-current-group t]
-	["Rescan group" gnus-summary-rescan-group t])
-       ("Help"
-	["Fetch group FAQ" gnus-summary-fetch-faq t]
-	["Describe group" gnus-summary-describe-group t]
-	["Read manual" gnus-info-find-node t])
-       ("Cache"
-	["Enter article" gnus-cache-enter-article t]
-	["Remove article" gnus-cache-remove-article t])
-       ("Modes"
-	["Pick and read" gnus-pick-mode t]
-	["Binary" gnus-binary-mode t])
-       ["Filter articles..." gnus-summary-execute-command t]
-       ["Run command on subjects..." gnus-summary-universal-argument t]
-       ["Toggle line truncation" gnus-summary-toggle-truncation t]
-       ["Expand window" gnus-summary-expand-window t]
-       ["Expire expirable articles" gnus-summary-expire-articles
-	(gnus-check-backend-function
-	 'request-expire-articles gnus-newsgroup-name)]
-       ["Edit local kill file" gnus-summary-edit-local-kill t]
-       ["Edit main kill file" gnus-summary-edit-global-kill t]
-       ))
 
     (easy-menu-define
      gnus-summary-kill-menu gnus-summary-mode-map ""
@@ -830,6 +726,110 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
        ;;["Send" gnus-summary-send-draft t]
        ;;["Send bounced" gnus-resend-bounced-mail t])
        ))
+
+    (easy-menu-define
+     gnus-summary-misc-menu gnus-summary-mode-map ""
+     '("Misc"
+       ("Mark"
+	("Read"
+	 ["Mark as read" gnus-summary-mark-as-read-forward t]
+	 ["Mark same subject and select"
+	  gnus-summary-kill-same-subject-and-select t]
+	 ["Mark same subject" gnus-summary-kill-same-subject t]
+	 ["Catchup" gnus-summary-catchup t]
+	 ["Catchup all" gnus-summary-catchup-all t]
+	 ["Catchup to here" gnus-summary-catchup-to-here t]
+	 ["Catchup region" gnus-summary-mark-region-as-read t]
+	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
+	("Various"
+	 ["Tick" gnus-summary-tick-article-forward t]
+	 ["Mark as dormant" gnus-summary-mark-as-dormant t]
+	 ["Remove marks" gnus-summary-clear-mark-forward t]
+	 ["Set expirable mark" gnus-summary-mark-as-expirable t]
+	 ["Set bookmark" gnus-summary-set-bookmark t]
+	 ["Remove bookmark" gnus-summary-remove-bookmark t])
+	("Limit"
+	 ["Marks..." gnus-summary-limit-to-marks t]
+	 ["Subject..." gnus-summary-limit-to-subject t]
+	 ["Author..." gnus-summary-limit-to-author t]
+	 ["Score" gnus-summary-limit-to-score t]
+	 ["Unread" gnus-summary-limit-to-unread t]
+	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
+	 ["Articles" gnus-summary-limit-to-articles t]
+	 ["Pop limit" gnus-summary-pop-limit t]
+	 ["Show dormant" gnus-summary-limit-include-dormant t]
+	 ["Hide childless dormant" 
+	  gnus-summary-limit-exclude-childless-dormant t]
+	 ;;["Hide thread" gnus-summary-limit-exclude-thread t]
+	 ["Show expunged" gnus-summary-show-all-expunged t])
+	("Process mark"
+	 ["Set mark" gnus-summary-mark-as-processable t]
+	 ["Remove mark" gnus-summary-unmark-as-processable t]
+	 ["Remove all marks" gnus-summary-unmark-all-processable t]
+	 ["Mark above" gnus-uu-mark-over t]
+	 ["Mark series" gnus-uu-mark-series t]
+	 ["Mark region" gnus-uu-mark-region t]
+	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
+	 ["Mark all" gnus-uu-mark-all t]
+	 ["Mark buffer" gnus-uu-mark-buffer t]
+	 ["Mark sparse" gnus-uu-mark-sparse t]
+	 ["Mark thread" gnus-uu-mark-thread t]
+	 ["Unmark thread" gnus-uu-unmark-thread t]))
+       ("Scroll article"
+	["Page forward" gnus-summary-next-page t]
+	["Page backward" gnus-summary-prev-page t]
+	["Line forward" gnus-summary-scroll-up t])
+       ("Move"
+	["Next unread article" gnus-summary-next-unread-article t]
+	["Previous unread article" gnus-summary-prev-unread-article t]
+	["Next article" gnus-summary-next-article t]
+	["Previous article" gnus-summary-prev-article t]
+	["Next unread subject" gnus-summary-next-unread-subject t]
+	["Previous unread subject" gnus-summary-prev-unread-subject t]
+	["Next article same subject" gnus-summary-next-same-subject t]
+	["Previous article same subject" gnus-summary-prev-same-subject t]
+	["First unread article" gnus-summary-first-unread-article t]
+	["Best unread article" gnus-summary-best-unread-article t]
+	["Go to subject number..." gnus-summary-goto-subject t]
+	["Go to article number..." gnus-summary-goto-article t]
+	["Go to the last article" gnus-summary-goto-last-article t]
+	["Pop article off history" gnus-summary-pop-article t])	
+       ("Sort"
+	["Sort by number" gnus-summary-sort-by-number t]
+	["Sort by author" gnus-summary-sort-by-author t]
+	["Sort by subject" gnus-summary-sort-by-subject t]
+	["Sort by date" gnus-summary-sort-by-date t]
+	["Sort by score" gnus-summary-sort-by-score t])
+       ("Help"
+	["Fetch group FAQ" gnus-summary-fetch-faq t]
+	["Describe group" gnus-summary-describe-group t]
+	["Read manual" gnus-info-find-node t])
+       ("Cache"
+	["Enter article" gnus-cache-enter-article t]
+	["Remove article" gnus-cache-remove-article t])
+       ("Modes"
+	["Pick and read" gnus-pick-mode t]
+	["Binary" gnus-binary-mode t])
+       ["Filter articles..." gnus-summary-execute-command t]
+       ["Run command on subjects..." gnus-summary-universal-argument t]
+       ["Toggle line truncation" gnus-summary-toggle-truncation t]
+       ["Expand window" gnus-summary-expand-window t]
+       ["Expire expirable articles" gnus-summary-expire-articles
+	(gnus-check-backend-function
+	 'request-expire-articles gnus-newsgroup-name)]
+       ["Edit local kill file" gnus-summary-edit-local-kill t]
+       ["Edit main kill file" gnus-summary-edit-global-kill t]
+       ("Exit"
+	["Catchup and exit" gnus-summary-catchup-and-exit t]
+	["Catchup all and exit" gnus-summary-catchup-and-exit t]
+	["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
+	["Exit group" gnus-summary-exit t]
+	["Exit group without updating" gnus-summary-exit-no-update t]
+	["Exit and goto next group" gnus-summary-next-group t]
+	["Exit and goto prev group" gnus-summary-prev-group t]
+	["Reselect group" gnus-summary-reselect-current-group t]
+	["Rescan group" gnus-summary-rescan-group t])))
+
     (run-hooks 'gnus-summary-menu-hook)
     ))
 

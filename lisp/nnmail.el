@@ -440,11 +440,7 @@ parameter.  It should return nil, `warn' or `delete'.")
 		(goto-char (point-min))
 		(if (looking-at "movemail: ")
 		    (delete-region (point-min) (match-end 0)))
-		(beep t)
-		(message (concat "movemail: "
-				 (buffer-substring (point-min)
-						   (point-max))))
-		(sit-for 3)
+		(error (concat "movemail: " (buffer-string)))
 		(setq tofile nil))))))
       (and errors
 	   (buffer-name errors)

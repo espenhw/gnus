@@ -351,6 +351,7 @@ instead use `nntp-server-buffer'.")
   "Open the virtual server SERVER.
 If CONNECTIONLESS is non-nil, don't attempt to connect to any physical
 servers."
+  (nnheader-init-server-buffer)
   ;; Called with just a port number as the defs.
   (when (or (stringp (car defs))
 	    (numberp (car defs)))
@@ -1058,7 +1059,7 @@ It will prompt for a password."
     ;; We open the nntp server if it is down.
     (or (nntp-server-opened (nnoo-current-server 'nntp))
 	(nntp-open-server (nnoo-current-server 'nntp))
-	(error (nntp-status-message)))
+	(error "Couldn't open server: " (nntp-status-message)))
     ;; Send the strings.
     (process-send-string nntp-server-process cmd)
     t))
@@ -1193,10 +1194,11 @@ If SERVICE, use this as the port number."
    "nntpd" nntp-server-buffer server nntp-port-number))
 
 (defun nntp-open-rlogin (server)
+  "Open a connection to SERVER using rsh."
   (let ((proc (if nntp-rlogin-user-name
 		  (start-process
 		   "nntpd" nntp-server-buffer "rsh"
-		   "-l" nntp-rlogin-user-name server
+		   server "-l" nntp-rlogin-user-name
 		   (mapconcat 'identity
 			      nntp-rlogin-parameters " "))
 		(start-process

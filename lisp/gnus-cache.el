@@ -374,9 +374,10 @@ Returns the list of articles removed."
 	  (file-name-as-directory
 	   (if (gnus-use-long-file-name 'not-cache)
 	       group 
-	     (let ((group (concat group "")))
-	       (if (string-match ":" group)
-		   (aset group (match-beginning 0) ?/))
+	     (let ((group (nnheader-replace-chars-in-string group ?/ ?_)))
+	       ;; Translate the first colon into a slash.
+	       (when (string-match ":" group)
+		 (aset group (match-beginning 0) ?/))
 	       (nnheader-replace-chars-in-string group ?. ?/))))
 	  (if (stringp article) article (int-to-string article))))
 

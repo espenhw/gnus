@@ -968,11 +968,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 		      (file-exists-p message-signature-file))
 		 signature))))
     (when signature
-;      ;; Remove blank lines at the end of the message.
-      (goto-char (point-max))
-;      (skip-chars-backward " \t\n")
-;      (delete-region (point) (point-max))
       ;; Insert the signature.
+      (goto-char (point-max))
       (unless (bolp)
 	(insert "\n"))
       (insert "\n-- \n")
@@ -1055,7 +1052,11 @@ name, rather than giving an automatic name."
 	     (name (if enter-string
 		       (read-string "New buffer name: " name-default)
 		     name-default)))
-	(rename-buffer name t)))))
+	(rename-buffer name t)
+	(setq buffer-auto-save-file-name
+	      (format "%s%s"
+		      (file-name-as-directory message-autosave-directory)
+		      (file-name-nondirectory buffer-auto-save-file-name)))))))
 
 (defun message-fill-yanked-message (&optional justifyp)
   "Fill the paragraphs of a message yanked into this one.
@@ -1684,8 +1685,8 @@ the user from the mailer."
 	  (concat "^" (regexp-quote mail-header-separator) "$"))
 	 (forward-line 1)
 	 (let ((b (point)))
-	   (or (re-search-forward message-signature-separator nil t)
-	       (goto-char (point-max)))
+	   (goto-char (point-max))
+	   (re-search-backward message-signature-separator nil t)
 	   (beginning-of-line)
 	   (or (re-search-backward "[^ \n\t]" b t)
 	       (y-or-n-p "Empty article.  Really post? ")))))
@@ -1715,7 +1716,7 @@ the user from the mailer."
     (message-check-element 'signature)
     (progn
       (goto-char (point-max))
-      (if (or (not (re-search-backward "^-- $" nil t))
+      (if (or (not (re-search-backward message-signature-separator nil t))
 	      (search-forward message-forward-end-separator nil t))
 	  t
 	(if (> (count-lines (point) (point-max)) 5)
@@ -2983,7 +2984,7 @@ Do a `tab-to-tab-stop' if not in those headers."
 ;;; Help stuff.
 
 (defmacro message-y-or-n-p (question show &rest text)
-  "Ask QUESTION, displaying the rest of the arguments in a temporary buffer."
+  "Ask QUESTION, displaying the rest of the arguments in a temp. buffer if SHOW"
   `(message-talkative-question 'y-or-n-p ,question ,show ,@text))
 
 (defun message-talkative-question (ask question show &rest text)

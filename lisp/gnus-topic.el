@@ -378,6 +378,7 @@ articles in the topic and its subtopics."
 	gnus-topic-tallied-groups nil
 	gnus-topology-checked-p nil))
 
+
 (defun gnus-topic-check-topology ()  
   ;; The first time we set the topology to whatever we have
   ;; gotten here, which can be rather random.
@@ -385,6 +386,8 @@ articles in the topic and its subtopics."
     (gnus-topic-init-alist))
 
   (setq gnus-topology-checked-p t)
+  ;; Go through the topic alist and make sure that all topics
+  ;; are in the topic topology.
   (let ((topics (gnus-topic-list))
 	(alist gnus-topic-alist)
 	changed)
@@ -395,7 +398,15 @@ articles in the topic and its subtopics."
 	(setq changed t))
       (setq alist (cdr alist)))
     (when changed
-      (gnus-topic-enter-dribble)))
+      (gnus-topic-enter-dribble))
+    ;; Conversely, go through the topology and make sure that all
+    ;; topologies have alists.
+    (while topics
+      (unless (assoc (car topics) gnus-topic-alist)
+	(push (list (car topics)) gnus-topic-alist))
+      (pop topics)))
+  ;; Go through all living groups and make sure that
+  ;; they belong to some topic.
   (let* ((tgroups (apply 'append (mapcar (lambda (entry) (cdr entry))
 					 gnus-topic-alist)))
 	 (entry (assoc (caar gnus-topic-topology) gnus-topic-alist))
@@ -403,7 +414,15 @@ articles in the topic and its subtopics."
 	 group)
     (while newsrc
       (unless (member (setq group (gnus-info-group (pop newsrc))) tgroups)
-	(setcdr entry (cons group (cdr entry)))))))
+	(setcdr entry (cons group (cdr entry))))))
+  ;; Go through all topics and make sure they contain only living groups.
+  (let ((alist gnus-topic-alist)
+	topic)
+    (while (setq topic (pop alist))
+      (while (cdr topic)
+	(if (gnus-gethash (cadr topic) gnus-newsrc-hashtb)
+	    (setq topic (cdr topic))
+	  (setcdr topic (cddr topic)))))))
 
 (defvar gnus-tmp-topics nil)
 (defun gnus-topic-list (&optional topology)

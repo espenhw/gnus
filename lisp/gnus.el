@@ -1774,7 +1774,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.37"
+(defconst gnus-version-number "5.2.38"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3117,6 +3117,8 @@ the first newsgroup."
 
 (defun gnus-make-directory (dir)
   "Make DIRECTORY recursively."
+  (unless dir
+    (error "No directory to make"))
   ;; Why don't we use `(make-directory dir 'parents)'?  That's just one
   ;; of the many mysteries of the universe.
   (let* ((dir (expand-file-name dir default-directory))
@@ -4823,15 +4825,17 @@ If REGEXP, only list groups matching REGEXP."
 (defun gnus-group-prefixed-name (group method)
   "Return the whole name from GROUP and METHOD."
   (and (stringp method) (setq method (gnus-server-to-method method)))
-  (concat (format "%s" (car method))
-	  (if (and
-	       (or (assoc (format "%s" (car method)) 
-			  (gnus-methods-using 'address))
-		   (gnus-server-equal method gnus-message-archive-method))
-	       (nth 1 method)
-	       (not (string= (nth 1 method) "")))
-	      (concat "+" (nth 1 method)))
-	  ":" group))
+  (if (not method)
+      group
+    (concat (format "%s" (car method))
+	    (if (and
+		 (or (assoc (format "%s" (car method)) 
+			    (gnus-methods-using 'address))
+		     (gnus-server-equal method gnus-message-archive-method))
+		 (nth 1 method)
+		 (not (string= (nth 1 method) "")))
+		(concat "+" (nth 1 method)))
+	    ":" group)))
 
 (defun gnus-group-real-prefix (group)
   "Return the prefix of the current group name."
@@ -5512,6 +5516,7 @@ Returns whether the fetching was successful or not."
 	  (goto-char b)
 	;; ... or insert the line.
 	(or
+	 t ;; Don't activate group.
 	 (gnus-active group)
 	 (gnus-activate-group group)
 	 (error "%s error: %s" group (gnus-status-message group)))
@@ -5655,19 +5660,24 @@ ADDRESS."
 	   (completing-read
 	    "Method: " (append gnus-valid-select-methods gnus-server-alist)
 	    nil t nil 'gnus-method-history)))
-      (cond ((assoc method gnus-valid-select-methods)
-	     (list method
-		   (if (memq 'prompt-address
-			     (assoc method gnus-valid-select-methods))
-		       (read-string "Address: ")
-		     "")))
-	    ((assoc method gnus-server-alist)
-	     (list method))
-	    (t
-	     (list method ""))))))
+      (cond 
+       ((equal method "")
+	(setq method gnus-select-method))
+       ((assoc method gnus-valid-select-methods)
+	(list method
+	      (if (memq 'prompt-address
+			(assoc method gnus-valid-select-methods))
+		  (read-string "Address: ")
+		"")))
+       ((assoc method gnus-server-alist)
+	(list method))
+       (t
+	(list method ""))))))
 
-  (let* ((meth (and method (if address (list (intern method) address)
-			     method)))
+  (let* ((meth (when (and method
+			  (not (gnus-server-equal method gnus-select-method)))
+		 (if address (list (intern method) address)
+		   method)))
 	 (nname (if method (gnus-group-prefixed-name name meth) name))
 	 backend info)
     (when (gnus-gethash nname gnus-newsrc-hashtb)
@@ -5748,9 +5758,13 @@ doing the deletion."
 
   ;; We find the proper prefixed name.
   (setq new-name
-	(gnus-group-prefixed-name
-	 (gnus-group-real-name new-name)
-	 (gnus-info-method (gnus-get-info group))))
+	(if (equal (gnus-group-real-name new-name) new-name)
+	    ;; Native group.
+	    new-name
+	  ;; Foreign group.
+	  (gnus-group-prefixed-name
+	   (gnus-group-real-name new-name)
+	   (gnus-info-method (gnus-get-info group)))))
 
   (gnus-message 6 "Renaming group %s to %s..." group new-name)
   (prog1
@@ -5959,7 +5973,7 @@ mail messages or news articles in files that have numeric names."
       (setq ext (format "<%d>" (setq i (1+ i)))))
     (gnus-group-make-group
      (gnus-group-real-name group)
-     (list 'nndir group (list 'nndir-directory dir)))))
+     (list 'nndir (gnus-group-real-name group) (list 'nndir-directory dir)))))
 
 (defun gnus-group-make-kiboze-group (group address scores)
   "Create an nnkiboze group.
@@ -9260,27 +9274,24 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 (active (gnus-active group))
 	 range)
     ;; First peel off all illegal article numbers.
-    (if active
-	(let ((ids articles)
-	      id first)
-	  (while ids
-	    (setq id (car ids))
-	    (if (and first (> id (cdr active)))
-		(progn
-		  ;; We'll end up in this situation in one particular
-		  ;; obscure situation.	 If you re-scan a group and get
-		  ;; a new article that is cross-posted to a different
-		  ;; group that has not been re-scanned, you might get
-		  ;; crossposted article that has a higher number than
-		  ;; Gnus believes possible.  So we re-activate this
-		  ;; group as well.  This might mean doing the
-		  ;; crossposting thingy will *increase* the number
-		  ;; of articles in some groups.  Tsk, tsk.
-		  (setq active (or (gnus-activate-group group) active))))
-	    (if (or (> id (cdr active))
+    (when active
+      (let ((ids articles)
+	    id first)
+	(while (setq id (pop ids))
+	  (when (and first (> id (cdr active)))
+	    ;; We'll end up in this situation in one particular
+	    ;; obscure situation.  If you re-scan a group and get
+	    ;; a new article that is cross-posted to a different
+	    ;; group that has not been re-scanned, you might get
+	    ;; crossposted article that has a higher number than
+	    ;; Gnus believes possible.  So we re-activate this
+	    ;; group as well.  This might mean doing the
+	    ;; crossposting thingy will *increase* the number
+	    ;; of articles in some groups.  Tsk, tsk.
+	    (setq active (or (gnus-activate-group group) active)))
+	  (when (or (> id (cdr active))
 		    (< id (car active)))
-		(setq articles (delq id articles)))
-	    (setq ids (cdr ids)))))
+	    (setq articles (delq id articles))))))
     ;; If the read list is nil, we init it.
     (and active
 	 (null (gnus-info-read info))
@@ -13298,18 +13309,22 @@ save those articles instead."
 		       gnus-article-save-directory
 		       (car split-name))))
 	      (car (push result file-name-history)))))))
+    ;; Create the directory.
+    (unless (equal (directory-file-name file) file)
+      (make-directory (file-name-directory file) t))
     ;; If we have read a directory, we append the default file name.
     (when (file-directory-p file)
       (setq file (concat (file-name-as-directory file)
 			 (file-name-nondirectory default-name))))
-    ;; Possibly translate some charaters.
+    ;; Possibly translate some characters.
     (nnheader-translate-file-chars file)))
 
 (defun gnus-article-archive-name (group)
   "Return the first instance of an \"Archive-name\" in the current buffer."
   (let ((case-fold-search t))
     (when (re-search-forward "archive-name: *\\([^ \n\t]+\\)[ \t]*$" nil t)
-      (match-string 1))))
+      (nnheader-concat gnus-article-save-directory
+		       (match-string 1)))))
 
 (defun gnus-summary-save-in-rmail (&optional filename)
   "Append this article to Rmail file.

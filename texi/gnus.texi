@@ -541,7 +541,13 @@ Subscribe all new groups alphabetically.
 
 @item gnus-subscribe-hierarchically
 @vindex gnus-subscribe-hierarchically
-Subscribe all new groups hierarchically.
+Subscribe all new groups hierarchically.  The difference between this
+function and @code{gnus-subscribe-alphabetically} is slight.
+{gnus-subscribe-alphabetically} will subscribe new groups in a strictly
+alphabetical fashion, while this function will enter groups into it's
+hierarchy.  So if you want to have the @samp{rec} hierarchy before the
+@samp{comp} hierarchy, this function will not mess that configuration
+up.  Or something like that.
 
 @item gnus-subscribe-interactively
 @vindex gnus-subscribe-interactively
@@ -1495,9 +1501,9 @@ to subscribe to @sc{nntp} groups, @pxref{Browse Foreign Server}.
 @kindex G r (Group)
 @findex gnus-group-rename-group
 Rename the current group to something else
-(@code{gnus-group-rename-group}).  This is legal only on some groups --
-mail groups mostly.  This command might very well be quite slow on some
-backends. 
+(@code{gnus-group-rename-group}).  This is legal only on some
+groups---mail groups mostly.  This command might very well be quite slow
+on some backends.
 
 @item G e
 @kindex G e (Group)
@@ -1536,7 +1542,7 @@ Make the Gnus help group (@code{gnus-group-make-help-group}).
 Make a Gnus archive group (@code{gnus-group-make-archive-group}).  By
 default a group pointing to the most recent articles will be created
 (@code{gnus-group-recent-archive-directory}), but given a prefix, a full
-group will be created from from @code{gnus-group-archive-directory}.
+group will be created from @code{gnus-group-archive-directory}.
 
 @item G k
 @kindex G k (Group)
@@ -2785,7 +2791,9 @@ command will go to the next group without confirmation.  Also
 @item gnus-auto-select-same
 @vindex gnus-auto-select-same
 If non-@code{nil}, all the movement commands will try to go to the next
-article with the same subject as the current.  This variable is not
+article with the same subject as the current.  (@dfn{Same} here might
+mean @dfn{roughly equal}.  See @code{gnus-summary-gather-subject-limit}
+for details (@pxref{Customizing Threading}).)  This variable is not
 particularly useful if you use a threaded display.
 
 @item gnus-summary-check-current
@@ -5208,19 +5216,19 @@ Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
 @vindex gnus-article-x-face-too-ugly
 Look for and display any X-Face headers
 (@code{gnus-article-display-x-face}).  The command executed by this
-function is given by the @code{gnus-article-x-face-command} variable.  If
-this variable is a string, this string will be executed in a sub-shell.
-If it is a function, this function will be called with the face as the
-argument.  If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
-matches the @code{From} header, the face will not be shown.  The default
-action under Emacs is to fork off an @code{xv} to view the face; under
-XEmacs the default action is to display the face before the @code{From}
-header.  (It's nicer if XEmacs has been compiled with X-Face support --
-that will make display somewhat faster.  If there's no native X-Face
-support, Gnus will try to convert the @code{X-Face} header using
+function is given by the @code{gnus-article-x-face-command} variable.
+If this variable is a string, this string will be executed in a
+sub-shell.  If it is a function, this function will be called with the
+face as the argument.  If the @code{gnus-article-x-face-too-ugly} (which
+is a regexp) matches the @code{From} header, the face will not be shown.
+The default action under Emacs is to fork off an @code{xv} to view the
+face; under XEmacs the default action is to display the face before the
+@code{From} header.  (It's nicer if XEmacs has been compiled with X-Face
+support---that will make display somewhat faster.  If there's no native
+X-Face support, Gnus will try to convert the @code{X-Face} header using
 external programs from the @code{pbmplus} package and friends.)  If you
 want to have this function in the display hook, it should probably come
-last. 
+last.
 
 @item W b
 @kindex W b (Summary)
@@ -6605,8 +6613,8 @@ archive group will appear in the group buffer the next time you start
 Gnus, or the next time you press @kbd{F} in the group buffer.  You can
 enter it and read the articles in it just like you'd read any other
 group.  If the group gets really big and annoying, you can simply rename
-if (using @kbd{G r} in the group buffer) to something nice --
-@samp{misc-mail-september-1995}, or whatever.  New messages will
+if (using @kbd{G r} in the group buffer) to something
+nice---@samp{misc-mail-september-1995}, or whatever.  New messages will
 continue to be stored in the old (now empty) group.
 
 That's the default method of archiving sent mail.  Gnus also offers two
@@ -7122,8 +7130,8 @@ Remove all marks to whether Gnus was denied connection from all servers
 @cindex news backends
 
 A newsreader is normally used for reading news.  Gnus currently provides
-only two methods of getting news -- it can read from an @sc{nntp}
-server, or it can read from a local spool.
+only two methods of getting news---it can read from an @sc{nntp} server,
+or it can read from a local spool.
 
 @menu
 * NNTP::               Reading news from an @sc{nntp} server.
@@ -9402,7 +9410,7 @@ interesting (with @kbd{I T} or @kbd{I S}), and ignore (@kbd{C y}) the
 rest.  Next time you enter the group, you will see new articles in the
 interesting threads, plus any new threads.
 
-I.e. -- the orphan score atom is for high-volume groups where there
+I.e.---the orphan score atom is for high-volume groups where there
 exist a few interesting threads which can't be found automatically by
 ordinary scoring rules.
 
@@ -10410,7 +10418,7 @@ you want to change the @code{article} setting, you could say:
 @end lisp
 
 You'd typically stick these @code{gnus-add-configuration} calls in your
-@file{.gnus} file or in some startup hook -- they should be run after
+@file{.gnus} file or in some startup hook---they should be run after
 Gnus has been loaded.
 
 
@@ -10821,7 +10829,7 @@ over your shoulder as you read news.
 @menu
 * Picon Basics::           What are picons and How do I get them.
 * Picon Requirements::     Don't go further if you aren't using XEmacs.
-* Easy Picons::            Displaying Picons -- the easy way.
+* Easy Picons::            Displaying Picons---the easy way.
 * Hard Picons::            The way you should do it.  You'll learn something.
 * Picon Configuration::    Other variables you can trash/tweak/munge/play with.
 @end menu
@@ -10898,8 +10906,8 @@ Where the picon images should be displayed.  It is @code{picons} by
 default (which by default maps to the buffer @samp{*Picons*}).  Other
 valid places could be @code{article}, @code{summary}, or
 @samp{"*scratch*"} for all I care.  Just make sure that you've made the
-buffer visible using the standard Gnus window configuration routines --
-@xref{Windows Configuration}.
+buffer visible using the standard Gnus window configuration
+routines---@xref{Windows Configuration}.
 
 @end table
 
@@ -12682,9 +12690,9 @@ basically, with each header (ouch) having one slot.
 
 These slots are, in order: @code{number}, @code{subject}, @code{from},
 @code{date}, @code{id}, @code{references}, @code{chars}, @code{lines},
-@code{xref}.  There are macros for accessing and setting these slots --
-they all have predictable names beginning with @code{mail-header-} and
-@code{mail-header-set-}, respectively.  
+@code{xref}.  There are macros for accessing and setting these
+slots---they all have predictable names beginning with
+@code{mail-header-} and @code{mail-header-set-}, respectively.
 
 The @code{xref} slot is really a @code{misc} slot.  Any extra info will
 be put in there.
@@ -12847,7 +12855,7 @@ following function:
 @end lisp
 
 This sort of thing has been done for bunches of functions.  Gnus does
-not redefine any native Emacs functions while running under XEmacs -- it
+not redefine any native Emacs functions while running under XEmacs---it
 does this @code{defalias} thing with Gnus equivalents instead.  Cleaner
 all over.
 

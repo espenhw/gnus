@@ -1,3 +1,68 @@
+Tue Jul 30 00:00:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-open-server): Init server buffer.
+
+	* gnus.el (gnus-group-prefixed-name): Do the right thing with nil
+	methods. 
+	(gnus-group-rename-group): Would act oddly when renaming native
+	groups. 
+
+Sat Jul 27 17:46:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-check-news-syntax): Use signature
+	separator. 
+
+	* gnus.el (gnus-group-make-group): Beep at "" methods.
+	(gnus-group-make-group): Don't prefix native groups.
+
+	* nnmail.el (nnmail-move-inbox): Bug out on movemail errors.
+
+	* gnus-cache.el (gnus-cache-file-name): Would bug out on group
+	names containing slashes.
+
+	* gnus-topic.el (gnus-topic-check-topology): Make sure all groups
+	in topics are living.
+
+	* nntp.el (nntp-send-strings-to-server): Give a better error
+	message. 
+
+Sat Jul 27 17:33:22 1996  Teddy  <teddy@fukt.hk-r.se>
+
+	* nntp.el (nntp-open-rlogin): Change parameter order.
+
+Sat Jul 27 17:19:47 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-check-topology): Make sure all
+	topologies have alists.
+
+Wed Jul 24 08:23:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-group-jump-to-group): Don't activate group.
+
+Wed Jul 24 07:47:47 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* message.el (message-rename-buffer): Rename autosave name.
+
+Wed Jul 24 06:24:07 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Moved Misc menu last.
+	(gnus-summary-make-menu-bar): Ditto.
+
+Sat Jul 20 00:59:22 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* smiley.el (smiley-buffer): Only do smilies under X.
+
+	* gnus.el (gnus-make-directory): Beep on nil dirs.
+	(gnus-article-archive-name): Prepend the save directory.
+
+Fri Jul 19 23:08:52 1996  Hallvard B. Furuseth  <hallvard@menja.ifi.uio.no>
+
+	* message.el (message-y-or-n-p): Doc fix.
+
+Fri Jul 19 02:12:58 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.37 is released.
+
 Fri Jul 19 00:31:22 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-subscribe-newsgroup): Add new groups to top-level
