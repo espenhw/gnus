@@ -2023,7 +2023,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (eval-when-compile
   (autoload 'bbdb-buffer "bbdb")
   (autoload 'bbdb-create-internal "bbdb")
-  (autoload 'bbdb-records "bbdb")
   (autoload 'bbdb-search-simple "bbdb"))
 
 (eval-and-compile
@@ -2032,6 +2031,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	      (require 'bbdb)
 	      (require 'bbdb-com))
 	  (file-error
+	   ;; `bbdb-records' should not be bound as an autoload function
+	   ;; before loading bbdb because of `bbdb-hashtable-size'.
+	   (defalias 'bbdb-records 'ignore)
 	   (defalias 'spam-BBDB-register-routine 'ignore)
 	   (defalias 'spam-enter-ham-BBDB 'ignore)
 	   nil))
