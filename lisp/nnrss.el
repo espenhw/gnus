@@ -454,7 +454,7 @@
     (while (and xml (not (assq 'item xml)))
       (unless (listp (car (setq xml (cddar xml))))
 	(setq xml nil)))
-    (dolist (item xml)
+    (dolist (item (nreverse xml))
        (when (and (listp item)
 		  (eq 'item (car item))
 		  (setq url (caddr (assq 'link (cddr item))))
@@ -479,12 +479,12 @@
 	 (gnus-sethash url (car nnrss-group-data) nnrss-group-hashtb)
 	 (setq changed t)))
     (when changed
-	(nnrss-save-group-data group server)
-	(let ((pair (assoc group nnrss-server-data)))
-	  (if pair
-	      (setcar (cdr pair) nnrss-group-max)
-	    (push (list group nnrss-group-max) nnrss-server-data)))
-	(nnrss-save-server-data server))))
+      (nnrss-save-group-data group server)
+      (let ((pair (assoc group nnrss-server-data)))
+	(if pair
+	    (setcar (cdr pair) nnrss-group-max)
+	  (push (list group nnrss-group-max) nnrss-server-data)))
+      (nnrss-save-server-data server))))
 
 (defun nnrss-generate-download-script ()
   "Generate a download script in the current buffer.
