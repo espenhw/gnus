@@ -1,3 +1,7 @@
+2003-01-12 22:02:49 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.12 is released.
+
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-sources): Removed autoload to make it
