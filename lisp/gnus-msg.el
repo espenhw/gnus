@@ -546,6 +546,7 @@ If SILENT, don't prompt the user."
   (interactive)
   (concat
    "Gnus/" (prin1-to-string (gnus-continuum-version gnus-version) t)
+   " (" gnus-version ")"
    " "
    (cond
     ((string-match "^\\([0-9]+\\.[0-9]+\\)\\.[.0-9]+$" emacs-version)
@@ -560,8 +561,7 @@ If SILENT, don't prompt the user."
 	     (if (boundp 'xemacs-codename)
 		 (concat " (" xemacs-codename ")")
 	       "")))
-    (t emacs-version))
-   " (" gnus-version ")"))
+    (t emacs-version))))
 
 
 ;;;
@@ -944,7 +944,7 @@ this is a reply."
 		       (concat "^" (regexp-quote mail-header-separator) "$")
 		       nil t)
 		  (replace-match "" t t ))
-		(unless (gnus-request-accept-article group method t)
+		(unless (gnus-request-accept-article group method t t)
 		  (gnus-message 1 "Couldn't store article in group %s: %s"
 				group (gnus-status-message method))
 		  (sit-for 2))

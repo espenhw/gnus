@@ -6771,6 +6771,7 @@ article massaging functions being run."
     (let ((gnus-have-all-headers t)
 	  gnus-article-display-hook
 	  gnus-article-prepare-hook
+	  gnus-article-decode-hook
 	  gnus-break-pages
 	  gnus-show-mime
 	  gnus-visual)

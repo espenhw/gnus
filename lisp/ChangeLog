@@ -1,3 +1,36 @@
+Thu Sep 10 04:03:29 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.24 is released.
+
+1998-09-10 01:58:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-show-article): Don't decode chars if
+	PREFIX. 
+
+	* parse-time.el (parse-time-rules): Accept times that look like
+	"h:mm". 
+
+	* message.el (message-make-date): Use zone properly.
+
+	* gnus.el: Autoload gnus-batch.
+
+	* gnus-art.el (article-de-quoted-unreadable): Do not do
+	gnus-article-decode-rfc1522. 
+
+	* gnus-msg.el (gnus-inews-do-gcc): Use it.
+
+	* gnus-int.el (gnus-request-accept-article): Accept a no-encode
+	param. 
+
+	* message.el (message-encode-message-body): Check for us-ascii.
+
+	* gnus-msg.el (gnus-extended-version): Move Gnus version comments
+	to the left.
+
+1998-09-09 13:18:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-decode-charset): Rename.
+
 Wed Sep  9 12:25:48 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.23 is released.

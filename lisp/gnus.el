@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.23"
+(defconst gnus-version-number "0.24"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1612,7 +1612,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-hide-citation-in-followups)
      ("gnus-kill" gnus-kill gnus-apply-kill-file-internal
       gnus-kill-file-edit-file gnus-kill-file-raise-followups-to-author
-      gnus-execute gnus-expunge)
+      gnus-execute gnus-expunge gnus-batch-kill gnus-batch-score)
      ("gnus-cache" gnus-cache-possibly-enter-article gnus-cache-save-buffers
       gnus-cache-possibly-remove-articles gnus-cache-request-article
       gnus-cache-retrieve-headers gnus-cache-possibly-alter-active

@@ -157,6 +157,11 @@
     ((2 1 0)
      ,#'(lambda () (and (stringp elt) (= (length elt) 5) (= (aref elt 2) ?:)))
      [0 2] [3 5] ,#'(lambda () 0))
+    ((2 1 0)
+     ,#'(lambda () (and (stringp elt)
+			(= (length elt) 4)
+			(= (aref elt 1) ?:)))
+     [0 1] [2 4] ,#'(lambda () 0))
     ((5) (70 99) ,#'(lambda () (+ 1900 elt))))
   "(slots predicate extractor...)")
 

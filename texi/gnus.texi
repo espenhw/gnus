@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.23 Manual
+@settitle Pterodactyl Gnus 0.24 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.23 Manual
+@title Pterodactyl Gnus 0.24 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.23.
+This manual corresponds to Pterodactyl Gnus 0.24.
 
 @end ifinfo
 
@@ -14273,6 +14273,9 @@ No, there's nothing here about X, so be quiet.
 If @code{gnus-use-full-window} non-@code{nil}, Gnus will delete all
 other windows and occupy the entire Emacs screen by itself.  It is
 @code{t} by default.
+
+Setting this variable to @code{nil} kinda works, but there are
+glitches.  Use at your own peril.
 
 @vindex gnus-buffer-configuration
 @code{gnus-buffer-configuration} describes how much space each Gnus

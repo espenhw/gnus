@@ -546,7 +546,7 @@ displayed by the first non-nil matching CONTENT face."
 			       (face :value default)))))
 
 (defcustom gnus-article-decode-hook
-  '(gnus-article-decode-charset gnus-article-decode-rfc1522)
+  '(article-decode-charset article-decode-rfc1522)
   "*Hook run to decode charsets in articles.")
 
 ;;; Internal variables
@@ -949,7 +949,7 @@ characters to translate to."
 		  (process-send-region "article-x-face" beg end)
 		  (process-send-eof "article-x-face"))))))))))
 
-(defun gnus-article-decode-mime-words ()
+(defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
   (interactive)
   (save-excursion
@@ -958,12 +958,11 @@ characters to translate to."
 	  buffer-read-only)
       (rfc2047-decode-region (point-min) (point-max)))))
 
-(defun gnus-article-decode-charset (&optional prompt)
+(defun article-decode-charset (&optional prompt)
   "Decode charset-encoded text in the article.
 If PROMPT (the prefix), prompt for a coding system to use."
   (interactive "P")
   (save-excursion
-    (set-buffer gnus-article-buffer)
     (save-restriction
       (message-narrow-to-head)
       (let* ((inhibit-point-motion-hooks t)
@@ -1005,7 +1004,7 @@ or not."
   (save-excursion
     (let ((buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
-      (gnus-article-decode-rfc1522)
+      ;;(gnus-article-decode-rfc1522)
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))
@@ -1844,6 +1843,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-date-iso8601
      article-date-original
      article-date-ut
+     article-decode-mime-words
      article-date-user
      article-date-lapsed
      article-emphasize

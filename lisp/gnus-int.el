@@ -423,7 +423,8 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 	     article (gnus-group-real-name group)
 	     (nth 1 gnus-command-method) accept-function last)))
 
-(defun gnus-request-accept-article (group &optional gnus-command-method last)
+(defun gnus-request-accept-article (group &optional gnus-command-method last
+					  no-encode)
   ;; Make sure there's a newline at the end of the article.
   (when (stringp gnus-command-method)
     (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
@@ -433,10 +434,11 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
   (goto-char (point-max))
   (unless (bolp)
     (insert "\n"))
-  (save-restriction
-    (message-narrow-to-headers)
-    (rfc2047-encode-message-header))
-  (message-encode-message-body)
+  (unless no-encode
+    (save-restriction
+      (message-narrow-to-headers)
+      (rfc2047-encode-message-header))
+    (message-encode-message-body))
   (let ((func (car (or gnus-command-method
 		       (gnus-find-method-for-group group)))))
     (funcall (intern (format "%s-request-accept-article" func))
