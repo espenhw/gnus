@@ -1,3 +1,7 @@
+2002-08-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (merge): Don't use coerce.
+
 2002-05-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* mailcap.el (mailcap-mime-data): Test window-system rather than
