@@ -1,3 +1,33 @@
+2002-02-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-start.el (gnus-activate-group): Re-enabled the catch error
+	clause of the condition-case statement.  Errors connecting to a
+	server no longer terminate gnus.
+
+	* gnus-agent.el (gnus-agent-toggle-plugged): Renamed parameter to
+	make its use obvious.  Added no-nothing case to avoid
+	opening(closing) servers when already open(closed).
+	(gnus-agent-while-plugged): Added macro to facilitate internal use
+	of gnus-agent-toggle-plugged.
+	(gnus-agent-fetch-group): Use new gnus-agent-while-plugged to
+	temporarily open servers.
+	(gnus-agent-get-undownloaded-list): Sort list of article numbers
+	as sorting gnus-newsgroup-headers is wrong.
+	(gnus-agent-summary-fetch-group): Use new gnus-agent-while-plugged
+	to temporarily open servers. Corrected logic to handle setting
+	gnus-agent-mark-unread-after-downloaded.
+	(gnus-agent-fetch-articles): Now handles headers with missing
+	article sizes and/or missing article lengths.  Now clears the
+	message buffer when finished.
+	(gnus-agent-fetch-group-1): Position point before calling
+	gnus-summary-set-agent-mark.
+	(gnus-get-predicate): Corrected description, parameter is
+	predicate not category.
+	(gnus-agent-expire-group): Adapted the gnus-agent-expire-* code to
+	provide a separate single group expiration function.
+	(gnus-agent-regenerate-group): Now clears the message buffer when
+	finished.
+	
 2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (gnus-agent-target-move-group-header): New variable.
