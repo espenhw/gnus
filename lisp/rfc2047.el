@@ -407,6 +407,13 @@ By default, the region is treated as containing addresses (see
 	    (insert "?=")
 	    (forward-line 1))))))
 
+(defun rfc2047-fold-field ()
+  "Fold the current header field."
+  (save-excursion
+    (save-restriction
+      (rfc2047-narrow-to-field)
+      (rfc2047-fold-region (point-min) (point-max)))))
+
 (defun rfc2047-fold-region (b e)
   "Fold long lines in region B to E."
   (save-restriction
