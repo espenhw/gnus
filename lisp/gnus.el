@@ -2290,6 +2290,8 @@ with some simple extensions.
 %V   Total thread score (number).
 %P   The line number (number).
 %O   Download mark (character).
+%C   If present, indicates desired cursor position
+     (instead of after first colon).
 %u   User defined specifier.  The next character in the format string should
      be a letter.  Gnus will call the function gnus-user-format-function-X,
      where X is the letter following %u.  The function will be passed the

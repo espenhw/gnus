@@ -1,3 +1,7 @@
+2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus.el (gnus-summary-line-format): Document %C.
+
 2002-11-11  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.el (pgg-encrypt, pgg-decrypt, pgg-sign, pgg-verify): Display
