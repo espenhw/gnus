@@ -1,3 +1,8 @@
+2003-02-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Article Washing): Mention `g'.
+	(Customizing Articles): Added cross reference.
+
 2003-02-12  Michael Shields  <shields@msrl.com>
 
 	* gnus.texi (Paging the Article): Document

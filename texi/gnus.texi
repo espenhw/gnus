@@ -8277,6 +8277,13 @@ This is not really washing, it's sort of the opposite of washing.  If
 you type this, you see the article exactly as it exists on disk or on
 the server.
 
+@item g
+Force redisplaying of the current article
+(@code{gnus-summary-show-article}).  This is also not really washing.
+If you type this, you see the article without any previously applied
+interactive Washing functions but with all default treatments
+(@pxref{Customizing Articles}).
+
 @item W l
 @kindex W l (Summary)
 @findex gnus-summary-stop-page-breaking
@@ -10692,7 +10699,8 @@ Also see @pxref{MIME Commands}.
 @cindex article customization
 
 A slew of functions for customizing how the articles are to look like
-exist.  You can call these functions interactively, or you can have them
+exist.  You can call these functions interactively
+(@pxref{Article Washing}), or you can have them
 called automatically when you select the articles.
 
 To have them called automatically, you should set the corresponding
