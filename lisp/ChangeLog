@@ -1,3 +1,8 @@
+2002-10-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-agent.el (gnus-agent-fetch-selected-article): Open history
+	if it isn't open yet.
+
 2002-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el: Require mm-url only when compiling.

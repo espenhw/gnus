@@ -790,6 +790,11 @@ This can be added to `gnus-select-article-hook' or
     (when (and gnus-plugged (gnus-agent-method-p gnus-command-method))
       (let ((gnus-agent-current-history
 	     (gnus-agent-history-buffer)))
+	(unless (and gnus-agent-current-history
+		     (buffer-live-p gnus-agent-current-history))
+	  (gnus-agent-open-history)
+	  (setq gnus-agent-current-history
+		(gnus-agent-history-buffer)))
 	(gnus-agent-fetch-articles
 	 gnus-newsgroup-name
 	 (list gnus-current-article))))))
