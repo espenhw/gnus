@@ -1,3 +1,8 @@
+2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Encoding Customization): Add a note to the
+	mm-content-transfer-encoding-defaults entry.
+
 2004-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Encoding Customization): Fix
