@@ -523,11 +523,11 @@ header line with the old Message-ID."
 	    (while (looking-at message-unix-mail-delimiter)
 	      (forward-line 1))
 	    (setq beg (point))
-	    (setq end (or (search-forward "\n\n" nil t) (point)))
+	    (setq end (or (message-goto-body) point))
 	    ;; Delete the headers from the displayed articles.
 	    (set-buffer gnus-article-copy)
 	    (delete-region (goto-char (point-min))
-			   (or (search-forward "\n\n" nil t) (point-max)))
+			   (or (message-goto-body) (point-max)))
 	    ;; Insert the original article headers.
 	    (insert-buffer-substring gnus-original-article-buffer beg end)
 	    (article-decode-encoded-words))))

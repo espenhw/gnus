@@ -1,3 +1,10 @@
+2001-06-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Fremlin <chief@bandits.org>
+
+	* message.el (message-goto-body): Some messages have no header.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Use it.
+
 2001-06-21  Ralph Schleicher  <rs@nunatak.allgaeu.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Date fix.
