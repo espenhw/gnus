@@ -153,7 +153,7 @@ If this variable is nil, no files will be excluded.")
 	   (or (nnheader-article-p)	; Either it's a real article...
 	       (progn
 		 (goto-char (point-min))
-		 (nneething-make-head file) ; ... or we fake some headers.
+		 (nneething-make-head file (current-buffer)) ; ... or we fake some headers.
 		 (insert "\n")))
 	   t))))
 
@@ -286,7 +286,7 @@ If this variable is nil, no files will be excluded.")
   (when (nneething-get-head file)
     (insert-buffer-substring nneething-work-buffer)))
 
-(defun nneething-make-head (file)
+(defun nneething-make-head (file &optional buffer)
   "Create a head by looking at the file attributes of FILE."
   (let ((atts (file-attributes file)))
     (insert 
@@ -294,24 +294,50 @@ If this variable is nil, no files will be excluded.")
      "Message-ID: <nneething-" 
      (int-to-string (incf nneething-message-id-number))
      "@" (system-name) ">\n"
-     "Date: " (current-time-string (nth 5 atts)) "\n"
-     (nneething-from-line (nth 2 atts))
-     "Chars: " (int-to-string (nth 7 atts)) "\n")))
+     (if (equal '(0 0) (nth 5 atts)) ""
+       (concat "Date: " (current-time-string (nth 5 atts)) "\n"))
+     (or (if buffer
+	     (save-excursion 
+	       (set-buffer buffer)
+	       (if (re-search-forward "<[a-zA-Z0-9_]@[-a-zA-Z0-9_]>" 1000 t)
+		   (concat "From: " (match-string 0) "\n"))))
+	 (nneething-from-line (nth 2 atts) file))
+     (if (> (string-to-int (int-to-string (nth 7 atts))) 0)
+	 (concat "Chars: " (int-to-string (nth 7 atts)) "\n")
+       "")
+     (if buffer 
+	 (save-excursion
+	   (set-buffer buffer)
+	   (concat "Lines: " (int-to-string 
+			      (count-lines (point-min) (point-max))) "\n"))
+       "")
+     )))
 
-(defun nneething-from-line (uid)
+(defun nneething-from-line (uid &optional file)
   "Return a From header based of UID."
-  (let ((login (condition-case nil 
-		   (user-login-name uid)
+  (let* ((login (condition-case nil 
+		    (user-login-name uid)
+		  (error 
+		   (cond ((= uid (user-uid)) (user-login-name))
+			 ((zerop uid) "root")
+			 (t (int-to-string uid))))))
+	 (name (condition-case nil 
+		   (user-full-name uid)
 		 (error 
-		  (cond ((= uid (user-uid)) (user-login-name))
-			((zerop uid) "root")
-			(t (int-to-string uid))))))
-	(name (condition-case nil 
-		  (user-full-name uid)
-		(error 
-		 (cond ((= uid (user-uid)) (user-full-name))
-		       ((zerop uid) "Ms. Root"))))))
-    (concat "From: " login "@" (system-name) 
+		  (cond ((= uid (user-uid)) (user-full-name))
+			((zerop uid) "Ms. Root")))))
+	 (host (if  (string-match "\\`/[^/@]*@\\([^:/]+\\):" file)
+		   (prog1
+		       (substring file 
+				  (match-beginning 1) 
+				  (match-end 1))
+		     (if (string-match "/\\(users\\|home\\)/\\([^/]+\\)/" file)
+			 (setq login (substring file
+						(match-beginning 2)
+						(match-end 2))
+			       name nil)))
+		 (system-name))))
+    (concat "From: " login "@" host 
 	    (if name (concat " (" name ")") "") "\n")))
 
 (defun nneething-get-head (file)
@@ -340,9 +366,10 @@ If this variable is nil, no files will be excluded.")
 		      (1- (point)))
 		 (point-max)))
 	   (point-max))
-	(erase-buffer)
-	(nneething-make-head file))
-      t))))
+	(goto-char (point-min))
+	(nneething-make-head file (current-buffer))
+	(delete-region (point) (point-max))
+	t)))))
 
 (defun nneething-file-name (article)
   "Return the file name of ARTICLE."

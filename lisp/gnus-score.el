@@ -1308,7 +1308,7 @@ SCORE is the score to add."
 	     entries alist ofunc article last)
 	(while (cdr articles)
 	  (setq articles (cdr articles)))
-	(setq last (mail-header-number (car articles)))
+	(setq last (mail-header-number (caar articles)))
 	(setq articles gnus-scores-articles)
 	;; Not all backends support partial fetching.  In that case,
 	;; we just fetch the entire article.

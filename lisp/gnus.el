@@ -1715,7 +1715,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.55"
+(defconst gnus-version "September Gnus v0.56"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4687,7 +4687,8 @@ If SYMBOL, return the value of that symbol in the group parameters."
   "Add SCORE to the GROUP score.
 If SCORE is nil, add 1 to the score of GROUP."
   (let ((info (gnus-get-info group)))
-    (gnus-info-set-score info (+ (gnus-info-score info) (or score 1)))))
+    (when info
+      (gnus-info-set-score info (+ (gnus-info-score info) (or score 1))))))
 
 (defun gnus-summary-bubble-group ()
   "Increase the score of the current group.
@@ -5594,7 +5595,7 @@ of the Earth\".	 There is no undo."
 	(message "Couldn't find doc group")
       (gnus-group-make-group
        (gnus-group-real-name name)
-       (list 'nndoc name
+       (list 'nndoc "gnus-help"
 	     (list 'nndoc-address file)
 	     (list 'nndoc-article-type 'mbox)))))
   (gnus-group-position-point))
@@ -5625,7 +5626,7 @@ of the Earth\".	 There is no undo."
 		 (file-name-nondirectory file) '(nndoc "")))))
     (gnus-group-make-group
      (gnus-group-real-name name)
-     (list 'nndoc name
+     (list 'nndoc (file-name-nondirectory file)
 	   (list 'nndoc-address file)
 	   (list 'nndoc-article-type (or type 'guess))))
     (forward-line -1)
@@ -9035,11 +9036,9 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		(if (and (search-forward "\nin-reply-to: " nil t)
 			 (setq in-reply-to (gnus-header-value))
 			 (string-match "<[^>]+>" in-reply-to))
-		    (prog1
-			(setq ref (substring in-reply-to (match-beginning 0)
-					     (match-end 0)))
-		      (setq ref ref)))
-		(setq ref "")))
+		    (setq ref (substring in-reply-to (match-beginning 0)
+					 (match-end 0)))
+		  (setq ref ""))))
 	    ;; Chars.
 	    0
 	    ;; Lines.
@@ -9663,7 +9662,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
 	 (mode major-mode)
 	 (buf (current-buffer)))
-    (run-hooks 'gnus-summary-prepare-exit-hook)
+    (unless temporary
+      (run-hooks 'gnus-summary-prepare-exit-hook))
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
       (gnus-kill-buffer gnus-article-buffer)
@@ -10244,7 +10244,7 @@ article."
 		 (gnus-message 3 "End of message"))
 		((null lines)
 		 (if (and (eq gnus-summary-goto-unread 'never)
-			  (not (eq article gnus-newsgroup-end)))
+			  (not (gnus-summary-last-article-p article)))
 		     (gnus-summary-next-article)
 		   (gnus-summary-next-unread-article))))))
     (gnus-summary-recenter)

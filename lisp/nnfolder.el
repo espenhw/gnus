@@ -110,36 +110,37 @@ it.")
     (erase-buffer)
     (let ((delim-string (concat "^" rmail-unix-mail-delimiter))
 	  article art-string start stop)
-      (nnfolder-possibly-change-group newsgroup server)
-      (set-buffer nnfolder-current-buffer)
-      (goto-char (point-min))
-      (if (stringp (car sequence))
-	  'headers
-	(while sequence
-	  (setq article (car sequence))
-	  (setq art-string (nnfolder-article-string article))
-	  (set-buffer nnfolder-current-buffer)
-	  (if (or (search-forward art-string nil t)
-		  ;; Don't search the whole file twice!  Also, articles
-		  ;; probably have some locality by number, so searching
-		  ;; backwards will be faster.  Especially if we're at the
-		  ;; beginning of the buffer :-). -SLB
-		  (search-backward art-string nil t))
-	      (progn
-		(setq start (or (re-search-backward delim-string nil t)
-				(point)))
-		(search-forward "\n\n" nil t)
-		(setq stop (1- (point)))
-		(set-buffer nntp-server-buffer)
-		(insert (format "221 %d Article retrieved.\n" article))
-		(insert-buffer-substring nnfolder-current-buffer start stop)
-		(goto-char (point-max))
-		(insert ".\n")))
-	  (setq sequence (cdr sequence)))
+      (when nnfolder-current-buffer
+	(nnfolder-possibly-change-group newsgroup server)
+	(set-buffer nnfolder-current-buffer)
+	(goto-char (point-min))
+	(if (stringp (car sequence))
+	    'headers
+	  (while sequence
+	    (setq article (car sequence))
+	    (setq art-string (nnfolder-article-string article))
+	    (set-buffer nnfolder-current-buffer)
+	    (if (or (search-forward art-string nil t)
+		    ;; Don't search the whole file twice!  Also, articles
+		    ;; probably have some locality by number, so searching
+		    ;; backwards will be faster.  Especially if we're at the
+		    ;; beginning of the buffer :-). -SLB
+		    (search-backward art-string nil t))
+		(progn
+		  (setq start (or (re-search-backward delim-string nil t)
+				  (point)))
+		  (search-forward "\n\n" nil t)
+		  (setq stop (1- (point)))
+		  (set-buffer nntp-server-buffer)
+		  (insert (format "221 %d Article retrieved.\n" article))
+		  (insert-buffer-substring nnfolder-current-buffer start stop)
+		  (goto-char (point-max))
+		  (insert ".\n")))
+	    (setq sequence (cdr sequence)))
 
-	(set-buffer nntp-server-buffer)
-	(nnheader-fold-continuation-lines)
-	'headers))))
+	  (set-buffer nntp-server-buffer)
+	  (nnheader-fold-continuation-lines)
+	  'headers)))))
 
 (defun nnfolder-open-server (server &optional defs)
   (nnheader-change-server 'nnfolder server defs)

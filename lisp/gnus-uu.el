@@ -710,7 +710,7 @@ The headers will be included in the sequence they are matched.")
 	  (when (or (not (file-exists-p to-file))
 		    (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
 	    (copy-file file to-file t t)))))
-    (message "Saved %d file%s" len (if (> len 1) "s" ""))))
+    (message "Saved %d file%s" len (if (= len 1) "" "s"))))
 
 ;; Functions for saving and possibly digesting articles without
 ;; any decoding.
@@ -1133,7 +1133,7 @@ The headers will be included in the sequence they are matched.")
   (articles process-function &optional sloppy limit no-errors)
   (let ((state 'first) 
 	has-been-begin article result-file result-files process-state
-	article-series)
+	article-series files)
  
     (while (and articles 
 		(not (memq 'error process-state))
@@ -1185,9 +1185,14 @@ The headers will be included in the sequence they are matched.")
       (when (memq 'end process-state)
 	(setq article-series nil)
 	(setq has-been-begin nil)
-	(push (list (cons 'name result-file)
-		    (cons 'article article))
-	      result-files)
+	(if (stringp result-file)
+	    (setq files (list result-file))
+	  (setq files result-file))
+	(setq result-file (car files))
+	(while files
+	  (push (list (cons 'name (pop files))
+		      (cons 'article article))
+		result-files))
 	;; Allow user-defined functions to be run on this file.
 	(when gnus-uu-grabbed-file-functions
 	  (let ((funcs gnus-uu-grabbed-file-functions))
@@ -1273,119 +1278,101 @@ The headers will be included in the sequence they are matched.")
 
 (defun gnus-uu-uustrip-article (process-buffer in-state)
   ;; Uudecodes a file asynchronously.
-  (let ((state (list 'ok))
-	(process-connection-type nil)
-	start-char pst name-beg name-end)
-    (save-excursion
-      (set-buffer process-buffer)
-      (let ((case-fold-search nil)
-	    (buffer-read-only nil))
+  (save-excursion
+    (set-buffer process-buffer)
+    (let ((state (list 'wrong-type))
+	  process-connection-type case-fold-search buffer-read-only 
+	  files start-char)
+      (goto-char (point-min))
 
-	(goto-char (point-min))
+      ;; Deal with ^M at the end of the lines.
+      (when gnus-uu-kill-carriage-return
+	(save-excursion
+	  (while (search-forward "\r" nil t)
+	    (delete-backward-char 1))))
 
-	(if gnus-uu-kill-carriage-return
-	    (progn
-	      (while (search-forward "\r" nil t)
-		(delete-backward-char 1))
-	      (goto-char (point-min))))
+      (while (or (re-search-forward gnus-uu-begin-string nil t)
+		 (re-search-forward gnus-uu-body-line nil t))
+	(setq state (list 'ok))
+	;; Ok, we are at the first uucoded line.
+	(beginning-of-line)
+	(setq start-char (point))
 
-	(if (not (re-search-forward gnus-uu-begin-string nil t))
-	    (if (not (re-search-forward gnus-uu-body-line nil t))
-		(setq state (list 'wrong-type))))
-     
-	(if (memq 'wrong-type state)
-	    ()
-	  (beginning-of-line)
-	  (setq start-char (point))
+	(if (not (looking-at gnus-uu-begin-string))
+	    (setq state (list 'middle))
+	  ;; This is the beginning of an uuencoded article.
+	  ;; We replace certain characters that could make things messy.
+	  (setq gnus-uu-file-name 
+		(let ((nnheader-file-name-translation-alist
+		       '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
+		  (nnheader-translate-file-chars (match-string 1))))
 
-	  (if (looking-at gnus-uu-begin-string)
-	      (progn 
-		(setq name-end (match-end 1)
-		      name-beg (match-beginning 1))
-		;; Remove any non gnus-uu-body-line right after start.
-		(forward-line 1)
-		(or (looking-at gnus-uu-body-line)
-		    (gnus-delete-line))
- 
-		;; Replace any slashes and spaces in file names before decoding
-		(goto-char name-beg)
-		(while (re-search-forward "/" name-end t)
-		  (replace-match ","))
-		(goto-char name-beg)
-		(while (re-search-forward " " name-end t)
-		  (replace-match "_"))
-		(goto-char name-beg)
-		(if (re-search-forward "_*$" name-end t)
-		    (replace-match ""))
-
-		(setq gnus-uu-file-name (buffer-substring name-beg name-end))
-		(and gnus-uu-uudecode-process
-		     (setq pst (process-status 
-				(or gnus-uu-uudecode-process "nevair")))
-		     (if (or (eq pst 'stop) (eq pst 'run))
-			 (progn
-			   (delete-process gnus-uu-uudecode-process)
-			   (gnus-uu-unmark-list-of-grabbed t))))
-		(if (get-process "*uudecode*")
-		    (delete-process "*uudecode*"))
-		(setq gnus-uu-uudecode-process
-		      (start-process 
-		       "*uudecode*" 
-		       (get-buffer-create gnus-uu-output-buffer-name)
-		       "sh" "-c" 
-		       (format "cd %s ; uudecode" gnus-uu-work-dir)))
-		(set-process-sentinel 
-		 gnus-uu-uudecode-process 'gnus-uu-uudecode-sentinel)
-		(setq state (list 'begin))
-		(gnus-uu-add-file (concat gnus-uu-work-dir gnus-uu-file-name)))
-	    (setq state (list 'middle)))
-	
-	  (goto-char (point-max))
-
-	  (re-search-backward 
-	   (concat gnus-uu-body-line "\\|" gnus-uu-end-string) nil t)
-	  (beginning-of-line)
-
-	  (if (looking-at gnus-uu-end-string)
-	      (setq state (cons 'end state)))
+	  ;; Remove any non gnus-uu-body-line right after start.
 	  (forward-line 1)
+	  (while (and (not (eobp))
+		      (not (looking-at gnus-uu-body-line)))
+	    (gnus-delete-line))
 
-	  (and gnus-uu-uudecode-process
-	       (setq pst (process-status 
-			  (or gnus-uu-uudecode-process "nevair")))
-	       (if (or (eq pst 'run) (eq pst 'stop))
-		   (progn
-		     (if gnus-uu-correct-stripped-uucode
-			 (progn
-			   (gnus-uu-check-correct-stripped-uucode 
-			    start-char (point))
-			   (goto-char (point-max))
-			   (re-search-backward 
-			    (concat gnus-uu-body-line "\\|" 
-				    gnus-uu-end-string) 
-			    nil t)
-			   (forward-line 1)))
+	  ;; If a process is running, we kill it.
+	  (when (and gnus-uu-uudecode-process
+		     (memq (process-status gnus-uu-uudecode-process) 
+			   '(run stop)))
+	    (delete-process gnus-uu-uudecode-process)
+	    (gnus-uu-unmark-list-of-grabbed t))
 
-		     (condition-case nil
-			 (process-send-region gnus-uu-uudecode-process 
-					      start-char (point))
-		       (error 
-			(progn 
-			  (delete-process gnus-uu-uudecode-process)
-			  (message "gnus-uu: Couldn't uudecode")
-					;			  (sleep-for 2)
-			  (setq state (list 'wrong-type)))))
+	  ;; Start a new uudecoding process.
+	  (setq gnus-uu-uudecode-process
+		(start-process 
+		 "*uudecode*" 
+		 (get-buffer-create gnus-uu-output-buffer-name)
+		 "sh" "-c" 
+		 (format "cd %s ; uudecode" gnus-uu-work-dir)))
+	  (set-process-sentinel 
+	   gnus-uu-uudecode-process 'gnus-uu-uudecode-sentinel)
+	  (setq state (list 'begin))
+	  (push (concat gnus-uu-work-dir gnus-uu-file-name) files)
+	  (gnus-uu-add-file (car files)))
+	
+	;; We look for the end of the thing to be decoded.
+	(if (re-search-forward gnus-uu-end-string nil t)
+	    (setq state (cons 'end state))
+	  (goto-char (point-max))
+	  (re-search-backward gnus-uu-body-line nil t))
+	 
+	(forward-line 1)
 
-		     (when (memq 'end state)
-		       (while (memq (process-status gnus-uu-uudecode-process)
-				    '(open run))
-			 (accept-process-output gnus-uu-uudecode-process 1))))
-		 (setq state (list 'wrong-type))))
-	  (if (not gnus-uu-uudecode-process)
-	      (setq state (list 'wrong-type)))))
+	(when gnus-uu-uudecode-process
+	  (when (memq (process-status gnus-uu-uudecode-process) '(run stop))
+	    ;; Try to correct mishandled uucode.
+	    (when gnus-uu-correct-stripped-uucode
+	      (gnus-uu-check-correct-stripped-uucode start-char (point)))
+
+	    ;; Send the text to the process.
+	    (condition-case nil
+		(process-send-region
+		 gnus-uu-uudecode-process start-char (point))
+	      (error 
+	       (progn 
+		 (delete-process gnus-uu-uudecode-process)
+		 (message "gnus-uu: Couldn't uudecode")
+		 (setq state (list 'wrong-type)))))
+
+	    (if (memq 'end state)
+		(progn
+		  ;; Send an EOF, just in case.
+		  (condition-case ()
+		      (process-send-eof gnus-uu-uudecode-process)
+		    (error nil))
+		  (while (memq (process-status gnus-uu-uudecode-process)
+			       '(open run))
+		    (accept-process-output gnus-uu-uudecode-process 1)))
+	      (when (or (not gnus-uu-uudecode-process)
+			(not (memq (process-status gnus-uu-uudecode-process)
+				   '(run stop))))
+		(setq state (list 'wrong-type)))))))
 
       (if (memq 'begin state)
-	  (cons (concat gnus-uu-work-dir gnus-uu-file-name) state)
+	  (cons (if (= (length files) 1) (car files) files) state)
 	state))))
 
 ;; This function is used by `gnus-uu-grab-articles' to treat
@@ -1544,36 +1531,37 @@ The headers will be included in the sequence they are matched.")
     out))
 
 (defun gnus-uu-check-correct-stripped-uucode (start end)
-  (let (found beg length)
-    (if (not gnus-uu-correct-stripped-uucode)
-	()
-      (goto-char start)
+  (save-excursion
+    (let (found beg length)
+      (if (not gnus-uu-correct-stripped-uucode)
+	  ()
+	(goto-char start)
 
-      (if (re-search-forward " \\|`" end t)
-	  (progn
-	    (goto-char start)
-	    (while (not (eobp))
-	      (progn
-		(if (looking-at "\n") (replace-match ""))
-		(forward-line 1))))
-	    
-	(while (not (eobp))
-	  (if (looking-at (concat gnus-uu-begin-string "\\|" 
-				  gnus-uu-end-string))
-	      ()
-	    (if (not found)
+	(if (re-search-forward " \\|`" end t)
+	    (progn
+	      (goto-char start)
+	      (while (not (eobp))
 		(progn
-		  (beginning-of-line)
-		  (setq beg (point))
-		  (end-of-line)
-		  (setq length (- (point) beg))))
-	    (setq found t)
-	    (beginning-of-line)
-	    (setq beg (point))
-	    (end-of-line)
-	    (if (not (= length (- (point) beg)))
-		(insert (make-string (- length (- (point) beg)) ? ))))
-	  (forward-line 1))))))
+		  (if (looking-at "\n") (replace-match ""))
+		  (forward-line 1))))
+	    
+	  (while (not (eobp))
+	    (if (looking-at (concat gnus-uu-begin-string "\\|" 
+				    gnus-uu-end-string))
+		()
+	      (if (not found)
+		  (progn
+		    (beginning-of-line)
+		    (setq beg (point))
+		    (end-of-line)
+		    (setq length (- (point) beg))))
+	      (setq found t)
+	      (beginning-of-line)
+	      (setq beg (point))
+	      (end-of-line)
+	      (if (not (= length (- (point) beg)))
+		  (insert (make-string (- length (- (point) beg)) ? ))))
+	    (forward-line 1)))))))
 
 (defvar gnus-uu-tmp-alist nil)
 

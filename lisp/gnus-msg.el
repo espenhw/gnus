@@ -1210,7 +1210,9 @@ This function can be used in `mail-citation-hook', for instance."
 	;; Run final inews hooks.  This hook may do FCC.
 	;; The article must be saved before being posted because
 	;; `gnus-request-post' modifies the buffer.
-	(run-hooks 'gnus-inews-article-hook)
+	(save-window-excursion
+	  (switch-to-buffer (current-buffer))
+	  (run-hooks 'gnus-inews-article-hook))
 	;; Copy the article over to some group, possibly.
 	(and gcc (gnus-inews-do-gcc gcc))
 	;; Post the article.

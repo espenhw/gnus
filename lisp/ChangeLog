@@ -1,4 +1,40 @@
+Sat Mar 23 00:01:56 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-group-add-score): Would bug out on dead groups.
+
+Fri Mar 22 22:30:32 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-get-newsgroup-headers): Would ignore In-Reply-To
+	headers. 
+
+	* gnus-uu.el (gnus-uu-uustrip-article): Handle multiple uuencoded
+	files in each article.
+
+	* gnus-msg.el (gnus-inews-article): Switch to buffer where
+	`gnus-inews-article-hook' is run to make ispelling possible.
+
+	* gnus.el (gnus-summary-last-article-p): New function.
+	(gnus-summary-next-page): Wouldn't go past last article in
+	narrowed buffers.
+	(gnus-group-make-help-group): Would create under false name.
+
+Fri Mar 22 22:23:20 1996  Greg Stark  <gsstark@mit.edu>
+
+	* nneething.el (nneething-make-head): Create better heads.
+
+Fri Mar 22 18:58:17 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-body): Would bug out.
+
+	* nnfolder.el (nnfolder-retrieve-headers): Make sure the buffer
+	exists before setting it. 
+
+	* gnus.el (gnus-summary-exit): Don't run prepare-exit-hook when
+	exiting temporarliy.
+
 Fri Mar 22 00:38:28 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.55 is released.
 
 	* gnus.el (gnus-summary-update-article): Would make things bug out.
 	(gnus-summary-insert-subject): Remove articles that have changed
