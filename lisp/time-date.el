@@ -1,5 +1,5 @@
 ;;; time-date.el --- Date and time handling functions
-;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	Masanobu Umeda <umerin@mse.kyutech.ac.jp>
@@ -38,7 +38,7 @@
 	     (parse-time-string
 	      ;; `parse-time-string' isn't sufficiently general or
 	      ;; robust.  It fails to grok some of the formats that
-	      ;; timzeone does (e.g. dodgy post-2000 stuff from some
+	      ;; timezone does (e.g. dodgy post-2000 stuff from some
 	      ;; Elms) and either fails or returns bogus values.  Lars
 	      ;; reverted this change, but that loses non-trivially
 	      ;; often for me.  -- fx

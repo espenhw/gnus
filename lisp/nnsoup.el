@@ -158,7 +158,7 @@ backend for the messages.")
 		  (when index-buffer
 		    (insert-buffer-substring index-buffer)
 		    (goto-char b)
-		    ;; We have to remove the index number entires and
+		    ;; We have to remove the index number entries and
 		    ;; insert article numbers instead.
 		    (while (looking-at "[0-9]+")
 		      (replace-match (int-to-string number) t t)

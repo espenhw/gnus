@@ -1,6 +1,6 @@
 ;;; parse-time.el --- Parsing time strings
 
-;; Copyright (C) 1996, 2000 by Free Software Foundation, Inc.
+;; Copyright (C) 1996, 2000, 2002 by Free Software Foundation, Inc.
 
 ;; Author: Erik Naggum <erik@naggum.no>
 ;; Keywords: util
@@ -32,7 +32,7 @@
 ;; `parse-time-string' parses a time in a string and returns a list of 9
 ;; values, just like `decode-time', where unspecified elements in the
 ;; string are returned as nil.  `encode-time' may be applied on these
-;; valuse to obtain an internal time value.
+;; values to obtain an internal time value.
 
 ;;; Code:
 

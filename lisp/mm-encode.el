@@ -87,7 +87,7 @@ This variable should never be set directly, but bound before a call to
   "Return a safer but similar encoding."
   (cond
    ((memq encoding '(7bit 8bit quoted-printable)) 'quoted-printable)
-   ;; The remaing encodings are binary and base64 (and perhaps some
+   ;; The remaining encodings are binary and base64 (and perhaps some
    ;; non-standard ones), which are both turned into base64.
    (t 'base64)))
 

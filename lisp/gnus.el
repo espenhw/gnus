@@ -2448,7 +2448,7 @@ Return nil if not defined."
 (defmacro gnus-get-info (group)
   `(nth 2 (gnus-gethash ,group gnus-newsrc-hashtb)))
 
-;;; Load the compatability functions.
+;;; Load the compatibility functions.
 
 (require 'gnus-ems)
 

@@ -57,7 +57,7 @@
   :group 'nnmail)
 
 (defgroup nnmail-split nil
-  "Organizing the incomming mail in folders."
+  "Organizing the incoming mail in folders."
   :group 'nnmail)
 
 (defgroup nnmail-files nil
@@ -832,7 +832,7 @@ If SOURCE is a directory spec, try to return the group name component."
 	(setq head-end (point))
 	;; We try the Content-Length value.  The idea: skip over the header
 	;; separator, then check what happens content-length bytes into the
-	;; message body.  This should be either the end ot the buffer, the
+	;; message body.  This should be either the end of the buffer, the
 	;; message separator or a blank line followed by the separator.
 	;; The blank line should probably be deleted.  If neither of the
 	;; three is met, the content-length header is probably invalid.
