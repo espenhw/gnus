@@ -1591,6 +1591,33 @@ Point is left at the beginning of the narrowed-to region."
   (defvar facemenu-add-face-function)
   (defvar facemenu-remove-face-function))
 
+;;; Forbidden properties
+;;
+;; We use `after-change-functions' to keep special text properties
+;; that interfer with the normal function of message mode out of the
+;; buffer. 
+
+(defconst message-forbidden-properties 
+  ;; No reason this should be clutter up customize.  We make it a
+  ;; property list (rather than a list of property symbols), to be
+  ;; directly useful for `remove-text-properties'.
+  '(field nil read-only nil intangible nil invisible nil 
+	  mouse-face nil modification-hooks nil insert-in-front-hooks nil
+	  insert-behind-hooks nil point-entered nil point-left nil) 
+  ;; Other special properties:
+  ;; category, face, display: probably doesn't do any harm.
+  ;; fontified: is used by font-lock.
+  ;; syntax-table, local-map: I dunno.
+  ;; We need to add XEmacs names to the list.
+  "Property list of with properties.forbidden in message buffers.
+The values of the properties are ignored, only the property names are used.")
+
+(defun message-strip-forbidden-properties (begin end &optional old-length)
+  "Strip forbidden properties between BEGIN and END, ignoring the third arg.
+This function is intended to be called from `after-change-functions'.
+See also `message-forbidden-properties'."
+  (remove-text-properties begin end message-forbidden-properties))
+
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
   "Major mode for editing mail and news to be sent.
@@ -1651,6 +1678,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	(set (make-local-variable 'tool-bar-map) (message-tool-bar-map))))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
+  ;; Mmmm... Forbidden properties...
+  (add-hook 'after-change-functions 'message-strip-forbidden-properties nil t)
   ;; Allow mail alias things.
   (when (eq message-mail-alias-type 'abbrev)
     (if (fboundp 'mail-abbrevs-setup)

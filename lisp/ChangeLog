@@ -1,3 +1,9 @@
+2001-11-03  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-forbidden-properties): New constant.
+	(message-strip-forbidden-properties): New function.
+	(message-mode): Activate it.
+
 2001-11-02 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-iso-8859-15-compatible): Fix doc.
