@@ -797,7 +797,7 @@ Will not return a nil score."
 
     (unless (and spam-move-spam-nonspam-groups-only
 		 (spam-group-spam-contents-p gnus-newsgroup-name))
-      (gnus-message 5 "Marking spam as expired and moving it to %s"
+      (gnus-message 6 "Marking spam as expired and moving it to %s"
 		    (gnus-parameter-spam-process-destination 
 		     gnus-newsgroup-name))
       (spam-mark-spam-as-expired-and-move-routine
@@ -805,7 +805,7 @@ Will not return a nil score."
 
     ;; now we redo spam-mark-spam-as-expired-and-move-routine to only
     ;; expire spam, in case the above did not expire them
-    (gnus-message 5 "Marking spam as expired without moving it")
+    (gnus-message 6 "Marking spam as expired without moving it")
     (spam-mark-spam-as-expired-and-move-routine nil)
 
     (when (or (spam-group-ham-contents-p gnus-newsgroup-name)
@@ -822,13 +822,13 @@ Will not return a nil score."
 	    (spam-register-routine classification check)))))
 
     (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
-      (gnus-message 5 "Copying ham")
+      (gnus-message 6 "Copying ham")
       (spam-ham-copy-routine
        (gnus-parameter-ham-process-destination gnus-newsgroup-name)))
 
     ;; now move all ham articles out of spam groups
     (when (spam-group-spam-contents-p gnus-newsgroup-name)
-      (gnus-message 5 "Moving ham messages from spam group")
+      (gnus-message 6 "Moving ham messages from spam group")
       (spam-ham-move-routine
        (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
 
@@ -853,7 +853,7 @@ When either list is nil, the other is returned."
   ;; check the global list of group names spam-junk-mailgroups and the
   ;; group parameters
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
-    (gnus-message 5 "Marking %s articles as spam"
+    (gnus-message 6 "Marking %s articles as spam"
 		  (if spam-mark-only-unseen-as-spam
 		      "unseen"
 		    "unread"))
@@ -1001,7 +1001,7 @@ When either list is nil, the other is returned."
 	  (mail-header-extra data-header))
 	 (t
 	  nil))
-	(gnus-message 5 "Article %d has a nil data header" article)))))
+	(gnus-message 6 "Article %d has a nil data header" article)))))
 
 (defun spam-fetch-field-from-fast (article &optional prepared-data-header)
   (spam-fetch-field-fast article 'from prepared-data-header))
@@ -1123,7 +1123,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			 (and specific-checks (memq (car pair) specific-checks))
 			 ;; or, given no specific checks, spam-use-CHECK is set
 			 (and (null specific-checks) (symbol-value (car pair))))
-		    (gnus-message 5 "spam-split: calling the %s function"
+		    (gnus-message 6 "spam-split: calling the %s function"
 				  (symbol-name (cdr pair)))
 		    (setq decision (funcall (cdr pair)))
 		    ;; if we got a decision at all, save the current check
@@ -1173,7 +1173,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	     registry-lookup)
 	 
 	 (unless id
-	   (gnus-message 5 "Article %d has no message ID!" article))
+	   (gnus-message 6 "Article %d has no message ID!" article))
 	 
 	 (when (and id spam-log-to-registry)
 	   (setq registry-lookup (spam-log-registration-type id 'incoming))
@@ -1444,7 +1444,7 @@ functions")
 	   type
 	   new-cell-list))
       (progn
-	(gnus-message 5 (format "%s call with bad ID, type, spam-check, or group"
+	(gnus-message 6 (format "%s call with bad ID, type, spam-check, or group"
 				"spam-log-undo-registration"))
 	nil))))
 
@@ -1520,7 +1520,7 @@ functions")
       (with-temp-buffer
 	(insert headers)
 	(goto-char (point-min))
-	(gnus-message 5 "Checking headers for relay addresses")
+	(gnus-message 6 "Checking headers for relay addresses")
 	(while (re-search-forward
 		"\\([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+\\)" nil t)
 	  (gnus-message 9 "Blackhole search found host IP %s." (match-string 1))
@@ -1538,13 +1538,13 @@ functions")
 		(if spam-use-dig
 		    (let ((query-result (query-dig query-string)))
 		      (when query-result
-			(gnus-message 5 "(DIG): positive blackhole check '%s'"
+			(gnus-message 6 "(DIG): positive blackhole check '%s'"
 				      query-result)
 			(push (list ip server query-result)
 			      matches)))
 		  ;; else, if not using dig.el
 		  (when (query-dns query-string)
-		    (gnus-message 5 "positive blackhole check")
+		    (gnus-message 6 "positive blackhole check")
 		    (push (list ip server (query-dns query-string 'TXT))
 			  matches)))))))))
     (when matches
@@ -1595,7 +1595,7 @@ functions")
 		   (record (and net-address
 				(bbdb-search-simple nil net-address))))
 	      (when net-address
-		(gnus-message 5 "%s address %s %s BBDB"
+		(gnus-message 6 "%s address %s %s BBDB"
 			      (if remove "Deleting" "Adding")
 			      from
 			      (if remove "from" "to"))
