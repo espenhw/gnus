@@ -1,3 +1,8 @@
+2002-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-prepare): Place point on the emtpy
+	header line.
+
 2002-04-11  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-refer-article-method): Change `dejanews' to `google'.

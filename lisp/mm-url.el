@@ -269,6 +269,10 @@ This is taken from RFC 2396.")
     (let ((name buffer-file-name))
       (prog1
 	  (url-insert-file-contents url)
+	(save-excursion
+	  (goto-char (point-min))
+	  (while (re-search-forward "\r 1000\r ?" nil t)
+	    (replace-match "")))
 	(setq buffer-file-name name)))))
 
 (defun mm-url-insert-file-contents-external (url)

@@ -3532,6 +3532,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		   gnus-article-mime-handle-alist))
 	      (gnus-set-mode-line 'article))
 	    (article-goto-body)
+	    (unless (bobp)
+	      (forward-line -1))
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    (gnus-configure-windows 'article)
 	    t))))))
