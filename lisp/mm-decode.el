@@ -296,7 +296,7 @@ Each function takes a file name as input and returns a file name.")
 (defcustom mm-default-directory nil
   "The default directory where mm will save files.
 If not set, `default-directory' will be used."
-  :type 'directory
+  :type '(choice directory (const :tag "Default" nil))
   :group 'mime-display)
 
 (defcustom mm-external-terminal-program "xterm"
