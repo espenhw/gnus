@@ -12,6 +12,16 @@
 	* mml2015.el (mml2015-pgg-clear-verify): Encode the text
 	according to buffer-file-coding-system.
 
+	* pgg-gpg.el (pgg-gpg-process-region): Revert previous change.
+
+	* pgg-pgp.el (pgg-pgp-process-region, pgg-pgp-verify-region)
+	(pgg-pgp-snarf-keys-region): do.
+
+	* pgg-pgp5.el (pgg-pgp5-verify-region)
+	(pgg-pgp5-snarf-keys-region, pgg-pgp5-process-region): do.
+
+	* pgg.el (pgg-make-temp-file, pgg-temporary-file-directory): do.
+	
 2003-04-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-split): (save-excursion) around (widen)
