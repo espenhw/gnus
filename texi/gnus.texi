@@ -6908,7 +6908,8 @@ Matching}).
 @findex gnus-thread-sort-by-number
 @findex gnus-thread-sort-by-random
 @vindex gnus-thread-sort-functions
-@findex gnus-thread-sort-by-most-recent-thread
+@findex gnus-thread-sort-by-most-recent-number
+@findex gnus-thread-sort-by-most-recent-date
 If you are using a threaded summary display, you can sort the threads by
 setting @code{gnus-thread-sort-functions}, which can be either a single
 function, a list of functions, or a list containing functions and
@@ -22266,7 +22267,7 @@ non-spam messages.
 So, what happens when you load @file{spam.el}?  
 
 First of all, you @strong{must} set the variable
-@code{spam-install-hooks} to t and install the @code{spam.el} hooks:
+@code{spam-install-hooks} to @code{t} and install the @code{spam.el} hooks:
 
 @example
 (setq spam-install-hooks t)
