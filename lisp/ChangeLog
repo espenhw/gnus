@@ -1,5 +1,23 @@
 2000-03-16  Simon Josefsson  <jas@pdc.kth.se>
 
+	* imap.el: GSSAPI support, support kerberos 4 with Cyrus v1.6.x
+	`imtest' too.
+	(imap-kerberos4-program): Renamed from `imap-imtest-program'.
+	(imap-gssapi-program): New variable.
+	(imap-streams): Add gssapi.
+	(imap-stream-alist): Ditto.
+	(imap-authenticators): Ditto.
+	(imap-authenticator-alist): Ditto.
+	(imap-kerberos4-stream-p): Rename from `imap-kerberos4s-p'.
+	(imap-kerberos4-open): Loop over imtest programs, support Cyrus
+	1.6.x `imtest' syntax.
+	(imap-gssapi-stream-p): New function.
+	(imap-gssapi-open): Ditto.
+	(imap-gssapi-auth-p): Ditto.
+	(imap-gssapi-auth): Ditto.
+	(imap-kerberos4-auth-p): Renamed from `imap-kerberos4a-p'.
+	(imap-send-command): Use buffer-local `imap-client-eol' value.
+
 	* nnimap.el (nnimap-retrieve-headers-progress): Fold continuation
 	lines and turn TAB into SPC before parsing.
 
