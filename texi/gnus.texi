@@ -13465,11 +13465,11 @@ restore the data.
 
 It is also possible to archive individual @code{nnml} or
 @code{nnfolder} groups, while preserving marks.  For @code{nnml}, you
-recursively copy the group's directory within the @code{nnml} server
-directory.  For @code{nnfolder} you need to copy both the base folder
-file itself, and the file named by concatenating the base folder name
-with @code{.mkr}.  Restoring the groups is done with @kbd{G m} from
-the Group buffer.  The last step makes Gnus notice the new directory.
+copy all files in the group's directory.  For @code{nnfolder} you need
+to copy both the base folder file itself (@code{FOO}, say), and the
+marks file (@code{FOO.mrk} in this example).  Restoring the group is
+done with @kbd{G m} from the Group buffer.  The last step makes Gnus
+notice the new directory.
 
 @node Web Searches
 @subsection Web Searches
