@@ -1,3 +1,8 @@
+2002-09-18  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-request-expire-articles): Make flag setting
+	conditional.  From Nevin Kapur <nevin@jhu.edu>.
+
 2002-09-17  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-expiry-target): Don't search for which

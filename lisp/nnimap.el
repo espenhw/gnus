@@ -1322,11 +1322,11 @@ function is generally only called when Gnus is shutting down."
 				 (concat "UID " 
 					 (imap-range-to-message-set artseq)))))
 		   (when oldarts
-		     (nnimap-expiry-target oldarts group server))
-		   (when (imap-message-flags-add
-			  (imap-range-to-message-set oldarts) "\\Deleted")
-		     (setq articles (gnus-set-difference
-				     articles oldarts)))))
+		     (nnimap-expiry-target oldarts group server)
+		     (when (imap-message-flags-add
+			    (imap-range-to-message-set oldarts) "\\Deleted")
+		       (setq articles (gnus-set-difference
+				       articles oldarts))))))
 		((numberp days)
 		 (let ((oldarts (imap-search
 				 (format nnimap-expunge-search-string
@@ -1335,11 +1335,11 @@ function is generally only called when Gnus is shutting down."
 		       (imap-fetch-data-hook
 			'(nnimap-request-expire-articles-progress)))
 		   (when oldarts
-		     (nnimap-expiry-target oldarts group server))
-		   (when (imap-message-flags-add
-			  (imap-range-to-message-set oldarts) "\\Deleted")
-		     (setq articles (gnus-set-difference 
-				     articles oldarts))))))))))
+		     (nnimap-expiry-target oldarts group server)
+		     (when (imap-message-flags-add
+			    (imap-range-to-message-set oldarts) "\\Deleted")
+		       (setq articles (gnus-set-difference 
+				       articles oldarts)))))))))))
   ;; return articles not deleted
   articles)
 
