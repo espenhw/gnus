@@ -1,3 +1,9 @@
+2002-09-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-reply-with-original,
+	gnus-article-followup-with-original): Switch to
+	gnus-summary-buffer before reply/followup.
+
 2002-09-15 John Paul Wallington <jpw@shootybangbang.com>
 
 	* gnus-sum.el (gnus-summary-toggle-header): The article window may

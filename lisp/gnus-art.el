@@ -4830,31 +4830,34 @@ the entire article will be yanked."
   (interactive "P")
   (let ((article (cdr gnus-article-current)) cont)
     (if (not (mark t))
-	(gnus-summary-reply (list (list article)) wide)
-      (setq cont (buffer-substring (point) (mark t)))
-      ;; Deactivate active regions.
-      (when (and (boundp 'transient-mark-mode)
-		 transient-mark-mode)
-	(setq mark-active nil))
-      (gnus-summary-reply
-       (list (list article cont)) wide))))
+	(with-current-buffer gnus-summary-buffer
+	  (gnus-summary-reply (list (list article)) wide))
+      (with-current-buffer gnus-summary-buffer
+	(setq cont (buffer-substring (point) (mark t)))
+	;; Deactivate active regions.
+	(when (and (boundp 'transient-mark-mode)
+		   transient-mark-mode)
+	  (setq mark-active nil))
+	(gnus-summary-reply
+	 (list (list article cont)) wide)))))
 
 (defun gnus-article-followup-with-original ()
   "Compose a followup to the current article.
 The text in the region will be yanked.  If the region isn't active,
 the entire article will be yanked."
   (interactive)
-  (let ((article (cdr gnus-article-current))
-	cont)
-    (if (not (mark t))
-	(gnus-summary-followup (list (list article)))
-      (setq cont (buffer-substring (point) (mark t)))
-      ;; Deactivate active regions.
-      (when (and (boundp 'transient-mark-mode)
-		 transient-mark-mode)
-	(setq mark-active nil))
-      (gnus-summary-followup
-       (list (list article cont))))))
+  (let ((article (cdr gnus-article-current)) cont)
+      (if (not (mark t))
+	  (with-current-buffer gnus-summary-buffer
+	    (gnus-summary-followup (list (list article))))
+	(setq cont (buffer-substring (point) (mark t)))
+	;; Deactivate active regions.
+	(when (and (boundp 'transient-mark-mode)
+		   transient-mark-mode)
+	  (setq mark-active nil))
+	(with-current-buffer gnus-summary-buffer
+	  (gnus-summary-followup
+	   (list (list article cont)))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
