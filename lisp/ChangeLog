@@ -1,3 +1,10 @@
+2000-09-14 11:31:28  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-setup-buffer): Clean handle-alist.
+	* gnus-sum.el (gnus-summary-exit): Ditto.
+	(gnus-summary-exit-no-update): Ditto.
+	(gnus-summary-show-article): Ditto.
+
 2000-09-14 08:42:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-dissect-mime-parts-sub): Remove

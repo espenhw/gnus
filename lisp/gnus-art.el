@@ -2655,6 +2655,8 @@ commands:
 	  (when gnus-article-mime-handles
 	    (mm-destroy-parts gnus-article-mime-handles)
 	    (setq gnus-article-mime-handles nil))
+	  ;; Set it to nil in article-buffer!
+	  (setq gnus-article-mime-handle-alist nil) 
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
 	  (unless (eq major-mode 'gnus-article-mode)

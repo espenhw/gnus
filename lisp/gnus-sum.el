@@ -5389,6 +5389,8 @@ If FORCE (the prefix), also save the .newsrc file(s)."
     (save-excursion
       (set-buffer gnus-article-buffer)
       (mm-destroy-parts gnus-article-mime-handles)
+      ;; Set it to nil for safety reason.
+      (setq gnus-article-mime-handle-alist nil)
       (setq gnus-article-mime-handles nil)))
   (gnus-kill-save-kill-buffer)
   (gnus-async-halt-prefetch)
@@ -5488,6 +5490,8 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (mm-destroy-parts gnus-article-mime-handles)
+	  ;; Set it to nil for safety reason.
+	  (setq gnus-article-mime-handle-alist nil)
 	  (setq gnus-article-mime-handles nil)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
@@ -7252,6 +7256,8 @@ without any article massaging functions being run."
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (mm-destroy-parts gnus-article-mime-handles)
+	  ;; Set it to nil for safety reason.
+	  (setq gnus-article-mime-handle-alist nil)
 	  (setq gnus-article-mime-handles nil)))
       (gnus-summary-select-article nil 'force))))
   (gnus-summary-goto-subject gnus-current-article)
