@@ -8,13 +8,18 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Gnus supports the "format=flowed" (RFC 2646) parameter.
+
+On composing messages, it is enabled by `use-hard-newlines'.  Decoding
+format=flowed was present but not documented in earlier versions.
+
 ** Gnus supports the generation of RFC 2298 Disposition Notification requests.
 
 This is invoked with the C-c M-n key binding from message mode.
 
 ** Gnus supports Maildir groups.
 
-Gnus includes a new backend nnmaildir.el, by Paul Jarc.
+Gnus includes a new backend nnmaildir.el.
 
 ** Printing capabilities are enhanced.
 
