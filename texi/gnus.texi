@@ -3324,67 +3324,26 @@ To get this @emph{fab} functionality you simply turn on (ooh!) the
 is a toggling command.)
 
 Go ahead, just try it.  I'll still be here when you get back.  La de
-dum...  Nice tune, that...  la la la...  What, you're back? Yes, and now
-press @kbd{l}.  There.  All your groups are now listed under
+dum...  Nice tune, that...  la la la...  What, you're back?  Yes, and
+now press @kbd{l}.  There.  All your groups are now listed under
 @samp{misc}.  Doesn't that make you feel all warm and fuzzy?  Hot and
 bothered?
 
 If you want this permanently enabled, you should add that minor mode to
-the hook for the group mode:
+the hook for the group mode.  Put the following line in your
+@file{~/.gnus} file:
 
 @lisp
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 @end lisp
 
 @menu
-* Topic Variables::             How to customize the topics the Lisp Way.
 * Topic Commands::              Interactive E-Z commands.
+* Topic Variables::             How to customize the topics the Lisp Way.
 * Topic Sorting::               Sorting each topic individually.
 * Topic Topology::              A map of the world.
 * Topic Parameters::            Parameters that apply to all groups in a topic.
 @end menu
-
-
-@node Topic Variables
-@subsection Topic Variables
-@cindex topic variables
-
-Now, if you select a topic, it will fold/unfold that topic, which is
-really neat, I think.
-
-@vindex gnus-topic-line-format
-The topic lines themselves are created according to the
-@code{gnus-topic-line-format} variable (@pxref{Formatting Variables}).
-Valid elements are:
-
-@table @samp
-@item i
-Indentation.
-@item n
-Topic name.
-@item v
-Visibility.
-@item l
-Level.
-@item g
-Number of groups in the topic.
-@item a
-Number of unread articles in the topic.
-@item A
-Number of unread articles in the topic and all its subtopics.
-@end table
-
-@vindex gnus-topic-indent-level
-Each sub-topic (and the groups in the sub-topics) will be indented with
-@code{gnus-topic-indent-level} times the topic level number of spaces.
-The default is 2.
-
-@vindex gnus-topic-mode-hook
-@code{gnus-topic-mode-hook} is called in topic minor mode buffers.
-
-@vindex gnus-topic-display-empty-topics
-The @code{gnus-topic-display-empty-topics} says whether to display even
-topics that have no unread articles in them.  The default is @code{t}.
 
 
 @node Topic Commands
@@ -3395,6 +3354,9 @@ When the topic minor mode is turned on, a new @kbd{T} submap will be
 available.  In addition, a few of the standard keys change their
 definitions slightly.
 
+Here is a list of the basic keys that you might need to set up topics
+the way you like.
+
 @table @kbd
 
 @item T n
@@ -3402,6 +3364,65 @@ definitions slightly.
 @findex gnus-topic-create-topic
 Prompt for a new topic name and create it
 (@code{gnus-topic-create-topic}).
+
+@item T TAB
+@itemx TAB
+@kindex T TAB (Topic)
+@kindex TAB (Topic)
+@findex gnus-topic-indent
+``Indent'' the current topic so that it becomes a sub-topic of the
+previous topic (@code{gnus-topic-indent}).  If given a prefix,
+``un-indent'' the topic instead.
+
+@item M-TAB
+@kindex M-TAB (Topic)
+@findex gnus-topic-unindent
+``Un-indent'' the current topic so that it becomes a sub-topic of the
+parent of its current parent (@code{gnus-topic-unindent}).
+
+@item C-k
+@kindex C-k (Topic)
+@findex gnus-topic-kill-group
+Kill a group or topic (@code{gnus-topic-kill-group}).  All groups in the
+topic will be removed along with the topic.
+
+@item C-y
+@kindex C-y (Topic)
+@findex gnus-topic-yank-group
+Yank the previously killed group or topic
+(@code{gnus-topic-yank-group}).  Note that all topics will be yanked
+before all groups.
+
+So, to move a topic to the beginning of the list of topics, just hit
+@kbd{C-k} on it.  This is like the `cut' part of cut and paste.  Then,
+move the cursor to the beginning of the buffer (just below the `Gnus'
+topic) and hit @kbd{C-y}.  This is like the `paste' part of cut and
+paste.  Like I said -- E-Z.
+
+@end table
+
+After setting up the topics the way you like them, you might wish to
+hide a topic, or to show it again.  That's why we have the following
+key.
+
+@table @kbd
+
+@item RET
+@kindex RET (Topic)
+@findex gnus-topic-select-group
+@itemx SPACE
+Either select a group or fold a topic (@code{gnus-topic-select-group}).
+When you perform this command on a group, you'll enter the group, as
+usual.  When done on a topic line, the topic will be folded (if it was
+visible) or unfolded (if it was folded already).  So it's basically a
+toggling command on topics.  In addition, if you give a numerical
+prefix, group on that level (and lower) will be displayed.
+
+@end table
+
+Now for a list of other commands, in no particular order.
+
+@table @kbd
 
 @item T m
 @kindex T m (Topic)
@@ -3478,51 +3499,12 @@ Mark all groups in the current topic with the process mark
 Remove the process mark from all groups in the current topic
 (@code{gnus-topic-unmark-topic}).
 
-@item T TAB
-@itemx TAB
-@kindex T TAB (Topic)
-@kindex TAB (Topic)
-@findex gnus-topic-indent
-``Indent'' the current topic so that it becomes a sub-topic of the
-previous topic (@code{gnus-topic-indent}).  If given a prefix,
-``un-indent'' the topic instead.
-
-@item M-TAB
-@kindex M-TAB (Topic)
-@findex gnus-topic-unindent
-``Un-indent'' the current topic so that it becomes a sub-topic of the
-parent of its current parent (@code{gnus-topic-unindent}).
-
-@item RET
-@kindex RET (Topic)
-@findex gnus-topic-select-group
-@itemx SPACE
-Either select a group or fold a topic (@code{gnus-topic-select-group}).
-When you perform this command on a group, you'll enter the group, as
-usual.  When done on a topic line, the topic will be folded (if it was
-visible) or unfolded (if it was folded already).  So it's basically a
-toggling command on topics.  In addition, if you give a numerical
-prefix, group on that level (and lower) will be displayed.
-
 @item C-c C-x
 @kindex C-c C-x (Topic)
 @findex gnus-topic-expire-articles
 Run all expirable articles in the current group or topic through the
 expiry process (if any)
 (@code{gnus-topic-expire-articles}). (@pxref{Expiring Mail}).
-
-@item C-k
-@kindex C-k (Topic)
-@findex gnus-topic-kill-group
-Kill a group or topic (@code{gnus-topic-kill-group}).  All groups in the
-topic will be removed along with the topic.
-
-@item C-y
-@kindex C-y (Topic)
-@findex gnus-topic-yank-group
-Yank the previously killed group or topic
-(@code{gnus-topic-yank-group}).  Note that all topics will be yanked
-before all groups.
 
 @item T r
 @kindex T r (Topic)
@@ -3550,6 +3532,48 @@ Edit the topic parameters (@code{gnus-topic-edit-parameters}).
 @xref{Topic Parameters}.
 
 @end table
+
+
+@node Topic Variables
+@subsection Topic Variables
+@cindex topic variables
+
+Now, if you select a topic, it will fold/unfold that topic, which is
+really neat, I think.
+
+@vindex gnus-topic-line-format
+The topic lines themselves are created according to the
+@code{gnus-topic-line-format} variable (@pxref{Formatting Variables}).
+Valid elements are:
+
+@table @samp
+@item i
+Indentation.
+@item n
+Topic name.
+@item v
+Visibility.
+@item l
+Level.
+@item g
+Number of groups in the topic.
+@item a
+Number of unread articles in the topic.
+@item A
+Number of unread articles in the topic and all its subtopics.
+@end table
+
+@vindex gnus-topic-indent-level
+Each sub-topic (and the groups in the sub-topics) will be indented with
+@code{gnus-topic-indent-level} times the topic level number of spaces.
+The default is 2.
+
+@vindex gnus-topic-mode-hook
+@code{gnus-topic-mode-hook} is called in topic minor mode buffers.
+
+@vindex gnus-topic-display-empty-topics
+The @code{gnus-topic-display-empty-topics} says whether to display even
+topics that have no unread articles in them.  The default is @code{t}.
 
 
 @node Topic Sorting

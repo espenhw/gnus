@@ -1,3 +1,10 @@
+2001-09-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Topic Commands): Make this the first subsection of
+	`Group Topics'.  Rearrange keys to mention the most important keys
+	first and to have subsections.  Add some more explanation for
+	C-k/C-y.
+
 2001-09-06  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Fancy Mail Splitting): Mention `delete' near the
