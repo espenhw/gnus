@@ -1,5 +1,9 @@
 2000-12-21 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-mime-*): handle may be nil.
+
+	* gnus-sum.el (gnus-summary-mode): Turn on gnus-mailing-list-mode.
+
 	* gnus.el (gnus-group-remove-excess-properties): Not defined
 	in gnus-xmas.
 

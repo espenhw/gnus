@@ -26,10 +26,6 @@
 
 ;; implement (small subset of) RFC 2369
 
-;;; Usage:
-
-;; (add-hook 'gnus-summary-mode-hook 'turn-on-gnus-mailing-list-mode)
-
 ;;; Code:
 
 (require 'gnus)
