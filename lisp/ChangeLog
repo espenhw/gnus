@@ -1,7 +1,7 @@
 2003-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-topic.el (gnus-topic-goto-missing-topic): Revert 2003-02-09
-	change in order to correct the position where a invisible topic
+	change in order to correct the position where an invisible topic
 	(because gnus-topic-display-empty-topics is nil) may be inserted.
 
 2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
