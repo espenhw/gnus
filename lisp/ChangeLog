@@ -1,3 +1,16 @@
+2003-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-setup-w3m): Set w3m-display-inline-images to
+	the value of mm-inline-text-html-with-images.
+	(mm-inline-text-html-render-with-w3m): Don't bind
+	w3m-display-inline-images.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Don't bind
+	w3m-display-inline-images.
+
+	* lpath.el: Bind w3m-display-inline-images; bind mm-w3m-mode-map
+	regardless of an Emacs flavor.
+
 2003-03-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.

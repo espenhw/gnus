@@ -22,10 +22,11 @@
 	       vcard-pretty-print w32-focus-frame
 	       w3m-charset-to-coding-system x-focus-frame))
 (maybe-bind '(filladapt-mode
-	      mc-pgp-always-sign rmail-enable-mime-composing
+	      mc-pgp-always-sign mm-w3m-mode-map rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
-	      w3m-meta-content-type-charset-regexp w3m-minor-mode-map))
+	      w3m-display-inline-images w3m-meta-content-type-charset-regexp
+	      w3m-minor-mode-map))
 
 (if (featurep 'xemacs)
     (progn
@@ -50,8 +51,7 @@
 		    enable-multibyte-characters language-info-alist
 		    mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    temporary-file-directory transient-mark-mode
-		    mm-w3m-mode-map)))
+		    temporary-file-directory transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation device-connection dfw-device
 		 events-to-keys font-lock-set-defaults frame-device
@@ -66,7 +66,7 @@
   (maybe-bind '(help-echo-owns-message
 		mail-mode-hook url-package-name url-package-version
 		w3-meta-charset-content-type-regexp
-		w3-meta-content-type-charset-regexp mm-w3m-mode-map)))
+		w3-meta-content-type-charset-regexp)))
 
 (defun nnkiboze-score-file (a)
   )

@@ -2270,7 +2270,6 @@ If READ-CHARSET, ask for a coding system."
     (let ((w3m-safe-url-regexp (if mm-inline-text-html-with-images
 				   nil
 				 "\\`cid:"))
-	  (w3m-display-inline-images mm-inline-text-html-with-images)
 	  w3m-force-redisplay)
       (w3m-region (point-min) (point-max)))
     (when mm-inline-text-html-with-w3m-keymap
