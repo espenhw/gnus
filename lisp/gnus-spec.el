@@ -372,12 +372,12 @@ characters when given a pad value."
       `(let* ((val (eval ,el))
 	      (need (- ,pad (,(if gnus-use-correct-string-widths
 				  'gnus-correct-length
-				'length) ,el))))
+				'length) val))))
 	 (if (> need 0)
 	     (concat ,(when side '(make-string need ?\ ))
-		     ,el
+		     val
 		     ,(when (not side) '(make-string need ?\ )))
-	   ,el)))))
+	   val)))))
 
 (defun gnus-parse-format (format spec-alist &optional insert)
   ;; This function parses the FORMAT string with the help of the
