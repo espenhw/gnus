@@ -1280,9 +1280,11 @@ this is a reply."
 		;; Regexp string match on the group name.
 		(string-match match group))
 	       ((eq match 'header)
-		(let ((header (message-fetch-field (pop style))))
-		  (and header
-		       (string-match (pop style) header))))
+		(and (gnus-buffer-live-p gnus-article-copy)
+		     (with-current-buffer gnus-article-copy
+		       (let ((header (message-fetch-field (pop style))))
+			 (and header
+			      (string-match (pop style) header))))))
 	       ((or (symbolp match)
 		    (gnus-functionp match))
 		(cond

@@ -1,3 +1,8 @@
+2001-02-17 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Match header in
+	gnus-article-copy.
+
 2001-02-16 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-do-send-housekeeping): Rename to a better
