@@ -127,6 +127,11 @@
   "Encrypt the current region between START and END.
 If optional argument SIGN is non-nil, do a combined sign and encrypt."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
+	 (passphrase
+	  (when sign
+	    (pgg-read-passphrase
+	     (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
+	     (pgg-gpg-lookup-key pgg-gpg-user-id 'encrypt))))
 	 (args
 	  (append
 	   (list "--batch" "--armor" "--always-trust" "--encrypt")
@@ -139,7 +144,10 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 				      (if pgg-encrypt-for-me
 					  (list pgg-gpg-user-id)))))))))
     (pgg-as-lbt start end 'CRLF
-      (pgg-gpg-process-region start end nil pgg-gpg-program args))
+      (pgg-gpg-process-region start end passphrase pgg-gpg-program args))
+    (when sign
+      (with-current-buffer pgg-errors-buffer
+	(pgg-gpg-possibly-cache-passphrase passphrase)))
     (pgg-process-when-success)))
 
 (defun pgg-gpg-decrypt-region (start end)

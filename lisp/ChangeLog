@@ -1,5 +1,8 @@
 2002-10-05  Simon Josefsson  <jas@extundo.com>
 
+	* pgg-gpg.el (pgg-gpg-encrypt-region): Query passphrase when
+	signing.
+
 	* gnus-agent.el (gnus-agent-read-servers): If getting method from
 	a named server fails, ignore the server.
 
