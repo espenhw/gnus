@@ -710,7 +710,8 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-unbuttonized-mime-types '(".*/.*")
   "List of MIME types that should not be given buttons when rendered inline.
-See also `gnus-buttonized-mime-types' which may override this variable."
+See also `gnus-buttonized-mime-types' which may override this variable.
+This variable is only used when `gnus-inhibit-mime-unbuttonizing' is nil."
   :version "21.1"
   :group 'gnus-article-mime
   :type '(repeat regexp))
@@ -719,7 +720,8 @@ See also `gnus-buttonized-mime-types' which may override this variable."
   "List of MIME types that should be given buttons when rendered inline.
 If set, this variable overrides `gnus-unbuttonized-mime-types'.
 To see e.g. security buttons you could set this to
-`(\"multipart/signed\")'."
+`(\"multipart/signed\")'.
+This variable is only used when `gnus-inhibit-mime-unbuttonizing' is nil."
   :version "21.1"
   :group 'gnus-article-mime
   :type '(repeat regexp))

@@ -1,3 +1,8 @@
+2003-01-08  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-unbuttonized-mime-types) 
+	(gnus-buttonized-mime-types): Doc fix.
+
 2003-01-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-inline-media-tests): .xpm is 'x-xpixmap'.
