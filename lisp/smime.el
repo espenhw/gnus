@@ -89,6 +89,8 @@
 ;; environment variables to pass the password to OpenSSL, which is
 ;; slightly insecure. Hence a new todo: use a better -passin method.
 ;;
+;; Cache password for e.g. 1h
+;;
 ;; Suggestions and comments are appreciated, mail me at simon@josefsson.org.
 
 ;; <rant>
@@ -222,6 +224,7 @@ If signing fails, the buffer is not modified.  Region is assumed to
 have proper MIME tags.  KEYFILES is expected to contain a PEM encoded
 private key and certificate as its car, and a list of additional certificates
 to include in its caar."
+  (smime-new-details-buffer)
   (let ((keyfile (car keyfiles))
 	(certfiles (and (cdr keyfiles) (cadr keyfiles)))
 	(buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
@@ -244,10 +247,11 @@ to include in its caar."
 		  (delete-file tmpfile)))
 	  (delete-region b e)
 	  (insert-buffer-substring buffer)
+	  (goto-char b)
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
-      (with-current-buffer (get-buffer-create smime-details-buffer)
+      (with-current-buffer smime-details-buffer
 	(goto-char (point-max))
 	(insert-buffer-substring buffer))
       (kill-buffer buffer))))
@@ -257,6 +261,7 @@ to include in its caar."
 If encryption fails, the buffer is not modified.  Region is assumed to
 have proper MIME tags.  CERTFILES is a list of filenames, each file
 is expected to contain of a PEM encoded certificate."
+  (smime-new-details-buffer)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
 	(tmpfile (make-temp-file "smime")))
     (prog1
@@ -269,10 +274,11 @@ is expected to contain of a PEM encoded certificate."
 		  (delete-file tmpfile)))
 	  (delete-region b e)
 	  (insert-buffer-substring buffer)
+	  (goto-char b)
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
-      (with-current-buffer (get-buffer-create smime-details-buffer)
+      (with-current-buffer smime-details-buffer
 	(goto-char (point-max))
 	(insert-buffer-substring buffer))
       (kill-buffer buffer))))
