@@ -135,6 +135,8 @@ if ErrorLevel 1 set ERROR=%ERROR%,sieve.texi
 if ErrorLevel 1 set ERROR=%ERROR%,pgg.texi
 %EMACSINFO% message.texi
 if ErrorLevel 1 set ERROR=%ERROR%,message.texi
+%EMACSINFO% sasl.texi
+if ErrorLevel 1 set ERROR=%ERROR%,sasl.texi
 
 if not "%2" == "/copy" goto nocopy
 if not exist %GNUS_INFO_DIR%\nul mkdir %GNUS_INFO_DIR%
@@ -158,6 +160,8 @@ xcopy /R /Q /Y sieve      %GNUS_INFO_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-sieve-info
 xcopy /R /Q /Y pgg        %GNUS_INFO_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-pgg-info
+xcopy /R /Q /Y sasl        %GNUS_INFO_DIR%
+if ErrorLevel 1 set ERROR=%ERROR%,copy-sasl-info
 
 echo.
 echo ***************************************************************************
@@ -167,6 +171,7 @@ echo * if they aren't already there:
 echo *
 echo * * PGG: (pgg).	Emacs interface to various PGP implementations.
 echo * * Sieve: (sieve).	Managing Sieve scripts in Emacs.
+echo * * SASL: (sasl).	The Emacs SASL library.
 echo ***************************************************************************
 echo.
 
