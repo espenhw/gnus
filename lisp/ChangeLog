@@ -1,3 +1,9 @@
+2001-03-16  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-dont-use-nov-p): Renamed from
+	`nnimap-use-nov-p' (it really tested the negative).
+	(nnimap-retrieve-headers): Use it.
+
 2001-03-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-generate-headers-first): Update doc.

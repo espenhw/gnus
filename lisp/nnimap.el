@@ -537,7 +537,7 @@ If EXAMINE is non-nil the group is selected read-only."
 	   (> nnimap-length nnmail-large-newsgroup)
 	   (nnheader-message 6 "nnimap: Retrieving headers...done")))))
 
-(defun nnimap-use-nov-p (group server)
+(defun nnimap-dont-use-nov-p (group server)
   (or gnus-nov-is-evil nnimap-nov-is-evil
       (unless (and (gnus-make-directory
 		    (file-name-directory
@@ -551,7 +551,7 @@ If EXAMINE is non-nil the group is selected read-only."
   (when (nnimap-possibly-change-group group server)
     (with-current-buffer nntp-server-buffer
       (erase-buffer)
-      (if (nnimap-use-nov-p group server)
+      (if (nnimap-dont-use-nov-p group server)
 	  (nnimap-retrieve-headers-from-server
 	   (gnus-compress-sequence articles) group server)
 	(let (uids cached low high)
