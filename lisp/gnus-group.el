@@ -2090,11 +2090,7 @@ If PROMPT (the prefix) is a number, use the prompt specified in
     ;; Either go to the line in the group buffer...
     (unless (gnus-group-goto-group group)
       ;; ... or insert the line.
-      (if (or (gnus-active group)
-	      (gnus-y-or-n-p
-	       (format "Group %s is not active.  Continue? " group)))
-	  (gnus-group-update-group group)
-	(error "No such group: %s." group))
+      (gnus-group-update-group group)
       (gnus-group-goto-group group)))
   ;; Adjust cursor point.
   (gnus-group-position-point))
