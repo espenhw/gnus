@@ -1,3 +1,7 @@
+2001-01-03 07:26:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-ignored-mail-headers): Add draft header.
+
 2001-01-02 06:28:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-expire-articles): Don't save

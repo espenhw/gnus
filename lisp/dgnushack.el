@@ -40,6 +40,8 @@
 (push (or (getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir)) 
       load-path)
 
+(push "/usr/share/emacs/site-lisp" load-path)
+
 (unless (featurep 'xemacs)
   (define-compiler-macro last (&whole form x &optional n)
     (if (and (fboundp 'last)
