@@ -1,5 +1,17 @@
 2001-08-18  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-util.el (gnus-remassoc, gnus-update-alist-soft): Moved from
+	nnimap.
+
+	* nnimap.el (nnimap-remassoc, nnimap-update-alist-soft): Moved to
+	gnus-util.
+	(nnimap-request-update-info-internal): Use new functions.
+
+	* nnml.el (nnml-request-set-mark, nnml-request-update-info): Use
+	new functions.
+
+2001-08-18  Simon Josefsson  <jas@extundo.com>
+
 	Make nnml groups self-contained as far as marks are concerned.
 
 	* nnml.el (nnml-request-delete-group): Delete marks file.

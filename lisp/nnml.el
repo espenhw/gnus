@@ -873,7 +873,7 @@ check twice.")
 	(assert (or (eq what 'add) (eq what 'del)) t
 		"Unknown request-set-mark action: %s" what)
 	(dolist (mark marks)
-	  (setq nnml-marks (nnimap-update-alist-soft
+	  (setq nnml-marks (gnus-update-alist-soft
 			    mark
 			    (funcall (if (eq what 'add) 'gnus-range-add
 				       'gnus-remove-from-range)
@@ -889,7 +889,7 @@ check twice.")
     (mapcar (lambda (pred)
 	      (gnus-info-set-marks
 	       info
-	       (nnimap-update-alist-soft
+	       (gnus-update-alist-soft
 		(cdr pred)
 		(cdr (assq (cdr pred) nnml-marks))
 		(gnus-info-marks info))

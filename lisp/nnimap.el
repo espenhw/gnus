@@ -912,7 +912,7 @@ function is generally only called when Gnus is shutting down."
 					 (imap-mailbox-get 'flags))))
 		    (gnus-info-set-marks
 		     info
-		     (nnimap-update-alist-soft
+		     (gnus-update-alist-soft
 		      (cdr pred)
 		      (gnus-compress-sequence
 		       (imap-search (nnimap-mark-to-predicate (cdr pred))))
@@ -925,7 +925,7 @@ function is generally only called when Gnus is shutting down."
 	  ;; so we remove that mark for gnus since we support dormant
 	  (gnus-info-set-marks
 	   info
-	   (nnimap-update-alist-soft
+	   (gnus-update-alist-soft
 	    'tick
 	    (gnus-remove-from-range
 	     (cdr-safe (assoc 'tick (gnus-info-marks info)))
@@ -1352,23 +1352,6 @@ be used in a STORE FLAGS command."
   "Return t iff MARK can be permanently (between IMAP sessions) saved on articles, in GROUP."
   (imap-message-flag-permanent-p (nnimap-mark-to-flag mark)))
 
-(defun nnimap-remassoc (key alist)
-  "Delete by side effect any elements of LIST whose car is `equal' to KEY.
-The modified LIST is returned.  If the first member
-of LIST has a car that is `equal' to KEY, there is no way to remove it
-by side effect; therefore, write `(setq foo (remassoc key foo))' to be
-sure of changing the value of `foo'."
-  (when alist
-    (if (equal key (caar alist))
-	(cdr alist)
-      (setcdr alist (nnimap-remassoc key (cdr alist)))
-      alist)))
-
-(defun nnimap-update-alist-soft (key value alist)
-  (if value
-      (cons (cons key value) (nnimap-remassoc key alist))
-    (nnimap-remassoc key alist)))
-
 (when nnimap-debug
   (require 'trace)
   (buffer-disable-undo (get-buffer-create nnimap-debug))
@@ -1429,8 +1412,6 @@ sure of changing the value of `foo'."
 	    nnimap-mark-to-flag-1
 	    nnimap-mark-to-flag
 	    nnimap-mark-permanent-p
-	    nnimap-remassoc
-	    nnimap-update-alist-soft
 	    )))
 
 (provide 'nnimap)
