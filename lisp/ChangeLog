@@ -1,3 +1,8 @@
+1999-12-19 22:49:13  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnagent.el (nnagent-server-opened): Optional.
+	(nnagent-status-message): Optional.
+
 1999-12-19  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-cite.el (gnus-article-toggle-cited-text): Restore beg and

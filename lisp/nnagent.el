@@ -184,11 +184,11 @@
   (nnoo-parent-function 'nnagent 'nnml-set-status 
 		    (list article name value group (nnagent-server server))))
 
-(deffoo nnagent-server-opened (server)
+(deffoo nnagent-server-opened (&optional server)
   (nnoo-parent-function 'nnagent 'nnml-server-opened
 			(list (nnagent-server server))))
 
-(deffoo nnagent-status-message (server)
+(deffoo nnagent-status-message (&optional server)
   (nnoo-parent-function 'nnagent 'nnml-status-message
 			(list (nnagent-server server))))
 
