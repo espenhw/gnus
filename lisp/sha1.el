@@ -1,4 +1,4 @@
-;;; sha1-el.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp
+;;; sha1.el --- SHA1 Secure Hash Algorithm in Emacs-Lisp
 
 ;; Copyright (C) 1999, 2001, 2003, 2004 Free Software Foundation, Inc.
 
@@ -435,7 +435,7 @@ If BINARY is non-nil, return a string in binary form."
       (set-buffer object)
       (sha1-region (or beg (point-min)) (or end (point-max)) binary))))
 
-(provide 'sha1-el)
+(provide 'sha1)
 
 ;;; arch-tag: c0f9abd0-ffc1-4557-aac6-ece7f2d4c901
-;;; sha1-el.el ends here
+;;; sha1.el ends here

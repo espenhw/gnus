@@ -1,3 +1,18 @@
+2004-09-01  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-canlock-generate): Require sha1, not
+	sha1-el.  (Can we get rid of this require alltogheter? It is ugly
+	to require within a function.  Sadly, if sha1.el isn't loaded, the
+	let binding in m-c-g will hide the defcustom definition, which is
+	bad.)
+
+	* canlock.el: Require sha1, not sha1-el.
+
+	* message.el: Don't autoload sha1 (there is a autoload cookie in
+	sha1.el).
+
+	* sha1-el.el: Renamed to sha1.el.
+
 2004-08-30  Juanma Barranquero  <lektu@terra.es>
 
 	* ietf-drums.el (ietf-drums-remove-whitespace): Fix character constant.
