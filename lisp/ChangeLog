@@ -1,5 +1,10 @@
 2004-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-fun.el (gnus-face-properties-alist): New user option.
+	(gnus-display-x-face-in-from): Use it.
+
+	* gnus-art.el (article-display-face): Ditto.
+
 	* compface.el (uncompface-use-external): Default to nil.
 
 2004-02-12  Jesper Harder  <harder@ifa.au.dk>
