@@ -118,6 +118,7 @@ If nil, the first match found will be used."
 (defcustom nnmail-split-fancy-with-parent-ignore-groups nil
   "Regexp that matches group names to be ignored when applying `nnmail-split-fancy-with-parent'.
 This can also be a list of regexps."
+  :version "21.4"
   :group 'nnmail-split
   :type '(choice (const :tag "none" nil)
 		 (regexp :value ".*")
@@ -126,6 +127,7 @@ This can also be a list of regexps."
 (defcustom nnmail-cache-ignore-groups nil
   "Regexp that matches group names to be ignored when inserting message ids into the cache (`nnmail-cache-insert').
 This can also be a list of regexps."
+  :version "21.4"
   :group 'nnmail-split
   :type '(choice (const :tag "none" nil)
 		 (regexp :value ".*")
@@ -352,6 +354,7 @@ discarded after running the split process."
 
 (defcustom nnmail-spool-hook nil
   "*A hook called when a new article is spooled."
+  :version "21.4"
   :group 'nnmail
   :type 'hook)
 
@@ -574,6 +577,7 @@ Normally, regexes given in `nnmail-split-fancy' are implicitly surrounded
 by \"\\=\\<...\\>\".  If this variable is true, they are not implicitly\
  surrounded
 by anything."
+  :version "21.4"
   :group 'nnmail
   :type 'boolean)
 
@@ -581,6 +585,7 @@ by anything."
   "Whether to lowercase expanded entries (i.e. \\N) when splitting mails.
 This avoids the creation of multiple groups when users send to an address
 using different case (i.e. mailing-list@domain vs Mailing-List@Domain)."
+  :version "21.4"
   :group 'nnmail
   :type 'boolean)
 

@@ -46,6 +46,7 @@
 				    (require 'url)
 				  (error nil)))
   "*If non-nil, use external grab program `mm-url-program'."
+  :version "21.4"
   :type 'boolean
   :group 'mm-url)
 
@@ -64,6 +65,7 @@
    (t "GET"))
   "The url grab program.
 Likely values are `wget', `w3m', `lynx' and `curl'."
+  :version "21.4"
   :type '(choice
 	  (symbol :tag "wget" wget)
 	  (symbol :tag "w3m" w3m)
@@ -74,6 +76,7 @@ Likely values are `wget', `w3m', `lynx' and `curl'."
 
 (defcustom mm-url-arguments nil
   "The arguments for `mm-url-program'."
+  :version "21.4"
   :type '(repeat string)
   :group 'mm-url)
 

@@ -24,11 +24,11 @@
 
 ;; These functions provide a simple way to wash/clean html infected
 ;; mails.  Definitely do not work in all cases, but some improvement
-;; in readability is generally obtained. Formatting is only done in
+;; in readability is generally obtained.  Formatting is only done in
 ;; the buffer, so the next time you enter the article it will be
 ;; "re-htmlized".
 ;;
-;; The main function is "html2text"
+;; The main function is `html2text'.
 
 ;;; Code:
 
@@ -47,9 +47,9 @@
   "The map of entity to text.
 
 This is an alist were each element is a dotted pair consisting of an
-old string, and a replacement string. This replacement is done by the
-function \"html2text-substitute\" which basically performs a
-replace-string operation for every element in the list. This is
+old string, and a replacement string.  This replacement is done by the
+function `html2text-substitute' which basically performs a
+`replace-string' operation for every element in the list.  This is
 completely verbatim - without any use of REGEXP.")
 
 (defvar html2text-remove-tag-list
@@ -57,11 +57,11 @@ completely verbatim - without any use of REGEXP.")
   "A list of removable tags.
 
 This is a list of tags which should be removed, without any
-formatting.  Observe that if you the tags in the list are presented
-*without* any \"<\" or \">\". All occurences of a tag appearing in
-this list are removed, irrespective of whether it is a closing or
-opening tag, or if the tag has additional attributes. The actual
-deletion is done by the function \"html2text-remove-tags\".
+formatting.  Note that tags in the list are presented *without*
+any \"<\" or \">\".  All occurences of a tag appearing in this
+list are removed, irrespective of whether it is a closing or
+opening tag, or if the tag has additional attributes.  The
+deletion is done by the function `html2text-remove-tags'.
 
 For instance the text:
 
@@ -75,8 +75,10 @@ If this list contains the element \"font\".")
 
 (defvar html2text-format-tag-list
   '(("b" 	  . html2text-clean-bold)
+    ("strong"     . html2text-clean-bold)
     ("u" 	  . html2text-clean-underline)
     ("i" 	  . html2text-clean-italic)
+    ("em"         . html2text-clean-italic)
     ("blockquote" . html2text-clean-blockquote)
     ("a"          . html2text-clean-anchor)
     ("ul"         . html2text-clean-ul)
@@ -86,7 +88,7 @@ If this list contains the element \"font\".")
   "An alist of tags and processing functions.
 
 This is an alist where each dotted pair consists of a tag, and then
-the name of a function to be called when this tag is found. The
+the name of a function to be called when this tag is found.  The
 function is called with the arguments p1, p2, p3 and p4. These are
 demontrated below:
 
@@ -117,11 +119,12 @@ formatting, and then moved afterward.")
 ;;
 
 
-(defun html2text-replace-string (from-string to-string p1 p2)
-  (goto-char p1)
+(defun html2text-replace-string (from-string to-string min max)
+  "Replace FROM-STRING with TO-STRING in region from MIN to MAX."
+  (goto-char min)
   (let ((delta (- (string-width to-string) (string-width from-string)))
 	(change 0))
-    (while (search-forward from-string p2 t)
+    (while (search-forward from-string max t)
       (replace-match to-string)
       (setq change (+ change delta)))
     change))
@@ -137,8 +140,79 @@ formatting, and then moved afterward.")
 ;; <Functions related to attributes> i.e. <font size=+3>
 ;;
 
-(defun html2text-attr-value (attr-list attr)
-  (nth 1 (assoc attr attr-list)))
+(defun html2text-attr-value (list attribute)
+  "Get value of ATTRIBUTE from LIST."
+  (nth 1 (assoc attribute list)))
+
+(defun html2text-get-attr (p1 p2 tag)
+  (goto-char p1)
+  (re-search-forward " +[^ ]" p2 t)
+  (let* ((attr-string (buffer-substring-no-properties (1- (point)) (1- p2)))
+	 (tmp-list (split-string attr-string))
+	 (attr-list)
+	 (counter 0)
+	 (prev (car tmp-list))
+	 (this (nth 1 tmp-list))
+	 (next (nth 2 tmp-list))
+	 (index 1))
+
+    (cond
+     ;; size=3
+     ((string-match "[^ ]=[^ ]" prev)
+      (let ((attr  (nth 0 (split-string prev "=")))
+	    (value (nth 1 (split-string prev "="))))
+	(setq attr-list (cons (list attr value) attr-list))))
+     ;; size= 3
+     ((string-match "[^ ]=\\'" prev)
+      (setq attr-list (cons (list (substring prev 0 -1) this) attr-list))))
+
+    (while (< index (length tmp-list))
+      (cond
+       ;; size=3
+       ((string-match "[^ ]=[^ ]" this)
+	(let ((attr  (nth 0 (split-string this "=")))
+	      (value (nth 1 (split-string this "="))))
+	  (setq attr-list (cons (list attr value) attr-list))))
+       ;; size =3
+       ((string-match "\\`=[^ ]" this)
+	(setq attr-list (cons (list prev (substring this 1)) attr-list)))
+       ;; size= 3
+       ((string-match "[^ ]=\\'" this)
+	(setq attr-list (cons (list (substring this 0 -1) next) attr-list)))
+       ;; size = 3
+       ((string= "=" this)
+	(setq attr-list (cons (list prev next) attr-list))))
+      (setq index (1+ index))
+      (setq prev this)
+      (setq this next)
+      (setq next (nth (1+ index) tmp-list)))
+    ;;
+    ;; Tags with no accompanying "=" i.e. value=nil
+    ;;
+    (setq prev (car tmp-list))
+    (setq this (nth 1 tmp-list))
+    (setq next (nth 2 tmp-list))
+    (setq index 1)
+
+    (when (and (not (string-match "=" prev))
+	       (not (string= (substring this 0 1) "=")))
+      (setq attr-list (cons (list prev nil) attr-list)))
+    (while (< index (1- (length tmp-list)))
+      (when (and (not (string-match "=" this))
+		 (not (or (string= (substring next 0 1) "=")
+			  (string= (substring prev -1) "="))))
+	(setq attr-list (cons (list this nil) attr-list)))
+      (setq index (1+ index))
+      (setq prev this)
+      (setq this next)
+      (setq next (nth (1+ index) tmp-list)))
+
+    (when (and this
+	       (not (string-match "=" this))
+	       (not (string= (substring prev -1) "=")))
+      (setq attr-list (cons (list this nil) attr-list)))
+    ;; return - value
+    attr-list))
 
 (defun html2text-get-attr (p1 p2)
   (save-restriction
@@ -261,9 +335,11 @@ formatting, and then moved afterward.")
   (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-anchor (p1 p2 p3 p4)
-  ;; If someone can explain how to make the URL clickable I will
-  ;; surely improve upon this.
-  (let ((href (html2text-attr-value (html2text-get-attr p1 p2) "href")))
+  ;; If someone can explain how to make the URL clickable I will surely
+  ;; improve upon this.
+  ;; Maybe `goto-addr.el' can be used here.
+  (let* ((attr-list (html2text-get-attr p1 p2 "a"))
+	 (href (html2text-attr-value attr-list "href")))
     (delete-region p1 p4)
     (when href
       (goto-char p1)
@@ -283,31 +359,28 @@ formatting, and then moved afterward.")
 
 (defun html2text-fix-paragraph (p1 p2)
   (goto-char p1)
-  (let ((has-br-line)
-	(refill-start)
+  (let ((refill-start)
 	(refill-stop))
     (when (re-search-forward "<br>$" p2 t)
-      (setq has-br-line t))
-    (when has-br-line
-	(goto-char p1)
-	(when (re-search-forward ".+[^<][^b][^r][^>]$" p2 t)
-	  (beginning-of-line)
-	  (setq refill-start (point))
-	  (goto-char p2)
-	  (re-search-backward ".+[^<][^b][^r][^>]$" refill-start t)
-	  (next-line 1)
-	  (end-of-line)
-	  ;; refill-stop should ideally be adjusted to
-	  ;; accomodate the "<br>" strings which are removed
-	  ;; between refill-start and refill-stop.  Can simply
-	  ;; be returned from my-replace-string
-	  (setq refill-stop (+ (point)
-			       (html2text-replace-string
-				"<br>" ""
-				refill-start (point))))
-	  ;; (message "Point = %s  refill-stop = %s" (point) refill-stop)
-	  ;; (sleep-for 4)
-	  (fill-region refill-start refill-stop))))
+      (goto-char p1)
+      (when (re-search-forward ".+[^<][^b][^r][^>]$" p2 t)
+	(beginning-of-line)
+	(setq refill-start (point))
+	(goto-char p2)
+	(re-search-backward ".+[^<][^b][^r][^>]$" refill-start t)
+	(next-line 1)
+	(end-of-line)
+	;; refill-stop should ideally be adjusted to
+	;; accomodate the "<br>" strings which are removed
+	;; between refill-start and refill-stop.  Can simply
+	;; be returned from my-replace-string
+	(setq refill-stop (+ (point)
+			     (html2text-replace-string
+			      "<br>" ""
+			      refill-start (point))))
+	;; (message "Point = %s  refill-stop = %s" (point) refill-stop)
+	;; (sleep-for 4)
+	(fill-region refill-start refill-stop))))
   (html2text-replace-string "<br>" "" p1 p2))
 
 ;;
@@ -343,7 +416,7 @@ fashion, quite close to pure guess-work. It does work in some cases though."
 ;;
 
 (defun html2text-remove-tags (tag-list)
-  "Removes the tags listed in the list \"html2text-remove-tag-list\".
+  "Removes the tags listed in the list `html2text-remove-tag-list'.
 See the documentation for that variable."
   (interactive)
   (dolist (tag tag-list)
@@ -352,7 +425,7 @@ See the documentation for that variable."
       (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun html2text-format-tags ()
-  "See the variable \"html2text-format-tag-list\" for documentation"
+  "See the variable `html2text-format-tag-list' for documentation."
   (interactive)
   (dolist (tag-and-function html2text-format-tag-list)
     (let ((tag      (car tag-and-function))
@@ -371,21 +444,18 @@ See the documentation for that variable."
 	  (search-backward "</" (point-min) t)
 	  (setq p3 (point))
 	  (funcall function p1 p2 p3 p4)
-	  (goto-char p1)
-	  )))))
+	  (goto-char p1))))))
 
 (defun html2text-substitute ()
-  "See the variable \"html2text-replace-list\" for documentation"
+  "See the variable `html2text-replace-list' for documentation."
   (interactive)
   (dolist (e html2text-replace-list)
     (goto-char (point-min))
     (let ((old-string (car e))
 	  (new-string (cdr e)))
-      (html2text-replace-string old-string new-string (point-min) (point-max)))
-    ))
+      (html2text-replace-string old-string new-string (point-min) (point-max)))))
 
 (defun html2text-format-single-elements ()
-  ""
   (interactive)
   (dolist (tag-and-function html2text-format-single-element-list)
     (let ((tag      (car tag-and-function))
@@ -420,6 +490,6 @@ See the documentation for that variable."
 ;;
 ;; </Interactive functions>
 ;;
-
+(provide 'html2text)
 ;;; arch-tag: e9e57b79-35d4-4de1-a647-e7e01fe56d1e
 ;;; html2text.el ends here
