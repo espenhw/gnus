@@ -1504,12 +1504,12 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-f\C-m" 'message-goto-mail-followup-to)
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
+  (define-key message-mode-map "\C-c\C-f\C-i" 'message-insert-or-toggle-importance)
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
   (define-key message-mode-map "\C-c\C-i" 'message-goto-signature)
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
-  (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)

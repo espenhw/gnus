@@ -1,3 +1,9 @@
+2001-11-19  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-mode-map): Use C-c C-f C-i for Importance:
+	instead of C-c C-u.  Suggested by Per Abrahamsen
+	<abraham@dina.kvl.dk>.
+
 2001-11-18 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-read-folder): Use group instead of
