@@ -1,3 +1,9 @@
+2002-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From Peter von der Ahe <nospam2159@daimi.au.dk>.
+
+	* gnus-ems.el (gnus-x-splash): Set coding-system-for-read to
+	raw-text.
+
 2002-09-30  Ted Zlatanov <tzz@lifelogs.com>
 
 	* spam.el: merged changes from pinard@iro.umontreal.ca (François Pinard).

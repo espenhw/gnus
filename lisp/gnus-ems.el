@@ -170,11 +170,13 @@
 	(when (and dir
 		   (file-exists-p (setq file
 					(expand-file-name "x-splash" dir))))
-	  (with-temp-buffer
-	    (insert-file-contents file)
-	    (goto-char (point-min))
-	    (ignore-errors
-	      (setq pixmap (read (current-buffer))))))
+	  (let ((coding-system-for-read 'raw-text)
+		default-enable-multibyte-characters)
+	    (with-temp-buffer
+	      (insert-file-contents file)
+	      (goto-char (point-min))
+	      (ignore-errors
+		(setq pixmap (read (current-buffer)))))))
 	(when pixmap
 	  (make-face 'gnus-splash)
 	  (setq height (/ (car pixmap) (frame-char-height))
