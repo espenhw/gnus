@@ -1,3 +1,8 @@
+2003-05-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-send-mail): Don't insert a courtesy copy
+	notice in base64 encoded messages.
+
 2003-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-move-article): Don't copy expirable

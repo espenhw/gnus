@@ -3499,6 +3499,9 @@ It should typically alter the sending method in some way or other."
 	  (or (= (preceding-char) ?\n)
 	      (insert ?\n))
 	  (message-cleanup-headers)
+	  ;; FIXME: we're inserting the courtesy copy after encoding.
+	  ;; This is wrong if the courtesy copy string contains
+	  ;; non-ASCII characters. -- jh
 	  (when
 	      (save-restriction
 		(message-narrow-to-headers)
@@ -3506,13 +3509,19 @@ It should typically alter the sending method in some way or other."
 		     (or (message-fetch-field "cc")
 			 (message-fetch-field "bcc")
 			 (message-fetch-field "to"))
-		     (let ((content-type (message-fetch-field "content-type")))
-		       (or
-			(not content-type)
-			(string= "text/plain"
-				 (car
-				  (mail-header-parse-content-type
-				   content-type)))))))
+		     (let ((content-type (message-fetch-field
+					  "content-type")))
+		       (and
+			(or
+			 (not content-type)
+			 (string= "text/plain"
+				  (car 
+				   (mail-header-parse-content-type
+				    content-type))))
+			(not
+			 (string= "base64"
+				  (message-fetch-field
+				   "content-transfer-encoding")))))))
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
