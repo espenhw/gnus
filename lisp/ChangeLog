@@ -1,5 +1,9 @@
 2001-09-14  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-start.el (gnus-group-mode-hook): Moved from gnus-group
+	(otherwise e.g. gnus-agentize in .gnus overrides the customized
+	default before gnus-group is loaded and the variable set.)
+
 	* nnimap.el (nnimap-request-set-mark): Do not store bookmark,
 	killed or unsent marks.
 

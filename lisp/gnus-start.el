@@ -396,6 +396,12 @@ Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)
 
+(defcustom gnus-group-mode-hook nil
+  "Hook for Gnus group mode."
+  :group 'gnus-group-various
+  :options '(gnus-topic-mode)
+  :type 'hook)
+
 (defcustom gnus-always-read-dribble-file nil
   "Unconditionally read the dribble file."
   :group 'gnus-newsrc

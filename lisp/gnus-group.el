@@ -200,12 +200,6 @@ with some simple extensions:
   :group 'gnus-group-visual
   :type 'string)
 
-(defcustom gnus-group-mode-hook nil
-  "Hook for Gnus group mode."
-  :group 'gnus-group-various
-  :options '(gnus-topic-mode)
-  :type 'hook)
-
 ;; Extracted from gnus-xmas-redefine in order to preserve user settings
 (when (featurep 'xemacs)
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
