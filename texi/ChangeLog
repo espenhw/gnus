@@ -1,3 +1,8 @@
+2002-12-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus.texi (Top): Add pointers to related manuals.  Suggested by
+	Reiner Steib.
+
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Saving Articles): Addition.

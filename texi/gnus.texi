@@ -428,6 +428,13 @@ the program.
 * Index::                       Variable, function and concept index.
 * Key Index::                   Key Index.
 
+Other related manuals
+
+* Message:(message).            Composing messages.
+* Emacs-MIME:(emacs-mime).      Composing messages; MIME-specific parts.
+* Sieve:(sieve).                Managing Sieve scripts in Emacs.
+* PGG:(pgg).                    PGP/MIME with Gnus.
+
 @detailmenu
  --- The Detailed Node Listing ---
 
