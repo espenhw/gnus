@@ -1,3 +1,8 @@
+2003-10-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* pgg-def.el (pgg-default-keyserver-address): Change to
+	subkeys.pgp.net.  From Michael Shields <shields@msrl.com>
+
 2003-10-01  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-idna-to-ascii-rhs-1): RHS can be terminated
