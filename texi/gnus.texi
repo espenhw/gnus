@@ -17614,55 +17614,49 @@ listed below.
 
 @cindex Agent Parameters
 @table @code
-@item gnus-agent-cat-name
+@item agent-cat-name
 The name of the category.
 
-@item gnus-agent-cat-groups
+@item agent-groups
 The list of groups that are in this category.
 
-@item gnus-agent-cat-predicate
+@item agent-predicate
 A predicate which (generally) gives a rough outline of which articles
 are eligible for downloading; and
 
-@item gnus-agent-cat-score-file
+@item agent-score-file
 a score rule which (generally) gives you a finer granularity when
 deciding what articles to download.  (Note that this @dfn{download
 score} is not necessarily related to normal scores.)
 
-@item gnus-agent-cat-enable-expiration
+@item agent-enable-expiration
 a boolean indicating whether the agent should expire old articles in
 this group.  Most groups should be expired to conserve disk space.  In
 fact, its probably safe to say that the gnus.* hierarchy contains the
 only groups that should not be expired.
 
-@item gnus-agent-cat-days-until-old
+@item agent-days-until-old
 an integer indicating the number of days that the agent should wait
 before deciding that a read article is safe to expire.
 
-@item gnus-agent-cat-low-score
+@item agent-low-score
 an integer that overrides the value of @code{gnus-agent-low-score}.
 
-@item gnus-agent-cat-high-score
+@item agent-high-score
 an integer that overrides the value of @code{gnus-agent-high-score}.
 
-@item gnus-agent-cat-length-when-short
+@item agent-length-when-short
 an integer that overrides the value of
 @code{gnus-agent-short-article}.
 
-@item gnus-agent-cat-length-when-long
+@item agent-length-when-long
 an integer that overrides the value of @code{gnus-agent-long-article}.
 
-@c @item gnus-agent-cat-disable-undownloaded-faces
-@c a symbol indicating whether the summary buffer should @emph{not} display
-@c undownloaded articles using the gnus-summary-*-undownloaded-face
-@c faces.  The symbol nil will enable the use of undownloaded faces while
-@c all other symbols disable them.
-
-@item gnus-agent-cat-enable-undownloaded-faces
+@item agent-enable-undownloaded-faces
 a symbol indicating whether the summary buffer should display
 undownloaded articles using the gnus-summary-*-undownloaded-face
-faces.  The symbol nil will disable the use of undownloaded faces while
-all other symbols enable them.
+faces. Any symbol other than nil will enable the use of undownloaded
+faces.
 @end table
 
 The name of a category can not be changed once the category has been
@@ -18245,21 +18239,19 @@ If you use the Agent as a cache (to avoid downloading the same article
 each time you visit it or to minimize your connection time), the
 undownloaded face will probably seem like a good idea.  The reason
 being that you do all of our work (marking, reading, deleting) with
-downloaded articles so the normal faces always appear.
+downloaded articles so the normal faces always appear.  For those
+users using the agent to improve online performance by caching the NOV
+database (most users since 5.10.2), the undownloaded faces may appear
+to be an absolutely horrible idea.  The issue being that, since none
+of their articles have been fetched into the Agent, all of the
+normal faces will be obscured by the undownloaded faces.
 
-For occasional Agent users, the undownloaded faces may appear to be an
-absolutely horrible idea.  The issue being that, since most of their
-articles have not been fetched into the Agent, most of the normal
-faces will be obscured by the undownloaded faces.  If this is your
-situation, you have two choices available.  First, you can completely
-disable the undownload faces by customizing
-@code{gnus-summary-highlight} to delete the three cons-cells that
-refer to the @code{gnus-summary-*-undownloaded-face} faces.  Second, if
-you prefer to take a more fine-grained approach, you may set the
-@code{agent-disable-undownloaded-faces} group parameter to t.  This
-parameter, like all other agent parameters, may be set on an Agent
-Category (@pxref{Agent Categories}), a Group Topic (@pxref{Topic
-Parameters}), or an individual group (@pxref{Group Parameters}).
+If you would like to use the undownloaded faces, you must enable the
+undownloaded faces by setting the @code{agent-enable-undownloaded-faces}
+group parameter to t.  This parameter, like all other agent
+parameters, may be set on an Agent Category (@pxref{Agent
+Categories}), a Group Topic (@pxref{Topic Parameters}), or an
+individual group (@pxref{Group Parameters}).
 
 @node Agent as Cache
 @subsection Agent as Cache
@@ -18411,16 +18403,24 @@ directory.  It's emptied when you synchronize flags.
 @node Outgoing Messages
 @subsection Outgoing Messages
 
-When Gnus is unplugged, all outgoing messages (both mail and news) are
-stored in the draft group ``queue'' (@pxref{Drafts}).  You can view
-them there after posting, and edit them at will.
+By default, when Gnus is unplugged, all outgoing messages (both mail
+and news) are stored in the draft group ``queue'' (@pxref{Drafts}).
+You can view them there after posting, and edit them at will.
 
-When Gnus is plugged again, you can send the messages either from the
-draft group with the special commands available there, or you can use
-the @kbd{J S} command in the group buffer to send all the sendable
-messages in the draft group.
+You can control the circumstances under which outgoing mail is queued
+(see @code{gnus-agent-queue-mail}, @pxref{Agent Variables}).  Outgoing
+news is always queued when Gnus is unplugged, and never otherwise.
 
+You can send the messages either from the draft group with the special
+commands available there, or you can use the @kbd{J S} command in the
+group buffer to send all the sendable messages in the draft group.
+Posting news will only work when Gnus is plugged, but you can send
+mail at any time.
 
+If sending mail while unplugged does not work for you and you worry
+about hitting @kbd{J S} by accident when unplugged, you can have Gnus
+ask you to confirm your action (see
+@code{gnus-agent-prompt-send-queue}, @pxref{Agent Variables}).
 
 @node Agent Variables
 @subsection Agent Variables
@@ -18519,6 +18519,19 @@ The legal values are @code{nil} (maneuver to any article),
 have not been fetched), @code{always-undownloaded} (maneuvering always
 ignores articles that have not been fetched), @code{unfetched}
 (maneuvering ignores articles whose headers have not been fetched).
+
+@item gnus-agent-queue-mail
+@vindex gnus-agent-queue-mail
+When @code{gnus-agent-queue-mail} is @code{always}, Gnus will always
+queue mail rather than sending it straight away.  When @code{t}, Gnus
+will queue mail when unplugged only.  When @code{nil}, never queue
+mail.  The default is @code{t}.
+
+@item gnus-agent-prompt-send-queue
+@vindex gnus-agent-prompt-send-queue
+When @code{gnus-agent-prompt-send-queue} is non-@code{nil} Gnus will
+prompt you to confirm that you really wish to proceed if you hit
+@kbd{J S} while unplugged.  The default is @code{nil}.
 
 @item gnus-agent-auto-agentize-methods
 @vindex gnus-agent-auto-agentize-methods

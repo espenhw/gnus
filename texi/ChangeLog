@@ -1,3 +1,12 @@
+2004-01-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.texi (Outgoing Messages, Agent Variables): Add
+	gnus-agent-queue-mail and gnus-agent-prompt-send-queue.
+	Suggested by Gaute Strokkenes <gs234@srcf.ucam.org>
+
+	* gnus.texi (agent-disable-undownloaded-faces): Replaced with
+	agent-enable-undownloaded-faces
+
 2004-01-17  Jesper Harder  <harder@ifa.au.dk>
 
 	* sieve.texi (Manage Sieve API): nil -> @code{nil}.
