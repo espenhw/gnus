@@ -1031,7 +1031,7 @@ This only works when `display-time' is enabled."
       (mail-source-run-script
        postscript
        (format-spec-make ?p password ?t mail-source-crash-box
-			 ?s server ?P port ?u user))))
+			 ?s server ?P port ?u user))
       found)))
 
 (eval-and-compile
