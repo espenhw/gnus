@@ -1,3 +1,8 @@
+2003-07-10  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Security): Discuss the PGP 2.x compatibility
+	problem.
+
 2003-06-24  Jesper Harder  <harder@ifa.au.dk>
 
 	* sieve.texi (Sieve Mode): Formatting fix.

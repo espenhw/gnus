@@ -940,28 +940,6 @@ a multipart tag will be used; if no other parts are present in your
 message a single part tag will be used.  This way, message mode will
 do the Right Thing (TM) with signed/encrypted multipart messages.
 
-@vindex mml-signencrypt-style-alist
-By default, when encrypting a message, Gnus will use the
-``signencrypt'' mode.  If you would like to disable this for a
-particular message, give the @code{mml-secure-message-encrypt-*}
-command a prefix argument.  (for example, @kbd{C-u C-c C-m c p}).
-Additionally, by default Gnus will separately sign, then encrypt a
-message which has the mode signencrypt.  If you would like to change
-this behavior you can customize the @code{mml-signencrypt-style-alist}
-variable.  For example:
-
-
-@lisp
-(setq mml-signencrypt-style-alist '(("smime" combined)
-                                    ("pgp" combined)
-                                    ("pgpmime" combined)))
-@end lisp
-
-Will cause Gnus to sign and encrypt in one pass, thus generating a
-single signed and encrypted part.  Note that combined sign and encrypt
-does not work with all supported OpenPGP implementations (in
-particular, @acronym{PGP} version 2 do not support this).
-
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
 mail is actually signed or encrypted.  After invoking the above
@@ -974,6 +952,12 @@ party the other night, actually will be sent encrypted.
 @emph{Note!}  Neither @acronym{PGP/MIME} nor @acronym{S/MIME} encrypt/signs
 RFC822 headers.  They only operate on the @acronym{MIME} object.  Keep this
 in mind before sending mail with a sensitive Subject line.
+
+By default, when encrypting a message, Gnus will use the
+``signencrypt'' mode, which means the message is both signed and
+encrypted.  If you would like to disable this for a particular
+message, give the @code{mml-secure-message-encrypt-*} command a prefix
+argument, e.g., @kbd{C-u C-c C-m c p}.
 
 Actually using the security commands above is not very difficult.  At
 least not compared with making sure all involved programs talk with each
@@ -1044,9 +1028,10 @@ the passphrase prompt.
 @subsection Using PGP/MIME
 
 @acronym{PGP/MIME} requires an external OpenPGP implementation, such
-as @uref{http://www.gnupg.org/, GNU Privacy Guard}.  One Emacs
-interface to OpenPGP implementations, PGG (@pxref{Top, ,PGG, pgg, PGG
-Manual}), is included, but Mailcrypt and Florian Weimer's
+as @uref{http://www.gnupg.org/, GNU Privacy Guard}.  Pre-OpenPGP
+implementations such as PGP 2.x and PGP 5.x are also supported.  One
+Emacs interface to the PGP implementations, PGG (@pxref{Top, ,PGG,
+pgg, PGG Manual}), is included, but Mailcrypt and Florian Weimer's
 @code{gpg.el} are also supported.
 
 @vindex gpg-temp-directory
@@ -1054,8 +1039,36 @@ Note, if you are using the @code{gpg.el} you must make sure that the
 directory specified by @code{gpg-temp-directory} have permissions
 0700.
 
-Creating your own OpenPGP key is described in detail in the
-documentation of your OpenPGP implementation, so we refer to it.
+Creating your own key is described in detail in the documentation of
+your PGP implementation, so we refer to it.
+
+If you have imported your old PGP 2.x key into GnuPG, and want to send
+signed and encrypted messages to your fellow PGP 2.x users, you'll
+discover that the receiver cannot understand what you send. One
+solution is to use PGP 2.x instead (i.e., if you use @code{pgg}, set
+@code{pgg-default-scheme} to @code{pgp}).  If you do want to use
+GnuPG, you can use a compatibility script called @code{gpg-2comp}
+available from
+@url{http://muppet.faveve.uni-stuttgart.de/~gero/gpg-2comp/}.  You
+could also convince your fellow PGP 2.x users to convert to GnuPG.
+@vindex mml-signencrypt-style-alist
+As a final workaround, you can make the sign and encryption work in
+two steps; separately sign, then encrypt a message.  If you would like
+to change this behavior you can customize the
+@code{mml-signencrypt-style-alist} variable.  For example:
+
+@lisp
+(setq mml-signencrypt-style-alist '(("smime" separate)
+                                    ("pgp" separate)
+                                    ("pgpauto" separate)
+                                    ("pgpmime" separate)))
+@end lisp
+
+This causes to sign and encrypt in two passes, thus generating a
+message that can be understood by PGP version 2.
+
+(Refer to @url{http://www.gnupg.org/gph/en/pgp2x.html} for more
+information about the problem.)
 
 @node Various Commands
 @section Various Commands
