@@ -55,7 +55,7 @@ This variable is a list of mail source specifiers."
   :group 'mail-source
   :type 'integer)
 
-(defcustom mail-source-delete-incoming nil
+(defcustom mail-source-delete-incoming t
   "*If non-nil, delete incoming files after handling."
   :group 'mail-source
   :type 'boolean)

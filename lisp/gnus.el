@@ -260,10 +260,10 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.99"
+(defconst gnus-version-number "5.8.0"
   "Version number for this version of Gnus.")
 
-(defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
+(defconst gnus-version (format "Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
