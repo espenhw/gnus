@@ -1,3 +1,8 @@
+2001-01-16  Simon Josefsson  <simon@josefsson.org>
+
+	* message.el (message-make-in-reply-to): Add comment to message-id
+	(old syntax, see 2000-08-02 change).
+
 2001-01-16 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-url-mailto): Use gnus-msg-mail.
