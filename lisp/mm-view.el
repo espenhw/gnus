@@ -89,6 +89,8 @@
       (setq text (mm-get-part handle))
       (let ((b (point))
 	    (url-standalone-mode t)
+	    (w3-honor-stylesheets nil)
+	    (w3-delay-image-loads t)
 	    (url-current-object
 	     (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
 	    (width (window-width))
@@ -121,6 +123,8 @@
 		      ;; Don't let w3 set the global version of
 		      ;; this variable.
 		      (fill-column fill-column)
+		      (w3-honor-stylesheets nil)
+		      (w3-delay-image-loads t)
 		      (url-standalone-mode t))
 		  (condition-case var
 		      (w3-region (point-min) (point-max))
@@ -214,7 +218,9 @@
 
 (defun mm-w3-prepare-buffer ()
   (require 'w3)
-  (let ((url-standalone-mode t))
+  (let ((url-standalone-mode t)
+	(w3-honor-stylesheets nil)
+	(w3-delay-image-loads t))
     (w3-prepare-buffer)))
 
 (defun mm-view-message ()

@@ -65,7 +65,8 @@ The following specs are understood:
   :type 'string)
 
 (defcustom gnus-server-browse-in-group-buffer nil
-  "Whether browse server in group buffer."
+  "Whether server browsing should take place in the group buffer.
+If nil, a faster, but more primitive, buffer is used instead."
   :group 'gnus-server-visual
   :type 'string)
 
@@ -726,7 +727,9 @@ The following commands are available:
 	      (list
 	       (format
 		"Gnus: %%b {%s:%s}" (car method) (cadr method))))
-	(let ((buffer-read-only nil) charset)
+	(let ((buffer-read-only nil) charset
+	      (prefix (let ((gnus-select-method orig-select-method))
+			(gnus-group-prefixed-name "" method))))
 	  (while groups
 	    (setq group (car groups))
 	    (setq charset (gnus-group-name-charset method (car group)))
@@ -735,11 +738,7 @@ The following commands are available:
 	     (prog1 (1+ (point))
 	       (insert
 		(format "%c%7d: %s\n"
-			(let ((level
-			       (let ((gnus-select-method orig-select-method))
-				 (gnus-group-level
-				  (gnus-group-prefixed-name (car group)
-							    method)))))
+			(let ((level (gnus-group-level (concat prefix (car group)))))
 			      (cond
 			       ((<= level gnus-level-subscribed) ? )
 			       ((<= level gnus-level-unsubscribed) ?U)

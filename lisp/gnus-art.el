@@ -138,7 +138,8 @@
     "^X-Abuse-Info:" "^X-From_:" "^X-Accept-Language:" "^Errors-To:"
     "^X-BeenThere:" "^X-Mailman-Version:" "^List-Help:" "^List-Post:"
     "^List-Subscribe:" "^List-Id:" "^List-Unsubscribe:" "^List-Archive:"
-     "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:")
+     "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:"
+     "^X-Request-PGP:" "^X-Fingerprint:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -1127,7 +1128,6 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-fill-article gnus-article-fill-cited-article)
     (gnus-treat-fill-long-lines gnus-article-fill-long-lines)
     (gnus-treat-strip-cr gnus-article-remove-cr)
-    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-date-ut gnus-article-date-ut)
     (gnus-treat-date-local gnus-article-date-local)
@@ -1159,6 +1159,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
     (gnus-treat-display-picons gnus-article-display-picons)
+    (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-play-sounds gnus-earcon-display)))
 
 (defvar gnus-article-mime-handle-alist nil)
@@ -1877,7 +1878,9 @@ If READ-CHARSET, ask for a coding system."
 	  (narrow-to-region (point) (point-max))
 	  (mm-setup-w3)
 	  (let ((w3-strict-width (window-width))
-		(url-standalone-mode t))
+		(url-standalone-mode t)
+		(w3-honor-stylesheets nil)
+		(w3-delay-image-loads t))
 	    (condition-case var
 		(w3-region (point-min) (point-max))
 	      (error))))))))
@@ -2021,7 +2024,8 @@ always hide."
 	(let ((buffer-read-only nil))
 	  (when (gnus-article-narrow-to-signature)
 	    (gnus-article-hide-text-type
-	     (point-min) (point-max) 'signature)))))))
+	     (point-min) (point-max) 'signature))))))
+  (gnus-set-mode-line 'article))
 
 (defun article-strip-headers-in-body ()
   "Strip offensive headers from bodies."
@@ -2213,7 +2217,8 @@ Originally it is hide instead of DUMMY."
      'article-type type
      (point-min) (point-max)
      (cons 'article-type (cons type
-			       gnus-hidden-properties)))))
+			       gnus-hidden-properties)))
+    (setq gnus-article-wash-types (delq type gnus-article-wash-types))))
 
 (defconst article-time-units
   `((year . ,(* 365.25 24 60 60))
@@ -2511,7 +2516,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	       (match-beginning invisible) (match-end invisible) props)
 	      (gnus-article-unhide-text-type
 	       (match-beginning visible) (match-end visible) 'emphasis)
-	      (gnus-put-text-property-excluding-newlines
+	      (gnus-put-overlay-excluding-newlines
 	       (match-beginning visible) (match-end visible) 'face face)
 	      (push 'emphasis gnus-article-wash-types)
 	      (goto-char (match-end invisible)))))))))

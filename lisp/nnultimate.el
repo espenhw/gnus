@@ -106,7 +106,7 @@
 		    fetchers))
 	    (pop articles)
 	    (setq article (car articles)))))
-   ;; Now we have the mapping from/to Gnus/nnultimate article numbers,
+      ;; Now we have the mapping from/to Gnus/nnultimate article numbers,
       ;; so we start fetching the topics that we need to satisfy the
       ;; request.
       (if (not fetchers)
