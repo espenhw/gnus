@@ -1,3 +1,8 @@
+2000-06-03 13:36:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-decode-charset): Override non-MIME forward
+	charset.
+
 2000-06-02 12:04:26  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-quote-region): Correct the regexp.
