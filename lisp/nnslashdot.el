@@ -169,7 +169,8 @@
 	     (cons
 	      (1+ article)
 	      (make-full-mail-header
-	       (1+ article) subject
+	       (1+ article)
+	       (concat subject " (" score ")")
 	       from date
 	       (concat "<" sid "%"
 		       (number-to-string (1+ article)) 
@@ -179,7 +180,7 @@
 			   (number-to-string (1+ (string-to-number parent)))
 			   "@slashdot>")
 		 "")
-	       0 (string-to-number score) nil nil))
+	       0 lines nil nil))
 	     headers)))))
     (setq nnslashdot-headers (sort headers 'car-less-than-car))
     (save-excursion
