@@ -220,20 +220,27 @@ regexp.  If it matches, the text in question is not a signature."
 
 ;; Fixme: This isn't the right thing for mixed graphical and and
 ;; non-graphical frames in a session.
-;; gnus-xmas.el overrides this for XEmacs.
 (defcustom gnus-article-x-face-command
-  (if (and (fboundp 'image-type-available-p)
-	   (image-type-available-p 'xbm))
-      'gnus-article-display-xface
-    (if gnus-article-compface-xbm
-	"{ echo '/* Width=48, Height=48 */'; uncompface; } | display -"
-      "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | \
-display -"))
+  (if (featurep 'xemacs)
+      (if (or (featurep 'xface)
+	      (featurep 'xpm))
+	  'gnus-xmas-article-display-xface
+	"{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | ee -")
+    (if (and (fboundp 'image-type-available-p)
+	     (image-type-available-p 'xbm))
+	'gnus-article-display-xface
+      (if gnus-article-compface-xbm
+	  "{ echo '/* Width=48, Height=48 */'; uncompface; } | display -"
+	"{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | \
+display -")))
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
-  :type '(choice string
-		 (function-item gnus-article-display-xface)
+  :type `(choice string
+		 (function-item 
+		  ,(if (featurep 'xemacs)
+		       'gnus-xmas-article-display-xface
+		     'gnus-article-display-xface))
 		 function)
   :version "21.1"
   :group 'gnus-article-washing)

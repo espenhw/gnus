@@ -81,16 +81,6 @@ Possibly the `etc' directory has not been installed.")))
   (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
-(defcustom gnus-article-x-face-command
-  (if (or (featurep 'xface)
-	  (featurep 'xpm))
-      'gnus-xmas-article-display-xface
-    "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | ee -")
-  "*String or function to be executed to display an X-Face header.
-If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command."
-  :type '(choice string function))
-
 ;;; Internal variables.
 
 ;; Don't warn about these undefined variables.
