@@ -508,13 +508,15 @@
 	     (format " *nnslashdot %s*" server))))))
 
 (defun nnslashdot-date-to-date (sdate)
-  (let ((elem (delete "" (split-string sdate))))
-    (concat (substring (nth 0 elem) 0 3) " "
-	    (substring (nth 1 elem) 0 3) " "
-	    (substring (nth 2 elem) 0 2) " "
-	    (substring (nth 3 elem) 1 6) " "
-	    (format-time-string "%Y") " "
-	    (nth 4 elem))))
+  (condition-case err
+      (let ((elem (delete "" (split-string sdate))))
+	(concat (substring (nth 0 elem) 0 3) " "
+		(substring (nth 1 elem) 0 3) " "
+		(substring (nth 2 elem) 0 2) " "
+		(substring (nth 3 elem) 1 6) " "
+		(format-time-string "%Y") " "
+		(nth 4 elem)))
+    (error "")))
 
 (defun nnslashdot-generate-active ()
   (save-excursion

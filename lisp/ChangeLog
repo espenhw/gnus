@@ -1,3 +1,10 @@
+1999-12-13 18:59:33  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-date-to-date): Error proof when input
+	is bad.
+	* gnus-sum.el (gnus-list-of-unread-articles): When (car read) 
+	is not 1.
+
 1999-12-13 18:22:08  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-request-article): A space.
