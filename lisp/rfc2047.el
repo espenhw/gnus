@@ -147,7 +147,7 @@ Should be called narrowed to the head of the message."
     found))
 
 (defun rfc2047-dissect-region (b e)
-  "Dissect the region between B and E."
+  "Dissect the region between B and E into words."
   (let (words)
     (save-restriction
       (narrow-to-region b e)
@@ -156,10 +156,8 @@ Should be called narrowed to the head of the message."
 	      (concat "[^" ietf-drums-tspecials " \t\n]+") nil t)
 	(push
 	 (list (match-beginning 0) (match-end 0)
-	       (car
-		(delq 'ascii
-		      (find-charset-region (match-beginning 0)
-					   (match-end 0)))))
+	       (car (delq 'ascii (find-charset-region
+				  (match-beginning 0) (match-end 0)))))
 	 words))
       words)))
 

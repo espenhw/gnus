@@ -1063,7 +1063,8 @@ This variable is used only in non-Mule Emacsen.")
     (when value
       (while (string-match "\n[\t ]+" value)
 	(setq value (replace-match " " t t value)))
-      value)))
+      ;; We remove all text props.delete-region
+      (format "%s" value))))
 
 (defun message-narrow-to-field ()
   "Narrow the buffer to the header on the current line."
@@ -2018,6 +2019,7 @@ the user from the mailer."
   (let ((inhibit-read-only t))
     (put-text-property (point-min) (point-max) 'read-only nil))
   (message-fix-before-sending)
+  (message-encode-message-body)
   (run-hooks 'message-send-hook)
   (message "Sending...")
   (let ((alist message-send-method-alist)
@@ -2107,7 +2109,6 @@ the user from the mailer."
 	(case-fold-search nil)
 	(news (message-news-p))
 	(mailbuf (current-buffer)))
-    (message-encode-message-body)
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
@@ -2283,7 +2284,6 @@ to find out how to use this."
 	result)
     (if (not (message-check-news-body-syntax))
 	nil
-      (message-encode-message-body)
       (save-restriction
 	(message-narrow-to-headers)
 	;; Insert some headers.

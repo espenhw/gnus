@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.59 Manual
+@settitle Pterodactyl Gnus 0.60 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.59 Manual
+@title Pterodactyl Gnus 0.60 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.59.
+This manual corresponds to Pterodactyl Gnus 0.60.
 
 @end ifinfo
 
@@ -15580,6 +15580,9 @@ Ordered list of suffixes on picon file names to try.  Defaults to
 @vindex gnus-picons-display-article-move-p
 Whether to move point to first empty line when displaying picons.  This
 has only an effect if `gnus-picons-display-where' has value `article'.
+
+If @code{nil}, display the picons in the @code{From} and
+@code{Newsgroups} lines.  This is the defailt.
 
 @item gnus-picons-clear-cache-on-shutdown
 @vindex gnus-picons-clear-cache-on-shutdown

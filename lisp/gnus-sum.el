@@ -1006,7 +1006,7 @@ variable (string, integer, character, etc).")
 (defvar gnus-last-article nil)
 (defvar gnus-newsgroup-history nil)
 
-(defvar gnus-newsgroup-default-charset nil)
+(defvar gnus-newsgroup-default-charset gnus-default-charset)
 (defvar gnus-newsgroup-iso-8859-1-forced nil)
 
 (defconst gnus-summary-local-variables

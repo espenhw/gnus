@@ -889,6 +889,37 @@ always hide."
 	   (point-max)))
        'boring-headers))))
 
+(defvar gnus-article-normalized-header-length 40
+  "Length of normalized headers.")
+
+(defun article-normalize-headers ()
+  "Make all header lines 40 characters long."
+  (interactive)
+  (let ((buffer-read-only nil)
+	column)
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-head)
+	(while (not (eobp))
+	  (cond
+	   ((< (setq column (- (gnus-point-at-eol) (point)))
+	       gnus-article-normalized-header-length)
+	    (end-of-line)
+	    (insert (make-string
+		     (- gnus-article-normalized-header-length column)
+		     ? )))
+	   ((> column gnus-article-normalized-header-length)
+	    (gnus-put-text-property
+	     (progn
+	       (forward-char gnus-article-normalized-header-length)
+	       (point))
+	     (gnus-point-at-eol)
+	     'invisible t))
+	   (t
+	    ;; Do nothing.
+	    ))
+	  (forward-line 1))))))
+
 (defun article-treat-dumbquotes ()
   "Translate M******** sm*rtq**t*s into proper text."
   (interactive)
@@ -1092,10 +1123,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 
 (defun article-decode-encoded-words ()
   "Remove encoded-word encoding from headers."
-  (let ((inhibit-point-motion-hooks t)
-	buffer-read-only
-	(rfc2047-default-charset gnus-newsgroup-default-charset)
-	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+  (let ((inhibit-point-motion-hooks t) buffer-read-only)
     (save-restriction
       (message-narrow-to-head)
       (funcall gnus-decode-header-function (point-min) (point-max)))))
@@ -1975,6 +2003,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-date-lapsed
      article-emphasize
      article-treat-dumbquotes
+     article-normalize-headers
      (article-show-all . gnus-article-show-all-headers))))
 
 ;;;
@@ -3862,7 +3891,7 @@ forbidden in URL encoding."
 
 (defvar gnus-decode-header-methods
   '(gnus-decode-with-mail-decode-encoded-word-region)
-  "List of methods used to decode headers
+  "List of methods used to decode headers.
 
 This variable is a list of FUNCTION or (REGEXP . FUNCTION). If item is
 FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
@@ -3878,7 +3907,8 @@ For example:
 (defvar gnus-decode-header-methods-cache nil)
 
 (defun gnus-decode-with-mail-decode-encoded-word-region (start end)
-  (let ((rfc2047-default-charset gnus-default-charset))
+  (let ((rfc2047-default-charset gnus-newsgroup-default-charset)
+	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (mail-decode-encoded-word-region start end)))
 
 (defun gnus-multi-decode-header (start end)

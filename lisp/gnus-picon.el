@@ -117,7 +117,7 @@ Some people may want to add \"unknown\" to this list."
   :type '(repeat string)
   :group 'picons)
 
-(defcustom gnus-picons-display-article-move-p t
+(defcustom gnus-picons-display-article-move-p nil
   "*Whether to move point to first empty line when displaying picons.
 This has only an effect if `gnus-picons-display-where' has value `article'."
   :type 'boolean
@@ -144,11 +144,7 @@ please tell me so that we can list it."
 		 (string))
   :group 'picons)
 
-(defface gnus-picons-xbm-face
-  '((((background dark))
-     (:foreground "green" :background "black"))
-    (t
-     (:foreground "black" :background "blue")))
+(defface gnus-picons-xbm-face '((t (:foreground "black" :background "white")))
   "Face to show xbm picons in."
   :group 'picons)
 
@@ -312,6 +308,15 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 						"."))))
 	  (gnus-picons-prepare-for-annotations)
 	  (gnus-group-display-picons)
+	  (unless gnus-picons-display-article-move-p
+	    (save-restriction
+	      (let ((buffer-read-only nil))
+		(when (re-search-forward "^From: " nil t)
+		  (narrow-to-region (point) (gnus-point-at-eol))
+		  (when (search-forward from nil t)
+		    (gnus-put-text-property
+		     (match-beginning 0) (match-end 0)
+		     'invisible t))))))
 	  (if (null gnus-picons-piconsearch-url)
 	      (progn
 		(gnus-picons-display-pairs (gnus-picons-lookup-pairs
@@ -338,27 +343,40 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	     (or (null gnus-picons-group-excluded-groups)
 		 (not (string-match gnus-picons-group-excluded-groups
 				    gnus-newsgroup-name))))
-    (save-excursion
-      (gnus-picons-prepare-for-annotations)
-      (if (null gnus-picons-piconsearch-url)
-	  (gnus-picons-display-pairs
-		 (gnus-picons-lookup-pairs
-		  (reverse (message-tokenize-header
-			    (gnus-group-real-name gnus-newsgroup-name) 
-			    "."))
-		  gnus-picons-news-directories)
-		 t ".")
-	(push (list 'gnus-group-annotations 'search nil
-		    (message-tokenize-header 
-		     (gnus-group-real-name gnus-newsgroup-name) ".")
-		    (if (listp gnus-picons-news-directories)
-			gnus-picons-news-directories
-		      (list gnus-picons-news-directories))
-		    nil)
-	      gnus-picons-jobs-alist)
-	(gnus-picons-next-job))
+    (let ((groups
+	   (if gnus-picons-display-article-move-p
+	       (list (gnus-group-real-name gnus-newsgroup-name))
+	     (split-string (mail-fetch-field "newsgroups") ",")))
+	  group)
+      (save-excursion
+	(gnus-picons-prepare-for-annotations)
+	(while (setq group (pop groups))
+	  (unless gnus-picons-display-article-move-p
+	    (save-restriction
+	      (let ((buffer-read-only nil))
+		(goto-char (point-min))
+		(when (re-search-forward "^Newsgroups:" nil t)
+		  (narrow-to-region (point) (gnus-point-at-eol))
+		  (when (search-forward group nil t)
+		    (gnus-put-text-property
+		     (match-beginning 0) (match-end 0)
+		     'invisible t))))))
+	  (if (null gnus-picons-piconsearch-url)
+	      (gnus-picons-display-pairs
+	       (gnus-picons-lookup-pairs
+		(reverse (split-string group "\\."))
+		gnus-picons-news-directories)
+	       t ".")
+	    (push (list 'gnus-group-annotations 'search nil
+			(split-string group "\\.")
+			(if (listp gnus-picons-news-directories)
+			    gnus-picons-news-directories
+			  (list gnus-picons-news-directories))
+			nil)
+		  gnus-picons-jobs-alist)
+	    (gnus-picons-next-job))
 
-      (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))
+	  (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))))
 
 (defun gnus-picons-lookup-internal (addrs dir)
   (setq dir (expand-file-name dir gnus-picons-database))
@@ -420,7 +438,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
   "Display picons in list PAIRS."
   (let ((domain-p (and gnus-picons-display-as-address dot-p))
 	pair picons)
-    (when (and bar-p domain-p right-p)
+    (when (and bar-p domain-p right-p
+	       gnus-picons-display-article-move-p)
       (setq picons (gnus-picons-display-glyph
 		    (let ((gnus-picons-file-suffixes '("xbm")))
 		      (gnus-picons-try-face
@@ -455,6 +474,7 @@ none, and whose CDR is the corresponding element of DOMAINS."
     glyph))
 
 (defun gnus-picons-display-glyph (glyph &optional part rightp)
+  (set-glyph-baseline glyph 70)
   (let ((new (gnus-picons-make-annotation
 	      glyph (point) 'text nil nil nil rightp)))
     (when (and part gnus-picons-display-as-address)
@@ -717,7 +737,8 @@ none, and whose CDR is the corresponding element of DOMAINS."
 	    (cond ((stringp tag);; (SYM-ANN "..." RIGHT-P)
 		   (gnus-picons-network-display-internal sym-ann nil tag
 							 (pop job)))
-		  ((eq 'bar tag)
+		  ((and (eq 'bar tag)
+			gnus-picons-display-article-move-p)
 		   (gnus-picons-network-display-internal
 		    sym-ann
 		    (let ((gnus-picons-file-suffixes '("xbm")))

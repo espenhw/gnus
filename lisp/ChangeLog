@@ -1,3 +1,51 @@
+Wed Dec  2 20:07:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.60 is released.
+
+1998-12-02 20:11:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-parse-1): Don't throw contents away.
+
+1998-12-02  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mml.el (mml-compute-boundary-1): Regexp-quote the boundary.
+
+1998-12-02 18:42:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-parse-singlepart-with-multiple-charsets): New
+	function.
+	(mml-parse-1): Use it.
+
+Tue Dec  1 23:04:25 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-decode-with-mail-decode-encoded-word-region):
+	Use gnus-newsgroup-default-charset.
+	(article-decode-encoded-words): Remove charset codes.
+	* gnus-sum.el (gnus-newsgroup-default-charset): Use
+	gnus-default-charset.
+
+1998-12-02 03:14:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Don't encode here.
+	(message-send-news): Nor here.
+	(message-send): ... but here instead.
+
+	* gnus-picon.el (gnus-picons-display-article-move-p): Changed
+	default to nil.
+	(gnus-article-display-picons): Replace From line.
+	(gnus-group-display-picons): Replace Newsgroups line.
+	(gnus-picons-display-glyph): Set baseline.
+	(gnus-group-display-picons): Piconize the entire Newsgroups line. 
+	(gnus-picons-xbm-face): Revert to old, standard colors.
+
+	* message.el (message-fetch-field): Remove text props.
+
+	* gnus-art.el (gnus-article-normalized-header-length): New
+	variable. 
+	(article-normalize-headers): New command and keystroke.
+
+	* gnus-picon.el (gnus-picons-xbm-face): Changed colors.
+
 Wed Dec  2 01:43:48 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.59 is released.

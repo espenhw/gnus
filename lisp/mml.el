@@ -55,24 +55,85 @@
   
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."
-  (let (struct)
+  (let (struct tag point contents charsets warn)
     (while (and (not (eobp))
 		(not (looking-at "<#/multipart")))
       (cond
        ((looking-at "<#multipart")
 	(push (nconc (mml-read-tag) (mml-parse-1)) struct))
-       ((looking-at "<#part")
-	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
-	      struct))
        ((looking-at "<#external")
 	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
 	      struct))
        (t
-	(push (list 'part '(type . "text/plain")
-		    (cons 'contents (mml-read-part))) struct))))
-    (unless (eobp)
-      (forward-line 1))
+	(if (looking-at "<#part")
+	    (setq tag (mml-read-tag))
+	  (setq tag (list 'part '(type . "text/plain"))
+		warn t))
+	(setq point (point)
+	      contents (mml-read-part)
+	      charsets (delq 'ascii (mm-find-charset-region point (point))))
+	(if (< (length charsets) 2)
+	    (push (nconc tag (list (cons 'contents contents)))
+		  struct)
+	  (let ((nstruct (mml-parse-singlepart-with-multiple-charsets
+			  tag point (point))))
+	    (when (and warn
+		       (not
+			(y-or-n-p
+			 (format
+			  "Warning: Your message contains %d parts.  Really send? "
+			  (length nstruct)))))
+	      (error "Edit your message to use only one charset"))
+	    (setq struct (nconc nstruct struct))))))
+      (unless (eobp)
+	(forward-line 1)))
     (nreverse struct)))
+
+(defun mml-parse-singlepart-with-multiple-charsets (orig-tag beg end)
+  (save-excursion
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((current (char-charset (following-char)))
+	  charset struct space newline paragraph)
+      (while (not (eobp))
+	(cond
+	 ;; The charset remains the same.
+	 ((or (eq (setq charset (char-charset (following-char))) 'ascii)
+	      (eq charset current)))
+	 ;; The initial charset was ascii.
+	 ((eq current 'ascii)
+	  (setq current charset))
+	 ;; We have a change in charsets.
+	 (t
+	  (push (append
+		 orig-tag
+		 (list (cons 'contents
+			     (buffer-substring
+			      beg (or paragraph newline space (point))))))
+		struct)
+	  (setq beg (or paragraph newline space (point))
+		current charset
+		space nil
+		newline nil
+		paragraph nil)))
+	;; Compute places where it might be nice to break the part.
+	(cond
+	 ((memq (following-char) '(?  ?\t))
+	  (setq space (1+ (point))))
+	 ((eq (following-char) ?\n)
+	  (setq newline (1+ (point))))
+	 ((and (eq (following-char) ?\n)
+	       (not (bobp))
+	       (eq (char-after (1- (point))) ?\n))
+	  (setq paragraph (point))))
+	(forward-char 1))
+      ;; Do the final part.
+      (unless (= beg (point))
+	(push (append orig-tag
+		      (list (cons 'contents
+				  (buffer-substring beg (point)))))
+	      struct))
+      struct)))
 
 (defun mml-read-tag ()
   "Read a tag and return the contents."
@@ -219,7 +280,8 @@
 	    (insert-file-contents-literally filename)
 	  (insert (cdr (assq 'contents cont))))
 	(goto-char (point-min))
-	(when (re-search-forward (concat "^--" mml-boundary) nil t)
+	(when (re-search-forward (concat "^--" (regexp-quote mml-boundary))
+				 nil t)
 	  (setq mml-boundary (mml-make-boundary))
 	  (throw 'not-unique nil))))
      ((eq (car cont) 'multipart)
