@@ -78,7 +78,7 @@
 
 (defun date-to-day (date)
   "Return the number of days between year 1 and DATE."
-  (time-to-day (date-to-time date)))
+  (time-to-days (date-to-time date)))
   
 (defun days-between (date1 date2)
   "Return the number of days between DATE1 and DATE2."
@@ -103,7 +103,7 @@
 	(setq day-of-year (1+ day-of-year))))
     day-of-year))
 
-(defun time-to-day (time)
+(defun time-to-days (time)
   "The number of days between the Gregorian date 0001-12-31bce and TIME.
 The Gregorian date Sunday, December 31, 1bce is imaginary."
   (let* ((tim (decode-time time))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.28 Manual
+@settitle Pterodactyl Gnus 0.29 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -270,7 +270,7 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995,96,97 Free Software Foundation, Inc.
+Copyright \copyright{} 1995,96,97,98 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.28 Manual
+@title Pterodactyl Gnus 0.29 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.28.
+This manual corresponds to Pterodactyl Gnus 0.29.
 
 @end ifinfo
 

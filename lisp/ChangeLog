@@ -1,3 +1,18 @@
+Sat Sep 12 13:27:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.29 is released.
+
+1998-09-12 12:46:30  Istvan Marko  <imarko@pacificnet.net>
+
+	* mm-decode.el (mm-save-part): Message right.
+
+1998-09-12 11:30:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* drums.el (drums-parse-address): Returned a list instead of a
+	string. 
+	(drums-remove-whitespace): Skip comments.
+	(drums-parse-addresses): Didn't work.
+
 Sat Sep 12 09:17:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.28 is released.

@@ -122,6 +122,8 @@
 	(cond
 	 ((eq c ?\")
 	  (forward-sexp 1))
+	 ((eq c ?\()
+	  (forward-sexp 1))
 	 ((memq c '(? ?\t ?\n))
 	  (delete-char 1))
 	 (t
@@ -185,7 +187,7 @@
 	    (cons
 	     (mapconcat 'identity (nreverse display-name) "")
 	     (drums-get-comment string)))
-	(cons mailbox display-name)))))
+	(cons mailbox display-string)))))
 
 (defun drums-parse-addresses (string)
   "Parse STRING and return a list of MAILBOX / DISPLAY-NAME pairs."
@@ -199,11 +201,14 @@
 	 ((memq c '(?\" ?< ?\())
 	  (forward-sexp 1))
 	 ((eq c ?,)
-	  (push (drums-parse-address (buffer-substring beg (1- (point))))
+	  (push (drums-parse-address (buffer-substring beg (point)))
 		pairs)
+	  (forward-char 1)
 	  (setq beg (point)))
 	 (t
 	  (forward-char 1))))
+      (push (drums-parse-address (buffer-substring beg (point)))
+	    pairs)
       (nreverse pairs))))
 
 (defun drums-unfold-fws ()

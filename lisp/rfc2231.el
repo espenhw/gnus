@@ -123,8 +123,7 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
       ;; The encoded string may contain zero to two single-quote
       ;; marks.  This should give us the encoded word stripped
       ;; of any preceding values.
-      (insert (or (car (last elems))
-		  string))
+      (insert (car (last elems)))
       (goto-char (point-min))
       (while (search-forward "%" nil t)
 	(insert
@@ -132,9 +131,10 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	     (string-to-number (buffer-substring (point) (+ (point) 2)) 16)
 	   (delete-region (1- (point)) (+ (point) 2)))))
       ;; Encode using the charset, if any.
-      (when (and elems
-		 (not (equal (car elems) 'us-ascii)))
-	(mm-decode-coding-region (point-min) (point-max) (car elems)))
+      (when (and (< (length elems) 1)
+		 (not (equal (intern (car elems)) 'us-ascii)))
+	(mm-decode-coding-region (point-min) (point-max)
+				 (intern (car elems))))
       (buffer-string))))
 
 (provide 'rfc2231)

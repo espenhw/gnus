@@ -660,7 +660,7 @@ the actual number of articles toggled is returned."
       (let ((dir (concat
 		  (gnus-agent-directory)
 		  (gnus-agent-group-path group) "/"))
-	    (date (time-to-day (current-time)))
+	    (date (time-to-days (current-time)))
 	    (case-fold-search t)
 	    pos crosses id elem)
 	(gnus-make-directory dir)
@@ -784,7 +784,7 @@ the actual number of articles toggled is returned."
  	  (gnus-agent-enter-history
  	   "last-header-fetched-for-session"
  	   (list (cons group (nth (- (length  articles) 1) articles)))
- 	   (time-to-day (current-time)))
+ 	   (time-to-days (current-time)))
  	  articles)))))
 
 (defsubst gnus-agent-copy-nov-line (article)
@@ -1303,7 +1303,7 @@ The following commands are available:
   "Expire all old articles."
   (interactive)
   (let ((methods gnus-agent-covered-methods)
-	(day (- (time-to-day (current-time)) gnus-agent-expire-days))
+	(day (- (time-to-days (current-time)) gnus-agent-expire-days))
 	gnus-command-method sym group articles
 	history overview file histories elem art nov-file low info
 	unreads marked article)

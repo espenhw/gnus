@@ -1,4 +1,4 @@
-;;; qp.el --- Quoted-printable functions
+;;; qp.el --- Quoted-Printable functions
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>

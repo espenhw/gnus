@@ -305,7 +305,8 @@ This overrides entries in the mailcap file."
       (insert-buffer-substring (mm-handle-buffer handle))
       (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
       (when (or (not (file-exists-p file))
-		(yes-or-no-p (format "File %s already exists; overwrite? ")))
+		(yes-or-no-p (format "File %s already exists; overwrite? "
+				     file)))
 	(write-region (point-min) (point-max) file)))))
 
 (defun mm-pipe-part (handle)

@@ -18,7 +18,7 @@ INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 PAPERTYPE=a4
 
-all: gnus message
+all: gnus message emacs-mime
 
 most: texi2latex.elc latex latexps
 
