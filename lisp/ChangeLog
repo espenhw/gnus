@@ -1,3 +1,12 @@
+2003-01-12  Gregorio Gervasio, Jr.  <gtgj@pacbell.net>
+
+	* gnus-sum.el (gnus-summary-exit): Reverse change to make group
+	exit work with two frames.
+
+2003-01-11  Fran,Ag(Bois-David Collin  <Francois-David.Collin@wanadoo.fr>
+
+	* message.el (message-forward-make-body): Use mule4.
+
 2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-mode-map): Move wide-reply command.

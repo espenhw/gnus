@@ -6412,7 +6412,10 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	(set-buffer gnus-group-buffer)
 	(gnus-summary-clear-local-variables)
 	(let ((gnus-summary-local-variables gnus-newsgroup-variables))
-	  (gnus-summary-clear-local-variables)))
+	  (gnus-summary-clear-local-variables))
+	;; Return to group mode buffer.
+	(when (eq mode 'gnus-summary-mode)
+	  (gnus-kill-buffer buf)))
       (setq gnus-current-select-method gnus-select-method)
       (pop-to-buffer gnus-group-buffer)
       (if (not quit-config)
@@ -6420,9 +6423,6 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	    (goto-char group-point)
 	    (gnus-configure-windows 'group 'force))
 	(gnus-handle-ephemeral-exit quit-config))
-      ;; Return to group mode buffer.
-      (when (eq mode 'gnus-summary-mode)
-	(gnus-kill-buffer buf))
       ;; Clear the current group name.
       (unless quit-config
 	(setq gnus-newsgroup-name nil)))))

@@ -5736,7 +5736,7 @@ Optional DIGEST will use digest to forward."
 	     (mm-disable-multibyte-mule4)
 	     (insert
 	      (with-current-buffer forward-buffer
-		(mm-string-as-unibyte (buffer-string))))
+		(mm-with-unibyte-current-buffer-mule4 (buffer-string))))
 	     (mm-enable-multibyte-mule4)
 	     (mime-to-mml)
 	     (goto-char (point-min))
