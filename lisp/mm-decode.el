@@ -27,11 +27,10 @@
 (require 'mail-parse)
 (require 'mailcap)
 (require 'mm-bodies)
+(eval-when-compile (require 'cl))
 
 (eval-and-compile
   (autoload 'mm-inline-partial "mm-partial"))
-
-(defvar mm-xemacs-p (string-match "XEmacs" (emacs-version)))
 
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
@@ -186,7 +185,7 @@
 Viewing agents are supposed to view the last possible part of a message,
 as that is supposed to be the richest.  However, users may prefer other
 types instead, and this list says what types are most unwanted.  If,
-for instance, text/html parts are very unwanted, and text/richtech are
+for instance, text/html parts are very unwanted, and text/richtext are
 somewhat unwanted, then the value of this variable should be set
 to:
 
@@ -232,7 +231,7 @@ to:
       (if (or (not ctl)
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
-	   '("text/plain") 
+	   '("text/plain")
 	   (and cte (intern (downcase (mail-header-remove-whitespace
 				       (mail-header-remove-comments
 					cte)))))
@@ -397,7 +396,7 @@ external if displayed external."
 		 (unwind-protect
 		     (start-process "*display*" nil
 				    "xterm"
-				    "-e" shell-file-name 
+				    "-e" shell-file-name
 				    shell-command-switch
 				    (mm-mailcap-command
 				     method file (mm-handle-type handle)))
@@ -412,7 +411,7 @@ external if displayed external."
 		    (unwind-protect
 			(progn
 			  (call-process shell-file-name nil
-					(setq buffer 
+					(setq buffer
 					      (generate-new-buffer "*mm*"))
 					nil
 					shell-command-switch
@@ -469,7 +468,7 @@ external if displayed external."
     (mapconcat 'identity (nreverse out) "")))
     
 (defun mm-remove-parts (handles)
-  "Remove the displayed MIME parts represented by HANDLE."
+  "Remove the displayed MIME parts represented by HANDLES."
   (if (and (listp handles)
 	   (bufferp (car handles)))
       (mm-remove-part handles)
@@ -486,7 +485,7 @@ external if displayed external."
 	  (mm-remove-part handle)))))))
 
 (defun mm-destroy-parts (handles)
-  "Remove the displayed MIME parts represented by HANDLE."
+  "Remove the displayed MIME parts represented by HANDLES."
   (if (and (listp handles)
 	   (bufferp (car handles)))
       (mm-destroy-part handles)
@@ -725,9 +724,8 @@ external if displayed external."
     result))
 
 (defun mm-preferred-alternative-precedence (handles)
-  "Return the precedence based on HANDLES and mm-discouraged-alternatives."
-  (let ((seq (nreverse (mapcar (lambda (h)
-				 (mm-handle-media-type h))
+  "Return the precedence based on HANDLES and `mm-discouraged-alternatives'."
+  (let ((seq (nreverse (mapcar #'mm-handle-media-type
 			       handles))))
     (dolist (disc (reverse mm-discouraged-alternatives))
       (dolist (elem (copy-sequence seq))
@@ -739,79 +737,46 @@ external if displayed external."
   "Return the handle(s) referred to by ID."
   (cdr (assoc id mm-content-id-alist)))
 
-(defun mm-get-image-emacs (handle)
-  "Return an image instance based on HANDLE."
-  (let ((type (mm-handle-media-subtype handle))
-	spec)
-    ;; Allow some common translations.
-    (setq type
-	  (cond
-	   ((equal type "x-pixmap")
-	    "xpm")
-	   ((equal type "x-xbitmap")
-	    "xbm")
-	   (t type)))
-    (or (mm-handle-cache handle)
-	(mm-with-unibyte-buffer
-	  (mm-insert-part handle)
-	  (prog1
-	      (setq spec
-		    (ignore-errors
-		      (cond
-		       ((equal type "xbm")
-			;; xbm images require special handling, since
-			;; the only way to create glyphs from these
-			;; (without a ton of work) is to write them
-			;; out to a file, and then create a file
-			;; specifier.
-			(error "Don't know what to do for XBMs right now."))
-		       (t
-			(list 'image :type (intern type) :data (buffer-string))))))
-	    (mm-handle-set-cache handle spec))))))
-
-(defun mm-get-image-xemacs (handle)
-  "Return an image instance based on HANDLE."
-  (let ((type (mm-handle-media-subtype handle))
-	spec)
-    ;; Allow some common translations.
-    (setq type
-	  (cond
-	   ((equal type "x-pixmap")
-	    "xpm")
-	   ((equal type "x-xbitmap")
-	    "xbm")
-	   (t type)))
-    (or (mm-handle-cache handle)
-	(mm-with-unibyte-buffer
-	  (mm-insert-part handle)
-	  (prog1
-	      (setq spec
-		    (ignore-errors
-		      (cond
-		       ((equal type "xbm")
-			;; xbm images require special handling, since
-			;; the only way to create glyphs from these
-			;; (without a ton of work) is to write them
-			;; out to a file, and then create a file
-			;; specifier.
-			(let ((file (make-temp-name
-				     (expand-file-name "emm.xbm"
-						       mm-tmp-directory))))
-			  (unwind-protect
-			      (progn
-				(write-region (point-min) (point-max) file)
-				(make-glyph (list (cons 'x file))))
-			    (ignore-errors
-			      (delete-file file)))))
-		       (t
-			(make-glyph
-			 (vector (intern type) :data (buffer-string)))))))
-	    (mm-handle-set-cache handle spec))))))
-
 (defun mm-get-image (handle)
-  (if mm-xemacs-p
-      (mm-get-image-xemacs handle)
-    (mm-get-image-emacs handle)))
+  "Return an image instance based on HANDLE."
+  (let ((type (mm-handle-media-subtype handle))
+	spec)
+    ;; Allow some common translations.
+    (setq type
+	  (cond
+	   ((equal type "x-pixmap")
+	    "xpm")
+	   ((equal type "x-xbitmap")
+	    "xbm")
+	   (t type)))
+    (or (mm-handle-cache handle)
+	(mm-with-unibyte-buffer
+	  (mm-insert-part handle)
+	  (prog1
+	      (setq spec
+		    (ignore-errors
+		      (if (fboundp 'make-glyph)
+			  (cond
+			   ((equal type "xbm")
+			    ;; xbm images require special handling, since
+			    ;; the only way to create glyphs from these
+			    ;; (without a ton of work) is to write them
+			    ;; out to a file, and then create a file
+			    ;; specifier.
+			    (let ((file (make-temp-name
+					 (expand-file-name "emm.xbm"
+							   mm-tmp-directory))))
+			      (unwind-protect
+				  (progn
+				    (write-region (point-min) (point-max) file)
+				    (make-glyph (list (cons 'x file))))
+				(ignore-errors
+				  (delete-file file)))))
+			   (t
+			    (make-glyph
+			     (vector (intern type) :data (buffer-string)))))
+			(create-image (buffer-string) (intern type) 'data-p))))
+	    (mm-handle-set-cache handle spec))))))
 
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
@@ -835,7 +800,8 @@ external if displayed external."
     (valid-image-instantiator-format-p format))
    ;; Handle Emacs 21
    ((fboundp 'image-type-available-p)
-    (image-type-available-p format))
+    (and (display-graphic-p)
+	 (image-type-available-p format)))
    ;; Nobody else can do images yet.
    (t
     nil)))
@@ -848,4 +814,4 @@ external if displayed external."
 
 (provide 'mm-decode)
 
-;; mm-decode.el ends here
+;;; mm-decode.el ends here
