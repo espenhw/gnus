@@ -199,9 +199,9 @@ Thank you for your help in stamping out bugs.
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
        (add-hook 'message-mode-hook
-		 `(lambda ()
-		    (set (make-local-variable 'message-posting-charset)
-			 (gnus-setup-posting-charset ,group))))
+		 (lambda ()
+		   (set (make-local-variable 'message-posting-charset)
+			(gnus-setup-posting-charset ,group))))
        (unwind-protect
 	   (progn
 	     ,@forms)

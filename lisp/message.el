@@ -30,7 +30,6 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-
 (require 'mailheader)
 (require 'nnheader)
 (require 'easymenu)
