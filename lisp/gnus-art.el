@@ -4391,10 +4391,7 @@ forbidden in URL encoding."
 
 (defun gnus-button-embedded-url (address)
   "Browse ADDRESS."
-  ;; In Emacs 20, `browse-url-browser-function' may be an alist.
-  (if (listp browse-url-browser-function)
-      (browse-url (gnus-strip-whitespace address))
-    (funcall browse-url-browser-function (gnus-strip-whitespace address))))
+  (browse-url (gnus-strip-whitespace address)))
 
 ;;; Next/prev buttons in the article buffer.
 

@@ -53,7 +53,7 @@
 (defvar srcdir (or (getenv "srcdir") "."))
 
 (push srcdir load-path)
-(push "/usr/share/emacs/site-lisp" load-path)
+;(push "/usr/share/emacs/site-lisp" load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)
 
 (defalias 'device-sound-enabled-p 'ignore)

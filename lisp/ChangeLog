@@ -1,3 +1,13 @@
+1999-12-03 01:26:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-button-embedded-url): Always call browse-url. 
+
+1999-12-02 18:00:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Use
+	mm-with-unibyte-current-buffer. 
+	(nnultimate-request-article): Ditto.
+
 1999-12-02 14:57:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-groups): Set to process buffer.

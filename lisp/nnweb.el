@@ -313,18 +313,23 @@ and `altavista'.")
 	      (current-buffer))))))
 
 (defun nnweb-fetch-url (url)
-  (save-excursion
-    (if (not nnheader-callback-function)
-	(progn
-	  (mm-with-unibyte-buffer
-	    (nnweb-insert url)
-	    (setq buf (buffer-string)))
-	  (erase-buffer)
-	  (insert buf)
-	  t)
-      (nnweb-url-retrieve-asynch
-       url 'nnweb-callback (current-buffer) nnheader-callback-function)
-      t)))
+  (let (buf)
+    (save-excursion
+      (if (not nnheader-callback-function)
+	  (progn
+	    (with-temp-buffer
+	      (mm-enable-multibyte)
+	      (let ((coding-system-for-read 'binary)
+		    (coding-system-for-write 'binary)
+		    (default-process-coding-system 'binary))
+		(nnweb-insert url))
+	      (setq buf (buffer-string)))
+	    (erase-buffer)
+	    (insert buf)
+	    t)
+	(nnweb-url-retrieve-asynch
+	 url 'nnweb-callback (current-buffer) nnheader-callback-function)
+	t))))
 
 (defun nnweb-callback (buffer callback)
   (when (gnus-buffer-live-p url-working-buffer)

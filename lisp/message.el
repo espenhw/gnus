@@ -384,10 +384,9 @@ always query the user whether to use the value.  If it is the symbol
 		 (const use)
 		 (const ask)))
 
-;; stuff relating to broken sendmail in MMDF
 (defcustom message-sendmail-f-is-evil nil
-  "*Non-nil means that \"-f username\" should not be added to the sendmail
-command line, because it is even more evil than leaving it out."
+  "*Non-nil means that \"-f username\" should not be added to the sendmail command line.
+Doing so would be even more evil than leaving it out."
   :group 'message-sending
   :type 'boolean)
 

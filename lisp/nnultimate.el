@@ -197,9 +197,10 @@
 	(setq nnultimate-headers (sort headers 'car-less-than-car))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (dolist (header nnultimate-headers)
-	    (nnheader-insert-nov (cdr header)))))
+	  (mm-with-unibyte-current-buffer
+	    (erase-buffer)
+	    (dolist (header nnultimate-headers)
+	      (nnheader-insert-nov (cdr header))))))
       'nov)))
 
 (deffoo nnultimate-request-group (group &optional server dont-check)
@@ -230,7 +231,8 @@
 	(goto-char (point-min))
 	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
 	(let ((header (cdr (assq article nnultimate-headers))))
-	  (nnheader-insert-header header))
+	  (mm-with-unibyte-current-buffer
+	    (nnheader-insert-header header)))
 	(nnheader-report 'nnultimate "Fetched article %s" article)
 	(cons group article)))))
 
