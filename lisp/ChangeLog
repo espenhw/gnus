@@ -1,8 +1,9 @@
 2003-09-20  Simon Josefsson  <jas@extundo.com>
 
-	* imap.el (imap-starttls-open): Erase buffer and disable process
-	filter before invoking STARTTLS negotiation, to support new
-	starttls.el that uses GNUTLS.
+	* tls.el (tls-process-connection-type): Doc fix.
+
+	* imap.el (imap-starttls-open): Rewrite, should support both old
+	starttls.el and new starttls.el that uses GNUTLS.
 
 2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
