@@ -69,13 +69,13 @@
   ;; FIXME!  Turned off for now.  The DNS routines are said to be flaky.
   "True if blackholes should be used.")
 
-(defvar spam-use-bogofilter t
+(defvar spam-use-bogofilter nil
   "True if bogofilter should be used.")
 
-(defvar spam-use-bbdb t
+(defvar spam-use-bbdb nil
   "True if BBDB should be used.")
 
-(defvar spam-use-ifile t
+(defvar spam-use-ifile nil
   "True if ifile should be used.")
 
 (defvar spam-split-group "spam"
