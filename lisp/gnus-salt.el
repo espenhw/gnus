@@ -670,6 +670,8 @@ Two predefined functions are available:
 	     (default gnus-summary-default-score)
 	     (default-high gnus-summary-default-high-score)
 	     (default-low gnus-summary-default-low-score)
+             (uncached (memq article gnus-newsgroup-undownloaded))
+             (downloaded (not uncached))
 	     (mark (or (gnus-summary-article-mark article) gnus-unread-mark)))
 	;; Eval the cars of the lists until we find a match.
 	(while (and list
