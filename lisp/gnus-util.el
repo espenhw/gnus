@@ -38,6 +38,7 @@
   (defvar nnmail-pathname-coding-system))
 (require 'nnheader)
 (require 'time-date)
+(require 'netrc)
 
 (eval-and-compile
   (autoload 'message-fetch-field "message")
@@ -61,6 +62,11 @@
 	  (setq string (replace-match newtext nil literal string))
 	  (setq start (- (length string) tail))))
       string))))
+
+;;; bring in the netrc functions as aliases
+(defalias 'gnus-netrc-get 'netrc-get)
+(defalias 'gnus-netrc-machine 'netrc-machine)
+(defalias 'gnus-parse-netrc 'netrc-parse)
 
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
@@ -899,93 +905,6 @@ ARG is passed to the first function."
     (unwind-protect
 	(apply 'run-hooks funcs)
       (set-buffer buf))))
-
-;;;
-;;; .netrc and .authinforc parsing
-;;;
-
-(defun gnus-parse-netrc (file)
-  "Parse FILE and return an list of all entries in the file."
-  (when (file-exists-p file)
-    (with-temp-buffer
-      (let ((tokens '("machine" "default" "login"
-		      "password" "account" "macdef" "force"
-		      "port"))
-	    alist elem result pair)
-	(insert-file-contents file)
-	(goto-char (point-min))
-	;; Go through the file, line by line.
-	(while (not (eobp))
-	  (narrow-to-region (point) (gnus-point-at-eol))
-	  ;; For each line, get the tokens and values.
-	  (while (not (eobp))
-	    (skip-chars-forward "\t ")
-	    ;; Skip lines that begin with a "#".
-	    (if (eq (char-after) ?#)
-		(goto-char (point-max))
-	      (unless (eobp)
-		(setq elem
-		      (if (= (following-char) ?\")
-			  (read (current-buffer))
-			(buffer-substring
-			 (point) (progn (skip-chars-forward "^\t ")
-					(point)))))
-		(cond
-		 ((equal elem "macdef")
-		  ;; We skip past the macro definition.
-		  (widen)
-		  (while (and (zerop (forward-line 1))
-			      (looking-at "$")))
-		  (narrow-to-region (point) (point)))
-		 ((member elem tokens)
-		  ;; Tokens that don't have a following value are ignored,
-		  ;; except "default".
-		  (when (and pair (or (cdr pair)
-				      (equal (car pair) "default")))
-		    (push pair alist))
-		  (setq pair (list elem)))
-		 (t
-		  ;; Values that haven't got a preceding token are ignored.
-		  (when pair
-		    (setcdr pair elem)
-		    (push pair alist)
-		    (setq pair nil)))))))
-	  (when alist
-	    (push (nreverse alist) result))
-	  (setq alist nil
-		pair nil)
-	  (widen)
-	  (forward-line 1))
-	(nreverse result)))))
-
-(defun gnus-netrc-machine (list machine &optional port defaultport)
-  "Return the netrc values from LIST for MACHINE or for the default entry.
-If PORT specified, only return entries with matching port tokens.
-Entries without port tokens default to DEFAULTPORT."
-  (let ((rest list)
-	result)
-    (while list
-      (when (equal (cdr (assoc "machine" (car list))) machine)
-	(push (car list) result))
-      (pop list))
-    (unless result
-      ;; No machine name matches, so we look for default entries.
-      (while rest
-	(when (assoc "default" (car rest))
-	  (push (car rest) result))
-	(pop rest)))
-    (when result
-      (setq result (nreverse result))
-      (while (and result
-		  (not (equal (or port defaultport "nntp")
-			      (or (gnus-netrc-get (car result) "port")
-				  defaultport "nntp"))))
-	(pop result))
-      (car result))))
-
-(defun gnus-netrc-get (alist type)
-  "Return the value of token TYPE from ALIST."
-  (cdr (assoc type alist)))
 
 ;;; Various
 
