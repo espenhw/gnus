@@ -1,3 +1,8 @@
+2000-12-30 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-open-connection): Kill pbuffer if process is nil.
+	Suggested by Christoph Conrad <christoph.conrad@gmx.de>.
+
 2000-12-30 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnheader.el (autoload): Autoload gnus-sorted-intersection.

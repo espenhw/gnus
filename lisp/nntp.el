@@ -894,6 +894,8 @@ password contained in '~/.nntp-authinfo'."
 	     nil))))
     (when timer
       (nnheader-cancel-timer timer))
+    (unless process
+      (nntp-kill-buffer pbuffer))
     (when (and (buffer-name pbuffer)
 	       process)
       (process-kill-without-query process)
