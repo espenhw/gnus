@@ -1,3 +1,18 @@
+2005-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-copy-article-buffer): Quote decoded words
+	containing special characters.
+
+	* gnus-sum.el (gnus-summary-edit-article): Ditto.
+
+	* mml.el (mime-to-mml): Ditto.
+
+	* rfc2047.el (rfc2047-encode-parameter): Use ietf-drums-tspecials.
+	(rfc2047-quote-decoded-words-containing-tspecials): New variable.
+	(rfc2047-decode-region): Quote decoded words containing special
+	characters when rfc2047-quote-decoded-words-containing-tspecials
+	is non-nil.
+
 2005-02-15  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-debug): Doc fix.
