@@ -242,7 +242,7 @@ This must be bound to a button-down mouse event."
     (let (event end end-point last-end-point (end-of-range (point)))
       (track-mouse
        (while (progn
-		(setq event (read-event))
+		(setq event (gnus-read-event-char))
 		(or (mouse-movement-p event)
 		    (eq (car-safe event) 'switch-frame)))
 	 (if (eq (car-safe event) 'switch-frame)

@@ -1,3 +1,12 @@
+Sat Jul 25 19:31:36 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.26 is released.
+
+1998-07-25 14:53:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-salt.el (gnus-pick-mouse-pick-region): Use
+	gnus-read-event-char. 
+
 Sat Jul 25 02:43:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.25 is released.
