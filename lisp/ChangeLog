@@ -1,3 +1,8 @@
+2001-07-31  Simon Josefsson  <jas@extundo.com>
+
+	* mml-smime.el (mml-smime-sign, mml-smime-encrypt): Goto end of
+	buffer when done.
+
 2001-07-30  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-call-openssl-region): Revert previous change,

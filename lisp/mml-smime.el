@@ -32,7 +32,8 @@
   (when (null smime-keys)
     (customize-variable 'smime-keys)
     (error "No S/MIME keys configured, use customize to add your key"))
-  (smime-sign-buffer (cdr (assq 'keyfile cont))))
+  (smime-sign-buffer (cdr (assq 'keyfile cont)))
+  (goto-char (point-max)))
 
 (defun mml-smime-encrypt (cont)
   (let (certnames certfiles tmp file tmpfiles)
@@ -56,7 +57,8 @@
 	  t)
       (while (setq tmp (pop tmpfiles))
 	(delete-file tmp))
-      nil)))
+      nil))
+  (goto-char (point-max)))
 
 (defun mml-smime-sign-query ()
   ;; query information (what certificate) from user when MML tag is
