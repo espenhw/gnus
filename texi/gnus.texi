@@ -22489,7 +22489,7 @@ when it's sent to the ding list.  On the other hand, some messages to
 the ding list are from a mail server in the blackhole list, so the
 invocation of @code{spam-split} can't be before the ding rule.
 
-You can let SpamAssassin headers supercede ding rules, but all other
+You can let SpamAssassin headers supersede ding rules, but all other
 @code{spam-split} rules (including a second invocation of the
 regex-headers check) will be after the ding rule:
 
@@ -25438,7 +25438,7 @@ the valid values.
 Gnus supports Cancel Locks in News.
 
 This means a header @samp{Cancel-Lock} is inserted in news posting.  It is
-used to determine if you wrote an article or not (for cancelling and
+used to determine if you wrote an article or not (for canceling and
 superseding).  Gnus generates a random password string the first time
 you post a message, and saves it in your @file{~/.emacs} using the Custom
 system.  While the variable is called @code{canlock-password}, it is not

@@ -1941,7 +1941,7 @@ Hook run after sending messages.
 
 @item message-cancel-hook
 @vindex message-cancel-hook
-Hook run when cancelling news articles.
+Hook run when canceling news articles.
 
 @item message-mode-syntax-table
 @vindex message-mode-syntax-table

@@ -1,3 +1,11 @@
+2003-10-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.texi (Various Message Variables): Typo.
+
+	* gnus.texi (Oort Gnus): Typo.
+	(Filtering Spam Using The Spam ELisp Package): Just remember,
+	kids: There is no 'c' in 'supersede'.
+
 2003-09-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi (Reply): Fix typo.
