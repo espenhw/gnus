@@ -393,7 +393,9 @@ Example:
 
 (defcustom nnmail-split-abbrev-alist
   '((any . "from\\|to\\|cc\\|sender\\|apparently-to\\|resent-from\\|resent-to\\|resent-cc")
-    (mail . "mailer-daemon\\|postmaster\\|uucp"))
+    (mail . "mailer-daemon\\|postmaster\\|uucp")
+    (to . "to\\|cc\\|apparently-to\\|resent-to\\|resent-cc")
+    (from . "from\\|sender\\|resent-from"))
   "Alist of abbreviations allowed in `nnmail-split-fancy'."
   :group 'nnmail-split
   :type '(repeat (cons :format "%v" symbol regexp)))

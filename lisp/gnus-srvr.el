@@ -530,8 +530,7 @@ The following commands are available:
        ["Select" gnus-browse-read-group t]
        ["Next" gnus-browse-next-group t]
        ["Prev" gnus-browse-next-group t]
-       ["Exit" gnus-browse-exit t]
-       ))
+       ["Exit" gnus-browse-exit t]))
     (run-hooks 'gnus-browse-menu-hook)))
 
 (defvar gnus-browse-current-method nil)
@@ -543,6 +542,8 @@ The following commands are available:
   "Browse the server METHOD."
   (setq gnus-browse-current-method method)
   (setq gnus-browse-return-buffer return-buffer)
+  (when (stringp method)
+    (setq method (gnus-server-to-method method)))
   (let ((gnus-select-method method)
 	groups group)
     (gnus-message 5 "Connecting to %s..." (nth 1 method))

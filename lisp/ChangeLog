@@ -1,3 +1,38 @@
+Sat Mar 22 15:42:53 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.34 is released.
+
+Sat Mar 22 01:37:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-move-article): Understand 'junk.
+
+	* nnml.el (nnml-request-accept-article): Return 'junk when legal.
+
+	* gnus-sum.el (gnus-summary-respool-query): Message better, and
+	return right value.
+
+	* nnmail.el (nnmail-split-abbrev-alist): New `to' and `from'
+	abbrevs. 
+
+Wed Mar 19 19:36:25 1997  Dewey M. Sasser  <dewey@newvision.com>
+
+	* message.el (message-make-from): Changed so that
+	message-from-style value is captured from message buffer instead
+	of temp buffer.
+
+Sat Mar 22 00:47:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Understand server
+	names. 
+
+	* gnus-group.el (gnus-group-browse-foreign-server): Down methodize
+	the server.
+
+Thu Mar 20 22:49:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-read-folder): Do checking if there are new
+	articles after the last nnfolder marker.
+
 Thu Mar 20 17:33:54 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.33 is released.

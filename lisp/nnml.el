@@ -325,8 +325,9 @@ all.  This may very well take some time.")
 	   (and last (nnml-save-nov))))
       (and
        (nnmail-activate 'nnml)
-       (setq result (car (nnml-save-mail
-			  (nnmail-article-group 'nnml-active-number))))
+       (if (not (setq result (nnmail-article-group 'nnml-active-number)))
+	   (setq result 'junk)
+	 (setq result (car (nnml-save-mail result))))
        (when last
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
 	 (when nnmail-cache-accepted-message-ids

@@ -3201,8 +3201,8 @@ and the second element is the address."
 		      "Address: "
 		      (mapcar (lambda (server) (list server))
 			      gnus-secondary-servers)))
-	     ;; We got a server name, so we find the method.
-	     (gnus-server-to-method how)))))
+	     ;; We got a server name.
+	     how))))
   (gnus-browse-foreign-server method))
 
 (defun gnus-group-set-info (info &optional method-only-group part)

@@ -6667,20 +6667,26 @@ and `request-accept' functions."
 	     (set-buffer copy-buf)
 	     ;; First put the article in the destination group.
 	     (gnus-request-article-this-buffer article gnus-newsgroup-name)
-	     (setq art-group
-		   (gnus-request-accept-article
-		    to-newsgroup select-method (not articles)))
-	     (setq new-xref (concat new-xref " " (car art-group)
-				    ":" (cdr art-group)))
-	     ;; Now we have the new Xrefs header, so we insert
-	     ;; it and replace the new article.
-	     (nnheader-replace-header "Xref" new-xref)
-	     (gnus-request-replace-article
-	      (cdr art-group) to-newsgroup (current-buffer))
-	     art-group)))))
-      (if (not art-group)
-	  (gnus-message 1 "Couldn't %s article %s"
-			(cadr (assq action names)) article)
+	     (when (consp (setq art-group
+				(gnus-request-accept-article
+				 to-newsgroup select-method (not articles))))
+	       (setq new-xref (concat new-xref " " (car art-group)
+				      ":" (cdr art-group)))
+	       ;; Now we have the new Xrefs header, so we insert
+	       ;; it and replace the new article.
+	       (nnheader-replace-header "Xref" new-xref)
+	       (gnus-request-replace-article
+		(cdr art-group) to-newsgroup (current-buffer))
+	       art-group))))))
+      (cond
+       ((not art-group)
+	(gnus-message 1 "Couldn't %s article %s"
+		      (cadr (assq action names)) article))
+       ((and (eq art-group 'junk)
+	     (eq action 'move))
+	(gnus-summary-mark-article article gnus-canceled-mark)
+	(gnus-message 4 "Deleted article %s" article))
+       (t
 	(let* ((entry
 		(or
 		 (gnus-gethash (car art-group) gnus-newsrc-hashtb)
@@ -6755,7 +6761,7 @@ and `request-accept' functions."
 
 	(gnus-summary-goto-subject article)
 	(when (eq action 'move)
-	  (gnus-summary-mark-article article gnus-canceled-mark)))
+	  (gnus-summary-mark-article article gnus-canceled-mark))))
       (gnus-summary-remove-process-mark article))
     ;; Re-activate all groups that have been moved to.
     (while to-groups
@@ -7068,7 +7074,7 @@ groups."
 
 ;;; Respooling
 
-(defun gnus-summary-respool-query ()
+(defun gnus-summary-respool-query (&optional silent)
   "Query where the respool algorithm would put this article."
   (interactive)
   (gnus-set-global-variables)
@@ -7078,8 +7084,13 @@ groups."
       (set-buffer gnus-original-article-buffer)
       (save-restriction
 	(message-narrow-to-head)
-	(message "This message would go to %s"
-		 (mapconcat 'car (nnmail-article-group 'identity) ", "))))))
+	(let ((groups (nnmail-article-group 'identity)))
+	  (unless silent
+	    (if groups
+		(message "This message would go to %s"
+			 (mapconcat 'car groups ", "))
+	      (message "This message would go to no groups"))
+	    groups))))))
 
 ;; Summary marking commands.
 
