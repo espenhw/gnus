@@ -1,3 +1,7 @@
+2005-01-26  Steve Youngs  <steve@sxemacs.org>
+
+	* gpg.el: Add timer/itimer compatibility.
+
 2004-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* README (compface.el): Describe.

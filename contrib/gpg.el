@@ -106,7 +106,9 @@
 
 ;;; Code:
 
-(require 'timer)
+(if (featurep 'xemacs)
+    (require 'timer-funcs)
+  (require 'timer))
 (eval-when-compile (require 'cl))
 
 (eval-and-compile 
@@ -114,6 +116,21 @@
     (if (fboundp 'point-at-eol)
 	'point-at-eol
       'line-end-position)))
+
+;; itimer/timer compatibility
+(eval-and-compile
+  (if (featurep 'xemacs)
+      (progn
+	(defalias 'gpg-cancel-timer 'delete-itimer)
+	(defalias 'gpg-timer-activate 'activate-itimer)
+	(defalias 'gpg-timer-create 'make-itimer)
+	(defalias 'gpg-timer-set-function 'set-itimer-function)
+	(defalias 'gpg-timer-set-time 'set-itimer-value))
+    (defalias 'gpg-cancel-timer 'cancel-timer)
+    (defalias 'gpg-timer-activate 'timer-activate)
+    (defalias 'gpg-timer-create 'timer-create)
+    (defalias 'gpg-timer-set-function 'timer-set-function)
+    (defalias 'gpg-timer-set-time 'timer-set-time)))
 
 ;;;; Customization:
 
@@ -779,7 +796,7 @@ evaluates BODY, like `progn'.  If BODY evaluates to `nil' (or
 ;;; Passphrase handling:
 
 (defvar gpg-passphrase-timer
-  (timer-create)
+  (gpg-timer-create)
   "This timer will clear the passphrase cache periodically.")
 
 (defvar gpg-passphrase
@@ -799,7 +816,7 @@ evaluates BODY, like `progn'.  If BODY evaluates to `nil' (or
   "Forget stored passphrase."
   (interactive)
   (when gpg-passphrase
-    (cancel-timer gpg-passphrase-timer)
+    (gpg-cancel-timer gpg-passphrase-timer)
     (setq gpg-passphrase-timer nil)
     (gpg-passphrase-clear-string gpg-passphrase)
     (setq gpg-passphrase nil)))
@@ -809,14 +826,14 @@ evaluates BODY, like `progn'.  If BODY evaluates to `nil' (or
 Updates the timeout for clearing the cache to `gpg-passphrase-timeout'."
   (unless (equal gpg-passphrase-timeout 0)
     (if (null gpg-passphrase-timer)
-	(setq gpg-passphrase-timer (timer-create)))
-    (timer-set-time gpg-passphrase-timer 
-		    (timer-relative-time (current-time) 
-					 gpg-passphrase-timeout))
-    (timer-set-function gpg-passphrase-timer 'gpg-passphrase-forget)
+	(setq gpg-passphrase-timer (gpg-timer-create)))
+    (gpg-timer-set-time gpg-passphrase-timer 
+			(timer-relative-time (current-time) 
+					     gpg-passphrase-timeout))
+    (gpg-timer-set-function gpg-passphrase-timer 'gpg-passphrase-forget)
     (unless (and (fboundp 'itimer-live-p)
 		 (itimer-live-p gpg-passphrase-timer))
-      (timer-activate gpg-passphrase-timer))
+      (gpg-timer-activate gpg-passphrase-timer))
     (setq gpg-passphrase passphrase))
   passphrase)
 

@@ -1,3 +1,38 @@
+2005-01-26  Steve Youngs  <steve@sxemacs.org>
+
+	* run-at-time.el: Removed.  It is no longer needed as
+	timer-funcs.el in the xemacs-base package has a working version of
+	`run-at-time'.
+
+	* gnus-xmas.el: Require timer-funcs instead of run-at-time.
+
+	* password.el: Require timer-funcs instead of run-at-time in
+	XEmacs.
+	Remove `password-run-at-time' macro.
+	(password-cache-add): Use `run-at-time' instead of
+	`password-run-at-time'. 
+
+	* nnheaderxm.el: Require timer-funcs instead of run-at-time.
+	Remove `nnheader-cancel-function-timers' alias,
+	`cancel-function-timers' exists in XEmacs in timer-funcs. 
+
+	* mail-source.el: Require timer-funcs instead of itimer in XEmacs
+	for `run-with-idle-timer'. 
+
+	* gnus-demon.el: Require timer-funcs instead of itimer in XEmacs
+	for `run-at-time'.
+
+	* mm-url.el: Require timer-funcs at compile time when in XEmacs
+	for `with-timeout'. 
+
+	* dgnushack.el: Autoload the correct `setenv' for SXEmacs which is
+	the same as for XEmacs 21.4.
+	No need to ignore `run-with-idle-timer', this function exists in
+	XEmacs now in timer-funcs.el in the xemacs-base package.
+	(dgnushack-compile): No need to delete
+	run-at-time.el from the list of files to compile because it
+	doesn't exist anymore.
+
 2005-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-generate-mime-1): Convert string into unibyte when

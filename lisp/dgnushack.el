@@ -208,7 +208,8 @@ fixed in Emacs after 21.3."
     (autoload 'read-passwd "passwd")
     (autoload 'regexp-opt "regexp-opt")
     (autoload 'reporter-submit-bug-report "reporter")
-    (if (emacs-version>= 21 5)
+    (if (and (emacs-version>= 21 5)
+	     (not (featurep 'sxemacs)))
 	(autoload 'setenv "process" nil t)
       (autoload 'setenv "env" nil t))
     (autoload 'sgml-mode "psgml" nil t)
@@ -230,7 +231,6 @@ fixed in Emacs after 21.3."
     (defalias 'overlays-in 'ignore)
     (defalias 'replace-dehighlight 'ignore)
     (defalias 'replace-highlight 'ignore)
-    (defalias 'run-with-idle-timer 'ignore)
     (defalias 'w3-coding-system-for-mime-charset 'ignore)))
 
 (defun dgnushack-compile-verbosely ()
@@ -275,8 +275,7 @@ dgnushack-compile."
     (dolist (file
 	     (if (featurep 'xemacs)
 		 '("md5.el")
-	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el"
-		 "run-at-time.el")))
+	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el")))
       (setq files (delete file files)))
 
     (dolist (file files)

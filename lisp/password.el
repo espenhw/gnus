@@ -60,7 +60,7 @@
 ;;; Code:
 
 (when (featurep 'xemacs)
-  (require 'run-at-time))
+  (require 'timer-funcs))
 
 (eval-when-compile
   (require 'cl))

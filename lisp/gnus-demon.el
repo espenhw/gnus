@@ -37,7 +37,7 @@
 (require 'gnus-util)
 (eval-and-compile
   (if (featurep 'xemacs)
-      (require 'itimer)
+      (require 'timer-funcs)
     (require 'timer)))
 
 (defgroup gnus-demon nil
