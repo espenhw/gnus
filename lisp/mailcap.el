@@ -801,11 +801,21 @@ this type is returned."
    ((memq system-type '(ms-dos ms-windows windows-nt))
     (setq path (mapconcat 'expand-file-name
 			  '("~/mime.typ" "~/etc/mime.typ") ";")))
-   (t (setq path (mapconcat 'expand-file-name
-			    '("~/.mime-types"
-			      "/etc/mime-types:/usr/etc/mime-types"
-			      "/usr/local/etc/mime-types"
-			      "/usr/local/www/conf/mime-types") ":"))))
+   (t (setq path (mapconcat
+		  'expand-file-name
+		  ;; mime.types seems to be the normal name,
+		  ;; definitely so on current GNUish systems.  The
+		  ;; ordering follows that for mailcap.
+		  '("~/.mime.types"
+		    "/etc/mime.types"
+		    "/usr/etc/mime.types"
+		    "/usr/local/etc/mime.types"
+		    "/usr/local/www/conf/mime.types"
+		    "~/.mime-types"
+		    "/etc/mime-types"
+		    "/usr/etc/mime-types"
+		    "/usr/local/etc/mime-types"
+		    "/usr/local/www/conf/mime-types") ":"))))
   (let ((fnames (reverse
 		 (split-string path
 			       (if (memq system-type
