@@ -193,6 +193,8 @@
 	   (point)
 	   (or (and (re-search-forward nndigest-separator nil t)
 		    (match-beginning 0))
+	       (and (re-search-forward "^------------------------------" nil t)
+		    (match-beginning 0))
 	       (point-max)))
 	  (cons (point-min) (point-max)))
       nil)))

@@ -1,3 +1,147 @@
+Sat May 20 00:11:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): Don't barf wifout a
+	message-id. 
+
+	* gnus-score.el (gnus-score-load-file): 'eval was not right. 
+
+	* gnus.el (gnus-make-articles-unread): Would deliver wrong
+	results. 
+
+Fri May 19 01:10:34 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnbabyl.el (nnbabyl-insert-newsgroup-line): Did not translate
+	"From " lines.
+	(nnbabyl-insert-lines): Wrong number of lines. 
+	(nnbabyl-request-accept-article): Bugged out. 
+
+	* nnmh.el (nnmh-request-accept-article): Would never accept an
+	article. 
+
+	* gnus-vis.el (gnus-article-add-buttons): `Entry' would be nil
+	sometimes. 
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine buffer-display-table. 
+
+	* gnus.el (gnus): Init server buffer, just in case.
+
+	* nnml.el (nnml-request-create-group): string-to-int instead of
+	int-to-string. 
+
+	* gnus.el (gnus-group-use-permament-levels): New variable,
+	supersedes other variables. 
+	(gnus-article-prepare): Let buffer-read-only nil before calling
+	hooks. 
+	(gnus-summary-next-group): Recenter group buffer.
+	(gnus-get-newsgroup-headers): Articles without message-id's
+	fetched in separate batches would be clobbered.
+
+	* gnus-msg.el (gnus-inews-do-fcc): Make sure the fcc dir exists. 
+	(gnus-inews-news): If both mailing and posting, remove the Fcc
+	before posting. 
+
+	* nnvirtual.el (nnvirtual-request-post-buffer): Don't suggest any
+	newsgroups to post in.
+
+	* gnus.el (gnus-list-of-read-articles): Would totally bug out. 
+
+	* gnus-score.el (gnus-score-string): Add tracing.
+	(gnus-score-find-trace): New command and keystroke.
+
+	* nnmbox.el (nnmbox-request-expire-articles): When deleting the
+	last article, would infloop.
+
+	* nnbabyl.el (nnbabyl-article-string): Did not anchor end of
+	number. 
+
+	* gnus-msg.el (gnus-forward-insert-buffer): Don't do double
+	copying of article buffer.
+	(gnus-copy-article-buffer): Would barf when the article buffer
+	didn't exist.
+
+	* gnus.el (gnus-configure-windows): Split the opposite way.
+	(gnus-summary-next-group): Would cycle on 0 on the last group. 
+
+	* gnus-score.el (gnus-summary-increase-score): Give fuller
+	prompts. 
+
+Sun May 14 10:01:49 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus.el: Use (point-min) instead if `1'.
+
+	* gnus.el (gnus-hidden-properties): Added.
+	(gnus-summary-toggle-header, gnus-article-show-all-headers,
+	gnus-article-hide-headers): Use it.
+
+	* gnus-cite.el (gnus-article-hide-citation,
+	gnus-article-hide-citation-maybe, gnus-cite-toggle): Use it.
+
+	* gnus-vis.el (gnus-article-hide-signature,
+	gnus-signature-toggle):  use it.
+
+	* gnus.el (gnus-article-hide-signature): Deleted.  Use the version
+	in `gnus-vis.el' instead.
+
+	* gnus-vis.el (gnus-article-next-button): New function and
+	keybinding. 
+
+Thu May 18 03:10:03 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-edit-alist): Really save winconf.
+
+	* gnus.el (gnus-summary-enter-digest-group): Don't use / in group
+	names. 
+
+	* nnmail.el (nnmail-split-incoming): Use Content-Length header. 
+
+	* gnus-score.el (gnus-score-headers): Let current-score-file. 
+
+	* gnus-ems.el: Don't use intagible before 19.29.
+
+	* nndigest.el (nndigest-narrow-to-article): Stop before that *End
+	of digest* line.
+
+	* gnus-score.el (gnus-score-score-files): Expand the kill-file
+	path before using it.
+	(gnus-summary-increase-score): Double quoting of types.
+
+	* gnus-mh.el (gnus-mail-forward-using-mhe): Use the incoming
+	buffer. 
+
+	* gnus.el (gnus-summary-prepare-threads): False roots would get
+	incorrect number of children.
+
+	* nnspool.el (nnspool-inews-sentinel): condition-case the sending
+	of eof.
+
+	* gnus.el (gnus-summary-mark-article): Always un-hide threads. 
+	(gnus-update-read-articles): Peel off expired article numbers. 
+	(gnus-article-set-window-start): New function.
+	(gnus-summary-refer-article): Would scroll to the end of the
+	buffer. 
+
+	* gnus-uu.el (gnus-uu-save-article): Grabbed one char to many when
+	snarfing headers. 
+
+	* gnus-score.el (gnus-score-add-followups): Don't enter if there
+	already is one.
+
+	* gnus.el (gnus-nov-read-integer): Condition-case the read. 
+
+	* nnvirtual.el (nnvirtual-close-group): Always handle a close. 
+
+	* gnus-vm.el (gnus-mail-forward-using-vm): Accept an argument.
+
+	* gnus-mh.el (gnus-mail-forward-using-mhe): Ditto.
+
+	* gnus.el (gnus-summary-make-display-table): New function.
+
+Thu May 18 00:58:54 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-mode): Display-table would be nil. 
+
+	* gnus.el: 0.72 is released.
+
 Wed May 17 19:38:43 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
 
 	* gnus.el: 0.71 is released.

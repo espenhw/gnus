@@ -437,43 +437,8 @@ highlight-headers-follow-url-netscape:
       ["Set mark below" gnus-score-set-mark-below t]
       ["Set expunge below" gnus-score-set-expunge-below t]
       ["Edit current score file" gnus-score-edit-alist t]
-      ["Edit score file" gnus-score-edit-file t])
-     ["Raise score with current subject" 
-      gnus-summary-temporarily-raise-by-subject t]
-     ["Raise score with current author" 
-      gnus-summary-temporarily-raise-by-author t]
-     ["Raise score with current thread" 
-      gnus-summary-temporarily-raise-by-thread t]
-     ["Raise score with current crossposting" 
-      gnus-summary-temporarily-raise-by-xref t]
-     ["Raise score for followups to current author"
-      gnus-summary-temporarily-raise-followups-to-author t]
-     ["Permanently raise score with current subject"
-      gnus-summary-raise-by-subject t]
-     ["Permanently raise score with current author" 
-      gnus-summary-raise-by-author t]
-     ["Permanently raise score with current crossposting" 
-      gnus-summary-raise-by-xref t]
-     ["Permanently raise score for followups to current author"
-      gnus-summary-raise-followups-to-author t]
-     ["Lower score with current subject" 
-      gnus-summary-temporarily-lower-by-subject t]
-     ["Lower score with current author" 
-      gnus-summary-temporarily-lower-by-author t]
-     ["Lower score with current thread" 
-      gnus-summary-temporarily-lower-by-thread t]
-     ["Lower score with current crossposting" 
-      gnus-summary-temporarily-lower-by-xref t]
-     ["Lower score for followups to current author"
-      gnus-summary-temporarily-lower-followups-to-author t]
-     ["Permanently lower score with current subject"
-      gnus-summary-lower-by-subject t]
-     ["Permanently lower score with current author" 
-      gnus-summary-lower-by-author t]
-     ["Permanently lower score with current crossposting" 
-      gnus-summary-lower-by-xref t]
-     ["Permanently lower score for followups to current author"
-      gnus-summary-lower-followups-to-author t]
+      ["Edit score file" gnus-score-edit-file t]
+      ["Trace score" gnus-score-find-trace t])
      ))
   )
  
@@ -519,10 +484,13 @@ highlight-headers-follow-url-netscape:
 	(save-excursion
 	  (let* ((beg (progn (beginning-of-line) (point)))
 		 (end (progn (end-of-line) (point)))
-		 (to (max 1 (1- (or (previous-single-property-change
-				     end 'mouse-face nil beg) end))))
-		 (from (1+ (or (next-single-property-change 
-				beg 'mouse-face nil end) beg))))
+		 ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
+		 (from (if (get-text-property beg 'mouse-face) 
+			   beg
+			 (next-single-property-change
+			  beg 'mouse-face nil end)))
+		 (to (next-single-property-change
+		      from 'mouse-face nil end)))
 	    (if (< to beg)
 		(progn
 		  (setq from beg)
@@ -607,6 +575,8 @@ highlight-headers-follow-url-netscape:
     ("fetch parent" . gnus-summary-refer-parent-article)
     "mail"
     ("move" . gnus-summary-move-article)
+    ("copy" . gnus-summary-copy-article)
+    ("respool" . gnus-summary-respool-article)
     "threads"
     ("lower" . gnus-summary-lower-thread)
     ("kill" . gnus-summary-kill-thread)
@@ -645,6 +615,9 @@ highlight-headers-follow-url-netscape:
 
 (defvar gnus-carpal-button-face 'bold
   "*Face used on carpal buttons.")
+
+(defvar gnus-carpal-header-face 'bold-italic
+  "*Face used on carpal buffer headers.")
 
 (defvar gnus-carpal-mode-map nil)
 (put 'gnus-carpal-mode 'mode-class 'special)
@@ -696,14 +669,16 @@ The following commands are available:
 	    (setq button (car buttons)
 		  buttons (cdr buttons))
 	    (if (stringp button)
-		(insert button " ")
+		(set-text-properties
+		 (point)
+		 (prog2 (insert button) (point) (insert " "))
+		 (list 'face gnus-carpal-header-face))
 	      (set-text-properties
 	       (point)
-	       (progn (insert (car button)) (point))
+	       (prog2 (insert (car button)) (point) (insert " "))
 	       (list 'gnus-callback (cdr button)
 		     'face gnus-carpal-button-face
-		     'mouse-face 'highlight))
-	      (insert " ")))
+		     'mouse-face 'highlight))))
 	  (let ((fill-column (- (window-width) 2)))
 	    (fill-region (point-min) (point-max)))
 	  (set-window-point (get-buffer-window (current-buffer)) 
@@ -892,15 +867,17 @@ External references are things like message-ids and URLs, as specified by
 	(goto-char (match-beginning 0))
 	(let* ((from (point))
 	       (entry (gnus-button-entry))
-	       (start (match-beginning (nth 1 entry)))
-	       (end (match-end (nth 1 entry)))
+	       (start (and entry (match-beginning (nth 1 entry))))
+	       (end (and entry (match-end (nth 1 entry))))
 	       (form (nth 2 entry))
 	       marker)
-	  (goto-char (match-end 0))
-	  (if (eval form)
-	      (gnus-article-add-button start end 'gnus-button-push
-				       (set-marker (make-marker)
-						   from))))))))
+	  (if (not entry)
+	      ()
+	    (goto-char (match-end 0))
+	    (if (eval form)
+		(gnus-article-add-button start end 'gnus-button-push
+					 (set-marker (make-marker)
+						     from)))))))))
 
 ;;; External functions:
 

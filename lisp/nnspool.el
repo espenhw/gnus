@@ -321,7 +321,11 @@ Newsgroup must be selected before calling this function."
 			nnspool-inews-program nnspool-inews-switches)))
       (set-process-sentinel proc 'nnspool-inews-sentinel)
       (process-send-region proc (point-min) (point-max))
-      (process-send-eof proc)
+      ;; We slap a condition-case around this, because the process may
+      ;; have exited already...
+      (condition-case nil
+	  (process-send-eof proc)
+	(error nil))
       t)))
 
 (defun nnspool-inews-sentinel (proc status)
@@ -397,9 +401,10 @@ Newsgroup must be selected before calling this function."
   (let ((first (car articles))
 	(last (progn (while (cdr articles) (setq articles (cdr articles)))
 		     (car articles))))
-    (call-process "sed" nil t nil "-e" 
-		  (format "1,/^%d\t/d\n/^%d\t/,$d"
-			  (1- first) (1+ last)) file)))
+    (call-process "awk" nil t nil 
+		  (format "BEGIN {firstmsg=%d; lastmsg=%d;}\n $1 >= firstmsg && $1 <= lastmsg {print;}"
+			  (1- first) (1+ last))
+		  file)))
 
 (defun nnspool-find-article-by-message-id (id)
   "Return full pathname of an article identified by message-ID."

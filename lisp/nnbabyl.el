@@ -302,7 +302,7 @@
        (let ((nnmail-split-methods
 	      (if (stringp group) (list (list group "")) 
 		nnmail-split-methods)))
-	 (setq result (nnbabyl-save-mail)))
+	 (setq result (car (nnbabyl-save-mail))))
        (set-buffer nnbabyl-mbox-buffer)
        (goto-char (point-max))
        (search-backward "\n\^_")
@@ -375,12 +375,34 @@
 
 (defun nnbabyl-article-string (article)
   (concat "\nX-Gnus-Newsgroup: " nnbabyl-current-group ":" 
-	  (int-to-string article)))
+	  (int-to-string article) " "))
+
+(defun nnbabyl-insert-lines ()
+  "Insert how many lines and chars there are in the body of the mail."
+  (let (lines chars)
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward "\n\n" nil t) 
+	  (progn
+	    ;; There may be an EOOH line here...
+	    (if (looking-at "\\*\\*\\* EOOH \\*\\*\\*")
+		(search-forward "\n\n" nil t))
+	    (setq chars (- (point-max) (point)))
+	    (setq lines (- (count-lines (point) (point-max)) 1))
+	    ;; Move back to the end of the headers. 
+	    (goto-char (point-min))
+	    (search-forward "\n\n" nil t)
+	    (forward-char -1)
+	    (save-excursion
+	      (if (re-search-backward "^Lines: " nil t)
+		  (delete-region (point) (progn (forward-line 1) (point)))))
+	    (insert (format "Lines: %d\n" lines))
+	    chars)))))
 
 (defun nnbabyl-save-mail ()
   ;; Called narrowed to an article.
   (let ((group-art (nreverse (nnmail-article-group 'nnbabyl-active-number))))
-    (nnmail-insert-lines)
+    (nnbabyl-insert-lines)
     (nnmail-insert-xref group-art)
     (nnbabyl-insert-newsgroup-line group-art)
     (run-hooks 'nnbabyl-prepare-save-mail-hook)
@@ -391,14 +413,15 @@
     (goto-char (point-min))
     ;; If there is a C-l at the beginning of the narrowed region, this
     ;; isn't really a "save", but rather a "scan".
+    (while (looking-at "From ")
+      (replace-match "Mail-from: From " t t)
+      (forward-line 1))
+    (goto-char (point-min))
     (or (looking-at "\^L")
 	(save-excursion
 	  (insert "\^L\n0, unseen,,\n*** EOOH ***\n")
 	  (goto-char (point-max))
 	  (insert "\^_\n")))
-    (while (looking-at "From ")
-      (replace-match "Mail-from: " t t)
-      (forward-line 1))
     (if (search-forward "\n\n" nil t)
 	(progn
 	  (forward-char -1)

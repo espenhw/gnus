@@ -145,12 +145,12 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 ;; gnus-mail-forward-using-mhe is contributed by Jun-ichiro Itoh
 ;; <itojun@ingram.mt.cs.keio.ac.jp>
 
-(defun gnus-mail-forward-using-mhe ()
+(defun gnus-mail-forward-using-mhe (&optional buffer)
   "Forward the current message to another user using mh-e."
   ;; First of all, prepare mhe mail buffer.
   (let ((to (read-string "To: "))
  	(cc (read-string "Cc: "))
- 	(buffer (current-buffer))
+ 	(buffer (or buffer gnus-article-buffer))
  	subject
 	(config (current-window-configuration))) ;; need to add this - erik
     ;;(gnus-article-show-all-headers)

@@ -47,7 +47,11 @@
 	  (if props
 	      (put-text-property start end (car props) (cadr props) buffer)
 	    (remove-text-properties start end ()))))
-  
+    
+    (or (fboundp 'make-overlay (fset 'make-overlay 'make-extent)))
+    (or (fboundp 'over-lay-put (fset 'overlay-put 'set-extent-property)))
+    (or (boundp 'standard-display-table (setq standard-display-table nil)))
+
     (if (not gnus-visual)
 	()
       (setq gnus-group-mode-hook
@@ -81,16 +85,52 @@
     (defun gnus-install-mouse-tracker ()
       (require 'mode-motion)
       (setq mode-motion-hook 'mode-motion-highlight-line)))
+
+   ((and (not (string-match "28.9" emacs-version)) 
+	 (not (string-match "29" emacs-version)))
+    (setq gnus-hidden-properties '(invisible t)))
+   
+   ))
+
+(eval-and-compile
+  (cond
+   ((not window-system)
+    (defun gnus-dummy-func (&rest args))
+    (let ((funcs '(mouse-set-point make-face set-face-foreground
+				   set-face-background)))
+      (while funcs
+	(or (fboundp (car funcs))
+	    (fset (car funcs) 'gnus-dummy-func))
+	(setq funcs (cdr funcs)))))
    ))
 
 (defun gnus-ems-redefine ()
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)
     ;; XEmacs definitions.
-    (fset 'gnus-set-mouse-face (lambda (string) string)))
+    (fset 'gnus-set-mouse-face (lambda (string) string))
+
+    (defun gnus-summary-make-display-table ()
+      (let* ((table (window-display-table)))
+	(and (not table)
+	     (setq table (make-vector 261 ())))
+	(let ((i 32))
+	  (while (>= (setq i (1- i)) 0)
+	    (aset table i [??])))
+	(aset table ?\n nil)
+	(let ((i 160))
+	  (while (>= (setq i (1- i)) 127)
+	    (aset table i [??])))
+	(setq gnus-summary-display-table table)))
+
+    )
 
    ))
 
 (provide 'gnus-ems)
+
+;; Local Variables:
+;; byte-compile-warnings: nil
+;; End:
 
 ;;; gnus-ems.el ends here

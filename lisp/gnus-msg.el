@@ -200,6 +200,9 @@ the article to a file).")
 The hook is called from the *post-news* buffer, narrowed to the
 headers.")
 
+(defvar gnus-mail-hook nil
+  "*A hook called as the last thing after setting up a mail buffer.")
+
 ;;; Internal variables.
 
 (defvar gnus-post-news-buffer "*post-news*")
@@ -352,12 +355,17 @@ header line with the old Message-ID."
   ;; if ARTICLE-BUFFER is nil, gnus-article-buffer is used
   ;; this buffer should be passed to all mail/news reply/post routines.
   (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
+  (buffer-disable-undo gnus-article-copy)
   (or (memq gnus-article-copy gnus-buffer-list)
       (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
-  (save-excursion
-    (set-buffer (or article-buffer gnus-article-buffer))
-    (copy-to-buffer gnus-article-copy (point-min) (point-max))
-    (set-text-properties (point-min) (point-max) nil gnus-article-copy)))
+  (let ((article-buffer (or article-buffer gnus-article-buffer)))
+    (if (and (get-buffer article-buffer)
+	     (buffer-name (get-buffer article-buffer)))
+	(save-excursion
+	  (set-buffer article-buffer)
+	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
+	  (set-text-properties (point-min) (point-max) 
+			       nil gnus-article-copy)))))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject)
   "Begin editing a new USENET news article to be posted.
@@ -502,7 +510,8 @@ will attempt to use the foreign server to post the article."
 	 (progn
 	   (goto-char (point-min))
 	   (re-search-forward 
-	    (concat "^" (regexp-quote mail-header-separator) "$"))))
+	    (concat "^" (regexp-quote mail-header-separator) "$"))
+	   (match-beginning 0)))
 
 	;; Correct newsgroups field: change sequence of spaces to comma and 
 	;; eliminate spaces around commas.  Eliminate imbedded line breaks.
@@ -560,7 +569,8 @@ will attempt to use the foreign server to post the article."
 
 	;; Mail the message too if To:, Bcc:. or Cc: exists.
 	(let* ((types '("to" "bcc" "cc"))
-	       (ty types))
+	       (ty types)
+	       fcc-line)
 	  (while ty
 	    (or (mail-fetch-field (car ty) nil t)
 		(setq types (delete (car ty) types)))
@@ -576,10 +586,23 @@ will attempt to use the foreign server to post the article."
 		   1 "No mailer defined.  To: and/or Cc: fields ignored.")
 		  (sit-for 1))
 	      (save-excursion
+		;; We want to remove Fcc, because we want to handle
+		;; that one ourselves...  
+		  
+		(goto-char (point-min))
+		(if (re-search-forward "^Fcc: " nil t)
+		    (progn
+		      (setq fcc-line
+			    (buffer-substring
+			     (progn (beginning-of-line) (point))
+			     (progn (forward-line 1) (point))))
+		      (forward-line -1)
+		      (gnus-delete-line)))
+
 		(save-restriction
 		  (widen)
 		  (gnus-message 5 "Sending via mail...")
-		      
+
 		  (if (and gnus-mail-courtesy-message
 			   (or (member "to" types)
 			       (member "cc" types)))
@@ -609,7 +632,11 @@ will attempt to use the foreign server to post the article."
 		   (re-search-forward 
 		    (concat "^" (regexp-quote mail-header-separator) "$")))
 		  (goto-char (point-min))
-		  (delete-matching-lines "^BCC:")))))))
+		  (delete-matching-lines "^BCC:"))
+		(if fcc-line
+		    (progn
+		      (goto-char (point-max))
+		      (insert fcc-line))))))))
 
       ;; Send to NNTP server. 
       (gnus-message 5 "Posting to USENET...")
@@ -1062,6 +1089,7 @@ a program specified by the rest of the value."
 		(t
 		 ;; Suggested by hyoko@flab.fujitsu.junet.
 		 ;; Save article in Unix mail format by default.
+		 (gnus-make-directory fcc-file)
 		 (if (and gnus-author-copy-saver
 			  (not (eq gnus-author-copy-saver 'rmail-output)))
 		     (funcall gnus-author-copy-saver fcc-file)
@@ -1205,9 +1233,6 @@ organization."
 	      "~/.organization")))
     (and (stringp organization)
 	 (> (length organization) 0)
-	 (or (file-exists-p organization)
-	     (string-match " " organization)
-	     (not (string-match  "^/[^/]+/" (expand-file-name organization))))
 	 (save-excursion
 	   (gnus-set-work-buffer)
 	   (if (file-exists-p organization)
@@ -1332,8 +1357,9 @@ mailer."
 	  (setq reply-to (mail-fetch-field "reply-to"))
 	  (setq references (mail-fetch-field "references"))
 	  (setq message-id (mail-fetch-field "message-id")))
-	(setq news-reply-yank-from from)
-	(setq news-reply-yank-message-id message-id)
+	(setq news-reply-yank-from (or from "(nobody)"))
+	(setq news-reply-yank-message-id
+	      (or message-id "(unknown Message-ID)"))
 
 	;; Gather the "to" addresses out of the follow-to list and remove
 	;; them as we go.
@@ -1392,7 +1418,8 @@ mailer."
 		(goto-char end)
 		(setq yank (cdr yank))))
 	    (goto-char last))
-	  (gnus-configure-windows 'reply-yank))))))
+	  (gnus-configure-windows 'reply-yank))
+	(run-hooks 'gnus-mail-hook)))))
 
 (defun gnus-mail-yank-original ()
   (interactive)
@@ -1429,8 +1456,7 @@ mailer."
 (defun gnus-forward-insert-buffer (buffer)
   (let ((beg (goto-char (point-max))))
     (insert "------- Start of forwarded message -------\n")
-    (gnus-copy-article-buffer buffer)
-    (insert-buffer gnus-article-copy)
+    (insert-buffer buffer)
     (goto-char (point-max))
     (insert "------- End of forwarded message -------\n")
     ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>. 

@@ -100,9 +100,9 @@ Has to be set before gnus-vm is loaded.")
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail folder)))
   
-(defun gnus-mail-forward-using-vm ()
+(defun gnus-mail-forward-using-vm (&optional buffer)
   "Forward the current message to another user using vm."
-  (let ((gnus-buffer (current-buffer))
+  (let ((gnus-buffer (or buffer (current-buffer)))
 	(subject (concat "[" gnus-newsgroup-name "] "
 			 (or (gnus-fetch-field "Subject") ""))))
     (or (featurep 'win-vm)

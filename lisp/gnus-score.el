@@ -66,6 +66,9 @@ score alists.")
     (gnus-catchup-mark (from -1) (subject -1)))
   "*Alist of marks and scores.")
 
+(defvar gnus-score-mimic-keymap nil
+  "*Have the score entry functions pretend that they are a keymap.")
+
 (defvar gnus-score-exact-adapt-limit nil
   "*Number that says how long a match has to be before using substring matching.
 When doing adaptive scoring, one normally uses substring matching.
@@ -82,8 +85,9 @@ always be used.")
 
 (defvar gnus-internal-global-score-files nil)
 (defvar gnus-score-file-list nil)
-(defvar gnus-current-score-file nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
+
+(defvar gnus-score-trace nil)
 
 (defvar gnus-score-alist nil
   "Alist containing score information.
@@ -123,6 +127,7 @@ of the last succesful match.")
 (define-key gnus-summary-score-map "x" 'gnus-score-set-expunge-below)
 (define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
 (define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
+(define-key gnus-summary-score-map "t" 'gnus-score-find-trace)
 
 
 
@@ -137,8 +142,9 @@ of the last succesful match.")
 
 (defun gnus-summary-increase-score (score)
   (interactive "P")
-  (let* ((score (gnus-score-default score))
-	 (prefix (if (< score 0) ?L ?I))
+  (let* ((nscore (gnus-score-default score))
+	 (prefix (if (< nscore 0) ?L ?I))
+	 (increase (> nscore 0))
 	 (char-to-header 
 	  '((?a "from")
 	    (?s "subject")
@@ -151,54 +157,66 @@ of the last succesful match.")
 	    (?d "date")
 	    (?f "followup")))
 	 (char-to-type
-	  '((?e 'e)
-	    (?f 'f)
-	    (?s 's)
-	    (?r 'r)
-	    (?b 'before)
-	    (?a 'at)
-	    (?n 'now)
-	    (?< '<)
-	    (?> '>)
-	    (?= '=)))
+	  '((?e e) (?f f) (?s nil) (?r r) (?b before)
+	    (?a at) (?n now) (?< <) (?> >) (?= =)))
+	 (char-to-perm
+	  (list (list ?t (current-time-string)) '(?p nil) '(?i now)))
+	 (mimic gnus-score-mimic-keymap)
 	 hchar entry temporary tchar pchar end type)
     ;; First we read the header to score.
-    (message "%c-" prefix)
+    (if mimic
+	(message "%c-" prefix)
+      (message "%s header (%s): " (if increase "Increase" "Lower")
+	       (mapconcat (lambda (s) (char-to-string (car s)))
+			  char-to-header "")))
     (setq hchar (read-char))
     (or (setq entry (assq (downcase hchar) char-to-header))
 	(progn
 	  (ding)
 	  (setq end t)
-	  (message "%c %c" prefix hchar)))
+	  (if mimic (message "%c %c" prefix hchar) (message ""))))
     (if (or end (/= (downcase hchar) hchar))
 	(progn
 	  ;; This was a majuscle, so we end reading and set the defaults.
-	  (message "%c %c" prefix hchar)
-	  (setq type 's
-		temporary t))
+	  (if mimic (message "%c %c" prefix hchar) (message ""))
+	  (setq type nil
+		temporary (current-time-string)))
       ;; We continue reading - the type.
-      (message "%c %c-" prefix hchar)
+      (if mimic
+	  (message "%c %c-" prefix hchar)
+	(message "%s header '%s' with match type (%s): "
+		 (if increase "Increase" "Lower")
+		 (nth 1 entry)
+		 (mapconcat (lambda (s) (char-to-string (car s)))
+			    char-to-type "")))
       (setq tchar (read-char))
       (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
 	  (progn
 	    (ding)
-	    (message "%c %c" prefix hchar)
+	    (if mimic (message "%c %c" prefix hchar) (message ""))
 	    (setq end t)))
       (if (or end (/= (downcase tchar) tchar))
 	  (progn
 	    ;; It was a majuscle, so we end reading and the the default.
-	    (message "%c %c %c" prefix hchar tchar)
-	    (setq temporary t))
+	    (if mimic (message "%c %c %c" prefix hchar tchar)
+	      (message ""))
+	    (setq temporary (current-time-string)))
 	;; We continue reading.
-	(message "%c %c %c-" prefix hchar tchar)
+	(if mimic
+	    (message "%c %c %c-" prefix hchar tchar)
+	  (message "%s permanence (%s): " (if increase "Increase" "Lower")
+		   (mapconcat (lambda (s) (char-to-string (car s)))
+			      char-to-perm "")))
 	(setq pchar (read-char))
-	(message "%c %c %c" prefix hchar tchar pchar)
-	(cond ((= pchar ?t)
-	       (setq temporary t))
-	      ((/= pchar ?p)
-	       (ding)
-	       (setq end t)
-	       (message "%c %c %c %c" prefix hchar tchar pchar)))))
+	(if mimic (message "%c %c %c" prefix hchar tchar pchar)
+	  (message ""))
+	(if (setq temporary (nth 1 (assq pchar char-to-perm)))
+	    ()
+	  (ding)
+	  (setq end t)
+	  (if mimic 
+	      (message "%c %c %c %c" prefix hchar tchar pchar)
+	    (message "")))))
     ;; We have all the data, so we enter this score.
     (if end
 	()
@@ -206,8 +224,8 @@ of the last succesful match.")
        (nth 1 entry)			; Header
        (gnus-summary-header (or (nth 2 entry) (nth 1 entry))) ; Match
        type				; Type
-       (gnus-score-default score)		; Score
-       (and temporary (current-time-string)) ; Temp
+       score                		; Score
+       temporary                        ; Temp
        (not (nth 3 entry)))		; Prompt
       )))
 
@@ -408,16 +426,16 @@ SCORE is the score to add."
 (defun gnus-score-edit-alist (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
-  (and (buffer-name gnus-summary-buffer) (gnus-score-save))
   (let ((winconf (current-window-configuration)))
+    (and (buffer-name gnus-summary-buffer) (gnus-score-save))
     (gnus-configure-windows 'article)
     (pop-to-buffer (find-file-noselect file))
+    (gnus-score-mode)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
   (gnus-message 
    4 (substitute-command-keys 
-      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
-  (gnus-score-mode))
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits")))
   
 (defun gnus-score-edit-file (file)
   "Edit a score file."
@@ -427,12 +445,12 @@ SCORE is the score to add."
   (let ((winconf (current-window-configuration)))
     (gnus-configure-windows 'article)
     (pop-to-buffer (find-file-noselect file))
+    (gnus-score-mode)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
   (gnus-message 
    4 (substitute-command-keys 
-      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits"))
-  (gnus-score-mode))
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits")))
   
 (defun gnus-score-load-file (file)
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
@@ -477,7 +495,7 @@ SCORE is the score to add."
 	  (exclude-files (gnus-score-get 'exclude-files alist))
           (orphan (car (gnus-score-get 'orphan alist)))
 	  (adapt (gnus-score-get 'adapt alist))
-	  (eval (gnus-score-get 'eval alist)))
+	  (eval (car (gnus-score-get 'eval alist))))
       ;; We do not respect eval and files atoms from global score
       ;; files. 
       (and files (not global)
@@ -634,7 +652,7 @@ SCORE is the score to add."
 	    (write-region (point-min) (point-max) file nil 'silent))))
       (kill-buffer (current-buffer)))))
   
-(defun gnus-score-headers (score-files)
+(defun gnus-score-headers (score-files &optional trace)
   ;; Score `gnus-newsgroup-headers'.
   (let (scores)
     ;; PLM: probably this is not the best place to clear orphan-score
@@ -668,6 +686,7 @@ SCORE is the score to add."
 	     (now (gnus-day-number (current-time-string)))
 	     (expire (- now gnus-score-expiry-days))
 	     (headers gnus-newsgroup-headers)
+	     (gnus-current-score-file gnus-current-score-file)
 	     entry header)
 	(gnus-message 5 "Scoring...")
 	;; Create articles, an alist of the form `(HEADER . SCORE)'.
@@ -701,7 +720,7 @@ SCORE is the score to add."
 				  (lambda (score)
 				    (length (gnus-score-get header score)))
 				  scores)))
-		(funcall (nth 2 entry) scores header now expire)))
+		(funcall (nth 2 entry) scores header now expire trace)))
 	  ;; Remove the buffer.
 	  (kill-buffer (current-buffer)))
 
@@ -789,7 +808,7 @@ SCORE is the score to add."
                    (forward-line))))))
              
 
-(defun gnus-score-integer (scores header now expire)
+(defun gnus-score-integer (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	alike last this art entries alist articles)
 
@@ -822,6 +841,9 @@ SCORE is the score to add."
 			  (or (aref (car (car articles)) gnus-score-index) 0)
 			  match)
 		 (progn
+		   (and trace (setq gnus-score-trace 
+				    (cons (cons (car (car articles)) kill)
+					  gnus-score-trace)))
 		   (setq found t)
 		   (setcdr (car articles) (+ score (cdr (car articles))))))
 	    (setq articles (cdr articles)))
@@ -836,7 +858,7 @@ SCORE is the score to add."
 		 (setq rest entries)))
 	  (setq entries rest))))))
 
-(defun gnus-score-date (scores header now expire)
+(defun gnus-score-date (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	alike last this art entries alist articles)
 
@@ -870,6 +892,9 @@ SCORE is the score to add."
 	     (setq l (aref (car (car articles)) gnus-score-index))
 	     (funcall match-func match (timezone-make-date-sortable l))
 	     (progn
+	       (and trace (setq gnus-score-trace 
+				(cons (cons (car (car articles)) kill)
+				      gnus-score-trace)))
 	       (setq found t)
 	       (setcdr (car articles) (+ score (cdr (car articles))))))
 	    (setq articles (cdr articles)))
@@ -884,7 +909,7 @@ SCORE is the score to add."
 		 (setq rest entries)))
 	  (setq entries rest))))))
 
-(defun gnus-score-body (scores header now expire)
+(defun gnus-score-body (scores header now expire &optional trace)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (save-restriction
@@ -954,7 +979,10 @@ SCORE is the score to add."
 		      ;; Found a match, update scores.
 		      (progn
 			(setcdr (car articles) (+ score (cdr (car articles))))
-			(setq found t)))
+			(setq found t)
+			(and trace (setq gnus-score-trace 
+					 (cons (cons (car (car articles)) kill)
+					       gnus-score-trace)))))
 		  ;; Update expire date
 		  (cond ((null date))	;Permanent entry.
 			(found		;Match, update date.
@@ -1063,12 +1091,25 @@ SCORE is the score to add."
 (defun gnus-score-add-followups (header score)
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (gnus-summary-score-entry 
-     "references" (header-id header) 's score 
-     (current-time-string) nil t)))
+    (let ((id (header-id header))
+	  (score gnus-score-alist)
+	  dont)
+      ;; Don't enter a score if there already is one.
+      (while score
+	(and (equal "references" (car (car score)))
+	     (or (null (nth 3 (car score)))
+		 (eq 's (nth 3 (car score))))
+	     (progn
+	       (or (assoc id (car score))
+		   (setq dont t))
+	       (setq score nil)))
+	(setq score (cdr score)))
+      (or dont
+	  (gnus-summary-score-entry 
+	   "references" id 's score (current-time-string) nil t)))))
 
 
-(defun gnus-score-string (score-list header now expire)
+(defun gnus-score-string (score-list header now expire &optional trace)
   ;; Score ARTICLES according to HEADER in SCORE-LIST.
   ;; Update matches entries to NOW and remove unmatched entried older
   ;; than EXPIRE.
@@ -1147,20 +1188,37 @@ SCORE is the score to add."
 			 (setq found (setq arts (get-text-property 
 						 (point) 'articles)))
 			 ;; Found a match, update scores.
-			 (while arts
-			   (setq art (car arts)
-				 arts (cdr arts))
-			   (setcdr art (+ score (cdr art))))))
+			 (if trace
+			     (while arts
+			       (setq art (car arts)
+				     arts (cdr arts))
+			       (setcdr art (+ score (cdr art)))
+			       (setq gnus-score-trace 
+				     (cons (cons (header-number
+						  (car art)) kill)
+					   gnus-score-trace)))
+			   (while arts
+			     (setq art (car arts)
+				   arts (cdr arts))
+			     (setcdr art (+ score (cdr art)))))))
 		  (forward-line 1))
 	      (and (string= match "") (setq match "\n"))
 	      (while (funcall search-func match nil t)
 		(end-of-line)
 		(setq found (setq arts (get-text-property (point) 'articles)))
 		;; Found a match, update scores.
-		(while arts
-		  (setq art (car arts)
-			arts (cdr arts))
-		  (setcdr art (+ score (cdr art))))))
+		(if trace
+		    (while arts
+		      (setq art (car arts)
+			    arts (cdr arts))
+		      (setcdr art (+ score (cdr art)))
+		      (setq gnus-score-trace 
+			    (cons (cons (header-number (car art)) kill)
+				  gnus-score-trace)))
+		  (while arts
+		    (setq art (car arts)
+			  arts (cdr arts))
+		    (setcdr art (+ score (cdr art)))))))
 	    ;; Update expire date
 	    (cond ((null date))		;Permanent entry.
 		  (found		;Match, update date.
@@ -1389,9 +1447,9 @@ This mode is an extended emacs-lisp mode.
 	(winconf gnus-prev-winconf))
     (save-buffer)
     (kill-buffer (current-buffer))
-    (and winconf (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
-    (gnus-score-load-file bufnam)))
+    (gnus-score-load-file bufnam)
+    (and winconf (set-window-configuration winconf))))
 
 ;;; Finding score files. 
 
@@ -1420,7 +1478,7 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
 	(file-name-as-directory
 	 (or gnus-kill-files-directory "~/News/")))
   ;; If er can't read it, there's no score files.
-  (if (not (file-readable-p gnus-kill-files-directory))
+  (if (not (file-readable-p (expand-file-name gnus-kill-files-directory)))
       (setq gnus-score-file-list nil)
     (if (gnus-use-long-file-name 'not-score)
 	;; We want long file names.
@@ -1542,7 +1600,7 @@ This includes the score file for the group and all its parents."
     (setq all (cons group all))
     (mapcar 'gnus-score-file-name (nreverse all))))
 
-(defun gnus-possibly-score-headers ()
+(defun gnus-possibly-score-headers (&optional trace)
   (let ((func gnus-score-find-score-files-function)
 	score-files scores)
     (and func (not (listp func))
@@ -1555,7 +1613,7 @@ This includes the score file for the group and all its parents."
 	   (setq score-files 
 		 (nconc score-files (funcall (car func) gnus-newsgroup-name))))
       (setq func (cdr func)))
-    (if score-files (gnus-score-headers score-files))))
+    (if score-files (gnus-score-headers score-files trace))))
 
 (defun gnus-score-file-name (newsgroup &optional suffix)
   "Return the name of a score file for NEWSGROUP."
@@ -1589,6 +1647,28 @@ This includes the score file for the group and all its parents."
 	(setq out (cons (car files) out)))
       (setq files (cdr files)))
     (setq gnus-internal-global-score-files out)))
+
+(defun gnus-score-find-trace ()
+  "Find all score rules applied to this article."
+  (interactive)
+  (let ((gnus-newsgroup-headers
+	 (list (gnus-get-header-by-number (gnus-summary-article-number))))
+	(gnus-newsgroup-scored nil)
+	(buf (current-buffer))
+	trace)
+    (setq gnus-score-trace nil)
+    (gnus-possibly-score-headers 'trace)
+    (pop-to-buffer "*Gnus Scores*")
+    (erase-buffer)
+    (setq trace gnus-score-trace)
+    (or trace
+	(error "No score rules apply to the current article."))
+    (while trace
+      (insert (format "%S\n" (cdr (car trace))))
+      (setq trace (cdr trace)))
+    (goto-char (point-min))
+    (pop-to-buffer buf)))
+  
 
 (provide 'gnus-score)
 

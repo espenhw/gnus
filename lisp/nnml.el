@@ -227,7 +227,7 @@ all. This may very well take some time.")
 	(nnml-possibly-change-directory group)
 	(let ((articles (mapcar
 			 (lambda (file)
-			   (int-to-string file))
+			   (string-to-int file))
 			 (directory-files 
 			  nnml-current-directory nil "^[0-9]+$"))))
 	  (and articles

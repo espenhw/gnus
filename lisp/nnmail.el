@@ -437,7 +437,7 @@ nn*-request-list should have been called before calling this function."
   "Go through the entire INCOMING file and pick out each individual mail.
 FUNC will be called with the buffer narrowed to each mail."
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
-	start end)
+	start end content-length do-search)
     (save-excursion
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
@@ -454,11 +454,33 @@ FUNC will be called with the buffer narrowed to each mail."
 	    ;; Skip all the headers in case there are more "From "s...
 	    (if (not (search-forward "\n\n" nil t))
 		(forward-line 1))
+	    ;; Look for a Content-Length header.
+	    (if (not (save-excursion
+		       (and (re-search-backward 
+			     "^Content-Length: \\([0-9]+\\)" nil t)
+			    (setq content-length (int-to-string
+						  (buffer-substring 
+						   (match-beginning 1)
+						   (match-end 1))))
+			    ;; We destroy the header, since none of
+			    ;; the backends ever use it, and we do not
+			    ;; want to confuse other mailers by having
+			    ;; a (possibly) faulty header.
+			    (progn (insert "X-") t))))
+		(setq do-search t)
+	      (if (save-excursion
+		    (forward-char content-length)
+		    (looking-at delim))
+		  (progn
+		    (forward-char content-length)
+		    (setq do-search nil))
+		(setq do-search t)))
 	    ;; Go to the beginning of the next article - or to the end
 	    ;; of the buffer.  
-	    (if (re-search-forward delim nil t)
-		(goto-char (match-beginning 0))
-	      (goto-char (point-max)))
+	    (if do-search
+		(if (re-search-forward delim nil t)
+		    (goto-char (match-beginning 0))
+		  (goto-char (point-max))))
 	    (save-excursion
 	      (save-restriction
 		(narrow-to-region start (point))

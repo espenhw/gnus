@@ -180,13 +180,15 @@ If the stream is opened, return T, otherwise return NIL."
 	nil))))
     
 (defun nnvirtual-close-group (group &optional server)
-  (nnvirtual-possibly-change-newsgroups group server t)
-  (nnvirtual-update-marked)
-  (setq nnvirtual-current-group nil
-	nnvirtual-current-groups nil
-	nnvirtual-current-mapping nil)
-  (setq nnvirtual-group-alist 
-	(delq (assoc group nnvirtual-group-alist) nnvirtual-group-alist)))
+  (if (not nnvirtual-current-group)
+      ()
+    (nnvirtual-possibly-change-newsgroups group server t)
+    (nnvirtual-update-marked)
+    (setq nnvirtual-current-group nil
+	  nnvirtual-current-groups nil
+	  nnvirtual-current-mapping nil)
+    (setq nnvirtual-group-alist 
+	  (delq (assoc group nnvirtual-group-alist) nnvirtual-group-alist))))
 
 (defun nnvirtual-request-list (&optional server) 
   (setq nnvirtual-status-string "nnvirtual: LIST is not implemented.")
@@ -204,7 +206,10 @@ If the stream is opened, return T, otherwise return NIL."
 
 (fset 'nnvirtual-request-post 'nntp-request-post)
 
-(fset 'nnvirtual-request-post-buffer 'nntp-request-post-buffer)
+(defun nnvirtual-request-post-buffer 
+  (post group subject header article-buffer info follow-to respect-poster)
+  (nntp-request-post-buffer post "" subject header article-buffer
+			    info follow-to respect-poster))
 
 
 ;;; Internal functions.

@@ -290,12 +290,12 @@
        (setq nnmh-group-alist (nnmail-get-active))
        ;; We trick the choosing function into believing that only one
        ;; group is availiable.  
-       (let ((nnmail-split-methods '(group "")))
-	 (cons group (nnmh-save-mail))))
+       (let ((nnmail-split-methods (list (list group ""))))
+	 (car (nnmh-save-mail))))
     (and
      (nnmh-request-list)
      (setq nnmh-group-alist (nnmail-get-active))
-     (nnmh-save-mail))))
+     (car (nnmh-save-mail)))))
 
 (defun nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)

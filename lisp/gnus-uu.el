@@ -661,7 +661,8 @@ The headers will be included in the sequence they are matched.")
 			 (concat sorthead
 				 (buffer-substring 
 				  (match-beginning 0)
-				  (or (re-search-forward "^[^ \t]" nil t)
+				  (or (and (re-search-forward "^[^ \t]" nil t)
+					   (1- (point)))
 				      (progn (forward-line 1) (point))))))))
 	     (widen)))
 	 (insert sorthead)(goto-char (point-max))
