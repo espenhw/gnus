@@ -1,3 +1,7 @@
+2001-11-09  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.texi (Movement): message-beginning-of-line.
+
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.texi (Examples): Add.

@@ -1531,7 +1531,8 @@ Point is left at the beginning of the narrowed-to region."
   ;;(define-key message-mode-map "\M-q" 'message-fill-paragraph)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
-
+  
+  (define-key message-mode-map "\C-a" 'message-beginning-of-line)
   (define-key message-mode-map "\t" 'message-tab)
   (define-key message-mode-map "\M-;" 'comment-region))
 
@@ -2007,16 +2008,29 @@ Prefix arg means justify as well."
     (message-newline-and-reformat arg t)
     t))
 
+;; Is it better to use `mail-header-end'?
+(defun message-point-in-header-p ()
+  "Return t if point is in the header."
+  (save-excursion
+    (let ((p (point)))
+      (goto-char (point-min))
+      (or (re-search-forward
+	   (concat "^" (regexp-quote mail-header-separator) "\n")
+	   p t)
+	  (re-search-forward "[^:]+:\\([^\n]\\|\n[ \t]\\)+\n\n" p t)))))
+
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (when (> (point) (save-excursion 
-		     (goto-char (point-min))
-		     (if (re-search-forward
-			  (concat "^" (regexp-quote mail-header-separator)
-				  "\n") nil t)
-			 (match-beginning 0)
-		       (point-max))))
+  (when (message-point-in-header-p)
     (do-auto-fill)))
+;;-  (when (> (point) (save-excursion 
+;;-		     (goto-char (point-min))
+;;-		     (if (re-search-forward
+;;-			  (concat "^" (regexp-quote mail-header-separator)
+;;-				  "\n") nil t)
+;;-			 (match-beginning 0)
+;;-		       (point-max))))
+;;-    (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for variable `message-signature'."
@@ -3957,6 +3971,17 @@ than 988 characters long, and if they are not, trim them until they are."
     (unless (looking-at "$")
       (forward-line 2)))
    (sit-for 0)))
+
+(defun message-beginning-of-line (&optional n)
+  "Move point to beginning of header value or to beginning of line."
+  (interactive "p")
+  (let* ((here (point))
+	 (bol (progn (beginning-of-line n) (point)))
+	 (eol (gnus-point-at-eol))
+	 (eoh (re-search-forward ": *" eol t)))
+    (if (equal here eoh)
+	(goto-char bol)
+      (goto-char eoh))))
 
 (defun message-buffer-name (type &optional to group)
   "Return a new (unique) buffer name based on TYPE and TO."

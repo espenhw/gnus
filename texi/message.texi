@@ -434,6 +434,13 @@ Move to the beginning of the body of the message
 @findex message-goto-signature
 Move to the signature of the message (@code{message-goto-signature}).
 
+@item C-a
+@kindex C-a
+@findex message-beginning-of-line
+If at beginning of header value, go to beginning of line, else go to
+beginning of header value.  (The header value comes after the header
+name and the colon.)
+
 @end table
 
 
