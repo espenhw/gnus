@@ -33,7 +33,7 @@
   "GnuPG interface"
   :group 'pgg)
 
-(defcustom pgg-gpg-program "gpg" 
+(defcustom pgg-gpg-program "gpg"
   "The GnuPG executable."
   :group 'pgg-gpg
   :type 'string)
@@ -65,16 +65,16 @@
     (unwind-protect
 	(progn
 	  (set-default-file-modes 448)
-          (let ((coding-system-for-write 'binary)
+	  (let ((coding-system-for-write 'binary)
 		(input (buffer-substring-no-properties start end))
 		(default-enable-multibyte-characters nil))
-            (with-temp-buffer
-              (when passphrase
-                (insert passphrase "\n"))
-              (insert input)
-              (setq exit-status
-                    (apply #'call-process-region (point-min) (point-max) program
-                           nil errors-buffer nil args))))
+	    (with-temp-buffer
+	      (when passphrase
+		(insert passphrase "\n"))
+	      (insert input)
+	      (setq exit-status
+		    (apply #'call-process-region (point-min) (point-max) program
+			   nil errors-buffer nil args))))
 	  (with-current-buffer (get-buffer-create output-buffer)
 	    (buffer-disable-undo)
 	    (erase-buffer)
@@ -84,7 +84,7 @@
 	    (set-buffer errors-buffer)
 	    (if (not (equal exit-status 0))
 		(insert (format "\n%s exited abnormally: '%s'\n"
-                                program exit-status)))))
+				program exit-status)))))
       (if (file-exists-p output-file-name)
 	  (delete-file output-file-name))
       (set-default-file-modes orig-mode))))
@@ -102,6 +102,26 @@
 		  "^\\[GNUPG:] NEED_PASSPHRASE \\w+ ?\\w*" nil t)
 		 (substring (match-string 0) -8))))
        passphrase)))
+
+(defvar pgg-gpg-all-secret-keys 'unknown)
+
+(defun pgg-gpg-lookup-all-secret-keys ()
+  "Return all secret keys present in secret key ring."
+  (when (eq pgg-gpg-all-secret-keys 'unknown)
+    (setq pgg-gpg-all-secret-keys '())
+    (let ((args (list "--with-colons" "--no-greeting" "--batch"
+		      "--list-secret-keys")))
+      (with-temp-buffer
+	(apply #'call-process pgg-gpg-program nil t nil args)
+	(goto-char (point-min))
+	(while (re-search-forward "^\\(sec\\|pub\\):"  nil t)
+	  (push (substring
+		 (nth 3 (split-string
+			 (buffer-substring (match-end 0)
+					   (progn (end-of-line) (point)))
+			 ":")) 8)
+		pgg-gpg-all-secret-keys)))))
+  pgg-gpg-all-secret-keys)
 
 (defun pgg-gpg-lookup-key (string &optional type)
   "Search keys associated with STRING."
@@ -147,7 +167,13 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 
 (defun pgg-gpg-decrypt-region (start end)
   "Decrypt the current region between START and END."
-  (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
+  (let* ((current-buffer (current-buffer))
+	 (message-keys (with-temp-buffer
+			 (insert-buffer-substring current-buffer)
+			 (pgg-decode-armor-region (point-min) (point-max))))
+	 (secret-keys (pgg-gpg-lookup-all-secret-keys))
+	 (key (pgg-gpg-select-matching-key message-keys secret-keys))
+	 (pgg-gpg-user-id (or key pgg-gpg-user-id pgg-default-user-id))
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
@@ -158,6 +184,14 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
       (pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)
       (goto-char (point-min))
       (re-search-forward "^\\[GNUPG:] DECRYPTION_OKAY\\>" nil t))))
+
+(defun pgg-gpg-select-matching-key (message-keys secret-keys)
+  "Choose a key from MESSAGE-KEYS that matches one of the keys in SECRET-KEYS."
+  (loop for message-key in message-keys
+	for message-key-id = (and (equal (car message-key) 1)
+				  (cdr (assq 'key-identifier message-key)))
+	for key = (and message-key-id (pgg-lookup-key message-key-id 'encrypt))
+	when (and key (member key secret-keys)) return key))
 
 (defun pgg-gpg-sign-region (start end &optional cleartext)
   "Make detached signature from text between START and END."

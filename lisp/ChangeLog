@@ -1,3 +1,11 @@
+2003-11-09  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-all-secret-keys): New variable.
+	(pgg-gpg-lookup-all-secret-keys): New function.
+	(pgg-gpg-select-matching-key): Likewise.
+	(pgg-gpg-decrypt-region): Use new functions.  From Satyaki Das
+	<satyakid@stanford.edu>.
+
 2003-11-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnmail.el (nnmail-cache-insert): make sure that the
