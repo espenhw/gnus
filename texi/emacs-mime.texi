@@ -1444,7 +1444,7 @@ Take a time and return the number of days that represents.
 
 @item safe-date-to-time
 Take a date and return a time.  If the date is not syntactically valid,
-return a "zero" date.
+return a ``zero'' date.
 
 @item time-less-p
 Take two times and say whether the first time is less (i. e., earlier)

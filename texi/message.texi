@@ -686,7 +686,7 @@ headers if necessary.
 @findex message-change-subject
 @cindex Subject
 Change the current @samp{Subject} header.  Ask for new @samp{Subject}
-header and append @code{(was: <Old Subject>)}.  The old subject can be
+header and append @samp{(was: <Old Subject>)}.  The old subject can be
 stripped on replying, see @code{message-subject-trailing-was-query}
 (@pxref{Message Headers}).
 
@@ -906,10 +906,10 @@ message a single part tag will be used.  This way, message mode will
 do the Right Thing (TM) with signed/encrypted multipart messages.
 
 @vindex mml-signencrypt-style-alist
-By default, when encrypting a message, Gnus will use the "signencrypt"
+By default, when encrypting a message, Gnus will use the ``signencrypt''
 mode.  If you would like to disable this for a particular message,
-give the mml-secure-message-encrypt-* command a prefix argument. (for
-example, C-u C-c C-m c p).  Additionally, by default Gnus will
+give the @code{mml-secure-message-encrypt-*} command a prefix argument. (for
+example, @kbd{C-u C-c C-m c p}).  Additionally, by default Gnus will
 separately sign, then encrypt a message which has the mode
 signencrypt.  If you would like to change this behavior you can
 customize the @code{mml-signencrypt-style-alist} variable.  For

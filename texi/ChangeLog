@@ -2,6 +2,10 @@
 
 	* gnus.texi: Markup fixes.
 
+	* message.texi: do.
+
+	* emacs-mime.texi: do.
+
 2003-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.texi (News Headers): Update description of Message-ID.
