@@ -1,3 +1,8 @@
+2004-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnheader.el (nnheader-nov-read-message-id): Pass the optional
+	arg to nnheader-generate-fake-message-id.
+
 2004-06-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnheader.el (nnheader-generate-fake-message-id): accept a

@@ -386,10 +386,10 @@ on your system, you could say something like:
      out))
 
 (defmacro nnheader-nov-read-message-id (&optional number)
-  '(let ((id (nnheader-nov-field)))
+  `(let ((id (nnheader-nov-field)))
      (if (string-match "^<[^>]+>$" id)
 	 id
-       (nnheader-generate-fake-message-id number))))
+       (nnheader-generate-fake-message-id ,number))))
 
 (defun nnheader-parse-nov ()
   (let ((eol (point-at-eol))
