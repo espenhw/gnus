@@ -1859,13 +1859,12 @@ The following commands are available:
   (let ((dir (concat (gnus-agent-directory)
 		     (gnus-agent-group-path group) "/"))
 	(file (gnus-agent-article-name ".overview" group))
-	articles n point arts alist header new-alist changed)
+	n point arts alist header new-alist changed)
     (when (file-exists-p dir)
-      (setq articles
+      (setq arts
 	    (sort (mapcar (lambda (name) (string-to-int name))
 			  (directory-files dir nil "^[0-9]+$" t))
 		  '<)))
-    (setq arts articles)
     (gnus-make-directory (nnheader-translate-file-chars
 			  (file-name-directory file) t))
     (mm-with-unibyte-buffer
@@ -1883,6 +1882,7 @@ The following commands are available:
 	  (when (and arts (> n (car arts)))
 	    (beginning-of-line)
 	    (while (and arts (> n (car arts)))
+	      (message "Regenerating NOV %s %d..." group (car arts))
 	      (mm-with-unibyte-buffer
 		(nnheader-insert-file-contents 
 		 (concat dir (number-to-string (car arts))))
@@ -1896,12 +1896,11 @@ The following commands are available:
 	      (setq changed t)
 	      (push (cons (car arts) t) alist)
 	      (pop arts)))
-	  (if arts
-	      (if (= n (car arts))
-		  (progn
-		    (push (cons (car arts) t) alist)
-		    (pop arts))
-		(push (cons (car arts) nil) alist)))
+	  (if (and arts (= n (car arts)))
+	      (progn
+		(push (cons n t) alist)
+		(pop arts))
+	    (push (cons n nil) alist))
 	  (forward-line 1)))
       (if changed
 	  (let ((coding-system-for-write gnus-agent-file-coding-system))
@@ -1917,8 +1916,11 @@ The following commands are available:
        ((> (caar alist) (caar gnus-agent-article-alist))
 	(push (list (car (pop gnus-agent-article-alist))) new-alist))
        (t 
-	(push (pop alist) new-alist)
-	(pop gnus-agent-article-alist))))
+	(pop gnus-agent-article-alist)
+	(while (and gnus-agent-article-alist
+		    (= (caar alist) (caar gnus-agent-article-alist)))
+	  (pop gnus-agent-article-alist))
+	(push (pop alist) new-alist))))
     (while alist
       (push (pop alist) new-alist))
     (while gnus-agent-article-alist
@@ -1945,6 +1947,7 @@ The following commands are available:
 (defun gnus-agent-regenerate ()
   "Regenerate all agent covered files."
   (interactive)
+  (message "Regenerating Gnus agent files...")
   (dolist (gnus-command-method gnus-agent-covered-methods)
     (let ((active-file (gnus-agent-lib-file "active"))
 	  history-hashtb active-hashtb active-changed 
@@ -1967,15 +1970,14 @@ The following commands are available:
 	(forward-line 1)
 	(while (not (eobp))
 	  (if (looking-at 
-	       "\\([^\t\n]+\\)\t[0-9]+\t\\([^ \n]+\\) \\([0-9]+\\)$")
+	       "\\([^\t\n]+\\)\t[0-9]+\t\\([^ \n]+\\) \\([0-9]+\\)")
 	      (progn
 		(unless (string= (match-string 1) 
 				 "last-header-fetched-for-session")
 		  (gnus-sethash (match-string 2) 
-				(cons
-				 (string-to-number (match-string 3))
-				 (gnus-gethash (match-string 2)
-					       history-hashtb))
+				(cons (string-to-number (match-string 3))
+				      (gnus-gethash-safe (match-string 2)
+							 history-hashtb))
 				history-hashtb))
 		(forward-line 1))
 	    (setq point (point))
@@ -1986,7 +1988,8 @@ The following commands are available:
 	(gnus-agent-regenerate-group group)
 	(let ((min (or (caar gnus-agent-article-alist) 1))
 	      (max (or (caar (last gnus-agent-article-alist)) 0))
-	      (active (gnus-gethash group active-hashtb)))
+	      (active (gnus-gethash-safe (gnus-group-real-name group)
+					 active-hashtb)))
 	  (if (not active)
 	      (progn
 		(setq active (cons min max)
@@ -1998,7 +2001,9 @@ The following commands are available:
 	    (when (< (cdr active) max)
 	      (setcdr active max)
 	      (setq active-changed t))))
-	(let ((arts (sort (gnus-gethash group history-hashtb) '<)))
+	(let ((arts (sort (gnus-gethash-safe group history-hashtb) '<))
+	      n)
+	  (gnus-sethash group arts history-hashtb)
 	  (while (and arts gnus-agent-article-alist)
 	    (cond 
 	     ((> (car arts) (caar gnus-agent-article-alist))
@@ -2006,12 +2011,22 @@ The following commands are available:
 		(gnus-agent-regenerate-history 
 		 group (caar gnus-agent-article-alist))
 		(setq history-changed t))
-	      (pop gnus-agent-article-alist))
-	     ((= (car arts) (caar gnus-agent-article-alist))
-	      (pop arts)
-	      (pop gnus-agent-article-alist))
+	      (setq n (car (pop gnus-agent-article-alist)))
+	      (while (and gnus-agent-article-alist 
+			  (= n (caar gnus-agent-article-alist)))
+		(pop gnus-agent-article-alist)))
+	     ((< (car arts) (caar gnus-agent-article-alist))
+	      (setq n (pop arts))
+	      (while (and arts (= n (car arts)))
+		(pop arts)))
 	     (t
-	      (pop arts))))
+	      (setq n (car (pop gnus-agent-article-alist)))
+	      (while (and gnus-agent-article-alist 
+			  (= n (caar gnus-agent-article-alist)))
+		(pop gnus-agent-article-alist))
+	      (setq n (pop arts))
+	      (while (and arts (= n (car arts)))
+		(pop arts)))))
 	  (while gnus-agent-article-alist
 	    (when (cdar gnus-agent-article-alist)
 	      (gnus-agent-regenerate-history 
@@ -2019,11 +2034,16 @@ The following commands are available:
 	      (setq history-changed t))
 	    (pop gnus-agent-article-alist))))
       (when history-changed
+	(message "Regenerate the history file of %s:%s" 
+		 (car gnus-command-method)
+		 (cadr gnus-command-method))
 	(gnus-agent-save-history))
       (gnus-agent-close-history)
       (when active-changed
+	(message "Regenerate %s" active-file) 
 	(let ((coding-system-for-write gnus-agent-file-coding-system))
-	  (gnus-write-active-file active-file active-hashtb t))))))
+	  (gnus-write-active-file active-file active-hashtb)))))
+  (message "Regenerating Gnus agent files...done"))
 
 (provide 'gnus-agent)
 

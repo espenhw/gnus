@@ -211,14 +211,14 @@ included.  Organization, Lines and User-Agent are optional."
   :type 'sexp)
 
 (defcustom message-ignored-news-headers
-  "^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:\\|^X-Draft-From:"
+  "^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:\\|^X-Draft-From:\\|^X-Gnus-Agent-Meta-Information:"
   "*Regexp of headers to be removed unconditionally before posting."
   :group 'message-news
   :group 'message-headers
   :type 'regexp)
 
 (defcustom message-ignored-mail-headers
-  "^[GF]cc:\\|^Resent-Fcc:\\|^Xref:\\|^X-Draft-From:"
+  "^[GF]cc:\\|^Resent-Fcc:\\|^Xref:\\|^X-Draft-From:\\|^X-Gnus-Agent-Meta-Information:"
   "*Regexp of headers to be removed unconditionally before mailing."
   :group 'message-mail
   :group 'message-headers

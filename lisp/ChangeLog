@@ -1,5 +1,16 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-ignored-news-headers) 
+	(message-ignored-mail-headers): Add X-Gnus-Agent-Meta-Information:.
+	Suggested by ARISAWA Akihiro <ari@atesoft.advantest.co.jp>
+
+	* gnus.el (gnus-gethash-safe): New macro.
+
+	* gnus-agent.el (gnus-agent-regenerate-history): New function.
+	(gnus-agent-regenerate): Show messages.
+
+2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
 	* gnus-agent.el (gnus-agent-regenerate-group): New function.
 	(gnus-agent-regenerate): New function.
 	(gnus-agent-save-alist): Sort.

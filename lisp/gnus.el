@@ -2245,6 +2245,12 @@ See (gnus)Formatting Variables."
   "Get hash value of STRING in HASHTABLE."
   `(symbol-value (intern-soft ,string ,hashtable)))
 
+(defmacro gnus-gethash-safe (string hashtable)
+  "Get hash value of STRING in HASHTABLE.
+Return nil if not defined."
+  `(let ((sym (intern-soft ,string ,hashtable)))
+     (and (boundp sym) (symbol-value sym))))
+
 (defmacro gnus-sethash (string value hashtable)
   "Set hash value.  Arguments are STRING, VALUE, and HASHTABLE."
   `(set (intern ,string ,hashtable) ,value))
