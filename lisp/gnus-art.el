@@ -4903,14 +4903,31 @@ If given a numerical ARG, move forward ARG pages."
 (defun gnus-article-goto-next-page ()
   "Show the next page of the article."
   (interactive)
-  (gnus-eval-in-buffer-window gnus-summary-buffer
-    (gnus-summary-next-page)))
+  (when (gnus-article-next-page)
+    (goto-char (point-min))
+    (gnus-article-read-summary-keys nil (gnus-character-to-event ?n))))
+
 
 (defun gnus-article-goto-prev-page ()
   "Show the next page of the article."
   (interactive)
-  (gnus-eval-in-buffer-window gnus-summary-buffer
-    (gnus-summary-prev-page)))
+  (if (bobp)
+      (gnus-article-read-summary-keys nil (gnus-character-to-event ?p))
+    (gnus-article-prev-page nil)))
+
+;; This is cleaner but currently breaks `gnus-pick-mode':
+;;
+;; (defun gnus-article-goto-next-page ()
+;;   "Show the next page of the article."
+;;   (interactive)
+;;   (gnus-eval-in-buffer-window gnus-summary-buffer
+;;     (gnus-summary-next-page)))
+;;
+;; (defun gnus-article-goto-prev-page ()
+;;   "Show the next page of the article."
+;;   (interactive)
+;;   (gnus-eval-in-buffer-window gnus-summary-buffer
+;;     (gnus-summary-prev-page)))
 
 (defun gnus-article-next-page (&optional lines)
   "Show the next page of the current article.

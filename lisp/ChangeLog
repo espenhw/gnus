@@ -1,3 +1,9 @@
+2003-04-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-article-goto-next-page)
+	(gnus-article-goto-prev-page): Revert 2003-02-12 change to make
+	gnus-pick-mode work.
+
 2003-04-28  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile.in (FLAGS): Use @FLAGS@.
