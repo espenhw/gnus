@@ -1,5 +1,8 @@
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-idna-to-ascii-rhs-1): Don't continue outside
+	header.
+
 	* rfc2047.el (rfc2047-header-encoding-alist): Make Followup-To
 	same as Newsgroups.
 

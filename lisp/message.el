@@ -4661,13 +4661,14 @@ I.e., calling it on a Subject: header is useless."
 
 (defun message-idna-to-ascii-rhs-1 (header)
   "Interactively potentially IDNA encode domain names in HEADER."
-  (let (rhs ace start end startpos endpos ovl)
+  (let (rhs ace start startpos endpos ovl)
     (goto-char (point-min))
-    (setq start (re-search-forward (concat "^" header) nil t)
-	  end (or (save-excursion (re-search-forward "^[ \t]" nil t))
-		  (point-max)))
-    (when (and start end)
-      (while (re-search-forward "@\\([^ \t\r\n>]+\\)" end t)
+    (while (re-search-forward (concat "^" header) nil t)
+      (while (re-search-forward "@\\([^ \t\r\n>]+\\)"
+				(or (save-excursion
+				      (re-search-forward "^[^ \t]" nil t))
+				    (point-max))
+				t)
 	(setq rhs (match-string-no-properties 1)
 	      startpos (match-beginning 1)
 	      endpos (match-end 1))
