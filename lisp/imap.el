@@ -521,7 +521,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	     response)
 	(when process
 	  (with-current-buffer buffer
-	    (setq imap-client-eol "\n")
+	    (setq imap-client-eol "\n"
+		  imap-calculate-literal-size-first t)
 	    (while (and (memq (process-status process) '(open run))
 			(goto-char (point-min))
                         ;; cyrus 1.6.x (13? < x <= 22) queries capabilities

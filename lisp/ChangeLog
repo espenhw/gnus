@@ -1,3 +1,7 @@
+2001-02-15  NAGY Andras <nagya@inf.elte.hu>
+
+	* imap.el (imap-gssapi-open): Set imap-c-l-s-first.
+
 2001-02-14 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-srvr.el (gnus-server-regenerate-server): Use gnus-get-function.
