@@ -1,3 +1,8 @@
+2003-07-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* mail-source.el (mail-source-movemail): Handle non-numerical
+	return values.
+
 2003-07-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* mailcap.el (mailcap-parse-args-syntax-table)

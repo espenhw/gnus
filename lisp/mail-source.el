@@ -608,7 +608,8 @@ Pass INFO on to CALLBACK."
 		(set-file-modes to mail-source-default-file-modes))
 	      (if (and (or (not (buffer-modified-p errors))
 			   (zerop (buffer-size errors)))
-		       (zerop result))
+		       (and (numberp result)
+			    (zerop result)))
 		  ;; No output => movemail won.
 		  t
 		(set-buffer errors)
