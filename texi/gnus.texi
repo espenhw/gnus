@@ -3856,9 +3856,11 @@ For example:
 @end lisp
 
 @item gnus-group-name-charset-group-alist
+@cindex UTF-8 group names
 @vindex gnus-group-name-charset-group-alist
-An alist of regexp of group name and the charset for group names.
-It is used to show non-ASCII group names.
+An alist of regexp of group name and the charset for group names.  It
+is used to show non-ASCII group names.  @code{((".*" utf-8))} is the
+default value if UTF-8 is supported, otherwise the default is nil.
 
 For example:
 @lisp
@@ -10119,12 +10121,39 @@ accepts the same format specifications as that variable, with two
 extensions:
 
 @table @samp
+
 @item w
 The @dfn{wash status} of the article.  This is a short string with one
 character for each possible article wash operation that may have been
-performed.
+performed.  The characters and their meaning:
+
+@table @samp
+
+@item c
+Displayed when cited text is hidden in the article buffer.
+
+@item h
+Displayed when headers are hidden in the article buffer.
+
+@item p 
+Displayed when article is digitally signed or encrypted, and Gnus has
+hidden the security headers.  (N.B. does not tell anything about
+security status, i.e. good or bad signature.)
+
+@item s
+Displayed when the signature has been hidden in the Article buffer.
+
+@item o
+Displayed when Gnus has treated overstrike characters in the article buffer.
+
+@item e
+Displayed when Gnus has treated emphasised strings in the article buffer.
+
+@end table
+
 @item m
 The number of @sc{mime} parts in the article.
+
 @end table
 
 @vindex gnus-break-pages

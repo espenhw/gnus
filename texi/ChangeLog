@@ -1,3 +1,9 @@
+2001-10-12  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Misc Group Stuff): Add UTF-8.
+	(Misc Article): Document wash status characters.  Suggested by
+	david.goldberg6@verizon.net (David S. Goldberg).
+
 2001-10-10 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnusref.tex, refcard.tex: Use epsfig.
