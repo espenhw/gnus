@@ -236,8 +236,8 @@ with some simple extensions.
 	result found)
     (while (and topology
 		(not (setq found (equal (caaar topology) topic)))
-		(not (setq result (gnus-topic-parent-topic topic
-							   (car topology)))))
+		(not (setq result (gnus-topic-parent-topic
+				   topic (car topology)))))
       (setq topology (cdr topology)))
     (or result (and found parent))))
 

@@ -172,6 +172,158 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 
 
+;;; Internal functions.
+
+(defsubst nntp-send-string (process string)
+  "Send STRING to PROCESS."
+  (process-send-string process (concat string nntp-end-of-line)))
+
+(defsubst nntp-wait-for (process wait-for buffer &optional decode discard)
+  "Wait for WAIT-FOR to arrive from PROCESS."
+  (save-excursion
+    (set-buffer (process-buffer process))
+    (goto-char (point-min))
+    (while (or (not (memq (following-char) '(?2 ?3 ?4 ?5)))
+	       (looking-at "480"))
+      (when (looking-at "480")
+	(erase-buffer)
+	(funcall nntp-authinfo-function))
+      (nntp-accept-process-output process)
+      (goto-char (point-min)))
+    (prog1
+	(if (looking-at "[45]")
+	    (progn
+	      (nntp-snarf-error-message)
+	      nil)
+	  (goto-char (point-max))
+	  (let ((limit (point-min)))
+	    (while (not (re-search-backward wait-for limit t))
+	      ;; We assume that whatever we wait for is less than 1000
+	      ;; characters long.
+	      (setq limit (max (- (point-max) 1000) (point-min)))
+	      (nntp-accept-process-output process)
+	      (goto-char (point-max))))
+	  (nntp-decode-text (not decode))
+	  (unless discard
+	    (save-excursion
+	      (set-buffer buffer)
+	      (goto-char (point-max))
+	      (insert-buffer-substring (process-buffer process))
+	      ;; Nix out "nntp reading...." message.
+	      (when nntp-have-messaged
+		(setq nntp-have-messaged nil)
+		(message ""))
+	      t)))
+      (unless discard
+	(erase-buffer)))))
+
+(defsubst nntp-find-connection (buffer)
+  "Find the connection delivering to BUFFER."
+  (let ((alist nntp-connection-alist)
+	(buffer (if (stringp buffer) (get-buffer buffer) buffer))
+	process entry)
+    (while (setq entry (pop alist))
+      (when (eq buffer (cadr entry))
+	(setq process (car entry)
+	      alist nil)))
+    (when process
+      (if (memq (process-status process) '(open run))
+	  process
+	(when (buffer-name (process-buffer process))
+	  (kill-buffer (process-buffer process)))
+	(setq nntp-connection-alist (delq entry nntp-connection-alist))
+	nil))))
+
+(defsubst nntp-find-connection-entry (buffer)
+  "Return the entry for the connection to BUFFER."
+  (assq (nntp-find-connection buffer) nntp-connection-alist))
+
+(defun nntp-find-connection-buffer (buffer)
+  "Return the process connection buffer tied to BUFFER."
+  (let ((process (nntp-find-connection buffer)))
+    (when process
+      (process-buffer process))))
+
+(defsubst nntp-retrieve-data (command address port buffer
+				   &optional wait-for callback decode)
+  "Use COMMAND to retrieve data into BUFFER from PORT on ADDRESS."
+  (let ((process (or (nntp-find-connection buffer)
+		     (nntp-open-connection buffer))))
+    (if (not process)
+	(nnheader-report 'nntp "Couldn't open connection to %s" address)
+      (unless (or nntp-inhibit-erase nnheader-callback-function)
+	(save-excursion
+	  (set-buffer (process-buffer process))
+	  (erase-buffer)))
+      (when command
+	(nntp-send-string process command))
+      (cond
+       ((eq callback 'ignore)
+	t)
+       ((and callback wait-for)
+	(save-excursion
+	  (set-buffer (process-buffer process))
+	  (unless nntp-inside-change-function
+	    (erase-buffer))
+	  (setq nntp-process-decode decode
+		nntp-process-to-buffer buffer
+		nntp-process-wait-for wait-for
+		nntp-process-callback callback
+		nntp-process-start-point (point-max)
+		after-change-functions
+		(list 'nntp-after-change-function-callback)))
+	t)
+       (wait-for
+	(nntp-wait-for process wait-for buffer decode))
+       (t t)))))
+
+(defsubst nntp-send-command (wait-for &rest strings)
+  "Send STRINGS to server and wait until WAIT-FOR returns."
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)))
+  (nntp-retrieve-data
+   (mapconcat 'identity strings " ")
+   nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function))
+
+(defun nntp-send-command-nodelete (wait-for &rest strings)
+  "Send STRINGS to server and wait until WAIT-FOR returns."
+  (nntp-retrieve-data
+   (mapconcat 'identity strings " ")
+   nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function))
+
+(defun nntp-send-command-and-decode (wait-for &rest strings)
+  "Send STRINGS to server and wait until WAIT-FOR returns."
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)))
+  (nntp-retrieve-data
+   (mapconcat 'identity strings " ")
+   nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function t))
+
+(defun nntp-send-buffer (wait-for)
+  "Send the current buffer to server and wait until WAIT-FOR returns."
+  (when (and (not nnheader-callback-function)
+	     (not nntp-inhibit-output))
+    (save-excursion
+      (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
+      (erase-buffer)))
+  (nntp-encode-text)
+  (process-send-region (nntp-find-connection nntp-server-buffer)
+		       (point-min) (point-max))
+  (nntp-retrieve-data
+   nil nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function))
+
+
+
 ;;; Interface functions.
 
 (nnoo-define-basics nntp)
@@ -561,78 +713,6 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 
 ;;; Internal functions.
 
-(defun nntp-send-command (wait-for &rest strings)
-  "Send STRINGS to server and wait until WAIT-FOR returns."
-  (when (and (not nnheader-callback-function)
-	     (not nntp-inhibit-output))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)))
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function))
-
-(defun nntp-send-command-nodelete (wait-for &rest strings)
-  "Send STRINGS to server and wait until WAIT-FOR returns."
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function))
-
-(defun nntp-send-command-and-decode (wait-for &rest strings)
-  "Send STRINGS to server and wait until WAIT-FOR returns."
-  (when (and (not nnheader-callback-function)
-	     (not nntp-inhibit-output))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)))
-  (nntp-retrieve-data
-   (mapconcat 'identity strings " ")
-   nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function t))
-
-(defun nntp-send-buffer (wait-for)
-  "Send the current buffer to server and wait until WAIT-FOR returns."
-  (when (and (not nnheader-callback-function)
-	     (not nntp-inhibit-output))
-    (save-excursion
-      (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
-      (erase-buffer)))
-  (nntp-encode-text)
-  (process-send-region (nntp-find-connection nntp-server-buffer)
-		       (point-min) (point-max))
-  (nntp-retrieve-data
-   nil nntp-address nntp-port-number nntp-server-buffer
-   wait-for nnheader-callback-function))
-
-(defun nntp-find-connection (buffer)
-  "Find the connection delivering to BUFFER."
-  (let ((alist nntp-connection-alist)
-	(buffer (if (stringp buffer) (get-buffer buffer) buffer))
-	process entry)
-    (while (setq entry (pop alist))
-      (when (eq buffer (cadr entry))
-	(setq process (car entry)
-	      alist nil)))
-    (when process
-      (if (memq (process-status process) '(open run))
-	  process
-	(when (buffer-name (process-buffer process))
-	  (kill-buffer (process-buffer process)))
-	(setq nntp-connection-alist (delq entry nntp-connection-alist))
-	nil))))
-
-(defun nntp-find-connection-entry (buffer)
-  "Return the entry for the connection to BUFFER."
-  (assq (nntp-find-connection buffer) nntp-connection-alist))
-
-(defun nntp-find-connection-buffer (buffer)
-  "Return the process connection buffer tied to BUFFER."
-  (let ((process (nntp-find-connection buffer)))
-    (when process
-      (process-buffer process))))
-
 (defun nntp-make-process-buffer (buffer)
   "Create a new, fresh buffer usable for nntp process connections."
   (save-excursion
@@ -730,82 +810,6 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	    (save-excursion
 	      (funcall callback (buffer-name
 				 (get-buffer nntp-process-to-buffer))))))))))
-
-(defun nntp-retrieve-data (command address port buffer
-				   &optional wait-for callback decode)
-  "Use COMMAND to retrieve data into BUFFER from PORT on ADDRESS."
-  (let ((process (or (nntp-find-connection buffer)
-		     (nntp-open-connection buffer))))
-    (if (not process)
-	(nnheader-report 'nntp "Couldn't open connection to %s" address)
-      (unless (or nntp-inhibit-erase nnheader-callback-function)
-	(save-excursion
-	  (set-buffer (process-buffer process))
-	  (erase-buffer)))
-      (when command
-	(nntp-send-string process command))
-      (cond
-       ((eq callback 'ignore)
-	t)
-       ((and callback wait-for)
-	(save-excursion
-	  (set-buffer (process-buffer process))
-	  (unless nntp-inside-change-function
-	    (erase-buffer))
-	  (setq nntp-process-decode decode
-		nntp-process-to-buffer buffer
-		nntp-process-wait-for wait-for
-		nntp-process-callback callback
-		nntp-process-start-point (point-max)
-		after-change-functions
-		(list 'nntp-after-change-function-callback)))
-	t)
-       (wait-for
-	(nntp-wait-for process wait-for buffer decode))
-       (t t)))))
-
-(defun nntp-send-string (process string)
-  "Send STRING to PROCESS."
-  (process-send-string process (concat string nntp-end-of-line)))
-
-(defun nntp-wait-for (process wait-for buffer &optional decode discard)
-  "Wait for WAIT-FOR to arrive from PROCESS."
-  (save-excursion
-    (set-buffer (process-buffer process))
-    (goto-char (point-min))
-    (while (or (not (memq (following-char) '(?2 ?3 ?4 ?5)))
-	       (looking-at "480"))
-      (when (looking-at "480")
-	(erase-buffer)
-	(funcall nntp-authinfo-function))
-      (nntp-accept-process-output process)
-      (goto-char (point-min)))
-    (prog1
-	(if (looking-at "[45]")
-	    (progn
-	      (nntp-snarf-error-message)
-	      nil)
-	  (goto-char (point-max))
-	  (let ((limit (point-min)))
-	    (while (not (re-search-backward wait-for limit t))
-	      ;; We assume that whatever we wait for is less than 1000
-	      ;; characters long.
-	      (setq limit (max (- (point-max) 1000) (point-min)))
-	      (nntp-accept-process-output process)
-	      (goto-char (point-max))))
-	  (nntp-decode-text (not decode))
-	  (unless discard
-	    (save-excursion
-	      (set-buffer buffer)
-	      (goto-char (point-max))
-	      (insert-buffer-substring (process-buffer process))
-	      ;; Nix out "nntp reading...." message.
-	      (when nntp-have-messaged
-		(setq nntp-have-messaged nil)
-		(message ""))
-	      t)))
-      (unless discard
-	(erase-buffer)))))
 
 (defun nntp-snarf-error-message ()
   "Save the error message in the current buffer."

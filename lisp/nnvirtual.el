@@ -579,7 +579,7 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
     ))
 
 
-(defun nnvirtual-reverse-map-sequence (group articles)
+(defsubst nnvirtual-reverse-map-sequence (group articles)
   "Return list of virtual article numbers for all ARTICLES in GROUP.
 The ARTICLES should be sorted, and can be a compressed sequence.
 If any of the article numbers has no corresponding virtual article,

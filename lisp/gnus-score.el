@@ -2190,7 +2190,9 @@ SCORE is the score to add."
     (setq gnus-score-trace nil)
     (gnus-possibly-score-headers 'trace)
     (if (not (setq trace gnus-score-trace))
-	(gnus-error 1 "No score rules apply to the current article.")
+	(gnus-error
+	 1 "No score rules apply to the current article (default score %d)."
+	 gnus-summary-default-score)
       (set-buffer "*Score Trace*")
       (gnus-add-current-to-buffer-list)
       (while trace

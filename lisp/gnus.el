@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.24"
+(defconst gnus-version-number "5.4.25"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2378,18 +2378,6 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (memq option (assoc (format "%s" (car method))
 		      gnus-valid-select-methods)))
 
-(defun gnus-server-extend-method (group method)
-  ;; This function "extends" a virtual server.	If the server is
-  ;; "hello", and the select method is ("hello" (my-var "something"))
-  ;; in the group "alt.alt", this will result in a new virtual server
-  ;; called "hello+alt.alt".
-  (if (or (not (gnus-similar-server-opened method))
-	  (not (cddr method)))
-      method
-    `(,(car method) ,(concat (cadr method) "+" group)
-      (,(intern (format "%s-address" (car method))) ,(cadr method))
-      ,@(cddr method))))
-
 (defun gnus-similar-server-opened (method)
   (let ((opened gnus-opened-servers))
     (while (and method opened)
@@ -2398,6 +2386,18 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	(setq method nil))
       (pop opened))
     (not method)))
+
+(defun gnus-server-extend-method (group method)
+  ;; This function "extends" a virtual server.	If the server is
+  ;; "hello", and the select method is ("hello" (my-var "something"))
+  ;; in the group "alt.alt", this will result in a new virtual server
+  ;; called "hello+alt.alt".
+  (if (or (not (inline (gnus-similar-server-opened method)))
+	  (not (cddr method)))
+      method
+    `(,(car method) ,(concat (cadr method) "+" group)
+      (,(intern (format "%s-address" (car method))) ,(cadr method))
+      ,@(cddr method))))
 
 (defun gnus-server-status (method)
   "Return the status of METHOD."
@@ -2426,9 +2426,9 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	    gnus-select-method
 	  (setq method
 		(cond ((stringp method)
-		       (gnus-server-to-method method))
+		       (inline (gnus-server-to-method method)))
 		      ((stringp (cadr method))
-		       (gnus-server-extend-method group method))
+		       (inline (gnus-server-extend-method group method)))
 		      (t
 		       method)))
 	  (cond ((equal (cadr method) "")
@@ -2438,7 +2438,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 		(t
 		 (gnus-server-add-address method)))))))
 
-(defun gnus-check-backend-function (func group)
+(defsubst gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC.
 GROUP can either be a string (a group name) or a select method."
   (ignore-errors

@@ -2623,6 +2623,7 @@ N and the number of steps taken is returned."
   (interactive)
   (setq gnus-killed-list (nconc gnus-zombie-list gnus-killed-list))
   (setq gnus-zombie-list nil)
+  (gnus-dribble-touch)
   (gnus-group-list-groups))
 
 (defun gnus-group-kill-region (begin end)

@@ -201,7 +201,7 @@ If it is down, start it up (again)."
   "Check whether a connection to METHOD has been opened."
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
-  (funcall (gnus-get-function method 'server-opened) (nth 1 method)))
+  (funcall (inline (gnus-get-function method 'server-opened)) (nth 1 method)))
 
 (defun gnus-status-message (method)
   "Return the status message from METHOD.
@@ -219,10 +219,10 @@ this group uses will be queried."
 
 (defun gnus-request-group (group &optional dont-check method)
   "Request GROUP.  If DONT-CHECK, no information is required."
-  (let ((method (or method (gnus-find-method-for-group group))))
+  (let ((method (or method (inline (gnus-find-method-for-group group)))))
     (when (stringp method)
-      (setq method (gnus-server-to-method method)))
-    (funcall (gnus-get-function method 'request-group)
+      (setq method (inline (gnus-server-to-method method))))
+    (funcall (inline (gnus-get-function method 'request-group))
 	     (gnus-group-real-name group) (nth 1 method) dont-check)))
 
 (defun gnus-list-active-group (group)
@@ -243,7 +243,7 @@ this group uses will be queried."
 
 (defun gnus-close-group (group)
   "Request the GROUP be closed."
-  (let ((method (gnus-find-method-for-group group)))
+  (let ((method (inline (gnus-find-method-for-group group))))
     (funcall (gnus-get-function method 'close-group)
 	     (gnus-group-real-name group) (nth 1 method))))
 

@@ -207,7 +207,7 @@
 	(pop defs))
       (nconc bstate (list (cons current state))))))
 
-(defun nnoo-current-server-p (backend server)
+(defsubst nnoo-current-server-p (backend server)
   (equal (nnoo-current-server backend) server))
 
 (defun nnoo-current-server (backend)

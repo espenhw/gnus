@@ -217,22 +217,23 @@ time saver for large mailboxes.")
 			     (car range) (cdr range) group))))))))
 
 (deffoo nnfolder-request-scan (&optional group server)
-  (nnfolder-possibly-change-group group server t)
-  (nnmail-get-new-mail
-   'nnfolder
-   (lambda ()
-     (let ((bufs nnfolder-buffer-alist))
-       (save-excursion
-	 (while bufs
-	   (if (not (buffer-name (nth 1 (car bufs))))
-	       (setq nnfolder-buffer-alist
-		     (delq (car bufs) nnfolder-buffer-alist))
-	     (set-buffer (nth 1 (car bufs)))
-	     (nnfolder-save-buffer)
-	     (kill-buffer (current-buffer)))
-	   (setq bufs (cdr bufs))))))
-   nnfolder-directory
-   group))
+  (when nnfolder-get-new-mail
+    (nnfolder-possibly-change-group group server)
+    (nnmail-get-new-mail
+     'nnfolder
+     (lambda ()
+       (let ((bufs nnfolder-buffer-alist))
+	 (save-excursion
+	   (while bufs
+	     (if (not (buffer-name (nth 1 (car bufs))))
+		 (setq nnfolder-buffer-alist
+		       (delq (car bufs) nnfolder-buffer-alist))
+	       (set-buffer (nth 1 (car bufs)))
+	       (nnfolder-save-buffer)
+	       (kill-buffer (current-buffer)))
+	     (setq bufs (cdr bufs))))))
+     nnfolder-directory
+     group)))
 
 ;; Don't close the buffer if we're not shutting down the server.  This way,
 ;; we can keep the buffer in the group buffer cache, and not have to grovel
@@ -362,7 +363,8 @@ time saver for large mailboxes.")
        (goto-char (point-min))
        (when (search-forward (nnfolder-article-string article) nil t)
 	 (nnfolder-delete-mail))
-       (and last (nnfolder-save-buffer))))
+       (when last
+	 (nnfolder-save-buffer))))
     result))
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
@@ -473,7 +475,7 @@ time saver for large mailboxes.")
 	     (point))
 	 (point-max))))))
 
-(defun nnfolder-possibly-change-group (group &optional server scanning)
+(defun nnfolder-possibly-change-group (group &optional server)
   ;; Change servers.
   (when (and server
 	     (not (nnfolder-server-opened server)))

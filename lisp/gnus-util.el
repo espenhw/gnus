@@ -145,7 +145,7 @@
 (defun gnus-byte-code (func)
   "Return a form that can be `eval'ed based on FUNC."
   (let ((fval (symbol-function func)))
-    (if (byte-code-function-p fval)
+    (if (compiled-function-p fval)
 	(let ((flist (append fval nil)))
 	  (setcar flist 'byte-code)
 	  flist)
@@ -458,7 +458,7 @@ If N, return the Nth ancestor instead."
     (let ((ids (inline (gnus-split-references references))))
       (car (last ids (or n 1))))))
 
-(defun gnus-buffer-live-p (buffer)
+(defsubst gnus-buffer-live-p (buffer)
   "Say whether BUFFER is alive or not."
   (and buffer
        (get-buffer buffer)

@@ -1290,12 +1290,35 @@ newsgroup."
 	     (> (cdr cache-active) (cdr active))
 	     (setcdr active (cdr cache-active)))))))
 
+(defun gnus-activate-group (group &optional scan dont-check method)
+  ;; Check whether a group has been activated or not.
+  ;; If SCAN, request a scan of that group as well.
+  (let ((method (or method (inline (gnus-find-method-for-group group))))
+	active)
+    (and (inline (gnus-check-server method))
+	 ;; We escape all bugs and quit here to make it possible to
+	 ;; continue if a group is so out-there that it reports bugs
+	 ;; and stuff.
+	 (progn
+	   (and scan
+		(gnus-check-backend-function 'request-scan (car method))
+		(gnus-request-scan group method))
+	   t)
+	 (condition-case ()
+	     (inline (gnus-request-group group dont-check method))
+	   (error nil)
+	   (quit nil))
+	 (gnus-set-active group (setq active (gnus-parse-active)))
+	 ;; Return the new active info.
+	 active)))
+
 (defun gnus-get-unread-articles-in-group (info active &optional update)
   (when active
     ;; Allow the backend to update the info in the group.
     (when (and update
 	       (gnus-request-update-info
-		info (gnus-find-method-for-group (gnus-info-group info))))
+		info (inline (gnus-find-method-for-group
+			      (gnus-info-group info)))))
       (gnus-activate-group (gnus-info-group info) nil t))
     (let* ((range (gnus-info-read info))
 	   (num 0))
@@ -1400,9 +1423,10 @@ newsgroup."
       ;; newsgroup to t.  This means that Gnus thinks that there are
       ;; unread articles, but it has no idea how many.
       (if (and (setq method (gnus-info-method info))
-	       (not (gnus-server-equal
-		     gnus-select-method
-		     (setq method (gnus-server-get-method nil method))))
+	       (not (inline
+		      (gnus-server-equal
+		       gnus-select-method
+		       (setq method (gnus-server-get-method nil method)))))
 	       (not (gnus-secondary-method-p method)))
 	  ;; These groups are foreign.  Check the level.
 	  (when (<= (gnus-info-level info) foreign-level)
@@ -1461,28 +1485,6 @@ newsgroup."
       (setq list (symbol-value (pop lists)))
       (while list
 	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
-
-(defun gnus-activate-group (group &optional scan dont-check method)
-  ;; Check whether a group has been activated or not.
-  ;; If SCAN, request a scan of that group as well.
-  (let ((method (or method (gnus-find-method-for-group group)))
-	active)
-    (and (gnus-check-server method)
-	 ;; We escape all bugs and quit here to make it possible to
-	 ;; continue if a group is so out-there that it reports bugs
-	 ;; and stuff.
-	 (progn
-	   (and scan
-		(gnus-check-backend-function 'request-scan (car method))
-		(gnus-request-scan group method))
-	   t)
-	 (condition-case ()
-	     (gnus-request-group group dont-check method)
-	   (error nil)
-	   (quit nil))
-	 (gnus-set-active group (setq active (gnus-parse-active)))
-	 ;; Return the new active info.
-	 active)))
 
 (defun gnus-parse-active ()
   "Parse active info in the nntp server buffer."
@@ -1589,10 +1591,12 @@ newsgroup."
 		    (gmethod (gnus-server-get-method nil method))
 		    groups info)
 		(while (setq info (pop newsrc))
-		  (when (gnus-server-equal
-			 (gnus-find-method-for-group
-			  (gnus-info-group info) info)
-			 gmethod)
+		  (when (inline
+			  (gnus-server-equal
+			   (inline
+			     (gnus-find-method-for-group
+			      (gnus-info-group info) info))
+			   gmethod))
 		    (push (gnus-group-real-name (gnus-info-group info))
 			  groups)))
 		(when groups
@@ -2253,7 +2257,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	;; Don't write foreign groups to .newsrc.
 	(when (or (null (setq method (gnus-info-method info)))
 		  (equal method "native")
-		  (gnus-server-equal method gnus-select-method))
+		  (inline (gnus-server-equal method gnus-select-method)))
 	  (insert (gnus-info-group info)
 		  (if (> (gnus-info-level info) gnus-level-subscribed)
 		      "!" ":"))
@@ -2393,9 +2397,11 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (narrow-to-region (point-min) (point)))
 	  ;; If these are groups from a foreign select method, we insert the
 	  ;; group prefix in front of the group names.
-	  (and method (not (gnus-server-equal
-			    (gnus-server-get-method nil method)
-			    (gnus-server-get-method nil gnus-select-method)))
+	  (and method (not (inline
+			     (gnus-server-equal
+			      (gnus-server-get-method nil method)
+			      (gnus-server-get-method
+			       nil gnus-select-method))))
 	       (let ((prefix (gnus-group-prefixed-name "" method)))
 		 (goto-char (point-min))
 		 (while (and (not (eobp))

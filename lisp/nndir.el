@@ -63,8 +63,6 @@
 	    server))
   (unless (assq 'nndir-directory defs)
     (push `(nndir-directory ,server) defs))
-  ;(when (equal server "")
-  ;  (setq server (cadr (assq 'nndir-directory defs))))
   (push `(nndir-current-group
 	  ,(file-name-nondirectory (directory-file-name nndir-directory)))
 	defs)
