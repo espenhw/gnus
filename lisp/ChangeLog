@@ -1,3 +1,12 @@
+2004-05-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* spam.el (spam-mark-spam-as-expired-and-move-routine): Return the
+	number of processed spam messages.
+	(spam-ham-copy-or-move-routine): Return the number of processed
+	ham messages.
+	(spam-summary-prepare-exit): Use the above values to decide
+	whether status messages shouled be displayed.
+
 2004-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-function-alist): Renamed from

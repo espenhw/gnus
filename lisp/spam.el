@@ -847,7 +847,7 @@ Will not return a nil score."
 	    ;; call spam-register-routine with specific articles to unregister,
 	    ;; when there are articles to unregister and the check is enabled
 	    (when (and unregister-list (symbol-value check))
-	      (spam-register-routine 
+	      (spam-register-routine
 	       classification check t unregister-list))))))
 
     ;; find all the spam processors applicable to this group
@@ -861,22 +861,21 @@ Will not return a nil score."
 
     (unless (and spam-move-spam-nonspam-groups-only
 		 (spam-group-spam-contents-p gnus-newsgroup-name))
-      (when (< 0 (length (spam-list-articles
-			  gnus-newsgroup-articles
-			  'spam)))
-	(gnus-message 6 "Marking spam as expired and moving it to %s"
-		      (gnus-parameter-spam-process-destination 
-		       gnus-newsgroup-name))
-	(spam-mark-spam-as-expired-and-move-routine
-	 (gnus-parameter-spam-process-destination gnus-newsgroup-name))))
+      (let* ((group (gnus-parameter-spam-process-destination
+		     gnus-newsgroup-name))
+	     (num (spam-mark-spam-as-expired-and-move-routine group)))
+	(when (> num 0)
+	  (gnus-message 6
+			"%d spam messages are marked as expired and moved it to %s"
+			num group))))
 
     ;; now we redo spam-mark-spam-as-expired-and-move-routine to only
     ;; expire spam, in case the above did not expire them
-    (when (< 0 (length (spam-list-articles
-			gnus-newsgroup-articles
-			'spam)))
-      (gnus-message 6 "Marking spam as expired without moving it")
-      (spam-mark-spam-as-expired-and-move-routine nil))
+    (let ((num (spam-mark-spam-as-expired-and-move-routine nil)))
+      (when (> num 0)
+	(gnus-message 6
+		      "%d spam messages are markd as expired without moving it"
+		      num)))
 
     (when (or (spam-group-ham-contents-p gnus-newsgroup-name)
 	      (and (spam-group-spam-contents-p gnus-newsgroup-name)
@@ -891,19 +890,20 @@ Will not return a nil score."
 		     (spam-group-processor-p gnus-newsgroup-name processor))
 	    (spam-register-routine classification check)))))
 
-    (when (< 0 (length (spam-list-articles
-			gnus-newsgroup-articles
-			'ham)))
-      (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
-	(gnus-message 6 "Copying ham")
-	(spam-ham-copy-routine
-	 (gnus-parameter-ham-process-destination gnus-newsgroup-name)))
+    (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
+      (let ((num
+	     (spam-ham-copy-routine
+	      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
+	(when (> num 0)
+	  (gnus-message 6 "%d ham messages are copied" num))))
 
-      ;; now move all ham articles out of spam groups
-      (when (spam-group-spam-contents-p gnus-newsgroup-name)
-	(gnus-message 6 "Moving ham messages from spam group")
-	(spam-ham-move-routine
-	 (gnus-parameter-ham-process-destination gnus-newsgroup-name)))))
+    ;; now move all ham articles out of spam groups
+    (when (spam-group-spam-contents-p gnus-newsgroup-name)
+      (let ((num
+	     (spam-ham-move-routine
+	      (gnus-parameter-ham-process-destination gnus-newsgroup-name))))
+	(when (> num 0)
+	  (gnus-message 6 "%d ham messages are moved from spam group" num)))))
 
   (setq spam-old-ham-articles nil)
   (setq spam-old-spam-articles nil))
@@ -973,7 +973,8 @@ When either list is nil, the other is returned."
 	  (let ((gnus-novice-user nil))	; don't ask me if I'm sure
 	    (gnus-summary-delete-article nil))))
 
-      (gnus-summary-yank-process-mark))))
+      (gnus-summary-yank-process-mark)
+      (length tomove))))
 
 (defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
@@ -1017,9 +1018,10 @@ When either list is nil, the other is returned."
 	  (gnus-summary-set-process-mark article))
 	(when todo
 	  (let ((gnus-novice-user nil))	; don't ask me if I'm sure
-	    (gnus-summary-delete-article nil))))))
+	    (gnus-summary-delete-article nil)))))
 
-  (gnus-summary-yank-process-mark))
+    (gnus-summary-yank-process-mark)
+    (length todo)))
 
 (defun spam-ham-copy-routine (&rest groups)
   (if (and (car-safe groups) (listp (car-safe groups)))
