@@ -3490,11 +3490,11 @@ You should probably use `gnus-find-method-for-group' instead."
 (defsubst gnus-secondary-method-p (method)
   "Return whether METHOD is a secondary select method."
   (let ((methods gnus-secondary-select-methods)
-	(gmethod (gnus-server-get-method nil method)))
+	(gmethod (inline (gnus-server-get-method nil method))))
     (while (and methods
 		(not (gnus-method-equal
-		      (gnus-server-get-method nil (car methods))
-		      (gnus-server-get-method nil gmethod))))
+		      (inline (gnus-server-get-method nil (car methods)))
+		      gmethod)))
       (setq methods (cdr methods)))
     methods))
 

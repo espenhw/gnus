@@ -1532,7 +1532,7 @@ newsgroup."
       ;; If the agent is enabled, we may have to alter the active info.
       (when (and gnus-agent info)
 	(gnus-agent-possibly-alter-active
-		 (gnus-info-group info) active))
+	 (gnus-info-group info) active))
 
       ;; Modify the list of read articles according to what articles
       ;; are available; then tally the unread articles and add the
@@ -1620,7 +1620,10 @@ newsgroup."
 		  gnus-activate-foreign-newsgroups)
 		 (t 0))
 	   level))
-	 scanned-methods info group active method retrieve-groups)
+	 (methods-cache nil)
+	 (type-cache nil)
+	 scanned-methods info group active method retrieve-groups cmethod
+	 method-type)
     (gnus-message 6 "Checking new news...")
 
     (while newsrc
@@ -1639,12 +1642,25 @@ newsgroup."
       ;; nil for non-foreign groups that the user has requested not be checked
       ;; t for unchecked foreign groups or bogus groups, or groups that can't
       ;;   be checked, for one reason or other.
-      (if (and (setq method (gnus-info-method info))
-	       (not (inline
-		      (gnus-server-equal
-		       gnus-select-method
-		       (setq method (gnus-server-get-method nil method)))))
-	       (not (gnus-secondary-method-p method)))
+      (when (setq method (gnus-info-method info))
+	(if (setq cmethod (assoc method methods-cache))
+	    (setq method (cdr cmethod))
+	  (setq cmethod (inline (gnus-server-get-method nil method)))
+	  (push (cons method cmethod) methods-cache)
+	  (setq method cmethod)))
+      (when (and method
+		 (not (setq method-type (cdr (assoc method type-cache)))))
+	(setq method-type
+	      (cond
+	       ((gnus-secondary-method-p method)
+		'secondary)
+	       ((inline (gnus-server-equal gnus-select-method method))
+		'primary)
+	       (t
+		'foreign)))
+	(push (cons method method-type) type-cache))
+      (if (and method
+	       (eq method-type 'foreign))
 	  ;; These groups are foreign.  Check the level.
 	  (when (and (<= (gnus-info-level info) foreign-level)
 		     (setq active (gnus-activate-group group 'scan)))

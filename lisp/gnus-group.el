@@ -1464,7 +1464,7 @@ if it is a string, only list groups matching REGEXP."
 	 (active (gnus-active group))
 	 (total (if active (1+ (- (cdr active) (car active))) 0))
 	 (info (nth 2 entry))
-	 (method (gnus-server-get-method group (gnus-info-method info)))
+	 (method (inline (gnus-server-get-method group (gnus-info-method info))))
 	 (marked (gnus-info-marks info))
 	 (mailp (apply 'append
 		       (mapcar

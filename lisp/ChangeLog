@@ -4,8 +4,13 @@
 
 2003-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-start.el (gnus-get-unread-articles): Inline gnus-server-get-method.
+	(gnus-get-unread-articles): Cache methods.
+	(gnus-get-unread-articles-in-group): Indent.
+
 	* gnus.el (gnus-version-number): Bump.
 	(gnus-secondary-method-p): Extend servers to methods before comparing.
+	(gnus-secondary-method-p): Revert.
 
 2003-12-30 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
