@@ -2648,6 +2648,13 @@ If you use the @code{google} search engine, you can limit the search
 to a particular group by using a match string like
 @samp{shaving group:alt.sysadmin.recovery}.
 
+@item G R
+@kindex G R (Group)
+@findex gnus-group-make-rss-group
+Make a group based on an @acronym{RSS} feed
+(@code{gnus-group-make-rss-group}).  You will be prompted for an URL.
+@xref{RSS}.
+
 @item G DEL
 @kindex G DEL (Group)
 @findex gnus-group-delete-group
@@ -2656,7 +2663,7 @@ This function will delete the current group
 actually delete all the articles in the group, and forcibly remove the
 group itself from the face of the Earth.  Use a prefix only if you are
 absolutely sure of what you are doing.  This command can't be used on
-read-only groups (like @code{nntp} group), though.
+read-only groups (like @code{nntp} groups), though.
 
 @item G V
 @kindex G V (Group)
@@ -15633,18 +15640,18 @@ Where @code{nnslashdot} will store its files.  The default is
 
 @item nnslashdot-active-url
 @vindex nnslashdot-active-url
-The @sc{url} format string that will be used to fetch the information on
-news articles and comments.  The default is@*
+The @acronym{URL} format string that will be used to fetch the
+information on news articles and comments.  The default is@*
 @samp{http://slashdot.org/search.pl?section=&min=%d}.
 
 @item nnslashdot-comments-url
 @vindex nnslashdot-comments-url
-The @sc{url} format string that will be used to fetch comments.
+The @acronym{URL} format string that will be used to fetch comments.
 
 @item nnslashdot-article-url
 @vindex nnslashdot-article-url
-The @sc{url} format string that will be used to fetch the news article.  The
-default is
+The @acronym{URL} format string that will be used to fetch the news
+article.  The default is
 @samp{http://slashdot.org/article.pl?sid=%s&mode=nocomment}.
 
 @item nnslashdot-threshold
@@ -15672,7 +15679,7 @@ information Gnus needs to keep groups updated.
 
 The easiest way to get started with @code{nnultimate} is to say
 something like the following in the group buffer:  @kbd{B nnultimate RET
-http://www.tcj.com/messboard/ubbcgi/ RET}.  (Substitute the @sc{url}
+http://www.tcj.com/messboard/ubbcgi/ RET}.  (Substitute the @acronym{URL}
 (not including @samp{Ultimate.cgi} or the like at the end) for a forum
 you're interested in; there's quite a list of them on the Ultimate web
 site.)  Then subscribe to the groups you're interested in from the
@@ -15730,14 +15737,21 @@ The password for your account on the web server.
 @cindex nnrss
 @cindex RSS
 
-Some sites have RDF site summary (RSS)
-@uref{http://purl.org/rss/1.0/spec}.  It has a quite regular and nice
-interface, and it's possible to get the information Gnus needs to keep
-groups updated.
+Some web sites have an RDF Site Summary (@acronym{RSS}).
+@acronym{RSS} is a format for summarizing headlines from news related
+sites (such as BBC or CNN).  But basically anything list-like can be
+presented as an @acronym{RSS} feed: weblogs, changelogs or recent
+changes to a wiki (e.g. @url{http://cliki.net/recent-changes.rdf}).
 
-The easiest way to get started with @code{nnrss} is to say something
-like the following in the group buffer: @kbd{B nnrss RET RET}, then
-subscribe groups.
+@acronym{RSS} has a quite regular and nice interface, and it's
+possible to get the information Gnus needs to keep groups updated.
+
+Use @kbd{G R} from the summary buffer to subscribe to a feed---you
+will be prompted for the location of the feed.
+
+An easy way to get started with @code{nnrss} is to say something like
+the following in the group buffer: @kbd{B nnrss RET y}, then
+subscribe to groups.
 
 The following @code{nnrss} variables can be altered:
 
@@ -15747,6 +15761,13 @@ The following @code{nnrss} variables can be altered:
 The directory where @code{nnrss} stores its files.  The default is
 @file{~/News/rss/}.
 
+@item nnrss-use-local
+@vindex nnrss-use-local
+@findex nnrss-generate-download-script
+If you set @code{nnrss-use-local} to @code{t}, @code{nnrss} will read
+the feeds from local files in @code{nnrss-directory}.  You can use
+the command @code{nnrss-generate-download-script} to generate a
+download script using @command{wget}.
 @end table
 
 The following code may be helpful, if you want to show the description in

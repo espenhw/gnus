@@ -1,3 +1,8 @@
+2003-11-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (RSS): Add nnrss-use-local.
+	(Foreign Groups): Add `G R'.
+
 2003-11-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex (subsection*{Notes}): Add `G R'.
