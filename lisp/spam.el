@@ -119,6 +119,15 @@ Competition."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-disable-spam-split-during-ham-respool nil
+  "Whether spam-split should be ignored while resplitting ham in
+a process destination.  This is useful to prevent ham from ending
+up in the same spam group after the resplit.  Don't set this to t
+if you have spam-split as the last rule in your split
+configuration."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-whitelist (expand-file-name "whitelist" spam-directory)
   "The location of the whitelist.
 The file format is one regular expression per line.
@@ -696,8 +705,11 @@ spam-use-* variable.")
 	    (gnus-summary-mark-article article gnus-unread-mark))
 	  (gnus-summary-set-process-mark article))
 
-	(if respool		   ; respooling is with a "fake" group
-	    (gnus-summary-respool-article nil respool-method)
+	(if respool			   ; respooling is with a "fake" group
+	    (let ((spam-split-disabled
+		   (or spam-split-disabled
+		       spam-disable-spam-split-during-ham-respool)))
+	      (gnus-summary-respool-article nil respool-method))
 	  (if (or (not backend-supports-deletions) ; else, we are not respooling
 		  (> (length groups) 1))
 	      (progn		    ; if copying, copy and set deletep
@@ -826,6 +838,9 @@ definitely a spam.")
   "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.")
 
+(defvar spam-split-disabled nil
+  "If non-nil, spam-split is disabled, and always returns nil.")
+
 ;;;TODO: modify to invoke self with each check if invoked without specifics
 (defun spam-split (&rest specific-checks)
   "Split this message into the `spam' group if it is spam.
@@ -836,35 +851,36 @@ spam-split-group to that string.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
-  (let ((spam-split-group-choice spam-split-group))
-    (dolist (check specific-checks)
-      (when (stringp check)
-	(setq spam-split-group-choice check)
-	(setq specific-checks (delq check specific-checks))))
-
-    (let ((spam-split-group spam-split-group-choice))
-      (save-excursion
-	(save-restriction
-	  (dolist (check spam-list-of-statistical-checks)
-	    (when (and (symbolp check) (symbol-value check))
-	      (widen)
-	      (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
-			    (symbol-name check))
-	      (return)))
-	  ;;   (progn (widen) (debug (buffer-string)))
-	  (let ((list-of-checks spam-list-of-checks)
-		decision)
-	    (while (and list-of-checks (not decision))
-	      (let ((pair (pop list-of-checks)))
-		(when (and (symbol-value (car pair))
-			   (or (null specific-checks)
-			       (memq (car pair) specific-checks)))
-		  (gnus-message 5 "spam-split: calling the %s function" 
-				(symbol-name (cdr pair)))
-		  (setq decision (funcall (cdr pair))))))
-	    (if (eq decision t)
-		nil
-	      decision)))))))
+  (unless spam-split-disabled
+    (let ((spam-split-group-choice spam-split-group))
+      (dolist (check specific-checks)
+	(when (stringp check)
+	  (setq spam-split-group-choice check)
+	  (setq specific-checks (delq check specific-checks))))
+      
+      (let ((spam-split-group spam-split-group-choice))
+	(save-excursion
+	  (save-restriction
+	    (dolist (check spam-list-of-statistical-checks)
+	      (when (and (symbolp check) (symbol-value check))
+		(widen)
+		(gnus-message 8 "spam-split: widening the buffer (%s requires it)"
+			      (symbol-name check))
+		(return)))
+	    ;;   (progn (widen) (debug (buffer-string)))
+	    (let ((list-of-checks spam-list-of-checks)
+		  decision)
+	      (while (and list-of-checks (not decision))
+		(let ((pair (pop list-of-checks)))
+		  (when (and (symbol-value (car pair))
+			     (or (null specific-checks)
+				 (memq (car pair) specific-checks)))
+		    (gnus-message 5 "spam-split: calling the %s function" 
+				  (symbol-name (cdr pair)))
+		    (setq decision (funcall (cdr pair))))))
+	      (if (eq decision t)
+		  nil
+		decision))))))))
 
 (defvar spam-registration-functions
   ;; first the ham register, second the spam register function

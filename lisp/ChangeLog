@@ -1,3 +1,15 @@
+2003-12-10  Teodor Zlatanov  <tzz@lifelogs.com> 
+
+	* spam.el (spam-disable-spam-split-during-ham-respool): new
+	variable.  From lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
+	(spam-ham-copy-or-move-routine): respect
+	spam-disable-spam-split-during-ham-respool.  From
+	lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
+	(spam-split-disabled): new variable.  From
+	lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
+	(spam-split): respect spam-split-disabled.  From
+	lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
+
 2003-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheaderxm.el (nnheader-xmas-run-at-time): Make it work
