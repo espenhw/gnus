@@ -54,6 +54,16 @@ The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type 'boolean)
 
+(defcustom gnus-registry-use-long-group-names nil
+  "Whether the registry should use long group names (BUGGY)."
+  :group 'gnus-registry
+  :type 'boolean)
+
+(defcustom gnus-registry-trim-articles-without-groups t
+  "Whether the registry should clean out message IDs without groups."
+  :group 'gnus-registry
+  :type 'boolean)
+
 (defcustom gnus-registry-cache-file "~/.gnus.registry.eld"
   "File where the Gnus registry will be stored."
   :group 'gnus-registry
@@ -364,8 +374,9 @@ Returns the first place where the trail finds a group name."
 		      nil)
 		 gnus-registry-hashtb))
       ;; now, clear the entry if there are no more groups
-      (unless (gnus-registry-group-count id)
-	(remhash id gnus-registry-hashtb))
+      (when gnus-registry-trim-articles-without-groups
+	(unless (gnus-registry-group-count id)
+	  (remhash id gnus-registry-hashtb)))
       (gnus-registry-store-extra-entry id 'mtime (current-time)))))
 
 (defun gnus-registry-add-group (id group &rest extra)
@@ -374,8 +385,13 @@ Returns the first place where the trail finds a group name."
   (when group
     (when (and id
 	       (not (string-match "totally-fudged-out-message-id" id)))
-      (let ((group (gnus-group-short-name group)))
-	(gnus-registry-delete-group id group)	
+      (let ((full-group group)
+	    (group (if gnus-registry-use-long-group-names 
+		       group 
+		     (gnus-group-short-name group))))
+	(gnus-registry-delete-group id group)
+	(unless gnus-registry-use-long-group-names 
+	  (gnus-registry-delete-group id full-group))
 	(let ((trail (gethash id gnus-registry-hashtb)))
 	  (puthash id (if trail
 			  (cons group trail)

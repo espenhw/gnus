@@ -1,3 +1,10 @@
+2003-05-30  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-use-long-group-names): new variable
+	(gnus-registry-add-group): use it
+	(gnus-registry-trim-articles-without-groups): new variable
+	(gnus-registry-delete-group): use it
+
 2003-05-30  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-decode): Don't use
