@@ -191,6 +191,10 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
     ;; sufficiently ripe.
     (let ((handlers gnus-demon-handler-state)
 	  (gnus-inhibit-demon t)
+	  ;; Try to avoid dialog boxes, e.g. by Mailcrypt.
+	  ;; Unfortunately, Emacs 20's `message-or-box...' doesn't
+	  ;; obey `use-dialog-box'.
+	  use-dialog-box (last-nonmenu-event 10)
 	  handler time idle)
       (while handlers
 	(setq handler (pop handlers))
