@@ -1,3 +1,7 @@
+2000-05-17 00:49:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-list-dormant): New function.
+
 2000-05-16 23:20:42  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-synchronize): Use
