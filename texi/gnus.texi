@@ -21501,6 +21501,7 @@ The following are the methods you can use to control the behavior of
 * Blacklists and Whitelists::   
 * BBDB Whitelists::             
 * Blackholes::                  
+* Regular Expressions Header Matching::  
 * Bogofilter::                  
 * ifile spam filtering::        
 * spam-stat spam filtering::    
@@ -21634,6 +21635,40 @@ The default setting of @code{t} is recommended.
 
 Blackhole checks are done only on incoming mail.  There is no spam or
 ham processor for blackholes.
+
+@node Regular Expressions Header Matching
+@subsubsection Regular Expressions Header Matching
+@cindex spam filtering
+@cindex regular expressions header matching, spam filtering
+@cindex spam
+
+@defvar spam-use-regex-headers
+
+This option is disabled by default.  You can let Gnus check the
+message headers against lists of regular expressions when you set this
+option.  The variables @code{spam-regex-headers-spam} and
+@code{spam-regex-headers-ham} hold the list of regular expressions
+Gnus will check against the message headers to determine if the
+message is spam or ham, repectively.
+
+@end defvar
+
+@defvar spam-regex-headers-spam
+
+The list of regular expressions that, when matched in the headers of
+the message, positively identify it as spam.
+
+@end defvar
+
+@defvar spam-regex-headers-ham
+
+The list of regular expressions that, when matched in the headers of
+the message, positively identify it as ham.
+
+@end defvar
+
+Regular expression header checks are done only on incoming mail.
+There is no specific spam or ham processor for regular expressions.
 
 @node Bogofilter
 @subsubsection Bogofilter
