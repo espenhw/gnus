@@ -288,7 +288,7 @@
 	(ignore-errors
 	  (delete-process process))
 	(let ((answer (car (dns-get 'answers (dns-read (buffer-string))))))
-	  (when (eq type (dns-get 'type answer))
+ 	  (when (eq type (dns-get 'type answer))
 	    (dns-get 'data answer)))))))
     
 (provide 'dns)
