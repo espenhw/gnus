@@ -41,11 +41,11 @@
 (defgroup netrc nil
  "Netrc configuration.")
 
-(defcustom netrc-encoding-method nil
+(defcustom netrc-encrypting-method nil
   "Decoding method used for the netrc file.
 Use the OpenSSL symmetric ciphers here.  Leave nil for no
-decoding.  Encode the file with netrc-encode, but make sure you
-have set netrc-encoding-method to a non-nil value."
+decoding.  Encrypt the file with netrc-encrypt, but make sure you
+have set netrc-encrypting-method to a non-nil value."
   :type '(choice
 	  (const :tag "DES-3" "des3")
 	  (const :tag "IDEA" "idea")
@@ -60,12 +60,12 @@ have set netrc-encoding-method to a non-nil value."
 		 (const :tag "openssl is not installed" nil))
   :group 'netrc)
 
-(defun netrc-encode (plain-file encoded-file)
-  (interactive "fPlain File: \nFEncoded File: ")
-  "Encode FILE to ENCODED-FILE with netrc-encoding-method cipher."
+(defun netrc-encrypt (plain-file encrypted-file)
+  (interactive "fPlain File: \nFEncrypted File: ")
+  "Encrypt FILE to ENCRYPTED-FILE with netrc-encrypting-method cipher."
   (when (and (file-exists-p plain-file)
-	     (stringp encoded-file)
-	     netrc-encoding-method
+	     (stringp encrypted-file)
+	     netrc-encrypting-method
 	     netrc-openssl-path)
     (let ((buffer-file-coding-system 'binary)
 	  (coding-system-for-read 'binary)
@@ -73,9 +73,9 @@ have set netrc-encoding-method to a non-nil value."
 	  (password 
 	   (password-read
 	    (format "OpenSSL Password for cipher %s? "
-		    netrc-encoding-method)
+		    netrc-encrypting-method)
 	    (format "netrc-openssl-password-%s"
-		    netrc-encoding-method))))
+		    netrc-encrypting-method))))
       (when password
 	(with-temp-buffer
 	  (insert-file-contents plain-file)
@@ -85,10 +85,10 @@ have set netrc-encoding-method to a non-nil value."
 	   (point-max)
 	   (format "%s %s -pass env:NETRC_OPENSSL_PASSWORD -e"
 		   netrc-openssl-path
-		   netrc-encoding-method)
+		   netrc-encrypting-method)
 	   t
 	   t)
-	  (write-file encoded-file t))))))
+	  (write-file encrypted-file t))))))
 
 (defun netrc-parse (file)
   (interactive "fFile to Parse: ")
@@ -99,7 +99,7 @@ have set netrc-encoding-method to a non-nil value."
 		      "password" "account" "macdef" "force"
 		      "port"))
 	    alist elem result pair)
-	(if (and netrc-encoding-method
+	(if (and netrc-encrypting-method
 		 netrc-openssl-path)
 	    (let ((buffer-file-coding-system 'binary)
 		  (coding-system-for-read 'binary)
@@ -107,9 +107,9 @@ have set netrc-encoding-method to a non-nil value."
 		  (password 
 		   (password-read
 		    (format "OpenSSL Password for cipher %s? "
-			    netrc-encoding-method)
+			    netrc-encrypting-method)
 		    (format "netrc-openssl-password-%s" 
-			    netrc-encoding-method))))
+			    netrc-encrypting-method))))
 	      (when password
 		(insert-file-contents file)
 		(setenv "NETRC_OPENSSL_PASSWORD" password)
@@ -118,7 +118,7 @@ have set netrc-encoding-method to a non-nil value."
 		 (point-max)
 		 (format "%s %s -pass env:NETRC_OPENSSL_PASSWORD -d"
 			 netrc-openssl-path
-			 netrc-encoding-method)
+			 netrc-encrypting-method)
 		 t
 		 t)))
 	  (insert-file-contents file))

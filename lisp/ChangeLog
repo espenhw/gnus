@@ -10,6 +10,8 @@
 	(netrc-parse): added interactive parameter, added optional
 	decoding if netrc-encoding-method is non-nil but otherwise
 	behavior is standard
+	(netrc-encrypting-method, netrc-encrypt, netrc-parse):
+	s/encode/encrypt/ everywhere
 
 	* spam.el: remove executable-find autoload
 
