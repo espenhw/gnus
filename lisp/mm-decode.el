@@ -520,16 +520,6 @@ external if displayed external."
 	(when (string-match ty type)
 	  (throw 'found t))))))
 
-(defun mm-inline-override-p (handle)
-  "Say whether HANDLE should have inline behavior overridden."
-  (let ((types mm-inline-override-types)
-	(type (mm-handle-media-type handle))
-	ty)
-    (catch 'found
-      (while (setq ty (pop types))
-	(when (string-match ty type)
-	  (throw 'found t))))))
-
 (defun mm-automatic-external-display-p (type)
   "Return the user-defined method for TYPE."
   (let ((methods mm-automatic-external-display)
