@@ -799,11 +799,13 @@ by nnmaildir-request-article.")
 	    (setq dirs (funcall srv-ls srv-dir nil "\\`[^.]" 'nosort)
 		  dirs (if (zerop (length target-prefix))
 			   dirs
-			 (remove-if (lambda (dir)
-				      (and (>= (length dir) (length target-prefix))
-					   (string= (substring dir 0 (length target-prefix))
-						    target-prefix)))
-				    dirs))
+			 (gnus-remove-if
+			  (lambda (dir)
+			    (and (>= (length dir) (length target-prefix))
+				 (string= (substring dir 0
+						     (length target-prefix))
+					  target-prefix)))
+			  dirs))
 		  seen (nnmaildir--up2-1 (length dirs))
 		  seen (make-vector seen 0))
 	    (mapcar
