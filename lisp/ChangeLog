@@ -1,5 +1,9 @@
 2004-07-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnheader.el (nnheader-uniquify-message-id): New experimental
+	variable. 
+	(nnheader-nov-read-message-id): Use it.
+
 	* spam-report.el (spam-report-gmane): Add interactive.
 
 2004-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>

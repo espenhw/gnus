@@ -385,10 +385,17 @@ on your system, you could say something like:
 	       out)))
      out))
 
+(defvar nnheader-uniquify-message-id nil)
+
 (defmacro nnheader-nov-read-message-id (&optional number)
   `(let ((id (nnheader-nov-field)))
      (if (string-match "^<[^>]+>$" id)
-	 id
+	 ,(if nnheader-uniquify-message-id
+	      `(if (string-match "__[^@]+@" id)
+		   (concat (substring id 0 (match-beginning 0))
+			   (substring id (1- (match-end 0))))
+		 id)
+	    'id)
        (nnheader-generate-fake-message-id ,number))))
 
 (defun nnheader-parse-nov ()
