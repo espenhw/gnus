@@ -2970,10 +2970,24 @@ translating the group parameter into a Sieve script (@pxref{Sieve
 Commands}) the following Sieve code is generated:
 
 @example
-if address \"sender\" \"sieve-admin@@extundo.com\" @{
-        fileinto \"INBOX.list.sieve\";
+if address "sender" "sieve-admin@@extundo.com" @{
+        fileinto "INBOX.list.sieve";
 @}
 @end example
+
+To generate tests for multiple email-addresses use a group parameter
+like @code{(sieve address "sender" ("name@@one.org" else@@two.org"))}.
+When generating a sieve script (@pxref{Sieve Commands}) Sieve code
+like the following is generated:
+
+@example
+if address "sender" ["name@@one.org", "else@@two.org"] @{
+        fileinto "INBOX.list.sieve";
+@}
+@end example
+
+See @pxref{Sieve Commands} for commands and variables that might be of
+interest in relation to the sieve parameter.
 
 The Sieve language is described in RFC 3028.  @xref{Top, Emacs Sieve,
 Top, sieve, Emacs Sieve}.
