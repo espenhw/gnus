@@ -681,7 +681,10 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 		 (sexp :tag "none" :format "%t" t)))
 
 (defvar message-reply-buffer nil)
-(defvar message-reply-headers nil)
+(defvar message-reply-headers nil
+  "The headers of the current replied article.
+It is a vector of the following headers:
+\[number subject from date id references chars lines xref extra].")
 (defvar message-newsreader nil)
 (defvar message-mailer nil)
 (defvar message-sent-message-via nil)

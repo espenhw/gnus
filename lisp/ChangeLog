@@ -1,3 +1,7 @@
+2002-01-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-reply-headers): Add doc.
+
 2002-01-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-delete-group): Nix the entry in
