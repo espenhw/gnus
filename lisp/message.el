@@ -319,7 +319,7 @@ The provided functions are:
   :group 'message-insertion
   :type 'regexp)
 
-(defcustom message-cancel-message "I am canceling my own article."
+(defcustom message-cancel-message "I am canceling my own article.\n"
   "Message to be inserted in the cancel message."
   :group 'message-interface
   :type 'string)
@@ -3709,9 +3709,10 @@ responses here are directed to other newsgroups."))
 
 
 ;;;###autoload
-(defun message-cancel-news ()
-  "Cancel an article you posted."
-  (interactive)
+(defun message-cancel-news (&optional arg)
+  "Cancel an article you posted.
+If ARG, allow editing of the cancellation message."
+  (interactive "P")
   (unless (message-news-p)
     (error "This is not a news article; canceling is impossible"))
   (when (yes-or-no-p "Do you really want to cancel this article? ")
@@ -3736,7 +3737,9 @@ responses here are directed to other newsgroups."))
 				      (message-make-from))))))
 	  (error "This article is not yours"))
 	;; Make control message.
-	(setq buf (set-buffer (get-buffer-create " *message cancel*")))
+	(if arg
+	    (message-news)
+	  (setq buf (set-buffer (get-buffer-create " *message cancel*"))))
 	(erase-buffer)
 	(insert "Newsgroups: " newsgroups "\n"
 		"From: " (message-make-from) "\n"
@@ -3748,12 +3751,13 @@ responses here are directed to other newsgroups."))
 		mail-header-separator "\n"
 		message-cancel-message)
 	(run-hooks 'message-cancel-hook)
-	(message "Canceling your article...")
-	(if (let ((message-syntax-checks
-		   'dont-check-for-anything-just-trust-me))
-	      (funcall message-send-news-function))
-	    (message "Canceling your article...done"))
-	(kill-buffer buf)))))
+	(unless arg
+	  (message "Canceling your article...")
+	  (if (let ((message-syntax-checks
+		     'dont-check-for-anything-just-trust-me))
+		(funcall message-send-news-function))
+	      (message "Canceling your article...done"))
+	  (kill-buffer buf))))))
 
 ;;;###autoload
 (defun message-supersede ()

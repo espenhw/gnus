@@ -28,6 +28,8 @@
 (require 'mailcap)
 (require 'mm-bodies)
 
+(defvar mm-xemacs-p (string-match "XEmacs" (emacs-version)))
+
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
   :link '(custom-manual "(emacs-mime)Customization")
@@ -732,7 +734,37 @@ external if displayed external."
   "Return the handle(s) referred to by ID."
   (cdr (assoc id mm-content-id-alist)))
 
-(defun mm-get-image (handle)
+(defun mm-get-image-emacs (handle)
+  "Return an image instance based on HANDLE."
+  (let ((type (mm-handle-media-subtype handle))
+	spec)
+    ;; Allow some common translations.
+    (setq type
+	  (cond
+	   ((equal type "x-pixmap")
+	    "xpm")
+	   ((equal type "x-xbitmap")
+	    "xbm")
+	   (t type)))
+    (or (mm-handle-cache handle)
+	(mm-with-unibyte-buffer
+	  (mm-insert-part handle)
+	  (prog1
+	      (setq spec
+		    (ignore-errors
+		      (cond
+		       ((equal type "xbm")
+			;; xbm images require special handling, since
+			;; the only way to create glyphs from these
+			;; (without a ton of work) is to write them
+			;; out to a file, and then create a file
+			;; specifier.
+			(error "Don't know what to do for XBMs right now."))
+		       (t
+			(list 'image :type (intern type) :data (buffer-string))))))
+	    (mm-handle-set-cache handle spec))))))
+
+(defun mm-get-image-xemacs (handle)
   "Return an image instance based on HANDLE."
   (let ((type (mm-handle-media-subtype handle))
 	spec)
@@ -771,17 +803,37 @@ external if displayed external."
 			 (vector (intern type) :data (buffer-string)))))))
 	    (mm-handle-set-cache handle spec))))))
 
+(defun mm-get-image (handle)
+  (if mm-xemacs-p
+      (mm-get-image-xemacs handle)
+    (mm-get-image-emacs handle)))
+
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
   (let ((image (mm-get-image handle)))
-    (or mm-inline-large-images
-	(and (< (glyph-width image) (window-pixel-width))
-	     (< (glyph-height image) (window-pixel-height))))))
+    (if (fboundp 'glyph-width)
+	;; XEmacs' glyphs can actually tell us about their width, so
+	;; lets be nice and smart about them.
+	(or mm-inline-large-images
+	    (and (< (glyph-width image) (window-pixel-width))
+		 (< (glyph-height image) (window-pixel-height))))
+      ;; Let's just inline everything under Emacs 21, since the image
+      ;; specification there doesn't actually get the width/height
+      ;; until you render the image.
+      t)))
 
 (defun mm-valid-image-format-p (format)
   "Say whether FORMAT can be displayed natively by Emacs."
-  (and (fboundp 'valid-image-instantiator-format-p)
-       (valid-image-instantiator-format-p format)))
+  (cond
+   ;; Handle XEmacs
+   ((fboundp 'valid-image-instantiator-format-p)
+    (valid-image-instantiator-format-p format))
+   ;; Handle Emacs 21
+   ((fboundp 'image-type-available-p)
+    (image-type-available-p format))
+   ;; Nobody else can do images yet.
+   (t
+    nil)))
 
 (defun mm-valid-and-fit-image-p (format handle)
   "Say whether FORMAT can be displayed natively and HANDLE fits the window."

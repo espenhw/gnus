@@ -1,3 +1,25 @@
+2000-04-20 21:17:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Allow
+	re-selecting referenced articles.
+
+	* message.el (message-cancel-news): Allow editing.
+	(message-cancel-message): Add newline.
+
+2000-04-20 21:03:54  William M. Perry  <wmperry@aventail.com>
+
+	* mm-view.el (mm-inline-image-emacs): New function. 
+
+2000-04-20 20:44:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-delete-incoming): Change default in
+	cvs. 
+
+2000-04-20 20:43:34  Kim-Minh Kaplan  <kmkaplan@vocatex.fr>
+
+	* gnus-art.el (gnus-mime-view-part-as-type-internal): New
+	function. 
+
 2000-04-20 14:45:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnml.el (nnml-request-expire-articles): Use it.

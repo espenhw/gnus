@@ -2840,14 +2840,33 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (let ((data (get-text-property (point) 'gnus-data)))
     (mm-interactively-view-part data)))
 
-(defun gnus-mime-view-part-as-type ()
+(defun gnus-mime-view-part-as-type-internal ()
+  (gnus-article-check-buffer)
+  (let* ((name (mail-content-type-get
+		(mm-handle-type (get-text-property (point) 'gnus-data))
+		'name))
+	 (def-type (and name (mm-default-file-encoding name))))
+    (and def-type (cons def-type 0))))
+
+(defun gnus-mime-view-part-as-type (mime-type)
   "Choose a MIME media type, and view the part as such."
   (interactive
-   (list (completing-read "View as MIME type: "
-			  (mapcar 'list (mailcap-mime-types)))))
+   (list (completing-read
+	  "View as MIME type: "
+	  (mapcar (lambda (i) (list i i)) (mailcap-mime-types))
+	  nil nil
+	  (gnus-mime-view-part-as-type-internal))))
   (gnus-article-check-buffer)
   (let ((handle (get-text-property (point) 'gnus-data)))
-    (gnus-mm-display-part handle)))
+    (gnus-mm-display-part
+     (mm-make-handle (mm-handle-buffer handle)
+		     (cons mime-type (cdr (mm-handle-type handle)))
+		     (mm-handle-encoding handle)
+		     (mm-handle-undisplayer handle)
+		     (mm-handle-disposition handle)
+		     (mm-handle-description handle)
+		     (mm-handle-cache handle)
+		     (mm-handle-id handle)))))
 
 (defun gnus-mime-copy-part (&optional handle)
   "Put the the MIME part under point into a new buffer."
@@ -3741,7 +3760,8 @@ If given a prefix, show the hidden text instead."
 		 (gnus-cache-request-article article group))
 	    'article)
 	   ;; Get the article and put into the article buffer.
-	   ((or (stringp article) (numberp article))
+	   ((or (stringp article)
+		(numberp article))
 	    (let ((gnus-override-method gnus-override-method)
 		  (methods (and (stringp article) 
 				gnus-refer-article-method))
@@ -3749,11 +3769,14 @@ If given a prefix, show the hidden text instead."
 		  (buffer-read-only nil))
 	      (setq methods
 		    (if (listp methods)
-			(delq 'current methods)
+			methods
 		      (list methods)))
-	      (if (and (null gnus-override-method) methods)
-		  (setq gnus-override-method (pop methods)))
+	      (when (and (null gnus-override-method)
+			 methods)
+		(setq gnus-override-method (pop methods)))
 	      (while (not result)
+		(when (eq gnus-override-method 'current)
+		  (setq gnus-override-method gnus-current-select-method))
 		(erase-buffer)
 		(gnus-kill-all-overlays)
 		(let ((gnus-newsgroup-name group))
