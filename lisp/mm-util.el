@@ -541,9 +541,12 @@ This affects whether coding conversion should be attempted generally."
 	(not inconvertible))))
 
 (defun mm-sort-coding-systems-predicate (a b)
-  (let ((priorities (mapcar 'mm-coding-system-p
-			    ;; Note: invalid entries are dropped silently
-			    mm-coding-system-priorities)))
+  (let ((priorities
+	 (mapcar (lambda (cs)
+		   ;; Note: invalid entries are dropped silently
+		   (and (setq cs (mm-coding-system-p cs))
+			(coding-system-base cs)))
+		 mm-coding-system-priorities)))
     (and (setq a (mm-coding-system-p a))
 	 (if (setq b (mm-coding-system-p b))
 	     (> (length (memq (coding-system-base a) priorities))
