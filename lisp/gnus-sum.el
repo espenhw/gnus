@@ -9476,15 +9476,13 @@ groups."
     (gnus-summary-select-article)
     (save-excursion
       (set-buffer gnus-original-article-buffer)
-      (save-restriction
-	(message-narrow-to-head)
-	(let ((groups (nnmail-article-group 'identity trace)))
-	  (unless silent
-	    (if groups
-		(message "This message would go to %s"
-			 (mapconcat 'car groups ", "))
-	      (message "This message would go to no groups"))
-	    groups))))))
+      (let ((groups (nnmail-article-group 'identity trace)))
+	(unless silent
+	  (if groups
+	      (message "This message would go to %s"
+		       (mapconcat 'car groups ", "))
+	    (message "This message would go to no groups"))
+	  groups)))))
 
 (defun gnus-summary-respool-trace ()
   "Trace where the respool algorithm would put this article.

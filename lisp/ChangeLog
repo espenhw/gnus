@@ -1,5 +1,8 @@
 2003-10-12  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-sum.el (gnus-summary-respool-query): Don't narrow to head,
+	it's done by nnmail-article-group.
+
 	* gnus-uu.el (gnus-uu-grab-articles): Fix misplaced parens.
 	From Mark Hood <markhood@speakeasy.net> (tiny change)
 
