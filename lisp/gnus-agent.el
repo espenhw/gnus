@@ -2244,12 +2244,12 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
          (file (gnus-agent-article-name ".overview" group))
          (dir (file-name-directory file))
          point
-	 (gnus-tmp-downloaded
-	  (if (file-exists-p dir)
-	      (sort (mapcar (lambda (name) (string-to-int name))
-			    (directory-files dir nil "^[0-9]+$" t))
-		    '>)
-	    (progn (gnus-make-directory dir) nil)))
+	 (downloaded (if (file-exists-p dir)
+			 (sort (mapcar (lambda (name) (string-to-int name))
+				       (directory-files dir nil "^[0-9]+$" t))
+			       '>)
+		       (progn (gnus-make-directory dir) nil)))
+	 (gnus-tmp-downloaded downloaded)
          dl nov-arts
          alist header
          regenerated)
