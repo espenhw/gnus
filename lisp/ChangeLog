@@ -1,3 +1,8 @@
+2002-08-19  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* message.el (message-ignored-supersedes-headers): Add X-Hashcash.
+	(message-ignored-resent-headers): Add envelope From.
+
 2002-08-18  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.el (gnus-summary-line-format): Document %k specifier.
