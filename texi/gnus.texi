@@ -33,7 +33,7 @@
 \makeindex
 \begin{document}
 
-\newcommand{\gnusversionname}{Oort Gnus v0.21}
+\newcommand{\gnusversionname}{Oort Gnus v0.22}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 
@@ -389,7 +389,7 @@ can be gotten by any nefarious means you can think of---@acronym{NNTP}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Oort Gnus v0.21.
+This manual corresponds to Oort Gnus v0.22.
 
 @end ifinfo
 
