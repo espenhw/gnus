@@ -1,5 +1,8 @@
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
+	* rfc2047.el (rfc2047-header-encoding-alist): Make Followup-To
+	same as Newsgroups.
+
 	* nntp.el (nntp-open-connection-function): Mention
 	nntp-open-tls-stream.
 	(nntp-open-tls-stream): New function.

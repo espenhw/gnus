@@ -42,6 +42,7 @@
 
 (defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
+    ("Followup-To" . nil)
     ("Message-ID" . nil)
     ("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\)" .
      "-A-Za-z0-9!*+/=_")
