@@ -1,3 +1,8 @@
+2000-10-06 09:38:54  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encode-region): Use
+	mm-with-unibyte-current-buffer within narrowed region.
+
 2000-10-06 08:56:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-type-definition): Fix my-deja open url.

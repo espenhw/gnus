@@ -92,9 +92,9 @@ If `mm-use-ultra-safe-encoding' is set, fold unconditionally and
 encode lines starting with \"From\"."
   (interactive "r")
   (save-excursion
-    (mm-with-unibyte-current-buffer
-      (save-restriction
-	(narrow-to-region from to)
+    (save-restriction
+      (narrow-to-region from to)
+      (mm-with-unibyte-current-buffer
 	;;      (mm-encode-body)
 	;; Encode all the non-ascii and control characters.
 	(goto-char (point-min))
