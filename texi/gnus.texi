@@ -20034,6 +20034,9 @@ fetching.
 Be able to forward groups of messages as MIME digests.
 
 @item
+nnweb should include the "get whole article" article when getting articles. 
+
+@item
 Solve the halting problem.
 
 @c TODO
