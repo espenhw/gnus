@@ -1,5 +1,8 @@
 1999-11-27 15:21:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnultimate.el (nnultimate-possibly-change-server): Don't always
+	read groups file.
+
 	* nnslashdot.el (nnslashdot-request-article): Convert <br><br> to
 	<p>. 
 

@@ -367,10 +367,10 @@
   (when (and server
 	     (not (nnultimate-server-opened server)))
     (nnultimate-open-server server))
-;  (unless nnultimate-groups-alist
+  (unless nnultimate-groups-alist
     (nnultimate-read-groups)
   (setq nnultimate-groups (cdr (assoc nnultimate-address
-				      nnultimate-groups-alist))))
+				      nnultimate-groups-alist)))))
 
 (deffoo nnultimate-open-server (server &optional defs connectionless)
   (nnheader-init-server-buffer)
