@@ -1,3 +1,13 @@
+2003-11-09  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el: Support for ID IMAP extension (RFC 2971).
+	(imap-local-variables): Add imap-id.
+	(imap-id): New variable.
+	(imap-id): New function.
+	(imap-parse-response): Parse untagged ID response.
+	* nnimap.el (nnimap-id): New variable.
+	(nnimap-open-connection): Use it.
+
 2003-12-28  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-score.el (gnus-score-edit-all-score): New.

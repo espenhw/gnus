@@ -73,13 +73,13 @@
 ;; explanatory for someone that know IMAP.  All functions have
 ;; additional documentation on how to invoke them.
 ;;
-;; imap.el support RFC1730/2060 (IMAP4/IMAP4rev1), implemented IMAP
-;; extensions are RFC2195 (CRAM-MD5), RFC2086 (ACL), RFC2342
+;; imap.el support RFC1730/2060/RFC3501 (IMAP4/IMAP4rev1), implemented
+;; IMAP extensions are RFC2195 (CRAM-MD5), RFC2086 (ACL), RFC2342
 ;; (NAMESPACE), RFC2359 (UIDPLUS), the IMAP-part of RFC2595 (STARTTLS,
 ;; LOGINDISABLED) (with use of external library starttls.el and
-;; program starttls) and the GSSAPI / kerberos V4 sections of RFC1731
-;; (with use of external program `imtest').  It also take advantage
-;; the UNSELECT extension in Cyrus IMAPD.
+;; program starttls), and the GSSAPI / kerberos V4 sections of RFC1731
+;; (with use of external program `imtest'), RFC2971 (ID).  It also
+;; take advantage the UNSELECT extension in Cyrus IMAPD.
 ;;
 ;; Without the work of John McClary Prevost and Jim Radford this library
 ;; would not have seen the light of day.  Many thanks.
@@ -339,6 +339,7 @@ for doing the actual authentication.")
 				 imap-current-target-mailbox
 				 imap-message-data
 				 imap-capability
+				 imap-id
 				 imap-namespace
 				 imap-state
 				 imap-reached-tag
@@ -393,6 +394,10 @@ and `examine'.")
 
 (defvar imap-capability nil
   "Capability for server.")
+
+(defvar imap-id nil
+  "Identity of server.
+See RFC 2971.")
 
 (defvar imap-namespace nil
   "Namespace for current server.")
@@ -1107,6 +1112,26 @@ If BUFFER is nil, the current buffer is assumed."
     (if identifier
 	(memq (intern (upcase (symbol-name identifier))) imap-capability)
       imap-capability)))
+
+(defun imap-id (&optional list-of-values buffer)
+  "Identify client to server in BUFFER, and return server identity.
+LIST-OF-VALUES is `nil', or a plist with identifier and value
+strings to send to the server to identify the client.
+
+Return a list of identifiers which server in BUFFER support, or
+nil if it doesn't support ID or returns no information.
+
+If BUFFER is nil, the current buffer is assumed."
+  (with-current-buffer (or buffer (current-buffer))
+    (when (and (imap-capability 'ID)
+	       (imap-ok-p (imap-send-command-wait
+			   (if (null list-of-values)
+			       "ID NIL"
+			     (concat "ID (" (mapconcat (lambda (el)
+							 (concat "\"" el "\""))
+						       list-of-values
+						       " ") ")")))))
+      imap-id)))
 
 (defun imap-namespace (&optional buffer)
   "Return a namespace hierarchy at server in BUFFER.
@@ -2071,6 +2096,8 @@ Return nil if no complete line has arrived."
 			       (read (concat "(" (upcase (buffer-substring
 							  (point) (point-max)))
 					     ")"))))
+	   (ID	       (setq imap-id (read (buffer-substring (point)
+							     (point-max)))))
 	   (ACL        (imap-parse-acl))
 	   (t       (case (prog1 (read (current-buffer))
 			    (imap-forward))

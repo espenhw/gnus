@@ -402,6 +402,43 @@ just like \"ticked\" articles, in other IMAP clients.")
 If this is 'imap-mailbox-lsub, then use a server-side subscription list to
 restrict visible folders.")
 
+(defcustom nnimap-id nil
+  "Plist with client identity to send to server upon login.
+Nil means no information is sent, symbol `no' to disable ID query
+alltogheter, or plist with identifier-value pairs to send to
+server.  RFC 2971 describes the list as follows:
+
+   Any string may be sent as a field, but the following are defined to
+   describe certain values that might be sent.  Implementations are free
+   to send none, any, or all of these.  Strings are not case-sensitive.
+   Field strings MUST NOT be longer than 30 octets.  Value strings MUST
+   NOT be longer than 1024 octets.  Implementations MUST NOT send more
+   than 30 field-value pairs.
+
+     name            Name of the program
+     version         Version number of the program
+     os              Name of the operating system
+     os-version      Version of the operating system
+     vendor          Vendor of the client/server
+     support-url     URL to contact for support
+     address         Postal address of contact/vendor
+     date            Date program was released, specified as a date-time
+                       in IMAP4rev1
+     command         Command used to start the program
+     arguments       Arguments supplied on the command line, if any
+                       if any
+     environment     Description of environment, i.e., UNIX environment
+                       variables or Windows registry settings
+
+   Implementations MUST NOT send the same field name more than once.
+
+An example plist would be '(\"name\" \"Gnus\" \"version\" gnus-version-number
+\"os\" system-configuration \"vendor\" \"GNU\")."
+  :group 'nnimap
+  :type '(choice (const :tag "No information" nil)
+		 (const :tag "Disable ID query" no)
+		 (plist :key-type string :value-type string)))
+
 (defcustom nnimap-debug nil
   "If non-nil, random debug spews are placed in *nnimap-debug* buffer."
   :group 'nnimap
@@ -731,6 +768,7 @@ If EXAMINE is non-nil the group is selected read-only."
 	  (prog1
 	      (push (list server nnimap-server-buffer)
 		    nnimap-server-buffer-alist)
+	    (imap-id nnimap-id nnimap-server-buffer)
 	    (nnimap-possibly-change-server server))
 	(imap-close nnimap-server-buffer)
 	(kill-buffer nnimap-server-buffer)
