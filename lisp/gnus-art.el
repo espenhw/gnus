@@ -3735,6 +3735,22 @@ General format specifiers can also be used.  See Info node
     ,@(mapcar (lambda (c)
 		(vector (caddr c) (car c) :enable t)) gnus-mime-button-commands)))
 
+(eval-when-compile
+  (define-compiler-macro popup-menu (&whole form
+					    menu &optional position prefix)
+    (if (and (fboundp 'popup-menu)
+	     (not (memq 'popup-menu (assoc "lmenu" load-history))))
+	form
+      ;; Gnus is probably running under Emacs 20.
+      `(let* ((menu (cdr ,menu))
+	      (response (x-popup-menu
+			 t (list (car menu)
+				 (cons "" (mapcar (lambda (c)
+						    (cons (caddr c) (car c)))
+						  (cdr menu)))))))
+	 (if response
+	     (call-interactively (nth 3 (assq response menu))))))))
+
 (defun gnus-mime-button-menu (event prefix)
  "Construct a context-sensitive menu of MIME commands."
  (interactive "e\nP")
@@ -4772,9 +4788,9 @@ not have a face in `gnus-article-boring-faces'."
   "Read article specified by message-id around point."
   (interactive)
   (save-excursion
-    (re-search-backward "<?news:\\|<" (point-at-bol) t)
+    (re-search-backward "<?news:\\|<" (gnus-point-at-bol) t)
     (cond ((re-search-forward
-	    gnus-button-mid-or-mail-regexp (point-at-eol) t)
+	    gnus-button-mid-or-mail-regexp (gnus-point-at-eol) t)
 	    (let ((msg-id (concat "<" (match-string 0) ">")))
 	      (set-buffer gnus-summary-buffer)
 	      (gnus-summary-refer-article msg-id)))
