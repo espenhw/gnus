@@ -1,3 +1,8 @@
+2003-01-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-article-setup-buffer): Reset
+	gnus-button-marker-list.
+
 2003-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nntp.el (nntp-read-timeout): Default to using a second delay
