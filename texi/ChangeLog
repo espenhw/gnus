@@ -1,3 +1,8 @@
+2003-05-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Selecting a Group): Mention nil value
+	gnus-large-newsgroup.
+
 2003-05-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (MIME Commands): Fix typo.

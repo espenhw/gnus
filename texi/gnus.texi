@@ -2119,17 +2119,19 @@ manner will have no permanent effects.
 @end table
 
 @vindex gnus-large-newsgroup
-The @code{gnus-large-newsgroup} variable says what Gnus should consider
-to be a big group.  This is 200 by default.  If the group has more
+The @code{gnus-large-newsgroup} variable says what Gnus should
+consider to be a big group.  If it is @code{nil}, no groups are
+considered big.  The default vaule is 200.  If the group has more
 (unread and/or ticked) articles than this, Gnus will query the user
-before entering the group.  The user can then specify how many articles
-should be fetched from the server.  If the user specifies a negative
-number (@code{-n}), the @code{n} oldest articles will be fetched.  If it
-is positive, the @code{n} articles that have arrived most recently will
-be fetched.
+before entering the group.  The user can then specify how many
+articles should be fetched from the server.  If the user specifies a
+negative number (@var{-n}), the @var{n} oldest articles will be
+fetched.  If it is positive, the @var{n} articles that have arrived
+most recently will be fetched.
 
 @vindex gnus-large-ephemeral-newsgroup
-Same as @code{gnus-large-newsgroup}, but only used for ephemeral
+@code{gnus-large-ephemeral-newsgroup} is the same as
+@code{gnus-large-newsgroup}, but is only used for ephemeral
 newsgroups.
 
 @vindex gnus-select-group-hook
