@@ -1,3 +1,16 @@
+2003-05-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-save): allow forced saving even
+	when registry is not dirty.  Use gnus-registry-trim to shorten the
+	gnus-registry-alist.
+	(gnus-registry-max-entries): new variable
+	(gnus-registry-trim): new function, trim gnus-registry-alist to
+	size gnus-registry-max-entries, sorting by entry mtime so the
+	newest entries stick around
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): instead of
+	just one specific variable, allow a list of specific variables
+
 2003-05-28  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-encode-region): Skip ASCII at beginning and
@@ -7,7 +20,7 @@
 
 	* lpath.el: Add put-char-table and get-char-table.
 
-2003-05-28  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+2003-05-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-dirty): flag for modified registry
 	(gnus-registry-save, gnus-registry-read) 

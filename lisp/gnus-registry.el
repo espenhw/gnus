@@ -59,6 +59,11 @@ The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type 'file)
 
+(defcustom gnus-registry-max-entries nil
+  "Maximum number of entries in the registry, nil for unlimited."
+  :group 'gnus-registry
+  :type 'integer)
+
 ;; Function(s) missing in Emacs 20
 (when (memq nil (mapcar 'fboundp '(puthash)))
   (require 'cl)
@@ -149,10 +154,11 @@ The group names are matched, they don't have to be fully qualified."
     (while (re-search-forward " $" nil t)
       (replace-match "" t t))))
 
-(defun gnus-registry-save ()
+(defun gnus-registry-save (&optional force)
 ;; TODO: delete entries with 0 groups
-  (when gnus-registry-dirty
-    (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
+  (when (or gnus-registry-dirty force)
+    (setq gnus-registry-alist (gnus-registry-trim 
+			       (hashtable-to-alist gnus-registry-hashtb)))
     (gnus-registry-cache-save)
     (setq gnus-registry-dirty nil)))
 
@@ -160,6 +166,26 @@ The group names are matched, they don't have to be fully qualified."
   (gnus-registry-cache-read)
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
   (setq gnus-registry-dirty nil))
+
+(defun gnus-registry-trim (alist)
+  "Trim alist to size, using gnus-registry-max-entries."
+  (unless (null gnus-registry-max-entries)
+    (let ((timehash (make-hash-table 			    
+		     :size 4096
+		     :test 'equal)))
+      (maphash
+       (lambda (key value)
+	 (puthash key (gnus-registry-fetch-extra key 'mtime) timehash))
+       gnus-registry-hashtb)
+
+      (setq alist
+	    (nthcdr
+	     (- (length alist) gnus-registry-max-entries)
+	     (sort alist 
+		   (lambda (a b)
+		     (time-less-p 
+		      (cdr (gethash (car a) timehash))
+		      (cdr (gethash (car b) timehash))))))))))
 
 (defun alist-to-hashtable (alist)
   "Build a hashtable from the values in ALIST."

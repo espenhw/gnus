@@ -2631,7 +2631,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(gnus-dribble-delete-file)
 	(gnus-group-set-mode-line)))))
 
-(defun gnus-gnus-to-quick-newsrc-format (&optional minimal name specific-variable)
+(defun gnus-gnus-to-quick-newsrc-format (&optional minimal name &rest specific-variables)
   "Print Gnus variables such as gnus-newsrc-alist in lisp format."
     (princ ";; -*- emacs-lisp -*-\n")
     (if name
@@ -2659,12 +2659,11 @@ If FORCE is non-nil, the .newsrc file is read."
 		(gnus-strip-killed-list)
 	      gnus-killed-list))
 	   (variables 
-	    (if specific-variable
-		(list specific-variable)
-	      (if gnus-save-killed-list gnus-variable-list
-		;; Remove the `gnus-killed-list' from the list of variables
-		;; to be saved, if required.
-		(delq 'gnus-killed-list (copy-sequence gnus-variable-list)))))
+	    (or specific-variables
+		(if gnus-save-killed-list gnus-variable-list
+		  ;; Remove the `gnus-killed-list' from the list of variables
+		  ;; to be saved, if required.
+		  (delq 'gnus-killed-list (copy-sequence gnus-variable-list)))))
 	   ;; Peel off the "dummy" group.
 	   (gnus-newsrc-alist (cdr gnus-newsrc-alist))
 	   variable)
