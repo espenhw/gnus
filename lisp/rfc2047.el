@@ -29,7 +29,24 @@
 
 (eval-when-compile
   (require 'cl)
-  (defvar message-posting-charset))
+  (defvar message-posting-charset)
+  (unless (fboundp 'with-syntax-table)	; not in Emacs 20
+    (defmacro with-syntax-table (table &rest body)
+      "Evaluate BODY with syntax table of current buffer set to TABLE.
+The syntax table of the current buffer is saved, BODY is evaluated, and the
+saved table is restored, even in case of an abnormal exit.
+Value is what BODY returns."
+      (let ((old-table (make-symbol "table"))
+	    (old-buffer (make-symbol "buffer")))
+	`(let ((,old-table (syntax-table))
+	       (,old-buffer (current-buffer)))
+	   (unwind-protect
+	       (progn
+		 (set-syntax-table ,table)
+		 ,@body)
+	     (save-current-buffer
+	       (set-buffer ,old-buffer)
+	       (set-syntax-table ,old-table))))))))
 
 (require 'qp)
 (require 'mm-util)
@@ -249,8 +266,8 @@ The buffer may be narrowed."
   ;; This is what we should do, but XEmacs doesn't support the optional
   ;; arg of `make-syntax-table':
 ;;   (let ((table (make-char-table 'syntax-table '(2))))
-  (let ((table (make-char-table 'syntax-table)))
-    (map-char-table (lambda (k v) (aset table k '(2))) table)
+  (let ((table (make-syntax-table)))
+    (map-char-table (lambda (k v) (modify-syntax-entry k "w" table)) table)
     (modify-syntax-entry ?\\ "\\" table)
     (modify-syntax-entry ?\" "\"" table)
     (modify-syntax-entry ?\( "." table)
