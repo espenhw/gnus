@@ -1,3 +1,9 @@
+2001-11-25 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-coding-system-priorities): Add backslash in the doc.
+
+	* message.el (message-setup-1): Clean up mc-*.
+
 2001-11-25 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-directory-sep-char-regexp): New.

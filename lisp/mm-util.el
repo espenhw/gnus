@@ -277,7 +277,7 @@ outgoing mails (see `sort-coding-systems').  If this variable is set,
 it overrides the default priority.  For example, Japanese users may
 prefer iso-2022-jp to japanese-shift-jis:
 
-(setq mm-coding-system-priorities
+\(setq mm-coding-system-priorities
   '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis utf-8))
 ")
 

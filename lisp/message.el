@@ -4183,13 +4183,7 @@ than 988 characters long, and if they are not, trim them until they are."
 			      headers)
 		      nil switch-function yank-action actions)))))
 
-;;;(defvar mc-modes-alist)
 (defun message-setup-1 (headers &optional replybuffer actions)
-;;;   (when (and (boundp 'mc-modes-alist)
-;;; 	     (not (assq 'message-mode mc-modes-alist)))
-;;;     (push '(message-mode (encrypt . mc-encrypt-message)
-;;; 			 (sign . mc-sign-message))
-;;; 	  mc-modes-alist))
   (dolist (action actions)
     (condition-case nil
 	(add-to-list 'message-send-actions
