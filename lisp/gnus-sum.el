@@ -5627,15 +5627,25 @@ If ALL is non-nil, limit strictly to unread articles."
 	   gnus-duplicate-mark)
      'reverse)))
 
-(defalias 'gnus-summary-delete-marked-with 'gnus-summary-limit-to-marks)
-(make-obsolete 'gnus-summary-delete-marked-with 'gnus-summary-limit-to-marks)
+(defalias 'gnus-summary-delete-marked-with 'gnus-summary-limit-exclude-marks)
+(make-obsolete 'gnus-summary-delete-marked-with
+	       'gnus-summary-limit-exlude-marks)
 
-(defun gnus-summary-limit-to-marks (marks &optional reverse)
-  "Limit the summary buffer to articles that are marked with MARKS (e.g. \"DK\").
-If REVERSE, limit the summary buffer to articles that are not marked
+(defun gnus-summary-limit-exclude-marks (marks &optional reverse)
+  "Exclude articles that are marked with MARKS (e.g. \"DK\").
+If REVERSE, limit the summary buffer to articles that are marked
 with MARKS.  MARKS can either be a string of marks or a list of marks.
 Returns how many articles were removed."
   (interactive "sMarks: ")
+  (gnus-summary-limit-to-marks marks t))
+  
+(defun gnus-summary-limit-to-marks (marks &optional reverse)
+  "Limit the summary buffer to articles that are marked with MARKS (e.g. \"DK\").
+If REVERSE (the prefix), limit the summary buffer to articles that are
+not marked with MARKS.  MARKS can either be a string of marks or a
+list of marks.
+Returns how many articles were removed."
+  (interactive (list (read-string "Marks: ") current-prefix-arg))
   (gnus-set-global-variables)
   (prog1
       (let ((data gnus-newsgroup-data)
@@ -7447,37 +7457,38 @@ The number of articles marked as read is returned."
   (interactive "P")
   (gnus-set-global-variables)
   (prog1
-      (when (or quietly
-		(not gnus-interactive-catchup) ;Without confirmation?
-		gnus-expert-user
-		(gnus-y-or-n-p
-		 (if all
-		     "Mark absolutely all articles as read? "
-		   "Mark all unread articles as read? ")))
-	(if (and not-mark
-		 (not gnus-newsgroup-adaptive)
-		 (not gnus-newsgroup-auto-expire)
-		 (not gnus-suppress-duplicates))
-	    (progn
-	      (when all
-		(setq gnus-newsgroup-marked nil
-		      gnus-newsgroup-dormant nil))
+      (save-excursion
+	(when (or quietly
+		  (not gnus-interactive-catchup) ;Without confirmation?
+		  gnus-expert-user
+		  (gnus-y-or-n-p
+		   (if all
+		       "Mark absolutely all articles as read? "
+		     "Mark all unread articles as read? ")))
+	  (if (and not-mark
+		   (not gnus-newsgroup-adaptive)
+		   (not gnus-newsgroup-auto-expire)
+		   (not gnus-suppress-duplicates))
+	      (progn
+		(when all
+		  (setq gnus-newsgroup-marked nil
+			gnus-newsgroup-dormant nil))
+		(setq gnus-newsgroup-unreads nil))
+	    ;; We actually mark all articles as canceled, which we
+	    ;; have to do when using auto-expiry or adaptive scoring.
+	    (gnus-summary-show-all-threads)
+	    (when (gnus-summary-first-subject (not all))
+	      (while (and
+		      (if to-here (< (point) to-here) t)
+		      (gnus-summary-mark-article-as-read gnus-catchup-mark)
+		      (gnus-summary-find-next (not all)))))
+	    (unless to-here
 	      (setq gnus-newsgroup-unreads nil))
-	  ;; We actually mark all articles as canceled, which we
-	  ;; have to do when using auto-expiry or adaptive scoring.
-	  (gnus-summary-show-all-threads)
-	  (when (gnus-summary-first-subject (not all))
-	    (while (and
-		    (if to-here (< (point) to-here) t)
-		    (gnus-summary-mark-article-as-read gnus-catchup-mark)
-		    (gnus-summary-find-next (not all)))))
-	  (unless to-here
-	    (setq gnus-newsgroup-unreads nil))
-	  (gnus-set-mode-line 'summary)))
-    (let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
-      (when (and (not to-here) (eq 'nnvirtual (car method)))
-	(nnvirtual-catchup-group
-	 (gnus-group-real-name gnus-newsgroup-name) (nth 1 method) all)))
+	    (gnus-set-mode-line 'summary)))
+	(let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
+	  (when (and (not to-here) (eq 'nnvirtual (car method)))
+	    (nnvirtual-catchup-group
+	     (gnus-group-real-name gnus-newsgroup-name) (nth 1 method) all))))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-catchup-to-here (&optional all)

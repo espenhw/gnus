@@ -748,7 +748,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (gnus-update-format-specifications)
 
     ;; See whether we need to read the description file.
-    (when (and (string-match "%[-,0-9]*D" gnus-group-line-format)
+    (when (and (boundp 'gnus-group-line-format)
+	       (string-match "%[-,0-9]*D" gnus-group-line-format)
 	       (not gnus-description-hashtb)
 	       (not dont-connect)
 	       gnus-read-active-file)
@@ -1537,7 +1538,8 @@ newsgroup."
 			      (zerop (forward-line 1)))))))
     ;; Store the active file in a hash table.
     (goto-char (point-min))
-    (if (string-match "%[oO]" gnus-group-line-format)
+    (if (and (boundp 'gnus-group-line-format)
+	     (string-match "%[oO]" gnus-group-line-format))
 	;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
 	;; If we want information on moderated groups, we use this
 	;; loop...

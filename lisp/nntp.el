@@ -632,8 +632,6 @@ It will prompt for a password."
 		  (insert-buffer-substring cur start)
 		  (narrow-to-region b (point-max))
 		  (nntp-decode-text)
-		  (goto-char (point-min))
-		  (gnus-delete-line)
 		  (widen)))))
 	  (goto-char end)
 	  (let ((callback nntp-process-callback)
@@ -743,6 +741,7 @@ It will prompt for a password."
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."
   (goto-char (point-min))
+  (current-buffer)
   (while (search-forward "\r" nil t)
     (delete-char -1))
   (unless cr-only

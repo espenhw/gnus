@@ -285,6 +285,9 @@
   "Define all keys in PLIST in KEYMAP."
   `(gnus-define-keys-1 ,keymap (quote ,plist)))
 
+(put 'gnus-define-keymap 'lisp-indent-function 1)
+(put 'gnus-define-keymap 'lisp-indent-hook 1)
+
 (defun gnus-define-keys-1 (keymap plist &optional safe)
   (when (null keymap)
     (error "Can't set keys in a null keymap"))

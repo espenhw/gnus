@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.50"
+(defconst gnus-version-number "0.51"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -892,6 +892,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-post-news gnus-inews-news 
       gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
+      gnus-summary-resend-message gnus-summary-bounced-mail
       gnus-bug)
      ("gnus-picon" :interactive t gnus-article-display-picons
       gnus-group-display-picons gnus-picons-article-display-x-face

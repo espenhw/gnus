@@ -1,3 +1,39 @@
+Wed Oct 16 03:49:12 1996  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* gnus-start.el (gnus-setup-news): Make sure
+	`gnus-group-line-format' is bound.
+
+Wed Oct 16 02:57:37 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* nntp.el (nntp-after-change-function-callback): Would delete the
+	first line of all articles.
+
+Mon Oct 14 21:31:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-limit-to-marks): Accept prefix.
+
+Sun Oct 13 16:37:05 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Message better.
+
+Sat Oct 12 19:33:01 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-indent-citation): Would infloop on empty
+	articles. 
+
+Sat Oct 12 19:21:05 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus.el: Autoload more functions.
+
+Sat Oct 12 19:09:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-catchup): Don't move point.
+	(gnus-summary-limit-exclude-marks): New command.
+
+Fri Oct 11 15:26:02 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.50 is released.
+
 Thu Oct 10 23:36:32 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
 
 	* gnus-nocem.el (gnus-nocem): Typo.

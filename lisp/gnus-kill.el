@@ -75,15 +75,15 @@ of time."
 (defvar gnus-kill-file-mode-map nil)
 
 (unless gnus-kill-file-mode-map
-  (gnus-define-keymap
-   (setq gnus-kill-file-mode-map (copy-keymap emacs-lisp-mode-map))
-   "\C-c\C-k\C-s" gnus-kill-file-kill-by-subject
-   "\C-c\C-k\C-a" gnus-kill-file-kill-by-author
-   "\C-c\C-k\C-t" gnus-kill-file-kill-by-thread
-   "\C-c\C-k\C-x" gnus-kill-file-kill-by-xref
-   "\C-c\C-a" gnus-kill-file-apply-buffer
-   "\C-c\C-e" gnus-kill-file-apply-last-sexp
-   "\C-c\C-c" gnus-kill-file-exit))
+  (gnus-define-keymap (setq gnus-kill-file-mode-map
+			    (copy-keymap emacs-lisp-mode-map))
+    "\C-c\C-k\C-s" gnus-kill-file-kill-by-subject
+    "\C-c\C-k\C-a" gnus-kill-file-kill-by-author
+    "\C-c\C-k\C-t" gnus-kill-file-kill-by-thread
+    "\C-c\C-k\C-x" gnus-kill-file-kill-by-xref
+    "\C-c\C-a" gnus-kill-file-apply-buffer
+    "\C-c\C-e" gnus-kill-file-apply-last-sexp
+    "\C-c\C-c" gnus-kill-file-exit))
 
 (defun gnus-kill-file-mode ()
   "Major mode for editing kill files.

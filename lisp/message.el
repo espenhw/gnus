@@ -1121,7 +1121,8 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(goto-char (point-max))))
     ;; Delete blank lines at the start of the buffer.
     (while (and (point-min)
-		(eolp))
+		(eolp)
+		(not (eobp)))
       (message-delete-line))
     ;; Delete blank lines at the end of the buffer.
     (goto-char (point-max))

@@ -542,7 +542,11 @@ The following commands are available:
       (gnus-message
        1 "Unable to contact server: %s" (gnus-status-message method))
       nil)
-     ((not (gnus-request-list method))
+     ((not
+       (prog2
+	   (gnus-message 6 "Reading active file...")
+	   (gnus-request-list method)
+	 (gnus-message 6 "Reading active file...done")))
       (gnus-message
        1 "Couldn't request list: %s" (gnus-status-message method))
       nil)

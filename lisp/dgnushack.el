@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(fset 'facep 'ignore)
+
 (require 'cl)
 (push "." load-path)
 
