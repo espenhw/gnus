@@ -1,3 +1,20 @@
+1999-11-06  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-art.el (article-decode-encoded-words):
+	(gnus-mime-display-single): Don't assume gnus-summary-buffer is
+	live.
+
+	* gnus.el (gnus-read-method): Add methods from
+	`gnus-opened-servers' to completion. Map entered method/address
+	into existing methods if possible.
+
+	* gnus-group.el (gnus-group-make-group): Simplify method.
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Simplify method.
+
+        * mml.el (mml-preview): Remove mail-header-separator before
+        encoding.
+
 1999-11-05 20:28:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-read-from-minibuffer): New function.
