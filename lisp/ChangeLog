@@ -1,3 +1,10 @@
+2000-05-07 17:24:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-prepare-flat-list-dead-predicate): New
+	function.
+	(gnus-group-prepare-flat-predicate): Use it.
+	(gnus-group-list-cached): List dead groups.
+
 2000-05-07 10:50:02  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-decode-charset): Don't decode message with

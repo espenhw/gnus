@@ -3568,10 +3568,27 @@ or `gnus-group-catchup-group-hook'."
 	""
       (gnus-time-iso8601 time))))
 
-(defun gnus-group-prepare-flat-predicate (level predicate &optional lowest)
+(defun gnus-group-prepare-flat-list-dead-predicate 
+  (groups level mark predicate)
+  (let (group)
+    (if predicate
+	;; This loop is used when listing groups that match some
+	;; regexp.
+	(while (setq group (pop groups))
+	  (when (funcall predicate group)
+	    (gnus-add-text-properties
+	     (point) (prog1 (1+ (point))
+		       (insert " " mark "     *: " group "\n"))
+	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
+		   'gnus-unread t
+		   'gnus-level level)))))))
+
+(defun gnus-group-prepare-flat-predicate (level predicate &optional lowest
+						dead-predicate)
   "List all newsgroups with unread articles of level LEVEL or lower.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher.
-If PREDICATE, only list groups which PREDICATE returns non-nil."
+If PREDICATE, only list groups which PREDICATE returns non-nil.
+If DEAD-PREDICATE, list dead groups which DEAD-PREDICATE returns non-nil."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
 	(newsrc (cdr gnus-newsrc-alist))
@@ -3593,6 +3610,17 @@ If PREDICATE, only list groups which PREDICATE returns non-nil."
 	    group (gnus-info-level info)
 	    (gnus-info-marks info) unread (gnus-info-method info))))
 
+    ;; List dead groups.
+    (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
+	 (gnus-group-prepare-flat-list-dead-predicate
+	  (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
+	  gnus-level-zombie ?Z
+	  dead-predicate))
+    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)
+	 (gnus-group-prepare-flat-list-dead-predicate
+	  (setq gnus-killed-list (sort gnus-killed-list 'string<))
+	  gnus-level-killed ?K dead-predicate))
+
     (gnus-group-set-mode-line)
     (setq gnus-group-list-mode (cons level t))
     (gnus-run-hooks 'gnus-group-prepare-hook)
@@ -3608,11 +3636,21 @@ This command may read the active file."
   (interactive "P")
   (when level
     (setq level (prefix-numeric-value level)))
-  (gnus-group-prepare-flat-predicate (or level gnus-level-killed)
+  (when (or (not level) (>= level gnus-level-zombie))
+    (gnus-cache-open))
+  (gnus-group-prepare-flat-predicate (or level gnus-level-subscribed)
 				#'(lambda (info)
 				    (let ((marks (gnus-info-marks info)))
 				      (assq 'cache marks)))
-				lowest)
+				lowest
+				#'(lambda (group)
+				    (or (gnus-gethash group 
+						      gnus-cache-active-hashtb)
+					;; Cache active file might use "." 
+					;; instead of ":".
+					(gnus-gethash 
+					 (subst-char-in-string ?: ?. group)
+					 gnus-cache-active-hashtb))))
   (goto-char (point-min))
   (gnus-group-position-point))
 
