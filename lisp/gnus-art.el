@@ -5838,13 +5838,14 @@ address, `ask' if unsure and `invalid' if the string is invalid."
     ;; Certain special cases...
     (when (string-match
 	   (concat
-	    "^0[0-9]+-[0-9][0-9][0-9][0-9]@t-online\\.de$" "\\|"
-	    "^[0-9]+\.[0-9]+\@compuserve")
+	    "^0[0-9]+-[0-9][0-9][0-9][0-9]@t-online\\.de$\\|"
+	    "^[0-9]+\\.[0-9]+@compuserve\\|"
+	    "@public\\.gmane\\.org")
 	   mid-or-mail)
-      (gnus-message 8 "`%s' is a known mail address.")
+      (gnus-message 8 "`%s' is a known mail address." mid-or-mail)
       (setq result 'mail))
     (when (string-match "@.*@\\| " mid-or-mail)
-      (gnus-message 8 "`%s' is invalid.")
+      (gnus-message 8 "`%s' is invalid." mid-or-mail)
       (setq result 'invalid))
     ;; Nothing more to do, if result is not a number here...
     (when (numberp result)
@@ -5886,8 +5887,10 @@ address, `ask' if unsure and `invalid' if the string is invalid."
 	  (gnus-message
 	   9 "`%s', rate `%s', result `%s'." mid-or-mail 5.0 result)))))
     (gnus-message 8 "`%s': Final rate is `%s'." mid-or-mail result)
+    ;; Maybe we should make this a customizable alist: (condition . 'result)
     (cond
-     ;; Maybe we should make this a customizable alist: (condition . 'result)
+     ((symbolp result) result)
+     ;; Now convert number into proper results:
      ((< result -10.0) 'mid)
      ((> result  10.0) 'mail)
      (t 'ask))))
