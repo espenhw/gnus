@@ -1,3 +1,8 @@
+2004-05-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-delete-article): invoke hook with
+	correct data (tiny change).  From Anand Mitra <mitramc@yahoo.com>.
+
 2004-05-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-list-of-processors): use nil for nonexistent processors

@@ -9418,10 +9418,10 @@ confirmation before the articles are deleted."
 	(unless (memq (car articles) not-deleted)
 	  (gnus-summary-mark-article (car articles) gnus-canceled-mark))
 	(let* ((article (car articles))
-	       (id (mail-header-id (gnus-data-header
-				    (assoc article (gnus-data-list nil))))))
+	       (ghead  (gnus-data-header
+				    (assoc article (gnus-data-list nil)))))
 	  (run-hook-with-args 'gnus-summary-article-delete-hook
-			      'delete id gnus-newsgroup-name nil
+			      'delete ghead gnus-newsgroup-name nil
 			      nil))
 	(setq articles (cdr articles)))
       (when not-deleted
