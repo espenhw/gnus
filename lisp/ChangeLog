@@ -1,3 +1,7 @@
+2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encoded-word-regexp): Mismatched paren.
+
 2004-03-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-encoded-word-regexp): Support RFC 2231
