@@ -1,5 +1,10 @@
 2002-02-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-agent.el (gnus-get-predicate): Use nconc.
+
+	* gnus-sum.el (gnus-summary-display-make-predicate): Use
+	gnus-summary-display-cache as cache.
+
 	* nndoc.el (nndoc-type-alist): Add mail-in-mail type.
 	(nndoc-mail-in-mail-type-p): New function.
 	(nndoc-mail-in-mail-article-begin): New function.

@@ -4814,13 +4814,15 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq display (car display)))
   (unless gnus-summary-display-cache
     (dolist (elem (append '((unread . unread)
+			    (read . read)
 			    (unseen . unseen))
 			  gnus-article-mark-lists))
       (push (cons (cdr elem)
 		  (gnus-byte-compile
 		   `(lambda () (gnus-article-marked-p ',(cdr elem)))))
 	    gnus-summary-display-cache)))
-  (let ((gnus-category-predicate-alist gnus-summary-display-cache))
+  (let ((gnus-category-predicate-alist gnus-summary-display-cache)
+	(gnus-category-predicate-cache gnus-summary-display-cache))
     (gnus-get-predicate display)))
 
 ;; Uses the dynamically bound `number' variable.

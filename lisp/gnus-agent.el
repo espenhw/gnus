@@ -1619,9 +1619,11 @@ The following commands are available:
 (defun gnus-get-predicate (predicate)
   "Return the predicate for CATEGORY."
   (or (cdr (assoc predicate gnus-category-predicate-cache))
-      (cdar (push (cons predicate
-			(gnus-category-make-function predicate))
-		  gnus-category-predicate-cache))))
+      (let ((func (gnus-category-make-function predicate)))
+	(setq gnus-category-predicate-cache
+	      (nconc gnus-category-predicate-cache
+		     (list (cons predicate func))))
+	func)))
 
 (defun gnus-group-category (group)
   "Return the category GROUP belongs to."
