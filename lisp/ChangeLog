@@ -1,5 +1,11 @@
 1999-11-16 10:01:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-valid-select-methods): nnslashdot is news.
+
+	* nnslashdot.el (nnslashdot-login-name): New variable.
+	(nnslashdot-password): Ditto.
+	(nnslashdot-request-post): New function.
+
 	* gnus-art.el (gnus-treat-buttonize): More testing.
 
 	* mm-encode.el: Another CVS test.

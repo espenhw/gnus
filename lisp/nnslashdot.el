@@ -72,6 +72,12 @@
 (defvoo nnslashdot-group-number 0
   "The number of non-fresh groups to keep updated.")
 
+(defvoo nnslashdot-login-name ""
+  "The login name to use when posting.")
+
+(defvoo nnslashdot-password ""
+  "The password to use when posting.")
+
 ;;; Internal variables
 
 (defvar nnslashdot-groups nil)
@@ -333,6 +339,8 @@
 	(insert contents)
 	(goto-char (point-min))
 	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
+	(insert "Newsgroups: " (caddr (assoc group nnslashdot-groups))
+		"\n")
 	(let ((header (cdr (assq article nnslashdot-headers))))
 	  (nnheader-insert-header header))
 	(nnheader-report 'nnslashdot "Fetched article %s" article)
@@ -397,6 +405,52 @@
   (nnslashdot-possibly-change-server nil server)
   (nnslashdot-generate-active)
   t)
+
+(deffoo nnslashdot-request-post (&optional server)
+  (nnslashdot-possibly-change-server nil server)
+  (let ((sid (message-fetch-field "newsgroups"))
+	(subject (message-fetch-field "subject"))
+	(references (car (last (split-string
+				(message-fetch-field "references")))))
+	body quoted pid)
+    (string-match "%\\([0-9]+\\)@slashdot" references)
+    (setq pid (match-string 1 references))
+    (message-goto-body)
+    (narrow-to-region (point) (progn (message-goto-signature) (point)))
+    (goto-char (point-min))
+    (while (not (eobp))
+      (if (looking-at "> ")
+	  (progn
+	    (delete-region (point) (+ (point) 2))
+	    (unless quoted
+	      (insert "<blockquote>\n"))
+	    (setq quoted t))
+	(when quoted
+	  (insert "</blockquote>\n")
+	  (setq quoted nil)))
+      (forward-line 1))
+    (widen)
+    (when (message-goto-signature)
+      (forward-line -1)
+      (insert "<p>\n")
+      (while (not (eobp))
+	(end-of-line)
+	(insert "<br>")
+	(forward-line 1)))
+    (message-goto-body)
+    (setq body (buffer-substring (point) (point-max)))
+    (erase-buffer)
+    (nnweb-fetch-form
+     "http://slashdot.org/comments.pl"
+     `(("sid" . ,sid)
+       ("pid" . ,pid)
+       ("rlogin" . "userlogin")
+       ("unickname" . ,nnslashdot-login-name)
+       ("upasswd" . ,nnslashdot-password)
+       ("postersubj" . ,subject)
+       ("op" . "Submit")
+       ("postercomment" . ,body)
+       ("posttype" . "html")))))
 
 (nnoo-define-skeleton nnslashdot)
 
