@@ -192,7 +192,6 @@
 	  t))))
 
 (defun nnmh-request-list (&optional server dir)
-  (and server nnmh-get-new-mail (nnmh-get-new-mail))
   (or dir
       (save-excursion
 	(set-buffer nntp-server-buffer)
@@ -204,11 +203,10 @@
 		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)
 		   (directory-files dir t nil t))))
     (while dirs 
-      (if (and (not (string-match "/\\.\\.$" (car dirs)))
-	       (not (string-match "/\\.$" (car dirs)))
+      (if (and (not (string-match "/\\.\\.?$" (car dirs)))
 	       (file-directory-p (car dirs))
 	       (file-readable-p (car dirs)))
-	  (nnmh-request-list server (car dirs)))
+	  (nnmh-request-list nil (car dirs)))
       (setq dirs (cdr dirs))))
   ;; For each directory, generate an active file line.
   (if (not (string= (expand-file-name nnmh-directory) dir))
@@ -228,6 +226,8 @@
 		 (substring dir (match-end 0)) ?/ ?.))
 	      (apply (function max) files) 
 	      (apply (function min) files)))))))
+  (setq nnmh-group-alist (nnmail-get-active))
+  (and server nnmh-get-new-mail (nnmh-get-new-mail))
   t)
 
 (defun nnmh-request-newgroups (date &optional server)
@@ -392,10 +392,8 @@
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (if (or (not group) (not nnmh-group-alist))
-	  (progn
-	    (nnmh-request-list)
-	    (setq nnmh-group-alist (nnmail-get-active))))
+      (or nnmh-group-alist
+	  (nnmh-request-list))
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

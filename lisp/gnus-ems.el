@@ -110,6 +110,8 @@
 	(and (not (file-directory-p file))
 	     (not (file-symlink-p file))
 	     (file-exists-p file))))
+  (or (fboundp 'face-list)
+      (defun face-list (&rest args)))
   )
 
 (defun gnus-ems-redefine ()

@@ -73,7 +73,7 @@
 
 ;;; Interface functions
 
-(defun nnbabyl-retrieqve-headers (sequence &optional newsgroup server)
+(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)

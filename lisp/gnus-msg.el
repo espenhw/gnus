@@ -210,6 +210,7 @@ headers.")
 (defvar gnus-post-news-buffer "*post-news*")
 (defvar gnus-summary-send-map nil)
 (defvar gnus-article-copy nil)
+(defvar gnus-reply-subject nil)
 
 
 ;;;
@@ -436,6 +437,8 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  (gnus-overload-functions)
 	  (make-local-variable 'gnus-article-reply)
 	  (make-local-variable 'gnus-article-check-size)
+	  (make-local-variable 'gnus-reply-subject)
+	  (setq gnus-reply-subject (and header (header-subject header)))
 	  (setq gnus-article-reply sumart)
 	  ;; Handle `gnus-auto-mail-to-author'.
 	  ;; Suggested by Daniel Quinlan <quinlan@best.com>.
@@ -966,22 +969,10 @@ Headers in `gnus-required-headers' will be generated."
     (if (and (mail-fetch-field "references")
 	     (get-buffer gnus-article-buffer))
 	(let ((psubject (gnus-simplify-subject-re
-			 (mail-fetch-field "subject")))
-	      subject)
-	  (save-excursion
-	    (set-buffer gnus-article-buffer)
-	    (save-restriction
-	      (gnus-narrow-to-headers)
-	      (if (setq subject (mail-fetch-field "subject"))
-		  (progn
-		    (and gnus-summary-gather-subject-limit
-			 (numberp gnus-summary-gather-subject-limit)
-			 (> (length subject) gnus-summary-gather-subject-limit)
-			 (setq subject
-			       (substring subject 0
-					  gnus-summary-gather-subject-limit)))
-		    (setq subject (gnus-simplify-subject-re subject))))))
-	  (or (and psubject subject (string= subject psubject))
+			 (mail-fetch-field "subject"))))
+	  (or (and psubject gnus-reply-subject 
+		   (string= (gnus-simplify-subject-re gnus-reply-subject)
+			    psubject))
 	      (progn
 		(string-match "@" Message-ID)
 		(setq Message-ID
@@ -1370,7 +1361,8 @@ mailer."
 	    (setq cc (mail-fetch-field "cc"))
 	    (setq reply-to (mail-fetch-field "reply-to"))
 	    (setq references (mail-fetch-field "references"))
-	    (setq message-id (mail-fetch-field "message-id")))
+	    (setq message-id (mail-fetch-field "message-id"))
+	    (widen))
 	  (setq news-reply-yank-from (or from "(nobody)")))
 	(setq news-reply-yank-message-id
 	      (or message-id "(unknown Message-ID)"))

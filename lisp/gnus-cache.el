@@ -127,9 +127,10 @@
 		(beginning-of-line))
 	    (forward-line 1))
 	  ;; [number subject from date id references chars lines xref]
-	  (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
+	  (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
 			  (header-number headers)
 			  (header-subject headers)
+			  (header-from headers)
 			  (header-date headers)
 			  (header-id headers)
 			  (or (header-references headers) "")

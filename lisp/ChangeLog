@@ -1,5 +1,46 @@
+Sat May 27 09:25:52 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* nnmail.el (nnmail-split-incoming): Would bug out on long
+	content-lengths.
+
+	* gnus.el (gnus-active-to-gnus-format): Do more checking. 
+	(gnus-summary-prev-page): Would not configure windows. 
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Did not
+	insert From headers in nov files.
+
+	* nnbabyl.el (nnbabyl-retrieve-headers): Misspelled func name.
+
+	* gnus.el (gnus-browse-group-name): Did not work.
+	(gnus-browse-select-group): No interactive spec.
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): `C-c C-y' woyld yank
+	only headers. 
+
+Fri May 26 06:34:55 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-make-doc-group): New command and keystroke. 
+
+	* nndoc.el (nndoc-open-server): New implementation. Now does
+	babyl, mbox and digest.
+
+	* nnspool.el (nnspool-request-post): Use a pipe instead of a pty. 
+
+	* gnus-msg.el (gnus-inews-insert-headers): Do the _-_ a bit more
+	intelligently. 
+
+Thu May 25 13:05:05 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-enter-digest-group): Did not work.
+
+	* nndigest.el (nndigest-current-buffer): Doc fix.
+
+	* nnmh.el (nnmh-request-list): Would recurse needlessly. 
+
 Thu May 25 05:34:16 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
 
+	* gnus.el: 0.77 is released.
+	
 	* gnus.el (gnus-article-date-ut): Ignore missing dates. 
 	(gnus-group-enter-directory): New command and keystroke.
 

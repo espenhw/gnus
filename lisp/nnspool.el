@@ -32,7 +32,7 @@
 (defvar nnspool-inews-program news-inews-program
   "Program to post news.")
 
-(defvar nnspool-inews-switches '("-S" "-h")
+(defvar nnspool-inews-switches '("-h")
   "Switches for nnspool-request-post to pass to `inews' for posting news.")
 
 (defvar nnspool-spool-directory news-path
@@ -316,7 +316,8 @@ Newsgroup must be selected before calling this function."
 (defun nnspool-request-post (&optional server)
   "Post a new news in current buffer."
   (save-excursion
-    (let* ((inews-buffer (generate-new-buffer " *nnspool post*"))
+    (let* ((process-connection-type nil) ; t bugs out on Solaris
+	   (inews-buffer (generate-new-buffer " *nnspool post*"))
 	   (proc (apply 'start-process "*nnspool inews*" inews-buffer
 			nnspool-inews-program nnspool-inews-switches)))
       (set-process-sentinel proc 'nnspool-inews-sentinel)

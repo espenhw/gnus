@@ -188,6 +188,9 @@ Example:
 
 
 
+(defun nnmail-request-post (&optional server)
+  (mail-send-and-exit nil))
+
 (defun nnmail-request-post-buffer (post group subject header article-buffer
 					info follow-to respect-poster)
   (let ((method-address (cdr (assq 'to-address (nth 5 info))))
@@ -475,7 +478,9 @@ FUNC will be called with the buffer narrowed to each mail."
 			    (progn (insert "X-") t))))
 		(setq do-search t)
 	      (if (save-excursion
-		    (forward-char content-length)
+		    (condition-case nil
+			(forward-char content-length)
+		      (end-of-buffer nil))
 		    (looking-at delim))
 		  (progn
 		    (forward-char content-length)

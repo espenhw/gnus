@@ -157,11 +157,7 @@ If NEWSGROUP is nil, the global kill file is selected."
       (cond ((get-buffer-window buffer)
 	     (pop-to-buffer buffer))
 	    ((eq major-mode 'gnus-group-mode)
-	     (gnus-configure-windows '(1 0 0)) ;Take all windows.
-	     (pop-to-buffer gnus-group-buffer)
-	     ;; Fix by sachs@SLINKY.CS.NYU.EDU (Jay Sachs).
-	     (let ((gnus-summary-buffer buffer))
-	       (gnus-configure-windows '(1 1 0))) ;Split into two.
+	     (gnus-configure-windows 'group) ;Take all windows.
 	     (pop-to-buffer buffer))
 	    ((eq major-mode 'gnus-summary-mode)
 	     (gnus-configure-windows 'article)

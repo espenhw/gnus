@@ -1272,7 +1272,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.77"
+(defconst gnus-version "(ding) Gnus v0.78"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2637,6 +2637,14 @@ If nothing is specified, use the variable gnus-overload-functions."
     ;; from `message'.
     (apply 'format args)))
 
+;; Generate a unique new group name.
+(defun gnus-generate-new-group-name (leaf)
+  (let ((name leaf)
+	(num 0))
+    (while (gnus-gethash name gnus-newsrc-hashtb)
+      (setq name (concat leaf "<" (int-to-string (setq num (1+ num))) ">")))
+    name))
+
 ;;; List and range functions
 
 (defun gnus-last-element (list)
@@ -2959,6 +2967,7 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-group-map "v" 'gnus-group-add-to-virtual)
   (define-key gnus-group-group-map "V" 'gnus-group-make-empty-virtual)
   (define-key gnus-group-group-map "D" 'gnus-group-enter-directory)
+  (define-key gnus-group-group-map "f" 'gnus-group-make-doc-group)
 
   (define-prefix-command 'gnus-group-list-map)
   (define-key gnus-group-mode-map "A" 'gnus-group-list-map)
@@ -3646,7 +3655,10 @@ If argument ALL is non-nil, already read articles become readable."
 					(cons (current-buffer) 'summary)))))))
      gnus-newsrc-hashtb)
     (set-buffer gnus-group-buffer)
-    (if activate (gnus-request-group group (nth 1 method)))
+    (or (gnus-server-opened method)
+	(gnus-open-server method)
+	(error "Unable to contact server: %s" (gnus-status-message method)))
+    (if activate (gnus-request-group group))
     (condition-case ()
 	(gnus-group-read-group t t group)
       (error nil)
@@ -3780,7 +3792,7 @@ If EXCLUDE-GROUP, do not go to that group."
   (gnus-configure-windows 'server)
   (gnus-server-prepare))
 
-(defun gnus-group-make-group (name method address)
+(defun gnus-group-make-group (name method &optional address)
   "Add a new newsgroup.
 The user will be prompted for a NAME, for a select METHOD, and an
 ADDRESS."
@@ -3913,6 +3925,30 @@ ADDRESS."
      (concat (file-name-as-directory (car path)) "doc.txt"))
     (gnus-group-position-cursor)))
 
+(defun gnus-group-make-doc-group (file type)
+  "Create a group that uses a single file as the source."
+  (interactive 
+   (list (read-file-name "File name: ") 
+	 (let ((err "")
+	       found char)
+	   (while (not found)
+	     (message "%sFile type (mbox, babyl, digest) [mbd]: " err)
+	     (setq found (cond ((= (setq char (read-char)) ?m) 'mbox)
+			       ((= char ?b) 'babyl)
+			       ((= char ?d) 'digest)
+			       (t (setq mess "%c unknown. " char)
+				  nil))))
+	   found)))
+  (let* ((file (expand-file-name file))
+	 (name (gnus-generate-new-group-name
+		(gnus-group-prefixed-name
+		 (file-name-nondirectory file) '(nndoc "")))))
+    (gnus-group-make-group 
+     (gnus-group-real-name name)
+     (list 'nndoc name
+	   (list 'nndoc-address file)
+	   (list 'nndoc-article-type type)))))
+
 (defun gnus-group-make-archive-group ()
   "Create the (ding) Gnus archive group."
   (interactive)
@@ -4006,10 +4042,8 @@ score file entries for articles to include in the group."
 	 (leaf (gnus-group-prefixed-name
 		(file-name-nondirectory (directory-file-name dir))
 		method))
-	 (name leaf)
+	 (name (gnus-generate-new-group-name leaf))
 	 (num 0))
-    (while (gnus-gethash name gnus-newsrc-hashtb)
-      (setq name (concat leaf "<" (int-to-string (setq num (1+ num))) ">")))
     (let ((nneething-read-only t))
       (or (gnus-group-read-ephemeral-group 
 	   name method t
@@ -4736,7 +4770,20 @@ and the second element is the address."
     (gnus-group-position-cursor)))
 
 (defun gnus-browse-mode ()
-  "Major mode for browsing a foreign server."
+  "Major mode for browsing a foreign server.
+
+All normal editing commands are switched off.
+
+\\<gnus-browse-mode-map>
+The only things you can do in this buffer is
+
+1) `\\[gnus-browse-unsubscribe-current-group]' to subscribe to a group.
+The group will be inserted into the group buffer upon exit from this
+buffer.  
+
+2) `\\[gnus-browse-read-group]' to read a group ephemerally.
+
+3) `\\[gnus-browse-exit]' to return to the group buffer."
   (interactive)
   (kill-all-local-variables)
   (if gnus-visual (gnus-browse-make-menu-bar))
@@ -4765,6 +4812,7 @@ and the second element is the address."
 
 (defun gnus-browse-select-group ()
   "Select the current group."
+  (interactive)
   (gnus-browse-read-group 'no))
 
 (defun gnus-browse-next-group (n)
@@ -4797,6 +4845,7 @@ and the second element is the address."
 
 (defun gnus-browse-group-name ()
   (save-excursion
+    (beginning-of-line)
     (if (not (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t))
 	()
       (gnus-group-prefixed-name 
@@ -5107,6 +5156,7 @@ and the second element is the address."
   (define-key gnus-summary-backend-map "w" 'gnus-summary-edit-article)
   (define-key gnus-summary-backend-map "c" 'gnus-summary-copy-article)
   (define-key gnus-summary-backend-map "q" 'gnus-summary-fancy-query)
+  (define-key gnus-summary-backend-map "i" 'gnus-summary-import-article)
 
 
   (define-prefix-command 'gnus-summary-save-map)
@@ -6642,7 +6692,9 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 		   nil
 		 (gnus-nov-field))	; misc
 	       ))
-      (quit (progn 
+      (error (progn 
+	       (ding)
+	       (message "Strange nov line.")
 	       (setq header nil)
 	       (goto-char eol))))
 
@@ -6918,8 +6970,13 @@ displayed, no centering will be performed."
 ;; Function written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
 (defun gnus-short-group-name (group &optional levels)
   "Collapse GROUP name LEVELS."
-  (let ((name "") (foreign "")
-	(levels (or levels 2)))
+  (let* ((name "") (foreign "") (depth -1) (skip 1)
+	 (levels (or levels
+		     (progn
+		       (while (string-match "\\." group skip)
+			 (setq skip (match-end 0)
+			       depth (+ depth 1)))
+		       depth))))
     (if (string-match ":" group)
 	(setq foreign (substring group 0 (match-end 0))
 	      group (substring group (match-end 0))))
@@ -7082,7 +7139,8 @@ The prefix argument ALL means to select all articles."
       ;; Do adaptive scoring, and possibly save score files.
       (and gnus-newsgroup-adaptive
 	   (gnus-score-adaptive))
-      (and (fboundp 'gnus-score-save)
+      (and gnus-use-scoring 
+	   (fboundp 'gnus-score-save)
 	   (funcall 'gnus-score-save))
       ;; Do not switch windows but change the buffer to work.
       (set-buffer gnus-group-buffer)
@@ -7519,14 +7577,17 @@ current article."
       (gnus-eval-in-buffer-window
        gnus-article-buffer
        (setq endp (gnus-article-next-page lines)))
-      (gnus-summary-recenter)
       (if endp
  	  (cond (circular
  		 (gnus-summary-beginning-of-article))
  		(lines
  		 (gnus-message 3 "End of message"))
  		((null lines)
- 		 (gnus-summary-next-unread-article)))))))
+ 		 (gnus-summary-next-unread-article)))))
+    (gnus-configure-windows 'article)
+    (gnus-summary-recenter)
+    (gnus-summary-position-cursor)))
+
 
 (defun gnus-summary-prev-page (lines)
   "Show previous page of selected article.
@@ -7543,6 +7604,7 @@ Argument LINES specifies lines to be scrolled down."
       (gnus-summary-recenter)
       (gnus-eval-in-buffer-window gnus-article-buffer
 	(gnus-article-prev-page lines))))
+  (gnus-configure-windows 'article)
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-scroll-up (lines)
@@ -7727,11 +7789,14 @@ NOTE: This command only works with newsgroup that use NNTP."
   (gnus-summary-stop-page-breaking)
   (let ((name (format "%s-%d" 
 		      (gnus-group-prefixed-name 
-		       gnus-newsgroup-name (list 'nndigest "")) 
+		       gnus-newsgroup-name (list 'nndoc "")) 
 		      gnus-current-article))
 	(buf (current-buffer)))
     (if (gnus-group-read-ephemeral-group 
-	 name (list 'nndigest gnus-article-buffer))
+	 name (list 'nndoc name
+		    (list 'nndoc-address (get-buffer gnus-article-buffer))
+		    '(nndoc-article-type digest))
+	 t)
 	()
       (switch-to-buffer buf)
       (gnus-set-global-variables)
@@ -7743,8 +7808,8 @@ NOTE: This command only works with newsgroup that use NNTP."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  (gnus-eval-in-buffer-window gnus-article-buffer
-			      (isearch-forward)))
+  (gnus-eval-in-buffer-window 
+   gnus-article-buffer (isearch-forward)))
 
 (defun gnus-summary-search-article-forward (regexp)
   "Search for an article containing REGEXP forward.
@@ -8162,6 +8227,26 @@ functions. (Ie. mail newsgroups at present.)"
       (gnus-summary-remove-process-mark (car articles))
       (setq articles (cdr articles)))
     (kill-buffer copy-buf)))
+
+(defun gnus-summary-import-article (file)
+  "Import a random file into a mail newsgroup."
+  (interactive "fImport file: ")
+  (let ((group gnus-newsgroup-name)
+	attrib)
+    (or (gnus-check-backend-function 'request-accept-article group)
+	(error "%s does not support article importing" group))
+    (or (file-readable-p file)
+	(not (file-regular-p file))
+	(error "Can't read %s" file))
+    (save-excursion
+      (set-buffer (get-buffer-create " *import file*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (setq attrib (file-attributes file))
+      (insert "From: " (read-string "From: ")))))
+
 
 (defun gnus-summary-expire-articles ()
   "Expire all articles that are marked as expirable in the current group."
@@ -11789,14 +11874,15 @@ Returns whether the updating was successful."
 	;; loop...   
 	(let* ((mod-hashtb (make-vector 7 0))
 	       (m (intern "m" mod-hashtb))
-	       group max mod)
+	       group max mod min)
 	  (while (not (eobp))
 	    (condition-case nil
 		(progn
 		  (narrow-to-region (point) (gnus-point-at-eol))
 		  (setq group (let ((obarray hashtb)) (read cur)))
-		  (setq max (read cur))
-		  (set group (cons (read cur) max))
+		  (and (numberp (setq max (read cur)))
+		       (numberp (setq min (read cur)))
+		       (set group (cons min max)))
 		  ;; Enter moderated groups into a list.
 		  (if (eq (let ((obarray mod-hashtb)) (read cur)) m)
 		      (setq gnus-moderated-list 
@@ -11806,7 +11892,7 @@ Returns whether the updating was successful."
 	    (forward-line 1)))
       ;; And if we do not care about moderation, we use this loop,
       ;; which is faster.
-      (let (group max)
+      (let (group max min)
 	(while (not (eobp))
 	  (condition-case ()
 	      (progn
@@ -11815,10 +11901,11 @@ Returns whether the updating was successful."
 		;; (what a hack!!)
 		(setq group (let ((obarray hashtb)) (read cur)))
 		(and (numberp (setq max (read cur)))
-		     (set group (cons (read cur) max))))
+		     (numberp (setq min (read cur)))
+		     (set group (cons min max))))
 	    (error 
 	     (progn (ding) 
-		    (gnus-message 3 "Illegal active: %s"
+		    (gnus-message 3 "Warning - illegal active: %s"
 				  (buffer-substring 
 				   (gnus-point-at-bol) (gnus-point-at-eol)))
 		    nil)))

@@ -31,5 +31,8 @@
 
 (setq load-path (cons "." load-path))
 
+(defun dgnushack-recompile ()
+  (byte-recompile-directory "."))
+
 ;;; dgnushack.el ends here  
 

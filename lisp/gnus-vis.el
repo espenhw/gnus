@@ -177,6 +177,7 @@ highlight-headers-follow-url-netscape:
       ["Add a directory group" gnus-group-make-directory-group t]
       ["Add the help group" gnus-group-make-help-group t]
       ["Add the archive group" gnus-group-make-archive-group t]
+      ["Make a doc group" gnus-group-make-doc-group t]
       ["Make a kiboze group" gnus-group-make-kiboze-group t]
       ["Make a virtual group" gnus-group-make-empty-virtual t]
       ["Add a group to a virtual" gnus-group-add-to-virtual t])

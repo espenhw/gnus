@@ -164,7 +164,11 @@
     ;; not set in the first sweep.
     (while defs
       (if (not (assq (car (car defs)) server))
-	  (set (car (car defs)) (eval (nth 1 (car defs)))))
+	  (set (car (car defs)) 
+	       (if (and (symbolp (nth 1 (car defs)))
+			(not (boundp (nth 1 (car defs)))))
+		   (nth 1 (car defs))
+		 (eval (nth 1 (car defs))))))
       (setq defs (cdr defs)))))
 
 (defun nnheader-save-variables (server)
