@@ -3836,7 +3836,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
     ;; overview: [num subject from date id refs chars lines misc]
     (unwind-protect
-	(progn
+	(let (x)
 	  (narrow-to-region (point) eol)
 	  (unless (eobp)
 	    (forward-char))
@@ -3844,10 +3844,14 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (setq header
 		(make-full-mail-header
 		 number			; number
-		 (funcall gnus-decode-encoded-word-function
-			  (nnheader-nov-field))	; subject
-		 (funcall gnus-decode-encoded-word-function
-			  (nnheader-nov-field))	; from
+		 (condition-case ()	; subject
+		     (funcall gnus-decode-encoded-word-function
+			      (setq x (nnheader-nov-field)))
+		   (error x))
+		 (condition-case ()	; from
+		     (funcall gnus-decode-encoded-word-function
+			      (setq x (nnheader-nov-field)))
+		   (error x))
 		 (nnheader-nov-field)	; date
 		 (nnheader-nov-read-message-id)	; id
 		 (setq references (nnheader-nov-field))	; refs
