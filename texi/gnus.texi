@@ -4093,10 +4093,12 @@ through @code{gnus-group-faq-directory} and try to open them one by one.
 @vindex gnus-group-charter-alist
 @cindex charter
 Try to open the charter for the current group in a web browser
-(@code{gnus-group-fetch-charter}).  Gnus will use
-@code{gnus-group-charter-alist} to find the location of the charter.
-If no location is known, Gnus will fetch the control messages for the
-group, which in some cases includes the charter.
+(@code{gnus-group-fetch-charter}).  Query for a group if given a
+prefix argument.
+
+Gnus will use @code{gnus-group-charter-alist} to find the location of
+the charter.  If no location is known, Gnus will fetch the control
+messages for the group, which in some cases includes the charter.
 
 @item H C
 @kindex H C (Group)
@@ -4104,7 +4106,8 @@ group, which in some cases includes the charter.
 @vindex gnus-group-fetch-control-use-browse-url
 @cindex control message
 Fetch the control messages for the group from the archive at
-@code{ftp.isc.org} (@code{gnus-group-fetch-control}).
+@code{ftp.isc.org} (@code{gnus-group-fetch-control}). Query for a
+group if given a prefix argument.
 
 If @code{gnus-group-fetch-control-use-browse-url} is non-nil, Gnus
 will open the control messages in a browser using @code{browse-url}.

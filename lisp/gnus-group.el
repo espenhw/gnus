@@ -3523,10 +3523,13 @@ to use."
 	  (setq found t))))))
 
 (defun gnus-group-fetch-charter (group)
-  "Fetch the charter for the current group."
+  "Fetch the charter for the current group.
+If given a prefix argument, prompt for a group."
   (interactive
-    (list (or (gnus-group-group-name)
-        gnus-newsgroup-name)))
+   (list (or (when current-prefix-arg
+	       (completing-read "Group: " gnus-active-hashtb))
+	     (gnus-group-group-name)
+	     gnus-newsgroup-name)))
   (unless group
     (error "No group name given"))
   (let ((name (mm-url-form-encode-xwfu (gnus-group-real-name group)))
@@ -3538,10 +3541,13 @@ to use."
 	(gnus-group-fetch-control group)))))
 
 (defun gnus-group-fetch-control (group)
-  "Fetch the archived control messages for the current group."
+  "Fetch the archived control messages for the current group.
+If given a prefix argument, prompt for a group."
   (interactive
-    (list (or (gnus-group-group-name)
-        gnus-newsgroup-name)))
+   (list (or (when current-prefix-arg
+	       (completing-read "Group: " gnus-active-hashtb))
+	     (gnus-group-group-name)
+	     gnus-newsgroup-name)))
   (unless group
     (error "No group name given"))
   (let ((name (gnus-group-real-name group))

@@ -1,3 +1,13 @@
+2002-10-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Jesper Harder.
+
+	* gnus-group.el (gnus-group-fetch-charter,
+	gnus-group-fetch-control): Prompt for group if given a prefix
+	argument.
+	* gnus-sum.el (t): Add gnus-group-fetch-charter and
+	gnus-group-fetch-control to summary key map and menu.
+
+
 2002-10-03  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--group-maxnum-art): fix maximum article

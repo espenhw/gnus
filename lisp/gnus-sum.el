@@ -1833,7 +1833,9 @@ increase the score of each group you read."
     "f" gnus-summary-fetch-faq
     "d" gnus-summary-describe-group
     "h" gnus-summary-describe-briefly
-    "i" gnus-info-find-node)
+    "i" gnus-info-find-node
+    "c" gnus-group-fetch-charter
+    "C" gnus-group-fetch-control)
 
   (gnus-define-keys (gnus-summary-backend-map "B" gnus-summary-mode-map)
     "e" gnus-summary-expire-articles
@@ -2332,6 +2334,12 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	("Help"
 	 ["Fetch group FAQ" gnus-summary-fetch-faq t]
 	 ["Describe group" gnus-summary-describe-group t]
+	 ["Fetch charter" gnus-group-fetch-charter
+	  ,@(if (featurep 'xemacs) nil
+	      '(:help "Display the charter of the current group"))]
+	 ["Fetch control message" gnus-group-fetch-control
+	  ,@(if (featurep 'xemacs) nil
+	      '(:help "Display the archived control message for the current group"))]
 	 ["Read manual" gnus-info-find-node t])
 	("Modes"
 	 ["Pick and read" gnus-pick-mode t]
