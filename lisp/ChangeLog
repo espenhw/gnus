@@ -2,6 +2,10 @@
 
 	* gnus-agent.el (gnus-agent-save-fetched-headers): Create
 	directory if it doesn't exist.
+	(gnus-agent-fetch-headers): Remove old cruft that tried to
+	abstain from downloading articles more than once if
+	gnus-agent-consider-all-articles was true.  This is now done
+	properly via the .fetched files.
 
 2002-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 

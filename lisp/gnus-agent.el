@@ -1127,13 +1127,6 @@ This can be added to `gnus-select-article-hook' or
       (setq articles new-articles))
     ;; Remove known articles.
     (when (gnus-agent-load-alist group)
-      ;; Remove articles marked as downloaded.
-      (setq articles
-	    (gnus-sorted-difference
-	     articles
-	     (delq nil
-		   (mapcar (lambda (x) (when (cdr x) (car x)))
-			   gnus-agent-article-alist))))
       (let ((low (1+ (caar (last gnus-agent-article-alist))))
 	    (high (cdr (gnus-active group))))
 	;; I suspect a deeper problem here and I suspect that low
