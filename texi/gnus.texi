@@ -4390,8 +4390,8 @@ Full @code{From} header.
 @item n
 The name (from the @code{From} header).
 @item f
-The name, code @code{To} header or the @code{Newsgroups} header
-(@pxref{To From Newsgroups}).
+The name, @code{To} header or the @code{Newsgroups} header (@pxref{To
+From Newsgroups}).
 @item a
 The name (from the @code{From} header).  This differs from the @code{n}
 spec in that it uses the function designated by the

@@ -1,3 +1,7 @@
+2002-05-14  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Summary Buffer Lines): Fix typo.
+
 2002-07-27  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Summary Mail Commands): Trivial fix from Reiner Steib
