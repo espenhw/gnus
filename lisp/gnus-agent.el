@@ -1140,8 +1140,9 @@ the actual number of articles toggled is returned."
 	(condition-case err
 	    (progn
 	      (setq gnus-command-method (car methods))
-	      (when (or (gnus-server-opened gnus-command-method)
-			(gnus-open-server gnus-command-method))
+	      (when (and (or (gnus-server-opened gnus-command-method)
+			     (gnus-open-server gnus-command-method))
+			 (gnus-online gnus-command-method))
 		(setq groups (gnus-groups-from-server (car methods)))
 		(gnus-agent-with-fetch
 		  (while (setq group (pop groups))

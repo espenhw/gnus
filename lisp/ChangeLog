@@ -16,6 +16,7 @@
 
 	* gnus-agent.el (gnus-agent-get-function): Use it.
 	(gnus-agent-get-undownloaded-list): Ditto.
+	(gnus-agent-fetch-session): Only fetch online methods.
 
 	* gnus-srvr.el (gnus-server-make-menu-bar): Add offline.
 	(gnus-server-mode-map): Ditto.
