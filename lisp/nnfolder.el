@@ -524,7 +524,9 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 	(while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
 	  (delete-region (point) (progn (forward-line 1) (point))))
 	(when nnmail-cache-accepted-message-ids
-	  (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
+	  (nnmail-cache-insert (nnmail-fetch-field "message-id") 
+			       group
+			       (nnmail-fetch-field "subject")))
 	(setq result (if (stringp group)
 			 (list (cons group (nnfolder-active-number group)))
 		       (setq art-group

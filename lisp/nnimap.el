@@ -1294,7 +1294,9 @@ function is generally only called when Gnus is shutting down."
 			     (let (msgid)
 			       (and (setq msgid
 					  (nnmail-fetch-field "message-id"))
-				    (nnmail-cache-insert msgid to-group)))))
+				    (nnmail-cache-insert msgid 
+							 to-group
+							 (nnmail-fetch-field "subject"))))))
 			 ;; Add the group-art list to the history list.
 			 (push (list (cons to-group 0)) nnmail-split-history))
 			(t
@@ -1471,7 +1473,8 @@ function is generally only called when Gnus is shutting down."
 		      (replace-match "\r\n"))
 		    (when nnmail-cache-accepted-message-ids
 		      (nnmail-cache-insert (nnmail-fetch-field "message-id")
-					   group)))
+					   group
+					   (nnmail-fetch-field "subject"))))
 		  (when (and last nnmail-cache-accepted-message-ids)
 		    (nnmail-cache-close))
 		  ;; this 'or' is for Cyrus server bug

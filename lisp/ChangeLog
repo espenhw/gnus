@@ -1,3 +1,55 @@
+2003-09-04  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el: added brief explanation of basics
+	(gnus-registry-track-extra): new variable for tracking of message
+	subjects
+	(gnus-registry-entry-caching): caching parameter, used for extra
+	data
+	(gnus-registry-minimum-subject-length): minimum subject length
+	before it's considered when tracing subjects
+	(gnus-registry-save): accomodate extra data entry caching
+	(gnus-registry-action): change function name, add the subject and
+	pass it to gnus-registry-add-group
+	(gnus-registry-spool-action): change function name, add the
+	subject and pass it to gnus-registry-add-group
+	(gnus-registry-split-fancy-with-parent): add subject tracking
+	(gnus-registry-register-message-ids): pass subject to
+	gnus-registry-add-group
+	(gnus-registry-simplify-subject)
+	(gnus-registry-fetch-simplified-message-subject-fast): new
+	functions
+	(gnus-registry-fetch-extra, gnus-registry-fetch-extra-entry): add
+	extra data entry caching
+	(gnus-registry-add-group): handle the extra subject parameter
+	(gnus-registry-install-hooks, gnus-registry-unload-hook): fix the
+	gnus-register-* function names
+
+	* nnmail.el (nnmail-cache-insert): add subject parameter, pass it
+	on to the nnmail-spool-hook
+
+	* nnbabyl.el (nnbabyl-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nndiary.el (nndiary-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nnfolder.el (nnfolder-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nnimap.el (nnimap-split-articles): added subject to
+	nnmail-cache-insert call
+	(nnimap-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nnmbox.el (nnmbox-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nnmh.el (nnmh-request-accept-article): added subject to
+	nnmail-cache-insert call
+
+	* nnml.el (nnml-request-accept-article): added subject to
+	nnmail-cache-insert call
+
 2003-09-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-button-handle-info-url)

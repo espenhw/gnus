@@ -349,7 +349,9 @@
 	 (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
 	   (delete-region (point) (progn (forward-line 1) (point)))))
        (when nnmail-cache-accepted-message-ids
-	 (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
+	 (nnmail-cache-insert (nnmail-fetch-field "message-id") 
+			      group
+			      (nnmail-fetch-field "subject")))
        (setq result
 	     (if (stringp group)
 		 (list (cons group (nnbabyl-active-number group)))
@@ -365,7 +367,9 @@
        (insert-buffer-substring buf)
        (when last
 	 (when nnmail-cache-accepted-message-ids
-	   (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
+	   (nnmail-cache-insert (nnmail-fetch-field "message-id") 
+				group
+				(nnmail-fetch-field "subject")))
 	 (save-buffer)
 	 (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
        result))))

@@ -369,7 +369,9 @@ marks file will be regenerated properly by Gnus.")
   (nnmail-check-syntax)
   (let (result)
     (when nnmail-cache-accepted-message-ids
-      (nnmail-cache-insert (nnmail-fetch-field "message-id") group))
+      (nnmail-cache-insert (nnmail-fetch-field "message-id") 
+			   group
+			   (nnmail-fetch-field "subject")))
     (if (stringp group)
 	(and
 	 (nnmail-activate 'nnml)

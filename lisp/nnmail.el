@@ -1492,9 +1492,9 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defvar group)
 (defvar group-art-list)
 (defvar group-art)
-(defun nnmail-cache-insert (id grp)
+(defun nnmail-cache-insert (id grp &optional subject)
   (run-hook-with-args 'nnmail-spool-hook 
-		      id grp)
+		      id grp subject)
   (when nnmail-treat-duplicates
     ;; Store some information about the group this message is written
     ;; to.  This is passed in as the grp argument -- all locations this
