@@ -1818,7 +1818,6 @@ FILE and places the combined headers into `nntp-server-buffer'."
           ;; Figure out how to select articles in this group
           (setq category (gnus-group-category group))
 
-          (debug)
           (setq predicate
                 (gnus-get-predicate
                  (or (gnus-agent-find-parameter group 'agent-predicate)
