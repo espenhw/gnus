@@ -1,3 +1,7 @@
+2003-06-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-parse-list): prevent empty ("") strings
+
 2003-06-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-parse-list): use gnus-extract-address-components

@@ -999,8 +999,9 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	  (setq address (buffer-substring (point) (spam-point-at-eol)))
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
-	  (let ((pure-address (cadr (gnus-extract-address-components address))))
-	    (push (or pure-address address) contents))))
+	  (unless (zerop (length address))
+	    (let ((pure-address (cadr (gnus-extract-address-components address))))
+	      (push (or pure-address address) contents)))))
       (nreverse contents))))
 
 (defun spam-from-listed-p (cache)
