@@ -1,5 +1,5 @@
 ;;; gnus-demon.el --- daemonic Gnus behaviour
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -41,7 +41,7 @@
   :group 'gnus)
 
 (defcustom gnus-demon-handlers nil
-  "Alist of daemonic handlers to be run at intervals.
+  "*Alist of daemonic handlers to be run at intervals.
 Each handler is a list on the form
 
 \(FUNCTION TIME IDLE)

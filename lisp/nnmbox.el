@@ -1,5 +1,5 @@
 ;;; nnmbox.el --- mail mbox access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -463,8 +463,8 @@
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (nnmbox-insert-newsgroup-line group-art)
-    (run-hooks 'nnmail-prepare-save-mail-hook)
-    (run-hooks 'nnmbox-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnmbox-prepare-save-mail-hook)
     group-art))
 
 (defun nnmbox-insert-newsgroup-line (group-art)

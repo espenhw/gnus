@@ -1,5 +1,5 @@
 ;;; gnus-cache.el --- cache interface for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -51,12 +51,12 @@
   :type 'file)
 
 (defcustom gnus-cache-enter-articles '(ticked dormant)
-  "Classes of articles to enter into the cache."
+  "*Classes of articles to enter into the cache."
   :group 'gnus-cache
   :type '(set (const ticked) (const dormant) (const unread) (const read)))
 
 (defcustom gnus-cache-remove-articles '(read)
-  "Classes of articles to remove from the cache."
+  "*Classes of articles to remove from the cache."
   :group 'gnus-cache
   :type '(set (const ticked) (const dormant) (const unread) (const read)))
 

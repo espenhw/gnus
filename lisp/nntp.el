@@ -179,6 +179,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvar nntp-inside-change-function nil)
 (defvoo nntp-last-command-time nil)
 (defvoo nntp-last-command nil)
+(defvoo nntp-authinfo-password nil)
 
 (defvar nntp-connection-list nil)
 
@@ -703,6 +704,27 @@ It will make innd servers spawn an nnrpd process to allow actual article
 reading."
   (nntp-send-command "^.*\r?\n" "MODE READER"))
 
+(defun nntp-send-authinfo ()
+  "Send the AUTHINFO to the nntp server.
+This function is supposed to be called from `nntp-server-opened-hook'.
+It will look in the \"~/.netrc\" file for matching entries.  If
+nothing suitable is found there, it will prompt for a user name
+and a password."
+  (let* ((list (gnus-parse-netrc "~/.netrc"))
+	 (alist (gnus-netrc-machine list nntp-address))
+	 (user (gnus-netrc-get alist "login"))
+	 (passwd (gnus-netrc-get alist "password")))
+    (nntp-send-command
+     "^3.*\r?\n" "AUTHINFO USER"
+     (or user (read-string (format "NNTP (%s) user name: " nntp-address))))
+    (nntp-send-command
+     "^2.*\r?\n" "AUTHINFO PASS"
+     (or passwd
+	 nntp-authinfo-password
+	 (setq nntp-authinfo-password
+	       (nnmail-read-passwd (format "NNTP (%s) password: "
+					   nntp-address)))))))
+
 (defun nntp-send-nosy-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
@@ -714,18 +736,12 @@ It will prompt for a password."
    "^2.*\r?\n" "AUTHINFO PASS"
    (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
 
-(defun nntp-send-authinfo ()
-  "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'.
-It will prompt for a password."
-  (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command
-   "^2.*\r?\n" "AUTHINFO PASS"
-   (nnmail-read-passwd (format "NNTP (%s) password: " nntp-address))))
-
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'."
+This function is supposed to be called from `nntp-server-opened-hook'.
+
+The authinfo login name is taken from the user's login name and the
+password contained in '~/.nntp-authinfo'."
   (when (file-exists-p "~/.nntp-authinfo")
     (nnheader-temp-write nil
       (insert-file-contents "~/.nntp-authinfo")
@@ -767,7 +783,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 
 (defun nntp-open-connection (buffer)
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
-  (run-hooks 'nntp-prepare-server-hook)
+  (gnus-run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
 	  (condition-case ()
@@ -788,7 +804,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	      (erase-buffer)
 	      (set-buffer nntp-server-buffer)
 	      (let ((nnheader-callback-function nil))
-		(run-hooks 'nntp-server-opened-hook))))
+		(gnus-run-hooks 'nntp-server-opened-hook))))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))

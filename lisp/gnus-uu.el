@@ -1,5 +1,5 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
-;; Copyright (C) 1985,86,87,93,94,95,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1985,86,87,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993
@@ -71,7 +71,7 @@
     ("\\.\\(flc\\|fli\\|rle\\|iff\\|pfx\\|avi\\|sme\\|rpza\\|dl\\|qt\\|rsrc\\|mov\\)$" "xanim")
     ("\\.\\(tar\\|arj\\|zip\\|zoo\\|arc\\|gz\\|Z\\|lzh\\|ar\\|lha\\)$"
      "gnus-uu-archive"))
-  "Default actions to be taken when the user asks to view a file.
+  "*Default actions to be taken when the user asks to view a file.
 To change the behaviour, you can either edit this variable or set
 `gnus-uu-user-view-rules' to something useful.
 
@@ -103,7 +103,7 @@ match."
   :type '(repeat (group regexp (string :tag "Command"))))
 
 (defcustom gnus-uu-user-view-rules nil
-  "What actions are to be taken to view a file.
+  "*What actions are to be taken to view a file.
 See the documentation on the `gnus-uu-default-view-rules' variable for
 details."
   :group 'gnus-extract-view
@@ -111,7 +111,7 @@ details."
 
 (defcustom gnus-uu-user-view-rules-end
   '(("" "file"))
-  "What actions are to be taken if no rule matched the file name.
+  "*What actions are to be taken if no rule matched the file name.
 See the documentation on the `gnus-uu-default-view-rules' variable for
 details."
   :group 'gnus-extract-view
@@ -129,7 +129,7 @@ details."
     ("\\.Z$" "uncompress")
     ("\\.gz$" "gunzip")
     ("\\.arc$" "arc -x"))
-  "See `gnus-uu-user-archive-rules'."
+  "*See `gnus-uu-user-archive-rules'."
   :group 'gnus-extract-archive
   :type '(repeat (group regexp (string :tag "Command"))))
 
@@ -137,7 +137,7 @@ details."
   (list "uncompress" "gunzip"))
 
 (defcustom gnus-uu-user-archive-rules nil
-  "A list that can be set to override the default archive unpacking commands.
+  "*A list that can be set to override the default archive unpacking commands.
 To use, for instance, 'untar' to unpack tar files and 'zip -x' to
 unpack zip files, say the following:
   (setq gnus-uu-user-archive-rules
@@ -234,7 +234,7 @@ Only the user viewing rules will be consulted.  Default is nil."
   :type 'boolean)
 
 (defcustom gnus-uu-grabbed-file-functions nil
-  "Functions run on each file after successful decoding.
+  "*Functions run on each file after successful decoding.
 They will be called with the name of the file as the argument.
 Likely functions you can use in this list are `gnus-uu-grab-view'
 and `gnus-uu-grab-move'."
@@ -284,14 +284,14 @@ so I simply dropped them."
   :type 'boolean)
 
 (defcustom gnus-uu-pre-uudecode-hook nil
-  "Hook run before sending a message to uudecode."
+  "*Hook run before sending a message to uudecode."
   :group 'gnus-extract
   :type 'hook)
 
 (defcustom gnus-uu-digest-headers
   '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
     "^Summary:" "^References:")
-  "List of regexps to match headers included in digested messages.
+  "*List of regexps to match headers included in digested messages.
 The headers will be included in the sequence they are matched."
   :group 'gnus-extract
   :type '(repeat regexp))
@@ -1440,7 +1440,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	    ;; Try to correct mishandled uucode.
 	    (when gnus-uu-correct-stripped-uucode
 	      (gnus-uu-check-correct-stripped-uucode start-char (point)))
-	    (run-hooks 'gnus-uu-pre-uudecode-hook)
+	    (gnus-run-hooks 'gnus-uu-pre-uudecode-hook)
 
 	    ;; Send the text to the process.
 	    (condition-case nil
@@ -1749,7 +1749,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 ;; and "spiral.jpg", respectively.) The function should return nil if
 ;; the encoding wasn't successful.
 (defcustom gnus-uu-post-encode-method 'gnus-uu-post-encode-uuencode
-  "Function used for encoding binary files.
+  "*Function used for encoding binary files.
 There are three functions supplied with gnus-uu for encoding files:
 `gnus-uu-post-encode-uuencode', which does straight uuencoding;
 `gnus-uu-post-encode-mime', which encodes with base64 and adds MIME
@@ -1762,21 +1762,21 @@ uuencode and adds MIME headers."
 		(function :tag "Other")))
 
 (defcustom gnus-uu-post-include-before-composing nil
-  "Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
+  "*Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
 If this variable is t, you can either include an encoded file with
 \\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article."
   :group 'gnus-extract-post
   :type 'boolean)
 
 (defcustom gnus-uu-post-length 990
-  "Maximum length of an article.
+  "*Maximum length of an article.
 The encoded file will be split into how many articles it takes to
 post the entire file."
   :group 'gnus-extract-post
   :type 'integer)
 
 (defcustom gnus-uu-post-threaded nil
-  "Non-nil means that gnus-uu will post the encoded file in a thread.
+  "*Non-nil means that gnus-uu will post the encoded file in a thread.
 This may not be smart, as no other decoder I have seen are able to
 follow threads when collecting uuencoded articles.  (Well, I have seen
 one package that does that - gnus-uu, but somehow, I don't think that
@@ -1785,7 +1785,7 @@ counts...)  The default is nil."
   :type 'boolean)
 
 (defcustom gnus-uu-post-separate-description t
-  "Non-nil means that the description will be posted in a separate article.
+  "*Non-nil means that the description will be posted in a separate article.
 The first article will typically be numbered (0/x).  If this variable
 is nil, the description the user enters will be included at the
 beginning of the first article, which will be numbered (1/x).  Default

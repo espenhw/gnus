@@ -1,5 +1,5 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
 ;; Keywords: news xpm annotation glyph faces
@@ -62,7 +62,7 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   :group 'picons)
 
 (defcustom gnus-picons-news-directories '("news")
-  "*Sub-directory of the faces database containing the icons for newsgroups."
+  "*List of directories to search for newsgroups faces."
   :type '(repeat string)
   :group 'picons)
 (define-obsolete-variable-alias 'gnus-picons-news-directory

@@ -1,5 +1,5 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news, mail
@@ -41,30 +41,30 @@
 
 (defcustom gnus-cite-reply-regexp
   "^\\(Subject: Re\\|In-Reply-To\\|References\\):"
-  "If headers match this regexp it is reasonable to believe that
+  "*If headers match this regexp it is reasonable to believe that
 article has citations."
   :group 'gnus-cite
   :type 'string)
 
 (defcustom gnus-cite-always-check nil
-  "Check article always for citations. Set it t to check all articles."
+  "*Check article always for citations. Set it t to check all articles."
   :group 'gnus-cite
   :type '(choice (const :tag "no" nil)
 		  (const :tag "yes" t)))
 
 (defcustom gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
-  "Format of cited text buttons."
+  "*Format of cited text buttons."
   :group 'gnus-cite
   :type 'string)
 
 (defcustom gnus-cited-lines-visible nil
-  "The number of lines of hidden cited text to remain visible."
+  "*The number of lines of hidden cited text to remain visible."
   :group 'gnus-cite
   :type '(choice (const :tag "none" nil)
 		 integer))
 
 (defcustom gnus-cite-parse-max-size 25000
-  "Maximum article size (in bytes) where parsing citations is allowed.
+  "*Maximum article size (in bytes) where parsing citations is allowed.
 Set it to nil to parse all articles."
   :group 'gnus-cite
   :type '(choice (const :tag "all" nil)
@@ -72,43 +72,43 @@ Set it to nil to parse all articles."
 
 (defcustom gnus-cite-prefix-regexp
     "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
-  "Regexp matching the longest possible citation prefix on a line."
+  "*Regexp matching the longest possible citation prefix on a line."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-max-prefix 20
-  "Maximum possible length for a citation prefix."
+  "*Maximum possible length for a citation prefix."
   :group 'gnus-cite
   :type 'integer)
 
 (defcustom gnus-supercite-regexp
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
-  "Regexp matching normal Supercite attribution lines.
+  "*Regexp matching normal Supercite attribution lines.
 The first grouping must match prefixes added by other packages."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
-  "Regexp matching mangled Supercite attribution lines.
+  "*Regexp matching mangled Supercite attribution lines.
 The first regexp group should match the Supercite attribution."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-minimum-match-count 2
-  "Minimum number of identical prefixes before we believe it's a citation."
+  "*Minimum number of identical prefixes before we believe it's a citation."
   :group 'gnus-cite
   :type 'integer)
 
 (defcustom gnus-cite-attribution-prefix 
   "in article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),"
-  "Regexp matching the beginning of an attribution line."
+  "*Regexp matching the beginning of an attribution line."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-attribution-suffix
   "\\(\\(wrote\\|writes\\|said\\|says\\|>\\)\\(:\\|\\.\\.\\.\\)\\)[ \t]*$"
-  "Regexp matching the end of an attribution line.
+  "*Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button."
   :group 'gnus-cite
   :type 'regexp)
@@ -118,7 +118,7 @@ The text matching the first grouping will be used as a button."
   "Face used for attribution lines.")
 
 (defcustom gnus-cite-attribution-face 'gnus-cite-attribution-face
-  "Face used for attribution lines.
+  "*Face used for attribution lines.
 It is merged with the face for the cited text belonging to the attribution."
   :group 'gnus-cite
   :type 'face)
@@ -237,7 +237,7 @@ It is merged with the face for the cited text belonging to the attribution."
   '(gnus-cite-face-1 gnus-cite-face-2 gnus-cite-face-3 gnus-cite-face-4
     gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8
     gnus-cite-face-9 gnus-cite-face-10 gnus-cite-face-11)
-  "List of faces used for highlighting citations.
+  "*List of faces used for highlighting citations.
 
 When there are citations from multiple articles in the same message,
 Gnus will try to give each citation from each article its own face.
@@ -246,12 +246,12 @@ This should make it easier to see who wrote what."
   :type '(repeat face))
 
 (defcustom gnus-cite-hide-percentage 50
-  "Only hide excess citation if above this percentage of the body."
+  "*Only hide excess citation if above this percentage of the body."
   :group 'gnus-cite
   :type 'number)
 
 (defcustom gnus-cite-hide-absolute 10
-  "Only hide excess citation if above this number of lines in the body."
+  "*Only hide excess citation if above this number of lines in the body."
   :group 'gnus-cite
   :type 'integer)
 

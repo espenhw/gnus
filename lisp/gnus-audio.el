@@ -2,7 +2,6 @@
 ;; Copyright (C) 1996 Free Software Foundation
 
 ;; Author: Steven L. Baur <steve@miranova.com>
-;; Keywords: news
 
 ;; This file is part of GNU Emacs.
 
@@ -71,14 +70,14 @@
 ;  "Enable Sound Effects for Gnus."
 ;  (interactive)
 ;  (setq gnus-audio-effects-enabled t)
-;  (run-hooks gnus-audio-enable-hooks))
+;  (gnus-run-hooks gnus-audio-enable-hooks))
 
 ;;;###autoload
 					;(defun gnus-audio-disable-sound ()
 ;  "Disable Sound Effects for Gnus."
 ;  (interactive)
 ;  (setq gnus-audio-effects-enabled nil)
-;  (run-hooks gnus-audio-disable-hooks))
+;  (gnus-run-hooks gnus-audio-disable-hooks))
 
 ;;;###autoload
 (defun gnus-audio-play (file)

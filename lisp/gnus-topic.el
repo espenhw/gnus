@@ -1,5 +1,5 @@
 ;;; gnus-topic.el --- a folding minor mode for Gnus group buffers
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Ilja Weis <kult@uni-paderborn.de>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -40,12 +40,12 @@
   "Minor mode for Gnus group buffers.")
 
 (defcustom gnus-topic-mode-hook nil
-  "Hook run in topic mode buffers."
+  "*Hook run in topic mode buffers."
   :type 'hook
   :group 'gnus-topic)
 
 (defcustom gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
-  "Format of topic lines.
+  "*Format of topic lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
 
@@ -398,7 +398,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 
       (gnus-group-set-mode-line)
       (setq gnus-group-list-mode (cons level all))
-      (run-hooks 'gnus-group-prepare-hook))))
+      (gnus-run-hooks 'gnus-group-prepare-hook))))
 
 (defun gnus-topic-prepare-topic (topicl level &optional list-level all silent
 					lowest)
@@ -980,7 +980,7 @@ articles in the topic and its subtopics."
       ;; We check the topology.
       (when gnus-newsrc-alist
 	(gnus-topic-check-topology))
-      (run-hooks 'gnus-topic-mode-hook))
+      (gnus-run-hooks 'gnus-topic-mode-hook))
     ;; Remove topic infestation.
     (unless gnus-topic-mode
       (remove-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)

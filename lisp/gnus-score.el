@@ -1,5 +1,5 @@
 ;;; gnus-score.el --- scoring code for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -34,7 +34,7 @@
 (require 'message)
 
 (defcustom gnus-global-score-files nil
-  "List of global score files and directories.
+  "*List of global score files and directories.
 Set this variable if you want to use people's score files.  One entry
 for each score file or each score file directory.  Gnus will decide
 by itself what score files are applicable to which group.
@@ -50,7 +50,7 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
   :type '(repeat file))
 
 (defcustom gnus-score-file-single-match-alist nil
-  "Alist mapping regexps to lists of score files.
+  "*Alist mapping regexps to lists of score files.
 Each element of this alist should be of the form
 	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
 
@@ -65,7 +65,7 @@ gnus-score-find-score-files-function (which see)."
   :type '(repeat (cons regexp (repeat file))))
 
 (defcustom gnus-score-file-multiple-match-alist nil
-  "Alist mapping regexps to lists of score files.
+  "*Alist mapping regexps to lists of score files.
 Each element of this alist should be of the form
 	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
 
@@ -81,18 +81,18 @@ gnus-score-find-score-files-function (which see)."
   :type '(repeat (cons regexp (repeat file))))
 
 (defcustom gnus-score-file-suffix "SCORE"
-  "Suffix of the score files."
+  "*Suffix of the score files."
   :group 'gnus-score-files
   :type 'string)
 
 (defcustom gnus-adaptive-file-suffix "ADAPT"
-  "Suffix of the adaptive score files."
+  "*Suffix of the adaptive score files."
   :group 'gnus-score-files
   :group 'gnus-score-adapt
   :type 'string)
 
 (defcustom gnus-score-find-score-files-function 'gnus-score-find-bnews
-  "Function used to find score files.
+  "*Function used to find score files.
 The function will be called with the group name as the argument, and
 should return a list of score files to apply to that group.  The score
 files do not actually have to exist.
@@ -162,7 +162,7 @@ It is called with one parameter -- the score to be decayed."
   :type 'number)
 
 (defcustom gnus-home-score-file nil
-  "Variable to control where interactive score entries are to go.
+  "*Variable to control where interactive score entries are to go.
 It can be:
 
  * A string
@@ -199,7 +199,7 @@ It can be:
 		 (function :value fun)))
 
 (defcustom gnus-home-adapt-file nil
-  "Variable to control where new adaptive score entries are to go.
+  "*Variable to control where new adaptive score entries are to go.
 This variable allows the same syntax as `gnus-home-score-file'."
   :group 'gnus-score-adapt
   :group 'gnus-score-files
@@ -216,7 +216,7 @@ This variable allows the same syntax as `gnus-home-score-file'."
     (gnus-catchup-mark (subject -10))
     (gnus-killed-mark (from -1) (subject -20))
     (gnus-del-mark (from -2) (subject -15)))
-"Alist of marks and scores."
+"*Alist of marks and scores."
 :group 'gnus-score-adapt
 :type '(repeat (cons (symbol :tag "Mark")
 		     (repeat (list (choice :tag "Header"
@@ -226,7 +226,7 @@ This variable allows the same syntax as `gnus-home-score-file'."
 				   (integer :tag "Score"))))))
 
 (defcustom gnus-ignored-adaptive-words nil
-  "List of words to be ignored when doing adaptive word scoring."
+  "*List of words to be ignored when doing adaptive word scoring."
   :group 'gnus-score-adapt
   :type '(repeat string))
 
@@ -245,7 +245,7 @@ This variable allows the same syntax as `gnus-home-score-file'."
     "being" "current" "back" "still" "go" "point" "value" "each" "did"
     "both" "true" "off" "say" "another" "state" "might" "under" "start"
     "try" "re")
-  "Default list of words to be ignored when doing adaptive word scoring."
+  "*Default list of words to be ignored when doing adaptive word scoring."
   :group 'gnus-score-adapt
   :type '(repeat string))
 
@@ -254,13 +254,13 @@ This variable allows the same syntax as `gnus-home-score-file'."
     (,gnus-catchup-mark . -10)
     (,gnus-killed-mark . -20)
     (,gnus-del-mark . -15))
-"Alist of marks and scores."
+"*Alist of marks and scores."
 :group 'gnus-score-adapt
 :type '(repeat (cons (character :tag "Mark")
 		     (integer :tag "Score"))))
 
 (defcustom gnus-adaptive-word-minimum nil
-  "If a number, this is the minimum score value that can be assigned to a word."
+  "*If a number, this is the minimum score value that can be assigned to a word."
   :group 'gnus-score-adapt
   :type '(choice (const nil) integer))
 
@@ -281,13 +281,13 @@ If this variable is nil, exact matching will always be used."
   :type '(choice (const nil) integer))
 
 (defcustom gnus-score-uncacheable-files "ADAPT$"
-  "All score files that match this regexp will not be cached."
+  "*All score files that match this regexp will not be cached."
   :group 'gnus-score-adapt
   :group 'gnus-score-files
   :type 'regexp)
 
 (defcustom gnus-score-default-header nil
-  "Default header when entering new scores.
+  "*Default header when entering new scores.
 
 Should be one of the following symbols.
 
@@ -317,7 +317,7 @@ If nil, the user will be asked for a header."
 		 (const :tag "ask" nil)))
 
 (defcustom gnus-score-default-type nil
-  "Default match type when entering new scores.
+  "*Default match type when entering new scores.
 
 Should be one of the following symbols.
 
@@ -347,12 +347,12 @@ If nil, the user will be asked for a match type."
 		 (const :tag "ask" nil)))
 
 (defcustom gnus-score-default-fold nil
-  "Use case folding for new score file entries iff not nil."
+  "*Use case folding for new score file entries iff not nil."
   :group 'gnus-score-default
   :type 'boolean)
 
 (defcustom gnus-score-default-duration nil
-  "Default duration of effect when entering new scores.
+  "*Default duration of effect when entering new scores.
 
 Should be one of the following symbols.
 
@@ -368,7 +368,7 @@ If nil, the user will be asked for a duration."
 		 (const :tag "ask" nil)))
 
 (defcustom gnus-score-after-write-file-function nil
-  "Function called with the name of the score file just written to disk."
+  "*Function called with the name of the score file just written to disk."
   :group 'gnus-score-files
   :type 'function)
 

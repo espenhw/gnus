@@ -1,5 +1,5 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -95,7 +95,7 @@
     "^Date-Received:" "^References:" "^Control:" "^Xref:" "^Lines:"
     "^Posted:" "^Relay-Version:" "^Message-ID:" "^Nf-ID:" "^Nf-From:"
     "^Approved:" "^Sender:" "^Received:" "^Mail-from:")
-  "All headers that start with this regexp will be hidden.
+  "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :type '(choice :custom-show nil
@@ -105,7 +105,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
 
 (defcustom gnus-visible-headers
   "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|X-Sent:"
-  "All headers that do not match this regexp will be hidden.
+  "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
   :type '(repeat :value-to-internal (lambda (widget value)
@@ -119,7 +119,7 @@ If this variable is non-nil, `gnus-ignored-headers' will be ignored."
 (defcustom gnus-sorted-header-list
   '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:"
     "^Followup-To:" "^To:" "^Cc:" "^Date:" "^Organization:")
-  "This variable is a list of regular expressions.
+  "*This variable is a list of regular expressions.
 If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
 this list."
@@ -127,7 +127,7 @@ this list."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
-  "Headers that are only to be displayed if they have interesting data.
+  "*Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
 `reply-to', `date', `long-to', and `many-to'."
   :type '(set (const :tag "Headers with no content." empty)
@@ -140,7 +140,7 @@ Possible values in this list are `empty', `newsgroups', `followup-to',
   :group 'gnus-article-hiding)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
-  "Regexp matching signature separator.
+  "*Regexp matching signature separator.
 This can also be a list of regexps.  In that case, it will be checked
 from head to tail looking for a separator.  Searches will be done from
 the end of the buffer."
@@ -148,7 +148,7 @@ the end of the buffer."
   :group 'gnus-article-signature)
 
 (defcustom gnus-signature-limit nil
-   "Provide a limit to what is considered a signature.
+   "*Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
 that number.  If it is a floating point number, no signature may be
 longer (in lines) than that number.  If it is a function, the function
@@ -162,20 +162,20 @@ regexp.  If it matches, the text in question is not a signature."
   :group 'gnus-article-signature)
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
-  "Property list to use for hiding text."
+  "*Property list to use for hiding text."
   :type 'sexp
   :group 'gnus-article-hiding)
 
 (defcustom gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
-  "String or function to be executed to display an X-Face header.
+  "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
   :type 'string				;Leave function case to Lisp.
   :group 'gnus-article-washing)
 
 (defcustom gnus-article-x-face-too-ugly nil
-  "Regexp matching posters whose face shouldn't be shown automatically."
+  "*Regexp matching posters whose face shouldn't be shown automatically."
   :type '(choice regexp (const nil))
   :group 'gnus-article-washing)
 
@@ -198,7 +198,7 @@ asynchronously.	 The compressed face will be piped to this command."
 	    (format format (car spec) (cadr spec))
 	    2 3 (intern (format "gnus-emphasis-%s" (caddr spec)))))
 	 types)))
-  "Alist that says how to fontify certain phrases.
+  "*Alist that says how to fontify certain phrases.
 Each item looks like this:
 
   (\"_\\\\(\\\\w+\\\\)_\" 0 1 'underline)
@@ -246,7 +246,7 @@ Esample: (_/*word*/_)."
   :group 'gnus-article-emphasis)
 
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
-  "Format for display of Date headers in article bodies.
+  "*Format for display of Date headers in article bodies.
 See `format-time-string' for the possible values.
 
 The variable can also be function, which should return a complete Date
@@ -280,7 +280,7 @@ each invocation of the saving commands."
 		 (sexp :tag "once" :format "%t\n" :value t)))
 
 (defcustom gnus-saved-headers gnus-visible-headers
-  "Headers to keep if `gnus-save-all-headers' is nil.
+  "*Headers to keep if `gnus-save-all-headers' is nil.
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
 will be kept while the rest will be deleted before saving."
@@ -288,7 +288,7 @@ will be kept while the rest will be deleted before saving."
   :type 'regexp)
 
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
-  "A function to save articles in your favourite format.
+  "*A function to save articles in your favourite format.
 The function must be interactively callable (in other words, it must
 be an Emacs command).
 
@@ -309,25 +309,25 @@ Gnus provides the following functions:
 		(function-item gnus-summary-write-to-file)))
 
 (defcustom gnus-rmail-save-name 'gnus-plain-save-name
-  "A function generating a file name to save articles in Rmail format.
+  "*A function generating a file name to save articles in Rmail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-mail-save-name 'gnus-plain-save-name
-  "A function generating a file name to save articles in Unix mail format.
+  "*A function generating a file name to save articles in Unix mail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-folder-save-name 'gnus-folder-save-name
-  "A function generating a file name to save articles in MH folder.
+  "*A function generating a file name to save articles in MH folder.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER."
   :group 'gnus-article-saving
   :type 'function)
 
 (defcustom gnus-file-save-name 'gnus-numeric-save-name
-  "A function generating a file name to save articles in article format.
+  "*A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional
 LAST-FILE."
   :group 'gnus-article-saving
@@ -336,7 +336,7 @@ LAST-FILE."
 (defcustom gnus-split-methods
   '((gnus-article-archive-name)
     (gnus-article-nndoc-name))
-  "Variable used to suggest where articles are to be saved.
+  "*Variable used to suggest where articles are to be saved.
 For instance, if you would like to save articles related to Gnus in
 the file \"gnus-stuff\", and articles related to VM in \"vm-stuff\",
 you could set this variable to something like:
@@ -366,7 +366,7 @@ be used as possible file names."
   :type 'boolean)
 
 (defcustom gnus-show-mime-method 'metamail-buffer
-  "Function to process a MIME message.
+  "*Function to process a MIME message.
 The function is called from the article buffer."
   :group 'gnus-article-mime
   :type 'function)
@@ -412,7 +412,7 @@ If you want to run a special decoding program like nkf, use this hook."
   :group 'gnus-article-various)
 
 (defcustom gnus-article-button-face 'bold
-  "Face used for highlighting buttons in the article buffer.
+  "*Face used for highlighting buttons in the article buffer.
 
 An article button is a piece of text that you can activate by pressing
 `RET' or `mouse-2' above it."
@@ -420,7 +420,7 @@ An article button is a piece of text that you can activate by pressing
   :group 'gnus-article-buttons)
 
 (defcustom gnus-article-mouse-face 'highlight
-  "Face used for mouse highlighting in the article buffer.
+  "*Face used for mouse highlighting in the article buffer.
 
 Article buttons will be displayed in this face when the cursor is
 above them."
@@ -428,7 +428,7 @@ above them."
   :group 'gnus-article-buttons)
 
 (defcustom gnus-signature-face 'gnus-signature-face
-  "Face used for highlighting a signature in the article buffer.
+  "*Face used for highlighting a signature in the article buffer.
 Obsolete; use the face `gnus-signature-face' for customizations instead."
   :type 'face
   :group 'gnus-article-highlight
@@ -510,7 +510,7 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
     ("Subject" nil gnus-header-subject-face)
     ("Newsgroups:.*," nil gnus-header-newsgroups-face)
     ("" gnus-header-name-face gnus-header-content-face))
-  "Controls highlighting of article header.
+  "*Controls highlighting of article header.
 
 An alist of the form (HEADER NAME CONTENT).
 
@@ -1036,7 +1036,7 @@ always hide."
 	      (gnus-article-hide-text-type
 	       (match-beginning 0) (match-end 0) 'pgp))
 	    (widen))
-	  (run-hooks 'gnus-article-hide-pgp-hook))))))
+	  (gnus-run-hooks 'gnus-article-hide-pgp-hook))))))
 
 (defun article-hide-pem (&optional arg)
   "Toggle hiding of any PEM headers and signatures in the current article.
@@ -1927,7 +1927,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (define-key gnus-article-mode-map [menu-bar post]
 	(cons "Post" gnus-summary-post-menu)))
 
-    (run-hooks 'gnus-article-menu-hook)))
+    (gnus-run-hooks 'gnus-article-menu-hook)))
 
 (defun gnus-article-mode ()
   "Major mode for displaying an article.
@@ -1963,7 +1963,7 @@ commands:
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
   (set-syntax-table gnus-article-mode-syntax-table)
-  (run-hooks 'gnus-article-mode-hook))
+  (gnus-run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()
   "Initialize the article buffer."
@@ -2096,10 +2096,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (setq gnus-current-headers nil))
 		(gnus-summary-goto-subject gnus-current-article)
 		(gnus-summary-show-thread)
-		(run-hooks 'gnus-mark-article-hook)
+		(gnus-run-hooks 'gnus-mark-article-hook)
 		(gnus-set-mode-line 'summary)
 		(when (gnus-visual-p 'article-highlight 'highlight)
-		  (run-hooks 'gnus-visual-mark-article-hook))
+		  (gnus-run-hooks 'gnus-visual-mark-article-hook))
 		;; Set the global newsgroup variables here.
 		;; Suggested by Jim Sisolak
 		;; <sisolak@trans4.neep.wisc.edu>.
@@ -2119,8 +2119,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      ;; Hooks for getting information from the article.
 	      ;; This hook must be called before being narrowed.
 	      (let (buffer-read-only)
-		(run-hooks 'internal-hook)
-		(run-hooks 'gnus-article-prepare-hook)
+		(gnus-run-hooks 'internal-hook)
+		(gnus-run-hooks 'gnus-article-prepare-hook)
 		;; Decode MIME message.
 		(when gnus-show-mime
 		  (if (or (not gnus-strict-mime)
@@ -2130,7 +2130,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			(funcall gnus-show-mime-method))
 		    (funcall gnus-decode-encoded-word-method)))
 		;; Perform the article display hooks.
-		(run-hooks 'gnus-article-display-hook))
+		(gnus-run-hooks 'gnus-article-display-hook))
 	      ;; Do page break.
 	      (goto-char (point-min))
 	      (setq gnus-page-broken
@@ -2552,7 +2552,7 @@ If given a prefix, show the hidden text instead."
 ;;;
 
 (defcustom gnus-article-edit-mode-hook nil
-  "Hook run in article edit mode buffers."
+  "*Hook run in article edit mode buffers."
   :group 'gnus-article-various
   :type 'hook)
 
@@ -2586,7 +2586,7 @@ This is an extended text-mode.
   (setq buffer-read-only nil)
   (buffer-enable-undo)
   (widen)
-  (run-hooks 'text-mode 'gnus-article-edit-mode-hook))
+  (gnus-run-hooks 'text-mode 'gnus-article-edit-mode-hook))
 
 (defun gnus-article-edit (&optional force)
   "Edit the current article.
@@ -2702,7 +2702,7 @@ groups."
 ;;; Internal Variables:
 
 (defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
-  "Regular expression that matches URLs."
+  "*Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
 
@@ -2721,7 +2721,7 @@ groups."
     ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
     ;; Raw URLs.
     (,gnus-button-url-regexp 0 t gnus-button-url 0))
-  "Alist of regexps matching buttons in article bodies.
+  "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
 REGEXP: is the string matching text around the button,
@@ -2753,7 +2753,7 @@ variable it the real callback function."
     ("^[^:]+:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))
-  "Alist of headers and regexps to match buttons in article heads.
+  "*Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
 alist has an additional HEADER element first in each entry:

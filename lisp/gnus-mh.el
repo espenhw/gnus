@@ -1,5 +1,5 @@
 ;;; gnus-mh.el --- mh-e interface for Gnus
-;; Copyright (C) 1994,95,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

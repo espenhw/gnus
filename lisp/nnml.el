@@ -1,5 +1,5 @@
 ;;; nnml.el --- mail spool access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -163,8 +163,6 @@ all.  This may very well take some time.")
 (deffoo nnml-request-article (id &optional group server buffer)
   (nnml-possibly-change-directory group server)
   (let* ((nntp-server-buffer (or buffer nntp-server-buffer))
-	 ;; 1997/8/12 by MORIOKA Tomohiko
-	 ;;	for XEmacs/mule.
 	 (pathname-coding-system 'binary)
 	 path gpath group-num)
     (if (stringp id)
@@ -250,8 +248,6 @@ all.  This may very well take some time.")
 
 (deffoo nnml-request-list (&optional server)
   (save-excursion
-    ;; 1997/8/12 by MORIOKA Tomohiko
-    ;;	for XEmacs/mule.
     (let ((nnmail-file-coding-system nnmail-active-file-coding-system)
 	  (pathname-coding-system 'binary)) ; for XEmacs/mule
       (nnmail-find-file nnml-active-file)
@@ -590,8 +586,8 @@ all.  This may very well take some time.")
   (let (chars headers)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
-    (run-hooks 'nnmail-prepare-save-mail-hook)
-    (run-hooks 'nnml-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnml-prepare-save-mail-hook)
     (goto-char (point-min))
     (while (looking-at "From ")
       (replace-match "X-From-Line: ")

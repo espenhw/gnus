@@ -1,5 +1,5 @@
 ;;; gnus-async.el --- asynchronous support for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -51,7 +51,7 @@ if t, prefetch as many articles as possible."
 		 (integer :tag "some" 0)))
 
 (defcustom gnus-prefetched-article-deletion-strategy '(read exit)
-  "List of symbols that say when to remove articles from the prefetch buffer.
+  "*List of symbols that say when to remove articles from the prefetch buffer.
 Possible values in this list are `read', which means that
 articles are removed as they are read, and `exit', which means
 that all articles belonging to a group are removed on exit
@@ -65,7 +65,7 @@ from that group."
   :type 'boolean)
 
 (defcustom gnus-async-prefetch-article-p 'gnus-async-unread-p
-  "Function called to say whether an article should be prefetched or not.
+  "*Function called to say whether an article should be prefetched or not.
 The function is called with one parameter -- the article data.
 It should return non-nil if the article is to be prefetched."
   :group 'gnus-asynchronous

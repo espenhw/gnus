@@ -1,5 +1,5 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -57,7 +57,7 @@ automatically."
   "Color alist used for the Gnus logo.")
 
 (defcustom gnus-xmas-logo-color-style 'moss
-  "Color styles used for the Gnus logo."
+  "*Color styles used for the Gnus logo."
   :type '(choice (const flame) (const pine) (const moss)
 		 (const irish) (const sky) (const tin)
 		 (const velvet) (const grape) (const labia)
@@ -73,7 +73,7 @@ automatically."
 	  (featurep 'xpm))
       'gnus-xmas-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
-  "String or function to be executed to display an X-Face header.
+  "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
   :type '(choice string function))
@@ -153,7 +153,7 @@ It is provided only to ease porting of broken FSF Emacs programs."
 		     gnus-summary-selected-face)))
 
 (defcustom gnus-xmas-force-redisplay nil
-  "If non-nil, force a redisplay before recentering the summary buffer.
+  "*If non-nil, force a redisplay before recentering the summary buffer.
 This is ugly, but it works around a bug in `window-displayed-height'."
   :type 'boolean
   :group 'gnus-xmas)

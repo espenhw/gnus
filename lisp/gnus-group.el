@@ -1,5 +1,5 @@
 ;;; gnus-group.el --- group mode commands for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -196,24 +196,24 @@ with some simple extensions:
   :type 'string)
 
 (defcustom gnus-group-mode-hook nil
-  "Hook for Gnus group mode."
+  "*Hook for Gnus group mode."
   :group 'gnus-group-various
   :options '(gnus-topic-mode)
   :type 'hook)
 
 (defcustom gnus-group-menu-hook nil
-  "Hook run after the creation of the group mode menu."
+  "*Hook run after the creation of the group mode menu."
   :group 'gnus-group-various
   :type 'hook)
 
 (defcustom gnus-group-catchup-group-hook nil
-  "Hook run when catching up a group from the group buffer."
+  "*Hook run when catching up a group from the group buffer."
   :group 'gnus-group-various
   :link '(custom-manual "(gnus)Group Data")
   :type 'hook)
 
 (defcustom gnus-group-update-group-hook nil
-  "Hook called when updating group lines."
+  "*Hook called when updating group lines."
   :group 'gnus-group-visual
   :type 'hook)
 
@@ -230,28 +230,28 @@ The only current function implemented is `gnus-group-prepare-flat'."
   :type 'function)
 
 (defcustom gnus-group-prepare-hook nil
-  "Hook called after the group buffer has been generated.
+  "*Hook called after the group buffer has been generated.
 If you want to modify the group buffer, you can use this hook."
   :group 'gnus-group-listing
   :type 'hook)
 
 (defcustom gnus-suspend-gnus-hook nil
-  "Hook called when suspending (not exiting) Gnus."
+  "*Hook called when suspending (not exiting) Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-exit-gnus-hook nil
-  "Hook called when exiting Gnus."
+  "*Hook called when exiting Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-after-exiting-gnus-hook nil
-  "Hook called after exiting Gnus."
+  "*Hook called after exiting Gnus."
   :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-group-update-hook '(gnus-group-highlight-line)
-  "Hook called when a group line is changed.
+  "*Hook called when a group line is changed.
 The hook will not be called if `gnus-visual' is nil.
 
 The default function `gnus-group-highlight-line' will
@@ -275,7 +275,7 @@ variable."
 		       (unless file
 			 (error "Couldn't find doc group"))
 		       file))))))
-  "Alist of useful group-server pairs."
+  "*Alist of useful group-server pairs."
   :group 'gnus-group-listing
   :type '(repeat (list (string :tag "Description")
 		       (string :tag "Name")
@@ -316,7 +316,7 @@ variable."
      gnus-group-mail-low-empty-face)
     (t .
      gnus-group-mail-low-face))
-  "Controls the highlighting of group buffer lines.
+  "*Controls the highlighting of group buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
 particular group line should be displayed, each form is
@@ -340,7 +340,7 @@ ticked: The number of ticked articles."
   :type '(repeat (cons (sexp :tag "Form") face)))
 
 (defcustom gnus-new-mail-mark ?%
-  "Mark used for groups with new mail."
+  "*Mark used for groups with new mail."
   :group 'gnus-group-visual
   :type 'character)
 
@@ -730,7 +730,7 @@ ticked: The number of ticked articles."
        ["Exit from Gnus" gnus-group-exit t]
        ["Exit without saving" gnus-group-quit t]))
 
-    (run-hooks 'gnus-group-menu-hook)))
+    (gnus-run-hooks 'gnus-group-menu-hook)))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -769,7 +769,7 @@ The following commands are available:
   (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (when gnus-use-undo
     (gnus-undo-mode 1))
-  (run-hooks 'gnus-group-mode-hook))
+  (gnus-run-hooks 'gnus-group-mode-hook))
 
 (defun gnus-update-group-mark-positions ()
   (save-excursion
@@ -948,7 +948,7 @@ If REGEXP, only list groups matching REGEXP."
 
     (gnus-group-set-mode-line)
     (setq gnus-group-list-mode (cons level all))
-    (run-hooks 'gnus-group-prepare-hook)
+    (gnus-run-hooks 'gnus-group-prepare-hook)
     t))
 
 (defun gnus-group-prepare-flat-list-dead (groups level mark regexp)
@@ -1090,7 +1090,7 @@ If REGEXP, only list groups matching REGEXP."
 		  gnus-level ,gnus-tmp-level))
     (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
-      (run-hooks 'gnus-group-update-hook)
+      (gnus-run-hooks 'gnus-group-update-hook)
       (forward-line))
     ;; Allow XEmacs to remove front-sticky text properties.
     (gnus-group-remove-excess-properties)))
@@ -1163,7 +1163,7 @@ already."
 	    (gnus-group-insert-group-line-info group)
 	    (save-excursion
 	      (forward-line -1)
-	      (run-hooks 'gnus-group-update-group-hook)))
+	      (gnus-run-hooks 'gnus-group-update-group-hook)))
 	  (setq loc (1+ loc)))
 	(unless (or found visible-only)
 	  ;; No such line in the buffer, find out where it's supposed to
@@ -1185,7 +1185,7 @@ already."
 	    (gnus-group-insert-group-line-info group)
 	    (save-excursion
 	      (forward-line -1)
-	      (run-hooks 'gnus-group-update-group-hook))))
+	      (gnus-run-hooks 'gnus-group-update-group-hook))))
 	(when gnus-group-update-group-function
 	  (funcall gnus-group-update-group-function group))
 	(gnus-group-set-mode-line)))
@@ -1898,6 +1898,7 @@ and NEW-NAME will be prompted for."
 	(gnus-set-active new-name (gnus-active group))
 	(gnus-message 6 "Renaming group %s to %s...done" group new-name)
 	new-name)
+    (gnus-dribble-touch)
     (gnus-group-position-point)))
 
 (defun gnus-group-edit-group (group &optional part)
@@ -2479,7 +2480,7 @@ or nil if no action could be taken."
 	  (gnus-add-marked-articles group 'tick nil nil 'force)
 	  (gnus-add-marked-articles group 'dormant nil nil 'force))
 	(let ((gnus-newsgroup-name group))
-	  (run-hooks 'gnus-group-catchup-group-hook))
+	  (gnus-run-hooks 'gnus-group-catchup-group-hook))
 	num))))
 
 (defun gnus-group-expire-articles (&optional n)
@@ -2869,7 +2870,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
   (let ((gnus-inhibit-demon t))
-    (run-hooks 'gnus-get-new-news-hook)
+    (gnus-run-hooks 'gnus-get-new-news-hook)
 
     ;; Read any slave files.
     (unless gnus-slave
@@ -2896,7 +2897,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 	  (gnus-get-unread-articles arg))
       (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
 	(gnus-get-unread-articles arg)))
-    (run-hooks 'gnus-after-getting-new-news-hook)
+    (gnus-run-hooks 'gnus-after-getting-new-news-hook)
     (gnus-group-list-groups (and (numberp arg)
 				 (max (car gnus-group-list-mode) arg)))))
 
@@ -3153,7 +3154,7 @@ If GROUP, edit that local kill file instead."
 In fact, cleanup buffers except for group mode buffer.
 The hook gnus-suspend-gnus-hook is called before actually suspending."
   (interactive)
-  (run-hooks 'gnus-suspend-gnus-hook)
+  (gnus-run-hooks 'gnus-suspend-gnus-hook)
   ;; Kill Gnus buffers except for group mode buffer.
   (let* ((group-buf (get-buffer gnus-group-buffer))
 	 ;; Do this on a separate list in case the user does a ^G before we finish
@@ -3183,7 +3184,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	  (not gnus-interactive-exit)	;Without confirmation
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
-    (run-hooks 'gnus-exit-gnus-hook)
+    (gnus-run-hooks 'gnus-exit-gnus-hook)
     ;; Offer to save data from non-quitted summary buffers.
     (gnus-offer-save-summaries)
     ;; Save the newsrc file(s).
@@ -3193,7 +3194,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
     ;; Reset everything.
     (gnus-clear-system)
     ;; Allow the user to do things after cleaning up.
-    (run-hooks 'gnus-after-exiting-gnus-hook)))
+    (gnus-run-hooks 'gnus-after-exiting-gnus-hook)))
 
 (defun gnus-group-quit ()
   "Quit reading news without updating .newsrc.eld or .newsrc.
@@ -3207,14 +3208,14 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	    (gnus-yes-or-no-p
 	     (format "Quit reading news without saving %s? "
 		     (file-name-nondirectory gnus-current-startup-file))))
-    (run-hooks 'gnus-exit-gnus-hook)
+    (gnus-run-hooks 'gnus-exit-gnus-hook)
     (gnus-configure-windows 'group t)
     (gnus-dribble-save)
     (gnus-close-backends)
     (gnus-clear-system)
     (gnus-kill-buffer gnus-group-buffer)
     ;; Allow the user to do things after cleaning up.
-    (run-hooks 'gnus-after-exiting-gnus-hook)))
+    (gnus-run-hooks 'gnus-after-exiting-gnus-hook)))
 
 (defun gnus-group-describe-briefly ()
   "Give a one line description of the group mode commands."

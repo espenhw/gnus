@@ -1,5 +1,5 @@
 ;;; nndoc.el --- single file access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -285,7 +285,7 @@ from the document.")
 	(if (stringp nndoc-address)
 	    (nnheader-insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address))
-	(run-hooks 'nndoc-open-document-hook))))
+	(gnus-run-hooks 'nndoc-open-document-hook))))
     ;; Initialize the nndoc structures according to this new document.
     (when (and nndoc-current-buffer
 	       (not nndoc-dissection-alist))

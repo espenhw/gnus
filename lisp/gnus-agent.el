@@ -1,9 +1,7 @@
 ;;; gnus-agent.el --- unplugged support for Gnus
-;; Copyright (C) 1997 Free Software Foundation, Inc.
+;; Copyright (C) 1997,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
-;; Keywords: news
-
 ;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
@@ -32,22 +30,22 @@
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-agent-directory (nnheader-concat gnus-directory "agent/")
-  "Where the Gnus agent will store its files."
+  "*Where the Gnus agent will store its files."
   :group 'gnus-agent
   :type 'directory)
 
 (defcustom gnus-agent-plugged-hook nil
-  "Hook run when plugging into the network."
+  "*Hook run when plugging into the network."
   :group 'gnus-agent
   :type 'hook)
 
 (defcustom gnus-agent-unplugged-hook nil
-  "Hook run when unplugging from the network."
+  "*Hook run when unplugging from the network."
   :group 'gnus-agent
   :type 'hook)
 
 (defcustom gnus-agent-handle-level gnus-level-subscribed
-  "Groups on levels higher than this variable will be ignored by the Agent."
+  "*Groups on levels higher than this variable will be ignored by the Agent."
   :group 'gnus-agent
   :type 'integer)
 
@@ -115,7 +113,8 @@
 
 (defsubst gnus-agent-directory ()
   "Path of the Gnus agent directory."
-  (nnheader-concat gnus-agent-directory (gnus-agent-method) "/"))
+  (nnheader-concat gnus-agent-directory
+		   (nnheader-translate-file-chars (gnus-agent-method)) "/"))
 
 (defun gnus-agent-lib-file (file)
   "The full path of the Gnus agent library FILE."
@@ -177,7 +176,7 @@
 						     buffer))))
 	    minor-mode-map-alist))
     (gnus-agent-toggle-plugged gnus-plugged)
-    (run-hooks 'gnus-agent-mode-hook)))
+    (gnus-run-hooks 'gnus-agent-mode-hook)))
 
 (defvar gnus-agent-group-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-group-mode-map
@@ -239,10 +238,10 @@
   (interactive (list (not gnus-plugged)))
   (if plugged
       (progn
-	(run-hooks 'gnus-agent-plugged-hook)
+	(gnus-run-hooks 'gnus-agent-plugged-hook)
 	(setcar (cdr gnus-agent-mode-status) " Plugged"))
     (gnus-agent-close-connections)
-    (run-hooks 'gnus-agent-unplugged-hook)
+    (gnus-run-hooks 'gnus-agent-unplugged-hook)
     (setcar (cdr gnus-agent-mode-status) " Unplugged"))
   (setq gnus-plugged plugged)
   (set-buffer-modified-p t))
@@ -926,7 +925,7 @@ the actual number of articles toggled is returned."
        ["Edit groups" gnus-category-edit-groups t]
        ["Exit" gnus-category-exit t]))
 
-    (run-hooks 'gnus-category-menu-hook)))
+    (gnus-run-hooks 'gnus-category-menu-hook)))
 
 (defun gnus-category-mode ()
   "Major mode for listing and editing agent categories.
@@ -952,7 +951,7 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
   (setq buffer-read-only t)
-  (run-hooks 'gnus-category-mode-hook))
+  (gnus-run-hooks 'gnus-category-mode-hook))
 
 (defalias 'gnus-category-position-point 'gnus-goto-colon)
 

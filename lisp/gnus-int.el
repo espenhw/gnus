@@ -1,5 +1,5 @@
 ;;; gnus-int.el --- backend interface functions for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -30,7 +30,7 @@
 (require 'gnus)
 
 (defcustom gnus-open-server-hook nil
-  "Hook called just before opening connection to the news server."
+  "*Hook called just before opening connection to the news server."
   :group 'gnus-start
   :type 'hook)
 
@@ -86,7 +86,7 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
        (t
 	(require 'nntp)))
       (setq gnus-current-select-method gnus-select-method)
-      (run-hooks 'gnus-open-server-hook)
+      (gnus-run-hooks 'gnus-open-server-hook)
       (or
        ;; gnus-open-server-hook might have opened it
        (gnus-server-opened gnus-select-method)
@@ -121,7 +121,7 @@ If it is down, start it up (again)."
 	(gnus-message 5 "Opening %s server%s..." (car method)
 		      (if (equal (nth 1 method) "") ""
 			(format " on %s" (nth 1 method)))))
-      (run-hooks 'gnus-open-server-hook)
+      (gnus-run-hooks 'gnus-open-server-hook)
       (prog1
 	  (gnus-open-server method)
 	(unless silent

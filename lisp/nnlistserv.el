@@ -1,5 +1,5 @@
-;;; nnlsitserv.el --- retrieving articles via web mailing list archives
-;; Copyright (C) 1997 Free Software Foundation, Inc.
+;;; nnlistserv.el --- retrieving articles via web mailing list archives
+;; Copyright (C) 1997,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.25 Manual
+@settitle Quassia Gnus 0.26 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.25 Manual
+@title Quassia Gnus 0.26 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.25.
+This manual corresponds to Quassia Gnus 0.26.
 
 @end ifinfo
 
@@ -7370,6 +7370,12 @@ to have truncation switched off while reading articles.
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
 If given a prefix, force an @code{article} window configuration. 
 
+@item M-C-e
+@kindex M-C-e (Summary)
+@findex gnus-summary-edit-parameters
+Edit the group parameters (@pxref{Group Parameters}) of the current
+group (@code{gnus-summary-edit-parameters}).
+
 @end table
 
 
@@ -8850,24 +8856,39 @@ present in this hook.
 
 @item nntp-authinfo-function 
 @vindex nntp-authinfo-function 
-This function will be used to send @samp{AUTHINFO} to the @sc{nntp}
-server.  Available functions include:
-
-@table @code
-@item nntp-send-authinfo
 @findex nntp-send-authinfo
-This function will use your current login name as the user name and will
-prompt you for the password.  This is the default.
+This function will be used to send @samp{AUTHINFO} to the @sc{nntp}
+server.  The default function is @code{nntp-send-authinfo}, which looks
+through your @file{~/.netrc} for applicable entries.  If none are found,
+it will prompt you for a login name and a password.  The format of the
+@file{~/.netrc} file is defined in the @code{ftp} manual page, but here
+are the salient facts:
 
-@item nntp-send-nosy-authinfo
-@findex nntp-send-nosy-authinfo
-This function will prompt you for both user name and password.
+@enumerate
+@item
+The file contains one or more line, each of which define one server.
 
-@item nntp-send-authinfo-from-file
-@findex nntp-send-authinfo-from-file
-This function will use your current login name as the user name and will
-read the @sc{nntp} password from @file{~/.nntp-authinfo}.
-@end table
+@item
+Each line may contain an arbitrary number of token/value pairs.  The
+valid tokens include @samp{machine}, @samp{login}, and @samp{password}.
+
+@end enumerate
+
+Here's an example file:
+
+@example
+machine news.uio.no login larsi password geheimnis
+machine nntp.ifi.uio.no login larsi
+@end example
+
+The token/value pairs may appear in any order; @samp{machine} doesn't
+have to be first, for instance.
+
+In this example, both login name and password have been supplied for the
+former server, while the latter has only the login name listed, and the
+user will be prompted for the password.
+
+Remember to not leave the @file{~/.netrc} world-readable.
 
 @item nntp-server-action-alist 
 @vindex nntp-server-action-alist 
@@ -10983,8 +11004,12 @@ If you would like to read @samp{soc.motss} both from a server in Japan
 and a server in Norway, you could use the following as the group regexp:
 
 @example
-"^nntp+some.server.jp:soc.motss$\\|^nntp+some.server.no:soc.motss$"
+"^nntp\\+some\\.server\\.jp:soc\\.motss$\\|^nntp\\+some\\.server\\.no:soc\\.motss$"
 @end example
+
+(Remember, though, that if you're creating the group with @kbd{G m}, you
+shouldn't double the backslashes, and you should leave off the quote
+characters at the beginning and the end of the string.)
 
 This should work kinda smoothly---all articles from both groups should
 end up in this one, and there should be no duplicates.  Threading (and
@@ -13416,7 +13441,7 @@ default.
 
 @item gnus-expert-user
 @vindex gnus-expert-user
-If this variable is non-@code{nil}, you will never ever be asked any
+If this variable is non-@code{nil}, you will seldom be asked any
 questions by Gnus.  It will simply assume you know what you're doing, no
 matter how strange.
 
@@ -14455,7 +14480,7 @@ over your shoulder as you read news.
 * Picon Requirements::     Don't go further if you aren't using XEmacs.
 * Easy Picons::            Displaying Picons---the easy way.
 * Hard Picons::            The way you should do it.  You'll learn something.
-* Picon Configuration::    Other variables you can trash/tweak/munge/play with.
+* Picon Useless Configuration:: Other variables you can trash/tweak/munge/play with.
 @end menu
 
 
@@ -14480,12 +14505,17 @@ in either monochrome @code{XBM} format or color @code{XPM} and
 @code{GIF} formats.
 @end quotation
 
-For instructions on obtaining and installing the picons databases, point
-your Web browser at
-@file{http://www.cs.indiana.edu/picons/ftp/index.html}.
+@vindex gnus-picons-piconsearch-url
+If you have a permanent connection to the Internet you can use Steve
+Kinzler's Picons Search engine by setting
+@code{gnus-picons-piconsearch-url} to the string
+@file{http://www.cs.indiana.edu/picons/search.html}.
 
 @vindex gnus-picons-database
-Gnus expects picons to be installed into a location pointed to by
+Otherwise you need a local copy of his database.  For instructions on
+obtaining and installing the picons databases, point your Web browser at
+@file{http://www.cs.indiana.edu/picons/ftp/index.html}.  Gnus expects
+picons to be installed into a location pointed to by
 @code{gnus-picons-database}.
 
 
@@ -14496,10 +14526,13 @@ To have Gnus display Picons for you, you must be running XEmacs
 19.13 or greater since all other versions of Emacs aren't yet able to
 display images.
 
-Additionally, you must have @code{xpm} support compiled into XEmacs.
+Additionally, you must have @code{x} support compiled into XEmacs.  To
+display color picons which are much nicer than the black & white one,
+you also need one of @code{xpm} or @code{gif} compiled into XEmacs.
 
 @vindex gnus-picons-convert-x-face
-If you want to display faces from @code{X-Face} headers, you must have
+If you want to display faces from @code{X-Face} headers, you should have
+the @code{xface} support compiled into XEmacs.  Otherwise you must have
 the @code{netpbm} utilities installed, or munge the
 @code{gnus-picons-convert-x-face} variable to use something else.
 
@@ -14517,6 +14550,15 @@ To enable displaying picons, simply put the following line in your
 (add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
 @end lisp
 
+and make sure @code{gnus-picons-database} points to the directory
+containing the Picons databases.
+
+Alternatively if you want to use the web piconsearch engine add this:
+
+@lisp
+(setq gnus-picons-piconsearch-url "http://www.cs.indiana.edu:800/piconsearch")
+@end lisp
+
 
 @node Hard Picons
 @subsubsection Hard Picons 
@@ -14531,9 +14573,26 @@ Gnus can display picons for you as you enter and leave groups and
 articles.  It knows how to interact with three sections of the picons
 database.  Namely, it can display the picons newsgroup pictures,
 author's face picture(s), and the authors domain.  To enable this
-feature, you need to first decide where to display them.
+feature, you need to select where to get the picons from, and where to
+display them.
 
 @table @code 
+
+@item gnus-picons-database
+@vindex gnus-picons-database
+The location of the picons database.  Should point to a directory
+containing the @file{news}, @file{domains}, @file{users} (and so on)
+subdirectories.  This is only useful if
+@code{gnus-picons-piconsearch-url} is @code{nil}.  Defaults to
+@file{/usr/local/faces/}.
+
+@item gnus-picons-piconsearch-url
+@vindex gnus-picons-piconsearch-url
+The URL for the web picons search engine.  The only currently known
+engine is @file{http://www.cs.indiana.edu:800/piconsearch}.  To
+workaround network delays, icons will be fetched in the background.  If
+this is @code{nil} 'the default), then picons are fetched from local
+database indicated by @code{gnus-picons-database}.
 
 @item gnus-picons-display-where 
 @vindex gnus-picons-display-where 
@@ -14554,9 +14613,9 @@ displayed.
 Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
 window configuration for you to include the @code{picons} buffer.
 
-Now that you've made that decision, you need to add the following
-functions to the appropriate hooks so these pictures will get
-displayed at the right time.
+Now that you've made those decision, you need to add the following
+functions to the appropriate hooks so these pictures will get displayed
+at the right time.
 
 @vindex gnus-article-display-hook
 @vindex gnus-picons-display-where
@@ -14589,8 +14648,8 @@ for the append flag of @code{add-hook}:
 @end lisp
 
 
-@node Picon Configuration
-@subsubsection Picon Configuration
+@node Picon Useless Configuration
+@subsubsection Picon Useless Configuration
 
 @iftex
 @iflatex
@@ -14603,16 +14662,11 @@ done, where things are located, and other useless stuff you really
 don't need to worry about.
 
 @table @code
-@item gnus-picons-database
-@vindex gnus-picons-database
-The location of the picons database.  Should point to a directory
-containing the @file{news}, @file{domains}, @file{users} (and so on)
-subdirectories.  Defaults to @file{/usr/local/faces/}.
 
-@item gnus-picons-news-directory
-@vindex gnus-picons-news-directory
-Sub-directory of the faces database containing the icons for
-newsgroups.
+@item gnus-picons-news-directories
+@vindex gnus-picons-news-directories
+List of subdirectories to search in @code{gnus-picons-database} for
+newsgroups faces.  @code{("news")} is the default.
 
 @item gnus-picons-user-directories
 @vindex gnus-picons-user-directories
@@ -14623,11 +14677,12 @@ faces.  @code{("local" "users" "usenix" "misc")} is the default.
 @vindex gnus-picons-domain-directories
 List of subdirectories to search in @code{gnus-picons-database} for
 domain name faces.  Defaults to @code{("domains")}.  Some people may
-want to add @samp{unknown} to this list.
+want to add @samp{"unknown"} to this list.
 
 @item gnus-picons-convert-x-face
 @vindex gnus-picons-convert-x-face
-The command to use to convert the @code{X-Face} header to an X bitmap
+If you don't have @code{xface} support builtin XEmacs, this is the
+command to use to convert the @code{X-Face} header to an X bitmap
 (@code{xbm}).  Defaults to @code{(format "@{ echo '/* Width=48,
 Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s"
 gnus-picons-x-face-file-name)}
@@ -14637,16 +14692,48 @@ gnus-picons-x-face-file-name)}
 Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
 to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
 
+@item gnus-picons-has-modeline-p
+@vindex gnus-picons-has-modeline-p
+If you have set @code{gnus-picons-display-where} to @code{picons}, your
+XEmacs frame will become really cluttered.  To alleviate this a bit you
+can set @code{gnus-picons-has-modeline-p} to @code{nil}; this will
+remove the mode line from the Picons buffer.  This is only useful if
+@code{gnus-picons-display-where} is @code{picons}.
+
+@item gnus-picons-refresh-before-display
+@vindex gnus-picons-refresh-before-display
+If non-nil, display the article buffer before computing the picons.
+Defaults to @code{nil}.
+
+@item gnus-picons-display-as-address
+@vindex gnus-picons-display-as-address
+If @code{t} display textual email addresses along with pictures.
+Defaults to @code{t}.
+
+@item gnus-picons-file-suffixes
+@vindex gnus-picons-file-suffixes
+Ordered list of suffixes on picon file names to try.  Defaults to
+@code{("xpm" "gif" "xbm")} minus those not builtin your XEmacs.
+
+@item gnus-picons-display-article-move-p
+@vindex gnus-picons-display-article-move-p
+Whether to move point to first empty line when displaying picons.  This
+has only an effect if `gnus-picons-display-where' has value `article'.
+
+@item gnus-picons-clear-cache-on-shutdown
+@vindex gnus-picons-clear-cache-on-shutdown
+Whether to clear the picons cache when exiting gnus.  Gnus caches every
+picons it finds while it is running.  This saves some time in the search
+process but eats some memory.  If this variable is set to @code{nil},
+Gnus will never clear the cache itself; you will have to manually call
+@code{gnus-picons-clear-cache} to clear it.  Otherwise the cache will be
+cleared every time you exit Gnus.  Defaults to @code{t}.
+
 @iftex
 @iflatex
 \margindex{}
 @end iflatex
 @end iftex
-
-@item gnus-picons-buffer
-@vindex gnus-picons-buffer
-The name of the buffer that @code{picons} points to.  Defaults to
-@samp{*Icon Buffer*}.
 
 @end table
 
@@ -17151,9 +17238,6 @@ X characters in the body.
  Move all prompting to the new `M-n' default style.
 
 @item
- have nntp cache the authinfo passwords.
-
-@item
  command to display all dormant articles.
 
 @item
@@ -17183,6 +17267,10 @@ How about making it possible to expire local articles?  Will it be
 possible to make various constraints on when an article can be
 expired, e.g. (read), (age > 14 days), or the more interesting (read
 & age > 14 days)?
+
+@item
+New limit command---limit to articles that have a certain string
+in the head or body.
 
 @item
 Solve the halting problem.

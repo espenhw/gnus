@@ -1,5 +1,5 @@
 ;;; gnus-srvr.el --- virtual server support for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -106,7 +106,7 @@ The following specs are understood:
        ["Close All" gnus-server-close-all-servers t]
        ["Reset All" gnus-server-remove-denials t]))
 
-    (run-hooks 'gnus-server-menu-hook)))
+    (gnus-run-hooks 'gnus-server-menu-hook)))
 
 (defvar gnus-server-mode-map nil)
 (put 'gnus-server-mode 'mode-class 'special)
@@ -164,7 +164,7 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
   (setq buffer-read-only t)
-  (run-hooks 'gnus-server-mode-hook))
+  (gnus-run-hooks 'gnus-server-mode-hook))
 
 (defun gnus-server-insert-server-line (name method)
   (let* ((how (car method))
@@ -318,7 +318,7 @@ The following commands are available:
 (defun gnus-server-exit ()
   "Return to the group buffer."
   (interactive)
-  (run-hooks 'gnus-server-exit-hook)
+  (gnus-run-hooks 'gnus-server-exit-hook)
   (kill-buffer (current-buffer))
   (gnus-configure-windows 'group t))
 
@@ -536,7 +536,7 @@ The following commands are available:
        ["Next" gnus-browse-next-group t]
        ["Prev" gnus-browse-next-group t]
        ["Exit" gnus-browse-exit t]))
-    (run-hooks 'gnus-browse-menu-hook)))
+    (gnus-run-hooks 'gnus-browse-menu-hook)))
 
 (defvar gnus-browse-current-method nil)
 (defvar gnus-browse-return-buffer nil)
@@ -634,7 +634,7 @@ buffer.
   (setq truncate-lines t)
   (gnus-set-default-directory)
   (setq buffer-read-only t)
-  (run-hooks 'gnus-browse-mode-hook))
+  (gnus-run-hooks 'gnus-browse-mode-hook))
 
 (defun gnus-browse-read-group (&optional no-article)
   "Enter the group at the current line."
@@ -698,8 +698,8 @@ buffer.
       ;; If this group it killed, then we want to subscribe it.
       (when (= (following-char) ?K)
 	(setq sub t))
-      (when (gnus-gethash (setq group (gnus-browse-group-name))
-			  gnus-newsrc-hashtb)
+      (when (cadr (gnus-gethash (setq group (gnus-browse-group-name))
+			  gnus-newsrc-hashtb))
 	(error "Group already subscribed"))
       ;; Make sure the group has been properly removed before we
       ;; subscribe to it.

@@ -1,5 +1,5 @@
 ;;; nnfolder.el --- mail folder access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -572,8 +572,8 @@ time saver for large mailboxes.")
     (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
-    (run-hooks 'nnmail-prepare-save-mail-hook)
-    (run-hooks 'nnfolder-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
+    (gnus-run-hooks 'nnfolder-prepare-save-mail-hook)
 
     ;; Insert the mail into each of the destination groups.
     (while (setq group-art (pop group-art-list))
@@ -783,7 +783,7 @@ time saver for large mailboxes.")
 (defun nnfolder-save-buffer ()
   "Save the buffer."
   (when (buffer-modified-p)
-    (run-hooks 'nnfolder-save-buffer-hook)
+    (gnus-run-hooks 'nnfolder-save-buffer-hook)
     (gnus-make-directory (file-name-directory (buffer-file-name)))
     (save-buffer)))
 

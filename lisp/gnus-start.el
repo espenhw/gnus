@@ -1,5 +1,5 @@
 ;;; gnus-start.el --- startup functions for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -35,13 +35,13 @@
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
-  "Your `.newsrc' file.
+  "*Your `.newsrc' file.
 `.newsrc-SERVER' will be used instead if that exists."
   :group 'gnus-start
   :type 'file)
 
 (defcustom gnus-init-file (nnheader-concat gnus-home-directory ".gnus")
-  "Your Gnus Emacs-Lisp startup file name.
+  "*Your Gnus Emacs-Lisp startup file name.
 If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :group 'gnus-start
   :type 'file)
@@ -52,13 +52,13 @@ If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
 	       (directory-file-name installation-directory))
 	      "site-lisp/gnus-init")
     (error nil))
-  "The site-wide Gnus Emacs-Lisp startup file name, or nil if none.
+  "*The site-wide Gnus Emacs-Lisp startup file name, or nil if none.
 If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
   :group 'gnus-start
   :type '(choice file (const nil)))
 
 (defcustom gnus-default-subscribed-newsgroups nil
-  "List of newsgroups to subscribe, when a user runs Gnus the first time.
+  "*List of newsgroups to subscribe, when a user runs Gnus the first time.
 The value should be a list of strings.
 If it is t, Gnus will not do anything special the first time it is
 started; it'll just use the normal newsgroups subscription methods."
@@ -229,7 +229,7 @@ not match this regexp will be removed before saving the list."
 			 "[][\"#'()]"	; bogus characters
 			 )
 		       "\\|"))
-  "A regexp to match uninteresting newsgroups in the active file.
+  "*A regexp to match uninteresting newsgroups in the active file.
 Any lines in the active file matching this regular expression are
 removed from the newsgroup list before anything else is done to it,
 thus making them effectively non-existent."
@@ -328,57 +328,57 @@ disc."
   :type 'boolean)
 
 (defcustom gnus-check-bogus-groups-hook nil
-  "A hook run after removing bogus groups."
+  "*A hook run after removing bogus groups."
   :group 'gnus-start-server
   :type 'hook)
 
 (defcustom gnus-startup-hook nil
-  "A hook called at startup.
+  "*A hook called at startup.
 This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-before-startup-hook nil
-  "A hook called at before startup.
+  "*A hook called at before startup.
 This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-started-hook nil
-  "A hook called as the last thing after startup."
+  "*A hook called as the last thing after startup."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-setup-news-hook nil
-  "A hook after reading the .newsrc file, but before generating the buffer."
+  "*A hook after reading the .newsrc file, but before generating the buffer."
   :group 'gnus-start
   :type 'hook)
 
 (defcustom gnus-get-new-news-hook nil
-  "A hook run just before Gnus checks for new news."
+  "*A hook run just before Gnus checks for new news."
   :group 'gnus-group-new
   :type 'hook)
 
 (defcustom gnus-after-getting-new-news-hook
   (when (gnus-boundp 'display-time-timer)
     '(display-time-event-handler))
-  "A hook run after Gnus checks for new news."
+  "*A hook run after Gnus checks for new news."
   :group 'gnus-group-new
   :type 'hook)
 
 (defcustom gnus-save-newsrc-hook nil
-  "A hook called before saving any of the newsrc files."
+  "*A hook called before saving any of the newsrc files."
   :group 'gnus-newsrc
   :type 'hook)
 
 (defcustom gnus-save-quick-newsrc-hook nil
-  "A hook called just before saving the quick newsrc file.
+  "*A hook called just before saving the quick newsrc file.
 Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)
 
 (defcustom gnus-save-standard-newsrc-hook nil
-  "A hook called just before saving the standard newsrc file.
+  "*A hook called just before saving the standard newsrc file.
 Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)
@@ -656,7 +656,7 @@ prompt the user for the name of an NNTP server to use."
 
     (gnus-splash)
     (gnus-clear-system)
-    (run-hooks 'gnus-before-startup-hook)
+    (gnus-run-hooks 'gnus-before-startup-hook)
     (nnheader-init-server-buffer)
     (setq gnus-slave slave)
     (gnus-read-init-file)
@@ -680,7 +680,7 @@ prompt the user for the name of an NNTP server to use."
 	(if (and (not dont-connect)
 		 (not did-connect))
 	    (gnus-group-quit)
-	  (run-hooks 'gnus-startup-hook)
+	  (gnus-run-hooks 'gnus-startup-hook)
 	  ;; NNTP server is successfully open.
 
 	  ;; Find the current startup file name.
@@ -698,14 +698,14 @@ prompt the user for the name of an NNTP server to use."
 
 	  ;; Do the actual startup.
 	  (gnus-setup-news nil level dont-connect)
-	  (run-hooks 'gnus-setup-news-hook)
+	  (gnus-run-hooks 'gnus-setup-news-hook)
 	  (gnus-start-draft-setup)
 	  ;; Generate the group buffer.
 	  (gnus-group-list-groups level)
 	  (gnus-group-first-unread-group)
 	  (gnus-configure-windows 'group)
 	  (gnus-group-set-mode-line)
-	  (run-hooks 'gnus-started-hook))))))
+	  (gnus-run-hooks 'gnus-started-hook))))))
 
 (defun gnus-start-draft-setup ()
   "Make sure the draft group exists."
@@ -1299,7 +1299,7 @@ newsgroup."
 	      (set (car dead-lists)
 		   (delete group (symbol-value (car dead-lists))))))
 	  (setq dead-lists (cdr dead-lists))))
-      (run-hooks 'gnus-check-bogus-groups-hook)
+      (gnus-run-hooks 'gnus-check-bogus-groups-hook)
       (gnus-message 5 "Checking bogus newsgroups...done"))))
 
 (defun gnus-check-duplicate-killed-groups ()
@@ -2225,7 +2225,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			    (set-buffer gnus-dribble-buffer)
 			    (buffer-size)))))
 	  (gnus-message 4 "(No changes need to be saved)")
-	(run-hooks 'gnus-save-newsrc-hook)
+	(gnus-run-hooks 'gnus-save-newsrc-hook)
 	(if gnus-slave
 	    (gnus-slave-save-newsrc)
 	  ;; Save .newsrc.
@@ -2245,7 +2245,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (erase-buffer)
 	  (gnus-message 5 "Saving %s.eld..." gnus-current-startup-file)
 	  (gnus-gnus-to-quick-newsrc-format)
-	  (run-hooks 'gnus-save-quick-newsrc-hook)
+	  (gnus-run-hooks 'gnus-save-quick-newsrc-hook)
 	  (save-buffer)
 	  (kill-buffer (current-buffer))
 	  (gnus-message
@@ -2347,7 +2347,7 @@ If FORCE is non-nil, the .newsrc file is read."
       (if gnus-modtime-botch
 	  (delete-file gnus-startup-file)
 	(clear-visited-file-modtime))
-      (run-hooks 'gnus-save-standard-newsrc-hook)
+      (gnus-run-hooks 'gnus-save-standard-newsrc-hook)
       (save-buffer)
       (kill-buffer (current-buffer)))))
 

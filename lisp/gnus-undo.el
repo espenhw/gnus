@@ -1,5 +1,5 @@
 ;;; gnus-undo.el --- minor mode for undoing in Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -100,7 +100,7 @@
     (gnus-add-minor-mode 'gnus-undo-mode "" gnus-undo-mode-map)
     (make-local-hook 'post-command-hook)
     (add-hook 'post-command-hook 'gnus-undo-boundary nil t)
-    (run-hooks 'gnus-undo-mode-hook)))
+    (gnus-run-hooks 'gnus-undo-mode-hook)))
 
 ;;; Interface functions.
 

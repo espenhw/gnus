@@ -1,5 +1,5 @@
 ;;; nndb.el --- nndb access for Gnus
-;; Copyright (C) 1997 Free Software Foundation, Inc.
+;; Copyright (C) 1997,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;         Kai Grossjohann <grossjohann@ls6.informatik.uni-dortmund.de>

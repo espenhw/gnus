@@ -1,5 +1,5 @@
 ;;; nnspool.el --- spool access for GNU Emacs
-;; Copyright (C) 1988,89,90,93,94,95,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1988,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -82,7 +82,6 @@ there.")
 (defvoo nnspool-rejected-article-hook nil
   "*A hook that will be run when an article has been rejected by the server.")
 
-;; 1997/8/14 by MORIOKA Tomohiko
 (defvoo nnspool-file-coding-system nnheader-file-coding-system
   "Coding system for nnspool.")
 
@@ -346,7 +345,7 @@ there.")
       (nnheader-report 'nnspool "%s" (buffer-string))
       (message "nnspool: %s" nnspool-status-string)
       (ding)
-      (run-hooks 'nnspool-rejected-article-hook))))
+      (gnus-run-hooks 'nnspool-rejected-article-hook))))
 
 (defun nnspool-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)

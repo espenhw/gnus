@@ -1,5 +1,5 @@
 ;;; nnheader.el --- header access macros for Gnus and its backends
-;; Copyright (C) 1987,88,89,90,93,94,95,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1987,88,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -751,7 +751,6 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 
-;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 (defvar nnheader-file-coding-system 'raw-text
   "Coding system used in file backends of Gnus.")
 
@@ -765,7 +764,6 @@ find-file-hooks, etc.
 	(auto-mode-alist (nnheader-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
         (after-insert-file-functions nil)
-	;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 	(coding-system-for-read nnheader-file-coding-system))
     (insert-file-contents filename visit beg end replace)))
 
@@ -775,7 +773,6 @@ find-file-hooks, etc.
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
         (after-insert-file-functions nil)
-	;; 1997/5/16 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 	(coding-system-for-read nnheader-file-coding-system))
     (apply 'find-file-noselect args)))
 

@@ -1,5 +1,5 @@
 ;;; gnus-util.el --- utility functions for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -72,9 +72,6 @@
 	 (set symbol nil))
      symbol))
 
-;; modified by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-;;   function `substring' might cut on a middle of multi-octet
-;;   character.
 (defun gnus-truncate-string (str width)
   (substring str 0 width))
 
@@ -161,7 +158,6 @@
       (setq address (substring from (match-beginning 0) (match-end 0))))
     ;; Then we check whether the "name <address>" format is used.
     (and address
-	 ;; Fix by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 	 ;; Linear white space is not required.
 	 (string-match (concat "[ \t]*<" (regexp-quote address) ">") from)
 	 (and (setq name (substring from 0 (match-beginning 0)))
@@ -175,7 +171,6 @@
 				   (1- (match-end 0)))))
 	(and (string-match "()" from)
 	     (setq name address))
-	;; Fix by MORIOKA Tomohiko <morioka@jaist.ac.jp>.
 	;; XOVER might not support folded From headers.
 	(and (string-match "(.*" from)
 	     (setq name (substring from (1+ (match-beginning 0))
@@ -837,6 +832,81 @@ ARG is passed to the first function."
     (while myfuns
       (setq arg (funcall (pop myfuns) arg)))
     arg))
+
+(defun gnus-run-hooks (&rest funcs)
+  "Does the same as `run-hooks', but saves excursion."
+  (save-excursion
+    (apply 'run-hooks funcs)))
+  
+;;;
+;;; .netrc and .authinforc parsing
+;;;
+
+(defvar gnus-netrc-syntax-table
+  (let ((table (copy-syntax-table text-mode-syntax-table)))
+    (modify-syntax-entry ?- "w" table)
+    (modify-syntax-entry ?_ "w" table)
+    (modify-syntax-entry ?! "w" table)
+    (modify-syntax-entry ?. "w" table)
+    (modify-syntax-entry ?, "w" table)
+    (modify-syntax-entry ?: "w" table)
+    (modify-syntax-entry ?\; "w" table)
+    (modify-syntax-entry ?% "w" table)
+    (modify-syntax-entry ?) "w" table)
+    (modify-syntax-entry ?( "w" table)
+    table)
+  "Syntax table when parsing .netrc files.")
+
+(defun gnus-parse-netrc (file)
+  "Parse FILE and return an list of all entries in the file."
+  (if (not (file-exists-p file))
+      ()
+    (save-excursion
+      (let ((tokens '("machine" "default" "login"
+		      "password" "account" "macdef"))
+	    alist elem result pair)
+	(nnheader-set-temp-buffer " *netrc*")
+	(set-syntax-table gnus-netrc-syntax-table)
+	(insert-file-contents file)
+	(goto-char (point-min))
+	;; Go through the file, line by line.
+	(while (not (eobp))
+	  (narrow-to-region (point) (gnus-point-at-eol))
+	  ;; For each line, get the tokens and values.
+	  (while (not (eobp))
+	    (skip-chars-forward "\t ")
+	    (unless (eobp)
+	      (setq elem (buffer-substring
+			  (point) (progn (forward-sexp 1) (point))))
+	      (if (member elem tokens)
+		  (progn
+		    ;; Tokens that don't have a following value are ignored.
+		    (when (and pair (cdr pair))
+		      (push pair alist))
+		    (setq pair (list elem)))
+		;; Values that haven't got a preceding token are ignored.
+		(when pair
+		  (setcdr pair elem)
+		  (push pair alist)
+		  (setq pair nil)))))
+	  (push alist result)
+	  (setq alist nil
+		pair nil)
+	  (widen)
+	  (forward-line 1))
+	result))))
+
+(defun gnus-netrc-machine (list machine)
+  "Return the netrc values from LIST for MACHINE."
+  (while (and list
+	      (not (equal (cdr (assoc "machine" (car list))) machine)))
+    (pop list))
+  (when list
+    (car list)))
+
+(defun gnus-netrc-get (alist type)
+  "Return the value of token TYPE from ALIST."
+  (cdr (assoc type alist)))
 
 (provide 'gnus-util)
 

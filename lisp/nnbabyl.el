@@ -1,5 +1,5 @@
 ;;; nnbabyl.el --- rmail mbox access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -503,7 +503,7 @@
   (nnbabyl-insert-lines)
   (nnmail-insert-xref group-art)
   (nnbabyl-insert-newsgroup-line group-art)
-  (run-hooks 'nnbabyl-prepare-save-mail-hook)
+  (gnus-run-hooks 'nnbabyl-prepare-save-mail-hook)
   group-art)
 
 (defun nnbabyl-insert-newsgroup-line (group-art)

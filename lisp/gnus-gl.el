@@ -1,5 +1,5 @@
 ;;; gnus-gl.el --- an interface to GroupLens for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Brad Miller <bmiller@cs.umn.edu>
 ;; Keywords: news, score
@@ -852,7 +852,7 @@ recommend using both scores and grouplens predictions together."
 	(gnus-grouplens-make-menu-bar))
       (gnus-add-minor-mode
        'gnus-grouplens-mode " GroupLens" gnus-grouplens-mode-map)
-      (run-hooks 'gnus-grouplens-mode-hook))))
+      (gnus-run-hooks 'gnus-grouplens-mode-hook))))
 
 (provide 'gnus-gl)
 

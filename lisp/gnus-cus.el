@@ -51,7 +51,7 @@ if that value is non-nil."
   (setq major-mode 'gnus-custom-mode
 	mode-name "Gnus Customize")
   (use-local-map widget-keymap)
-  (run-hooks 'gnus-custom-mode-hook))
+  (gnus-run-hooks 'gnus-custom-mode-hook))
 
 ;;; Group Customization:
 

@@ -1,7 +1,8 @@
 ;;; gnus-salt.el --- alternate summary mode interfaces for Gnus
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Keywords: news
 
 ;; This file is part of GNU Emacs.
 
@@ -42,7 +43,7 @@
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-mode-hook nil
-  "Hook run in summary pick mode buffers."
+  "*Hook run in summary pick mode buffers."
   :type 'hook
   :group 'gnus-summary-pick)
 
@@ -52,7 +53,7 @@
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-elegant-flow t
-  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
+  "*If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
   :type 'boolean
   :group 'gnus-summary-pick)
 
@@ -132,7 +133,7 @@ It accepts the same format specs that `gnus-summary-line-format' does."
       (when (gnus-visual-p 'pick-menu 'menu)
 	(gnus-pick-make-menu-bar))
       (gnus-add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map)
-      (run-hooks 'gnus-pick-mode-hook))))
+      (gnus-run-hooks 'gnus-pick-mode-hook))))
 
 (defun gnus-pick-setup-message ()
   "Make Message do the right thing on exit."
@@ -335,7 +336,7 @@ This must be bound to a button-down mouse event."
       (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
       (gnus-add-minor-mode 'gnus-binary-mode " Binary" gnus-binary-mode-map)
-      (run-hooks 'gnus-binary-mode-hook))))
+      (gnus-run-hooks 'gnus-binary-mode-hook))))
 
 (defun gnus-binary-display-article (article &optional all-header)
   "Run ARTICLE through the binary decode functions."
@@ -354,12 +355,12 @@ This must be bound to a button-down mouse event."
 ;;;
 
 (defcustom gnus-tree-line-format "%(%[%3,3n%]%)"
-  "Format of tree elements."
+  "*Format of tree elements."
   :type 'string
   :group 'gnus-summary-tree)
 
 (defcustom gnus-tree-minimize-window t
-  "If non-nil, minimize the tree buffer window.
+  "*If non-nil, minimize the tree buffer window.
 If a number, never let the tree buffer grow taller than that number of
 lines."
   :type 'boolean
@@ -460,7 +461,7 @@ Two predefined functions are available:
     (gnus-set-work-buffer)
     (gnus-tree-node-insert (make-mail-header "") nil)
     (setq gnus-tree-node-length (1- (point))))
-  (run-hooks 'gnus-tree-mode-hook))
+  (gnus-run-hooks 'gnus-tree-mode-hook))
 
 (defun gnus-tree-read-summary-keys (&optional arg)
   "Read a summary buffer key sequence and execute it."
@@ -955,7 +956,7 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
   (make-local-variable 'gnus-carpal-attached-buffer)
-  (run-hooks 'gnus-carpal-mode-hook))
+  (gnus-run-hooks 'gnus-carpal-mode-hook))
 
 (defun gnus-carpal-setup-buffer (type)
   (let ((buffer (symbol-value (intern (format "gnus-carpal-%s-buffer" type)))))

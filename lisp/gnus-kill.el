@@ -1,5 +1,5 @@
 ;;; gnus-kill.el --- kill commands for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -33,7 +33,7 @@
 (require 'gnus-range)
 
 (defcustom gnus-kill-file-mode-hook nil
-  "Hook for Gnus kill file mode."
+  "*Hook for Gnus kill file mode."
   :group 'gnus-score-kill
   :type 'hook)
 
@@ -49,7 +49,7 @@
   :type 'boolean)
 
 (defcustom gnus-winconf-kill-file nil
-  "What does this do, Lars?"
+  "*What does this do, Lars?"
   :group 'gnus-score-kill
   :type 'sexp)
 
@@ -159,7 +159,7 @@ gnus-kill-file-mode-hook with no arguments, if that value is non-nil."
   (setq major-mode 'gnus-kill-file-mode)
   (setq mode-name "Kill")
   (lisp-mode-variables nil)
-  (run-hooks 'emacs-lisp-mode-hook 'gnus-kill-file-mode-hook))
+  (gnus-run-hooks 'emacs-lisp-mode-hook 'gnus-kill-file-mode-hook))
 
 (defun gnus-kill-file-edit-file (newsgroup)
   "Begin editing a kill file for NEWSGROUP.

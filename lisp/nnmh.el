@@ -1,5 +1,5 @@
 ;;; nnmh.el --- mhspool access for Gnus
-;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96,97,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -250,7 +250,7 @@
 	   (directory-files nnmh-current-directory nil "^[0-9]+$" t)))
 	 (is-old t)
 	 article rest mod-time)
-    (nnmail-activate 'nnmh)
+    (nnheader-init-server-buffer)
 
     (while (and articles is-old)
       (setq article (concat nnmh-current-directory
@@ -303,22 +303,19 @@
   (nnmail-check-syntax)
   (when nnmail-cache-accepted-message-ids
     (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+  (nnheader-init-server-buffer)
   (prog1
       (if (stringp group)
-	  (and
-	   (nnmail-activate 'nnmh)
-	   (if noinsert
-	       (nnmh-active-number group)
-	     (car (nnmh-save-mail
-		   (list (cons group (nnmh-active-number group)))
-		   noinsert))))
-	(and
-	 (nnmail-activate 'nnmh)
-	 (let ((res (nnmail-article-group 'nnmh-active-number)))
-	   (if (and (null res)
-		    (yes-or-no-p "Moved to `junk' group; delete article? "))
-	       'junk
-	     (car (nnmh-save-mail res noinsert))))))
+	  (if noinsert
+	      (nnmh-active-number group)
+	    (car (nnmh-save-mail
+		  (list (cons group (nnmh-active-number group)))
+		  noinsert)))
+	(let ((res (nnmail-article-group 'nnmh-active-number)))
+	  (if (and (null res)
+		   (yes-or-no-p "Moved to `junk' group; delete article? "))
+	      'junk
+	    (car (nnmh-save-mail res noinsert)))))
     (when (and last nnmail-cache-accepted-message-ids)
       (nnmail-cache-close))))
 
@@ -335,7 +332,7 @@
       t)))
 
 (deffoo nnmh-request-create-group (group &optional server args)
-  (nnmail-activate 'nnmh)
+  (nnheader-init-server-buffer)
   (unless (assoc group nnmh-group-alist)
     (let (active)
       (push (list group (setq active (cons 1 0)))
@@ -432,8 +429,8 @@
   (unless noinsert
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art))
-  (run-hooks 'nnmail-prepare-save-mail-hook)
-  (run-hooks 'nnmh-prepare-save-mail-hook)
+  (gnus-run-hooks 'nnmail-prepare-save-mail-hook)
+  (gnus-run-hooks 'nnmh-prepare-save-mail-hook)
   (goto-char (point-min))
   (while (looking-at "From ")
     (replace-match "X-From-Line: ")

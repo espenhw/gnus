@@ -60,7 +60,7 @@ This mode is an extended emacs-lisp mode.
   (setq mode-name "Score")
   (lisp-mode-variables nil)
   (make-local-variable 'gnus-score-edit-exit-function)
-  (run-hooks 'emacs-lisp-mode-hook 'gnus-score-mode-hook))
+  (gnus-run-hooks 'emacs-lisp-mode-hook 'gnus-score-mode-hook))
 
 (defun gnus-score-make-menu-bar ()
   (unless (boundp 'gnus-score-menu)
@@ -70,7 +70,7 @@ This mode is an extended emacs-lisp mode.
        ["Exit" gnus-score-edit-exit t]
        ["Insert date" gnus-score-edit-insert-date t]
        ["Format" gnus-score-pretty-print t]))
-    (run-hooks 'gnus-score-menu-hook)))
+    (gnus-run-hooks 'gnus-score-menu-hook)))
 
 (defun gnus-score-edit-insert-date ()
   "Insert date in numerical format."

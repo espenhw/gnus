@@ -1,5 +1,5 @@
 ;;; nnagent.el --- offline backend for Gnus
-;; Copyright (C) 1997 Free Software Foundation, Inc.
+;; Copyright (C) 1997,98 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail
@@ -102,6 +102,9 @@
 	       (gnus-group-real-name group) article))))
 
 (deffoo nnagent-request-newgroups (date server)
+  nil)
+
+(deffoo nnagent-request-update-info (group info &optional server)
   nil)
 
 (deffoo nnagent-request-post (&optional server)

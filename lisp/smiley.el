@@ -1,5 +1,5 @@
 ;;; smiley.el --- displaying smiley faces
-;; Copyright (C) 1996,97 Free Software Foundation, Inc.
+;; Copyright (C) 1996,97,98 Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
 ;; Keywords: fun
@@ -45,7 +45,7 @@
   :group 'gnus-visual)
 
 (defcustom smiley-data-directory (message-xmas-find-glyph-directory "smilies")
-  "Location of the smiley faces files."
+  "*Location of the smiley faces files."
   :type 'directory
   :group 'smiley)
 
@@ -76,7 +76,7 @@
     ("\\(;-*[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
     ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\([:|]-*P\\)\\W" 1 "FaceYukky.xpm"))
-  "Normal and deformed faces for smilies."
+  "*Normal and deformed faces for smilies."
   :type '(repeat (list regexp
 		       (integer :tag "Match")
 		       (string :tag "Image")))
@@ -102,14 +102,14 @@
     ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
     ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
-  "Smileys with noses.  These get less false matches."
+  "*Smileys with noses.  These get less false matches."
   :type '(repeat (list regexp
 		       (integer :tag "Match")
 		       (string :tag "Image")))
   :group 'smiley)
 
 (defcustom smiley-regexp-alist smiley-deformed-regexp-alist
-  "A list of regexps to map smilies to real images.
+  "*A list of regexps to map smilies to real images.
 Defaults to the contents of `smiley-deformed-regexp-alist'.
 An alternative is `smiley-nosey-regexp-alist' that matches less
 aggressively.
@@ -123,27 +123,27 @@ If this is a symbol, take its value."
   :group 'smiley)
 
 (defcustom smiley-flesh-color "yellow"
-  "Flesh color."
+  "*Flesh color."
   :type 'string
   :group 'smiley)
 
 (defcustom smiley-features-color "black"
-  "Features color."
+  "*Features color."
   :type 'string
   :group 'smiley)
 
 (defcustom smiley-tongue-color "red"
-  "Tongue color."
+  "*Tongue color."
   :type 'string
   :group 'smiley)
 
 (defcustom smiley-circle-color "black"
-  "Circle color."
+  "*Circle color."
   :type 'string
   :group 'smiley)
 
 (defcustom smiley-mouse-face 'highlight
-  "Face used for mouse highlighting in the smiley buffer.
+  "*Face used for mouse highlighting in the smiley buffer.
 
 Smiley buttons will be displayed in this face when the cursor is
 above them."
