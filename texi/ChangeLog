@@ -1,3 +1,8 @@
+2001-06-23  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Duplicates): Contents of Gnus-Warning header have
+	changed.  Reported by Peter J Acklam.
+
 2001-06-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (IMAP): Fix `imtest' discussion.

@@ -12538,7 +12538,7 @@ methods:
 @lisp
 (setq nnmail-split-fancy
       '(| ;; Messages duplicates go to a separate group.
-          ("gnus-warning" "duplication of message" "duplicate")
+          ("gnus-warning" "duplicat\\(e\\|ion\\) of message" "duplicate")
           ;; Message from daemons, postmaster, and the like to another.
           (any mail "mail.misc")
           ;; Other rules.
