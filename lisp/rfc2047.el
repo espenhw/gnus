@@ -61,6 +61,8 @@ The values can be:
     (iso-8859-7 . Q)
     (iso-8859-8 . Q)
     (iso-8859-9 . Q)
+    (iso-8859-14 . Q)
+    (iso-8859-15 . Q)
     (iso-2022-jp . B)
     (iso-2022-kr . B)
     (gb2312 . B)
@@ -298,7 +300,7 @@ Should be called narrowed to the head of the message."
 	  (setq break (point)))
 	 ((and break
 	       (looking-at "\\?=")
-	       (> (- (point) (save-excursion (beginning-of-line) (point))) 76))
+	       (> (- (point) (gnus-point-at-bol)) 76))
 	  (goto-char break)
 	  (setq break nil)
 	  (insert "\n ")))
