@@ -4392,7 +4392,7 @@ Optional DIGEST will use digest to forward."
   (interactive "P")
   (let* ((cur (current-buffer))
 	 (message-forward-decoded-p 
-	  (if (local-variable-p 'gnus-article-decoded-p)
+	  (if (local-variable-p 'gnus-article-decoded-p (current-buffer))
 	      gnus-article-decoded-p  ;; In an article buffer.
 	    message-forward-decoded-p))
 	 (subject (message-make-forward-subject))

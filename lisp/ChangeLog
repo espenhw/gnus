@@ -1,3 +1,8 @@
+2001-03-16 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-forward): local-variable-p takes an extra
+	argument in XEmacs.
+
 2001-03-16  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-dont-use-nov-p): Renamed from
