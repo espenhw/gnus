@@ -1,3 +1,7 @@
+2000-11-14 10:32:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mailcap.el (mailcap-possible-viewers): Match the entire string.
+
 2000-11-14 10:20:56  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-mailcrypt-verify): replace-match is

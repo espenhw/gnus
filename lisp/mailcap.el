@@ -526,7 +526,7 @@ MAILCAPS if set; otherwise (on Unix) use the path from RFC 1524, plus
       (cond
        ((equal (car (car major)) minor)
 	(setq exact (cons (cdr (car major)) exact)))
-       ((and minor (string-match (car (car major)) minor))
+       ((and minor (string-match (concat "^" (car (car major)) "$") minor))
 	(setq wildcard (cons (cdr (car major)) wildcard))))
       (setq major (cdr major)))
     (nconc exact wildcard)))
