@@ -5101,7 +5101,8 @@ articles with that subject.  If BACKWARD, search backward instead."
   "Center point in window and redisplay frame.
 Also do horizontal recentering."
   (interactive "P")
-  (when (and gnus-auto-center-summary
+  (when (and nil
+	     gnus-auto-center-summary
 	     (not (eq gnus-auto-center-summary 'vertical)))
     (gnus-horizontal-recenter))
   (recenter n))
@@ -5112,6 +5113,7 @@ If `gnus-auto-center-summary' is nil, or the article buffer isn't
 displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
+  (interactive)
   (let* ((top (cond ((< (window-height) 4) 0)
 		    ((< (window-height) 7) 1)
 		    (t (if (numberp gnus-auto-center-summary)

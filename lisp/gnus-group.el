@@ -2587,7 +2587,7 @@ sort in reverse order."
 ;; Group catching up.
 
 (defun gnus-group-catchup-current (&optional n all)
-  "Mark all articles not marked as unread in current newsgroup as read.
+  "Mark all unread articles in the current newsgroup as read.
 If prefix argument N is numeric, the next N newsgroups will be
 caught up.  If ALL is non-nil, marked articles will also be marked as
 read.  Cross references (Xref: header) of articles are ignored.

@@ -1712,14 +1712,7 @@ text was killed."
 	      (/= (aref message-caesar-translation-table ?a) (+ ?a n)))
       (setq message-caesar-translation-table
 	    (message-make-caesar-translation-table n)))
-    ;; Then we translate the region.  Do it this way to retain
-    ;; text properties.
-    (while (< b e)
-      (when (< (char-after b) 255)
-	(subst-char-in-region
-	 b (1+ b) (char-after b)
-	 (aref message-caesar-translation-table (char-after b))))
-      (incf b))))
+    (translate-region b e message-caesar-translation-table)))
 
 (defun message-make-caesar-translation-table (n)
   "Create a rot table with offset N."

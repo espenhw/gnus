@@ -1204,36 +1204,35 @@ this is a reply."
       (setq results (delq name (delq address results)))
       (make-local-variable 'message-setup-hook)
       (dolist (result results)
-	(when (cdr result)
-	  (add-hook 'message-setup-hook
-		    (cond
-		     ((eq 'eval (car result))
-		      'ignore)
-		     ((eq 'body (car result))
+	(add-hook 'message-setup-hook
+		  (cond
+		   ((eq 'eval (car result))
+		    'ignore)
+		   ((eq 'body (car result))
+		    `(lambda ()
+		       (save-excursion
+			 (message-goto-body)
+			 (insert ,(cdr result)))))
+		   ((eq 'signature (car result))
+		    (set (make-local-variable 'message-signature) nil)
+		    (set (make-local-variable 'message-signature-file) nil)
+		    (if (not (cdr result))
+			'ignore
 		      `(lambda ()
 			 (save-excursion
-			   (message-goto-body)
-			   (insert ,(cdr result)))))
-		     ((eq 'signature (car result))
-		      (set (make-local-variable 'message-signature) nil)
-		      (set (make-local-variable 'message-signature-file) nil)
-		      (if (not (cdr result))
-			  'ignore
-			`(lambda ()
-			   (save-excursion
-			     (let ((message-signature ,(cdr result)))
-			       (when message-signature
-				 (message-insert-signature)))))))
-		     (t
-		      (let ((header
-			     (if (symbolp (car result))
-				 (capitalize (symbol-name (car result)))
-			       (car result))))
-			`(lambda ()
-			   (save-excursion
-			     (message-remove-header ,header)
-			     (message-goto-eoh)
-			     (insert ,header ": " ,(cdr result) "\n")))))))))
+			   (let ((message-signature ,(cdr result)))
+			     (when message-signature
+			       (message-insert-signature)))))))
+		   (t
+		    (let ((header
+			   (if (symbolp (car result))
+			       (capitalize (symbol-name (car result)))
+			     (car result))))
+		      `(lambda ()
+			 (save-excursion
+			   (message-remove-header ,header)
+			   (message-goto-eoh)
+			   (insert ,header ": " ,(cdr result) "\n"))))))))
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()

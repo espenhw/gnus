@@ -2602,9 +2602,8 @@ commands:
     (if (get-buffer name)
 	(save-excursion
 	  (set-buffer name)
-	  (if gnus-article-mime-handles
-	      (mm-destroy-parts gnus-article-mime-handles))
-	  (kill-all-local-variables)
+	  (when gnus-article-mime-handles
+	    (mm-destroy-parts gnus-article-mime-handles))
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
 	  (unless (eq major-mode 'gnus-article-mode)
@@ -2671,8 +2670,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (message "Message marked for downloading"))
 		  (gnus-summary-mark-article article gnus-canceled-mark)
 		  (unless (memq article gnus-newsgroup-sparse)
-		    (gnus-error 1
-				"No such article (may have expired or been canceled)")))))
+		    (gnus-error 1 "No such article (may have expired or been canceled)")))))
 	  (if (or (eq result 'pseudo)
 		  (eq result 'nneething))
 	      (progn

@@ -1,4 +1,26 @@
+2000-04-21 22:27:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Allow nil values to
+	override. 
+
+2000-04-21 21:58:20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* nnmail.el (nnmail-cache-insert): Does some stuff that is
+	probably good to do, or something.  I dunno.  I just write these
+	ChangeLog entries, and my name is Lars.
+
+1999-12-06  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* message.el (message-caesar-region): Use translate-region.
+
+2000-04-21 21:20:32  Mike Fabian  <mike.fabian@gmx.de>
+
+	* gnus-group.el (gnus-group-catchup-current): Doc fix. 
+
 2000-04-21 20:36:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-setup-buffer): Don't kill local
+	variables, because that makes Emacs flash.
 
 	* gnus-group.el (gnus-group-insert-group-line): Don't call
 	gnus-group-add-icon unconditionally.
