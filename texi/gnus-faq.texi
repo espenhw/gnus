@@ -440,7 +440,7 @@ the line
 @example
 
 SET HOME=C:\myhome
-	    
+            
 @end example
 
 @noindent
@@ -548,9 +548,9 @@ Answer:
 
 @example
 (add-to-list 'gnus-secondary-select-methods 
-	     '(nntp "news.yourSecondProvider.net"))
+             '(nntp "news.yourSecondProvider.net"))
 (add-to-list 'gnus-secondary-select-methods 
-	     '(nntp "news.yourThirdProvider.net"))	    
+             '(nntp "news.yourThirdProvider.net"))          
 @end example
  
 @ifnottex
@@ -745,9 +745,9 @@ Answer:
 (add-to-list 
  'gnus-secondary-select-methods
  '(nnimap "Give the baby a name"
-	  (nnimap-address "imap.yourProvider.net")
-	  (nnimap-port 143)
-	  (nnimap-list-pattern "archive.*")))
+          (nnimap-address "imap.yourProvider.net")
+          (nnimap-port 143)
+          (nnimap-list-pattern "archive.*")))
 @end example
 
 @noindent
@@ -1204,8 +1204,8 @@ Answer:
 @example
 (gnus-add-configuration 
  '(article (vertical 1.0
-		     (summary .35 point)
-		     (article 1.0))))
+                     (summary .35 point)
+                     (article 1.0))))
 @end example
  
 
@@ -2046,9 +2046,9 @@ Answer:
  engines and with the help of nnir you can search trough
  the indexed mail and generate a temporary group with all
  messages which met your search criteria. If this sound
- cool to you get nnir.el from
- @uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/}
- or @uref{ftp://ftp.is.informatik.uni-duisburg.de/pub/src/emacs/}.
+ cool to you get nnir.el from the contrib directory of the Gnus
+ distribution or
+ @uref{http://quimby.gnus.org/cgi-bin/cvsweb.cgi/~checkout~/gnus/contrib/nnir.el?rev=HEAD&content-type=text/plain}
  Instructions on how to use it are at the top of the file.
  
 @ifnottex
