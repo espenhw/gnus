@@ -198,18 +198,16 @@ This is set by hooking into Gnus.")
 
 (defun spam-stat-store-current-buffer ()
   "Store a copy of the current buffer in `spam-stat-buffer'."
-  (save-excursion
-    (let ((str (buffer-string)))
-      (set-buffer (get-buffer-create spam-stat-buffer-name))
+  (let ((buf (current-buffer)))
+    (with-current-buffer (get-buffer-create spam-stat-buffer-name)
       (erase-buffer)
-      (insert str)
+      (insert-buffer-substring buf)
       (setq spam-stat-buffer (current-buffer)))))
 
 (defun spam-stat-store-gnus-article-buffer ()
   "Store a copy of the current article in `spam-stat-buffer'.
 This uses `gnus-article-buffer'."
-  (save-excursion
-    (set-buffer gnus-original-article-buffer)
+  (with-current-buffer gnus-original-article-buffer
     (spam-stat-store-current-buffer)))
 
 ;; Data -- not using defstruct in order to save space and time

@@ -1,5 +1,10 @@
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam-stat.el (spam-stat-store-gnus-article-buffer): Use
+	with-current-buffer.
+	(spam-stat-store-current-buffer): Use insert-buffer-substring to
+	avoid consing a string.
+
 	* mm-util.el (mm-charset-synonym-alist): Add ks_c_5601-1987.
 	Remove obsolete entries for big5 and gb2312.
 
