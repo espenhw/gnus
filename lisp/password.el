@@ -115,11 +115,11 @@ user again."
   "Add password to cache.
 The password is removed by a timer after `password-cache-expiry'
 seconds."
-  (set (intern key password-data) password)
-  (when password-cache-expiry
+  (when (and password-cache-expiry (null (intern-soft key password-data)))
     (run-at-time password-cache-expiry nil
 		 #'password-cache-remove
 		 key))
+  (set (intern key password-data) password)
   nil)
 
 (provide 'password)
