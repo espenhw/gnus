@@ -1,3 +1,14 @@
+1999-11-13  Simon Josefsson  <jas@pdc.kth.se>
+
+	* mail-source.el (mail-source-keyword-map): For IMAP mail source,
+	added fetchflag and dontexpunge keywords.
+	(mail-source-fetch-imap): Use them.
+
+1999-11-12  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-start.el (gnus-get-unread-articles): Use
+	nnfoo-retrieve-groups to find new news, if available.
+
 1999-11-12  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-start.el (gnus-level-subscribed, gnus-level-unsubscribed,
