@@ -1,4 +1,4 @@
-\Input texinfo
+\input texinfo
 
 @setfilename emacs-mime
 @settitle Emacs MIME Manual
