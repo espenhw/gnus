@@ -1,3 +1,8 @@
+2004-09-30  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-generate-hashcash): Add.
+	(message-send-mail): Use it, call mail-add-payment.
+
 2004-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-verify-bogofilter): -V, not -sV option

@@ -1428,6 +1428,12 @@ no, only reply back to the author."
 		 (const :tag "Never" nil)
 		 (const :tag "Always" t)))
 
+(defcustom message-generate-hashcash nil
+  "*Whether to generate X-Hashcash: headers."
+  :group 'message-headers
+  :link '(custom-manual "(message)Mail Headers")
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -3722,6 +3728,13 @@ not have PROP."
 	      (gnus-setup-posting-charset nil)
 	    message-posting-charset))
 	 (headers message-required-mail-headers))
+    (when message-generate-hashcash
+      (save-restriction
+	(message-narrow-to-headers)
+	(message-remove-header "X-Hashcash"))
+      (message "Generating hashcash...")
+      (mail-add-payment)
+      (message "Generating hashcash...done"))
     (save-restriction
       (message-narrow-to-headers)
       ;; Generate the Mail-Followup-To header if the header is not there...
