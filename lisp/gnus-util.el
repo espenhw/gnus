@@ -30,14 +30,18 @@
 ;; Gnus first.
 
 ;; [Unfortunately, it does depend on other parts of Gnus, e.g. the
-;; autoloads below...]
+;; autoloads and defvars below...]
 
 ;;; Code:
 
 (eval-when-compile
   (require 'cl)
   ;; Fixme: this should be a gnus variable, not nnmail-.
-  (defvar nnmail-pathname-coding-system))
+  (defvar nnmail-pathname-coding-system)
+
+  ;; Inappropriate references to other parts of Gnus.
+  (defvar gnus-emphasize-whitespace-regexp)
+  )
 (require 'time-date)
 (require 'netrc)
 
@@ -1446,6 +1450,28 @@ predicate on the elements."
 	      ")"))
 	 "")))
      (t emacs-version))))
+
+(defun gnus-rename-file (old-path new-path &optional trim)
+  "Rename OLD-PATH as NEW-PATH.  If TRIM, recursively delete
+empty directories from OLD-PATH."
+  (when (file-exists-p old-path)
+    (let* ((old-dir (file-name-directory old-path))
+	   (old-name (file-name-nondirectory old-path))
+	   (new-dir (file-name-directory new-path))
+	   (new-name (file-name-nondirectory new-path))
+	   temp)
+      (gnus-make-directory new-dir)
+      (rename-file old-path new-path t)
+      (when trim
+	(while (progn (setq temp (directory-files old-dir))
+		      (while (member (car temp) '("." ".."))
+			(setq temp (cdr temp)))
+		      (= (length temp) 0))
+	  (delete-directory old-dir)
+	  (setq old-dir (file-name-as-directory 
+			 (file-truename 
+			  (concat old-dir "..")))))))))
+
 
 (provide 'gnus-util)
 
