@@ -2098,6 +2098,11 @@ Place point on the subject line of the first article.
 @item unseen
 Place point on the subject line of the first unseen article.
 
+@item unseen-or-unread
+Place point on the subject line of the first unseen article, and if
+there is no such article, place point on the subject line of the first
+unread article.
+
 @item best
 Place point on the subject line of the highest-scored unread article.
 
@@ -4117,10 +4122,12 @@ trick:
 
 @lisp
 (setq gnus-group-line-format
-      "%M\%S\%p\%P\%5y: %(%-40,40g%) %Ud\n")
+      "%M\%S\%p\%P\%5y: %(%-40,40g%) %ud\n")
 (defun gnus-user-format-function-d (headers)
   (let ((time (gnus-group-timestamp gnus-tmp-group)))
-    (format-time-string "%b %d  %H:%M" time)))
+    (if time
+        (format-time-string "%b %d  %H:%M" time)
+      "")))
 @end lisp
             
 
@@ -13690,6 +13697,10 @@ for a group is usually stored in the @code{.marks} file (but see
 Individual @code{nnml} groups are also possible to backup, use @kbd{G m}
 to restore the group (after restoring the backup into the nnml
 directory).
+
+If for some reason you believe your @file{.marks} files are screwed
+up, you can just delete them all.  Gnus will then correctly regenerate
+them next time it starts.
 
 Virtual server settings:
 

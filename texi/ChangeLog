@@ -1,3 +1,16 @@
+2002-01-20  Patric Mueller  <bhaak@gmx.net>
+
+	* gnus.texi (Group Timestamp): Typo fix.
+
+2002-01-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Selecting a Group): Addition.
+
+2002-01-19  Lars Magne Ingebrigtsen  <karra@cs.utah.edu>
+
+	* gnus.texi (Mail Spool): Note that the .marks files can be
+	removed. 
+
 2002-01-17  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Choosing a Mail Back End): mention nnmaildir.
