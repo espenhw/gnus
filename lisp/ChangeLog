@@ -1,3 +1,10 @@
+2003-01-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-read-mark-p): added the spam-mark as a
+	"not-read" mark
+	(gnus-summary-mark-forward): added the spam-mark to the list of
+	marks not to be marked as "read" when viewed
+
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-inews-make-draft): Quote article-reply. 
