@@ -128,7 +128,7 @@ Should be called narrowed to the head of the message."
 	     (t)))
 	  (goto-char (point-max)))))
     (when mail-parse-charset
-      (encode-coding-region
+      (mm-encode-coding-region
        (point-min) (point-max) mail-parse-charset))))
 
 (defun rfc2047-encodable-p (&optional header)

@@ -1,3 +1,16 @@
+2000-04-24 00:56:00  Björn Torkelsson  <torkel@hpc2n.umu.se>
+
+	* rfc2047.el (rfc2047-encode-message-header): Fixing typo.
+	
+2000-04-26 12:27:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-draft.el (gnus-draft-send): Move gnus-draft-setup inside of
+	let.
+
+2000-04-26 12:26:10  Pavel Janik ml. <Pavel.Janik@inet.cz>
+
+	* gnus-draft.el (gnus-draft-setup): Fix comments.
+
 2000-04-26 10:06:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmbox.el (nnmbox-create-mbox): Use nnmbox-file-coding-system,

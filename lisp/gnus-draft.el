@@ -122,7 +122,6 @@
 
 (defun gnus-draft-send (article &optional group interactive)
   "Send message ARTICLE."
-  (gnus-draft-setup article (or group "nndraft:queue"))
   (let ((message-syntax-checks (if interactive nil
 				 'dont-check-for-anything-just-trust-me))
 	(message-inhibit-body-encoding (or (not group) 
@@ -130,8 +129,10 @@
 					   message-inhibit-body-encoding))
 	(message-send-hook (and group (not (equal group "nndraft:queue"))
 				message-send-hook))
-	(message-setup-hook nil)
+	(message-setup-hook (and group (not (equal group "nndraft:queue"))
+				 message-setup-hook))
 	type method)
+    (gnus-draft-setup article (or group "nndraft:queue"))
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.
     (save-restriction
@@ -194,9 +195,9 @@
 	(erase-buffer)
 	(if (not (gnus-request-restore-buffer article group))
 	    (error "Couldn't restore the article")
-	  ;; Insert the separator.
 	  (if (and restore (equal group "nndraft:queue"))
 	      (mime-to-mml))
+	  ;; Insert the separator.
 	  (goto-char (point-min))
 	  (search-forward "\n\n")
 	  (forward-char -1)
