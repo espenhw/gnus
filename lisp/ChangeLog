@@ -1,3 +1,23 @@
+2004-09-25  Kevin Greiner  <kgreiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-possibly-synchronize-flags): Ignore
+	servers that are offline.  Avoids having gnus-agent-toggle-plugged
+	first ask if you want to open a server and then, even when you
+	responded with no, asking if you want to synchronize the server's
+	flags.
+	(gnus-agent-synchronize-flags-server): Rewrote read loop to handle
+	multi-line expressions.
+	(gnus-agent-synchronize-group-flags): New internal function.
+	Updates marks in memory (in the info structure) AND in the
+	backend.
+
+	* gnus-util.el (gnus-remassoc): Fixed typo in documentation.
+
+	* nnagent.el (nnagent-request-set-mark): Use
+	gnus-agent-synchronize-group-flags, not backend's request-set-mark
+	method, to ensure that synchronization updates marks in the
+	backend and in the info (in memory) structure.
+	
 2004-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-uu.el (gnus-uu-digest-mail-forward): Obey the process/prefix
