@@ -27624,7 +27624,9 @@ A Gnus group info (@pxref{Group Info}) is handed to the back end for
 alterations.  This comes in handy if the back end really carries all
 the information (as is the case with virtual and imap groups).  This
 function should destructively alter the info to suit its needs, and
-should return a non-@code{nil} value.
+should return a non-@code{nil} value (exceptionally,
+@code{nntp-request-update-info} always returns @code{nil} not to waste
+the network resources).
 
 There should be no result data from this function.
 

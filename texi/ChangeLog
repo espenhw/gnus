@@ -1,3 +1,8 @@
+2005-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Optional Back End Functions): nntp-request-update-info
+	always returns nil exceptionally.
+
 2005-01-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Some edits based on comments from David Abrahams.
