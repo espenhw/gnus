@@ -1,3 +1,9 @@
+2000-10-09  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-group-overview-filename): Create directory for
+	newfile (when use long filenames is nil).  Copy+delete file if
+	rename didn't work.
+
 2000-10-08 13:05:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-compile): Delete old elc files first.

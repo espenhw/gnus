@@ -496,7 +496,10 @@ If EXAMINE is non-nil the group is selected read-only."
         (progn
 	  (message "nnimap: Upgrading novcache filename...")
 	  (sit-for 1)
-	  (rename-file oldfile newfile)
+	  (gnus-make-directory (file-name-directory newfile))
+	  (unless (rename-file oldfile newfile)
+	    (when (copy-file oldfile newfile)
+	      (delete-file oldfile)))
 	  newfile)
       newfile)))
 
