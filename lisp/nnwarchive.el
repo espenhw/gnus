@@ -513,7 +513,7 @@
   (while (re-search-forward "<a[^>]+>\\([^<]+\\)</a>" nil t)
     (replace-match "<\\1>"))
   (nnwarchive-decode-entities)
-  (buffer-substring (point-min) (point-max)))
+  (buffer-string))
 
 (defun nnwarchive-egroups-xover-files (group articles)
   (let (aux auxs)
@@ -605,7 +605,7 @@
       (setq min (apply 'min (mapcar 'car nnwarchive-headers))))))
 
 (defun nnwarchive-mail-archive-article (group article)
-  (let (p refs url mime file)
+  (let (p refs url mime file e)
     (save-restriction
       (goto-char (point-min))
       (when (search-forward "<ul>" nil t)
@@ -656,11 +656,11 @@
 	    (goto-char (point-max))))
       (setq p (point))
       (when (search-forward "X-References-End" nil t)
-	(narrow-to-region p (point))
-	(goto-char (point-min))
-	(while (re-search-forward "msg\\([0-9]+\\)\\.html" nil t)
-	  (push (concat "<" (match-string 1) "%" group ">") refs))
-	(widen))
+	(setq e (point))
+	(beginning-of-line)
+	(search-backward "X-References" p t)
+	(while (re-search-forward "msg\\([0-9]+\\)\\.html" e t)
+	  (push (concat "<" (match-string 1) "%" group ">") refs)))
       (delete-region p (point-max))
       (goto-char (point-min))
       (insert (format "Message-ID: <%05d%%%s>\n" (1- article) group))
@@ -672,7 +672,7 @@
       (when mime
 	(insert "MIME-Version: 1.0\n"
 		"Content-Type: text/html\n")))
-    (buffer-string (point-min) (point-max))))
+    (buffer-string)))
 
 (provide 'nnwarchive)
 
