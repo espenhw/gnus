@@ -697,8 +697,7 @@ Pass INFO on to CALLBACK."
   "Fetcher for directory sources."
   (mail-source-bind (directory source)
     (mail-source-run-script
-     prescript (format-spec-make ?t path)
-     prescript-delay)
+     prescript (format-spec-make ?t path) prescript-delay)
     (let ((found 0)
 	  (mail-source-string (format "directory:%s" path)))
       (dolist (file (directory-files
@@ -707,8 +706,7 @@ Pass INFO on to CALLBACK."
 		   (funcall predicate file)
 		   (mail-source-movemail file mail-source-crash-box))
 	  (incf found (mail-source-callback callback file))))
-      (mail-source-run-script
-       postscript (format-spec-make ?t path))
+      (mail-source-run-script postscript (format-spec-make ?t path))
       found)))
 
 (defun mail-source-fetch-pop (source callback)

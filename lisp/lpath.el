@@ -50,7 +50,8 @@
 		    enable-multibyte-characters language-info-alist
 		    mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    temporary-file-directory transient-mark-mode)))
+		    temporary-file-directory transient-mark-mode
+		    mm-w3m-mode-map)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation device-connection dfw-device
 		 events-to-keys font-lock-set-defaults frame-device
@@ -65,7 +66,7 @@
   (maybe-bind '(help-echo-owns-message
 		mail-mode-hook url-package-name url-package-version
 		w3-meta-charset-content-type-regexp
-		w3-meta-content-type-charset-regexp)))
+		w3-meta-content-type-charset-regexp mm-w3m-mode-map)))
 
 (defun nnkiboze-score-file (a)
   )
