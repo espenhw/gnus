@@ -1029,27 +1029,25 @@ Return the modified alist."
 (defmacro gnus-with-output-to-file (file &rest body)
   (let ((buffer (make-symbol "output-buffer"))
         (size (make-symbol "output-buffer-size"))
-        (leng (make-symbol "output-buffer-length")))
-    `(let* ((print-quoted t)
-            (print-readably t)
-            (print-escape-multibyte nil)
-            print-level 
-            print-length
-            (,size 131072)
+        (leng (make-symbol "output-buffer-length"))
+        (append (make-symbol "output-buffer-append")))
+    `(let* ((,size 131072)
             (,buffer (make-string ,size 0))
             (,leng 0)
-            (append nil)
+            (,append nil)
             (standard-output
 	     (lambda (c)
-	       (aset ,buffer ,leng c)
+               (aset ,buffer ,leng c)
+                   
 	       (if (= ,size (setq ,leng (1+ ,leng)))
-		   (progn (write-region ,buffer nil ,file append 'no-msg)
+		   (progn (write-region ,buffer nil ,file ,append 'no-msg)
 			  (setq ,leng 0
-				append t))))))
+				,append t))))))
        ,@body
        (when (> ,leng 0)
+         (let ((coding-system-for-write 'no-conversion))
 	 (write-region (substring ,buffer 0 ,leng) nil ,file
-		       append 'no-msg)))))
+		       ,append 'no-msg))))))
 
 (put 'gnus-with-output-to-file 'lisp-indent-function 1)
 (put 'gnus-with-output-to-file 'edebug-form-spec '(form body))
