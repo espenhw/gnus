@@ -253,15 +253,25 @@ Modify to suit your needs."))
   (require 'gnus)
   (byte-recompile-directory "." 0))
 
-(defvar dgnushack-gnus-load-file (expand-file-name "gnus-load.el"))
-(defvar	dgnushack-cus-load-file (expand-file-name "cus-load.el"))
+(defvar dgnushack-gnus-load-file
+  (if (featurep 'xemacs)
+      (expand-file-name "auto-autoloads.el")
+    (expand-file-name "gnus-load.el")))
+
+(defvar	dgnushack-cus-load-file 
+  (if (featurep 'xemacs)
+      (expand-file-name "custom-load.el")
+    (expand-file-name "cus-load.el")))
 
 (defun dgnushack-make-cus-load ()
   (load "cus-dep")
   (let ((cusload-base-file dgnushack-cus-load-file))
     (if (fboundp 'custom-make-dependencies)
 	(custom-make-dependencies)
-      (Custom-make-dependencies))))
+      (Custom-make-dependencies))
+    (when (featurep 'xemacs)
+      (message "Compiling %s..." dgnushack-cus-load-file)
+      (byte-compile-file dgnushack-cus-load-file))))
 
 (defun dgnushack-make-auto-load ()
   (require 'autoload)
@@ -290,43 +300,44 @@ Modify to suit your needs."))
     (batch-update-autoloads)))
 
 (defun dgnushack-make-load ()
-  (message "Generating %s..." dgnushack-gnus-load-file)
-  (with-temp-file dgnushack-gnus-load-file
-    (insert-file-contents dgnushack-cus-load-file)
-    (delete-file dgnushack-cus-load-file)
-    (goto-char (point-min))
-    (search-forward ";;; Code:")
-    (forward-line)
-    (delete-region (point-min) (point))
-    (insert "\
+  (unless (featurep 'xemacs)
+    (message "Generating %s..." dgnushack-gnus-load-file)
+    (with-temp-file dgnushack-gnus-load-file
+      (insert-file-contents dgnushack-cus-load-file)
+      (delete-file dgnushack-cus-load-file)
+      (goto-char (point-min))
+      (search-forward ";;; Code:")
+      (forward-line)
+      (delete-region (point-min) (point))
+      (insert "\
 ;;; gnus-load.el --- automatically extracted custom dependencies and autoload
 ;;
 ;;; Code:
 ")
-    (goto-char (point-max))
-    (if (search-backward "custom-versions-load-alist" nil t)
+      (goto-char (point-max))
+      (if (search-backward "custom-versions-load-alist" nil t)
+	  (forward-line -1)
 	(forward-line -1)
-      (forward-line -1)
-      (while (eq (char-after) ?\;)
-	(forward-line -1))
-      (forward-line))
-    (delete-region (point) (point-max))
-    (insert "\n")
-    ;; smiley-* are duplicated. Remove them all.
-    (let ((point (point)))
-      (insert-file-contents dgnushack-gnus-load-file)
-      (goto-char point)
-      (while (search-forward "smiley-" nil t)
-	(beginning-of-line)
-	(if (looking-at "(autoload ")
-	    (delete-region (point) (progn (forward-sexp) (point)))
-	  (forward-line))))
-    ;;
-    (goto-char (point-max))
-    (when (search-backward "\n(provide " nil t)
-      (forward-line -1)
-      (delete-region (point) (point-max)))
-    (insert "\
+	(while (eq (char-after) ?\;)
+	  (forward-line -1))
+	(forward-line))
+      (delete-region (point) (point-max))
+      (insert "\n")
+      ;; smiley-* are duplicated. Remove them all.
+      (let ((point (point)))
+	(insert-file-contents dgnushack-gnus-load-file)
+	(goto-char point)
+	(while (search-forward "smiley-" nil t)
+	  (beginning-of-line)
+	  (if (looking-at "(autoload ")
+	      (delete-region (point) (progn (forward-sexp) (point)))
+	    (forward-line))))
+      ;;
+      (goto-char (point-max))
+      (when (search-backward "\n(provide " nil t)
+	(forward-line -1)
+	(delete-region (point) (point-max)))
+      (insert "\
 
 \(provide 'gnus-load)
 
@@ -337,18 +348,15 @@ Modify to suit your needs."))
 ;;; End:
 ;;; gnus-load.el ends here
 ")
-    ;; Workaround the bug in some version of XEmacs.
-    (when (featurep 'xemacs)
-      (condition-case nil
-	  (require 'cus-load)
-	(error nil))
-      (goto-char (point-min))
-      (when (and (fboundp 'custom-add-loads)
-		 (not (search-forward "\n(autoload 'custom-add-loads " nil t)))
-	(search-forward "\n;;; Code:" nil t)
-	(forward-line 1)
-	(insert "\n(autoload 'custom-add-loads \"cus-load\")\n"))))
+      ))
   (message "Compiling %s..." dgnushack-gnus-load-file)
-  (byte-compile-file dgnushack-gnus-load-file))
+  (byte-compile-file dgnushack-gnus-load-file)
+  (when (featurep 'xemacs)
+    (message "Creating dummy gnus-load.el...")
+    (with-temp-file (expand-file-name "gnus-load.el")
+      (insert "\
+
+\(provide 'gnus-load)"))))
+
 
 ;;; dgnushack.el ends here

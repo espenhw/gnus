@@ -1,3 +1,15 @@
+2003-10-24  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* dgnushack.el (dgnushack-gnus-load-file): Set to
+	"auto-autoloads.el" if building with XEmacs.
+	(dgnushack-cus-load-file): Set to "custom-load.el" if building
+	with XEmacs.
+	(dgnushack-make-cus-load): We don't delete the resulting file if
+	building with XEmacs so byte-compile it.
+	(dgnushack-make-load): When building with XEmacs do nothing except
+	byte-compile the autoload file and create a dummy gnus-load.el
+	file. 
+
 2003-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-make-fqdn): Bind case-fold-search.
