@@ -452,7 +452,7 @@ your main source of newsgroup names."
   "Spam bsfilter configuration."
   :group 'spam)
 
-(defcustom spam-bsfilter-path (exec-installed-p "bsfilter")
+(defcustom spam-bsfilter-path (executable-find "bsfilter")
   "File path of the Bsfilter executable program."
   :type '(choice (file :tag "Location of bsfilter")
 		 (const :tag "Bsfilter is not installed"))
