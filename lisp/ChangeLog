@@ -1,4 +1,27 @@
-2004-01-17  Teodor Zlatanov  <tzz@lifelogs.com>
+2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>  
+	From Hubert Chan <hubert@uhoreg.ca>.
+
+	* spam.el (spam-use-spamassassin, spam-use-spamassassin-headers)
+	(spam-install-hooks, spam-spamassassin, spam-spamassassin-path)
+	(spam-spamassassin-arguments)
+	(spam-spamassassin-spam-flag-header)
+	(spam-spamassassin-positive-spam-flag-header)
+	(spam-spamassassin-spam-status-header, spam-sa-learn-path)
+	(spam-sa-learn-rebuild, spam-sa-learn-spam-switch)
+	(spam-sa-learn-ham-switch, spam-sa-learn-unregister-switch)
+	(spam-list-of-processors, spam-list-of-checks)
+	(spam-list-of-statistical-checks, spam-registration-functions)
+	(spam-check-spamassassin-headers, spam-check-spamassassin)
+	(spam-spamassassin-score)
+	(spam-spamassassin-register-with-sa-learn)
+	(spam-spamassassin-register-spam-routine)
+	(spam-spamassassin-register-ham-routine)
+	(spam-assassin-register-spam-routine)
+	(spam-assassin-register-ham-routine): add SpamAssassin support
+	(spam-bogofilter-score): fix to show article before scoring
+
+	* gnus.el (spam-process, spam-autodetect-methods): add
+	spamassassin and spamassassin-headers
 
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent):
 	Suppress unnecessary messages.  From Nevin Kapur

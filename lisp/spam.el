@@ -245,6 +245,19 @@ considered spam."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-spamassassin nil
+  "Whether spamassassin should be invoked by `spam-split'.
+Enable this if you want Gnus to invoke SpamAssassin on new messages."
+  :type 'boolean
+  :group 'spam)
+
+(defcustom spam-use-spamassassin-headers nil
+  "Whether spamassassin headers should be checked by `spam-split'.
+Enable this if you pre-process messages with SpamAssassin BEFORE Gnus sees
+them."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-install-hooks (or
 			       spam-use-dig
 			       spam-use-blacklist
@@ -254,8 +267,10 @@ considered spam."
 			       spam-use-hashcash
 			       spam-use-regex-headers
 			       spam-use-regex-body
-			       spam-use-bogofilter-headers
 			       spam-use-bogofilter
+			       spam-use-bogofilter-headers
+			       spam-use-spamassassin
+			       spam-use-spamassassin-headers
 			       spam-use-BBDB
 			       spam-use-BBDB-exclusive
 			       spam-use-ifile
@@ -417,6 +432,70 @@ When nil, use the default spamoracle database."
 		 (const :tag "Use the default"))
   :group 'spam-spamoracle)
 
+(defgroup spam-spamassassin nil
+  "Spam SpamAssassin configuration."
+  :group 'spam)
+
+(defcustom spam-spamassassin-path (executable-find "spamassassin")
+  "File path of the spamassassin executable program.
+Hint: set this to \"spamc\" if you have spamd running.  See the spamc and
+spamd man pages for more information on these programs."
+  :type '(choice (file :tag "Location of spamc")
+		 (const :tag "spamassassin is not installed"))
+  :group 'spam-spamassassin)
+
+(defcustom spam-spamassassin-arguments ()
+  "Arguments to pass to the spamassassin executable.
+This must be a list.  For example, `(\"-C\" \"configfile\")'."
+  :type '(restricted-sexp :match-alternatives (listp))
+  :group 'spam-spamassassin)
+
+(defcustom spam-spamassassin-spam-flag-header "X-Spam-Flag"
+  "The header inserted by SpamAssassin to flag spam."
+  :type 'string
+  :group 'spam-spamassassin)
+
+(defcustom spam-spamassassin-positive-spam-flag-header "YES"
+  "The regex on `spam-spamassassin-spam-flag-header' for positive spam
+identification"
+  :type 'string
+  :group 'spam-spamassassin)
+
+(defcustom spam-spamassassin-spam-status-header "X-Spam-Status"
+  "The header inserted by SpamAssassin, giving extended scoring information"
+  :type 'string
+  :group 'spam-spamassassin)
+
+(defcustom spam-sa-learn-path (executable-find "sa-learn")
+  "File path of the sa-learn executable program."
+  :type '(choice (file :tag "Location of spamassassin")
+		 (const :tag "spamassassin is not installed"))
+  :group 'spam-spamassassin)
+
+(defcustom spam-sa-learn-rebuild t
+  "Whether sa-learn should rebuild the database every time it is called
+Enable this if you want sa-learn to rebuild the database automatically.  Doing
+this will slightly increase the running time of the spam registration process.
+If you choose not to do this, you will have to run \"sa-learn --rebuild\" in
+order for SpamAssassin to recognize the new registered spam."
+  :type 'boolean
+  :group 'spam-spamassassin)
+
+(defcustom spam-sa-learn-spam-switch "--spam"
+  "The switch that sa-learn uses to register spam messages"
+  :type 'string
+  :group 'spam-spamassassin)
+
+(defcustom spam-sa-learn-ham-switch "--ham"
+  "The switch that sa-learn uses to register ham messages"
+  :type 'string
+  :group 'spam-spamassassin)
+
+(defcustom spam-sa-learn-unregister-switch "--forget"
+  "The switch that sa-learn uses to unregister messages messages"
+  :type 'string
+  :group 'spam-spamassassin)
+
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
@@ -506,12 +585,14 @@ finds ham or spam.")
     (gnus-group-spam-exit-processor-ifile        spam spam-use-ifile)
     (gnus-group-spam-exit-processor-stat         spam spam-use-stat)
     (gnus-group-spam-exit-processor-spamoracle   spam spam-use-spamoracle)
+    (gnus-group-spam-exit-processor-spamassassin spam spam-use-spam-spamassassin)
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
     (gnus-group-ham-exit-processor-stat          ham spam-use-stat)
     (gnus-group-ham-exit-processor-whitelist     ham spam-use-whitelist)
     (gnus-group-ham-exit-processor-BBDB          ham spam-use-BBDB)
     (gnus-group-ham-exit-processor-copy          ham spam-use-ham-copy)
+    (gnus-group-ham-exit-processor-spamassassin  ham spam-use-ham-spamassassin)
     (gnus-group-ham-exit-processor-spamoracle    ham spam-use-spamoracle))
   "The `spam-list-of-processors' list.
 This list contains pairs associating a ham/spam exit processor
@@ -868,18 +949,20 @@ Respects the process/prefix convention."
 ;;;; Spam determination.
 
 (defvar spam-list-of-checks
-  '((spam-use-blacklist  	 . spam-check-blacklist)
-    (spam-use-regex-headers  	 . spam-check-regex-headers)
-    (spam-use-regex-body  	 . spam-check-regex-body)
-    (spam-use-whitelist  	 . spam-check-whitelist)
-    (spam-use-BBDB	 	 . spam-check-BBDB)
-    (spam-use-ifile	 	 . spam-check-ifile)
-    (spam-use-spamoracle         . spam-check-spamoracle)
-    (spam-use-stat	 	 . spam-check-stat)
-    (spam-use-blackholes 	 . spam-check-blackholes)
-    (spam-use-hashcash  	 . spam-check-hashcash)
-    (spam-use-bogofilter-headers . spam-check-bogofilter-headers)
-    (spam-use-bogofilter 	 . spam-check-bogofilter))
+  '((spam-use-blacklist  	 	. 	spam-check-blacklist)
+    (spam-use-regex-headers  	 	. 	spam-check-regex-headers)
+    (spam-use-regex-body  	 	. 	spam-check-regex-body)
+    (spam-use-whitelist  	 	. 	spam-check-whitelist)
+    (spam-use-BBDB	 	 	. 	spam-check-BBDB)
+    (spam-use-ifile	 	 	. 	spam-check-ifile)
+    (spam-use-spamoracle         	. 	spam-check-spamoracle)
+    (spam-use-stat	 	 	. 	spam-check-stat)
+    (spam-use-blackholes 	 	. 	spam-check-blackholes)
+    (spam-use-hashcash  	 	. 	spam-check-hashcash)
+    (spam-use-spamassassin-headers 	. 	spam-check-spamassassin-headers)
+    (spam-use-spamassassin 		. 	spam-check-spamassassin)
+    (spam-use-bogofilter-headers 	. 	spam-check-bogofilter-headers)
+    (spam-use-bogofilter 	 	. 	spam-check-bogofilter))
   "The spam-list-of-checks list contains pairs associating a
 parameter variable with a spam checking function.  If the
 parameter variable is true, then the checking function is called,
@@ -900,6 +983,7 @@ definitely a spam.")
     spam-use-stat
     spam-use-bogofilter
     spam-use-blackholes
+    spam-use-spamassassin
     spam-use-spamoracle)
   "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.
@@ -1070,6 +1154,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			 ;; does Gmane support unregistration?
 			 nil
 			 nil)
+    (spam-use-spamassassin spam-spamassassin-register-ham-routine
+			   spam-spamassassin-register-spam-routine
+			   spam-spamassassin-unregister-ham-routine
+			   spam-spamassassin-unregister-spam-routine)
     (spam-use-bogofilter spam-bogofilter-register-ham-routine
 			 spam-bogofilter-register-spam-routine
 			 spam-bogofilter-unregister-ham-routine
@@ -1795,9 +1883,9 @@ REMOVE not nil, remove the ADDRESSES."
     (set-buffer gnus-article-buffer)
     (let ((score (or (spam-check-bogofilter-headers t)
 		     (spam-check-bogofilter t))))
+      (gnus-summary-show-article)
       (message "Spamicity score %s" score)
-      (or score "0"))
-    (gnus-summary-show-article)))
+      (or score "0"))))
 
 (defun spam-check-bogofilter (&optional score)
   "Check the Bogofilter backend for the classification of this message"
@@ -1916,6 +2004,95 @@ REMOVE not nil, remove the ADDRESSES."
 (defun spam-spamoracle-unlearn-spam (articles &optional unregister)
   (spam-spamoracle-learn-spam articles t))
 
+
+;;;; SpamAssassin
+;;; based mostly on the bogofilter code
+(defun spam-check-spamassassin-headers (&optional score)
+  "Check the SpamAssassin headers for the classification of this message."
+  (if score				; scoring mode
+      (let ((header (message-fetch-field spam-spamassassin-spam-status-header)))
+	(when header
+	  (if (string-match "hits=\\(-?[0-9.]+\\)" header)
+	      (match-string 1 header)
+	    "0")))
+    ;; spam detection mode
+    (let ((header (message-fetch-field spam-spamassassin-spam-flag-header))
+	  (spam-split-group (if spam-split-symbolic-return
+				 'spam
+			       spam-split-group)))
+	  (when header			; return nil when no header
+	    (when (string-match spam-spamassassin-positive-spam-flag-header
+				header)
+	      spam-split-group)))))
+
+(defun spam-check-spamassassin (&optional score)
+  "Check the SpamAssassin backend for the classification of this message."
+  (let ((article-buffer-name (buffer-name)))
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (apply 'call-process-region
+		 (point-min) (point-max) spam-spamassassin-path
+		 nil temp-buffer-name nil spam-spamassassin-arguments))
+	;; check the return now (we're back in the temp buffer)
+	(goto-char (point-min))
+	(spam-check-spamassassin-headers score)))))
+
+;; return something sensible if the score can't be determined
+(defun spam-spamassassin-score ()
+  "Get the SpamAssassin score"
+  (interactive)
+  (save-window-excursion
+    (gnus-summary-show-article t)
+    (set-buffer gnus-article-buffer)
+    (let ((score (or (spam-check-spamassassin-headers t)
+		     (spam-check-spamassassin t))))
+      (gnus-summary-show-article)
+      (message "SpamAssassin score %s" score)
+      (or score "0"))))
+
+(defun spam-spamassassin-register-with-sa-learn (articles spam
+						 &optional unregister)
+  "Register articles with spamassassin's sa-learn as spam or non-spam."
+  (if articles
+      (let ((action (if unregister spam-sa-learn-unregister-switch
+		      (if spam spam-sa-learn-spam-switch
+			spam-sa-learn-ham-switch)))
+	    (summary-buffer-name (buffer-name)))
+	(with-temp-buffer
+	  ;; group the articles into mbox format
+	  (dolist (article articles)
+	    (let (article-string)
+	      (save-excursion
+		(set-buffer summary-buffer-name)
+		(setq article-string (spam-get-article-as-string article)))
+	      (when (stringp article-string)
+		(insert "From \n") ; mbox separator (sa-learn only checks the
+				   ; first five chars, so we can get away with
+				   ; a bogus line))
+		(insert article-string)
+		(insert "\n"))))
+	  ;; call sa-learn on all messages at the same time
+	  (apply 'call-process-region
+		 (point-min) (point-max)
+		 spam-sa-learn-path
+		 nil nil nil "--mbox"
+		 (if spam-sa-learn-rebuild
+		     (list action)
+		   `("--no-rebuild" ,action)))))))
+
+(defun spam-spamassassin-register-spam-routine (articles &optional unregister)
+  (spam-spamassassin-register-with-sa-learn articles t unregister))
+
+(defun spam-spamassassin-register-ham-routine (articles &optional unregister)
+  (spam-spamassassin-register-with-sa-learn articles nil unregister))
+
+(defun spam-assassin-register-spam-routine (articles)
+  (spam-spamassassin-register-with-sa-learn articles t t))
+
+(defun spam-assassin-register-ham-routine (articles)
+  (spam-spamassassin-register-with-sa-learn articles nil t))
 
 ;;;; Hooks
 
