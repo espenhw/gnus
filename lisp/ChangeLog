@@ -1,5 +1,8 @@
 2002-03-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-draft.el (gnus-draft-send): If interactive, use its default
+	value of message-syntax-checks.
+
 	* qp.el (quoted-printable-decode-region): Doc addition.
 	From: Eli Zaretskii <eliz@is.elta.co.il>
 
