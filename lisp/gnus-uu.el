@@ -2108,8 +2108,7 @@ If no file has been included, the user will be asked for a file."
 
     (when (not gnus-uu-post-separate-description)
       (set-buffer-modified-p nil)
-      (when (fboundp 'bury-buffer)
-	(bury-buffer)))))
+      (bury-buffer))))
 
 (provide 'gnus-uu)
 

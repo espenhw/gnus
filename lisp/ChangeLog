@@ -1,3 +1,9 @@
+2004-01-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-registry.el: Remove Emacs 20 hash table compatibility code.
+
+	* gnus-uu.el (gnus-uu-post-encoded): bury-buffer is always fbound.
+
 2004-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-treat-ansi-sequences,
