@@ -1,3 +1,10 @@
+2003-12-30  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-crl-check): New.
+	(smime-verify-region): Use it.  From Arne J,Ax(Brgensen
+	<arne@arnested.dk> in <87llpk9v5q.fsf@seamus.arnested.dk> (tiny
+	change).
+
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-score-edit-file-at-point): Consider the

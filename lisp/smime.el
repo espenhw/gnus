@@ -184,6 +184,13 @@ and the files themself should be in PEM format."
 		 (const :tag "RC2 128 bits" "-rc2-128"))
   :group 'smime)
 
+(defcustom smime-crl-check nil
+  "*Check revocation status of signers certificate using CRLs."
+  :type '(choice (const :tag "No check" nil)
+		 (const :tag "Check certificate" "-crl_check")
+		 (const :tag "Check certificate chain" "-crl_check_all"))
+  :group 'smime)
+
 (defcustom smime-dns-server nil
   "*DNS server to query certificates from.
 If nil, use system defaults."
@@ -348,6 +355,8 @@ Any details (stdout and stderr) are left in the buffer specified by
 			       (expand-file-name smime-CA-directory))))))
     (unless CAs
       (error "No CA configured"))
+    (if smime-crl-check
+	(add-to-list 'CAs smime-crl-check))
     (if (apply 'smime-call-openssl-region b e (list smime-details-buffer t)
 	       "smime" "-verify" "-out" "/dev/null" CAs)
 	t
