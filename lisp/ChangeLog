@@ -1,3 +1,11 @@
+2003-03-26  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-fetch-selected-article): Replaced
+	gnus-summary-update-line (which updated the article's face) with
+	gnus-summary-update-download-mark (which updates the article's
+	face by calling gnus-summary-update-line AND updates the download
+	mark to show that the article was fetched).
+	
 2003-03-23  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-expire-unagentized-dirs): Provides
