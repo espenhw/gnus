@@ -723,7 +723,6 @@ XEmacs compatibility workaround."
 			       gnus-mime-button-commands)))))
     (set-buffer (event-buffer event))
     (goto-char (event-point event))
-    (setq current-prefix-arg prefix)
     (funcall (event-function response) (event-object response))))
 
 (defun gnus-group-add-icon ()
