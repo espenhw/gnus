@@ -1,7 +1,7 @@
 2002-10-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Do nothing
-	for methods not covered by the agent.
+	for methods not covered by the agent, and when unplugged.
 
 2002-10-05  Simon Josefsson  <jas@extundo.com>
 
