@@ -1,5 +1,7 @@
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-ignored-bounced-headers): Add Delivered-To. 
+
 	* gnus-sum.el (gnus-summary-find-next): Indent.
 	(gnus-summary-find-prev): Ditto.
 	(gnus-summary-catchup): Doc fix.

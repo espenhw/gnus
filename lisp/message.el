@@ -144,7 +144,8 @@ If this variable is nil, no such courtesy message will be added."
   :group 'message-sending
   :type 'string)
 
-(defcustom message-ignored-bounced-headers "^\\(Received\\|Return-Path\\):"
+(defcustom message-ignored-bounced-headers
+  "^\\(Received\\|Return-Path\\|Delivered-To\\):"
   "*Regexp that matches headers to be removed in resent bounced mail."
   :group 'message-interface
   :type 'regexp)
