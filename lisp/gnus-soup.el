@@ -150,7 +150,7 @@ move those articles instead."
 	;; Mark article as read. 
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-remove-process-mark (car articles))
-	(gnus-summary-mark-as-read (car articles) "F")
+	(gnus-summary-mark-as-read (car articles) gnus-souped-mark)
 	(setq articles (cdr articles)))
       (kill-buffer tmp-buf))
     (gnus-soup-save-areas)))
@@ -303,15 +303,16 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 
 (defun gnus-soup-write-prefixes ()
   (let ((prefix gnus-soup-last-prefix))
-    (while prefix
-      (gnus-set-work-buffer)
-      (insert (format "(setq gnus-soup-prev-prefix %d)\n" 
-		      (cdr (car prefix))))
-      (write-region (point-min) (point-max)
-		    (concat (car (car prefix)) 
-			    gnus-soup-prefix-file) 
-		    nil 'nomesg)
-      (setq prefix (cdr prefix)))))
+    (save-excursion
+      (while prefix
+	(gnus-set-work-buffer)
+	(insert (format "(setq gnus-soup-prev-prefix %d)\n" 
+			(cdr (car prefix))))
+	(write-region (point-min) (point-max)
+		      (concat (car (car prefix)) 
+			      gnus-soup-prefix-file) 
+		      nil 'nomesg)
+	(setq prefix (cdr prefix))))))
 
 (defun gnus-soup-pack (dir packer)
   (let* ((files (mapconcat 'identity
@@ -378,7 +379,8 @@ file. The vector contain three strings, [prefix name encoding]."
 			    (gnus-soup-field))
 		    replies))
 	(if (eq (preceding-char) ?\t)
-	    (beginning-of-line 2))))
+	    (beginning-of-line 2)))
+      (kill-buffer (current-buffer)))
     replies))
 
 (defun gnus-soup-field ()
@@ -399,6 +401,7 @@ file. The vector contain three strings, [prefix name encoding]."
     (save-excursion
       (set-buffer (find-file-noselect
 		   (concat gnus-soup-directory "AREAS")))
+      (buffer-disable-undo)
       (erase-buffer)
       (let ((areas gnus-soup-areas)
 	    area)
@@ -430,6 +433,7 @@ file. The vector contain three strings, [prefix name encoding]."
       (gnus-make-directory dir))
   (save-excursion
     (set-buffer (find-file-noselect (concat dir "REPLIES")))
+    (buffer-disable-undo)
     (erase-buffer)
     (let (area)
       (while areas

@@ -182,7 +182,7 @@ all. This may very well take some time.")
 	       (concat 
 		(if (numberp id)
 		    nnml-current-directory
-		  (nnmail-article-pathname (car group-num) nnml-directory))
+		  (nnmail-group-pathname (car group-num) nnml-directory))
 		(int-to-string number))))
 	 (nntp-server-buffer (or buffer nntp-server-buffer)))
     (and file
@@ -277,9 +277,7 @@ all. This may very well take some time.")
       (setq article (concat nnml-current-directory 
 			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (and (or (not nnmail-keep-last-article)
-		       (not max-article)
-		       (not (= (car articles) max-article)))
+	  (if (and (nnml-deletable-article-p newsgroup (car articles))
 		   (or force
 		       (and (not (equal mod-time '(0 0)))
 			    (setq is-old
@@ -314,6 +312,7 @@ all. This may very well take some time.")
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
     (and 
+     (nnml-deletable-article-p group article)
      (nnml-request-article article group server)
      (save-excursion
        (set-buffer buf)
@@ -431,7 +430,7 @@ all. This may very well take some time.")
 	     (rename-file 
 	      (directory-file-name nnml-current-directory)
 	      (directory-file-name 
-	       (nnmail-article-pathname new-name nnml-directory)))
+	       (nnmail-group-pathname new-name nnml-directory)))
 	     t)
 	 (error nil))
        ;; That went ok, so we change the internal structures.
@@ -445,6 +444,11 @@ all. This may very well take some time.")
 
 
 ;;; Internal functions.
+
+(defun nnml-deletable-article-p (group article)
+  "Say whether ARTICLE in GROUP can be deleted."
+  (or (not nnmail-keep-last-article)
+      (not (eq (cdr (nth 1 (assoc group nnml-group-alist))) article))))
 
 ;; Find an article number in the current group given the Message-ID. 
 (defun nnml-find-group-number (id)
@@ -471,7 +475,7 @@ all. This may very well take some time.")
 (defun nnml-find-id (group id)
   (erase-buffer)
   (insert-file-contents 
-   (concat (nnmail-article-pathname group nnml-directory)
+   (concat (nnmail-group-pathname group nnml-directory)
 	   nnml-nov-file-name))
   (let (number found)
     (while (and (not found) 
@@ -520,7 +524,7 @@ all. This may very well take some time.")
 
 (defun nnml-possibly-change-directory (newsgroup &optional force)
   (if newsgroup
-      (let ((pathname (nnmail-article-pathname newsgroup nnml-directory)))
+      (let ((pathname (nnmail-group-pathname newsgroup nnml-directory)))
 	(and (or force (file-directory-p pathname))
 	     (setq nnml-current-directory pathname
 		   nnml-current-group newsgroup)))
@@ -528,7 +532,7 @@ all. This may very well take some time.")
 
 (defun nnml-possibly-create-directory (group)
   (let (dir dirs)
-    (setq dir (nnmail-article-pathname group nnml-directory))
+    (setq dir (nnmail-group-pathname group nnml-directory))
     (while (not (file-directory-p dir))
       (setq dirs (cons dir dirs))
       (setq dir (file-name-directory (directory-file-name dir))))
@@ -554,7 +558,7 @@ all. This may very well take some time.")
 	  first)
       (while ga
 	(nnml-possibly-create-directory (car (car ga)))
-	(let ((file (concat (nnmail-article-pathname 
+	(let ((file (concat (nnmail-group-pathname 
 			     (car (car ga)) nnml-directory)
 			    (int-to-string (cdr (car ga))))))
 	  (if first
@@ -587,7 +591,7 @@ all. This may very well take some time.")
 	  (setq nnml-group-alist (cons (list group active) nnml-group-alist))))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
-	    (concat (nnmail-article-pathname group nnml-directory)
+	    (concat (nnmail-group-pathname group nnml-directory)
 		    (int-to-string (cdr active))))
       (setcdr active (1+ (cdr active))))
     (cdr active)))
@@ -600,7 +604,7 @@ all. This may very well take some time.")
     (insert (int-to-string article) line)))
 
 (defsubst nnml-header-value ()
-  (buffer-substring (match-end 0) (save-excursion (end-of-line) (point))))
+  (buffer-substring (match-end 0) (progn (end-of-line) (point))))
 
 (defun nnml-make-nov-line (chars)
   "Create a nov from the current headers."
@@ -630,7 +634,8 @@ all. This may very well take some time.")
 	     ((eq char ?f)
 	      (setq from (nnml-header-value)))
 	     ((eq char ?x)
-	      (setq xref (nnml-header-value)))
+	      (setq xref (buffer-substring (match-beginning 0) 
+					   (progn (end-of-line) (point)))))
 	     ((eq char ?l)
 	      (setq lines (nnml-header-value)))
 	     ((eq char ?d)
@@ -658,13 +663,14 @@ all. This may very well take some time.")
 				(lambda (time) (int-to-string time))
 				(current-time) "-")))
 		(or references "")
-		(or chars 0) (or lines "0") (or xref ""))))))
+		(or chars 0) (or lines "0") 
+		(or xref ""))))))
 
 (defun nnml-open-nov (group)
   (or (cdr (assoc group nnml-nov-buffer-alist))
       (let ((buffer (find-file-noselect 
-		     (concat (nnmail-article-pathname 
-			      group nnml-directory) nnml-nov-file-name))))
+		     (concat (nnmail-group-pathname group nnml-directory)
+			     nnml-nov-file-name))))
 	(save-excursion
 	  (set-buffer buffer)
 	  (buffer-disable-undo (current-buffer)))
@@ -687,7 +693,7 @@ all. This may very well take some time.")
 
 ;;;###autoload
 (defun nnml-generate-nov-databases (dir)
-  "Generate nov databases in all nnml mail newsgroups."
+  "Generate nov databases in all nnml directories."
   (interactive 
    (progn   
      (setq nnml-group-alist nil)
@@ -734,18 +740,19 @@ all. This may very well take some time.")
 	  (while files
 	    (erase-buffer)
 	    (insert-file-contents (concat dir "/" (int-to-string (car files))))
-	    (goto-char (point-min))
-	    (narrow-to-region 1 (save-excursion (search-forward "\n\n" nil t)
-						(setq chars (- (point-max) 
-							       (point)))
-						(point)))
- 	    (if (not (= 0 chars))	; none of them empty files...
- 		(progn
-		  (setq nov-line (nnml-make-nov-line chars))
-		  (save-excursion
-		    (set-buffer nov-buffer)
-		    (goto-char (point-max))
-		    (insert (int-to-string (car files)) nov-line))))
+	    (narrow-to-region 
+	     (goto-char (point-min))
+	     (save-excursion
+	       (search-forward "\n\n" nil t)
+	       (setq chars (- (point-max) (point)))
+	       (point)))
+ 	    (when (and (not (= 0 chars))	; none of them empty files...
+		       (not (= (point-min) (point-max))))
+	      (setq nov-line (nnml-make-nov-line chars))
+	      (save-excursion
+		(set-buffer nov-buffer)
+		(goto-char (point-max))
+		(insert (int-to-string (car files)) nov-line)))
 	    (widen)
 	    (setq files (cdr files)))
 	  (save-excursion

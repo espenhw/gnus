@@ -29,9 +29,10 @@
 (require 'nnmail)
 (require 'gnus-soup)
 (require 'gnus-msg)
+(eval-when-compile (require 'cl))
 
 (defvar nnsoup-directory "~/SOUP/"
-  "*SOUP packet directory directory.")
+  "*SOUP packet directory.")
 
 (defvar nnsoup-replies-directory (concat nnsoup-directory "replies/")
   "*Directory where outgoing packets will be composed.")
@@ -99,6 +100,7 @@ The SOUP packet file name will be inserted at the %s.")
 	  (use-nov t)
 	  useful-areas this-area-seq)
       (if (stringp (car sequence))
+	  ;; We don't support fetching by Message-ID.
 	  'headers
 	;; We go through all the areas and find which files the
 	;; articles in SEQUENCE come from.
@@ -106,24 +108,23 @@ The SOUP packet file name will be inserted at the %s.")
 	  ;; Peel off areas that are below sequence.
 	  (while (and areas (< (cdr (car (car areas))) (car sequence)))
 	    (setq areas (cdr areas)))
-	  (if (not areas)
-	      ()
+	  (when areas
 	    ;; This is a useful area.
-	    (setq useful-areas (cons (car areas) useful-areas)
-		  this-area-seq nil)
+	    (push (car areas) useful-areas)
+	    (setq this-area-seq nil)
 	    ;; We take note whether this MSG has a corresponding IDX
 	    ;; for later use.
-	    (if (or (= (gnus-soup-encoding-index 
-			(gnus-soup-area-encoding (nth 1 (car areas)))) ?n)
-		    (not (file-exists-p
-			  (nnsoup-file
-			   (gnus-soup-area-prefix (nth 1 (car areas)))))))
-		(setq use-nov nil))
-	    ;; We assing the portion of `sequence' that is relevant to
+	    (when (or (= (gnus-soup-encoding-index 
+			  (gnus-soup-area-encoding (nth 1 (car areas)))) ?n)
+		      (not (file-exists-p
+			    (nnsoup-file
+			     (gnus-soup-area-prefix (nth 1 (car areas)))))))
+	      (setq use-nov nil))
+	    ;; We assign the portion of `sequence' that is relevant to
 	    ;; this MSG packet to this packet.
 	    (while (and sequence (<= (car sequence) (cdr (car (car areas)))))
-	      (setq this-area-seq (cons (car sequence) this-area-seq)
-		    sequence (cdr sequence)))
+	      (push (car sequence) this-area-seq)
+	      (setq sequence (cdr sequence)))
 	    (setcar useful-areas (cons (nreverse this-area-seq)
 				       (car useful-areas)))))
 
@@ -137,22 +138,25 @@ The SOUP packet file name will be inserted at the %s.")
 	;; what lines are relevant.  If some of the IDX files are
 	;; missing, we must return HEADs for all the articles.
 	(if use-nov
-	    (while useful-areas
-	      (goto-char (point-max))
-	      (let ((b (point))
-		    (number (car (nth 1 (car useful-areas)))))
-		(insert-buffer-substring
-		 (nnsoup-index-buffer
-		  (gnus-soup-area-prefix
-		   (nth 2 (car useful-areas)))))
-		(goto-char b)
-		;; We have to remove the index number entires and
-		;; insert article numbers instead.
-		(while (looking-at "[0-9]+")
-		  (replace-match (int-to-string number) t t)
-		  (setq number (1+ number))
-		  (forward-line 1)))
-	      (setq useful-areas (cdr useful-areas)))
+	    ;; We have IDX files for all areas.
+	    (progn
+	      (while useful-areas
+		(goto-char (point-max))
+		(let ((b (point))
+		      (number (car (nth 1 (car useful-areas)))))
+		  (insert-buffer-substring
+		   (nnsoup-index-buffer
+		    (gnus-soup-area-prefix
+		     (nth 2 (car useful-areas)))))
+		  (goto-char b)
+		  ;; We have to remove the index number entires and
+		  ;; insert article numbers instead.
+		  (while (looking-at "[0-9]+")
+		    (replace-match (int-to-string number) t t)
+		    (incf number)
+		    (forward-line 1)))
+		(setq useful-areas (cdr useful-areas)))
+	      'nov)
 	  ;; We insert HEADs.
 	  (while useful-areas
 	    (setq articles (car (car useful-areas))
@@ -170,11 +174,10 @@ The SOUP packet file name will be inserted at the %s.")
 	  ;; Fold continuation lines.
 	  (goto-char (point-min))
 	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	    (replace-match " " t t)))
-	(if use-nov 'nov 'headers)))))
+	    (replace-match " " t t))
+	  'headers)))))
 
 (defun nnsoup-open-server (server &optional defs)
-  (nnsoup-set-variables)
   (nnheader-init-server-buffer)
   (if (equal server nnsoup-current-server)
       t
@@ -195,6 +198,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-request-close ()
   (nnsoup-write-active-file)
   (nnsoup-write-replies)
+  (gnus-soup-save-areas)
   (while nnsoup-buffers
     (and (car nnsoup-buffers)
 	 (buffer-name (car nnsoup-buffers))
@@ -284,6 +288,43 @@ The SOUP packet file name will be inserted at the %s.")
   (nnsoup-store-reply "mail")
   t)
 
+(defun nnsoup-request-expire-articles (articles group &optional server force)
+  (nnsoup-possibly-change-group group)
+  (let* ((days (or (and nnmail-expiry-wait-function
+			(funcall nnmail-expiry-wait-function group))
+		   nnmail-expiry-wait))
+	 (total-infolist (assoc group nnsoup-group-alist))
+	 (infolist (cdr total-infolist))
+	 info range-list mod-time prefix)
+    (while infolist
+      (setq info (pop infolist)
+	    range-list (gnus-uncompress-range (car info))
+	    prefix (gnus-soup-area-prefix (nth 1 info)))
+      (when ;; All the articles in this file are marked for expiry.
+	  (and (gnus-sublist-p articles range-list)
+	       ;; This file is old enough.  We have to check for 
+	       ;; `(0 0)', since that's what ange-ftp files reply with.
+	       (or force
+		   (and (not (equal
+			      (setq mod-time (nth 5 (nnsoup-file prefix)))
+			      '(0 0)))
+			(> (nnmail-days-between
+			    (current-time-string)
+			    (current-time-string mod-time))
+			   days))))
+	;; Ok, we delete this file.
+	(when (condition-case nil
+		  (and
+		   (delete-file (nnsoup-file prefix))
+		   (delete-file (nnsoup-file prefix) t)
+		   t)
+		(error nil))
+	  (setcdr total-infolist (delq info total-infolist))
+	  (setq articles (gnus-sorted-complement articles range-list)))))
+    (nnsoup-write-active-file)
+    ;; Return the articles that weren't expired.
+    articles))
+
 
 ;;; Internal functions
 
@@ -299,14 +340,15 @@ The SOUP packet file name will be inserted at the %s.")
 	(error nil))))
 
 (defun nnsoup-write-active-file ()
-  (save-excursion
-    (set-buffer (get-buffer-create " *nnsoup work*"))
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (insert (format "(setq nnsoup-group-alist '%S)\n" nnsoup-group-alist))
-    (write-region (point-min) (point-max) nnsoup-active-file
-		  nil 'silent)
-    (kill-buffer (current-buffer))))
+  (when nnsoup-group-alist
+    (save-excursion
+      (set-buffer (get-buffer-create " *nnsoup work*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
+      (insert (format "(setq nnsoup-group-alist '%S)\n" nnsoup-group-alist))
+      (write-region (point-min) (point-max) nnsoup-active-file
+		    nil 'silent)
+      (kill-buffer (current-buffer)))))
 
 (defun nnsoup-read-areas ()
   (save-excursion
@@ -365,6 +407,7 @@ The SOUP packet file name will be inserted at the %s.")
     (or (get-buffer buffer-name)	; File aready loaded.
 	(save-excursion			; Load the file.
 	  (set-buffer (get-buffer-create buffer-name))
+	  (buffer-disable-undo (current-buffer))
 	  (setq nnsoup-buffers (cons (current-buffer) nnsoup-buffers))
 	  (insert-file-contents (concat nnsoup-directory file))
 	  (current-buffer)))))
@@ -452,25 +495,37 @@ The SOUP packet file name will be inserted at the %s.")
    (t
     (error "Unknown format: %c" format))))
 
+;;;###autoload
 (defun nnsoup-pack-replies ()
   "Make an outbound package of SOUP replies."
   (interactive)
+  ;; Write all data buffers.
+  (gnus-soup-save-areas)
+  ;; Write the active file.
   (nnsoup-write-active-file)
+  ;; Write the REPLIES file.
   (nnsoup-write-replies)
+  ;; Pack all these files into a SOUP packet.
   (gnus-soup-pack nnsoup-replies-directory nnsoup-packer))
 
 (defun nnsoup-write-replies ()
-  (gnus-soup-write-replies nnsoup-replies-directory nnsoup-replies-list))
+  "Write the REPLIES file."
+  (when nnsoup-replies-list
+    (gnus-soup-write-replies nnsoup-replies-directory nnsoup-replies-list)
+    (setq nnsoup-replies-list nil)))
 
 (defun nnsoup-article-to-area (article group)
+  "Return the area that ARTICLE in GROUP is located in."
   (let ((areas (cdr (assoc group nnsoup-group-alist))))
     (while (and areas (< (cdr (car (car areas))) article))
       (setq areas (cdr areas)))
     (and areas (car areas))))
 
+;;;###autoload
 (defun nnsoup-set-variables ()
+  "Use the SOUP methods for posting news and mailing mail."
+  (interactive)
   (setq gnus-inews-article-function 'nnsoup-request-post)
-  (setq gnus-mail-send-method 'nnsoup-request-mail)
   (setq send-mail-function 'nnsoup-request-mail))
 
 (defun nnsoup-store-reply (kind)
@@ -527,10 +582,10 @@ The SOUP packet file name will be inserted at the %s.")
       (kill-buffer tembuf))))
 
 (defun nnsoup-kind-to-prefix (kind)
-  (or nnsoup-replies-list
-      (setq nnsoup-replies-list
-	    (gnus-soup-parse-replies 
-	     (concat nnsoup-replies-directory "REPLIES"))))
+  (unless nnsoup-replies-list
+    (setq nnsoup-replies-list
+	  (gnus-soup-parse-replies 
+	   (concat nnsoup-replies-directory "REPLIES"))))
   (let ((replies nnsoup-replies-list))
     (while (and replies 
 		(not (string= kind (gnus-soup-reply-kind (car replies)))))

@@ -160,7 +160,7 @@
 	 (string-to-int (file-name-nondirectory file)))))
 
 (defun nnmh-request-group (group &optional server dont-check)
-  (let ((pathname (nnmh-article-pathname group nnmh-directory))
+  (let ((pathname (nnmail-group-pathname group nnmh-directory))
 	dir)
     (if (file-directory-p pathname)
 	(progn
@@ -263,16 +263,14 @@
       (setq article (concat nnmh-current-directory 
 			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (and (or (not nnmail-keep-last-article)
-		       (not max-article)
-		       (not (= (car articles) max-article)))
-		   (not (equal mod-time '(0 0)))
+	  (if (and (nnmh-deletable-article-p newsgroup (car articles))
 		   (or force
-		       (setq is-old
-			     (> (nnmail-days-between
-				 (current-time-string)
-				 (current-time-string mod-time))
-				days))))
+		       (and (not (equal mod-time '(0 0)))
+			    (setq is-old
+				  (> (nnmail-days-between
+				      (current-time-string)
+				      (current-time-string mod-time))
+				     days)))))
 	      (progn
 		(and gnus-verbose-backends 
 		     (message "Deleting article %s in %s..." 
@@ -294,6 +292,7 @@
   (let ((buf (get-buffer-create " *nnmh move*"))
 	result)
     (and 
+     (nnmh-deletable-article-p group article)
      (nnmh-request-article article group server)
      (save-excursion
        (set-buffer buf)
@@ -384,7 +383,7 @@
 	     (rename-file 
 	      (directory-file-name nnmh-current-directory)
 	      (directory-file-name 
-	       (nnmail-article-pathname new-name nnmh-directory)))
+	       (nnmail-group-pathname new-name nnmh-directory)))
 	     t)
 	 (error nil))
        ;; That went ok, so we change the internal structures.
@@ -398,14 +397,14 @@
 
 (defun nnmh-possibly-change-directory (newsgroup)
   (if newsgroup
-      (let ((pathname (nnmh-article-pathname newsgroup nnmh-directory)))
+      (let ((pathname (nnmail-group-pathname newsgroup nnmh-directory)))
 	(if (file-directory-p pathname)
 	    (setq nnmh-current-directory pathname)
 	  (error "No such newsgroup: %s" newsgroup)))))
 
 (defun nnmh-possibly-create-directory (group)
   (let (dir dirs)
-    (setq dir (nnmh-article-pathname group nnmh-directory))
+    (setq dir (nnmail-group-pathname group nnmh-directory))
     (while (not (file-directory-p dir))
       (setq dirs (cons dir dirs))
       (setq dir (file-name-directory (directory-file-name dir))))
@@ -431,7 +430,7 @@
 	  first)
       (while ga
 	(nnmh-possibly-create-directory (car (car ga)))
-	(let ((file (concat (nnmh-article-pathname 
+	(let ((file (concat (nnmail-group-pathname 
 			     (car (car ga)) nnmh-directory) 
 			    (int-to-string (cdr (car ga))))))
 	  (if first
@@ -454,17 +453,10 @@
 	  (setq nnmh-group-alist (cons (list group active) nnmh-group-alist))))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
-	    (concat (nnmh-article-pathname group nnmh-directory)
+	    (concat (nnmail-group-pathname group nnmh-directory)
 		    (int-to-string (cdr active))))
       (setcdr active (1+ (cdr active))))
     (cdr active)))
-
-(defun nnmh-article-pathname (group mail-dir)
-  "Make pathname for GROUP."
-  (let ((mail-dir (file-name-as-directory (expand-file-name mail-dir))))
-    (if (file-directory-p (concat mail-dir group))
-	(concat mail-dir group "/")
-      (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
 
 (defun nnmh-update-gnus-unreads (group)
   ;; Go through the .nnmh-articles file and compare with the actual
@@ -531,6 +523,11 @@
       (insert (prin1-to-string articles) ")\n")
       (write-region (point-min) (point-max) nnmh-file nil 'nomesg)
       (kill-buffer (current-buffer)))))
+
+(defun nnmh-deletable-article-p (group article)
+  "Say whether ARTICLE in GROUP can be deleted."
+  (or (not nnmail-keep-last-article)
+      (not (eq (cdr (nth 1 (assoc group nnmh-group-alist))) article))))
 
 (provide 'nnmh)
 

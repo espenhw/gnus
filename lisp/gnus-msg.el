@@ -206,7 +206,7 @@ If this variable is t, Gnus will check everything it can.  If it is a
 list, then those elements in that list will be checked.")
 
 (defvar gnus-delete-supersedes-headers
-  "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Supersedes:"
+  "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Supersedes:\\|^Xref:\\|^Lines:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion.")
@@ -215,10 +215,7 @@ any confusion.")
   "*If non-nil, mail the authors of articles a copy of your follow-ups.
 If this variable is `ask', the user will be prompted for whether to
 mail a copy.  The string given by `gnus-mail-courtesy-message' will be
-inserted at the beginning of the mail copy.
-
-Mail is sent using the function specified by the
-`gnus-mail-send-method' variable.")
+inserted at the beginning of the mail copy.")
 
 ;; Added by Ethan Bradford <ethanb@ptolemy.astro.washington.edu>.
 (defvar gnus-mail-courtesy-message
@@ -241,11 +238,6 @@ Three pre-made functions are `gnus-mail-forward-using-mail' (sendmail);
 Three pre-made functions are `gnus-mail-other-window-using-mail'
 (sendmail); `gnus-mail-other-window-using-mhe' (MH-E); and
 `gnus-mail-other-window-using-vm'.")
-
-(defvar gnus-mail-send-method send-mail-function
-  "*Function to mail a message which is also being posted as an article.
-The message must have To or Cc header.  The default is copied from
-the variable `send-mail-function'.")
 
 (defvar gnus-inews-article-function 'gnus-inews-article
   "*Function to post an article.")
@@ -324,13 +316,31 @@ headers.")
 (defun gnus-group-mail ()
   "Start composing a mail."
   (interactive)
-  (gnus-new-mail))
+  (gnus-new-mail
+   ;; We might want to prompt here.
+   (when (and gnus-interactive-post
+	      (not gnus-expert-user))
+     (read-string "To: "))))
 
-(defun gnus-group-post-news ()
-  "Post an article."
-  (interactive)
-  (let ((gnus-newsgroup-name nil))
-    (gnus-post-news 'post nil nil gnus-article-buffer)))
+(defun gnus-group-post-news (&optional arg)
+  "Post an article.
+The newsgroup under the cursor is used as the group to post to.
+
+If you wish to get an empty post buffer, use a prefix ARG.  You can
+also do this by calling this function from the bottom of the Group
+buffer."
+  (interactive "P")
+  (let ((gnus-newsgroup-name nil)
+	(group (unless arg (gnus-group-group-name)))
+	subject)
+    ;; We might want to prompt here.
+    (when (and gnus-interactive-post
+	       (not gnus-expert-user))
+      (setq gnus-newsgroup-name
+	    (setq group 
+		  (completing-read "Group: " gnus-active-hashtb nil nil
+				   (cons group 0)))))
+    (gnus-post-news 'post group nil gnus-article-buffer)))
 
 (defun gnus-summary-post-news ()
   "Post an article."
@@ -400,38 +410,28 @@ header line with the old Message-ID."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article t)
-  (if (not
-       (string-equal
-	(downcase (mail-strip-quoted-names 
-		   (mail-header-from gnus-current-headers)))
-	(downcase (mail-strip-quoted-names (gnus-inews-user-name)))))
-      (error "This article is not yours."))
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (let ((buffer-read-only nil))
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
-      (if (not (re-search-backward "^Message-ID: " nil t))
-	  (error "No Message-ID in this article"))))
-  (if (gnus-post-news 'post gnus-newsgroup-name)
-      (progn
-	(erase-buffer)
-	(insert-buffer-substring gnus-article-buffer)
-	(if (search-forward "\n\n" nil t)
-	    (forward-char -1)
-	  (goto-char (point-max)))
-	(narrow-to-region (point-min) (point))
-	(goto-char (point-min))
-	(and gnus-delete-supersedes-headers
-	     (delete-matching-lines gnus-delete-supersedes-headers))
-	(goto-char (point-min))
-	(if (not (re-search-forward "^Message-ID: " nil t))
-	    (error "No Message-ID in this article")
-	  (replace-match "Supersedes: " t t))
-	(goto-char (point-max))
-	(insert mail-header-separator)
-	(widen)
-	(forward-line 1))))
+  ;; Check whether the user owns the article that is to be superseded. 
+  (unless (string-equal
+	   (downcase (mail-strip-quoted-names 
+		      (mail-header-from gnus-current-headers)))
+	   (downcase (mail-strip-quoted-names (gnus-inews-user-name))))
+    (error "This article is not yours."))
+  ;; Get a normal *post-news* buffer.
+  (gnus-new-news gnus-newsgroup-name t)
+  (erase-buffer)
+  (insert-buffer-substring gnus-original-article-buffer)
+  (gnus-narrow-to-headers)
+  ;; Remove unwanted headers.
+  (when gnus-delete-supersedes-headers
+    (nnheader-remove-header gnus-delete-supersedes-headers t))
+  (goto-char (point-min))
+  (if (not (re-search-forward "^Message-ID: " nil t))
+      (error "No Message-ID in this article")
+    (replace-match "Supersedes: " t t))
+  (goto-char (point-max))
+  (insert mail-header-separator)
+  (widen)
+  (forward-line 1))
 
 
 ;;;###autoload
@@ -465,21 +465,24 @@ Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
   (let* ((group (or group gnus-newsgroup-name))
 	 (to-address 
-	  (and group
-	       (cdr (assq 
-		     'to-address 
-		     (nth 5 (nth 2 (gnus-gethash 
-				    group gnus-newsrc-hashtb)))))))
+	  (when group
+	    (gnus-group-get-parameter group 'to-address)))
+	 (to-group
+	  (when group
+	    (gnus-group-get-parameter group 'to-group)))
 	 (mailing-list
 	  (and group gnus-mailing-list-groups
 	       (string-match gnus-mailing-list-groups group))))
-    (if (and (gnus-member-of-valid 'post (or group gnus-newsgroup-name))
-	     (not mailing-list)
-	     (not to-address))
+    (when group
+      (setq group (gnus-group-real-name group)))
+    (if (or to-group
+	    (and (gnus-member-of-valid 'post (or group gnus-newsgroup-name))
+		 (not mailing-list)
+		 (not to-address)))
 	;; This is news.
 	(if post
-	    (gnus-new-news group)
-	  (gnus-news-followup yank group))
+	    (gnus-new-news (or to-group group))
+	  (gnus-news-followup yank (or to-group group)))
       ;; The is mail.
       (if post
 	  (progn
@@ -500,7 +503,6 @@ will attempt to use the foreign server to post the article."
   (or gnus-current-select-method
       (setq gnus-current-select-method gnus-select-method))
   (let* ((case-fold-search nil)
-	 (server-running (gnus-server-opened gnus-current-select-method))
 	 (reply gnus-article-reply)
 	 error post-result)
     (save-excursion
@@ -528,15 +530,16 @@ will attempt to use the foreign server to post the article."
 	     ;; We cannot signal an error.
 	     (setq error t)
 	     (ding)
-	     (gnus-message 1 "Article rejected: %s" 
-			   (gnus-status-message gnus-select-method)))))
+	     (gnus-message 
+	      1 "Article rejected: %s" 
+	      (gnus-status-message
+	       (gnus-post-method gnus-newsgroup-name use-group-method))))))
 
     (let ((conf gnus-prev-winconf))
-      (if (not error)
-	  (progn
-	    (bury-buffer)
-	    ;; Restore last window configuration.
-	    (and conf (set-window-configuration conf)))))))
+      (unless error
+	(bury-buffer)
+	;; Restore last window configuration.
+	(and conf (set-window-configuration conf))))))
 
 (defun gnus-inews-narrow-to-headers ()
   (widen)
@@ -609,8 +612,38 @@ will attempt to use the foreign server to post the article."
 (defun gnus-inews-remove-headers-after-mail ()
   (save-excursion
     (save-restriction
-      (gnus-inews-narrow-to-headers)
-      (nnheader-remove-header "bcc"))))
+      (let ((case-fold-search t))
+	(gnus-inews-narrow-to-headers)
+	;; Remove Bcc completely.
+	(nnheader-remove-header "bcc")
+	;; We transform To and Cc headers to avoid re-mailing if the user
+	;; accidentally (or purposefully) leans on the `C-c C-c' keys
+	;; and the news server rejects the posting.
+	(while (re-search-forward "^\\(to\\|[bcf]cc\\|cc\\):" nil t)
+	  (beginning-of-line)
+	  (insert "X-"))
+	(widen)))))
+
+(defun gnus-inews-dex-headers ()
+  "Remove \"X-\" prefixes from To and Cc headers."
+  (save-excursion
+    (save-restriction
+      (let ((case-fold-search t))
+	(gnus-narrow-to-headers)
+	(while (re-search-forward "^X-\\(to\\|[bcf]cc\\|cc\\):" nil t)
+	  (beginning-of-line)
+	  (delete-char 2))
+	(widen)))))
+
+(defun gnus-inews-remove-empty-headers ()
+  "Remove empty headers from news and mail.
+The buffer should be narrowed to the headers before this function is
+called."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^[^ \t:]+:\\([ \t]*\n\\)+[^ \t]" nil t)
+      (delete-region (match-beginning 0) (1- (match-end 0)))
+      (beginning-of-line))))
 
 (defun gnus-inews-check-post ()
   "Check whether the post looks ok."
@@ -756,7 +789,7 @@ will attempt to use the foreign server to post the article."
 	  (goto-char (point-max))
 	  (if (not (re-search-backward gnus-signature-separator nil t))
 	      t
-	    (if (> (count-lines (point) (point-max)) 4)
+	    (if (> (count-lines (point) (point-max)) 5)
 		(gnus-y-or-n-p
 		 (format
 		  "Your .sig is %d lines; it should be max 4.  Really post? "
@@ -911,22 +944,15 @@ will attempt to use the foreign server to post the article."
 	;; The article must be saved before being posted because
 	;; `gnus-request-post' modifies the buffer.
 	(run-hooks 'gnus-inews-article-hook)
+	;; Remove X- prefixes to headers.
+	(gnus-inews-dex-headers)
 	;; Copy the article over to some group, possibly.
 	(and gcc (gnus-inews-do-gcc gcc))
 	;; Post the article.
-	(setq result
-	      (gnus-request-post 
-	       (if use-group-method
-		   (gnus-find-method-for-group gnus-newsgroup-name)
-		 gnus-select-method) use-group-method))
+	(let ((method (gnus-post-method gnus-newsgroup-name use-group-method)))
+	  (setq result (gnus-request-post method)))
 	(kill-buffer (current-buffer)))
       (run-hooks 'gnus-message-sent-hook)
-      ;; We remove To and Cc headers to avoid re-mailing if the user
-      ;; accidentally (or purposefully) leans on the `C-c C-c' keys
-      ;; and the news server rejects the posting.
-      (gnus-inews-narrow-to-headers)
-      (nnheader-remove-header "^\\(to\\|[bcf]cc\\|cc\\):" t)
-      (widen)
       ;; If the posting was unsuccessful (that it, it was rejected) we
       ;; put it into the draft group.
       (or result (gnus-put-in-draft-group))
@@ -1057,62 +1083,64 @@ Headers in `gnus-required-headers' will be generated."
     ;; Distribution. 
     (while headers
       (goto-char (point-min))
-      (setq elem (car headers))
+      (setq elem (pop headers))
       (if (consp elem)
 	  (setq header (car elem))
 	(setq header elem))
-      (if (or (not (re-search-forward 
-		    (concat "^" (downcase (symbol-name header)) ":") nil t))
-	      (progn
-		;; The header was found. We insert a space after the
-		;; colon, if there is none.
-		(if (/= (following-char) ? ) (insert " "))
-		;; Find out whether the header is empty...
-		(looking-at "[ \t]*$")))
-	  ;; So we find out what value we should insert.
-	  (progn
- 	    (setq value
-		  (cond 
-		   ((and (consp elem) (eq (car elem) 'optional))
-		    ;; This is an optional header.  If the cdr of this
-		    ;; is something that is nil, then we do not insert
-		    ;; this header.
-		    (setq header (cdr elem))
-		    (or (and (fboundp (cdr elem)) (funcall (cdr elem)))
-			(and (boundp (cdr elem)) (symbol-value (cdr elem)))))
-		   ((consp elem)
-		    ;; The element is a cons.  Either the cdr is a
-		    ;; string to be inserted verbatim, or it is a
-		    ;; function, and we insert the value returned from
-		    ;; this function.
-		    (or (and (stringp (cdr elem)) (cdr elem))
-			(and (fboundp (cdr elem)) (funcall (cdr elem)))))
-		   ((and (boundp header) (symbol-value header))
-		    ;; The element is a symbol.  We insert the value
-		    ;; of this symbol, if any.
-		    (symbol-value header))
-		   (t
-		    ;; We couldn't generate a value for this header,
-		    ;; so we just ask the user.
-		    (read-from-minibuffer
-		     (format "Empty header for %s; enter value: " header)))))
-	    ;; Finally insert the header.
-	    (if (not value)
-		()
-	      (save-excursion
-		(if (bolp)
-		    (progn
-		      (goto-char (point-max))
-		      (insert (symbol-name header) ": " value "\n")
-		      (forward-line -1))
-		  (replace-match value t t))
-		;; Add the deletable property to the headers that require it.
-		(and (memq header gnus-deletable-headers)
-		     (progn (beginning-of-line) (looking-at "[^:]+: "))
-		     (add-text-properties 
-		      (point) (match-end 0)
-		      '(gnus-deletable t face italic) (current-buffer)))))))
-      (setq headers (cdr headers)))
+      (when (or (not (re-search-forward 
+		      (concat "^" (downcase (symbol-name header)) ":") nil t))
+		(progn
+		  ;; The header was found. We insert a space after the
+		  ;; colon, if there is none.
+		  (if (/= (following-char) ? ) (insert " "))
+		  ;; Find out whether the header is empty...
+		  (looking-at "[ \t]*$")))
+	;; So we find out what value we should insert.
+	(setq value
+	      (cond 
+	       ((and (consp elem) (eq (car elem) 'optional))
+		;; This is an optional header.  If the cdr of this
+		;; is something that is nil, then we do not insert
+		;; this header.
+		(setq header (cdr elem))
+		(or (and (fboundp (cdr elem)) (funcall (cdr elem)))
+		    (and (boundp (cdr elem)) (symbol-value (cdr elem)))))
+	       ((consp elem)
+		;; The element is a cons.  Either the cdr is a
+		;; string to be inserted verbatim, or it is a
+		;; function, and we insert the value returned from
+		;; this function.
+		(or (and (stringp (cdr elem)) (cdr elem))
+		    (and (fboundp (cdr elem)) (funcall (cdr elem)))))
+	       ((and (boundp header) (symbol-value header))
+		;; The element is a symbol.  We insert the value
+		;; of this symbol, if any.
+		(symbol-value header))
+	       (t
+		;; We couldn't generate a value for this header,
+		;; so we just ask the user.
+		(read-from-minibuffer
+		 (format "Empty header for %s; enter value: " header)))))
+	;; Finally insert the header.
+	(when (and value 
+		   (not (equal value "")))
+	  (save-excursion
+	    (if (bolp)
+		(progn
+		  ;; This header didn't exist, so we insert it.
+		  (goto-char (point-max))
+		  (insert (symbol-name header) ": " value "\n")
+		  (forward-line -1))
+	      ;; The value of this header was empty, so we clear
+	      ;; totally and insert the new value.
+	      (delete-region (point) (gnus-point-at-bol))
+	      (insert value))
+	    ;; Add the deletable property to the headers that require it.
+	    (and (memq header gnus-deletable-headers)
+		 (progn (beginning-of-line) (looking-at "[^:]+: "))
+		 (add-text-properties 
+		  (point) (match-end 0)
+		  '(gnus-deletable t face italic) (current-buffer)))))))
     ;; Insert new Sender if the From is strange. 
     (let ((from (mail-fetch-field "from"))
 	  (sender (mail-fetch-field "sender")))
@@ -1197,56 +1225,39 @@ nil."
 		     (insert "7bit")))))))
 
 (defun gnus-inews-do-fcc ()
-  "Process FCC: fields in current article buffer.
+  "Process Fcc headers in the current buffer.
 Unless the first character of the field is `|', the article is saved
 to the specified file using the function specified by the variable
 gnus-author-copy-saver.  The default function rmail-output saves in
 Unix mailbox format.
-If the first character is `|', the contents of the article is send to
+
+If the first character is `|', the contents of the article is sent to
 a program specified by the rest of the value."
-  (let ((fcc-list nil)
-	(fcc-file nil)
-	(case-fold-search t))		;Should ignore case.
+  (let ((case-fold-search t)		;Should ignore case.
+	list file)
     (save-excursion
       (save-restriction
-	(goto-char (point-min))
-	(search-forward "\n\n")
-	(narrow-to-region (point-min) (point))
-	(goto-char (point-min))
-	(while (re-search-forward "^FCC:[ \t]*" nil t)
-	  (setq fcc-list
-		(cons (buffer-substring
-		       (point)
-		       (progn
-			 (end-of-line)
-			 (skip-chars-backward " \t")
-			 (point)))
-		      fcc-list))
-	  (delete-region (match-beginning 0)
-			 (progn (forward-line 1) (point))))
+	(gnus-narrow-to-headers)
+	(while (setq file (mail-fetch-field "fcc"))
+	  (push file list)
+	  (nnheader-remove-header "fcc" nil t))
 	;; Process FCC operations.
 	(widen)
-	(while fcc-list
-	  (setq fcc-file (car fcc-list))
-	  (setq fcc-list (cdr fcc-list))
-	  (cond ((string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" fcc-file)
-		 (let ((program (substring fcc-file
-					   (match-beginning 1) (match-end 1))))
-		   ;; Suggested by yuki@flab.fujitsu.junet.
-		   ;; Send article to named program.
-		   (call-process-region (point-min) (point-max) shell-file-name
-					nil nil nil "-c" program)))
-		(t
-		 (setq fcc-file (expand-file-name fcc-file))
-		 ;; Suggested by hyoko@flab.fujitsu.junet.
-		 ;; Save article in Unix mail format by default.
-		 (gnus-make-directory (file-name-directory fcc-file))
-		 (if (and gnus-author-copy-saver
-			  (not (eq gnus-author-copy-saver 'rmail-output)))
-		     (funcall gnus-author-copy-saver fcc-file)
-		   (if (and (file-readable-p fcc-file) (rmail-file-p fcc-file))
-		       (gnus-output-to-rmail fcc-file)
-		     (rmail-output fcc-file 1 t t))))))))))
+	(while list
+	  (setq file (pop list))
+	  (if (string-match "^[ \t]*|[ \t]*\\(.*\\)[ \t]*$" file)
+	      ;; Pipe the article to the program in question.
+	      (call-process-region (point-min) (point-max) shell-file-name
+				   nil nil nil "-c" (match-string 1 file))
+	    ;; Save the article.
+	    (setq file (expand-file-name file))
+	    (gnus-make-directory (file-name-directory file))
+	    (if (and gnus-author-copy-saver
+		     (not (eq gnus-author-copy-saver 'rmail-output)))
+		(funcall gnus-author-copy-saver file)
+	      (if (and (file-readable-p file) (mail-file-babyl-p file))
+		  (gnus-output-to-rmail file)
+		(rmail-output file 1 t t)))))))))
 
 (defun gnus-inews-path ()
   "Return uucp path."
@@ -1396,7 +1407,7 @@ organization."
 	 (> (length organization) 0)
 	 (or (file-exists-p organization)
 	     (string-match " " organization)
-	     (not (string-match "^/usr/lib/" organization)))
+	     (not (string-match "^/usr/lib/\\|^~/" organization)))
 	 (save-excursion
 	   (gnus-set-work-buffer)
 	   (if (file-exists-p organization)
@@ -1490,10 +1501,14 @@ mailer."
   (gnus-new-mail))
 
 (defun gnus-new-mail (&optional to)
-  (pop-to-buffer gnus-mail-buffer)
-  (erase-buffer)
-  (gnus-mail-setup 'new to)
-  (run-hooks 'gnus-mail-hook))
+  (let (subject)
+    (when (and gnus-interactive-post
+	       (not gnus-expert-user))
+      (setq subject (read-string "Subject: ")))
+    (pop-to-buffer gnus-mail-buffer)
+    (erase-buffer)
+    (gnus-mail-setup 'new to subject)
+    (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
@@ -1628,31 +1643,43 @@ mailer."
 		(goto-char end)
 		(setq yank (cdr yank))))
 	    (goto-char last))
+	  (forward-line 2)
 	  (gnus-configure-windows 'reply-yank 'force))
 	(run-hooks 'gnus-mail-hook)))))
 
-(defun gnus-new-news (&optional group)
+(defun gnus-new-news (&optional group inhibit-prompt)
+  "Set up a *post-news* buffer that points to GROUP.
+If INHIBIT-PROMPT, never prompt for a Subject."
   (let ((winconf (current-window-configuration))
 	subject)
-    (and gnus-interactive-post
-	 (not gnus-expert-user)
-	 (not group)
-	 (progn
-	   (setq gnus-newsgroup-name
-		 (setq group 
-		       (completing-read "Group: " gnus-active-hashtb)))
-	   (setq subject (read-string "Subject: "))))
+    (when (and gnus-interactive-post
+	       (not inhibit-prompt)
+	       (not gnus-expert-user))
+      (setq subject (read-string "Subject: ")))
     (pop-to-buffer gnus-post-news-buffer)  
     (erase-buffer)
     (news-reply-mode)
     ;; Let posting styles be configured.
     (gnus-configure-posting-styles)
     (news-setup nil subject nil (and group (gnus-group-real-name group)) nil)
+    (goto-char (point-min))
+
+    (unless (re-search-forward 
+	     (concat "^" (regexp-quote mail-header-separator) "$") nil t)
+      (goto-char (point-max)))
+    (insert "\n\n")
+
+    (gnus-inews-insert-bfcc)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
 	 (symbolp gnus-post-prepare-function)
 	 (fboundp gnus-post-prepare-function)
 	 (funcall gnus-post-prepare-function group))
+    (goto-char (point-min))
+    (if (re-search-forward 
+	 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
+	(forward-line 1)
+      (goto-char (point-max)))
     (run-hooks 'gnus-post-prepare-hook)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
@@ -1672,7 +1699,7 @@ mailer."
 	    (winconf (current-window-configuration))
 	    from subject date reply-to message-of
 	    references message-id sender follow-to sendto elt 
-	    followup-to distribution)
+	    followup-to distribution newsgroups)
 	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
 	(if (and (buffer-modified-p)
@@ -1704,6 +1731,7 @@ mailer."
 	      (setq references (mail-fetch-field "references"))
 	      (setq message-id (mail-fetch-field "message-id"))
 	      (setq followup-to (mail-fetch-field "followup-to"))
+	      (setq newsgroups (mail-fetch-field "newsgroups"))
 	      (setq distribution (mail-fetch-field "distribution"))
 	      ;; Remove bogus distribution.
 	      (and (stringp distribution)
@@ -1726,14 +1754,15 @@ mailer."
 	  (gnus-configure-posting-styles)
 
 	  (news-setup nil subject nil 
-		      (or group sendto 
-			  (and follow-to
+		      (or sendto 
+			  (and followup-to
 			       gnus-use-followup-to
 			       (or (not (eq gnus-use-followup-to 'ask))
 				   (gnus-y-or-n-p 
 				    (format
-				     "Use Followup-To %s? " follow-to))))
-			  group "")
+				     "Use Followup-To %s? " followup-to)))
+			       followup-to)
+			  newsgroups group "")
 		      gnus-article-copy)
 
 	  (make-local-variable 'gnus-article-reply)
@@ -1804,27 +1833,18 @@ mailer."
 		  (mail-position-on-field "To")
 		  (insert to))))
 
-	  ;; Handle author copy using BCC field.
-	  (if (and gnus-mail-self-blind
-		   (not (mail-fetch-field "bcc")))
-	      (progn
-		(mail-position-on-field "Bcc")
-		(insert (if (stringp gnus-mail-self-blind)
-			    gnus-mail-self-blind
-			  (user-login-name)))))
-	  ;; Handle author copy using FCC field.
-	  (if gnus-author-copy
-	      (progn
-		(mail-position-on-field "Fcc")
-		(insert gnus-author-copy)))
-	
+	  (gnus-inews-insert-bfcc)
+
 	  ;; Now the headers should be ok, so we do the yanking.
 	  (goto-char (point-min))
 	  (re-search-forward
 	   (concat "^" (regexp-quote mail-header-separator) "$"))
 	  (forward-line 1)
 	  (if (not yank)
-	      (gnus-configure-windows 'followup 'force)
+	      (progn
+		(gnus-configure-windows 'followup 'force)
+		(insert "\n\n")
+		(forward-line -2))
 	    (let ((last (point))
 		  end)
 	      (if (not (listp yank))
@@ -2169,7 +2189,8 @@ Headers will be generated before sending."
     (save-restriction
       (widen)
       (gnus-inews-narrow-to-headers)
-      (gnus-inews-insert-headers gnus-required-mail-headers)))
+      (gnus-inews-insert-headers gnus-required-mail-headers)
+      (gnus-inews-remove-empty-headers)))
   (widen)
   ;; Remove the header separator.
   (goto-char (point-min))
@@ -2225,6 +2246,12 @@ Headers will be generated before sending."
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
   (mail-mode)
   (mail-setup to subject nil cc replybuffer actions)
+  (goto-char (point-min))
+  (if (re-search-forward 
+       (concat "^" (regexp-quote mail-header-separator) "$") nil t)
+      (forward-line 1)
+    (goto-char (point-max)))
+;  (insert "\n\n")
   (gnus-inews-modify-mail-mode-map))
   
 ;;; Gcc handling.
@@ -2249,6 +2276,25 @@ Headers will be generated before sending."
 	      (error nil))
 	    (setq gcc (substring gcc end))))))))
 
+(defun gnus-inews-insert-bfcc ()
+  "Insert Bcc and Fcc headers."
+  (save-excursion
+    (save-restriction
+      (gnus-inews-narrow-to-headers)
+      ;; Handle author copy using BCC field.
+      (if (and gnus-mail-self-blind
+	       (not (mail-fetch-field "bcc")))
+	  (progn
+	    (mail-position-on-field "Bcc")
+	    (insert (if (stringp gnus-mail-self-blind)
+			gnus-mail-self-blind
+		      (user-login-name)))))
+      ;; Handle author copy using FCC field.
+      (if gnus-author-copy
+	  (progn
+	    (mail-position-on-field "Fcc")
+	    (insert gnus-author-copy))))))
+
 (defun gnus-inews-insert-gcc ()
   (let* ((group gnus-outgoing-message-group)
 	 (gcc (cond 
@@ -2256,8 +2302,7 @@ Headers will be generated before sending."
 		(funcall group))
 	       ((or (stringp group) (list group))
 		group))))
-    (if (not gcc)
-	() ; Insert no Gcc.
+    (when gcc
       (insert "Gcc: "
 	      (if (stringp group) group
 		(mapconcat 'identity group " "))
@@ -2380,6 +2425,7 @@ Headers will be generated before sending."
 (defun gnus-configure-posting-styles ()
   "Configure posting styles according to `gnus-posting-styles'."
   (let ((styles gnus-posting-styles)
+	(gnus-newsgroup-name (or gnus-newsgroup-name ""))
 	style match variable attribute value value-value)
     ;; Go through all styles and look for matches.
     (while styles

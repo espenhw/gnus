@@ -102,7 +102,7 @@ save those articles instead."
 			    (and default-name
 				 (file-name-directory default-name))))
     (gnus-make-directory (file-name-directory folder))
-    (set-buffer gnus-article-buffer)
+    (set-buffer gnus-original-article-buffer)
     (save-excursion
       (save-restriction
 	(widen)
@@ -111,7 +111,7 @@ save those articles instead."
 	  (kill-buffer vm-folder))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail folder)))
-  
+
 (defun gnus-vm-mail-setup (to subject in-reply-to cc replybuffer actions)
   (gnus-sendmail-mail-setup to subject in-reply-to cc replybuffer actions)
   )

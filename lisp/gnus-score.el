@@ -26,6 +26,75 @@
 ;;; Code:
 
 (require 'gnus)
+(eval-when-compile (require 'cl))
+
+(defvar gnus-global-score-files nil
+  "*List of global score files and directories.
+Set this variable if you want to use people's score files.  One entry
+for each score file or each score file directory.  Gnus will decide
+by itself what score files are applicable to which group.
+
+Say you want to use the single score file
+\"/ftp.ifi.uio.no@ftp:/pub/larsi/ding/score/soc.motss.SCORE\" and all
+score files in the \"/ftp.some-where:/pub/score\" directory.
+
+ (setq gnus-global-score-files
+       '(\"/ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE\"
+         \"/ftp.some-where:/pub/score\"))")
+
+(defvar gnus-score-file-single-match-alist nil
+  "*Alist mapping regexps to lists of score files.
+Each element of this alist should be of the form
+	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
+
+If the name of a group is matched by REGEXP, the corresponding scorefiles
+will be used for that group.
+The first match found is used, subsequent matching entries are ignored (to
+use multiple matches, see gnus-score-file-multiple-match-alist).
+
+These score files are loaded in addition to any files returned by
+gnus-score-find-score-files-function (which see).")
+
+(defvar gnus-score-file-multiple-match-alist nil
+  "*Alist mapping regexps to lists of score files.
+Each element of this alist should be of the form
+	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
+
+If the name of a group is matched by REGEXP, the corresponding scorefiles
+will be used for that group.
+If multiple REGEXPs match a group, the score files corresponding to each
+match will be used (for only one match to be used, see
+gnus-score-file-single-match-alist).
+
+These score files are loaded in addition to any files returned by
+gnus-score-find-score-files-function (which see).")
+
+(defvar gnus-score-file-suffix "SCORE"
+  "*Suffix of the score files.")
+
+(defvar gnus-adaptive-file-suffix "ADAPT"
+  "*Suffix of the adaptive score files.")
+
+(defvar gnus-score-find-score-files-function 'gnus-score-find-bnews
+  "*Function used to find score files.
+The function will be called with the group name as the argument, and
+should return a list of score files to apply to that group.  The score
+files do not actually have to exist.
+
+Predefined values are:
+
+gnus-score-find-single: Only apply the group's own score file.
+gnus-score-find-hierarchical: Also apply score files from parent groups.
+gnus-score-find-bnews: Apply score files whose names matches.
+
+See the documentation to these functions for more information.
+
+This variable can also be a list of functions to be called.  Each
+function should either return a list of score files, or a list of
+score alists.")
+
+(defvar gnus-score-interactive-default-score 1000
+  "*Scoring commands will raise/lower the score with this number as the default.")
 
 (defvar gnus-score-expiry-days 7
   "*Number of days before unused score file entries are expired.")
@@ -60,6 +129,9 @@ If this variable is nil, exact matching will always be used.")
 
 
 ;; Internal variables.
+
+(defvar gnus-internal-global-score-files nil)
+(defvar gnus-score-file-list nil)
 
 (defvar gnus-score-help-winconf nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
@@ -335,6 +407,16 @@ used as score."
 	  (error "No article on current line")
 	nil))))
 
+(defsubst gnus-score-get (symbol &optional alist)
+  ;; Get SYMBOL's definition in ALIST.
+  (cdr (assoc symbol 
+	      (or alist 
+		  gnus-score-alist
+		  (progn
+		    (gnus-score-load 
+		     (gnus-score-file-name gnus-newsgroup-name))
+		    gnus-score-alist)))))
+
 (defun gnus-summary-score-entry 
   (header match type score date &optional prompt silent)
   "Enter score file entry.
@@ -518,16 +600,6 @@ SCORE is the score to add."
 	   (setcdr alist
 		   (cons (cons symbol value) (cdr alist)))))))
 
-(defun gnus-score-get (symbol &optional alist)
-  ;; Get SYMBOL's definition in ALIST.
-  (cdr (assoc symbol 
-	      (or alist 
-		  gnus-score-alist
-		  (progn
-		    (gnus-score-load 
-		     (gnus-score-file-name gnus-newsgroup-name))
-		    gnus-score-alist)))))
-
 (defun gnus-score-change-score-file (file)
   "Change current score alist."
   (interactive 
@@ -614,8 +686,13 @@ SCORE is the score to add."
 					(gnus-score-load-file file)) 
 				      files))))
       (and eval (not global) (eval eval))
+      ;; We then expand any exclude-file directives.
       (setq gnus-scores-exclude-files 
-	    (append exclude-files gnus-scores-exclude-files))
+	    (nconc 
+	     (mapcar 
+	      (lambda (sfile) 
+		(expand-file-name sfile (file-name-directory file)))
+	      exclude-files) gnus-scores-exclude-files))
       (if (not local)
 	  ()
 	(save-excursion
@@ -802,8 +879,7 @@ SCORE is the score to add."
 	(setq scores (nconc (car score-files) scores)))
       (setq score-files (cdr score-files)))
     ;; Prune the score files that are to be excluded, if any.
-    (if (not gnus-scores-exclude-files)
-	()
+    (when gnus-scores-exclude-files
       (let ((s scores)
 	    c)
 	(while s
@@ -811,11 +887,11 @@ SCORE is the score to add."
 	       (member (car c) gnus-scores-exclude-files)
 	       (setq scores (delq (car s) scores)))
 	  (setq s (cdr s)))))
-    (if (not (and gnus-summary-default-score
-		  scores
-		  (> (length gnus-newsgroup-headers)
-		     (length gnus-newsgroup-scored))))
-	()
+    ;; Do the scoring.
+    (when (and gnus-summary-default-score
+	       scores
+	       (> (length gnus-newsgroup-headers)
+		  (length gnus-newsgroup-scored)))
       (let* ((entries gnus-header-index)
 	     (now (gnus-day-number (current-time-string)))
 	     (expire (- now gnus-score-expiry-days))
@@ -850,13 +926,14 @@ SCORE is the score to add."
 	  ;; Run each header through the score process.
 	  (while entries
 	    (setq entry (car entries)
-		  header (nth 0 entry)
+		  header (downcase (nth 0 entry))
 		  entries (cdr entries))
 	    (setq gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	    (if (< 0 (apply 'max (mapcar
 				  (lambda (score)
 				    (length (gnus-score-get header score)))
 				  scores)))
+		;; Call the scoring function for this type of "header".
 		(funcall (nth 2 entry) scores header now expire trace)))
 	  ;; Remove the buffer.
 	  (kill-buffer (current-buffer)))
@@ -1144,8 +1221,6 @@ SCORE is the score to add."
 		  (setq entries rest)))))
 	  (setq articles (cdr articles)))))))
 
-
-
 (defun gnus-score-followup (scores header now expire &optional trace)
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
@@ -1368,19 +1443,14 @@ SCORE is the score to add."
 		;; Found a match, update scores.
 		(if trace
 		    (while arts
-		      (setq art (car arts)
-			    arts (cdr arts))
+		      (setq art (pop arts))
 		      (setcdr art (+ score (cdr art)))
-		      (setq gnus-score-trace
-			    (cons
-			     (cons
-			      (car-safe
-			       (rassq alist gnus-score-cache))
+		      (push (cons
+			      (car-safe (rassq alist gnus-score-cache))
 			      kill)
-			     gnus-score-trace)))
+			    gnus-score-trace))
 		  (while arts
-		    (setq art (car arts)
-			  arts (cdr arts))
+		    (setq art (pop arts))
 		    (setcdr art (+ score (cdr art)))))
 		(forward-line 1)))
 	    ;; Update expire date
@@ -1393,71 +1463,61 @@ SCORE is the score to add."
 		   (setcdr entries (cdr rest))
 		   (setq rest entries))))
 	  (setq entries rest))))
-  
+
     ;; Find fuzzy matches.
-    (setq scores (and fuzzy score-list))
-    (if fuzzy (gnus-simplify-buffer-fuzzy))
-    (while scores
-      (setq alist (car scores)
-	    scores (cdr scores)
-	    entries (assoc header alist))
-      (while (cdr entries)		;First entry is the header index.
-	(let* ((rest (cdr entries))		
-	       (kill (car rest))
-	       (match (nth 0 kill))
-	       (type (or (nth 3 kill) 's))
-	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
-	       (date (nth 2 kill))
-	       (found nil)
-	       (mt (aref (symbol-name type) 0))
-	       (case-fold-search 
-		(not (or (= mt ?R) (= mt ?S) (= mt ?E) (= mt ?F))))
-	       (dmt (downcase mt))
-	       (search-func 
-		(cond ((= dmt ?r) 're-search-forward)
-		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
-		      (t (error "Illegal match type: %s" type))))
-	       arts art)
-	  (if (/= dmt ?f)
-	      ()
-	    (goto-char (point-min))
-	    (while (and (not (eobp)) 
-			(funcall search-func match nil t))
-	      (and (= (progn (beginning-of-line) (point))
-		      (match-beginning 0))
-		   (= (progn (end-of-line) (point))
-		      (match-end 0))
-		   (progn
-		     (setq found (setq arts (get-text-property 
-					     (point) 'articles)))
-		     ;; Found a match, update scores.
-		     (if trace
-			 (while arts
-			   (setq art (car arts)
-				 arts (cdr arts))
-			   (setcdr art (+ score (cdr art)))
-			   (setq gnus-score-trace
-				 (cons
-				  (cons
-				   (car-safe
-				    (rassq alist gnus-score-cache))
-				   kill)
-				  gnus-score-trace)))
-		       (while arts
-			 (setq art (car arts)
-			       arts (cdr arts))
-			 (setcdr art (+ score (cdr art)))))))
-	      (forward-line 1))
-	    ;; Update expire date
-	    (cond ((null date))		;Permanent entry.
-		  (found		;Match, update date.
-		   (gnus-score-set 'touched '(t) alist)
-		   (setcar (nthcdr 2 kill) now))
-		  ((< date expire)	;Old entry, remove.
-		   (gnus-score-set 'touched '(t) alist)
-		   (setcdr entries (cdr rest))
-		   (setq rest entries))))
-	  (setq entries rest))))))
+    (when fuzzy
+      (setq scores score-list)
+      (gnus-simplify-buffer-fuzzy)
+      (while scores
+	(setq alist (car scores)
+	      scores (cdr scores)
+	      entries (assoc header alist))
+	(while (cdr entries)		;First entry is the header index.
+	  (let* ((rest (cdr entries))		
+		 (kill (car rest))
+		 (match (nth 0 kill))
+		 (type (or (nth 3 kill) 's))
+		 (score (or (nth 1 kill) gnus-score-interactive-default-score))
+		 (date (nth 2 kill))
+		 (found nil)
+		 (mt (aref (symbol-name type) 0))
+		 (case-fold-search (not (= mt ?F)))
+		 (dmt (downcase mt))
+		 arts art)
+	    (when (= dmt ?f)
+	      (goto-char (point-min))
+	      (while (and (not (eobp)) 
+			  (search-forward match nil t))
+		(when (and (= (progn (beginning-of-line) (point))
+			      (match-beginning 0))
+			   (= (progn (end-of-line) (point))
+			      (match-end 0)))
+		  (setq found (setq arts (get-text-property 
+					  (point) 'articles)))
+		  ;; Found a match, update scores.
+		  (if trace
+		      (while arts
+			(setq art (pop arts))
+			(setcdr art (+ score (cdr art)))
+			(push (cons
+			       (car-safe (rassq alist gnus-score-cache))
+			       kill)
+			      gnus-score-trace))
+		    (while arts
+		      (setq art (pop arts))
+		      (setcdr art (+ score (cdr art))))))
+		(forward-line 1))
+	      ;; Update expire date
+	      (unless trace
+		(cond ((null date))		;Permanent entry.
+		      (found		;Match, update date.
+		       (gnus-score-set 'touched '(t) alist)
+		       (setcar (nthcdr 2 kill) now))
+		      ((< date expire)	;Old entry, remove.
+		       (gnus-score-set 'touched '(t) alist)
+		       (setcdr entries (cdr rest))
+		       (setq rest entries)))))
+	    (setq entries rest)))))))
 
 (defun gnus-score-string< (a1 a2)
   ;; Compare headers in articles A2 and A2.
@@ -1626,6 +1686,295 @@ This mode is an extended emacs-lisp mode.
   "Clear all internal score variables."
   (setq gnus-score-cache nil
 	gnus-internal-global-score-files nil))
+
+;; Summary score marking commands.
+
+(defun gnus-summary-raise-same-subject-and-select (score)
+  "Raise articles which has the same subject with SCORE and select the next."
+  (interactive "p")
+  (let ((subject (gnus-summary-article-subject)))
+    (gnus-summary-raise-score score)
+    (while (gnus-summary-find-subject subject)
+      (gnus-summary-raise-score score))
+    (gnus-summary-next-article t)))
+
+(defun gnus-summary-raise-same-subject (score)
+  "Raise articles which has the same subject with SCORE."
+  (interactive "p")
+  (let ((subject (gnus-summary-article-subject)))
+    (gnus-summary-raise-score score)
+    (while (gnus-summary-find-subject subject)
+      (gnus-summary-raise-score score))
+    (gnus-summary-next-subject 1 t)))
+
+(defun gnus-score-default (level)
+  (if level (prefix-numeric-value level) 
+    gnus-score-interactive-default-score))
+
+(defun gnus-summary-raise-thread (&optional score)
+  "Raise the score of the articles in the current thread with SCORE."
+  (interactive "P")
+  (setq score (gnus-score-default score))
+  (let (e)
+    (save-excursion
+      (let ((articles (gnus-summary-articles-in-thread)))
+	(while articles
+	  (gnus-summary-goto-subject (car articles))
+	  (gnus-summary-raise-score score)
+	  (setq articles (cdr articles))))
+      (setq e (point)))
+    (let ((gnus-summary-check-current t))
+      (or (zerop (gnus-summary-next-subject 1 t))
+	  (goto-char e))))
+  (gnus-summary-recenter)
+  (gnus-summary-position-point)
+  (gnus-set-mode-line 'summary))
+
+(defun gnus-summary-lower-same-subject-and-select (score)
+  "Raise articles which has the same subject with SCORE and select the next."
+  (interactive "p")
+  (gnus-summary-raise-same-subject-and-select (- score)))
+
+(defun gnus-summary-lower-same-subject (score)
+  "Raise articles which has the same subject with SCORE."
+  (interactive "p")
+  (gnus-summary-raise-same-subject (- score)))
+
+(defun gnus-summary-lower-thread (&optional score)
+  "Lower score of articles in the current thread with SCORE."
+  (interactive "P")
+  (gnus-summary-raise-thread (- (1- (gnus-score-default score)))))
+
+;;; Finding score files. 
+
+(defun gnus-score-score-files (group)
+  "Return a list of all possible score files."
+  ;; Search and set any global score files.
+  (and gnus-global-score-files 
+       (or gnus-internal-global-score-files
+	   (gnus-score-search-global-directories gnus-global-score-files)))
+  ;; Fix the kill-file dir variable.
+  (setq gnus-kill-files-directory 
+	(file-name-as-directory
+	 (or gnus-kill-files-directory "~/News/")))
+  ;; If we can't read it, there are no score files.
+  (if (not (file-exists-p (expand-file-name gnus-kill-files-directory)))
+      (setq gnus-score-file-list nil)
+    (if (gnus-use-long-file-name 'not-score)
+	;; We want long file names.
+	(if (or (not gnus-score-file-list)
+		(not (car gnus-score-file-list))
+		(gnus-file-newer-than gnus-kill-files-directory
+				      (car gnus-score-file-list)))
+	    (setq gnus-score-file-list 
+		  (cons (nth 5 (file-attributes gnus-kill-files-directory))
+			(nreverse 
+			 (directory-files 
+			  gnus-kill-files-directory t 
+			  (gnus-score-file-regexp))))))
+      ;; We do not use long file names, so we have to do some
+      ;; directory traversing.  
+      (let ((mdir (length (expand-file-name gnus-kill-files-directory)))
+  	    (suffixes (list gnus-score-file-suffix gnus-adaptive-file-suffix))
+ 	    dir files suffix)
+  	(while suffixes
+ 	  (setq dir (expand-file-name
+ 		     (concat gnus-kill-files-directory
+ 			     (gnus-replace-chars-in-string group ?. ?/))))
+	  (setq dir (gnus-replace-chars-in-string dir ?: ?/))
+	  (setq suffix (car suffixes)
+		suffixes (cdr suffixes))
+	  (if (file-exists-p (concat dir "/" suffix))
+	      (setq files (cons (concat dir "/" suffix) files)))
+	  (while (>= (1+ (length dir)) mdir)
+	    (and (file-exists-p (concat dir "/all/" suffix))
+		 (setq files (cons (concat dir "/all/" suffix) files)))
+	    (string-match "/[^/]*$" dir)
+	    (setq dir (substring dir 0 (match-beginning 0)))))
+	(setq gnus-score-file-list 
+	      (cons nil (nreverse files)))))
+    (cdr gnus-score-file-list)))
+
+(defun gnus-score-file-regexp ()
+  (concat "\\(" gnus-score-file-suffix 
+	  "\\|" gnus-adaptive-file-suffix "\\)$"))
+	
+(defun gnus-score-find-bnews (group)
+  "Return a list of score files for GROUP.
+The score files are those files in the ~/News directory which matches
+GROUP using BNews sys file syntax."
+  (let* ((sfiles (append (gnus-score-score-files group)
+			 gnus-internal-global-score-files))
+	 (kill-dir (file-name-as-directory 
+		    (expand-file-name gnus-kill-files-directory)))
+	 (klen (length kill-dir))
+	 (score-regexp (gnus-score-file-regexp))
+	 ofiles not-match regexp)
+    (save-excursion
+      (set-buffer (get-buffer-create "*gnus score files*"))
+      (buffer-disable-undo (current-buffer))
+      ;; Go through all score file names and create regexp with them
+      ;; as the source.  
+      (while sfiles
+	(erase-buffer)
+	(insert (car sfiles))
+	(goto-char (point-min))
+	;; First remove the suffix itself.
+	(re-search-forward (concat "." score-regexp))
+	(replace-match "" t t) 
+	(goto-char (point-min))
+	(if (looking-at (regexp-quote kill-dir))
+	    ;; If the file name was just "SCORE", `klen' is one character
+	    ;; too much.
+	    (delete-char (min (1- (point-max)) klen))
+	  (goto-char (point-max))
+	  (search-backward "/")
+	  (delete-region (1+ (point)) (point-min)))
+	;; If short file names were used, we have to translate slashes.
+	(goto-char (point-min))
+	(while (re-search-forward "[/:]" nil t)
+	  (replace-match "." t t))
+	;; Cludge to get rid of "nntp+" problems.
+	(goto-char (point-min))
+	(and (looking-at "nn[a-z]+\\+")
+	     (progn
+	       (search-forward "+")
+	       (forward-char -1)
+	       (insert "\\")))
+	;; Translate "all" to ".*".
+	(while (search-forward "all" nil t)
+	  (replace-match ".*" t t))
+	(goto-char (point-min))
+	;; Deal with "not."s.
+	(if (looking-at "not.")
+	    (progn
+	      (setq not-match t)
+	      (setq regexp (buffer-substring 5 (point-max))))
+	  (setq regexp (buffer-substring 1 (point-max)))
+	  (setq not-match nil))
+	;; Finally - if this resulting regexp matches the group name,
+	;; we add this score file to the list of score files
+	;; applicable to this group.
+	(if (or (and not-match
+		     (not (string-match regexp group)))
+		(and (not not-match)
+		     (string-match regexp group)))
+	    (setq ofiles (cons (car sfiles) ofiles)))
+	(setq sfiles (cdr sfiles)))
+      (kill-buffer (current-buffer))
+      ;; Slight kludge here - the last score file returned should be
+      ;; the local score file, whether it exists or not. This is so
+      ;; that any score commands the user enters will go to the right
+      ;; file, and not end up in some global score file.
+      (let ((localscore (gnus-score-file-name group)))
+	(setq ofiles (cons localscore (delete localscore ofiles))))
+      (nreverse ofiles))))
+
+(defun gnus-score-find-single (group)
+  "Return list containing the score file for GROUP."
+  (list (gnus-score-file-name group gnus-adaptive-file-suffix)
+	(gnus-score-file-name group)))
+
+(defun gnus-score-find-hierarchical (group)
+  "Return list of score files for GROUP.
+This includes the score file for the group and all its parents."
+  (let ((all (copy-sequence '(nil)))
+	(start 0))
+    (while (string-match "\\." group (1+ start))
+      (setq start (match-beginning 0))
+      (setq all (cons (substring group 0 start) all)))
+    (setq all (cons group all))
+    (nconc
+     (mapcar (lambda (newsgroup)
+	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
+	     (setq all (nreverse all)))
+     (mapcar 'gnus-score-file-name all))))
+
+(defvar gnus-score-file-alist-cache nil)
+
+(defun gnus-score-find-alist (group)
+  "Return list of score files for GROUP.
+The list is determined from the variable gnus-score-file-alist."
+  (let ((alist gnus-score-file-multiple-match-alist)
+	score-files)
+    ;; if this group has been seen before, return the cached entry
+    (if (setq score-files (assoc group gnus-score-file-alist-cache))
+	(cdr score-files)		;ensures caching groups with no matches
+      ;; handle the multiple match alist
+      (while alist
+	(and (string-match (car (car alist)) group)
+	     (setq score-files
+		   (nconc score-files (copy-sequence (cdr (car alist))))))
+	(setq alist (cdr alist)))
+      (setq alist gnus-score-file-single-match-alist)
+      ;; handle the single match alist
+      (while alist
+	(and (string-match (car (car alist)) group)
+	     ;; progn used just in case ("regexp") has no files
+	     ;; and score-files is still nil. -sj
+	     ;; this can be construed as a "stop searching here" feature :>
+	     ;; and used to simplify regexps in the single-alist 
+	     (progn
+	       (setq score-files
+		     (nconc score-files (copy-sequence (cdr (car alist)))))
+	       (setq alist nil)))
+	(setq alist (cdr alist)))
+      ;; cache the score files
+      (setq gnus-score-file-alist-cache
+	    (cons (cons group score-files) gnus-score-file-alist-cache))
+      score-files)))
+
+(defun gnus-possibly-score-headers (&optional trace)
+  (let ((func gnus-score-find-score-files-function)
+	score-files)
+    (and func 
+	 (not (listp func))
+	 (setq func (list func)))
+    ;; Go through all the functions for finding score files (or actual
+    ;; scores) and add them to a list.
+    (and func (setq score-files (gnus-score-find-alist gnus-newsgroup-name)))
+    (while func
+      (and (symbolp (car func))
+	   (fboundp (car func))
+	   (setq score-files 
+		 (nconc score-files (funcall (car func) gnus-newsgroup-name))))
+      (setq func (cdr func)))
+    (if score-files (gnus-score-headers score-files trace))))
+
+(defun gnus-score-file-name (newsgroup &optional suffix)
+  "Return the name of a score file for NEWSGROUP."
+  (let ((suffix (or suffix gnus-score-file-suffix)))
+    (cond 
+     ((or (null newsgroup)
+	  (string-equal newsgroup ""))
+      ;; The global score file is placed at top of the directory.
+      (expand-file-name 
+       suffix (or gnus-kill-files-directory "~/News")))
+     ((gnus-use-long-file-name 'not-score)
+      ;; Append ".SCORE" to newsgroup name.
+      (expand-file-name (concat (gnus-newsgroup-saveable-name newsgroup)
+				"." suffix)
+			(or gnus-kill-files-directory "~/News")))
+     (t
+      ;; Place "SCORE" under the hierarchical directory.
+      (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
+				"/" suffix)
+			(or gnus-kill-files-directory "~/News"))))))
+
+(defun gnus-score-search-global-directories (files)
+  "Scan all global score directories for score files."
+  ;; Set the variable `gnus-internal-global-score-files' to all
+  ;; available global score files.
+  (interactive (list gnus-global-score-files))
+  (let (out)
+    (while files
+      (if (string-match "/$" (car files))
+	  (setq out (nconc (directory-files 
+			    (car files) t
+			    (concat (gnus-score-file-regexp) "$"))))
+	(setq out (cons (car files) out)))
+      (setq files (cdr files)))
+    (setq gnus-internal-global-score-files out)))
 
 (provide 'gnus-score)
 

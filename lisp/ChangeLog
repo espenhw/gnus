@@ -1,3 +1,292 @@
+Wed Nov 15 06:13:48 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-get): Turned into a defsubst.
+	(gnus-score-find-bnews): Slightly less funcalling.
+
+	* gnus.el (gnus-group-real-name): Turned into a macro.
+	(gnus-server-equal): Ditto.
+	(gnus-server-add-address): Turned into defsubst.
+	(gnus-server-get-method): Ditto.
+	(gnus-secondary-method-p): Ditto.
+
+Mon Nov 13 22:13:10 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-mode-map): Moved fetch-faq.
+
+	* gnus-vis.el (gnus-button-alist): Be a bit more restrictive.
+
+	* gnus-msg.el (gnus-inews-insert-headers): Would choke on empty
+	headers.
+
+	* nnml.el (nnml-make-nov-line): Include the Xref: in the nov line.
+
+Mon Nov 13 21:54:36 1995    <morioka@jaist.ac.jp>
+
+	* gnus.el (gnus-summary-save-in-rmail): Save original article
+	buffer.
+
+Mon Nov 13 15:10:28 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnsoup.el (nnsoup-open-server): Don't force using nnsoup as a
+	posting agent.
+
+	* gnus.el (gnus-info-group, gnus-info-level, gnus-info-read,
+	gnus-info-method, gnus-info-options): New macros.  Massive changes
+	throughout the file.
+	(gnus-get-info): New macro.
+	(gnus-group-add-score): New function.
+	(gnus-summary-bubble-group): New function.
+	(gnus-group-mode-map): New group sort submap.
+	(gnus-group-sort-groups-by-alphabet,
+	gnus-group-sort-groups-by-unread, gnus-group-sort-groups-by-level,
+	gnus-group-sort-groups-by-score, gnus-group-sort-groups-by-rank,
+	gnus-group-sort-groups-by-method): New commands and keystrokes.
+
+	* nnsoup.el (nnsoup-set-variables): Autoload; doc fix.
+
+	* gnus-score.el (gnus-score-headers): Score "header" names are now
+	case-insensitive.
+
+	* gnus.el (gnus-rebuild-thread): Didn't work when using a
+	non-threaded display.
+
+Sun Nov 12 00:11:34 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-use-long-file-names): New variable.
+	(nnmail-group-pathname): Use it.
+
+	* gnus.el (gnus-auto-select-first): Allow `best' as a value.
+
+	* gnus-uu.el (gnus-uu-save-article): Quote lines that start with
+	dashes. 
+
+	* gnus-mh.el (gnus-mh-mail-setup): Don't use a (None) subject. 
+
+	* gnus-msg.el (gnus-inews-insert-bfcc): New function.
+	(gnus-new-news): Use it.
+
+	* gnus.el (gnus-summary-generate-hook): New variable.
+	(gnus-summary-prepare): Use it.
+
+	* nnsoup.el (nnsoup-index-buffer): Disable undo.
+
+	* gnus.el (gnus-select-newsgroup): Fetch old headers before
+	scoring. 
+	(gnus-dribble-read-file): Force setting the dribble buffer file
+	name. 
+	(gnus-summary-catchup-to-here): Treat `all' right, and catchup to
+	the right article.
+	(gnus-summary-catchup): Update mode line.
+	(gnus-summary-refer-references): Didn't really work.
+	(gnus-summary-toggle-header): Would barf if point weren't at
+	point-min.
+
+Sat Nov 11 11:21:58 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-move-inbox): Bind default directory before
+	calling movemail.
+
+	* nndoc.el (nndoc-type-to-regexp): Changed babyl body-begin regexp.
+
+	* nnml.el (nnml-generate-nov-databases): Don't choke on files that
+	start with empty lines.
+
+	* gnus.el (gnus-souped-mark): New variable.
+	(gnus-summary-mark-article-as-read): Use it.
+	(gnus-set-mode-line): Would compute incorrect mode lines. 
+
+	* gnus.el: Changes throughout making ticked and dormant articles
+	subsets of the read articles instead of the unread articles. 
+
+	* gnus-soup.el (gnus-soup-add-article): Use it.
+
+	* gnus-msg.el (gnus-post-news): Respect to `to-group' group
+	parameter. 
+
+	* gnus.el (gnus-sublist-p): New function.
+	(gnus-group-prepare-flat-list-dead): Faster implementation.
+
+Fri Nov 10 03:17:03 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-newsgroup-threads): Double defvar.
+	(gnus-newsgroup-prepared): New variable.
+	(gnus-summary-setup-buffer): Use it.
+	(gnus-summary-prepare-threads): Don't destroy threads while
+	generating. 
+	(gnus-remove-thread): Didn't remove gathered threads.
+	(gnus-rebuild-thread): Didn't generate anything properly.
+	(gnus-summary-refer-parent-article): Didn't find parent.
+
+	* gnus-msg.el (gnus-mail-send-method): Removed variable.
+	(gnus-auto-mail-to-author): Doc fix.
+
+	* nnheader.el (nnheader-remove-header): Return the number of
+	headers removed.
+
+	* gnus.el (gnus-headers-de-quoted-unreadable): New function.
+	(gnus-headers-decode-quoted-readable): New function.
+	(gnus-article-de-quoted-unreadable): Use it.
+
+Fri Nov 10 00:00:47 1995  Steven L. Baur <steve@miranova.com>
+
+	* gnus-vis.el (gnus-header-button-alist): Recognize X-Url
+	headers. 
+
+Fri Nov 10 00:00:47 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-delete-supersedes-headers): Also remove Xref
+	and Lines.
+	(gnus-summary-supersede-article): Delete multi-line headers.
+	(gnus-news-followup): Insert a few empty lines in new articles.
+	(gnus-mail-reply): Put point the right place when replying.
+	(gnus-inews-organization): Don't interpret signatures that begin
+	with ~ as strings.
+	(gnus-news-followup): Respect the Newsgroup header.
+
+	* nnsoup.el (nnsoup-write-buffers): New function.
+	(nnsoup-request-close): Use it.
+	(nnsoup-pack-replies): Ditto.
+
+	* gnus-soup.el (gnus-soup-parse-replies): Didn't kill buffer.
+	(gnus-soup-write-prefixes): Would change current buffer.
+
+Thu Nov  9 20:54:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-mouse-face-function): More efficient implementation.
+	(gnus-max-width-function): Ditto.
+
+	* gnus-msg.el (gnus-inews-news): Get the error message from the
+	right backend.
+
+	* gnus.el (gnus-summary-limit-to-score): Don't infloop.
+	(gnus-request-post-buffer): Removed function.
+	(gnus-method-option-p): New function.
+	(gnus-post-method): New function.
+	(gnus-request-post): Use it.
+
+	* nnsoup.el (nnsoup-write-active-file): Would possibly kill the
+	active file.
+
+Mon Nov  6 13:16:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-new-news): Removed prompting for group name.
+	(gnus-group-post-news): Prompt for group name.
+	(gnus-inews-do-fcc): Rewrite.
+
+	* gnus.el (gnus-group-get-parameter): New function.
+
+Sat Nov  4 19:24:57 1995  sudish joseph  <joseph@cis.ohio-state.edu>
+
+	* gnus-msg.el (gnus-group-post-news): Use the group under point as
+	  the default when composing the post buffer.  (This means that
+	  `a' over a mail group will get you a *mail* buffer.)  Using a
+	  prefix ARG will force a fresh post buffer (i.e., no default
+	  group is used).
+
+Mon Nov  6 12:54:40 1995  steve@miranova.com (Steven L. Baur)
+
+	* gnus-topic.el (gnus-topic-toggle-topic): New command and
+	keystroke. 
+
+Sat Nov  4 19:07:31 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Add key description for
+	the "See old articles" entry and made it run
+	gnus-group-select-group with an argument. 
+	* gnus.el (gnus-group-select-group-all): Deleted.
+
+Mon Nov  6 12:22:20 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-save-newsrc-file): Set local `version-control' to
+	`never'. 
+	(gnus-gnus-to-newsrc-format): Ditto.
+
+	* gnus-msg.el (gnus-new-news): Move point to the right place.
+	(gnus-sendmail-mail-setup): Ditto.
+
+Sun Nov  5 10:05:47 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Make sure that
+	`gnus-newsgroup-name' is set.
+
+	* gnus-topic.el (gnus-group-add-to-topic): Remove process marks. 
+
+	* nnml.el (nnml-request-move-article): The article has to be
+	deletable to be moved.
+	* nnmh.el (nnmh-request-move-article): Ditto.
+
+	* nnmh.el (nnmh-deletable-article-p): New function.
+
+	* nnml.el (nnml-deletable-article-p): New function.
+
+	* gnus.el (gnus-data-compute-positions): Doc fix.
+	(gnus-summary-sort): Make sure positions were updated.
+	(gnus-request-article-this-buffer): Set original article buffer to
+	be read-only.
+
+Fri Nov  3 03:01:09 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-request-article-this-buffer): Make sure all
+	overlays are dead.
+
+Fri Nov  3 00:41:22 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el: Removed mouse tracker.
+
+	* gnus.el (gnus-mouse-face-function): Redefined so that it also
+	works under XEmacs.
+
+Thu Nov  2 03:40:22 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-batch-score): Don't generate threads and stuff.
+	(gnus-sort-threads): Better message.
+
+Tue Oct 31 21:26:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Would eat groups under
+	emtpy topics.
+
+	* gnus.el (gnus-simplify-buffer-fuzzy): Would strip trailing
+	newlines. 
+	(gnus-group-list-groups): Update format specs.
+	(gnus-summary-limit-children): Didn't mark as read.
+
+Mon Oct 30 00:09:42 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-find-matching): Wouldn't do `backward' ok.
+	(gnus-summary-limit-to-subject): Don't just limit to articles
+	after point.
+	(gnus-articles-to-read): Respond properly to numerical prefixes.
+
+	* gnus-msg.el (gnus-inews-article): Do the To/X-To shuffle dance.
+
+	* gnus.el (gnus-summary-expire-articles): Be less complaining when
+	doing total-expiry.
+
+	* gnus-msg.el (gnus-mail-send): Remove empty headers before
+	sending. 
+	(gnus-inews-remove-empty-headers): New function.
+
+	* gnus.el (gnus-summary-find-next): Respect
+	`gnus-summary-check-current'. 
+	(gnus-summary-find-prev): Ditto.
+	(gnus-summary-mode-map): Limit map had disappeared.
+	(gnus-summary-limit-children): Wouldn't limit properly with
+	gnus-fetch-old-headers 'some.
+
+Sun Oct 29 23:37:17 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmh.el: Use nnmail's new definition.
+	* nnml.el: Ditto.
+
+	* nnmail.el (nnmail-group-pathname): Use nnmh's definition.
+
+	* gnus.el (gnus-group-startup-message): Change.
+
+Sun Oct 29 19:57:57 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.12 is released.
+
 Tue Oct 24 22:11:44 1995  Peter Arius  <arius@informatik.uni-erlangen.de>
 
 	* gnus.el (gnus-summary-skip-intangible): Quotes missing in macro 
@@ -60,6 +349,8 @@ Mon Oct 16 11:57:14 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 	"non-running" Gnus.
 
 	* gnus-mh.el (gnus-mh-mail-setup): Bugged out.
+
+	* gnus.el: 0.11 is released.
 
 Wed Oct  4 23:08:30 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
  

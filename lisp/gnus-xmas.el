@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'mode-motion)
 (require 'text-props)
 
 (defvar gnus-xmas-glyph-directory nil
@@ -83,10 +82,6 @@ automatically.")
 (defvar gnus-mouse-2)
 (defvar standard-display-table)
 
-(defun gnus-xmas-install-mouse-tracker ()
-  (or (featurep 'mode-motion+)
-      (add-hook 'mode-motion-hook 'mode-motion-highlight-line)))
-
 (defun gnus-xmas-set-text-properties (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
 It is provided only to ease porting of broken FSF Emacs programs."
@@ -129,8 +124,8 @@ It is provided only to ease porting of broken FSF Emacs programs."
      ;; possible valid number, or the second line from the top,
      ;; whichever is the least.
      (set-window-start
-      window (min bottom (save-excursion (forward-line (- top)) 
-					 (point)))))))
+      window (min bottom (save-excursion
+			   (forward-line (- top)) (point)))))))
 
 (defun gnus-xmas-group-insert-group-line-info (group)
   (let ((entry (gnus-gethash group gnus-newsrc-hashtb)) 
@@ -140,7 +135,8 @@ It is provided only to ease porting of broken FSF Emacs programs."
 	(progn
 	  (setq info (nth 2 entry))
 	  (gnus-group-insert-group-line 
-	   nil group (nth 1 info) (nth 3 info) (car entry) (nth 4 info)))
+	   nil group (gnus-info-group info) (gnus-info-marks info)
+	   (car entry) (gnus-info-method info)))
       (setq active (gnus-gethash group gnus-active-hashtb))
 	  
       (gnus-group-insert-group-line 
@@ -227,16 +223,14 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-group-menu-add ()
   (easy-menu-add gnus-group-reading-menu)
   (easy-menu-add gnus-group-group-menu)
-  (easy-menu-add gnus-group-misc-menu)
-  (gnus-xmas-install-mouse-tracker))
+  (easy-menu-add gnus-group-misc-menu))
 
 (defun gnus-xmas-summary-menu-add ()
   (easy-menu-add gnus-summary-article-menu)
   (easy-menu-add gnus-summary-thread-menu)
   (easy-menu-add gnus-summary-misc-menu)
   (easy-menu-add gnus-summary-post-menu)
-  (easy-menu-add gnus-summary-kill-menu)
-  (gnus-xmas-install-mouse-tracker)) 
+  (easy-menu-add gnus-summary-kill-menu)) 
 
 (defun gnus-xmas-article-menu-add ()
   (easy-menu-add gnus-article-article-menu)

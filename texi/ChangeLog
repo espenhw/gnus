@@ -1,3 +1,41 @@
+Mon Nov 13 00:14:30 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Various File Formats): New.
+	(Active File Format): New.
+	(Newsgroups File Format): New.
+	(nndoc): Addition.
+	(Group Score): New.
+	(SOUP Replies): New.
+	(nnsoup): New.
+	(SOUP Commands): New.
+	(@sc{soup}): New.
+	(Saving Articles): Addition.
+
+Sun Nov 12 13:17:53 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Various Summary Stuff): Addition.
+	(Score Variables): Addition.
+	(Process/Prefix): Addition.
+	(Selecting a Group): Change.
+	(Reading Mail): Addition.
+
+Thu Nov  9 21:30:44 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Posting Server): New.
+	(nnspool): Addition.
+
+Mon Nov  6 12:58:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Topics): Addition.
+
+Tue Oct 31 22:04:28 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Topics): Change.
+
+Mon Oct 30 19:40:54 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Score Variables): Addition.
+
 Thu Oct 26 14:56:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Limiting): Change.

@@ -364,18 +364,28 @@ The buffer is not selected, just returned to the caller."
        ;; without inserting extra newline.
        (fill-region-as-paragraph begin (1+ (point))))))
 
-(defun nnheader-remove-header (header &optional is-regexp)
+(defun nnheader-remove-header (header &optional is-regexp first)
+  "Remove HEADER.
+If FIRST, only remove the first instance if the header.
+Return the number of headers removed."
   (goto-char (point-min))
   (let ((regexp (if is-regexp header (concat "^" header ":")))
-	(case-fold-search t))
-    (while (re-search-forward regexp nil t)
+	(number 0)
+	(case-fold-search t)
+	last)
+    (while (and (re-search-forward regexp nil t)
+		(not last))
+      (incf number)
+      (when first
+	(setq last t))
       (delete-region
        (match-beginning 0) 
        ;; There might be a continuation header, so we have to search
        ;; until we find a new non-continuation line.
        (if (re-search-forward "^[^ \t]" nil t)
 	   (match-beginning 0)
-	 (point-max))))))
+	 (point-max))))
+    number))
 
 (defun nnheader-set-temp-buffer (name)
   (set-buffer (get-buffer-create name))

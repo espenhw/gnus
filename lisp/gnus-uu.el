@@ -727,8 +727,12 @@ The headers will be included in the sequence they are matched.")
 	      (put-text-property (point-min) (point-max) 'intangible nil))
 	    (goto-char (point-min))
 	    (re-search-forward "\n\n")
+	    ;; Quote all lines that begin with a dash.
+	    (save-excursion
+	      (while (re-search-forward "^-" nil t)
+		(replace-match "- -")))
 	    (setq body (buffer-substring (1- (point)) (point-max)))
-	    (narrow-to-region 1 (point))
+	    (narrow-to-region (point-min) (point))
 	    (if (not (setq headers gnus-uu-digest-headers))
 		(setq sorthead (buffer-substring (point-min) (point-max)))
 	      (while headers

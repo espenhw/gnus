@@ -150,11 +150,11 @@ newsgroups that have hundreds (or thousands) of new articles each day?
 
 Gnus offer no real solutions to these questions, but I would very much
 like to see Gnus being used as a testing ground for new methods of
-reading and fetching news. Expanding on Umeda-san's wise decision to
+reading and fetching news.  Expanding on Umeda-san's wise decision to
 separate the newsreader from the backends, Gnus now offers a simple
 interface for anybody who wants to write new backends for fetching mail
-and news from different sources. I have added hooks for customizations
-everywhere I can imagine useful. By doing so, I'm inviting every one of
+and news from different sources.  I have added hooks for customizations
+everywhere I can imagine useful.  By doing so, I'm inviting every one of
 you to explore and invent new ways of reading news.
 
 May Gnus never be complete. @kbd{C-u 100 M-x hail-emacs}. 
@@ -344,7 +344,7 @@ wrong show.
 Of course, GNUS was written by Masanobu UMEDA.
 @item 
 Many excellent functions, especially dealing with scoring and
-highlighting (as well as the soon-to-come @sc{soup} support) was written
+highlighting (as well as the @sc{soup} support) was written
 by Per Abrahamsen.
 @item
 Innumerable bug fixes were written by Sudish Joseph.
@@ -607,7 +607,7 @@ The top part of an article, where administration information (etc.) is
 put. 
 @item body
 @cindex body
-The rest of an article. Everything that is not in the head is in the
+The rest of an article.  Everything that is not in the head is in the
 body. 
 @item header
 @cindex header
@@ -783,7 +783,7 @@ will happen whether the server doesn't actually exist (i.e., you have
 given the wrong address) or the server has just momentarily taken ill
 for some reason or other.  
 
-If Gnus says "nntp server on <your server> can't be opened. Continue?",
+If Gnus says "nntp server on <your server> can't be opened.  Continue?",
 you do not want to continue unless you have some foreign groups that you
 want to read.  Even if you don't, Gnus will let you continue, but you'll
 find it difficult to actually do anything in the group buffer.  But,
@@ -865,11 +865,12 @@ Subscribe all new groups hierarchically.
 @vindex gnus-subscribe-interactively
 Subscribe new groups interactively.  This means that Gnus will ask
 you about @strong{all} new groups.
+
 @item gnus-subscribe-zombies
 @vindex gnus-subscribe-zombies
-Make all new groups zombies.  You can browse the zombies later and
-either kill them all off properly, or subscribe to them.  This is the
-default.
+Make all new groups zombies.  You can browse the zombies later (with
+@kbd{A z}) and either kill them all off properly, or subscribe to them.
+This is the default.
 @end table
 
 @vindex gnus-subscribe-hierarchical-interactive
@@ -993,8 +994,8 @@ file being whatever that one is with a @samp{.eld} appended.
 files, while @code{gnus-save-quick-newsrc-hook} is called just before
 saving the @file{.newsrc.eld} file, and
 @code{gnus-save-standard-newsrc-hook} is called just before saving the
-@file{.newsrc} file.  The latter two are commonly used to tern version
-control on or off.
+@file{.newsrc} file.  The latter two are commonly used to turn version
+control on or off.  Version control is off by default when saving.
 
 @node Auto Save
 @section Auto Save
@@ -1009,7 +1010,7 @@ Emacs way.  If your Emacs should crash before you have saved the
 this file.
 
 If Gnus detects this file at startup, it will ask the user whether to
-read it. The auto save file is deleted whenever the real startup file is
+read it.  The auto save file is deleted whenever the real startup file is
 saved.
 
 @vindex gnus-use-dribble-file
@@ -1118,10 +1119,12 @@ long as Gnus is active.
 * Selecting a Group::      Actually reading news.
 * Subscription Commands::  Unsubscribing, killing, subscribing.
 * Group Levels::           Levels? What are those, then?
+* Group Score::            A mechanism for finding out what groups you like.
 * Marking Groups::         You can mark groups for later processing.
 * Foreign Groups::         How to create foreign groups.
 * Group Parameters::       Each group may have different parameters set.
 * Listing Groups::         Gnus can list various subsets of the groups.
+* Sorting Groups::         Re-arrange the group order.
 * Group Maintenance::      Maintaining a tidy @file{.newsrc} file.
 * Browse Foreign Server::  You can browse a server.  See what if has to offer.
 * Exiting Gnus::           Stop reading news and get some work done.
@@ -1373,11 +1376,26 @@ the @samp{n} oldest articles will be fetched.  If it is positive, the
 
 @vindex gnus-select-group-hook
 @vindex gnus-auto-select-first
-If @code{gnus-auto-select-first} is non-@code{nil}, the first unread
-article in the group will be displayed when you enter the group.  If you
-want to prevent automatic selection in some group (say, in a binary
-group with Huge articles) you can set this variable to @code{nil} in
-@code{gnus-select-group-hook}, which is called when a group is selected.
+@code{gnus-auto-select-first} control whether any articles are selected
+automatically when entering a group.  
+
+@table @code
+@item nil
+Don't select any articles when entering the group.  Just display the
+full summary buffer.
+
+@item t
+Select the first unread article when entering the group.  
+
+@item best
+Select the most high-scored article in the group when entering the
+group. 
+@end table
+        
+If you want to prevent automatic selection in some group (say, in a
+binary group with Huge articles) you can set this variable to @code{nil}
+in @code{gnus-select-group-hook}, which is called when a group is
+selected.
 
 @findex gnus-thread-sort-by-total-score
 @findex gnus-thread-sort-by-date
@@ -1413,6 +1431,7 @@ The function in the @code{gnus-thread-score-function} variable (default
 @code{+}) is used for calculating the total score of a thread.  Useful
 functions might be @code{max}, @code{min}, or squared means, or whatever
 tickles you fancy.
+
 
 @node Subscription Commands
 @section Subscription Commands
@@ -1527,6 +1546,35 @@ by default.
 If @code{gnus-group-use-permament-levels} is non-@code{nil}, once you
 give a level prefix to @kbd{g} or @kbd{l}, all subsequent commands will
 use this level as the "work" level.
+
+
+@node Group Score
+@section Group Score
+@cindex group score
+
+You would normally keep important groups on high levels, but that scheme
+is somewhat restrictive.  Don't you wish you could have Gnus sort the
+group buffer according to how often you read groups, perhaps?  Within
+reason?  
+
+This is what @dfn{group score} is for.  You can assign a score to each
+group.  You can then sort the group buffer based on this score.
+Alternatively, you can sort on score and then level.  (Taken together,
+the level and the score is called the @dfn{rank} of the group.  A group
+that is on level 4 and has a score of 1 has a higher rank than a group
+on level 5 that has a score of 300.  (The level is the most significant
+part and the score is the least significant part.)
+
+@findex gnus-summary-bubble-group
+If you want groups you read often to get higher scores than groups you
+read seldom you can add the @code{gnus-summary-bubble-group} function to
+the @code{gnus-summary-exit-hook} hook.  This will result (after
+sorting) in a bubbling sort of action.  If you want to see that in
+action after each summary exit, you can add
+@code{gnus-group-sort-groups-by-rank} or
+@code{gnus-group-sort-groups-by-score} to the same hook, but that will
+slow things down somewhat.
+
 
 @node Marking Groups
 @section Marking Groups
@@ -1704,8 +1752,9 @@ The different methods all have their peculiarities, of course.
 * nnvirtual::        Combining articles from many groups.
 * nnkiboze::         Looking through parts of the newsfeed for articles.
 * nndir::            You can read a directory as if it was a newsgroup.
-* nneething::          Dired? Who needs dired?
+* nneething::        Dired?  Who needs dired?
 * nndoc::            Single files can be the basis of a group.
+* SOUP::             Reading @sc{SOUP} packets "offline".
 * Reading Mail::     Reading your personal mail with Gnus.
 @end menu
 
@@ -1867,7 +1916,9 @@ Anyways, you just specify @code{nnspool} as the method and @samp{""} (or
 anything else) as the address.
 
 If you have access to a local spool, you should probably use that as the
-native select method (@pxref{Finding the News}).
+native select method (@pxref{Finding the News}).  It is normally faster
+than using an @code{nntp} select method, but might not be.  It depends.
+You just have to try to find out what's best at your site.
 
 @table @code
 @item nnspool-inews-program
@@ -1898,7 +1949,7 @@ The path of the active file.
 
 @item nnspool-newsgroups-file
 @vindex nnspool-newsgroups-file
-The path of the group description file.
+The path of the group descriptions file.
 
 @item nnspool-history-file
 @vindex nnspool-history-file
@@ -1971,6 +2022,7 @@ One limitation, however---all groups that are included in a virtual
 group has to be alive (i.e., subscribed or unsubscribed).  Killed or
 zombie groups can't be component groups for @code{nnvirtual} groups.
 
+
 @node nnkiboze
 @subsection nnkiboze
 @cindex @code{nnkiboze}
@@ -1981,9 +2033,10 @@ the news feed".  @code{nnkiboze} is a backend that will do this for you.  Oh
 joy!  Now you can grind any @sc{nntp} server down to a halt with useless
 requests!  Oh happiness!
 
-The address field of the @code{nnkiboze} method is, as with @code{nnvirtual}, a regexp
-to match groups to be "included" in the @code{nnkiboze} group.  There most
-similarities between @code{nnkiboze} and @code{nnvirtual} ends.
+The address field of the @code{nnkiboze} method is, as with
+@code{nnvirtual}, a regexp to match groups to be "included" in the
+@code{nnkiboze} group.  There most similarities between @code{nnkiboze}
+and @code{nnvirtual} ends.
 
 In addition to this regexp detailing component groups, an @code{nnkiboze} group
 must have a score file to say what articles that are to be included in
@@ -2048,36 +2101,36 @@ methods if you feel the need to have a non-read-only @code{nndir}.
 
 From the @code{nndir} backend (which reads a single spool-like
 directory), it's just a hop and a skip to @code{nneething}, which
-pretends that any random directory is a newsgroup. Strange, but true.
+pretends that any random directory is a newsgroup.  Strange, but true.
 
 When @code{nneething} is presented with a directory, it will scan this
-directory and assign article numbers to each file. When you enter such a
-group, @code{nneething} must create "headers" that Gnus can use. After
+directory and assign article numbers to each file.  When you enter such a
+group, @code{nneething} must create "headers" that Gnus can use.  After
 all, Gnus is a newsreader, in case you're forgetting. @code{nneething}
-does this in a two-step process. First, it snoops each file in question.
+does this in a two-step process.  First, it snoops each file in question.
 If the file looks like an article (i.e., the first few lines look like
-headers), it will use this as the head. If this is just some random file
+headers), it will use this as the head.  If this is just some random file
 without a head (eg. a C source file), @code{nneething} will cobble up a
-header out of thin air. It will use file ownership, name and date and do
+header out of thin air.  It will use file ownership, name and date and do
 whatever it can with these elements.
 
 All this should happen automatically for you, and you will be presented
-with something that looks very much like a newsgroup. Totally like a
-newsgroup, to be precise. If you select an article, it will be displayed
+with something that looks very much like a newsgroup.  Totally like a
+newsgroup, to be precise.  If you select an article, it will be displayed
 in the article buffer, just as usual.
 
 If you select a line that represents a directory, Gnus will pop you into
-a new summary buffer for this @code{nneething} group. And so on. You can
+a new summary buffer for this @code{nneething} group.  And so on.  You can
 traverse the entire disk this way, if you feel like, but remember that
 Gnus is not dired, really, and does not intend to be, either.
 
-There are two overall modes to this action---ephemeral or solid. When
+There are two overall modes to this action---ephemeral or solid.  When
 doing the ephemeral thing (i.e., @kbd{G D} from the group buffer), Gnus
 will not store information on what files you have read, and what files
-are new, and so on. If you create a solid @code{nneething} group the
+are new, and so on.  If you create a solid @code{nneething} group the
 normal way with @kbd{G m}, Gnus will store a mapping table between
 article numbers and file names, and you can treat this group like any
-other groups. When you activate a solid @code{nneething} group, you will
+other groups.  When you activate a solid @code{nneething} group, you will
 be told how many unread articles it contains, etc., etc.
 
 Some variables:
@@ -2090,7 +2143,7 @@ in this directory, which defaults to @file{~/.nneething/}.
 
 @item nneething-exclude-files
 @vindex nneething-exclude-files
-All files that match this regexp will be ignored. Nice to use to exclude
+All files that match this regexp will be ignored.  Nice to use to exclude
 auto-save files and the like, which is what it does by default.
 
 @item nneething-map-file
@@ -2113,6 +2166,16 @@ and @code{digest}.
 it---it will simply, like, let you use the file as the basis for a
 group.  And that's it.
 
+If you have some old archived articles that you want to insert into your
+new & spiffy Gnus mail backend, @code{nndoc} can probably help you with
+that.  Say you have an old @file{RMAIL} file with mail that you now want
+to split into your new @code{nnml} groups.  You look at that file using
+@code{nndoc}, set the process mark on all the articles in the buffer
+(@kbd{M P b}, for instance), and then respool (@kbd{B r}) using
+@code{nnml}.  If all goes well, all the mail in the @file{RMAIL} file is
+now also stored in lots of @code{nnml} directories, and you can delete
+that pesky @file{RMAIL} file.  If you have the guts!  
+
 Virtual server variables:
 
 @table @code
@@ -2120,6 +2183,245 @@ Virtual server variables:
 @vindex nndoc-article-type
 This should be one of @code{mbox}, @code{babyl} or @code{digest}. 
 @end table
+
+
+@node SOUP
+@subsection @sc{soup}
+@cindex @sc{SOUP}
+@cindex offline
+
+In the PC world people often talk about "offline" newsreaders.  These
+are thingies that are combined reader/news transport monstrosities.
+With built-in modem programs.  Yecchh!  
+
+Of course, us Unix Weenie types of human beans use things like
+@code{uucp} and, like, @code{nntpd} and set up proper news and mail
+transport things like Ghod inteded.  And then we just use normal
+newsreaders.  
+
+However, it can sometimes be convenient to do something a that's a bit
+easier on the brain if you have a very slow modem, and you're not really
+that interested in doing things properly.  
+
+A file format called @sc{soup} has been developed for transporting news
+and mail from servers to home machines and back again.  It can be a bit
+fiddly.
+
+@enumerate
+
+@item
+You log in on the server and create a @sc{soup} packet.  You can either
+use a dedicated @sc{soup} thingie, or you can use Gnus to create the
+packet with the @kbd{O s} command.
+
+@item 
+You transfer the packet home.  Rail, boat, car or modem will do fine.
+
+@item
+You put the packet in your home directory.
+
+@item
+You fire up Gnus using the @code{nnsoup} backend as the native server.
+
+@item
+You read articles and mail and answer and followup to the things you
+want.
+
+@item 
+You do the @kbd{G S r} command to pack these replies into a @sc{soup}
+packet.
+
+@item 
+You transfer this packet to the server.  
+
+@item
+You use Gnus to mail this packet out with the @kbd{G S s} command.
+
+@item
+You then repeat until you die.
+
+@end enumerate
+
+So you basically have a bipartite system---you use @code{nnsoup} for
+reading and Gnus for packing/sending these @sc{soup} packets.
+
+@menu
+* SOUP Commands::     Commands for creating and sending @sc{soup} packets
+* nnsoup::            A backend for reading @sc{soup} packets.
+* SOUP Replies::      How to enable @code{nnsoup} to take over mail and news.
+@end menu
+
+
+@node SOUP Commands
+@subsubsection @sc{soup} Commands
+
+@table @kbd
+@item G s b
+@kindex G s b (Group)
+@findex gnus-group-brew-soup
+Pack all unread articles in the current group
+(@code{gnus-group-brew-soup}).  This command understands the
+process/prefix convention.
+
+@item G s w
+@kindex G s w (Group)
+@findex gnus-soup-save-areas
+Save all data files (@code{gnus-soup-save-areas}).
+
+@item G s s
+@kindex G s s (Group)
+@findex gnus-soup-send-replies
+Send all replies from the replies packet
+(@code{gnus-soup-send-replies}). 
+
+@item G s p
+@kindex G s p (Group)
+@findex gnus-soup-pack-packet
+Pack all files into a @sc{soup} packet (@code{gnus-soup-pack-packet}). 
+
+@item G s r
+@kindex G s r (Group)
+@findex nnsoup-pack-replies
+Pack all replies into a replies packet (@code{nnsoup-pack-replies}). 
+
+@item O s
+@kindex O s (Summary)
+@findex gnus-soup-add-article
+This summary-mode command adds the current article to a @sc{soup} packet
+(@code{gnus-soup-add-article}).  It understands the process/prefix
+convention. 
+
+@end table
+
+
+There are a few variables to customize where Gnus will put all these
+thingies:  
+
+@table @code
+
+@item gnus-soup-directory
+@vindex gnus-soup-directory
+Directory where Gnus will save intermediate files while composing
+@sc{soup} packets.  The default is @file{~/SoupBrew/}. 
+
+@item gnus-soup-replies-directory
+@vindex gnus-soup-replies-directory
+This is what Gnus will use as a temporary directory while sending our
+reply packets.  The default is @file{~/SoupBrew/SoupReplies/}. 
+
+@item gnus-soup-prefix-file
+@vindex gnus-soup-prefix-file
+Name of the file where Gnus stores the last used prefix.  The default is
+@samp{"gnus-prefix"}. 
+
+@item gnus-soup-packer
+@vindex gnus-soup-packer
+A format string command for packing a @sc{soup} packet.  The default is
+@samp{ "tar cf - %s | gzip > $HOME/Soupout%d.tgz"}. 
+
+@item gnus-soup-unpacker
+@vindex gnus-soup-unpacker
+Format string command for unpacking a @sc{soup} packet.  The default is
+@samp{"gunzip -c %s | tar xvf -"}.
+
+@item gnus-soup-packet-directory
+@vindex gnus-soup-packet-directory
+Wehre Gnus will look for reply packets.  The default is @file{~/}. 
+
+@item gnus-soup-packet-regexp
+@vindex gnus-soup-packet-regexp
+Regular expression matching @sc{soup} reply packets in
+@code{gnus-soup-packet-directory}. 
+
+@end table
+ 
+
+@node nnsoup
+@subsubsection nnsoup
+@cindex @code{nnsoup}
+
+@code{nnsoup} is the backend for reading @sc{soup} packets.  It will
+read incoming packets, unpack them, and put them in a directory where
+you can read them at leisure.
+
+These are the variables you can use to customize its behavior:
+
+@table @code
+
+@item nnsoup-directory
+@vindex nnsoup-directory
+@code{nnsoup} will move all incoming @sc{soup} packets to this directory
+and unpack them there.  The default is @file{~/SOUP/}.
+
+@item nnsoup-replies-directory 
+@vindex nnsoup-replies-directory 
+All replies will stored in this directory before being packed into a
+reply packet.  The default is @file{~/SOUP/replies/"}.
+
+@item nnsoup-replies-format-type
+@vindex nnsoup-replies-format-type
+The @sc{soup} format of the replies packets.  The default is @samp{?n}
+(rnews), and I don't think you should touch that variable.  I probaly
+shouldn't even have documented it.  Drats!  Too late!
+
+@item nnsoup-replies-index-type
+@vindex nnsoup-replies-index-type
+The index type of the replies packet.  The is @samp{?n}, which means
+"none".  Don't fiddle with this one either!
+
+@item nnsoup-active-file
+@vindex nnsoup-active-file
+Where @code{nnsoup} stores lots of information.  This is not an "active
+file" in the @code{nntp} sense; it's an Emacs Lisp file.  If you lose
+this file or mess it up in any way, you're dead.  The default is
+@file{~/SOUP/active}.
+
+@item nnsoup-packer
+@vindex nnsoup-packer
+Format string command for packing a reply @sc{soup} packet.  The default
+is @samp{"tar cf - %s | gzip > $HOME/Soupin%d.tgz"}. 
+
+@item nnsoup-unpacker
+@vindex nnsoup-unpacker
+Format string command for unpacking incoming @sc{soup} packets.  The
+default is @samp{"gunzip -c %s | tar xvf -"}. 
+
+@item nnsoup-packet-directory
+@vindex nnsoup-packet-directory
+Where @code{nnsoup} will look for incoming packets.  The default is
+@file{~/}.  
+
+@item nnsoup-packet-regexp
+@vindex nnsoup-packet-regexp
+Regular expression matching incoming @sc{soup} packets.  The default is
+@samp{Soupout}. 
+
+@end table
+
+
+@node SOUP Replies
+@subsubsection SOUP Replies
+
+Just using @code{nnsoup} won't mean that your postings and mailings end
+up in @sc{soup} reply packets automagically.  You have to work a bit
+more for that to happen.
+
+@findex nnsoup-set-variables
+The @code{nnsoup-set-variables} command will set the appropriate
+variables to ensure that all your followups and replies end up in the
+@sc{soup} system.
+
+In specific, this is what it does:
+
+@lisp
+(setq gnus-inews-article-function 'nnsoup-request-post)
+(setq send-mail-function 'nnsoup-request-mail)
+@end lisp
+
+And that's it, really.  If you only want news to go into the @sc{soup}
+system you just use the first line.  If you only want mail to be
+@sc{soup}ed you use the second.
+
 
 @node Reading Mail
 @subsection Reading Mail
@@ -2158,6 +2460,13 @@ mail by themselves.  It is quite likely that Gnus supports POP-mail.
 Set this variable to begin with the string @samp{po:}, and everything
 should go smoothly, even though I have never tested this.
 
+When you use a mail backend, Gnus will slurp all your mail from your
+inbox and plonk it down in your home directory.  Gnus doesn't move any
+mail if you're not using a mail backend---you have to do a lot of magic
+invocations first.  At the time when you have finished drawing the
+pentagram, lightened the candles, and sacrificed the goat, you really
+shouldn't be too suprised when Gnus moves your mail.
+
 @vindex nnmail-use-procmail
 If @code{nnmail-use-procmail} is non-@code{nil}, the mail backends will
 look in @code{nnmail-procmail-directory} for incoming mail.  All the
@@ -2177,23 +2486,29 @@ non-@code{nil}, it will be used instead.
 
 @vindex nnmail-movemail-program
 @code{nnmail-movemail-program} is executed to move mail from the user's
-inbox to her home directory. The default is @samp{"movemail"}.
+inbox to her home directory.  The default is @samp{"movemail"}.
 
 @vindex nnmail-delete-incoming
 If @code{nnmail-delete-incoming} is non-@code{nil}, the mail backends
 will delete the temporary incoming file after splitting mail into the
 proper groups.  This is @code{nil} by default for reasons of security. 
 
+@vindex nnmail-use-long-file-names
+If @code{nnmail-use-long-file-names} is non-@code{nil} the mail backends
+will use long file and directory names.  Groups like @samp{mail.misc}
+will end up in directories like @file{mail.misc/}.  If it is @code{nil},
+the same group will end up in @file{mail/misc/}.
+
 @vindex nnmail-message-id-cache-length
 @vindex nnmail-message-id-cache-file
 @vindex nnmail-delete-duplicates
 @cindex duplicate mails
 If you are a member of a couple of mailing list, you will sometime
-receive two copies of the same mail. This can be quite annoying, so
-@code{nnmail} checks for and discards any duplicates it might find. To
+receive two copies of the same mail.  This can be quite annoying, so
+@code{nnmail} checks for and discards any duplicates it might find.  To
 do this, it keeps a cache of old @code{Message-ID}s -
 @code{nnmail-message-id-cache-file}, which is @file{~/.nnmail-cache} by
-default. The approximate maximum number of @code{Message-ID}s stored
+default.  The approximate maximum number of @code{Message-ID}s stored
 there is controlled by the @code{nnmail-message-id-cache-length}
 variable, which is 1000 by default. (So 1000 @code{Message-ID}s will be
 stored.) If all this sounds scary to you, you can set
@@ -2204,7 +2519,7 @@ Here's a neat feature: If you know that the recipient reads her mail
 with Gnus, and that she has @code{nnmail-delete-duplicates} set to
 @code{t}, you can send her as many insults as you like, just by using a
 @code{Message-ID} of a mail that you know that she's already received.
-Think of all the fun! She'll never see any of it! Whee!
+Think of all the fun!  She'll never see any of it!  Whee!
 
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
@@ -2256,16 +2571,23 @@ expression should @emph{always} be @samp{""} so that it matches any
 mails that haven't been matched by any of the other regexps.
 
 If you like to tinker with this yourself, you can set this variable to a
-function of your choice. This function will be called without any
+function of your choice.  This function will be called without any
 arguments in a buffer narrowed to the headers of an incoming mail
-message. The function should return a list of groups names that it
+message.  The function should return a list of groups names that it
 thinks should carry this mail message.
+
+Note that the mail backends are free to maul the poor, innocent
+incoming headers all they want to.  They all add @code{Lines} headers;
+some add @code{X-Gnus-Group} headers; most rename the Unix mbox
+@code{From<SPC>} line to something else.
 
 @vindex nnmail-crosspost
 The mail backends all support cross-posting.  If several regexps match,
 the mail will be "cross-posted" to all those groups.
 @code{nnmail-crosspost} says whether to use this mechanism or not.  Note
 that no articles are crossposted to the general (@samp{""}) group. 
+
+
 
 @node Fancy Mail Splitting
 @subsubsection Fancy Mail Splitting
@@ -2388,7 +2710,7 @@ Gnus to split the mail the normal way, you could set
 If you use @code{procmail} to split things directory into an @code{nnmh}
 directory (which you shouldn't do), you should set
 @code{nnmail-keep-last-article} to non-@code{nil} to prevent Gnus from
-ever expiring the final article in a mail newsgroup. This is quite,
+ever expiring the final article in a mail newsgroup.  This is quite,
 quite important.
 
 
@@ -2602,7 +2924,8 @@ The active file for the @code{nnml} server.
 
 @item nnml-newsgroups-file
 @vindex nnml-newsgroups-file
-The @code{nnml} group description file.
+The @code{nnml} group descriptions file.  @xref{Newsgroups File
+Format}. 
 
 @item nnml-get-new-mail
 @vindex nnml-get-new-mail
@@ -2679,7 +3002,7 @@ The name of the active file.
 
 @item nnfolder-newsgroups-file
 @vindex nnfolder-newsgroups-file
-The name of the group description file.
+The name of the group descriptions file.  @xref{Newsgroups File Format}.
 
 @item nnfolder-get-new-mail
 @vindex nnfolder-get-new-mail
@@ -2840,6 +3163,97 @@ thing to match on.
 
 @end table
 
+
+@node Sorting Groups
+@section Sorting Groups
+@cindex sorting groups
+
+@kindex C-c C-s (Group)
+@findex gnus-group-sort-groups
+@vindex gnus-group-sort-function
+The @kbd{C-c C-s} (@code{gnus-group-srot-groups}) command sorts the
+group buffer according to the function(s) given by the
+@code{gnus-group-sort-function} variable.  Available sorting functions
+include: 
+
+@table @code
+
+@item gnus-group-sort-by-alphabet
+@findex gnus-group-sort-by-alphabet
+Sort the group names alphabetically.  This is the default.
+
+@item gnus-group-sort-by-level
+@findex gnus-group-sort-by-level
+Sort by group level.
+
+@item gnus-group-sort-by-score
+@findex gnus-group-sort-by-score
+Sort by group score.
+
+@item gnus-group-sort-by-rank
+@findex gnus-group-sort-by-rank
+Sort by group score and then the group level.  The level and the score
+are, when taken together, the group's @dfn{rank}. 
+
+@item gnus-group-sort-by-unread
+@findex gnus-group-sort-by-unread
+Sort by number of unread articles.
+
+@item gnus-group-sort-by-method
+@findex gnus-group-sort-by-method
+Sort by alphabetically on the select method.
+
+
+@end table
+
+@code{gnus-group-sort-function} can also be a list of sorting
+functions.  In that case, the most significant sort key function must be
+the last one.
+
+
+There are also a number of commands for sorting directly according to
+some sorting criteria:
+
+@table @kbd
+@item G S a
+@kindex G S a (Group)
+@findex gnus-group-sort-groups-by-alphabet
+Sort the group buffer alphabetically by group name
+(@code{gnus-group-sort-groups-by-alphabet}). 
+
+@item G S u
+@kindex G S u (Group)
+@findex gnus-group-sort-groups-by-unread
+Sort the group buffer by the number of unread articles
+(@code{gnus-group-sort-groups-by-unread}).
+
+@item G S l
+@kindex G S l (Group)
+@findex gnus-group-sort-groups-by-level
+Sort the group buffer by group level
+(@code{gnus-group-sort-groups-by-level}). 
+
+@item G S v
+@kindex G S v (Group)
+@findex gnus-group-sort-groups-by-score
+Sort the group buffer by group score
+(@code{gnus-group-sort-groups-by-score}). 
+
+@item G S r
+@kindex G S r (Group)
+@findex gnus-group-sort-groups-by-rank
+Sort the group buffer by group level
+(@code{gnus-group-sort-groups-by-rank}). 
+
+@item G S m
+@kindex G S m (Group)
+@findex gnus-group-sort-groups-by-method
+Sort the group buffer alphabetically by backend name
+(@code{gnus-group-sort-groups-by-method}). 
+
+@end table
+
+
 @node Group Maintenance
 @section Group Maintenance
 @cindex bogus groups
@@ -2850,10 +3264,12 @@ thing to match on.
 @findex gnus-group-check-bogus-groups
 Find bogus groups and delete them
 (@code{gnus-group-check-bogus-groups}).
+
 @item F
 @kindex F (Group)
 @findex gnus-find-new-newsgroups
 Find new groups and process them (@code{gnus-find-new-newsgroups}).
+
 @item C-c C-x
 @kindex C-c C-x (Group)
 @findex gnus-group-expire-articles
@@ -2866,38 +3282,8 @@ process (if any) (@code{gnus-group-expire-articles}).
 Run all articles in all groups through the expiry process
 (@code{gnus-group-expire-all-groups}).
 
-@item C-c C-s
-@kindex C-c C-s (Group)
-@findex gnus-group-sort-groups
-@vindex gnus-group-sort-function
-Sort the groups according to the function given by the
-@code{gnus-group-sort-function} variable
-(@code{gnus-group-sort-groups}).  Available sorting functions include:
-
-@table @code
-
-@item gnus-group-sort-by-alphabet
-@findex gnus-group-sort-by-alphabet
-Sort the group names alphabetically.  This is the default.
-
-@item gnus-group-sort-by-level
-@findex gnus-group-sort-by-level
-Sort by group level.
-
-@item gnus-group-sort-by-unread
-@findex gnus-group-sort-by-unread
-Sort by number of unread articles.
-
-@item gnus-group-sort-by-method
-@findex gnus-group-sort-by-method
-Sort by alphabetically on the select method.
-
 @end table
 
-@code{gnus-group-sort-function} can also be a list of sorting
-functions.  In that case, the most significant sort key function must be
-the last one.
-@end table
 
 @node Browse Foreign Server
 @section Browse Foreign Server
@@ -3023,10 +3409,14 @@ them according to topics.  You put your Emacs groups over here, your sex
 groups over there, and the rest (what, two groups or so?) you put in
 some misc section that you never bother with anyway.
 
-To get this @emph{fab} functionality, you set
-@code{gnus-group-prepare-function} to @code{gnus-group-prepare-topics}.
+To get this @emph{fab} functionality:
+
+@lisp
+(setq gnus-group-prepare-function 'gnus-group-prepare-topics)
+@end lisp
+
 Go ahead, just try it.  I'll still be here when you get back.  La de
-dum...  Nice tune, that... la la la...  What, you're back? Yes, and now
+dum...  Nice tune, that...  la la la...  What, you're back? Yes, and now
 press @kbd{l}.  There.  All your groups are now listed under
 @samp{misc}.  Doesn't that make you feel all warm and fuzzy?  Hot and
 bothered?
@@ -3051,7 +3441,7 @@ number, these groups are never shown.
 Whoo, this is complicated.  If @code{gnus-group-topic-topics-only} is
 @code{nil}, all groups and topics will be listed, as you would expect.
 If this variable is non-@code{nil}, only the topics will be listed, and
-the groups will not be listed. This makes the group buffer much shorter,
+the groups will not be listed.  This makes the group buffer much shorter,
 I'm sure you'll agree.  This is all modified on a topic-by-topic basis
 by the @var{show} parameter.   It makes perfect sense, really.
 
@@ -3082,10 +3472,8 @@ If you want to add a group to a topic, you can use the @kbd{G t}
 (@code{gnus-group-add-to-topic}) command.  It understands the
 process/prefix convention (@pxref{Process/Prefix}). 
 
-If you want to add a group to a topic, you can use the @kbd{G t}
-(@code{gnus-group-add-to-topic}) command.  It understands the
-process/prefix convention (@pxref{Process/Prefix}). 
-
+@kbd{A t} (@code{gnus-topic-toggle-topic} toggles between the normal
+flat group buffer display and the topic folded display.
 
 @node Misc Group Stuff
 @section Misc Group Stuff
@@ -3157,7 +3545,8 @@ List all groups that have names or descriptions that match a regexp
 @item a
 @kindex a (Group)
 @findex gnus-group-post-news
-Post an article to a group (@code{gnus-group-post-news}).
+Post an article to a group (@code{gnus-group-post-news}).  The current
+group name will be used as the default.
 @item m
 @kindex m (Group)
 @findex gnus-group-mail
@@ -3272,11 +3661,11 @@ Full @code{From} line.
 @item n
 The name (from the @code{From} header).
 @item a
-The name (from the @code{From} header). This differs from the @code{n}
+The name (from the @code{From} header).  This differs from the @code{n}
 spec in that it uses @code{gnus-extract-address-components}, which is
 slower, but may be more thorough.
 @item A
-The address (from the @code{From} header). This works the same way as
+The address (from the @code{From} header).  This works the same way as
 the @code{a} spec.
 @item L
 Number of lines in the article.
@@ -3374,7 +3763,7 @@ either as @samp{<%U(+%u) more>} if there are both unread and unselected
 articles, and just as @samp{<%U more>} if there are just unread articles
 and no unselected ones.
 @item g
-Shortish group name. For instance, @samp{rec.arts.anime} will be
+Shortish group name.  For instance, @samp{rec.arts.anime} will be
 shortened to @samp{r.a.anime}. 
 @item S
 Subject of the current article.
@@ -3643,6 +4032,7 @@ server.
 @menu 
 * Mail::                 Mailing & replying.
 * Post::                 Posting and following up.
+* Posting Server::       What server should you post via?
 * Mail & Post::          Mailing and posting at the same time.
 * Posting Styles::       An easier way to configure some key elements.
 * Drafts::               Postponing messages and rejected messages.
@@ -3917,7 +4307,7 @@ This optional header will be filled out with the Gnus version numbers.
 @end table
 
 In addition, you can enter conses into this list.  The car of this cons
-should be a symbol. This symbol's name is the name of the header, and
+should be a symbol.  This symbol's name is the name of the header, and
 the cdr can either be a string to be entered verbatim as the value of
 this header, or it can be a function to be called.  This function should
 return a string to be inserted.  For instance, if you want to insert
@@ -3932,11 +4322,6 @@ the cdr of this cons will only be inserted if it is non-@code{nil}.
 Other variables for customizing outgoing articles:
 
 @table @code
-@item gnus-post-method
-@vindex gnus-post-method
-If non-@code{nil}, Gnus will use this method instead of the default
-select method when posting.
-
 @item nntp-news-default-headers
 @vindex nntp-news-default-headers
 If non-@code{nil}, this variable will override
@@ -4011,7 +4396,7 @@ signature.  Nice if you use different signatures in different groups.
 
 @item gnus-post-prepare-hook
 @vindex gnus-post-prepare-hook
-This hook is called after a post buffer has been prepared. If you want
+This hook is called after a post buffer has been prepared.  If you want
 to insert a signature at this point, you could put
 @code{gnus-inews-insert-signature} into this hook.
 
@@ -4098,6 +4483,32 @@ something only moderators should include.
 @end table
 
 @end table
+
+
+@node Posting Server
+@subsection Posting Server
+
+When you press those magical @kbd{C-c C-c} keys to ship off your latest
+(extremely intelligent, of course) article, where does it go?
+
+Thank you for asking.  I hate you.
+
+@vindex gnus-post-method
+
+It can be quite complicated.  Normally, Gnus will use the same native
+server.  However.  If your native server doesn't allow posting, just
+reading, you probably want to use some other server to post your
+(extremely intelligent and fabulously interesting) articles.  You can
+then set the @code{gnus-post-method} to some other method:
+
+@lisp
+(setq gnus-post-method '(nnspool ""))
+@end lisp
+
+Now, if you've done this, and then this server rejects your article, or
+this server is down, what do you do then?  To override this variable you
+can use a prefix to the @kbd{C-c C-c} command to force using the
+"current" server for posting.
 
 
 @node Mail & Post
@@ -4194,7 +4605,7 @@ the other Gnus variables if it is non-@code{nil}.
 
 Here are two example values of this variable: @samp{"larsi@@ifi.uio.no
 (Lars Magne Ingebrigtsen)"} and @samp{"Lars Magne Ingebrigtsen
-<larsi@@ifi.uio.no>"}. The latter version is recommended in news (and is
+<larsi@@ifi.uio.no>"}.  The latter version is recommended in news (and is
 probably illegal in mail), but the name has to be quoted if it contains
 non-alpha-numerical characters---@samp{"\"Lars M. Ingebrigtsen\"
 <larsi@@ifi.uio.no>"}.
@@ -4227,7 +4638,7 @@ of using the variable described above.
 @vindex gnus-outgoing-message-group 
 All outgoing messages will be put in this group.  If you want to store
 all your outgoing mail and articles in the group @samp{nnml:archive},
-you set this variable to that value. This variable can also be a list of
+you set this variable to that value.  This variable can also be a list of
 group names.
 
 If you want to have greater control over what group to put each
@@ -4804,7 +5215,7 @@ with that mark (@code{gnus-summary-limit-to-marks}).
 
 @item / n
 @kindex / n (Summary)
-@findex 
+@findex gnus-summary-limit-to-articles
 Limit the summary buffer to the current article
 (@code{gnus-summary-limit-to-articles}).  Uses the process/prefix
 convention (@pxref{Process/Prefix}).
@@ -5094,9 +5505,9 @@ that have subjects that are fuzzily equal will be included.
 @cindex asynchronous article fetching
 
 If you read your news from an @sc{nntp} server that's far away, the
-network latencies may make reading articles a chore. You have to wait
+network latencies may make reading articles a chore.  You have to wait
 for a while after pressing @kbd{n} to go to the next article before the
-article appears. Why can't Gnus just go ahead and fetch the article
+article appears.  Why can't Gnus just go ahead and fetch the article
 while you are reading the previous one? Why not, indeed.
 
 First, some caveats.  There are some pitfalls to using asynchronous
@@ -5119,7 +5530,7 @@ loaded than if you didn't use article pre-fetch.  The server itself will
 also become more loaded---both with the extra article requests, and the
 extra connection.
 
-Ok, so now you know that you shouldn't really use this thing... unless
+Ok, so now you know that you shouldn't really use this thing...  unless
 you really want to.
 
 @vindex gnus-asynchronous
@@ -5342,6 +5753,7 @@ considerably.
 
 C'est la vie.
 
+
 @node Process/Prefix
 @section Process/Prefix
 @cindex process/prefix convention
@@ -5368,6 +5780,15 @@ process mark, just perform the operation on the current article.
 
 Quite simple, really, but it needs to be made clear so that surprises
 are avoided.
+
+@vindex gnus-summary-goto-unread
+One thing that seems to shock & horrify lots of people is that, for
+instance, @kbd{3 d} does exactly the same as @kbd{d} @kbd{d} @kbd{d}.
+Since each @kbd{d} (which marks the current article as read) by default
+goes to the next unread article after marking, this means that @kbd{3 d}
+will mark the next three unread articles as read, no matter what the
+summary buffer looks like.  Set @code{gnus-summary-goto-unread} to
+@code{nil} for a more straightforward action.
 
 @node Saving Articles
 @section Saving Articles
@@ -5518,29 +5939,25 @@ Generates file names that look like @samp{~/News/alt.andrea-dworkin}.
 
 @vindex gnus-split-methods
 You can have Gnus suggest where to save articles by plonking regexp into
-the @code{gnus-split-methods} alist.  The syntax of this variable is the
-same as @code{nnmail-split-methods}. For instance, if you would like to
+the @code{gnus-split-methods} alist.  For instance, if you would like to
 save articles related to Gnus in the file @file{gnus-stuff}, and articles
 related to VM in @code{vm-stuff}, you could set this variable to something
 like:
 
 @lisp
 (("^Subject:.*gnus\\|^Newsgroups:.*gnus" "gnus-stuff")
- ("^Subject:.*vm\\|^Xref:.*vm" "vm-stuff"))
+ ("^Subject:.*vm\\|^Xref:.*vm" "vm-stuff")
+ (my-choosing-function "../other-dir/my-stuff")
+ ((equal gnus-newsgroup-name "mail.misc") "mail-stuff"))
 @end lisp
 
-@vindex gnus-split-methods
-You can have Gnus suggest where to save articles by plonking regexp into
-the @code{gnus-split-methods} alist.  The syntax of this variable is the
-same as @code{nnmail-split-methods}. For instance, if you would like to
-save articles related to Gnus in the file @file{gnus-stuff}, and articles
-related to VM in @code{vm-stuff}, you could set this variable to something
-like:
-
-@lisp
-(("^Subject:.*gnus\\|^Newsgroups:.*gnus" "gnus-stuff")
- ("^Subject:.*vm\\|^Xref:.*vm" "vm-stuff"))
-@end lisp
+We see that this is a list where each element is a list that has two
+elements---the @dfn{match} and the @dfn{file}.  The match can either be
+a string (in which case it is used as a regexp to match on the article
+head); it can be a symbol (which will be called as a function); or it
+can be a list (which will be @code{eval}ed).  If any of these actions
+have a non-@code{nil} result, the @dfn{file} will be used as a default
+prompt. 
 
 @vindex gnus-use-long-file-name
 Finally, you have the @code{gnus-use-long-file-name} variable.  If it is
@@ -5568,9 +5985,9 @@ a spool, you could
 (setq gnus-default-article-save 'gnus-summary-save-in-file) ; no encoding
 @end lisp
 
-Then just save with @kbd{o}. You'd then read this hierarchy with
+Then just save with @kbd{o}.  You'd then read this hierarchy with
 ephemeral @code{nneething} groups---@kbd{G D} in the group buffer, and
-the toplevel directory as the argument (@file{~/News/}). Then just walk
+the toplevel directory as the argument (@file{~/News/}).  Then just walk
 around to the groups/directories with @code{nneething}.
 
 
@@ -6128,11 +6545,11 @@ Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
 @vindex gnus-article-x-face-command
 @vindex gnus-article-x-face-too-ugly
 Look for and display any X-Face headers
-(@code{gnus-article-display-x-face}). The command executed by this
-function is given by the @code{gnus-article-x-face-command} variable. If
+(@code{gnus-article-display-x-face}).  The command executed by this
+function is given by the @code{gnus-article-x-face-command} variable.  If
 this variable is a string, this string will be executed in a sub-shell.
 If it is a function, this function will be called with the face as the
-argument. If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
+argument.  If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
 matches the @code{From} header, the face will not be shown.
 
 @item W b
@@ -6369,7 +6786,7 @@ Expire all expirable articles in the group
 @kindex B M-C-e (Summary)
 @findex gnus-summary-expire-articles-now
 Expunge all the expirable articles in the group
-(@code{gnus-summary-expire-articles-now}). This means that @strong{all}
+(@code{gnus-summary-expire-articles-now}).  This means that @strong{all}
 articles that are eligeble for expiry in the current group will
 disappear forever into that big @file{/dev/null} in the sky.
 
@@ -6437,6 +6854,13 @@ will tell you (@code{gnus-summary-fancy-query}).
 * Searching for Articles::            Multiple article commands.
 * Really Various Summary Commands::   Those pesky non-conformant commands.
 @end menu
+
+@vindex gnus-summary-generate-hook
+@code{gnus-summary-generate-hook} is called as the last thing before
+doing the threading and the generation of the summary buffer.  It's
+quite convenient for customizing the threading variables based on what
+data the newsgroup has.  This hook is called from the summary buffer
+after most summary buffer variables has been set.
 
 @vindex gnus-summary-prepare-hook
 @code{gnus-summary-prepare-hook} is called after the summary buffer has
@@ -6951,7 +7375,7 @@ Gnus will read any @dfn{score files} that apply to the current group
 before generating the summary buffer.
 
 There are several commands in the summary buffer that insert score
-entries based on the current article. You can, for instance, ask Gnus to
+entries based on the current article.  You can, for instance, ask Gnus to
 lower or increase the score of all articles with a certain subject.
 
 There are two sorts of scoring entries: Permanent and temporary.
@@ -7285,13 +7709,20 @@ default.  For instance, if the current group is @samp{gnu.emacs.gnus},
 @samp{all} in the score file names are translated into @samp{.*}, and
 then a regexp match is done.
 
+This means that if you have some score entries that you want to apply to
+all groups, then you put those entries in the @file{all.SCORE} file. 
+
 If @code{gnus-use-long-file-name} is non-@code{nil}, this won't work
-very will. It will find stuff like @file{gnu/all/SCORE}, but will not
+very will.  It will find stuff like @file{gnu/all/SCORE}, but will not
 find files like @file{not/gnu/all/SCORE}. 
 
 @item gnus-score-find-hierarchical
 @findex gnus-score-find-hierarchical
-Apply all score files from all the parent groups.
+Apply all score files from all the parent groups.  This means that you
+can't have score files like @file{all.SCORE} or @file{all.emacs.SCORE},
+but you can have @file{SCORE},  @file{comp.SCORE} and
+@file{comp.emacs.SCORE}. 
+
 @end table
 This variable can also be a list of functions.  In that case, all these
 functions will be called, and all the returned lists of score files will
@@ -7461,7 +7892,7 @@ it.
 @cindex local variables
 The value of this entry should be a list of @code{(VAR VALUE)} pairs.
 Each @var{var} will be made buffer-local to the current summary buffer,
-and set to the value specified. This is a convenient, if somewhat
+and set to the value specified.  This is a convenient, if somewhat
 strange, way of setting variables in some groups if you don't like hooks
 much.
 @end table
@@ -7558,10 +7989,10 @@ is @samp{ADAPT}.
 
 @vindex gnus-score-exact-adapt-limit
 When doing adaptive scoring, substring or fuzzy matching would probably
-give you the best results in most cases. However, if the header one
+give you the best results in most cases.  However, if the header one
 matches is short, the possibility for false positives is great, so if
 the length of the match is less than
-@code{gnus-score-exact-adapt-limit}, exact matching will be used. If
+@code{gnus-score-exact-adapt-limit}, exact matching will be used.  If
 this variable is @code{nil}, exact matching will always be used to avoid
 this problem.
 
@@ -8208,14 +8639,14 @@ mouse highlights will be done if @code{gnus-visual} is @code{nil}.
 @vindex gnus-display-type
 This variable is symbol indicating the display Emacs is running under.
 The symbol should be one of @code{color}, @code{grayscale} or
-@code{mono}. If Gnus guesses this display attribute wrongly, either set
+@code{mono}.  If Gnus guesses this display attribute wrongly, either set
 this variable in your @file{~/.emacs} or set the resource
 @code{Emacs.displayType} in your @file{~/.Xdefaults}.
 
 @item gnus-background-mode 
 @vindex gnus-background-mode 
-This is a symbol indicating the Emacs background brightness. The symbol
-should be one of @code{light} or @code{dark}. If Gnus guesses this
+This is a symbol indicating the Emacs background brightness.  The symbol
+should be one of @code{light} or @code{dark}.  If Gnus guesses this
 frame attribute wrongly, either set this variable in your @file{~/.emacs} or
 set the resource @code{Emacs.backgroundMode} in your @file{~/.Xdefaults}. 
 `gnus-display-type'.
@@ -8383,7 +8814,7 @@ If all else fails, report the problem as a bug.
 @findex gnus-bug
 If you find a bug in Gnus, you can report it with the @kbd{M-x gnus-bug}
 command. @kbd{M-x set-variable RET debug-on-error RET t RET}, and send
-me the backtrace. I will fix bugs, but I can only fix them if you send
+me the backtrace.  I will fix bugs, but I can only fix them if you send
 me a precise description as to how to reproduce the bug.
 
 You really can never be too detailed in a bug report.  Always use the
@@ -8434,19 +8865,19 @@ but at the common table.@*
 @chapter Appendices
 
 @menu
-* A Programmer's Guide to Gnus::   Rilly, rilly technical stuff.
+* A Programmer@'s Guide to Gnus::   Rilly, rilly technical stuff.
 * Emacs for Heathens::             A short intruduction to Emacsian terms.
 * Frequently Asked Questions::     A question-and-answer session.
 @end menu
 
 
-@node A Programmer's Guide to Gnus
-@section A Programmer's Guide to Gnus
+@node A Programmer@'s Guide to Gnus
+@section A Programmer@'s Guide to Gnus
 
 It is my hope that other people will figure out smart stuff that Gnus
 can do, and that other people will write those smart things as well.  To
 facilitate that I thought it would be a good idea to describe the inner
-workings of Gnus. And some of the not-so-inner workings, while I'm at
+workings of Gnus.  And some of the not-so-inner workings, while I'm at
 it.
 
 You can never expect the internals of a program not to change, but I
@@ -8461,6 +8892,7 @@ and general method of operations.
 * Headers::                  How Gnus stores headers internally.
 * Ranges::                   A handy format for storing mucho numbers.
 * Group Info::               The group info format.
+* Various File Formats::     Formats of files that Gnus use.
 @end menu
 
 
@@ -9113,7 +9545,7 @@ second is a more complex one:
 ("no.group" 5 (1 . 54324))
 
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
-                ((tick (15 . 19)) (replied 3 6 (19 . 23)))
+                ((tick (15 . 19)) (replied 3 6 (19 . 3)))
                 (nnml "")
                 (auto-expire (to-address "ding@@ifi.uio.no")))
 @end example
@@ -9141,6 +9573,65 @@ parameters    = "(" *elisp-forms ")"
 Actually that @samp{marks} rule is a fib.  A @samp{marks} is a
 @samp{<string>} consed on to a @samp{range}, but that's a bitch to say
 in pseudo-BNF.
+
+
+@node Various File Formats
+@subsection Various File Formats
+
+@menu
+* Active File Format::      Information on articles and groups available.
+* Newsgroups File Format::  Group descriptions.
+@end menu
+
+
+@node Active File Format
+@subsubsection Active File Format
+
+The active file lists all groups that are available on the server in
+question.  It also lists the highest and lowest current article numbers
+in each group.  
+
+Here's an exceprt from a typical active file:
+
+@example
+soc.motss 296030 293865 y
+alt.binaries.pictures.fractals 3922 3913 n
+comp.sources.unix 1605 1593 m
+comp.binaries.ibm.pc 5097 5089 y
+no.general 1000 900 y
+@end example
+
+Here's a pseudo-BNF definition of this file:
+
+@example
+active      = *group-line
+group-line  = group space high-number space low-number space flag <NEWLINE>
+group       = <non-white-space string>
+space       = " "
+high-number = <non-negative integer>
+low-number  = <positive integer>
+flag        = "y" / "n" / "m" / "j" / "x" / "=" group
+@end example
+
+
+@node Newsgroups File Format
+@subsubsection Newsgroups File Format
+
+The newsgroups file lists groups along with their descriptions.  Not all
+groups on the server have to be listed,  and not all groups in the file
+have to exist on the server.  The file is meant purely as information to
+the user.
+
+The format is quite simple; a group name, a tab, and the description.
+Here's the definition:
+
+@example
+newsgroups    = *line
+line          = group tab description <NEWLINE>
+group         = <non-white-space string>
+tab           = <TAB>
+description   = <string>
+@end example
 
 
 @node Emacs for Heathens

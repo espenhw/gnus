@@ -64,7 +64,7 @@ Optional argument FOLDER specifies folder name."
 		   t))))
 	(errbuf (get-buffer-create " *Gnus rcvstore*")))
     (gnus-eval-in-buffer-window 
-     gnus-article-buffer
+     gnus-original-article-buffer
      (save-restriction
        (widen)
        (unwind-protect
@@ -82,7 +82,7 @@ Optional argument FOLDER specifies folder name."
   (let ((config (current-window-configuration))) 
     (setq mh-show-buffer gnus-article-copy)
     (mh-find-path)
-    (mh-send-sub (or to "") (or cc "") (or subject "(None)") config)
+    (mh-send-sub (or to "") (or cc "") (or subject "") config)
     (goto-char (point-min))
     (and in-reply-to (insert "In-Reply-To: " in-reply-to "\n"))
     (setq mh-sent-from-folder gnus-article-copy)

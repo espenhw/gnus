@@ -69,6 +69,11 @@ If nil, the first match found will be used.")
 directory.  You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired.")
 
+(defvar nnmail-use-long-file-names nil
+  "*If non-nil the mail backends will use long file and directory names.
+If nil, groups like \"mail.misc\" will end up in directories like
+\"mail/misc/\".")
+
 (defvar nnmail-expiry-wait 7
   "*Articles that are older than `nnmail-expiry-wait' days will be expired.")
 
@@ -244,10 +249,15 @@ perfomed.")
       (progn (insert-file-contents file) t)
     (file-error nil)))
 
-(defun nnmail-article-pathname (group mail-dir)
+(defun nnmail-group-pathname (group mail-dir)
   "Make pathname for GROUP."
-  (concat (file-name-as-directory (expand-file-name mail-dir))
-	  (nnmail-replace-chars-in-string group ?. ?/) "/"))
+  (let ((mail-dir (file-name-as-directory (expand-file-name mail-dir))))
+    ;; If this directory exists, we use it directly.
+    (if (or nnmail-use-long-file-names 
+	    (file-directory-p (concat mail-dir group)))
+	(concat mail-dir group "/")
+      ;; If not, we translate dots into slashes.
+      (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
 
 (defun nnmail-replace-chars-in-string (string from to)
   "Replace characters in STRING from FROM to TO."
@@ -286,7 +296,7 @@ perfomed.")
     ;; We create the directory the tofile is to reside in if it
     ;; doesn't exist.
     (or (file-exists-p (file-name-directory tofile))
-	(make-directory tofile 'parents))
+	(make-directory (file-name-directory tofile) 'parents))
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.
@@ -329,9 +339,10 @@ perfomed.")
 	       (save-excursion
 		 (setq errors (generate-new-buffer " *nnmail loss*"))
 		 (buffer-disable-undo errors)
-		 (call-process
-		  (expand-file-name nnmail-movemail-program exec-directory)
-		  nil errors nil inbox tofile)
+		 (let ((default-directory "/"))
+		   (call-process
+		    (expand-file-name nnmail-movemail-program exec-directory)
+		    nil errors nil inbox tofile))
 		 (if (not (buffer-modified-p errors))
 		     ;; No output => movemail won
 		     nil
@@ -354,7 +365,6 @@ perfomed.")
 	 (kill-buffer errors))
     tofile))
 
-
 (defun nnmail-get-active ()
   "Returns an assoc of group names and active ranges.
 nn*-request-list should have been called before calling this function."
@@ -365,27 +375,11 @@ nn*-request-list should have been called before calling this function."
       (goto-char (point-min))
       (while (re-search-forward 
 	      "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)[ \t]+\\([0-9]+\\)" nil t)
-	(setq group-assoc
-	      (cons (list (buffer-substring (match-beginning 1) 
-					    (match-end 1))
-			  (cons (string-to-int 
-				 (buffer-substring (match-beginning 3)
-						   (match-end 3)))
-				(string-to-int 
-				 (buffer-substring (match-beginning 2)
-						   (match-end 2)))))
-		    group-assoc))))
-
-    ;;    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
-    ;;    (let ((methods (and (not (symbolp nnmail-split-methods))
-    ;;			nnmail-split-methods)))
-    ;;      (while methods
-    ;;	(if (not (assoc (car (car methods)) group-assoc))
-    ;;	    (setq group-assoc
-    ;;		  (cons (list (car (car methods)) (cons 1 0)) 
-    ;;			group-assoc)))
-    ;;	(setq methods (cdr methods)))
-    
+	;; We create an alist with `(GROUP (LOW . HIGH))' elements.
+	(push (list (match-string 1)
+		    (cons (string-to-int (match-string 3))
+			  (string-to-int (match-string 2))))
+	      group-assoc)))
     group-assoc))
 
 (defun nnmail-save-active (group-assoc file-name)
@@ -452,25 +446,23 @@ FUNC will be called with the buffer narrowed to each mail."
 	    ;; Find the Message-ID header.
 	    (save-excursion
 	      (if (re-search-backward "^Message-ID:[ \t]*\\(<[^>]*>\\)" nil t)
-		  (setq message-id (buffer-substring (match-beginning 1)
-						     (match-end 1)))
+		  (setq message-id (match-string 1))
 		;; There is no Message-ID here, so we create one.
 		(forward-line -1)
 		(insert "Message-ID: " (setq message-id (nnmail-message-id))
 			"\n")))
 	    ;; Look for a Content-Length header.
 	    (if (not (save-excursion
-		       (and (re-search-backward 
-			     "^Content-Length: \\([0-9]+\\)" start t)
-			    (setq content-length (string-to-int
-						  (buffer-substring 
-						   (match-beginning 1)
-						   (match-end 1))))
-			    ;; We destroy the header, since none of
-			    ;; the backends ever use it, and we do not
-			    ;; want to confuse other mailers by having
-			    ;; a (possibly) faulty header.
-			    (progn (insert "X-") t))))
+		       (when (re-search-backward 
+			      "^Content-Length: \\([0-9]+\\)" start t)
+			 (setq content-length 
+			       (string-to-int (match-string 1)))
+			 ;; We destroy the header, since none of
+			 ;; the backends ever use it, and we do not
+			 ;; want to confuse other mailers by having
+			 ;; a (possibly) faulty header.
+			 (insert "X-") 
+			 t)))
 		(setq do-search t)
 	      (if (or (= (+ (point) content-length) (point-max))
 		      (save-excursion

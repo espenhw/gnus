@@ -45,7 +45,7 @@ Possible values:
        (, (concat "^" rmail-unix-mail-delimiter))
        nil "^$" nil nil nil)
       (babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
-	     "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
+	     "^$")
       (digest
        "^------------------------------*[\n \t]+"
        "^------------------------------*[\n \t]+"

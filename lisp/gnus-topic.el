@@ -77,7 +77,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
         (lowest (or lowest 1))
 	tlist info)
     
-    (or list-topic (erase-buffer))
+    (unless list-topic 
+      (erase-buffer))
     
     ;; List dead groups?
     (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
@@ -109,7 +110,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	       (point)
 	       (progn
 		 (insert topic "\n")
-		 (point))
+		 (1- (point)))
 	       (list 'mouse-face gnus-mouse-face
 		     'face gnus-group-topic-face
 		     'gnus-topic topic)))
@@ -118,6 +119,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
             (if (and (or (and (not how) (not gnus-group-topic-topics-only))
 			 (and how (not (numberp how))))
 		     (not (member topic gnus-topics-not-listed)))
+		;; We want to list this topic.
 		(progn
 		  (setq gnus-topics-not-listed
 			(delete topic gnus-topics-not-listed))
@@ -125,12 +127,14 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 		  (while tlist
 		    (setq info (car tlist))
 		    (gnus-group-insert-group-line 
-		     nil (car info) (car (cdr info)) (nth 3 info) 
-		     (car (gnus-gethash (car info) gnus-newsrc-hashtb))
-		     (nth 4 info))
+		     nil (gnus-info-group info)
+		     (gnus-info-level info) (gnus-info-marks info) 
+		     (car (gnus-gethash (gnus-info-group info)
+					gnus-newsrc-hashtb))
+		     (gnus-info-method info))
 		    (setq tlist (cdr tlist))))
-	      (setq gnus-topics-not-listed
-		    (cons topic gnus-topics-not-listed)))))))
+	      ;; This one is hiddent.
+	      (push topic gnus-topics-not-listed))))))
 
   (gnus-group-set-mode-line)
   (setq gnus-group-list-mode (cons level all))
@@ -153,21 +157,21 @@ If TOPIC, just find the groups in that topic."
     ;; We go through the newsrc to look for matches.
     (while newsrc
       (setq info (car newsrc)
-            group (car info)
+            group (gnus-info-group info)
             newsrc (cdr newsrc)
             unread (car (gnus-gethash group gnus-newsrc-hashtb)))
       (and 
        unread				; nil means that the group is dead.
-       (<= (setq clevel (car (cdr info))) level) 
+       (<= (setq clevel (gnus-info-level info)) level) 
        (>= clevel lowest)		; Is inside the level we want.
        (or all
 	   (eq unread t)
 	   (> unread 0)
-	   (cdr (assq 'tick (nth 3 info)))) ; Has right readedness.
+	   (cdr (assq 'tick (gnus-info-marks info)))) ; Has right readedness.
        (progn
 	 ;; So we find out what topic this group belongs to.  First we
 	 ;; check the group parameters.
-	 (setq gtopic (cdr (assq 'topic (nth 5 info))))
+	 (setq gtopic (cdr (assq 'topic (gnus-info-params info))))
 	 ;; On match, we add it.
 	 (and (stringp gtopic) 
 	      (or (not topic)
@@ -192,13 +196,13 @@ If TOPIC, just find the groups in that topic."
   "Remove the current topic."
   (let ((topic (gnus-group-topic-name))
 	buffer-read-only)
-    (if (not topic) 
-	()
+    (when topic
       (setq gnus-topics-not-listed (cons topic gnus-topics-not-listed))
       (forward-line 1)
-      (delete-region (point) 
-		     (or (next-single-property-change (point) 'gnus-topic)
-			 (point-max))))))
+      (unless (gnus-group-topic-name)
+	(delete-region (point) 
+		       (or (next-single-property-change (point) 'gnus-topic)
+			   (point-max)))))))
 
 (defun gnus-topic-insert-topic (topic)
   "Insert TOPIC."
@@ -226,8 +230,18 @@ If TOPIC, just find the groups in that topic."
    (list current-prefix-arg
 	 (completing-read "Add to topic: " gnus-topic-names)))
   (let ((groups (gnus-group-process-prefix n)))
-    (mapcar (lambda (g) (gnus-group-add-parameter g (cons 'topic topic)))
+    (mapcar (lambda (g) 
+	      (gnus-group-remove-mark g)
+	      (gnus-group-add-parameter g (cons 'topic topic)))
 	    groups)
     (gnus-group-position-point)))
+
+(defun gnus-topic-toggle-topic ()
+  "Toggle between a flat group buffer and a topic display."
+  (interactive)
+  (if (eq gnus-group-prepare-function 'gnus-group-prepare-topics)
+      (setq gnus-group-prepare-function 'gnus-group-prepare-flat)
+    (setq gnus-group-prepare-function 'gnus-group-prepare-topics))
+  (gnus-group-list-groups))
 
 ;;; gnus-topic.el ends here

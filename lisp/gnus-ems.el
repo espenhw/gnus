@@ -34,6 +34,9 @@
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas"))
 
+(or (fboundp 'mail-file-babyl-p)
+    (fset 'mail-file-babyl-p 'rmail-file-p))
+
 ;;; Mule functions.
 
 (defun gnus-mule-truncate-string (str width)

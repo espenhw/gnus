@@ -210,16 +210,20 @@
 ;(defvar gnus-signature-face 'italic
 ;  "Face used for signature.")
 
+(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]"
+  "*Regular expression matching Urls")
+
 (defvar gnus-button-alist 
-  '(("in\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
-     (assq (count-lines (point-min) (match-end 0)) 
-	   gnus-cite-attribution-alist)
+  `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
+     (let ((lines (count-lines (point-min) (match-end 0))))
+       (or (assq lines gnus-cite-attribution-alist)
+	   (assq (1+ lines) gnus-cite-attribution-alist)))
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    ("\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]" 0 t gnus-button-url 0))
+    (,gnus-button-url-regexp 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -234,10 +238,11 @@ CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
 
 (defvar gnus-header-button-alist 
-  '(("^\\(References\\|Message-ID\\):" "<[^>]+>" 0 t gnus-button-message-id 0)
+  `(("^\\(References\\|Message-ID\\):" "<[^>]+>" 0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
-     0 t gnus-button-mailto 0))
+     0 t gnus-button-mailto 0)
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0))
   "Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
@@ -294,7 +299,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
       '("Group"
 	["Read" gnus-group-read-group t]
 	["Select" gnus-group-select-group t]
-	["See old articles" gnus-group-select-group-all t]
+	["See old articles" (gnus-group-select-group 'all) :keys "C-u SPC" ]
 	["Catch up" gnus-group-catchup-current t]
 	["Catch up all articles" gnus-group-catchup-current-all t]
 	["Check for new articles" gnus-group-get-new-news-this-group t]
@@ -381,6 +386,8 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	))
      (run-hooks 'gnus-group-menu-hook)
      )))
+
+(defvar gnus-server-mode-map)
 
 ;; Server mode
 (defun gnus-server-make-menu-bar ()
@@ -983,9 +990,9 @@ If nil, the user will be asked for a duration.")
     ("prev" . gnus-group-prev-unread-group)
     ("read" . gnus-group-read-group)
     ("select" . gnus-group-select-group)
-    ("catch up" . gnus-group-catchup-current)
-    ("new news" . gnus-group-get-new-news-this-group)
-    ("toggle sub" . gnus-group-unsubscribe-current-group)
+    ("catch-up" . gnus-group-catchup-current)
+    ("new-news" . gnus-group-get-new-news-this-group)
+    ("toggle-sub" . gnus-group-unsubscribe-current-group)
     ("subscribe" . gnus-group-unsubscribe-group)
     ("kill" . gnus-group-kill-group)
     ("yank" . gnus-group-yank-group)
@@ -999,7 +1006,7 @@ If nil, the user will be asked for a duration.")
     ("post" . gnus-group-post-news)
     ("mail" . gnus-group-mail)
     ("rescan" . gnus-group-get-new-news)
-    ("browse foreign" . gnus-group-browse-foreign)
+    ("browse-foreign" . gnus-group-browse-foreign)
     ("exit" . gnus-group-exit)))
 
 (defvar gnus-carpal-summary-buffer-buttons
@@ -1010,15 +1017,15 @@ If nil, the user will be asked for a duration.")
     ("expirable" . gnus-summary-mark-as-expirable)
     "move"
     ("scroll" . gnus-summary-next-page)
-    ("next unread" . gnus-summary-next-unread-article)
-    ("prev unread" . gnus-summary-prev-unread-article)
+    ("next-unread" . gnus-summary-next-unread-article)
+    ("prev-unread" . gnus-summary-prev-unread-article)
     ("first" . gnus-summary-first-unread-article)
     ("best" . gnus-summary-best-unread-article)
     "article"
     ("headers" . gnus-summary-toggle-header)
     ("uudecode" . gnus-uu-decode-uu)
-    ("enter digest" . gnus-summary-enter-digest-group)
-    ("fetch parent" . gnus-summary-refer-parent-article)
+    ("enter-digest" . gnus-summary-enter-digest-group)
+    ("fetch-parent" . gnus-summary-refer-parent-article)
     "mail"
     ("move" . gnus-summary-move-article)
     ("copy" . gnus-summary-copy-article)
@@ -1034,7 +1041,7 @@ If nil, the user will be asked for a duration.")
     ("cancel" . gnus-summary-cancel-article)
     "misc"
     ("exit" . gnus-summary-exit)
-    ("fed up" . gnus-summary-catchup-and-goto-next-group)))
+    ("fed-up" . gnus-summary-catchup-and-goto-next-group)))
 
 (defvar gnus-carpal-server-buffer-buttons 
   '(("add" . gnus-server-add-server)
@@ -1309,33 +1316,38 @@ It does this by making everything after `gnus-signature-separator' invisible."
 \"External references\" are things like Message-IDs and URLs, as
 specified by `gnus-button-alist'."
   (interactive (list 'force))
-  (if (eq gnus-button-last gnus-button-alist)
-      ()
+  (unless (eq gnus-button-last gnus-button-alist)
     (setq gnus-button-regexp (mapconcat 'car gnus-button-alist  "\\|")
 	  gnus-button-last gnus-button-alist))
   (save-excursion
     (set-buffer gnus-article-buffer)
+    ;; We parse citations first to be able to match attributions.
     (gnus-cite-parse-maybe force)
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
 	  (case-fold-search t))
       (goto-char (point-min))
-      (or (search-forward "\n\n" nil t)
-	  (goto-char (point-max)))
+      ;; We skip the headers.
+      (unless (search-forward "\n\n" nil t)
+	(goto-char (point-max)))
+      ;; Then we search forward using that big regexp we have.
       (while (re-search-forward gnus-button-regexp nil t)
 	(goto-char (match-beginning 0))
 	(let* ((from (point))
-	       (entry (gnus-button-entry))
+	       (current (match-end 0))
+	       (entry (gnus-button-entry)) ; Find sub-regexp.
 	       (start (and entry (match-beginning (nth 1 entry))))
 	       (end (and entry (match-end (nth 1 entry))))
 	       (form (nth 2 entry)))
-	  (if (not entry)
-	      ()
-	    (goto-char (match-end 0))
-	    (if (eval form)
-		(gnus-article-add-button 
-		 start end 'gnus-button-push
-		 (set-marker (make-marker) from)))))))))
+	  ;; We now have a valid entry.
+	  (when entry
+	    (goto-char current)
+	    (when (eval form)
+	      ;; That optional form returned non-nil, so we add the
+	      ;; button. 
+	      (gnus-article-add-button 
+	       start end 'gnus-button-push 
+	       (set-marker (make-marker) from)))))))))
 
 ;; Add buttons to the head of an article.
 (defun gnus-article-add-buttons-to-head ()
