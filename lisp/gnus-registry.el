@@ -179,7 +179,9 @@ The group names are matched, they don't have to be fully qualified."
 
 (defun gnus-registry-trim (alist)
   "Trim alist to size, using gnus-registry-max-entries."
-  (unless (null gnus-registry-max-entries)
+  (if (null gnus-registry-max-entries)
+      alist				; just return the alist
+    ;; else, when given max-entries, trim the alist
     (let ((timehash (make-hash-table 			    
 		     :size 4096
 		     :test 'equal)))
@@ -188,6 +190,7 @@ The group names are matched, they don't have to be fully qualified."
 	 (puthash key (gnus-registry-fetch-extra key 'mtime) timehash))
        gnus-registry-hashtb)
 
+      ;; we use the return value of this setq, which is the trimmed alist
       (setq alist
 	    (nthcdr
 	     (- (length alist) gnus-registry-max-entries)
