@@ -103,33 +103,15 @@
      (when (gnus-buffer-exists-p buf)
        (kill-buffer buf))))
 
-(cond
- ((fboundp 'point-at-bol)
-  (fset 'gnus-point-at-bol 'point-at-bol))
- ((fboundp 'line-beginning-position)
-  (fset 'gnus-point-at-bol 'line-beginning-position))
- (t
-  (defun gnus-point-at-bol ()
-    "Return point at the beginning of the line."
-    (let ((p (point)))
-      (beginning-of-line)
-      (prog1
-	  (point)
-	(goto-char p))))))
+(fset 'gnus-point-at-bol
+      (if (fboundp 'point-at-bol)
+	  'point-at-bol
+	'line-beginning-position))
 
-(cond
- ((fboundp 'point-at-eol)
-  (fset 'gnus-point-at-eol 'point-at-eol))
- ((fboundp 'line-end-position)
-  (fset 'gnus-point-at-eol 'line-end-position))
- (t
-  (defun gnus-point-at-eol ()
-    "Return point at the end of the line."
-    (let ((p (point)))
-      (end-of-line)
-      (prog1
-	  (point)
-	(goto-char p))))))
+(fset 'gnus-point-at-eol
+      (if (fboundp 'point-at-eol)
+	  'point-at-eol
+	'line-end-position))
 
 (defun gnus-delete-first (elt list)
   "Delete by side effect the first occurrence of ELT as a member of LIST."
@@ -547,7 +529,7 @@ Timezone package is used."
 	(erase-buffer))
     (set-buffer (gnus-get-buffer-create gnus-work-buffer))
     (kill-all-local-variables)
-    (buffer-disable-undo (current-buffer))))
+    (mm-enable-multibyte)))
 
 (defmacro gnus-group-real-name (group)
   "Find the real name of a foreign newsgroup."

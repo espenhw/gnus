@@ -35,9 +35,24 @@
     (fset 'mm-encode-coding-string (lambda (s a) s))))
 
 (eval-and-compile
+  (if (fboundp 'encode-coding-region)
+      (fset 'mm-encode-coding-region 'encode-coding-region)
+    (fset 'mm-encode-coding-string 'ignore)))
+
+(eval-and-compile
+  (if (fboundp 'decode-coding-region)
+      (fset 'mm-decode-coding-region 'decode-coding-region)
+    (fset 'mm-decode-coding-string 'ignore)))
+
+(eval-and-compile
   (if (fboundp 'coding-system-list)
       (fset 'mm-coding-system-list 'coding-system-list)
     (fset 'mm-coding-system-list 'ignore)))
+
+(eval-and-compile
+  (if (fboundp 'coding-system-equal)
+      (fset 'mm-coding-system-equal 'coding-system-equal)
+    (fset 'mm-coding-system-equal 'equal)))
 
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
@@ -138,6 +153,24 @@ used as the line break code type of the coding system."
 	(aset string idx to))
       (setq idx (1+ idx)))
     string))
+
+(defun mm-enable-multibyte ()
+  "Enable multibyte in the current buffer."
+  (when (fboundp 'set-buffer-multibyte)
+    (set-buffer-multibyte t)))
+
+(defun mm-insert-rfc822-headers (charset encoding)
+  "Insert text/plain headers with CHARSET and ENCODING."
+  (insert "MIME-Version: 1.0\n")
+  (insert "Content-Type: text/plain; charset=\""
+	  (downcase (symbol-name charset)) "\"\n")
+  (insert "Content-Transfer-Encoding: "
+	  (downcase (symbol-name encoding)) "\n"))
+
+(defun mm-content-type-charset (header)
+  "Return the charset parameter from HEADER."
+  (when (string-match "charset *= *\"? *\\([-0-9a-zA-Z_]+\\)\"? *$" header)
+    (intern (match-string 1 header))))
 
 (provide 'mm-util)
 

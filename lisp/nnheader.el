@@ -399,7 +399,6 @@ the line could be found."
     (unless (gnus-buffer-live-p nntp-server-buffer)
       (setq nntp-server-buffer (get-buffer-create " *nntpd*")))
     (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
     (erase-buffer)
     (kill-all-local-variables)
     (setq case-fold-search t)		;Should ignore case.

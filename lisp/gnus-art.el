@@ -33,6 +33,7 @@
 (require 'gnus-spec)
 (require 'gnus-int)
 (require 'browse-url)
+(require 'mm-bodies)
 
 (defgroup gnus-article nil
   "Article display."
@@ -953,6 +954,26 @@ characters to translate to."
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
       (rfc2047-decode-region (point-min) (point-max)))))
+
+(defun gnus-article-decode-charset ()
+  "Decode charset-encoded text in the article."
+  (interactive)
+  (when (featurep 'mule)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (let* ((inhibit-point-motion-hooks t)
+	     (ct (message-fetch-field "Content-Type"))
+	     (charset (and ct (mm-content-type-charset ct)))
+	     mule-charset buffer-read-only)
+	(save-restriction
+	  (goto-char (point-min))
+	  (search-forward "\n\n" nil 'move)
+	  (narrow-to-region (point) (point-max))
+	  (when (and charset
+		     (setq mule-charset (mm-charset-to-coding-system charset))
+		     (not (mm-coding-system-equal
+			   buffer-file-coding-system mule-charset)))
+	    (mm-decode-body (mm-charset-to-coding-system charset))))))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
@@ -1936,8 +1957,7 @@ commands:
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
   (set-syntax-table gnus-article-mode-syntax-table)
-  (when (fboundp 'set-buffer-multibyte)
-    (set-buffer-multibyte t))
+  (mm-enable-multibyte)
   (gnus-run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()

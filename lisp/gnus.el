@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.10"
+(defconst gnus-version-number "0.11"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1346,12 +1346,16 @@ face."
 (defcustom gnus-article-display-hook
   (if (and (string-match "XEmacs" emacs-version)
 	   (featurep 'xface))
-      '(gnus-article-hide-headers-if-wanted
+      '(gnus-article-decode-charset
+	gnus-article-decode-rfc1522
+	gnus-article-hide-headers-if-wanted
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
 	gnus-article-display-x-face)
-    '(gnus-article-hide-headers-if-wanted
+    '(gnus-article-decode-charset
+      gnus-article-decode-rfc1522
+      gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
       gnus-article-maybe-highlight))
@@ -2001,14 +2005,13 @@ If ARG, insert string at point."
       (string-to-number
        (if (zerop major)
 	   (format "%s00%02d%02d"
-		   (cond
-		    ((member alpha '("(ding)" "d")) "4.99")
-		    ((member alpha '("September" "s")) "5.01")
-		    ((member alpha '("Red" "r")) "5.03")
-		    ((member alpha '("Quassia" "q")) "5.05")
-		    ((member alpha '("Pterodactyl" "p")) "5.07")
-		    ((member alpha '("o")) "5.09")
-		    ((member alpha '("n")) "5.11"))
+		   (if (member alpha '("(ding)" "d"))
+		       "4.99"
+		     (+ 5 (* 0.02
+			     (abs
+			      (- (char-int (aref (downcase alpha) 0))
+				 (char-int ?t))))
+			-0.01))
 		   minor least)
 	 (format "%d.%02d%02d" major minor least))))))
 

@@ -1,3 +1,62 @@
+Mon Aug 31 22:14:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.11 is released.
+
+1998-08-31 14:27:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-encode-message-body): Ditto.
+
+	* gnus-art.el (gnus-article-decode-mime-words): New command and
+	keystroke. 
+	(gnus-article-decode-charset): Ditto.
+	(gnus-article-decode-charset): Only work under MULE.
+
+	* mm-util.el (mm-content-type-charset): New function.
+
+	* nnmail.el (nnmail-delete-incoming): Changed to nil.
+
+	* message.el (message-send-mail): Insert MIME headers.
+	(message-check-news-body-syntax): Don't warn for escape sequences.
+	(message-check-news-body-syntax): Insert MIME headers.
+
+	* mm-bodies.el (mm-body-encoding): New function.
+
+	* message.el (message-encode-message-body): New function.
+
+	* mm-bodies.el: New file.
+
+	* mm-util.el (mm-narrow-to-head): New function.
+
+	* rfc2047.el (rfc2047-encode): Use it.
+
+	* mm-util.el: Provide mm-encode-coding-region.
+
+	* gnus-sum.el (gnus-summary-mode): Enable multibyte.
+
+	* gnus-util.el (gnus-set-work-buffer): Enable multibyte.
+
+	* mm-util.el (mm-enable-multibyte): New function.
+
+	* message.el (message-set-work-buffer): Set multibyte.
+
+	* gnus.el (gnus-continuum-version): Be valid forever and ever.
+
+	* gnus-util.el (gnus-point-at-eol): Removed.
+	(gnus-point-at-bol): Ditto.
+
+	* base64.el (base64-decode-region): Commented out messaging.
+
+1998-08-31  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-msg.el (gnus-group-mail): make it behave like
+	gnus-group-post-news with regards to the prefix (this enables the
+	use of posting styles).
+
+1998-08-31 12:53:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-article-display-hook): Added
+	gnus-article-decode-rfc1522 to hook.
+
 Mon Aug 31 12:43:46 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.10 is released.

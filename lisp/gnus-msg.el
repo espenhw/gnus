@@ -228,11 +228,20 @@ Thank you for your help in stamping out bugs.
 
 ;;; Post news commands of Gnus group mode and summary mode
 
-(defun gnus-group-mail ()
-  "Start composing a mail."
-  (interactive)
-  (gnus-setup-message 'message
-    (message-mail)))
+(defun gnus-group-mail (&optional arg)
+  "Start composing a mail.
+If ARG, use the group under the point to find a posting style.
+If ARG is 1, prompt for a group name to find the posting style."
+  (interactive "P")
+  (let ((gnus-newsgroup-name
+	 (if arg
+	     (if (= 1 (prefix-numeric-value arg))
+		 (completing-read "Use style of group: " gnus-active-hashtb nil
+				  (gnus-read-active-file-p))
+	       (gnus-group-group-name))
+	   "")))
+    (gnus-setup-message 'message (message-mail))
+    ))
 
 (defun gnus-group-post-news (&optional arg)
   "Start composing a news message.
@@ -356,8 +365,7 @@ header line with the old Message-ID."
   (buffer-disable-undo gnus-article-copy)
   (save-excursion
     (set-buffer gnus-article-copy)
-    (when (fboundp 'set-buffer-multibyte)
-      (set-buffer-multibyte t)))
+    (mm-enable-multibyte))
   (let ((article-buffer (or article-buffer gnus-article-buffer))
 	end beg)
     (if (not (and (get-buffer article-buffer)

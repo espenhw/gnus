@@ -184,10 +184,7 @@ Should be called narrowed to the head of the message."
 		 (downcase (symbol-name encoding)) "?")))
     (save-restriction
       (narrow-to-region b e)
-      (insert
-       (prog1
-	   (mm-encode-coding-string (buffer-string) mime-charset)
-	 (delete-region (point-min) (point-max))))
+      (mm-encode-coding-region b e mime-charset)
       (funcall (cdr (assq encoding rfc2047-encoding-function-alist))
 	       (point-min) (point-max))
       (goto-char (point-min))
@@ -249,6 +246,7 @@ Should be called narrowed to the head of the message."
 (defun rfc2047-decode-string (string)
  "Decode the quoted-printable-encoded STRING and return the results."
  (with-temp-buffer
+   (mm-enable-multibyte)
    (insert string)
    (inline
      (rfc2047-decode-region (point-min) (point-max)))
@@ -269,7 +267,7 @@ Return WORD if not."
      word)))
 
 (defun rfc2047-decode (charset encoding string)
-  "Decode STRING as an encoded text.
+  "Decode STRING that uses CHARSET with ENCODING.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
   (let ((cs (mm-charset-to-coding-system charset)))
