@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; $Revision: 2.6 $
+;; $Revision: 1.2 $
 ;; Copyright (C) 1997,2001 Paul E. Foley
 
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
@@ -82,6 +82,7 @@ present, is the string to be hashed; if not present ADDR will be used.")
     (when pay
       (insert-before-markers "X-Hashcode: " pay "\n"))))
 
+;;;###autoload
 (defun mail-add-payment (&optional arg)
   "Add an X-Hashcode: header with a hashcash payment for each recipient address
 Prefix arg sets default payment temporarily."
