@@ -9213,7 +9213,7 @@ To have all Vcards be ignored, you'd say something like this:
 
 @item gnus-article-loose-mime
 @vindex gnus-article-loose-mime
-If non-@code{nil}, Gnus won't required the @samp{MIME-Version} header
+If non-@code{nil}, Gnus won't require the @samp{MIME-Version} header
 before interpreting the message as a @acronym{MIME} message.  This helps
 when reading messages from certain broken mail user agents.  The
 default is @code{nil}.
