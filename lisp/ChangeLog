@@ -1,3 +1,14 @@
+2001-11-01 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-iso-8859-x-to-15-region): New.
+	(mm-hack-charsets): New.
+	(mm-iso-8859-15-compatible): New.
+	(mm-iso-8859-x-to-15-table): New.
+	(mm-find-mime-charset-region): Add parameter hack-charsets.
+
+	* mm-bodies.el (mm-encode-body): Use it.
+	* mml.el (mml-parse-1): Ditto.
+
 2001-11-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-make-menu-bar): Add Sieve.

@@ -154,7 +154,8 @@ one charsets.")
 			 (list
 			  (intern (downcase (cdr (assq 'charset tag))))))
 			(t
-			 (mm-find-mime-charset-region point (point)))))
+			 (mm-find-mime-charset-region point (point) 
+						      mm-hack-charsets))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
 		  (message-options-get 'unknown-encoding)

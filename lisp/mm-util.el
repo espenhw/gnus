@@ -237,6 +237,32 @@
 				(coding-system-get cs 'safe-charsets))))))
 	  (sort-coding-systems (coding-system-list 'base-only))))))
 
+(defvar mm-hack-charsets '(iso-8859-15 iso-2022-jp-2)
+  "A list of special charsets when encoding.
+The each element could be one of the following:
+`iso-8859-15'    convert ISO-8859-1, -2 to ISO-8859-15 if ISO-8859-15 exists.
+`iso-2022-jp-2'  convert ISO-2022-jp to ISO-2022-jp-2 if ISO-2022-jp-2 exists."
+)
+
+;; FIXME: what the value should be?
+(defvar mm-iso-8859-15-compatible '(iso-8859-1 iso-8859-2)
+  "Coding systems that are compatible with iso-8859-15.")
+
+(defvar mm-iso-8859-x-to-15-table
+  (and (fboundp 'coding-system-p)
+       (mm-coding-system-p 'iso-8859-15)
+       (mapcar (lambda (cs)
+		 (if (mm-coding-system-p cs)
+		     (let ((c (string-to-char
+			       (decode-coding-string "\341" cs))))
+		       (cons (char-charset c)
+			     (- (string-to-char
+				 (decode-coding-string "\341" 'iso-8859-15))
+				c)))
+		   '(gnus-charset . 0)))
+	       mm-iso-8859-15-compatible))
+  "A table of the difference character between ISO-8859-X and ISO-8859-15.")
+
 ;;; Internal variables:
 
 ;;; Functions:
@@ -421,38 +447,60 @@ If the charset is `composition', return the actual one."
       enable-multibyte-characters
     (featurep 'mule)))
 
-(defun mm-find-mime-charset-region (b e)
+(defun mm-iso-8859-x-to-15-region (&optional b e)
+  (let (charset item)
+    (save-restriction
+      (if e (narrow-to-region b e))
+      (goto-char (point-min))
+      (skip-chars-forward "\0-\177")
+      (while (not (eobp))
+	(cond 
+	 ((setq item (assq (charset-after) mm-iso-8859-x-to-15-table))
+	  (insert (prog1
+		      (+ (char-after) (cdr item))
+		    (delete-char 1))))
+	 (t (forward-char)))
+	(skip-chars-forward "\0-\177")))))
+
+(defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.
 Nil means ASCII, a single-element list represents an appropriate MIME
 charset, and a longer list means no appropriate charset."
-  ;; The return possibilities of this function are a mess...
-  (or (and
-       (mm-multibyte-p)
-       (fboundp 'find-coding-systems-region)
-       ;; Find the mime-charset of the most preferred coding
-       ;; system that has one.
-       (let ((systems (find-coding-systems-region b e))
-	     result)
-	 ;; Fixme: The `mime-charset' (`x-ctext') of `compound-text'
-	 ;; is not in the IANA list.
-	 (setq systems (delq 'compound-text systems))
-	 (unless (equal systems '(undecided))
-	   (while systems
-	     (let ((cs (coding-system-get (pop systems) 'mime-charset)))
-	       (if cs
-		   (setq systems nil
-			 result (list cs))))))
-	 result))
-      ;; Otherwise we're not multibyte, XEmacs or a single coding
-      ;; system won't cover it.
-      (let ((charsets 
-	     (mm-delete-duplicates
-	      (mapcar 'mm-mime-charset
-		      (delq 'ascii
-			    (mm-find-charset-region b e))))))
-	(if (memq 'iso-2022-jp-2 charsets)
-	    (delq 'iso-2022-jp charsets)
-	  charsets))))
+  (let (charsets)
+    ;; The return possibilities of this function are a mess...
+    (or (and (mm-multibyte-p)
+	     (fboundp 'find-coding-systems-region)
+	     ;; Find the mime-charset of the most preferred coding
+	     ;; system that has one.
+	     (let ((systems (find-coding-systems-region b e)))
+	       ;; Fixme: The `mime-charset' (`x-ctext') of `compound-text'
+	       ;; is not in the IANA list.
+	       (setq systems (delq 'compound-text systems))
+	       (unless (equal systems '(undecided))
+		 (while systems
+		   (let ((cs (coding-system-get (pop systems) 'mime-charset)))
+		     (if cs
+			 (setq systems nil
+			       charsets (list cs))))))
+	       charsets))
+	;; Otherwise we're not multibyte, XEmacs or a single coding
+	;; system won't cover it.
+	(setq charsets 
+	      (mm-delete-duplicates
+	       (mapcar 'mm-mime-charset
+		       (delq 'ascii
+			     (mm-find-charset-region b e))))))
+    (when (and (memq 'iso-8859-15 charsets)
+	     (memq 'iso-8859-15 hack-charsets))
+      (save-excursion
+	(mm-iso-8859-x-to-15-region b e))
+      (mapcar (lambda (x)
+		(setq charsets (delq x charsets)))
+	      mm-iso-8859-15-compatible))
+    (if (and (memq 'iso-2022-jp-2 charsets)
+	     (memq 'iso-2022-jp-2 hack-charsets))
+	(setq charsets (delq 'iso-2022-jp charsets))
+	  charsets)))
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.

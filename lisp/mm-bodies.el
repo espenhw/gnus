@@ -82,7 +82,8 @@ If no encoding was done, nil is returned."
 	    (mm-encode-coding-region (point-min) (point-max) charset)
 	    charset)
 	(goto-char (point-min))
-	(let ((charsets (mm-find-mime-charset-region (point-min) (point-max)))
+	(let ((charsets (mm-find-mime-charset-region (point-min) (point-max)
+						     mm-hack-charsets))
 	      start)
 	  (cond
 	   ;; No encoding.
