@@ -3108,21 +3108,39 @@ Would otherwise be an alias for `display-time-event-handler'." nil))))
 
 (defun gnus-check-reasonable-setup ()
   ;; Check whether nnml and nnfolder share a directory.
-  (let ((actives nil))
+  (let ((display-warn
+	 (if (boundp 'display-warning)
+	     'display-warning
+	   (lambda (type message)
+	     (if noninteractive
+		 (message "Warning (%s): %s" type message)
+	       (let (window)
+		 (with-current-buffer (get-buffer-create "*Warnings*")
+		   (goto-char (point-max))
+		   (unless (bolp)
+		     (insert "\n"))
+		   (insert (format "Warning (%s): %s\n" type message))
+		   (setq window (display-buffer (current-buffer)))
+		   (set-window-start
+		    window
+		    (prog2
+			(forward-line (- 1 (window-height window)))
+			(point)
+		      (goto-char (point-max))))))))))
+	method active actives match)
     (dolist (server gnus-server-alist)
-      (let* ((method (gnus-server-to-method server))
-	     (active (intern (format "%s-active-file" (car method))))
-	     match)
-	(when (and (member (car method) '(nnml nnfolder))
-		   (gnus-server-opened method)
-		   (boundp active))
-	  (when (setq match (assoc (symbol-value active) actives))
-	    (display-warning
-	     :warning (format "%s and %s share the same active file %s"
-			      (car method)
-			      (cadr match)
-			      (car match))))
-	  (push (list (symbol-value active) method) actives))))))
+      (setq method (gnus-server-to-method server)
+	    active (intern (format "%s-active-file" (car method))))
+      (when (and (member (car method) '(nnml nnfolder))
+		 (gnus-server-opened method)
+		 (boundp active))
+	(when (setq match (assoc (symbol-value active) actives))
+	  (funcall display-warn 'gnus-server
+		   (format "%s and %s share the same active file %s"
+			   (car method)
+			   (cadr match)
+			   (car match))))
+	(push (list (symbol-value active) method) actives)))))
 
 (provide 'gnus-start)
 
