@@ -7182,7 +7182,9 @@ the @code{banner} group parameter (@pxref{Group Parameters}) to the
 group you want banners stripped from.  The parameter either be a string,
 which will be interpreted as a regular expression matching text to be
 removed, or the symbol @code{signature}, meaning that the (last)
-signature should be removed.
+signature should be removed, or other symbol, meaning that the
+corresponding regular expression in @code{gnus-article-banner-alist} is
+used.
 
 @item W W c
 @kindex W W c (Summary)
@@ -9180,8 +9182,17 @@ Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
 
 @findex gnus-mime-inline-part
 @item i (Article)
-Insert the raw contents of the @sc{mime} object into the buffer
-(@code{gnus-mime-inline-part}).
+Insert the contents of the @sc{mime} object into the buffer
+(@code{gnus-mime-inline-part}) as text/plain.  If given a prefix, insert
+the raw contens without decoding.  If given a numerical prefix, you can
+do semi-manual charset stuff (see
+@code{gnus-summary-show-article-charset-alist} in @pxref{Paging the
+Article}).
+
+@findex gnus-mime-action-on-part
+@item . (Article)
+Interactively run an action on the @sc{mime} object
+(@code{gnus-mime-action-on-part}).
 
 @end table
 

@@ -1,3 +1,8 @@
+2000-10-04 09:23:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Article Hiding): Add.
+	(Using MIME): Add.
+
 2000-09-30  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (Agent and IMAP): Add.
