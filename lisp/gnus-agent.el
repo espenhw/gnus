@@ -1205,14 +1205,30 @@ This can be added to `gnus-select-article-hook' or
 ;;; Internal functions
 ;;;
 
-(defun gnus-agent-synchronize-group-flags (group action server)
-"Update a plugged group by performing the indicated action."
+(defun gnus-agent-synchronize-group-flags (group actions server)
+"Update a plugged group by performing the indicated actions."
   (let* ((gnus-command-method (gnus-server-to-method server))
-	 (info (gnus-get-info group)))
-    (gnus-request-set-mark group action)
+	 (info (or (gnus-get-info group)
+		   (gnus-get-info (gnus-group-full-name 
+				   group gnus-command-method)))))
+    (gnus-request-set-mark group actions)
 
     (when info
-      (gnus-request-update-info info gnus-command-method))
+      (dolist (action actions)
+	(let ((range (nth 0 action))
+	      (what  (nth 1 action))
+	      (marks (nth 2 action)))
+	  (when (memq 'read marks)
+	    (gnus-info-set-read 
+	     info
+	     (funcall (if (eq what 'add)
+			  'gnus-range-add
+			'gnus-remove-from-range)
+		      (gnus-info-read info)
+		      range))
+	    (gnus-get-unread-articles-in-group 
+	     info
+	     (gnus-active (gnus-info-group info)))))))
     nil))
 
 (defun gnus-agent-save-active (method)
