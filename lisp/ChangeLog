@@ -1,3 +1,8 @@
+2003-06-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el (nnheader-init-server-buffer): Don't add
+	nntp-server-buffer to list of Gnus buffers.
+
 2003-06-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-parse-list): prevent empty ("") strings
