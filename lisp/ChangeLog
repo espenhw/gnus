@@ -1,3 +1,7 @@
+1999-11-18  Matthias Andree  <ma@dt.e-technik.uni-dortmund.de>
+
+	* imap.el (require): Added autoload for base64-encode-string.
+
 1999-11-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-refer-article-method): Made list value
