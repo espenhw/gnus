@@ -2316,7 +2316,7 @@ This restriction may disappear in later versions of Gnus."
 (defun gnus-find-subscribed-addresses ()
   "Return a regexp matching the addresses of all subscribed mail groups.
 It consists of the `to-address' or `to-list' parameter of all groups
-with a nil `not-subscribed' parameter."
+with a `subscribed' parameter."
   (let ((addresses))
     (mapc (lambda (entry)
 	    (let ((group (car entry)))

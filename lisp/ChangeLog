@@ -1,3 +1,8 @@
+2001-10-31  Matt Armstrong  <matt@lickey.com>
+
+	* gnus.el (gnus-find-subscribed-addresses): Doc fix:
+	not-subscribed -> subscribed.
+
 2001-10-31 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
         From: Josh Huber <huber@alum.wpi.edu>
 
