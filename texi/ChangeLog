@@ -1,3 +1,9 @@
+2003-10-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): added
+	spam-process-ham-in-spam-groups and
+	spam-process-ham-in-nonham-groups variable descriptions
+
 2003-10-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi (Various Message Variables): Typo.

@@ -22440,6 +22440,19 @@ set, the ham articles are marked as unread before being moved.
 When you leave a @emph{ham} group, all ham-marked articles are sent to
 a ham processor, which will study these as non-spam samples.
 
+@vindex spam-process-ham-in-spam-groups
+By default the variable @code{spam-process-ham-in-spam-groups} is
+nil.  Set it to t if you want ham found in spam groups to be
+processed.  Normally this is not done, you are expected instead to
+send your ham to a ham group and process it there.
+
+@vindex spam-process-ham-in-nonham-groups
+By default the variable @code{spam-process-ham-in-nonham-groups} is
+nil.  Set it to t if you want ham found in non-ham (spam or
+unclassified) groups to be processed.  Normally this is not done, you
+are expected instead to send your ham to a ham group and process it
+there.
+
 @vindex gnus-spam-process-destinations
 When you leave a @emph{ham} or @emph{unclassified} group, all
 @strong{spam} articles are moved to a location determined by either
