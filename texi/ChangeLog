@@ -1,3 +1,8 @@
+2002-05-01  Josh Huber  <huber@alum.wpi.edu>
+
+	* gnus.texi (Signing and encrypting): Fix doc.  Also, add a
+	paragraph about replysign/replyencrypt/replysignencryped use.
+
 2002-05-01  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
 	* message.texi (Message Headers): Remove colon from index

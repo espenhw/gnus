@@ -11226,6 +11226,14 @@ For PGP, Gnus supports two external libraries, @sc{gpg.el} and
 @sc{Mailcrypt}, you need to install at least one of them.  The
 @sc{s/mime} support in Gnus requires the external program OpenSSL.
 
+Often, you would like to sign replies to people who send you signed
+messages.  Even more often, you might want to encrypt messages which
+are in reply to encrypted messages.  Gnus offers
+@code{gnus-message-replysign} to enable the former, and
+@code{gnus-message-replyencrypt} for the latter.  In addition, setting
+@code{gnus-message-replysignencrypted} (on by default) will sign
+automatically encrypted messages.
+
 Instructing MML to perform security operations on a @sc{mime} part is
 done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
 C-m c} key map for encryption, as follows.
@@ -11234,39 +11242,39 @@ C-m c} key map for encryption, as follows.
 
 @item C-c C-m s s
 @kindex C-c C-m s s
-@findex mml-secure-sign-smime
+@findex mml-secure-message-sign-smime
 
-Digitally sign current @sc{mime} part using @sc{s/mime}.
+Digitally sign current message using @sc{s/mime}.
 
 @item C-c C-m s o
 @kindex C-c C-m s o
-@findex mml-secure-sign-pgp
+@findex mml-secure-message-sign-pgp
 
-Digitally sign current @sc{mime} part using PGP.
+Digitally sign current message using PGP.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
-@findex mml-secure-sign-pgp
+@findex mml-secure-message-sign-pgp
 
-Digitally sign current @sc{mime} part using @sc{pgp/mime}.
+Digitally sign current message using @sc{pgp/mime}.
 
 @item C-c C-m c s
 @kindex C-c C-m c s
-@findex mml-secure-encrypt-smime
+@findex mml-secure-message-encrypt-smime
 
-Digitally encrypt current @sc{mime} part using @sc{s/mime}.
+Digitally encrypt current message using @sc{s/mime}.
 
 @item C-c C-m c o
 @kindex C-c C-m c o
-@findex mml-secure-encrypt-pgp
+@findex mml-secure-message-encrypt-pgp
 
-Digitally encrypt current @sc{mime} part using PGP.
+Digitally encrypt current message using PGP.
 
 @item C-c C-m c p
 @kindex C-c C-m c p
-@findex mml-secure-encrypt-pgpmime
+@findex mml-secure-message-encrypt-pgpmime
 
-Digitally encrypt current @sc{mime} part using @sc{pgp/mime}.
+Digitally encrypt current message using @sc{pgp/mime}.
 
 @item C-c C-m C-n
 @kindex C-c C-m C-n

@@ -1,3 +1,24 @@
+2002-05-01  Josh Huber  <huber@alum.wpi.edu>
+
+	* gnus-msg.el (gnus-message-replysignencrypted): enabled by
+	default.
+	* mml-sec.el:
+	* mml-sec.el (mml-signencrypt-style): New.
+	* mml-sec.el (mml-pgpmime-encrypt-buffer): Accept optional
+	argument `sign'.
+	* mml-sec.el (mml-secure-message-encrypt-pgp): Changed default to
+	signencrypt.
+	* mml-sec.el (mml-secure-message-encrypt-pgpmime): Ditto.
+	* mml.el (mml-generate-mime-1): Changed logic so a part which is
+	both signed & encryped is processed in one operation. (rather than
+	two separate ops: sign, then encrypt)
+	* mml2015.el (mml2015-gpg-extract-signature-details): Give some
+	indication if a message is signed by an expired key.
+	* mml2015.el (mml2015-gpg-encrypt): Accept optional argument which
+	enables combined sign & encrypt operation. (this was always on
+	before).
+	* mml2015.el (mml2015-encrypt): Accept optional argument `sign'.
+
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-retrieve-groups): Use separate data for each

@@ -46,6 +46,13 @@
 (defvar mml-default-encrypt-method (caar mml-encrypt-alist)
   "Default encryption method.")
 
+(defvar mml-signencrypt-style
+  '(("smime"   separate)
+    ("pgp"     separate)
+    ("pgpmime" combined))
+  "Alist specifying whether or not a single sign & encrypt
+operation should be perfomed when requesting signencrypt.")
+
 ;;; Security functions
 
 (defun mml-smime-sign-buffer (cont)
@@ -68,8 +75,8 @@
   (or (mml2015-sign cont)
       (error "Signing failed... inspect message logs for errors")))
 
-(defun mml-pgpmime-encrypt-buffer (cont)
-  (or (mml2015-encrypt cont)
+(defun mml-pgpmime-encrypt-buffer (cont &optional sign)
+  (or (mml2015-encrypt cont sign)
       (error "Encryption failed... inspect message logs for errors")))
 
 (defun mml-secure-part (method &optional sign)
@@ -174,21 +181,17 @@ If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
   (mml-secure-message "smime" (if dontsign 'encrypt 'signencrypt)))
 
-;;; NOTE: this should be switched to use signencrypt
-;;; once it does something sensible
 (defun mml-secure-message-encrypt-pgp (&optional dontsign)
   "Add MML tag to encrypt and sign the entire message.
 If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
-  (mml-secure-message "pgp" (if dontsign 'encrypt 'encrypt)))
+  (mml-secure-message "pgp" (if dontsign 'encrypt 'signencrypt)))
 
-;;; NOTE: this should be switched to use signencrypt
-;;; once it does something sensible
 (defun mml-secure-message-encrypt-pgpmime (&optional dontsign)
   "Add MML tag to encrypt and sign the entire message.
 If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
-  (mml-secure-message "pgpmime" (if dontsign 'encrypt 'encrypt)))
+  (mml-secure-message "pgpmime" (if dontsign 'encrypt 'signencrypt)))
 
 (provide 'mml-sec)
 

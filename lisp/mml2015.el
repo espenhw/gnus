@@ -414,10 +414,13 @@ by you.")
 (defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
   (if (boundp 'gpg-unabbrev-trust-alist)
-      (let* ((signer (and (re-search-forward
-			   "^\\[GNUPG:\\] GOODSIG [0-9A-Za-z]* \\(.*\\)$"
+      (let* ((expired (re-search-forward
+		       "^\\[GNUPG:\\] SIGEXPIRED$"
+		       nil t))
+	     (signer (and (re-search-forward
+			   "^\\[GNUPG:\\] GOODSIG \\([0-9A-Za-z]*\\) \\(.*\\)$"
 			   nil t)
-			  (match-string 1)))
+			  (cons (match-string 1) (match-string 2))))
 	     (fprint (and (re-search-forward
 			   "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
 			   nil t)
@@ -429,12 +432,16 @@ by you.")
 	     (trust-good-enough-p
 	      (cdr (assoc (cdr (assoc trust gpg-unabbrev-trust-alist))
 			  mml2015-trust-boundaries-alist))))
-	(if (and signer trust fprint)
-	    (concat signer
-		    (unless trust-good-enough-p
-		      (concat "\nUntrusted, Fingerprint: "
-			      (mml2015-gpg-pretty-print-fpr fprint))))
-	  "From unknown user"))
+	(cond ((and signer fprint)
+	       (concat (cdr signer)
+		       (unless trust-good-enough-p
+			 (concat "\nUntrusted, Fingerprint: "
+				 (mml2015-gpg-pretty-print-fpr fprint)))
+		       (when expired
+			 (format "\nWARNING: Signature from expired key (%s)"
+			  (car signer)))))
+	      (t
+	       "From unknown user")))
     (if (re-search-forward "^gpg: Good signature from \"\\(.*\\)\"$" nil t)
 	(match-string 1)
       "From unknown user")))
@@ -559,28 +566,39 @@ by you.")
       (insert (format "--%s--\n" boundary))
       (goto-char (point-max)))))
 
-(defun mml2015-gpg-encrypt (cont)
+(defun mml2015-gpg-encrypt (cont &optional sign-also)
   (let ((boundary
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(text (current-buffer))
 	cipher)
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
-	(unless (gpg-sign-encrypt
-		 text (setq cipher (current-buffer))
-		 mml2015-result-buffer
-		 (split-string
-		  (or
-		   (message-options-get 'message-recipients)
-		   (message-options-set 'message-recipients
-					(read-string "Recipients: ")))
-		  "[ \f\t\n\r\v,]+")
-		 nil
-		 (message-options-get 'message-sender)
-		 t t) ; armor & textmode
-	  (unless (> (point-max) (point-min))
-	    (pop-to-buffer mml2015-result-buffer)
-	    (error "Encrypt error")))
+	(flet ((gpg-encrypt-func 
+		 (sign plaintext ciphertext result recipients &optional
+		       passphrase sign-with-key armor textmode)
+		 (if sign-also
+		     (gpg-sign-encrypt
+		      plaintext ciphertext result recipients passphrase
+		      sign-with-key armor textmode)
+		   (gpg-encrypt
+		    plaintext ciphertext result recipients passphrase
+		    armor textmode))))
+	  (unless (gpg-encrypt-func
+		    sign-also ; passed in when using signencrypt
+		    text (setq cipher (current-buffer))
+		    mml2015-result-buffer
+		    (split-string
+		     (or
+		      (message-options-get 'message-recipients)
+		      (message-options-set 'message-recipients
+					   (read-string "Recipients: ")))
+		     "[ \f\t\n\r\v,]+")
+		    nil
+		    (message-options-get 'message-sender)
+		    t t) ; armor & textmode
+	    (unless (> (point-max) (point-min))
+	      (pop-to-buffer mml2015-result-buffer)
+	      (error "Encrypt error"))))
 	(goto-char (point-min))
 	(while (re-search-forward "\r+$" nil t)
 	  (replace-match "" t t))
@@ -641,11 +659,11 @@ by you.")
   mml2015-use)
 
 ;;;###autoload
-(defun mml2015-encrypt (cont)
+(defun mml2015-encrypt (cont &optional sign)
   (mml2015-clean-buffer)
   (let ((func (nth 2 (assq mml2015-use mml2015-function-alist))))
     (if func
-	(funcall func cont)
+	(funcall func cont sign)
       (error "Cannot find encrypt function"))))
 
 ;;;###autoload

@@ -530,22 +530,30 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (insert "\n--" mml-boundary "--\n")))))
        (t
 	(error "Invalid element: %S" cont)))
-      (let ((item (assoc (cdr (assq 'sign cont)) mml-sign-alist))
+      ;; handle sign & encrypt tags in a semi-smart way.
+      (let ((sign-item (assoc (cdr (assq 'sign cont)) mml-sign-alist))
+	    (encrypt-item (assoc (cdr (assq 'encrypt cont))
+				 mml-encrypt-alist))
 	    sender recipients)
-	(when item
+	(when (or sign-item encrypt-item)
 	  (if (setq sender (cdr (assq 'sender cont)))
 	      (message-options-set 'message-sender sender))
 	  (if (setq recipients (cdr (assq 'recipients cont)))
 	      (message-options-set 'message-recipients recipients))
-	  (funcall (nth 1 item) cont)))
-      (let ((item (assoc (cdr (assq 'encrypt cont)) mml-encrypt-alist))
-	    sender recipients)
-	(when item
-	  (if (setq sender (cdr (assq 'sender cont)))
-	      (message-options-set 'message-sender sender))
-	  (if (setq recipients (cdr (assq 'recipients cont)))
-	      (message-options-set 'message-recipients recipients))
-	  (funcall (nth 1 item) cont))))))
+	  (let ((style (second (assoc (first sign-item)
+				      mml-signencrypt-style))))
+	    ;; check if: we're both signing & encrypting, both methods
+	    ;; are the same (why would they be different?!), and that
+	    ;; the signencrypt style allows for combined operation.
+	    (if (and sign-item encrypt-item (equal (first sign-item)
+						   (first encrypt-item))
+		     (equal style 'combined))
+		(funcall (nth 1 encrypt-item) cont t)
+	      ;; otherwise, revert to the old behavior.
+	      (when sign-item
+		(funcall (nth 1 sign-item) cont))
+	      (when encrypt-item
+		(funcall (nth 1 encrypt-item) cont)))))))))
 
 (defun mml-compute-boundary (cont)
   "Return a unique boundary that does not exist in CONT."

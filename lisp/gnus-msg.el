@@ -234,7 +234,7 @@ See also the `mml-default-encrypt-method' variable."
   :type 'boolean)
 
 (defcustom gnus-message-replysignencrypted
-  nil
+  t
   "Setting this causes automatically encryped messages to also be signed."
   :group 'gnus-message
   :type 'boolean)
