@@ -2014,10 +2014,9 @@ Prefix arg means justify as well."
   (save-excursion
     (let ((p (point)))
       (goto-char (point-min))
-      (or (re-search-forward
-	   (concat "^" (regexp-quote mail-header-separator) "\n")
-	   p t)
-	  (re-search-forward "[^:]+:\\([^\n]\\|\n[ \t]\\)+\n\n" p t)))))
+      (not (re-search-forward
+	    (concat "^" (regexp-quote mail-header-separator) "\n")
+	    p t)))))
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
