@@ -510,9 +510,9 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 	  result art-group)
       (goto-char (point-min))
       (when (looking-at "X-From-Line: ")
-	(save-match-data
-	  (mail-header-unfold-field))
-	(replace-match "From "))
+	(replace-match "From ")
+	(while (progn (forward-line) (looking-at "[ \t]"))
+	  (delete-char -1)))
       (with-temp-buffer
 	(let ((nnmail-file-coding-system nnfolder-active-file-coding-system)
 	      (nntp-server-buffer (current-buffer)))
