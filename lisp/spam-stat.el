@@ -185,6 +185,7 @@ This is set by hooking into Gnus.")
 	     (= emacs-major-version 20))
     ;; gethash, hash-table-count, make-hash-table, mapc
     (require 'cl)
+    ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
 
 (eval-when-compile
