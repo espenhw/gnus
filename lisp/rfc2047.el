@@ -113,12 +113,15 @@ Should be called narrowed to the head of the message."
 	(save-restriction
 	  (rfc2047-narrow-to-field)
 	  (if (not (rfc2047-encodable-p))
-	      (if (mm-body-7-or-8)
-		  ;; 8 bit must be decoded.
-		  (if (car message-posting-charset)
-		      ;; Is message-posting-charset a coding system?
-		      (mm-encode-coding-region (point-min) (point-max)
-					       (car message-posting-charset))))
+	      (if (and (eq (mm-body-7-or-8) '8bit)
+		       (mm-multibyte-p)
+		       (mm-coding-system-p
+			(car message-posting-charset)))
+		       ;; 8 bit must be decoded.
+		       ;; Is message-posting-charset a coding system?
+		       (mm-encode-coding-region 
+			(point-min) (point-max) 
+			(car message-posting-charset)))
 	    ;; We found something that may perhaps be encoded.
 	    (while (setq elem (pop alist))
 	      (when (or (and (stringp (car elem))

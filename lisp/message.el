@@ -2218,7 +2218,8 @@ It should typically alter the sending method in some way or other."
 	      (goto-char (point-max))
 	      (insert "\n")
 	      (widen)
-	      (funcall message-send-mail-function))
+	      (mm-with-unibyte-current-buffer
+		(funcall message-send-mail-function)))
 	    (setq n (+ n 1))
 	    (setq p (pop plist))
 	    (erase-buffer)))
@@ -2273,7 +2274,8 @@ It should typically alter the sending method in some way or other."
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
 		  (not (y-or-n-p "The message size is too large, should it be sent partially?")))
-	      (funcall message-send-mail-function)
+	      (mm-with-unibyte-current-buffer
+		(funcall message-send-mail-function))
 	    (message-send-mail-partially)))
       (kill-buffer tembuf))
     (set-buffer mailbuf)

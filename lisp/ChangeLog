@@ -1,3 +1,9 @@
+2000-05-02 21:34:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-message-header): Check the coding-system.
+	* message.el (message-send-mail): Use unibyte-buffer.
+	(message-send-mail): Ditto.
+
 Mon May  1 15:09:46 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
 
 	* gnus.el: Gnus v5.8.6 is released.
