@@ -1,3 +1,8 @@
+2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* assistant.el (assistant-render-node): Fix up rendering and
+	read-only text. 
+
 2004-05-20  Danny Siu  <dsiu@adobe.com>
 
         * gnus-sum.el (gnus-summary-recenter): Summery buffer was not auto

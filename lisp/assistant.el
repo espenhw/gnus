@@ -203,16 +203,27 @@
   (dolist (elem text)
     (if (stringp elem)
 	(insert elem)
-      (push 
-       (widget-create
-	'editable-field
-	:value-face 'assistant-field-face
-	:assistant-variable (cadr elem)
-	(assistant-get-variable node (cadr elem)))
-       assistant-widgets))))
+      (let ((start (point)))
+	(push 
+	 (widget-create
+	  'editable-field
+	  :value-face 'assistant-field-face
+	  :assistant-variable (cadr elem)
+	  (assistant-get-variable node (cadr elem)))
+	 assistant-widgets)
+	;; The editable-field widget apparently inserts a newline;
+	;; remove it.
+	(delete-char -1)
+	(add-text-properties start (point)
+			     (list
+			      'bold t
+			      'face 'assistant-field-face
+			      'not-read-only t))))))
 
 (defun assistant-render-node (node-name)
-  (let ((node (assistant-find-node node-name)))
+  (let ((node (assistant-find-node node-name))
+	(inhibit-read-only t)
+	(buffer-read-only nil))
     (set (make-local-variable 'assistant-widgets) nil)
     (assistant-set-defaults node)
     (setq assistant-current-node node-name)
@@ -224,7 +235,18 @@
     (when assistant-previous-node
       (assistant-node-button 'previous assistant-previous-node))
     (assistant-node-button 'next (assistant-find-next-node))
-    (insert "\n")))
+    (insert "\n")
+    (assistant-make-read-only)))
+
+(defun assistant-make-read-only ()
+  (let ((start (point-min))
+	end)
+    (while (setq end (text-property-any start (point-max) 'not-read-only t))
+      (put-text-property start end 'read-only t)
+      (while (get-text-property end 'not-read-only)
+	(incf end))
+      (setq start end))
+    (put-text-property start (point-max) 'read-only t)))
 
 (defun assistant-node-button (type node)
   (let ((text (if (eq type 'next)
