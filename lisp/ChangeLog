@@ -1,3 +1,9 @@
+2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-mailing-list-followup-to): New function.
+
+	* gnus-util.el (gnus-fetch-original-field): New function.
+
 2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* message.el (message-mode): \\(...\\) around additional

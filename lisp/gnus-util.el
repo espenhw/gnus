@@ -198,6 +198,12 @@
 	(nnheader-narrow-to-headers)
 	(message-fetch-field field)))))
 
+(defun gnus-fetch-original-field (field)
+  "Fetch FIELD from the original version of the current article."
+  (with-current-buffer gnus-original-article-buffer
+    (gnus-fetch-field field)))
+
+
 (defun gnus-goto-colon ()
   (beginning-of-line)
   (let ((eol (gnus-point-at-eol)))

@@ -1764,6 +1764,16 @@ this is a reply."
 		(insert " ")))
 	    (insert "\n")))))))
 
+(defun gnus-mailing-list-followup-to ()
+  "Look at the headers in the current buffer and return a Mail-Followup-To address."
+  (let ((x-been-there (gnus-fetch-original-field "x-beenthere"))
+	(list-post (gnus-fetch-original-field "list-post")))
+    (when (and list-post
+	       (string-match "mailto:\\([^>]+\\)" list-post))
+      (setq list-post (match-string 1 list-post)))
+    (or list-post
+	x-been-there)))
+
 ;;; Posting styles.
 
 (defun gnus-configure-posting-styles (&optional group-name)
