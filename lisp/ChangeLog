@@ -1,3 +1,7 @@
+2004-06-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-send-mail-with-sendmail): Use with-current-buffer.
+
 2004-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-text-with-property): Make it fast and accept

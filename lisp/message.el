@@ -3821,8 +3821,7 @@ If you always want Gnus to send messages in one piece, set
 	    (when (eval message-mailer-swallows-blank-line)
 	      (newline))
 	    (when message-interactive
-	      (save-excursion
-		(set-buffer errbuf)
+	      (with-current-buffer errbuf
 		(erase-buffer))))
 	  (let* ((default-directory "/")
 		 (coding-system-for-write message-send-coding-system)
