@@ -76,7 +76,7 @@ decoder, such as hexbin."
 This can be either \"inline\" or \"attachment\".")
 
 (defvar mm-uu-emacs-sources-regexp "gnu\\.emacs\\.sources"
-  "The regexp of emacs sources groups.")
+  "The regexp of Emacs sources groups.")
 
 (defcustom mm-uu-diff-groups-regexp "gnus\\.commits"
   "*Regexp matching diff groups."
@@ -335,7 +335,7 @@ Return that buffer."
     ((eq mm-verify-option 'never) nil)
     ((eq mm-verify-option 'always) t)
     ((eq mm-verify-option 'known) t)
-    (t (y-or-n-p "Verify pgp signed part?")))))
+    (t (y-or-n-p "Verify pgp signed part? ")))))
 
 (eval-when-compile
   (defvar gnus-newsgroup-charset))

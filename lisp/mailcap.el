@@ -47,7 +47,7 @@
     (modify-syntax-entry ?{ "(" table)
     (modify-syntax-entry ?} ")" table)
     table)
-  "A syntax table for parsing sgml attributes.")
+  "A syntax table for parsing SGML attributes.")
 
 (eval-and-compile
   (when (featurep 'xemacs)
@@ -627,7 +627,7 @@ Also return non-nil if no test clause is present."
 
 (defun mailcap-viewer-passes-test (viewer-info type-info)
   "Return non-nil iff viewer specified by VIEWER-INFO passes its test clause.
-Also retun non-nil if it has no test clause.  TYPE-INFO is an argument
+Also return non-nil if it has no test clause.  TYPE-INFO is an argument
 to supply to the test."
   (let* ((test-info (assq 'test viewer-info))
 	 (test (cdr test-info))

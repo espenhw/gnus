@@ -109,7 +109,7 @@ If no encoding was done, nil is returned."
 	   ))))))
 
 (defun mm-long-lines-p (length)
-  "Say whether any of the lines in the buffer is longer than LINES."
+  "Say whether any of the lines in the buffer is longer than LENGTH."
   (save-excursion
     (goto-char (point-min))
     (end-of-line)

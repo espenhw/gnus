@@ -70,7 +70,7 @@ handle to tweak the part.")
 (defvar mml-tweak-sexp-alist
   '((mml-externalize-attachments . mml-tweak-externalize-attachments))
   "A list of (SEXP . FUNCTION) for tweaking MML parts.
-SEXP is a s-expression. If the evaluation of SEXP is non-nil, FUNCTION
+SEXP is an s-expression.  If the evaluation of SEXP is non-nil, FUNCTION
 is called.  FUNCTION is a Lisp function which is called with the MML
 handle to tweak the part.")
 
@@ -210,12 +210,12 @@ one charsets.")
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
 		  (message-options-get 'unknown-encoding)
 		  (and (y-or-n-p "\
-Message contains characters with unknown encoding.  Really send?")
+Message contains characters with unknown encoding.  Really send? ")
 		       (message-options-set 'unknown-encoding t)))
 	      (if (setq use-ascii
 			(or (memq 'use-ascii mml-confirmation-set)
 			    (message-options-get 'use-ascii)
-			    (and (y-or-n-p "Use ASCII as charset?")
+			    (and (y-or-n-p "Use ASCII as charset? ")
 				 (message-options-set 'use-ascii t))))
 		  (setq charsets (delq nil charsets))
 		(setq warn nil))
@@ -611,7 +611,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (not (equal type mml-generate-default-type)))
       (when (consp charset)
 	(error
-	 "Can't encode a part with several charsets."))
+	 "Can't encode a part with several charsets"))
       (insert "Content-Type: " type)
       (when charset
 	(insert "; " (mail-header-encode-parameter

@@ -134,13 +134,14 @@ the documentation for the option `mm-w3m-safe-url-regexp'."
   :group 'mime-display)
 
 (defcustom mm-w3m-safe-url-regexp "\\`cid:"
-  "Regexp that matches safe url names.  Some HTML mails might have a
-trick of spammers using <img> tags.  It is likely to be intended to
-verify whether you have read the mail.  You can prevent your personal
-informations from leaking by setting this to the regexp which matches
-the safe url names.  The value of the variable `w3m-safe-url-regexp'
-will be bound with this value.  You may set this value to nil if you
-consider all the urls to be safe."
+  "Regexp that matches safe url names.
+Some HTML mails might have a trick of spammers using <img> tags.
+It is likely to be intended to verify whether you have read the
+mail.  You can prevent your personal informations from leaking by
+setting this to the regexp which matches the safe url names.  The
+value of the variable `w3m-safe-url-regexp' will be bound with
+this value.  You may set this value to nil if you consider all
+urls to be safe."
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil))
   :group 'mime-display)
@@ -384,7 +385,7 @@ If not set, `default-directory' will be used."
 (defcustom mm-verify-option 'never
   "Option of verifying signed parts.
 `never', not verify; `always', always verify;
-`known', only verify known protocols. Otherwise, ask user."
+`known', only verify known protocols.  Otherwise, ask user."
   :type '(choice (item always)
 		 (item never)
 		 (item :tag "only known protocols" known)
@@ -402,7 +403,7 @@ If not set, `default-directory' will be used."
 (defcustom mm-decrypt-option nil
   "Option of decrypting encrypted parts.
 `never', not decrypt; `always', always decrypt;
-`known', only decrypt known protocols. Otherwise, ask user."
+`known', only decrypt known protocols.  Otherwise, ask user."
   :type '(choice (item always)
 		 (item never)
 		 (item :tag "only known protocols" known)
@@ -458,8 +459,9 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 	  (throw 'found t))))))
 
 (defun mm-handle-set-external-undisplayer (handle function)
-  "Set the undisplayer for this handle; postpone undisplaying of viewers
-for types in mm-keep-viewer-alive-types."
+  "Set the undisplayer for HANDLE to FUNCTION.
+Postpone undisplaying of viewers for types in
+`mm-keep-viewer-alive-types'."
   (if (mm-keep-viewer-alive-p handle)
       (let ((new-handle (copy-sequence handle)))
 	(mm-handle-set-undisplayer new-handle function)
@@ -1001,8 +1003,8 @@ external if displayed external."
 
 (defun mm-file-name-replace-whitespace (file-name)
   "Replace whitespace characters in FILE-NAME with underscores.
-Set `mm-file-name-replace-whitespace' to any other string if you do not
-like underscores."
+Set the option `mm-file-name-replace-whitespace' to any other
+string if you do not like underscores."
   (let ((s (or mm-file-name-replace-whitespace "_")))
     (while (string-match "\\s-" file-name)
       (setq file-name (replace-match s t t file-name))))

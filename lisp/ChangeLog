@@ -1,5 +1,20 @@
 2003-07-08  Jesper Harder  <harder@ifa.au.dk>
 
+	* mailcap.el (mailcap-parse-args-syntax-table)
+	(mailcap-viewer-passes-test): Docstring fix.
+
+	* mm-bodies.el (mm-long-lines-p): Docstring fix.
+
+	* mm-decode.el (mm-w3m-safe-url-regexp, mm-verify-option)
+	(mm-decrypt-option, mm-handle-set-external-undisplayer)
+	(mm-file-name-replace-whitespace): Docstring fix.
+
+	* mm-uu.el (mm-uu-emacs-sources-regexp): Docstring fix.
+	(mm-uu-pgp-signed-test): Fix message.
+
+	* mml.el (mml-tweak-sexp-alist): Docstring fix.
+	(mml-parse-1, mml-insert-mime-headers): Fix message.
+
 	* message.el (message-archive-header)
 	(message-subscribed-address-functions)
 	(message-subscribed-addresses, message-subscribed-regexps)
