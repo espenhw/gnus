@@ -4268,6 +4268,10 @@ argument.  The function should return a string, which will be inserted
 into the summary just like information from any other summary specifier.
 @end table
 
+Text between @samp{%(} and @samp{%)} will be highlighted with
+@code{gnus-mouse-face} when the mouse point is placed inside the area.
+There can only be one such area.
+
 The @samp{%U} (status), @samp{%R} (replied) and @samp{%z} (zcore) specs
 have to be handled with care.  For reasons of efficiency, Gnus will
 compute what column these characters will end up in, and ``hard-code''

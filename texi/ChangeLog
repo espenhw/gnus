@@ -1,3 +1,7 @@
+2001-10-17  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.texi (Summary Buffer Lines): Documment %( and %).
+
 2001-09-04 21:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Topic Sorting): Addition.
