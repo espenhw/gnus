@@ -5309,7 +5309,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 
 (defun gnus-summary-exit (&optional temporary)
   "Exit reading current newsgroup, and then return to group selection mode.
-gnus-exit-group-hook is called with no arguments if that value is non-nil."
+`gnus-exit-group-hook' is called with no arguments if that value is non-nil."
   (interactive)
   (gnus-set-global-variables)
   (when (gnus-buffer-live-p gnus-article-buffer)
@@ -5342,6 +5342,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (gnus-dup-enter-articles))
     (when gnus-use-trees
       (gnus-tree-close group))
+    (when gnus-use-cache
+      (gnus-cache-write-active))
     ;; Remove entries for this group.
     (nnmail-purge-split-history (gnus-group-real-name group))
     ;; Make all changes in this group permanent.

@@ -198,6 +198,10 @@ Thank you for your help in stamping out bugs.
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
+       (add-hook 'message-mode-hook
+		 `(lambda ()
+		    (set (make-local-variable 'message-posting-charset)
+			 (gnus-setup-posting-charset ,group))))
        (unwind-protect
 	   (progn
 	     ,@forms)
@@ -206,8 +210,6 @@ Thank you for your help in stamping out bugs.
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
 	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
-	 (set (make-local-variable 'message-posting-charset)
-	      (gnus-setup-posting-charset ,group))
 	 (gnus-run-hooks 'gnus-message-setup-hook))
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)

@@ -1,4 +1,19 @@
+1999-12-04 07:18:23  Matt Swift  <swift@alum.mit.edu>
+
+	* gnus-uu.el (gnus-uu-mark-by-regexp): Doc fix.
+	(gnus-uu-unmark-by-regexp): Ditto.
+
+	* gnus-group.el (gnus-group-catchup-current): Would bug out on
+	dead groups.
+
 1999-12-04 01:34:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-setup-message): Allow the charset setting to
+	do their real thing.
+
+	* nnmh.el (nnmh-be-safe): Doc fix.
+
+	* gnus-sum.el (gnus-summary-exit): Write cache active file. 
 
 	* nntp.el (nntp-retrieve-headers-with-xover): Make sure the entire 
 	status line has arrived before we count it.

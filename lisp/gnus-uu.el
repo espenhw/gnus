@@ -568,8 +568,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 ;; Process marking.
 
 (defun gnus-uu-mark-by-regexp (regexp &optional unmark)
-  "Ask for a regular expression and set the process mark on all articles that match."
-  (interactive (list (read-from-minibuffer "Mark (regexp): ")))
+  "Set the process mark on articles whose subjects match REGEXP.
+When called interactively, prompt for REGEXP.
+Optional UNMARK non-nil means unmark instead of mark."
+  (interactive "sMark (regexp): \nP")
   (let ((articles (gnus-uu-find-articles-matching regexp)))
     (while articles
       (if unmark
@@ -578,9 +580,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (message ""))
   (gnus-summary-position-point))
 
-(defun gnus-uu-unmark-by-regexp (regexp &optional unmark)
-  "Ask for a regular expression and remove the process mark on all articles that match."
-  (interactive (list (read-from-minibuffer "Mark (regexp): ")))
+(defun gnus-uu-unmark-by-regexp (regexp)
+  "Remove the process mark from articles whose subjects match REGEXP.
+When called interactively, prompt for REGEXP."
+  (interactive "sUnmark (regexp): ")
   (gnus-uu-mark-by-regexp regexp t))
 
 (defun gnus-uu-mark-series ()
