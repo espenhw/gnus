@@ -14236,6 +14236,20 @@ articles or not.
 
 @end table
 
+@item nnimap-expunge-search-string
+@cindex Expunging
+@vindex nnimap-expunge-search-string
+
+This variable contain the IMAP search command sent to server when
+searching for articles eligible for expiring.  The default is
+@code{"UID %s NOT SINCE %s"}, where the first @code{%s} is replaced by
+UID set and the second @code{%s} is replaced by a date.
+
+Probably the only useful value to change this to is
+@code{"UID %s NOT SENTSINCE %s"}, which makes nnimap use the Date: in
+messages instead of the internal article date. See section 6.4.4 of
+RFC 2060 for more information on valid strings.
+
 @item nnimap-authinfo-file
 @vindex nnimap-authinfo-file
 
