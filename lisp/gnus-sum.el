@@ -772,6 +772,16 @@ which it may alter in any way.")
 (defvar gnus-decode-encoded-word-function 'mail-decode-encoded-word-string
   "Variable that says which function should be used to decode a string with encoded words.")
 
+(defcustom gnus-extra-headers nil
+  "*Extra headers to parse."
+  :group 'gnus-summary
+  :type '(repeat symbol))
+
+(defcustom gnus-ignored-from-addresses nil
+  "*Regexp of From headers that may be suppressed in favor of To headers."
+  :group 'gnus-summary
+  :type 'regexp)
+
 ;;; Internal variables
 
 (defvar gnus-article-mime-handles nil)
@@ -832,6 +842,7 @@ which it may alter in any way.")
     (?l (bbb-grouplens-score gnus-tmp-header) ?s)
     (?V (gnus-thread-total-score (and (boundp 'thread) (car thread))) ?d)
     (?U gnus-tmp-unread ?c)
+    (?f (gnus-summary-from-or-to-or-newsgroups gnus-tmp-header) ?s)
     (?t (gnus-summary-number-of-articles-in-thread
 	 (and (boundp 'thread) (car thread)) gnus-tmp-level)
 	?d)
@@ -2387,7 +2398,7 @@ marks of articles."
 	(let ((gnus-summary-line-format-spec spec)
 	      (gnus-newsgroup-downloadable '((0 . t))))
 	  (gnus-summary-insert-line
-	   [0 "" "" "" "" "" 0 0 ""]  0 nil 128 t nil "" nil 1)
+	   [0 "" "" "" "" "" 0 0 "" nil]  0 nil 128 t nil "" nil 1)
 	  (goto-char (point-min))
 	  (setq pos (list (cons 'unread (and (search-forward "\200" nil t)
 					     (- (point) 2)))))
@@ -2410,6 +2421,27 @@ marks of articles."
   (gnus-add-text-properties
    (point) (progn (eval gnus-summary-dummy-line-format-spec) (point))
    (list 'gnus-number gnus-tmp-number 'gnus-intangible gnus-tmp-number)))
+
+(defun gnus-summary-from-or-to-or-newsgroups (header)
+  (let ((to (cdr (assq 'To (mail-header-extra header))))
+	(newsgroups (cdr (assq 'Newsgroups (mail-header-extra header)))))
+    (cond
+     ((and to
+	   gnus-ignored-from-addresses
+	   (string-match gnus-ignored-from-addresses
+			 (mail-header-from header)))
+      (or (car (funcall gnus-extract-address-components
+			(funcall gnus-decode-encoded-word-function to)))
+	  (funcall gnus-decode-encoded-word-function to)))
+     ((and newsgroups
+	   gnus-ignored-from-addresses
+	   (string-match gnus-ignored-from-addresses
+			 (mail-header-from header)))
+      newsgroups)
+     (t
+      (or (car (funcall gnus-extract-address-components
+			(mail-header-from header)))
+	  (mail-header-from header))))))
 
 (defun gnus-summary-insert-line (gnus-tmp-header
 				 gnus-tmp-level gnus-tmp-current
@@ -3057,9 +3089,6 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	     (setq heads nil)))))
      gnus-newsgroup-dependencies)))
 
-;; The following macros and functions were written by Felix Lee
-;; <flee@cse.psu.edu>.
-
 (defmacro gnus-nov-read-integer ()
   '(prog1
        (if (eq (char-after) ?\t)
@@ -3074,6 +3103,16 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
 (defmacro gnus-nov-field ()
   '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
+
+(defmacro gnus-nov-parse-extra ()
+  '(let (out string)
+     (while (not (memq (char-after) '(?\n nil)))
+       (setq string (gnus-nov-field))
+       (when (string-match "^\\([^ :]\\): " string)
+	 (push (cons (intern (match-string 1))
+		     (substring string (match-end 0)))
+	       out)))
+     out))
 
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
@@ -3103,7 +3142,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		 (gnus-nov-read-integer) ; chars
 		 (gnus-nov-read-integer) ; lines
 		 (unless (eq (char-after) ?\n)
-		   (gnus-nov-field)))))	; misc
+		   (gnus-nov-field))	; misc
+		 (gnus-nov-parse-extra)))) ; extra
 
       (widen))
 
@@ -3578,6 +3618,12 @@ Unscored articles will be counted as having a score of zero."
 (defvar gnus-tmp-false-parent nil)
 (defvar gnus-tmp-root-expunged nil)
 (defvar gnus-tmp-dummy-line nil)
+
+(defvar gnus-tmp-header)
+(defun gnus-extra-header (type &optional header)
+  "Return the extra header of TYPE."
+  (or (cdr (assq type (mail-header-extra (or header gnus-tmp-header))))
+      ""))
 
 (defun gnus-summary-prepare-threads (threads)
   "Prepare summary buffer from THREADS and indentation LEVEL.
@@ -4517,7 +4563,19 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (and (search-forward "\nxref: " nil t)
-		   (nnheader-header-value)))))
+		   (nnheader-header-value)))
+	    ;; Extra.
+	    (when gnus-extra-headers
+	      (let ((extra gnus-extra-headers)
+		    out)
+		(while extra
+		  (goto-char p)
+		  (when (search-forward
+			 (concat "\n" (symbol-name (car extra)) ": ") nil t)
+		    (push (cons (car extra) (nnheader-header-value))
+			  out))
+		  (pop extra))
+		out))))
 	  (when (equal id ref)
 	    (setq ref nil))
 

@@ -449,6 +449,11 @@ parameter.  It should return nil, `warn' or `delete'."
 		 (const warn)
 		 (const delete)))
 
+(defcustom nnmail-extra-headers nil
+  "*Extra headers to parse."
+  :group 'nnmail
+  :type '(repeat symbol))
+
 ;;; Internal variables.
 
 (defvar nnmail-split-history nil

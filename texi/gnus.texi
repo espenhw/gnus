@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.37 Manual
+@settitle Pterodactyl Gnus 0.38 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.37 Manual
+@title Pterodactyl Gnus 0.38 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.37.
+This manual corresponds to Pterodactyl Gnus 0.38.
 
 @end ifinfo
 
@@ -3253,6 +3253,7 @@ You can have as many summary buffers open as you wish.
 
 @menu
 * Summary Buffer Lines::     You can specify how summary lines should look.
+* To From Newsgroups::       How to not display your own name.
 * Summary Buffer Mode Line:: You can say how the mode line should look.
 * Summary Highlighting::     Making the summary buffer all pretty and nice.
 @end menu
@@ -3306,6 +3307,9 @@ had a different subject, @code{gnus-summary-same-subject} otherwise.
 Full @code{From} header.
 @item n
 The name (from the @code{From} header).
+@item f
+The name, code @code{To} header or the @code{Newsgroups} header
+(@pxref{To From Newsgroups}).
 @item a
 The name (from the @code{From} header).  This differs from the @code{n}
 spec in that it uses the function designated by the
@@ -3393,6 +3397,69 @@ The smart choice is to have these specs as far to the left as possible.
 (Isn't that the case with everything, though?  But I digress.)
 
 This restriction may disappear in later versions of Gnus.
+
+
+@node To From Newsgroups
+@subsection To From Newsgroups
+@cindex To
+@cindex Newsgroups
+
+In some groups (particularly in archive groups), the @code{From} header
+isn't very interesting, since all the articles there are written by
+you.  To display the information in the @code{To} or @code{Newsgroups}
+headers instead, you need to decide three things: What information to
+gather; where to display it; and when to display it.
+
+@enumerate
+@item
+@vindex gnus-extra-headers
+The reading of extra header information is controlled by the
+@code{gnus-extra-headers}.  This is a list of header symbols.  For
+instance:
+
+@lisp
+(setq gnus-extra-headers
+      '(To Newsgroups X-Newsreader))
+@end lisp
+
+This will result in Gnus trying to obtain these three headers, and
+storing it in header structures for later easy retrieval.
+
+@item
+@findex gnus-extra-header
+The value of these extra headers can be accessed via the
+@code{gnus-extra-header} function.  Here's a format line spec that will
+access the @code{X-Newsreader} header:
+
+@example
+"%~(form (gnus-extra-header 'X-Newsreader))@@"
+@end example
+
+@item
+@vindex gnus-ignored-from-addresses
+The @code{gnus-ignored-from-addresses} variable says when the @samp{%f}
+summary line spec returns the @code{To}, @code{Newsreader} or
+@code{From} header.  If this regexp matches the contents of the
+@code{From} header, the value of the @code{To} or @code{Newsreader}
+headers are used instead.
+
+@end enumerate
+
+@vindex nnmail-extra-headers
+A related variable is @code{nnmail-extra-headers}, which controls when
+to include extra headers when generating active files.
+
+In summary, you'd typically do something like the following:
+
+@lisp
+(setq gnus-extra-headers
+      '(To Newsgroups))
+(setq nnmail-extra-headers gnus-extra-headers)
+(setq gnus-summary-line-format
+      "%U%R%z%I%(%[%4L: %-20,20f%]%) %s\n")
+(setq gnus-ignored-from-addresses
+      "Your Name Here")
+@end lisp
 
 
 @node Summary Buffer Mode Line

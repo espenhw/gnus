@@ -222,7 +222,6 @@ See also `with-temp-file' and `with-output-to-string'."
 (put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
 
-
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

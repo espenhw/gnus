@@ -3,3 +3,7 @@
 *** gnus-auto-select-first can now be a function to be
 called to position point.
 
+*** The user can now decide which extra headers should be included in
+summary buffers and NOV files.
+
+

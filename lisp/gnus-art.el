@@ -1019,7 +1019,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(widen)
 	(forward-line 1)
 	(narrow-to-region (point) (point-max))
-	(when (or (not ct)
+	(when (or (not ctl)
 		  (equal (car ctl) "text/plain"))
 	  (mm-decode-body
 	   charset (and cte (intern (downcase
@@ -1045,13 +1045,11 @@ or not."
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)
-	(quoted-printable-decode-region (point) (point-max))
-	(when mm-default-coding-system
-	  (mm-decode-body mm-default-coding-system))))))
-
-(defun article-mime-decode-quoted-printable-buffer ()
-  "Decode Quoted-Printable in the current buffer."
-  (quoted-printable-decode-region (point-min) (point-max)))
+	(save-restriction
+	  (narrow-to-region (point) (point-max))
+	  (quoted-printable-decode-region (point-min) (point-max))
+	  (when mm-default-coding-system
+	    (mm-decode-body mm-default-coding-system)))))))
 
 (defun article-hide-pgp (&optional arg)
   "Toggle hiding of any PGP headers and signatures in the current article.

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.37"
+(defconst gnus-version-number "0.38"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1811,6 +1811,7 @@ with some simple extensions.
 %a   Extracted name of the poster (string)
 %A   Extracted address of the poster (string)
 %F   Contents of the From: header (string)
+%f   Contents of the From: or To: headers (string)
 %x   Contents of the Xref: header (string)
 %D   Date of the article (string)
 %d   Date of the article (string) in DD-MMM format

@@ -201,17 +201,7 @@ it's not cached."
 		    (beginning-of-line))
 		(forward-line 1))
 	      (beginning-of-line)
-	      ;; [number subject from date id references chars lines xref]
-	      (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
-			      (mail-header-number headers)
-			      (mail-header-subject headers)
-			      (mail-header-from headers)
-			      (mail-header-date headers)
-			      (mail-header-id headers)
-			      (or (mail-header-references headers) "")
-			      (or (mail-header-chars headers) "")
-			      (or (mail-header-lines headers) "")
-			      (or (mail-header-xref headers) "")))
+	      (nnheader-insert-nov headers)
 	      ;; Update the active info.
 	      (set-buffer gnus-summary-buffer)
 	      (gnus-cache-update-active group number)

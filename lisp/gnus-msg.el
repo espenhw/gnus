@@ -395,7 +395,7 @@ header line with the old Message-ID."
 	  ;; Delete the headers from the displayed articles.
 	  (set-buffer gnus-article-copy)
 	  (delete-region (goto-char (point-min))
-			 (or (search-forward "\n\n" nil t) (point)))
+			 (or (search-forward "\n\n" nil t) (point-max)))
 	  ;; Insert the original article headers.
 	  (insert-buffer-substring gnus-original-article-buffer beg end)
 	  (article-decode-encoded-words)))

@@ -1,3 +1,47 @@
+Sat Oct 24 20:31:55 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.38 is released.
+
+1998-10-24 07:54:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-mime-decode-quoted-printable-buffer):
+	Removed. 
+	(article-de-quoted-unreadable): Narrow to default.
+
+	* qp.el (quoted-printable-encode-region): Encode before QP-ing.
+
+	* gnus-art.el (article-decode-charset): Decode even when broken
+	MIME. 
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Return
+	name. 
+
+	* gnus-msg.el (gnus-copy-article-buffer): Delete headers.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Use
+	nnheader. 
+
+	* nnmail.el (nnmail-extra-headers): New variable.
+
+	* nnheader.el (nnheader-insert-nov): Insert extra.
+
+	* gnus.el (gnus-summary-line-format): Doc fix.
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Parse extra.
+	(gnus-nov-parse-line): Ditto.
+	(gnus-nov-parse-extra): New macro.
+	(gnus-header): New function.
+	(gnus-update-summary-mark-positions): Change.
+	(gnus-ignored-from-addresses): New variable.
+	(gnus-summary-insert-from-or-to): New function.
+
+	* gnus.el (gnus-extra-headers): New variable.
+
+	* nnheader.el (make-mail-header): Expand.
+	(mail-header-extra): New macro.
+	(mail-header-set-extra): Ditto.
+	(make-full-mail-header): Expand.
+
 Sat Oct 24 07:41:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.37 is released.
