@@ -386,7 +386,7 @@ The buffer may be narrowed."
 	    (progn
 	      (goto-char eol)
 	      (delete-region eol (progn
-				   (skip-chars-forward "[ \t\n\r]+")
+				   (skip-chars-forward " \t\n\r")
 				   (1- (point)))))
 	  (setq bol (gnus-point-at-bol)))
 	(setq eol (gnus-point-at-eol))
