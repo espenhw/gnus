@@ -3206,8 +3206,7 @@ buffer that was in action when the last article was fetched."
 	    (push (eval (car locals)) vlist))
 	  (setq locals (cdr locals)))
 	(setq vlist (nreverse vlist)))
-      (save-excursion
-	(set-buffer gnus-group-buffer)
+      (with-current-buffer gnus-group-buffer
 	(setq gnus-newsgroup-name name
 	      gnus-newsgroup-marked marked
 	      gnus-newsgroup-spam-marked spam
@@ -4152,8 +4151,7 @@ the id of the parent article (if any)."
 	    (setq article (read (current-buffer))
 		  header (gnus-nov-parse-line article dependencies)))
 	  (when header
-	    (save-excursion
-	      (set-buffer gnus-summary-buffer)
+	    (with-current-buffer gnus-summary-buffer
 	      (push header gnus-newsgroup-headers)
 	      (if (memq (setq article (mail-header-number header))
 			gnus-newsgroup-unselected)
@@ -5784,8 +5782,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
   (let ((cur nntp-server-buffer)
 	(dependencies
 	 (or dependencies
-	     (save-excursion (set-buffer gnus-summary-buffer)
-			     gnus-newsgroup-dependencies)))
+	     (with-current-buffer gnus-summary-buffer
+	       gnus-newsgroup-dependencies)))
 	headers id end ref
 	(mail-parse-charset gnus-newsgroup-charset)
 	(mail-parse-ignored-charsets
@@ -6002,8 +6000,8 @@ Return a list of headers that match SEQUENCE (see
 (defun gnus-article-get-xrefs ()
   "Fill in the Xref value in `gnus-current-headers', if necessary.
 This is meant to be called in `gnus-article-internal-prepare-hook'."
-  (let ((headers (save-excursion (set-buffer gnus-summary-buffer)
-				 gnus-current-headers)))
+  (let ((headers (with-current-buffer gnus-summary-buffer
+		   gnus-current-headers)))
     (or (not gnus-use-cross-reference)
 	(not headers)
 	(and (mail-header-xref headers)
@@ -6175,8 +6173,7 @@ If optional argument BACKWARD is non-nil, search backward instead."
 (defun gnus-summary-best-group (&optional exclude-group)
   "Find the name of the best unread group.
 If EXCLUDE-GROUP, do not go to this group."
-  (save-excursion
-    (set-buffer gnus-group-buffer)
+  (with-current-buffer gnus-group-buffer
     (save-excursion
       (gnus-group-best-unread-group exclude-group))))
 
@@ -6548,8 +6545,7 @@ The prefix argument ALL means to select all articles."
 	  (setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
 	(let ((headers gnus-newsgroup-headers))
 	  ;; Set the new ranges of read articles.
-	  (save-excursion
-	    (set-buffer gnus-group-buffer)
+	  (with-current-buffer gnus-group-buffer
 	    (gnus-undo-force-boundary))
 	  (gnus-update-read-articles
 	   group (gnus-sorted-union
@@ -6807,8 +6803,7 @@ The state which existed when entering the ephemeral is reset."
   ;; Kill any previous dead summary buffer.
   (when (and gnus-dead-summary
 	     (buffer-name gnus-dead-summary))
-    (save-excursion
-      (set-buffer gnus-dead-summary)
+    (with-current-buffer gnus-dead-summary
       (when gnus-dead-summary-mode
 	(kill-buffer (current-buffer)))))
   ;; Make this the current dead summary.
@@ -6827,8 +6822,7 @@ The state which existed when entering the ephemeral is reset."
   (save-excursion
     (when (and (buffer-name buffer)
 	       (not gnus-single-article-buffer))
-      (save-excursion
-	(set-buffer buffer)
+      (with-current-buffer buffer
 	(gnus-kill-buffer gnus-article-buffer)
 	(gnus-kill-buffer gnus-original-article-buffer)))
     (cond
@@ -7194,8 +7188,7 @@ If BACKWARD, the previous article is selected instead of the next."
       (gnus-summary-jump-to-group gnus-newsgroup-name))
     (let ((cmd last-command-char)
 	  (point
-	   (save-excursion
-	     (set-buffer gnus-group-buffer)
+	   (with-current-buffer gnus-group-buffer
 	     (point)))
 	  (group
 	   (if (eq gnus-keep-same-level 'best)
@@ -8313,8 +8306,7 @@ to guess what the document format is."
     (let* ((name (format "%s-%d"
 			 (gnus-group-prefixed-name
 			  gnus-newsgroup-name (list 'nndoc ""))
-			 (save-excursion
-			   (set-buffer gnus-summary-buffer)
+			 (with-current-buffer gnus-summary-buffer
 			   gnus-current-article)))
 	   (ogroup gnus-newsgroup-name)
 	   (params (append (gnus-info-params (gnus-get-info ogroup))
@@ -9805,8 +9797,7 @@ ARTICLE can also be a list of articles."
   ;; (article-number . line-number-in-body).
   (push
    (cons article
-	 (save-excursion
-	   (set-buffer gnus-article-buffer)
+	 (with-current-buffer gnus-article-buffer
 	   (count-lines
 	    (min (point)
 		 (save-excursion
@@ -11467,8 +11458,7 @@ UNREAD is a sorted list."
     (dolist (buffer (buffer-list))
       (when (and (setq buffer (buffer-name buffer))
 		 (string-match "Summary" buffer)
-		 (save-excursion
-		   (set-buffer buffer)
+		 (with-current-buffer buffer
 		   ;; We check that this is, indeed, a summary buffer.
 		   (and (eq major-mode 'gnus-summary-mode)
 			;; Also make sure this isn't bogus.

@@ -1,3 +1,13 @@
+2004-04-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-set-global-variables)
+	(gnus-build-all-threads, gnus-get-newsgroup-headers)
+	(gnus-article-get-xrefs, gnus-summary-best-group)
+	(gnus-summary-next-article, gnus-summary-enter-digest-group)
+	(gnus-summary-set-bookmark, gnus-offer-save-summaries)
+	(gnus-summary-update-info, gnus-kill-or-deaden-summary): Use
+	with-current-buffer.
+
 2004-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-summary-prepare-exit): simplified logic
@@ -11,7 +21,7 @@
 2004-04-16  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-cater-to-broken-inn): Remove.
-	(message-shorten-references): Make the total folded length of
+	(message-shorten-references): Make sure the total folded length of
 	References is shorter than 998 characters to cater to a bug in INN
 	2.3.  Also, don't pretend that references aren't folded -- this
 	hasn't worked for a while.
