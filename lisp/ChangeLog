@@ -1,5 +1,9 @@
 2003-11-30  Simon Josefsson  <jas@extundo.com>
 
+	* mm-util.el (mm-enable-multibyte): Call set-buffer-multibyte with
+	'to argument.  Fixes something or other in Emacs 22, and is
+	backwards compatible.  From Kenichi Handa <handa@m17n.org>.
+
 	* gnus-agent.el (gnus-agent-expire-unagentized-dirs): Custom fix.
 
 2003-11-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
