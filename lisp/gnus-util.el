@@ -188,8 +188,7 @@ is slower."
   "Return the value of the header FIELD of current article."
   (save-excursion
     (save-restriction
-      (let ((case-fold-search t)
-	    (inhibit-point-motion-hooks t))
+      (let ((inhibit-point-motion-hooks t))
 	(nnheader-narrow-to-headers)
 	(message-fetch-field field)))))
 
