@@ -3634,7 +3634,8 @@ entry of article %s deleted." l1))
               ;; recalculate the number of unread articles in the group
 
               (let ((group (gnus-group-real-name group))
-                    (group-active (gnus-active group)))
+                    (group-active (or (gnus-active group)
+				      (gnus-activate-group group))))
                 (gnus-agent-possibly-alter-active group group-active)))))
 
         (when (and reread gnus-agent-article-alist)
