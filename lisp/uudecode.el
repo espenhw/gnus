@@ -29,15 +29,19 @@
 ;;; Code:
 
 (if (not (fboundp 'char-int))
-    (fset 'char-int 'identity))
+    (defalias 'char-int 'identity))
 
-(defvar uudecode-decoder-program "uudecode"
+(defcustom uudecode-decoder-program "uudecode"
   "*Non-nil value should be a string that names a uu decoder.
 The program should expect to read uu data on its standard
-input and write the converted data to its standard output.")
+input and write the converted data to its standard output."
+  :type 'string
+  :group 'gnus-extract)
 
-(defvar uudecode-decoder-switches nil
-  "*List of command line flags passed to the command named by uudecode-decoder-program.")
+(defcustom uudecode-decoder-switches nil
+  "*List of command line flags passed to `uudecode-decoder-program'."
+  :group 'gnus-extract
+  :type '(repeat string))
 
 (defconst uudecode-alphabet "\040-\140")
 
@@ -57,7 +61,7 @@ input and write the converted data to its standard output.")
 
 ;;;###autoload
 (defun uudecode-decode-region-external (start end &optional file-name)
-  "uudecode region between START and END with external decoder.
+  "Uudecode region between START and END with external decoder.
 
 If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
@@ -118,7 +122,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 ;;;###autoload
 
 (defun uudecode-decode-region (start end &optional file-name)
-  "uudecode region between START and END.
+  "Uudecode region between START and END.
 If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
   (let ((work-buffer nil)
