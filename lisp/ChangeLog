@@ -1,3 +1,34 @@
+Wed Jun 18 17:26:35 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.59 is released.
+
+Wed Jun 18 09:29:15 1997  Andreas Jaeger  <aj@arthur.rhein-neckar.de>
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): Correct setting of
+	braces.
+
+1997-06-07  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* smiley.el (smiley-deformed-regexp-alist): Add Japanese smiley
+	faces.
+
+Wed Jun 18 14:15:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-hide-pgp): Only run hook when there is a
+	PGP signature.
+
+	* gnus-sum.el (gnus-summary-fetch-faq): Have `C-u' work.
+
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Don't nix
+	out chars that aren't supposed to be nixed out.
+
+	* gnus-art.el (gnus-article-delete-invisible-text): Would bug out
+	on point-max.
+	(gnus-article-delete-text-of-type): Ditto.
+
+	* gnus-xmas.el (gnus-xmas-redefine): Switch off horiz scrollbar in
+	tree buffers.
+
 Wed Jun 18 01:11:58 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.58 is released.

@@ -213,7 +213,8 @@ displayed, no centering will be performed."
     ;; We nix out any glyphs over 126 below ctl-arrow.
     (let ((i (if (integerp ctl-arrow) ctl-arrow 160)))
       (while (>= (setq i (1- i)) 127)
-	(aset table i [??])))
+	(unless (aref table i)
+	  (aset table i [??]))))
     ;; Can't use `set-specifier' because of a bug in 19.14 and earlier
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
 
@@ -511,7 +512,8 @@ call it with the value of the `gnus-data' text property."
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
 
   (add-hook 'gnus-summary-mode-hook
-	    'gnus-xmas-switch-horizontal-scrollbar-off))
+	    'gnus-xmas-switch-horizontal-scrollbar-off)
+  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off))
 
 
 ;;; XEmacs logo and toolbar.
@@ -735,9 +737,9 @@ XEmacs compatibility workaround."
 		      (gnus-xmas-call-region "icontopbm")
 		      (gnus-xmas-call-region "ppmtoxpm")
 		      (make-glyph
-		       (vector 'xpm :data (buffer-string)))))
-		  (t
-		   (make-glyph [nothing]))))))
+		       (vector 'xpm :data (buffer-string))))))
+		 (t
+		  (make-glyph [nothing])))))
       (set-glyph-face xface-glyph 'gnus-x-face)
       (goto-char (point-min))
       (re-search-forward "^From:" nil t)

@@ -2916,11 +2916,11 @@ to use."
   (interactive
    (list
     (gnus-group-group-name)
-    (cond (current-prefix-arg
-	   (completing-read
-	    "Faq dir: " (and (listp gnus-group-faq-directory)
-			     (mapcar (lambda (file) (list file))
-				     gnus-group-faq-directory)))))))
+    (when current-prefix-arg
+      (completing-read
+       "Faq dir: " (and (listp gnus-group-faq-directory)
+			(mapcar (lambda (file) (list file))
+				gnus-group-faq-directory))))))
   (unless group
     (error "No group name given"))
   (let ((dirs (or faq-dir gnus-group-faq-directory))

@@ -5083,7 +5083,8 @@ in."
     (when current-prefix-arg
       (completing-read
        "Faq dir: " (and (listp gnus-group-faq-directory)
-			gnus-group-faq-directory)))))
+			(mapcar (lambda (file) (list file))
+				gnus-group-faq-directory))))))
   (let (gnus-faq-buffer)
     (when (setq gnus-faq-buffer
 		(gnus-group-fetch-faq gnus-newsgroup-name faq-dir))
