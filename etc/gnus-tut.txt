@@ -22,7 +22,8 @@ people started.
 Gnus is a rewrite of GNUS 4.1, written by Masanobu Umeda.  The rewrite
 was done by moi, yours truly, your humble servant, Lars Magne
 Ingebrigtsen.  If you have a WWW browser, you can investigate to your
-heart's delight at <URL:http://quimby.gnus.org/lmi/>.
+heart's delight at <URL:http://www.gnus.org/> and
+<URL:http://quimby.gnus.org/lmi/>.
 
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
