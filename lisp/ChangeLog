@@ -1,5 +1,15 @@
 2004-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-util.el (mm-xemacs-find-mime-charset): New macro.
+
+2004-12-17  Aidan Kehoe  <kehoea@parhasard.net>
+
+	* mm-util.el (mm-xemacs-find-mime-charset-1): New function used to
+	unify Latin characters in XEmacs.
+	(mm-find-mime-charset-region): Use it.
+
+2004-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-util.el (gnus-delete-directory): New function.
 
 	* gnus-agent.el (gnus-agent-delete-group): Use it.
