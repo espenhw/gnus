@@ -1,3 +1,7 @@
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* etc/gnus/unimportant.xpm, etc/gnus/important.xpm: New files.
+
 2001-11-11  Simon Josefsson  <jas@extundo.com>
 
 	* make-x.bat: Don't use -nw.  Suggested by Frank Haun
