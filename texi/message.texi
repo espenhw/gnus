@@ -1834,11 +1834,13 @@ This function won't add the header if the header is already present.
 
 @item message-send-mail-hook
 @vindex message-send-mail-hook
-Hook run before sending mail messages.
+Hook run before sending mail messages.  This hook is run very late --
+just before the message is actually sent as news.
 
 @item message-send-news-hook
 @vindex message-send-news-hook
-Hook run before sending news messages.
+Hook run before sending news messages.  This hook is run very late --
+just before the message is actually sent as news.
 
 @item message-sent-hook
 @vindex message-sent-hook
