@@ -116,7 +116,7 @@
 
 (defun gnus-agent-lib-file (file)
   "The full path of the Gnus agent library FILE."
-  (concat (gnus-agent-directory) "lib/" file))
+  (concat (gnus-agent-directory) "agent.lib/" file))
 
 ;;;
 ;;; Mode infestation
@@ -243,8 +243,11 @@ and `message-send-mail-function' variables, and install the Gnus
 agent minor mode in all Gnus buffers."
   (interactive)
   (add-hook 'gnus-before-startup-hook 'gnus-open-agent)
-  (setq gnus-agent-send-mail-function message-send-mail-function
-	message-send-mail-function 'gnus-agent-send-mail))
+  (unless gnus-agent-send-mail-function 
+    (setq gnus-agent-send-mail-function message-send-mail-function
+	  message-send-mail-function 'gnus-agent-send-mail))
+  (unless gnus-agent-covered-methods
+    (setq gnus-agent-covered-methods (list gnus-select-method))))
 
 (defun gnus-agent-send-mail ()
   (if gnus-plugged
@@ -264,10 +267,8 @@ agent minor mode in all Gnus buffers."
   (interactive (list (gnus-group-group-name)))
   (unless group
     (error "No group on the current line"))
-  (let ((articles (gnus-list-of-unread-articles group))
-	(gnus-command-method (gnus-find-method-for-group group)))
-    (gnus-agent-with-fetch
-      (gnus-agent-fetch-articles group articles))))
+  (gnus-agent-with-fetch
+    (gnus-agent-fetch-group-1 group (gnus-find-method-for-group group))))
 
 (defun gnus-agent-add-group (category arg)
   "Add the current group to an agent category."
@@ -756,57 +757,61 @@ the actual number of articles toggled is returned."
   (unless gnus-plugged
     (error "Can't fetch articles while Gnus is unplugged"))
   (let ((methods gnus-agent-covered-methods)
-	gnus-newsgroup-dependencies gnus-newsgroup-headers
-	gnus-newsgroup-scored
-	gnus-headers gnus-score
-	gnus-use-cache
-	gnus-command-method groups group articles score arts
-	category predicate info marks score-param)
+	method groups group)
     (save-excursion
       (while methods
-	(setq gnus-command-method (car methods)
+	(setq method (car methods)
 	      groups (gnus-groups-from-server (pop methods)))
 	(gnus-agent-with-fetch
 	  (while (setq group (pop groups))
-	    ;; Fetch headers.
-	    (when (and (setq articles (gnus-list-of-unread-articles group))
-		       (gnus-agent-fetch-headers group articles))
-	      ;; Parse them and see which articles we want to fetch.
-	      (setq gnus-newsgroup-dependencies
-		    (make-vector (length articles) 0))
-	      (setq gnus-newsgroup-headers
-		    (gnus-get-newsgroup-headers-xover articles nil nil group))
-	      (setq category (gnus-group-category group))
-	      (setq predicate
-		    (gnus-get-predicate 
-		     (or (gnus-group-get-parameter group 'agent-predicate)
-			 (cadr category))))
-	      (setq score-param
-		    (or (gnus-group-get-parameter group 'agent-score)
-			(caddr category)))
-	      (when score-param
-		(gnus-score-headers (list (list score-param))))
-	      (setq arts nil)
-	      (while (setq gnus-headers (pop gnus-newsgroup-headers))
-		(setq gnus-score
-		      (or (cdr (assq (mail-header-number gnus-headers)
-				     gnus-newsgroup-scored))
-			  gnus-summary-default-score))
-		(when (funcall predicate)
-		  (push (mail-header-number gnus-headers)
-			arts)))
-	      ;; Fetch the articles.
-	      (when arts
-		(gnus-agent-fetch-articles group arts)))
-	    ;; Perhaps we have some additional articles to fetch.
-	    (setq arts (assq 'download (gnus-info-marks
-					(setq info (gnus-get-info group)))))
-	    (when (cdr arts)
-	      (gnus-agent-fetch-articles
-	       group (gnus-uncompress-range (cdr arts)))
-	      (setq marks (delq arts (gnus-info-marks info)))
-	      (gnus-info-set-marks info marks)))))
+	    (gnus-agent-fetch-group-1 group method))))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
+
+(defun gnus-agent-fetch-group-1 (group method)
+  "Fetch GROUP."
+  (let ((gnus-command-method method)
+	gnus-newsgroup-dependencies gnus-newsgroup-headers
+	gnus-newsgroup-scored gnus-headers gnus-score
+	gnus-use-cache articles score arts
+	category predicate info marks score-param)
+    ;; Fetch headers.
+    (when (and (setq articles (gnus-list-of-unread-articles group))
+	       (gnus-agent-fetch-headers group articles))
+      ;; Parse them and see which articles we want to fetch.
+      (setq gnus-newsgroup-dependencies
+	    (make-vector (length articles) 0))
+      (setq gnus-newsgroup-headers
+	    (gnus-get-newsgroup-headers-xover articles nil nil group))
+      (setq category (gnus-group-category group))
+      (setq predicate
+	    (gnus-get-predicate 
+	     (or (gnus-group-get-parameter group 'agent-predicate)
+		 (cadr category))))
+      (setq score-param
+	    (or (gnus-group-get-parameter group 'agent-score)
+		(caddr category)))
+      (when score-param
+	(gnus-score-headers (list (list score-param))))
+      (setq arts nil)
+      (while (setq gnus-headers (pop gnus-newsgroup-headers))
+	(setq gnus-score
+	      (or (cdr (assq (mail-header-number gnus-headers)
+			     gnus-newsgroup-scored))
+		  gnus-summary-default-score))
+	(when (funcall predicate)
+	  (push (mail-header-number gnus-headers)
+		arts)))
+      ;; Fetch the articles.
+      (when arts
+	(gnus-agent-fetch-articles group arts)))
+    ;; Perhaps we have some additional articles to fetch.
+    (setq arts (assq 'download (gnus-info-marks
+				(setq info (gnus-get-info group)))))
+    (when (cdr arts)
+      (gnus-agent-fetch-articles
+       group (gnus-uncompress-range (cdr arts)))
+      (setq marks (delq arts (gnus-info-marks info)))
+      (gnus-info-set-marks info marks))))
 
 ;;;
 ;;; Agent Category Mode
@@ -1222,7 +1227,7 @@ The following commands are available:
 		     (setq file (concat dir (number-to-string article))))
 		(delete-file file))))))
       (gnus-agent-save-alist nil nil nil dir))))
-   
+
 (provide 'gnus-agent)
 
 ;;; gnus-agent.el ends here

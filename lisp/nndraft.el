@@ -35,7 +35,7 @@
 (nnoo-declare nndraft
   nnmh)
 
-(defvoo nndraft-directory (nnheader-concat message-directory "drafts/")
+(defvoo nndraft-directory (nnheader-concat message-directory "message-drafts/")
   "Where nndraft will store its files."
   nnmh-current-directory)
 
@@ -135,7 +135,7 @@
 (deffoo nndraft-request-update-info (group info &optional server)
   (gnus-info-set-read
    info
-   (gnus-update-read-articles "nndraft:draft" (nndraft-articles) t))
+   (gnus-update-read-articles "nndraft:drafts" (nndraft-articles) t))
   (let (marks)
     (when (setq marks (nth 3 info))
       (setcar (nthcdr 3 info)
@@ -219,10 +219,8 @@
 (defun nndraft-articles ()
   "Return the list of messages in the group."
   (sort
-   (mapcar
-    (lambda (file)
-      (string-to-int file))
-    (directory-files nndraft-directory nil "^[0-9]+$" t))
+   (mapcar 'string-to-int
+	   (directory-files nndraft-directory nil "\\`[0-9]+\\'" t))
    '<))
 
 (nnoo-map-functions nndraft

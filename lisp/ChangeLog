@@ -1,3 +1,42 @@
+Wed Sep 17 03:28:36 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.6 is released.
+
+1997-08-17  SL Baur  <steve@altair.xemacs.org>
+
+	* dgnushack.el (dgnushack-compile): Ignore .el files beginning
+	with an `=' character.
+
+Wed Sep 17 02:30:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-build-sparse-threads): Allow display of looped
+	References.
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Separated out into
+	function. 
+
+	* message.el (message-delete-not-region): New command and
+	keystroke. 
+
+Tue Sep 16 00:58:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndraft.el (nndraft-directory): Changed value.
+
+	* message.el (message-kill-buffer): Disassociate draft.
+	(message-mode): Use kill hook to disassociate.
+	(message-disassociate-draft): Double-check.
+
+	* gnus-agent.el (gnus-agentize): Don't set twice.
+
+	* gnus-art.el (gnus-article-prepare): Go to the right line before
+	marking. 
+
+	* gnus-start.el: Renamed the drafts group.
+
+	* gnus-agent.el (gnus-agent-lib-file): Changed name of directory.
+
+	* gnus-draft.el (gnus-draft-mode): Simplify.
+
 Tue Sep 16 00:18:11 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.5 is released.

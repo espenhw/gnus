@@ -424,8 +424,7 @@
 	    (url-insert-file-contents more)))
 	;; Return the articles in the right order.
 	(setq nnweb-articles
-	      (sort (nconc nnweb-articles map)
-		    (lambda (s1 s2) (< (car s1) (car s2)))))))))
+	      (sort (nconc nnweb-articles map) 'car-less-than-car))))))
 
 (defun nnweb-dejanews-wash-article ()
   (let ((case-fold-search t))
@@ -524,8 +523,7 @@
 	  (setq more nil))
 	;; Return the articles in the right order.
 	(setq nnweb-articles
-	      (sort (nconc nnweb-articles map)
-		    (lambda (s1 s2) (< (car s1) (car s2)))))))))
+	      (sort (nconc nnweb-articles map) 'car-less-than-car))))))
 
 (defun nnweb-reference-wash-article ()
   (let ((case-fold-search t))
@@ -651,8 +649,7 @@
 	      (setq more nil)))
 	  ;; Return the articles in the right order.
 	  (setq nnweb-articles
-		(sort (nconc nnweb-articles map)
-		      (lambda (s1 s2) (< (car s1) (car s2))))))))))
+		(sort (nconc nnweb-articles map) 'car-less-than-car)))))))
 
 (defun nnweb-altavista-wash-article ()
   (goto-char (point-min))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.5 Manual
+@settitle Quassia Gnus 0.6 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.5 Manual
+@title Quassia Gnus 0.6 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.5.
+This manual corresponds to Quassia Gnus 0.6.
 
 @end ifinfo
 
@@ -4498,45 +4498,76 @@ displayed as empty lines in the summary buffer.
 @node Customizing Threading
 @subsection Customizing Threading
 @cindex customizing threading
+
+@menu
+* Loose Threads::        How Gnus gathers loose threads into bigger threads.
+* Filling In Threads::   Making the threads displayed look fuller.
+* More Threading::       Even more variables for fiddling with threads.
+* Low-Level Threading::  You thought it was over... but you were wrong!
+@end menu
+
+
+@node Loose Threads
+@subsubsection Loose Threads
 @cindex <
 @cindex >
+@cindex loose threads
+
+@table @code
+@item gnus-summary-make-false-root
+@vindex gnus-summary-make-false-root
+If non-@code{nil}, Gnus will gather all loose subtrees into one big tree
+and create a dummy root at the top.  (Wait a minute.  Root at the top?
+Yup.)  Loose subtrees occur when the real root has expired, or you've
+read or killed the root in a previous session.
+
+When there is no real root of a thread, Gnus will have to fudge
+something.  This variable says what fudging method Gnus should use.
+There are four possible values:
+
+@iftex
+@iflatex
+\gnusfigure{The Summary Buffer}{390}{
+\put(0,0){\epsfig{figure=tmp/summary-adopt.ps,width=7.5cm}}
+\put(445,0){\makebox(0,0)[br]{\epsfig{figure=tmp/summary-empty.ps,width=7.5cm}}}
+\put(0,400){\makebox(0,0)[tl]{\epsfig{figure=tmp/summary-none.ps,width=7.5cm}}}
+\put(445,400){\makebox(0,0)[tr]{\epsfig{figure=tmp/summary-dummy.ps,width=7.5cm}}}
+}
+@end iflatex
+@end iftex
+
+@cindex adopting articles
 
 @table @code
 
-@item gnus-show-threads
-@vindex gnus-show-threads
-If this variable is @code{nil}, no threading will be done, and all of
-the rest of the variables here will have no effect.  Turning threading
-off will speed group selection up a bit, but it is sure to make reading
-slower and more awkward.
+@item adopt
+Gnus will make the first of the orphaned articles the parent.  This
+parent will adopt all the other articles.  The adopted articles will be
+marked as such by pointy brackets (@samp{<>}) instead of the standard
+square brackets (@samp{[]}).  This is the default method.
 
-@item gnus-fetch-old-headers
-@vindex gnus-fetch-old-headers
-If non-@code{nil}, Gnus will attempt to build old threads by fetching
-more old headers---headers to articles marked as read.  If you
-would like to display as few summary lines as possible, but still
-connect as many loose threads as possible, you should set this variable
-to @code{some} or a number.  If you set it to a number, no more than
-that number of extra old headers will be fetched.  In either case,
-fetching old headers only works if the backend you are using carries
-overview files---this would normally be @code{nntp}, @code{nnspool} and
-@code{nnml}.  Also remember that if the root of the thread has been
-expired by the server, there's not much Gnus can do about that.
+@item dummy
+@vindex gnus-summary-dummy-line-format
+Gnus will create a dummy summary line that will pretend to be the
+parent.  This dummy line does not correspond to any real article, so
+selecting it will just select the first real article after the dummy
+article.  @code{gnus-summary-dummy-line-format} is used to specify the
+format of the dummy roots.  It accepts only one format spec:  @samp{S},
+which is the subject of the article.  @xref{Formatting Variables}.
 
-@item gnus-build-sparse-threads
-@vindex gnus-build-sparse-threads
-Fetching old headers can be slow.  A low-rent similar effect can be
-gotten by setting this variable to @code{some}.  Gnus will then look at
-the complete @code{References} headers of all articles and try to string
-together articles that belong in the same thread.  This will leave
-@dfn{gaps} in the threading display where Gnus guesses that an article
-is missing from the thread.  (These gaps appear like normal summary
-lines.  If you select a gap, Gnus will try to fetch the article in
-question.)  If this variable is @code{t}, Gnus will display all these
-``gaps'' without regard for whether they are useful for completing the
-thread or not.  Finally, if this variable is @code{more}, Gnus won't cut
-off sparse leaf nodes that don't lead anywhere.  This variable is
-@code{nil} by default.
+@item empty
+Gnus won't actually make any article the parent, but simply leave the
+subject field of all orphans except the first empty.  (Actually, it will
+use @code{gnus-summary-same-subject} as the subject (@pxref{Summary
+Buffer Format}).)
+
+@item none
+Don't make any article parent at all.  Just gather the threads and
+display them after one another.
+
+@item nil
+Don't gather loose threads.
+@end table
 
 @item gnus-summary-gather-subject-limit
 @vindex gnus-summary-gather-subject-limit
@@ -4630,60 +4661,54 @@ something like:
       'gnus-gather-threads-by-references)
 @end lisp
 
-@item gnus-summary-make-false-root
-@vindex gnus-summary-make-false-root
-If non-@code{nil}, Gnus will gather all loose subtrees into one big tree
-and create a dummy root at the top.  (Wait a minute.  Root at the top?
-Yup.)  Loose subtrees occur when the real root has expired, or you've
-read or killed the root in a previous session.
+@end table
 
-When there is no real root of a thread, Gnus will have to fudge
-something.  This variable says what fudging method Gnus should use.
-There are four possible values:
 
-@iftex
-@iflatex
-\gnusfigure{The Summary Buffer}{390}{
-\put(0,0){\epsfig{figure=tmp/summary-adopt.ps,width=7.5cm}}
-\put(445,0){\makebox(0,0)[br]{\epsfig{figure=tmp/summary-empty.ps,width=7.5cm}}}
-\put(0,400){\makebox(0,0)[tl]{\epsfig{figure=tmp/summary-none.ps,width=7.5cm}}}
-\put(445,400){\makebox(0,0)[tr]{\epsfig{figure=tmp/summary-dummy.ps,width=7.5cm}}}
-}
-@end iflatex
-@end iftex
-
-@cindex adopting articles
+@node Filling In Threads
+@subsubsection Filling In Threads
 
 @table @code
+@item gnus-fetch-old-headers
+@vindex gnus-fetch-old-headers
+If non-@code{nil}, Gnus will attempt to build old threads by fetching
+more old headers---headers to articles marked as read.  If you
+would like to display as few summary lines as possible, but still
+connect as many loose threads as possible, you should set this variable
+to @code{some} or a number.  If you set it to a number, no more than
+that number of extra old headers will be fetched.  In either case,
+fetching old headers only works if the backend you are using carries
+overview files---this would normally be @code{nntp}, @code{nnspool} and
+@code{nnml}.  Also remember that if the root of the thread has been
+expired by the server, there's not much Gnus can do about that.
 
-@item adopt
-Gnus will make the first of the orphaned articles the parent.  This
-parent will adopt all the other articles.  The adopted articles will be
-marked as such by pointy brackets (@samp{<>}) instead of the standard
-square brackets (@samp{[]}).  This is the default method.
+@item gnus-build-sparse-threads
+@vindex gnus-build-sparse-threads
+Fetching old headers can be slow.  A low-rent similar effect can be
+gotten by setting this variable to @code{some}.  Gnus will then look at
+the complete @code{References} headers of all articles and try to string
+together articles that belong in the same thread.  This will leave
+@dfn{gaps} in the threading display where Gnus guesses that an article
+is missing from the thread.  (These gaps appear like normal summary
+lines.  If you select a gap, Gnus will try to fetch the article in
+question.)  If this variable is @code{t}, Gnus will display all these
+``gaps'' without regard for whether they are useful for completing the
+thread or not.  Finally, if this variable is @code{more}, Gnus won't cut
+off sparse leaf nodes that don't lead anywhere.  This variable is
+@code{nil} by default.
 
-@item dummy
-@vindex gnus-summary-dummy-line-format
-Gnus will create a dummy summary line that will pretend to be the
-parent.  This dummy line does not correspond to any real article, so
-selecting it will just select the first real article after the dummy
-article.  @code{gnus-summary-dummy-line-format} is used to specify the
-format of the dummy roots.  It accepts only one format spec:  @samp{S},
-which is the subject of the article.  @xref{Formatting Variables}.
-
-@item empty
-Gnus won't actually make any article the parent, but simply leave the
-subject field of all orphans except the first empty.  (Actually, it will
-use @code{gnus-summary-same-subject} as the subject (@pxref{Summary
-Buffer Format}).)
-
-@item none
-Don't make any article parent at all.  Just gather the threads and
-display them after one another.
-
-@item nil
-Don't gather loose threads.
 @end table
+
+
+@node More Threading
+@subsubsection More Threading
+
+@table @code
+@item gnus-show-threads
+@vindex gnus-show-threads
+If this variable is @code{nil}, no threading will be done, and all of
+the rest of the variables here will have no effect.  Turning threading
+off will speed group selection up a bit, but it is sure to make reading
+slower and more awkward.
 
 @item gnus-thread-hide-subtree
 @vindex gnus-thread-hide-subtree
@@ -4714,6 +4739,14 @@ in a new thread.
 This is a number that says how much each sub-thread should be indented.
 The default is 4.
 
+@end table
+
+
+@node Low-Level Threading
+@subsubsection Low-Level Threading
+
+@table @code
+
 @item gnus-parse-headers-hook
 @vindex gnus-parse-headers-hook
 Hook run before parsing any headers.  The default value is
@@ -4737,9 +4770,9 @@ meaningful.  Here's one example:
 (defun my-alter-message-id (header)
   (let ((id (mail-header-id header)))
     (when (string-match
-           "\\(<[^<>@]*\\)\\.?cygnus\\..*@\\([^<>@]*>\\)" id)
+           "\\(<[^<>@@]*\\)\\.?cygnus\\..*@@\\([^<>@@]*>\\)" id)
       (mail-header-set-id
-       (concat (match-string 1 id) "@" (match-string 2 id))
+       (concat (match-string 1 id) "@@" (match-string 2 id))
        header))))
 @end lisp
 
@@ -5100,7 +5133,9 @@ subscribed newsgroups, request all unread articles, score them, and
 store them in the cache.  You should only ever, ever ever ever, use this
 command if 1) your connection to the @sc{nntp} server is really, really,
 really slow and 2) you have a really, really, really huge disk.
-Seriously.
+Seriously.  One way to cut down on the number of articles downloaded is
+to score unwanted articles down and have them marked as read.  They will
+not then be downloaded by this command.
 
 @vindex gnus-uncacheable-groups
 It is likely that you do not want caching on some groups.  For instance,
@@ -6159,6 +6194,13 @@ Remove page breaks from the current article
 @c @icon{gnus-summary-caesar-message}
 Do a Caesar rotate (rot13) on the article buffer
 (@code{gnus-summary-caesar-message}). 
+Unreadable articles that tell you to read them with Caesar rotate or rot13.
+(Typically offensive jokes and such.)
+
+It's commonly called ``rot13'' because each letter is rotated 13
+positions in the alphabet, e. g. @samp{B} (letter #2) -> @sam{O} (letter
+#15).  It is sometimes referred to as ``Caesar rotate'' because Caesar
+is rumoured to have employed this form of, uh, somewhat weak encryption.
 
 @item W t
 @kindex W t (Summary)
@@ -10871,6 +10913,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Commands::         New commands for all the buffers.
 * Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
+* Example Setup::          An example @file{.gnus.el} file for offline people.
 @end menu
 
 
@@ -11286,6 +11329,52 @@ Hook run when connecting to the network.
 Hook run when disconnecting from the network.
 
 @end table
+
+
+@node Example Setup
+@subsection Example Setup
+
+If you don't want to read this manual, and you have a fairly standard
+setup, you may be able to use something like the following as your
+@file{.gnus.el} file to get started.
+
+@lisp
+;;; Define how Gnus is to fetch news.  We do this over NNTP
+;;; from your ISP's server.
+(setq gnus-select-method '(nntp "nntp.your-isp.com"))
+
+;;; Define how Gnus is to read your mail.  We read mail from
+;;; your ISP's POP server.
+(setenv "MAILSERVER" "pop.your-isp.com")
+(setq nnmail-spool-file "po:username")
+
+;;; Say how Gnus is to store the mail.  We use nnml groups.
+(setq gnus-secondary-select-methods '((nnml "")))
+
+;;; Make Gnus into an offline newsreader.
+(gnus-agentize)
+@end lisp
+
+That should be it, basically.  Put that in your @file{~/.gnus.el} file,
+edit to suit your needs, start up PPP (or whatever), and type @kbd{M-x
+gnus}.
+
+If this is the first time you've run Gnus, you will be subscribed
+automatically to a few default newsgroups.  You'll probably want to
+subscribe to more groups, and to do that, you have to query the
+@sc{nntp} server for a complete list of groups with the @kbd{A A}
+command.  This usually takes quite a while, but you only have to do it
+once.
+
+After reading and parsing a while, you'll be presented with a list of
+groups.  Subscribe to the ones you want to read with the @kbd{u}
+command.  @kbd{l} to make all the killed groups disappear after you've
+subscribe to all the groups you want to read.  (@kbd{A k} will bring
+back all the killed groups.)
+
+You can now read the groups at once, or you can download the articles
+with the @kbd{J s} command.  And then read the rest of this manual to
+find out which of the other gazillion things you want to customize.
 
 
 @node Scoring

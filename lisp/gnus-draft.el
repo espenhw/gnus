@@ -60,10 +60,9 @@
 \\{gnus-draft-mode-map}"
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
-    (if (not (set (make-local-variable 'gnus-draft-mode)
+    (when (set (make-local-variable 'gnus-draft-mode)
 		  (if (null arg) (not gnus-draft-mode)
-		    (> (prefix-numeric-value arg) 0))))
-	(remove-hook 'gnus-message-setup-hook 'gnus-draft-setup-message)
+		    (> (prefix-numeric-value arg) 0)))
       ;; Set up the menu.
       (when (gnus-visual-p 'draft-menu 'menu)
 	(gnus-draft-make-menu-bar))
@@ -125,12 +124,13 @@
 (defun gnus-group-send-drafts ()
   "Send all sendable articles from the draft group."
   (interactive)
-  (gnus-request-group "nndraft:draft")
+  (gnus-request-group "nndraft:drafts")
   (save-excursion
     (let ((articles (nndraft-articles))
 	  (unsendable (gnus-uncompress-range
-		       (cdr (assq 'unsend (gnus-info-marks
-					   (gnus-get-info "nndraft:draft"))))))
+		       (cdr (assq 'unsend
+				  (gnus-info-marks
+				   (gnus-get-info "nndraft:drafts"))))))
 	  article)
       (while (setq article (pop articles))
 	(unless (memq article unsendable)
@@ -143,7 +143,7 @@
     (message-mail)
     (erase-buffer)
     (if (not (gnus-request-restore-buffer
-	      article (or gnus-newsgroup-name "nndraft:draft")))
+	      article (or gnus-newsgroup-name "nndraft:drafts")))
 	(error "Couldn't restore the article")
       ;; Insert the separator.
       (goto-char (point-min))

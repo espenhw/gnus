@@ -334,7 +334,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (error "Document is not of any recognized type"))
     (if result
 	(car entry)
-      (cadar (sort results (lambda (r1 r2) (< (car r1) (car r2))))))))
+      (cadar (sort results 'car-less-than-car)))))
 
 ;;;
 ;;; Built-in type predicates and functions

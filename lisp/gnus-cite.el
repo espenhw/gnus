@@ -383,7 +383,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
       (gnus-article-search-signature)
       (push (cons (point-marker) "") marks)
       ;; Sort the marks.
-      (setq marks (sort marks (lambda (m1 m2) (< (car m1) (car m2)))))
+      (setq marks (sort marks 'car-less-than-car))
       (let ((omarks marks))
 	(setq marks nil)
 	(while (cdr omarks)

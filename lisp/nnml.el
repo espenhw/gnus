@@ -632,7 +632,7 @@ all.  This may very well take some time.")
 	(setq nnml-article-file-alist
 	      (sort
 	       (nnheader-article-to-file-alist nnml-current-directory)
-	       (lambda (a1 a2) (< (car a1) (car a2))))))
+	       'car-less-than-car)))
       (setq active
 	    (if nnml-article-file-alist
 		(cons (caar nnml-article-file-alist)
@@ -728,7 +728,7 @@ all.  This may very well take some time.")
 	  (nnml-generate-nov-databases-1 dir seen))))
     ;; Do this directory.
     (let ((files (sort (nnheader-article-to-file-alist dir)
-		       (lambda (a b) (< (car a) (car b))))))
+		       'car-less-than-car)))
       (when files
 	(funcall nnml-generate-active-function dir)
 	;; Generate the nov file.

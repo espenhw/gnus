@@ -105,7 +105,7 @@
   nil)
 
 (deffoo nnagent-request-post (&optional server)
-  (gnus-request-accept-article "nndraft:draft"))
+  (gnus-request-accept-article "nndraft:drafts"))
 
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent

@@ -700,12 +700,12 @@ prompt the user for the name of an NNTP server to use."
 
 (defun gnus-start-draft-setup ()
   "Make sure the draft group exists."
-  (unless (gnus-gethash "nndraft:draft" gnus-newsrc-hashtb)
-    (gnus-request-create-group "draft" '(nndraft ""))
+  (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
+    (gnus-request-create-group "drafts" '(nndraft ""))
     (let ((gnus-level-default-subscribed 1))
-      (gnus-subscribe-group "nndraft:draft" nil '(nndraft "")))
+      (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
     (gnus-group-set-parameter
-     "nndraft:draft" 'gnus-dummy '((gnus-draft-mode)))))
+     "nndraft:drafts" 'gnus-dummy '((gnus-draft-mode)))))
 
 ;;;###autoload
 (defun gnus-unload ()

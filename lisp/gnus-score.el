@@ -2544,7 +2544,7 @@ Destroys the current buffer."
 	    files)))
       (mapcar
        (lambda (f) (cdr f))
-       (sort alist (lambda (f1 f2) (< (car f1) (car f2))))))))
+       (sort alist 'car-less-than-car)))))
 
 (defun gnus-score-find-alist (group)
   "Return list of score files for GROUP.

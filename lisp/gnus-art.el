@@ -1977,6 +1977,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (cons gnus-newsgroup-name gnus-current-article))
 		(unless (vectorp gnus-current-headers)
 		  (setq gnus-current-headers nil))
+		(gnus-summary-goto-subject gnus-current-article)
 		(gnus-summary-show-thread)
 		(run-hooks 'gnus-mark-article-hook)
 		(gnus-set-mode-line 'summary)

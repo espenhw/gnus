@@ -1170,6 +1170,7 @@ Return the number of headers removed."
   (define-key message-mode-map "\C-c\C-d" 'message-dont-send)
 
   (define-key message-mode-map "\C-c\C-e" 'message-elide-region)
+  (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
 
   (define-key message-mode-map "\t" 'message-tab))
 
@@ -1183,6 +1184,7 @@ Return the number of headers removed."
    ["Caesar (rot13) Message" message-caesar-buffer-body t]
    ["Caesar (rot13) Region" message-caesar-region (mark t)]
    ["Elide Region" message-elide-region (mark t)]
+   ["Delete Outside Region" message-delete-not-region (mark t)]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
    "----"
@@ -1240,6 +1242,8 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-kill-actions)
   (make-local-variable 'message-postpone-actions)
   (make-local-variable 'message-draft-article)
+  (make-local-hook 'kill-buffer-hook)
+  (add-hook 'kill-buffer-hook 'message-disassociate-draft)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
   (setq local-abbrev-table message-mode-abbrev-table)
@@ -1401,6 +1405,22 @@ With the prefix argument FORCE, insert the header anyway."
 
 
 ;;; Various commands
+
+(defun message-delete-not-region (beg end)
+  "Delete everything in the body of the current message that is outside of the region."
+  (interactive "r")
+  (save-excursion
+    (goto-char end)
+    (delete-region (point) (progn (message-goto-signature)
+				  (forward-line -2)
+				  (point)))
+    (insert "\n")
+    (goto-char beg)
+    (delete-region beg (progn (message-goto-body)
+			      (forward-line 2)
+			      (point))))
+  (message-goto-signature)
+  (forward-line -2))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."
@@ -1726,6 +1746,7 @@ The text will also be indented the normal way."
   (when (or (not (buffer-modified-p))
 	    (yes-or-no-p "Message modified; kill anyway? "))
     (let ((actions message-kill-actions))
+      (setq buffer-file-name nil)
       (kill-buffer (current-buffer))
       (message-do-actions actions))))
 
@@ -3021,8 +3042,9 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-disassociate-draft ()
   "Disassociate the message buffer from the drafts directory."
-  (nndraft-request-expire-articles
-   (list message-draft-article) "drafts" nil t))
+  (when message-draft-article
+    (nndraft-request-expire-articles
+     (list message-draft-article) "drafts" nil t)))
 
 
 
