@@ -4034,6 +4034,8 @@ Number of characters in the article. This specifier is not supported in some
 methods (like nnfolder).
 @item I
 Indentation based on thread level (@pxref{Customizing Threading}).
+@item B
+A complex trn-style thread tree, showing response-connecting trace lines.
 @item T
 Nothing if the article is a root and lots of spaces if it isn't (it
 pushes everything after it off the screen).
