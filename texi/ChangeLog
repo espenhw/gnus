@@ -1,3 +1,10 @@
+2003-01-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnusref.tex (subsection*{Notes}): do.
+
+	* gnus.texi (Article Hiding): Remove gnus-article-hide-pgp.
+	(Customizing Articles): Remove gnus-treat-strip-pgp.
+
 2003-01-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Various Summary Stuff): Add

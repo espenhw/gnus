@@ -8109,29 +8109,6 @@ subject.  This can also be a list of regular expressions.
 
 @end table
 
-@item W W p
-@kindex W W p (Summary)
-@findex gnus-article-hide-pgp
-@vindex gnus-article-hide-pgp-hook
-Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}).  The
-@code{gnus-article-hide-pgp-hook} hook will be run after a @sc{pgp}
-signature has been hidden.  For example, to automatically verify
-articles that have signatures in them do:
-@lisp
-;;; Hide pgp cruft if any.
-
-(setq gnus-treat-strip-pgp t)
-
-;;; After hiding pgp, verify the message;
-;;; only happens if pgp signature is found.
-
-(add-hook 'gnus-article-hide-pgp-hook
-          (lambda ()
-            (save-excursion
-              (set-buffer gnus-original-article-buffer)
-              (mc-verify))))
-@end lisp
-
 @item W W P
 @kindex W W P (Summary)
 @findex gnus-article-hide-pem
@@ -10769,7 +10746,6 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-strip-leading-blank-lines (t, integer)
 @item gnus-treat-strip-multiple-blank-lines (t, integer)
 @item gnus-treat-strip-pem (t, last, integer)
-@item gnus-treat-strip-pgp (t, last, integer)
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
 @item gnus-treat-unsplit-urls (t, integer)
 @item gnus-treat-wash-html (t, integer)
