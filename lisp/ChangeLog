@@ -1,3 +1,8 @@
+2003-02-23  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* message.el (message-mode): \\(...\\) around additional
+	paragraph-separate alternative.
+
 2003-02-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-mime-button-commands): Add ellipsis.

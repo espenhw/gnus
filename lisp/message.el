@@ -2270,9 +2270,11 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-checksum) nil)
   (set (make-local-variable 'message-mime-part) 0)
   (message-setup-fill-variables)
-  (set (make-local-variable 'paragraph-separate)
-       (concat paragraph-separate
-	       "\\|<#!*/?\\(multipart\\|part\\|external\\|mml\\|secure\\)"))
+  (set
+   (make-local-variable 'paragraph-separate)
+   (format "\\(%s\\)\\|\\(%s\\)"
+	   paragraph-separate
+	   "<#!*/?\\(multipart\\|part\\|external\\|mml\\|secure\\)"))
   ;; Allow using comment commands to add/remove quoting.
   (set (make-local-variable 'comment-start) message-yank-prefix)
   (if (featurep 'xemacs)
