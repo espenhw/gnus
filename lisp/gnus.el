@@ -892,9 +892,9 @@ REST is a plist of following:
 			 ,parameter-type
 			 ,parameter-document))
      (if (eq type 'bool)
-	 `(defun ,function (group)
+	 `(defun ,function (name)
 	    ,function-document
-	    (let ((params (gnus-group-find-parameter group))
+	    (let ((params (gnus-group-find-parameter name))
 		  val)
 	      (cond
 	       ((memq ',param params)
@@ -902,7 +902,7 @@ REST is a plist of following:
 	       ((setq val (assq ',param params))
 		(cdr val))
 	       ((stringp ,variable)
-		(string-match ,variable group))
+		(string-match ,variable name))
 	       (,variable
 		(let ((alist ,variable)
 		      elem value)

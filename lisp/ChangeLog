@@ -1,3 +1,8 @@
+2001-02-14  Katsumi Yamaoka <yamaoka@jpl.org>
+        Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-define-group-parameter): Fix.
+
 2001-02-14 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-define-group-parameter): Improved.
