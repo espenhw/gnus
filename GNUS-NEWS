@@ -34,7 +34,13 @@ X-No-Archive: header.  Improved crosspost follow behaviour with
 ** References and X-Draft-Headers are no longer generated when you
    start composing messages.
 
-** Improved anti-speam features.
+** Improved anti-spam features.
+
+Gnus is now able to take out spam from your mail and news streams
+using a wide variety of programs and filter rules. Among the supported
+methods are RBL blocklists, bogofilter and white/blacklists.  Hooks
+for easy use of external packages such as SpamAssassin and Hashcash
+are also new.
 
 ** Easy inclusion of X-Faces headers.
 
@@ -150,7 +156,7 @@ Add a new format of match like
         ((header "to" "larsi.*org")
          (Organization "Somewhere, Inc."))
 
-The old format like the lines below is obsolete.
+The old format like the lines below is obsolete, but still accepted.
 
         (header "to" "larsi.*org"
          (Organization "Somewhere, Inc."))
@@ -238,10 +244,10 @@ the .marks or .mrk file instead of the information in .newsrc.eld.
 The new server variables `nnml-marks-is-evil' and
 `nnfolder-marks-is-evil' can be used to disable this feature.
 
-** The menu bar (in Group and Summary buffer) named "Misc" has been
-renamed to "Gnus".
+** The menu bar item (in Group and Summary buffer) named "Misc" has
+been renamed to "Gnus".
 
-** The menu bar (in Message mode) named "MML" has been renamed to
+** The menu bar item (in Message mode) named "MML" has been renamed to
 "Attachments".
 
 ** gnus-group-charset-alist and gnus-group-ignored-charsets-alist.
