@@ -1741,7 +1741,7 @@ lines of a @code{format} specification, which is pretty much the same as
 a @code{printf} specifications, for those of you who use (feh!) C.
 @xref{Formatting Variables}.
 
-@samp{%M%S%5y: %(%g%)\n} is the value that produced those lines above.
+@samp{%M%S%5y:%B%(%g%)\n} is the value that produced those lines above.
 
 There should always be a colon on the line; the cursor always moves to
 the colon after performing an operation.  @xref{Positioning
@@ -1818,6 +1818,9 @@ Newsgroup description.
 
 @item s
 Select method.
+
+@item B
+If the summary buffer for the group is open or not.
 
 @item n
 Select from where.
