@@ -1,5 +1,8 @@
 2002-10-09  Simon Josefsson  <jas@extundo.com>
 
+	* mml1991.el (mml1991-pgg-sign): Bind pgg-default-user-id, not
+	pgg-gpg-user-id.
+
 	* pgg.el (pgg-insert-url-with-w3): Ignore errors.
 	(pgg-fetch-key-function): Nil if w3 is not installed.
 
