@@ -1,3 +1,8 @@
+2003-05-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-expire-unagentized-dirs): Added
+	space. 
+
 2003-05-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): Don't do article
