@@ -2743,6 +2743,8 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (or gnus-override-method
       (and (not group)
 	   gnus-select-method)
+      (and (not (gnus-group-entry group)) ;; a new group
+	   (gnus-group-name-to-method group))
       (let ((info (or info (gnus-get-info group)))
 	    method)
 	(if (or (not info)

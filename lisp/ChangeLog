@@ -1,3 +1,8 @@
+1999-12-03 01:12:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-find-method-for-group): The method of a new group
+ 	is not the native one.
+
 1999-12-03 01:26:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-button-embedded-url): Always call browse-url. 
