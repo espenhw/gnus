@@ -1,7 +1,7 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 1997,
-;; 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -46,8 +46,7 @@
 
 (defgroup gnus-format nil
   "Dealing with formatting issues."
-  :group 'news
-  :group 'mail)
+  :group 'gnus)
 
 (defgroup gnus-charset nil
   "Group character set issues."
@@ -57,6 +56,7 @@
 
 (defgroup gnus-cache nil
   "Cache interface."
+  :link '(custom-manual "(gnus)Article Caching")
   :group 'gnus)
 
 (defgroup gnus-start nil
@@ -1304,7 +1304,7 @@ If the default site is too slow, try one of these:
     ("netins" . (concat "http://www.netins.net/usenet/charter/" 
 			(gnus-replace-in-string name "\\." "-") "-charter.html")))
   "*An alist of (HIERARCHY . FORM) pairs used to construct the URL of a charter.
-  When FORM is evaluated `name' is bound to the name of the group."
+When FORM is evaluated `name' is bound to the name of the group."
   :group 'gnus-group-various
   :type '(repeat (cons (string :tag "Hierarchy") (sexp :tag "Form"))))
 
