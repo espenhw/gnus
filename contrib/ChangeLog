@@ -1,3 +1,8 @@
+2000-12-19 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gpg.el (defalias): Use eval-and-compile.
+	(gpg-command-all-arglist): Suggest by Jeff Senn <senn@maya.com>.
+
 2000-12-15 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gpg.el (gpg-command-alist): Alist may not be defined.

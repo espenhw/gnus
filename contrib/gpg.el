@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.7 2000/12/15 04:50:15 zsh Exp $
+;; $Id: gpg.el,v 1.8 2000/12/15 05:26:35 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -112,10 +112,11 @@
 (eval-when-compile 
   (require 'cl))
 
-(defalias 'gpg-point-at-eol
-  (if (fboundp 'point-at-eol)
-      'point-at-eol
-    'line-end-position))
+(eval-and-compile 
+  (defalias 'gpg-point-at-eol
+    (if (fboundp 'point-at-eol)
+	'point-at-eol
+      'line-end-position)))
 
 ;;;; Customization:
 
@@ -235,6 +236,12 @@ for `gpg-2comp' if you don't have this script, but you'll lose PGP
 2.6.x compatibility."
   :tag "GnuPG programs"
   :type 'gpg-command-alist
+  :group 'gpg-options)
+
+(defcustom gpg-command-all-arglist
+  nil
+  "List of arguments to add to all GPG commands."
+  :tag "All command args"
   :group 'gpg-options)
 
 (defcustom gpg-command-flag-textmode "--textmode"
@@ -543,7 +550,7 @@ it are replaced by SUBSTITUTIONS.
 SUBSTITIONS is a list of (SYMBOL . SEXP) pairs, where SEXP is either a
 string (which is inserted literally), a list of strings (which are
 inserted as well), or nil, which means to insert nothing."
-  (let (arglist)
+  (let ((arglist (copy-list gpg-command-all-arglist)))
     (while template
       (let* ((templ (pop template))
 	     (repl (assoc templ substitutions))
