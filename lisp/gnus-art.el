@@ -1145,8 +1145,7 @@ See Info node `(gnus)Customizing Articles' for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
 
-(defvaralias 'gnus-treat-display-xface 'gnus-treat-display-x-face)
-(make-obsolete-variable 'gnus-treat-display-xface 
+(make-obsolete-variable 'gnus-treat-display-xface
 			'gnus-treat-display-x-face)
 
 (defcustom gnus-treat-display-x-face
@@ -1166,7 +1165,22 @@ See Info node `(gnus)Customizing Articles' and Info node
   :version "21.1"
   :link '(custom-manual "(gnus)Customizing Articles")
   :link '(custom-manual "(gnus)X-Face")
-  :type gnus-article-treat-head-custom)
+  :type gnus-article-treat-head-custom
+  :set (lambda (symbol value)
+	 (custom-set-default
+	  symbol
+	  (cond ((boundp 'gnus-treat-display-xface)
+		 (message "\
+** gnus-treat-display-xface is an obsolete variable;\
+ use gnus-treat-display-x-face instead")
+		 (default-value 'gnus-treat-display-xface))
+		((get 'gnus-treat-display-xface 'saved-value)
+		 (message "\
+** gnus-treat-display-xface is an obsolete variable;\
+ use gnus-treat-display-x-face instead")
+		 (eval (car (get 'gnus-treat-display-xface 'saved-value))))
+		(t
+		 value)))))
 (put 'gnus-treat-display-x-face 'highlight t)
 
 (defcustom gnus-treat-display-face
