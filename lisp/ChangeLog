@@ -1,3 +1,31 @@
+2000-06-26  Dave Love  <fx@gnu.org>
+
+	* mm-decode.el (mm-image-fit-p): Use `image-size' in Emacs. 
+
+	* message.el: Remove unnecessary `require'ments.  Defvar
+	gnus-list-identifiers when compiling.  Don't try to autoload
+	variable `gnus-list-identifiers'.  Autoload
+	gnus-group-name-charset.
+	(message-fetch-field): Don't assume `format' removes text
+	properties.
+	(message-strip-list-identifiers, message-reply, message-followup):
+	Require gnus-sum.
+	(message-mode): Tidy XEmacs conditionals.
+	(message-replace-chars-in-string): Use subst-char-in-string when
+	available.
+
+	* gnus-xmas.el (gnus-xmas-define) <match-string-no-properties>:
+	Define if necessary.
+
+	* gnus-art.el (gnus-article-edit-exit): Don't assume `format'
+	removes text properties.
+
+	* gnus-srvr.el (gnus-browse-group-name): Likewise.
+
+	* gnus-msg.el (gnus-copy-article-buffer):  Likewise.
+
+	* gnus-score.el (gnus-summary-score-entry): Likewise.
+
 2000-06-26 11:18:57  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnimap.el (nnimap-request-post): Fix parenthesis.
