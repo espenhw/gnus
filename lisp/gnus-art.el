@@ -1169,7 +1169,9 @@ See Info node `(gnus)Customizing Articles' and Info node
   :set (lambda (symbol value)
 	 (custom-set-default
 	  symbol
-	  (cond ((boundp 'gnus-treat-display-xface)
+	  (cond ((or (boundp symbol) (get symbol 'saved-value))
+		 value)
+		((boundp 'gnus-treat-display-xface)
 		 (message "\
 ** gnus-treat-display-xface is an obsolete variable;\
  use gnus-treat-display-x-face instead")
