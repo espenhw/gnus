@@ -1,5 +1,7 @@
 1999-11-16 10:01:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treat-buttonize): More testing.
+
 	* mm-encode.el: Another CVS test.
 
 	* gnus-art.el (gnus-treat-emphasize): Change default.
