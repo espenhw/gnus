@@ -1,3 +1,8 @@
+2000-10-06 Emerick Rogul <emerick@csa.bu.edu>
+
+	* message.el (message-setup-fill-variables): New variable.
+	(message-mode): Use it.
+
 2000-10-05  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-fold-region): Use gnus-point-at-bol.
