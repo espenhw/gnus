@@ -130,7 +130,7 @@ messages will be shown to indicate the current status.")
 					info follow-to respect-poster)
   (let ((method-address (cdr (assq 'to-address (nth 4 info))))
 	from subject date to reply-to message-of
-	references message-id sender cc)
+	references message-id sender cc sendto elt)
     (setq method-address
 	  (if (and (stringp method-address) 
 		   (string= method-address ""))
@@ -173,15 +173,26 @@ messages will be shown to indicate the current status.")
 	    (widen))
 	  (setq news-reply-yank-from from)
 	  (setq news-reply-yank-message-id message-id)
-	  (mail-setup (if (and follow-to (listp follow-to)) ""
+	  
+	  ;; Gather the "to" addresses out of the follow-to list and remove
+	  ;; them as we go.
+	  (if (and follow-to (listp follow-to))
+	      (while (setq elt (assoc "To" follow-to))
+		(setq sendto (concat sendto (and sendto ", ") (cdr elt)))
+		(setq follow-to (delq elt follow-to))))
+	  (mail-setup (if (and follow-to (listp follow-to)) sendto
 			(or method-address 
 			    (concat (or sender reply-to from "")
 				    (if to (concat ", " to) "")
 				    (if cc (concat ", " cc) ""))))
 		      subject message-of nil article-buffer nil)
+	  ;; Note that "To" elements should already be in the message.
 	  (if (and follow-to (listp follow-to))
 	      (progn
 		(goto-char (point-min))
+		(re-search-forward "^To:" nil t)
+		(beginning-of-line)
+		(forward-line 1)
 		(while follow-to
 		  (insert 
 		   (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
@@ -239,7 +250,7 @@ messages will be shown to indicate the current status.")
 (defun nnmail-move-inbox (inbox tofile)
   (let ((inbox (file-truename
 		(expand-file-name (substitute-in-file-name inbox))))
-	(tofile (make-temp-name (expand-file-name tofile)))
+	(tofile (nnmail-make-complex-temp-name (expand-file-name tofile)))
 	movemail popmail errors)
     ;; Check whether the inbox is to be moved to the special tmp dir. 
     (if nnmail-tmp-directory
@@ -479,6 +490,15 @@ FUNC will be called with the group name to determine the article number."
 			    (cdr (car group-alist))))
 	    (setq group-alist (cdr group-alist)))
 	  (insert "\n")))))
+
+;; Written by byer@mv.us.adobe.com (Scott Byer).
+(defun nnmail-make-complex-temp-name (prefix)
+  (let ((newname (make-temp-name prefix))
+	(newprefix prefix))
+    (while (file-exists-p newname)
+      (setq newprefix (concat newprefix "x"))
+      (setq newname (make-temp-name newprefix)))
+    newname))
 
 (provide 'nnmail)
 

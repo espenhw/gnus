@@ -281,10 +281,13 @@ all. This may very well take some time.")
 	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
     (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
-      (setcar active (or (and active-articles (apply 'min active-articles))
-			 0))
+      (and active
+	   (setcar active (or (and active-articles
+				   (apply 'min active-articles))
+			      0)))
       (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
+    (message "")
     rest))
 
 (defun nnml-request-move-article 
@@ -656,7 +659,7 @@ all. This may very well take some time.")
   (save-excursion
     (set-buffer (nnml-open-nov group))
     (goto-char 1)
-    (if (re-search-forward (concat "^" (int-to-string article) "\t"))
+    (if (re-search-forward (concat "^" (int-to-string article) "\t") nil t)
 	(delete-region (match-beginning 0) (progn (forward-line 1) (point))))
     t))
 

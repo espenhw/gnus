@@ -1,7 +1,8 @@
 ;;; nnfolder.el --- mail folder access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Scott Byer <byer@mv.us.adobe.com>
+;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -40,6 +41,25 @@
 (defvar nnfolder-active-file (concat nnfolder-directory  "active")
   "The name of the active file.")
 
+;; I renamed this variable to somehting more in keeping with the general GNU
+;; style. -SLB
+
+(defvar nnfolder-ignore-active-file nil
+  "If non-nil, causes nnfolder to do some extra work in order to determine the true active ranges of an mbox file.  
+Note that the active file is still saved, but it's values are not
+used.  This costs some extra time when scanning an mbox when opening
+it.")
+
+;; Note that this variable may not be completely implemented yet. -SLB
+
+(defvar nnfolder-always-close nil
+  "If non-nil, nnfolder attempts to only ever have one mbox open at a time.  
+This is a straight space/performance trade off, as the mboxes will have to 
+be scaned every time they are read in.  If nil (default), nnfolder will
+attempt to keep the buffers around (saving the nnfolder's buffer upon group 
+close, but not killing it), speeding some things up tremendously, especially
+such things as moving mail.  All buffers always get killed upon server close.")
+
 (defvar nnfolder-newsgroups-file (concat nnfolder-directory "newsgroups")
   "Mail newsgroups description file.")
 
@@ -48,7 +68,7 @@
 
 
 
-(defconst nnfolder-version "nnfolder 0.1"
+(defconst nnfolder-version "nnfolder 0.2"
   "nnfolder version.")
 
 (defconst nnfolder-article-marker "X-Gnus-Article-Number: "
@@ -152,7 +172,7 @@
 (defun nnfolder-request-close ()
   (let ((alist nnfolder-buffer-alist))
     (while alist
-      (nnfolder-close-group (car (car alist)))
+      (nnfolder-close-group (car (car alist)) nil t)
       (setq alist (cdr alist))))
   (setq nnfolder-buffer-alist nil
 	nnfolder-group-alist nil))
@@ -210,16 +230,28 @@
 			       (car active))))
 	     t)))))
 
-(defun nnfolder-close-group (group &optional server)
+;; Don't close the buffer if we're not shutting down the server.  This way,
+;; we can keep the buffer in the group buffer cache, and not have to grovel
+;; over the buffer again unless we add new mail to it or modify it in some
+;; way.
+
+(defun nnfolder-close-group (group &optional server force)
   (nnfolder-possibly-change-group group)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
-    (or (buffer-modified-p)
-	(kill-buffer (current-buffer))))
-  (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
-				    nnfolder-buffer-alist))
-  (setq nnfolder-current-group nil
-	nnfolder-current-buffer nil)
+    ;; If the buffer was modified, write the file out now.
+    (save-buffer)
+    (if (or force
+	    nnfolder-always-close)
+	;; If we're shutting the server down, we need to kill the buffer and
+	;; remove it from the open buffer list.  Or, of course, if we're
+	;; trying to minimize our space impact.
+	(progn
+	  (kill-buffer (current-buffer))
+	  (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
+					    nnfolder-buffer-alist))))
+    (setq nnfolder-current-group nil
+	  nnfolder-current-buffer nil))
   t)
 
 (defun nnfolder-request-list (&optional server)
@@ -322,7 +354,6 @@
       (insert "From nobody " (current-time-string) "\n"))
     (and 
      (nnfolder-request-list)
-     (setq nnfolder-group-alist (nnmail-get-active))
      (progn
        (set-buffer buf)
        (goto-char (point-min))
@@ -330,14 +361,14 @@
        (forward-line -1)
        (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (setq result (nnfolder-save-mail (and (stringp group) group))))
+       (setq result (car (nnfolder-save-mail (and (stringp group) group)))))
      (save-excursion
        (set-buffer nnfolder-current-buffer)
        (insert-buffer-substring buf)
        (and last (save-buffer))
        result)
      (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
-    (car result)))
+    result))
 
 (defun nnfolder-request-replace-article (article group buffer)
   (nnfolder-possibly-change-group group)
@@ -390,13 +421,27 @@
     (if (and (equal group nnfolder-current-group)
 	     (buffer-name nnfolder-current-buffer))
 	()
-      (if (setq inf (member group nnfolder-buffer-alist))
-	  (setq nnfolder-current-buffer (nth 1 inf)))
       (setq nnfolder-current-group group)
-      (if (not (buffer-name nnfolder-current-buffer))
+
+      ;; If we have to change groups, see if we don't already have the mbox
+      ;; in memory.  If we do, verify the modtime and destroy the mbox if
+      ;; needed so we can rescan it.
+      (if (setq inf (assoc group nnfolder-buffer-alist))
+	  (setq nnfolder-current-buffer (nth 1 inf)))
+
+      ;; If the buffer is not live, make sure it isn't in the alist.  If it
+      ;; is live, verify that nobody else has touched the file since last
+      ;; time.
+      (if (or (not (buffer-name nnfolder-current-buffer))
+	      (not (and (bufferp nnfolder-current-buffer)
+			(verify-visited-file-modtime nnfolder-current-buffer))))
 	  (progn
+	    (if (and (buffer-name nnfolder-current-buffer)
+		     (bufferp nnfolder-current-buffer))
+		(kill-buffer nnfolder-current-buffer))
 	    (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist))
 	    (setq inf nil)))
+      
       (if inf
 	  ()
 	(save-excursion
@@ -414,9 +459,19 @@
 	  (if group (list (list group "")) nnmail-split-methods))
 	 (group-art-list
 	  (nreverse (nnmail-article-group 'nnfolder-active-number)))
-	 group-art)
+	 save-list group-art)
+    (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
+
+    ;; Kill the previous newsgroup markers.
+    (goto-char (point-min))
+    (search-forward "\n\n" nil t)
+    (forward-line -1)
+    (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
+      (delete-region (point) (progn (forward-line 1) (point))))
+
+    ;; Insert the mail into each of the destination groups.
     (while group-art-list
       (setq group-art (car group-art-list)
 	    group-art-list (cdr group-art-list))
@@ -428,11 +483,10 @@
 	(save-excursion
 	  (set-buffer nnfolder-current-buffer)
 	  (goto-char (point-max))
-	  (insert-buffer-substring obuf beg end)))
-      (goto-char (point-min))
-      (search-forward (concat "\n" nnfolder-article-marker))
-      (delete-region (progn (beginning-of-line) (point))
-		     (progn (forward-line 1) (point))))))
+	  (insert-buffer-substring obuf beg end))))
+
+    ;; Did we save it anywhere?
+    save-list))
 
 (defun nnfolder-insert-newsgroup-line (group-art)
   (save-excursion
@@ -484,20 +538,30 @@
 	  (number "[0-9]+")
 	  (active (car (cdr (assoc nnfolder-current-group 
 				   nnfolder-group-alist))))
-	  activenumber start end)
+	  activenumber activemin start end)
       (goto-char (point-min))
       ;;
       ;; Anytime the active number is 1 or 0, it is supect.  In that case,
-      ;; search the file manually to find the active number.
+      ;; search the file manually to find the active number.  Or, of course,
+      ;; if we're being paranoid.  (This would also be the place to build
+      ;; other lists from the header markers, such as expunge lists, etc., if
+      ;; we ever desired to abandon the active file entirely for mboxes.)
       (setq activenumber (cdr active))
-      (if (< activenumber 2)
+      (if (or nnfolder-ignore-active-file
+	      (< activenumber 2))
 	  (progn
+	    (setq activemin (max (1- (lsh 1 23)) 
+				 (1- (lsh 1 24)) 
+				 (1- (lsh 1 25))))
 	    (while (and (search-forward marker nil t)
 			(re-search-forward number nil t))
-	      (setq activenumber (max activenumber
-				      (string-to-number (buffer-substring
-							 (match-beginning 0)
-							 (match-end 0))))))
+	      (let (newnum (string-to-number (buffer-substring
+					      (match-beginning 0)
+					      (match-end 0))))
+		(setq activenumber (max activenumber newnum))
+		(setq activemin (min activemin newnum))))
+	    (setcar active (min activemin activenumber))
+	    (setcdr active activenumber)
 	    (goto-char (point-min))))
 
       ;; Keep track of the active number on our own, and insert it back into

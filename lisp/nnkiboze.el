@@ -195,8 +195,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(gnus-read-active-file t)
 	(gnus-expert-user t))
     (gnus))
-  (let* ((gnus-newsrc-assoc (gnus-copy-sequence gnus-newsrc-assoc))
-	 (newsrc gnus-newsrc-assoc))
+  (let* ((gnus-newsrc-alist (gnus-copy-sequence gnus-newsrc-alist))
+	 (newsrc gnus-newsrc-alist))
     (while newsrc
       (if (string-match "nnkiboze" (car (car newsrc)))
 	  (nnkiboze-generate-group (car (car newsrc))))

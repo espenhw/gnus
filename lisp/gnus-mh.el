@@ -102,7 +102,9 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 				   gnus-user-login-name)))
 	    (setq cc (concat (if cc (concat cc ", ") "") orig-to))
 	  )
-	;;    (setq mh-show-buffer buffer)
+        ;; mh-yank-cur-msg needs to have mh-show-buffer set in the 
+        ;; *Article* buffer
+	(setq mh-show-buffer buffer)
 	)) ;; save excursion/restriction
 
     (mh-find-path)

@@ -67,6 +67,11 @@ messages will be shown to indicate the current status.")
 (defvar nnspool-nov-is-evil nil
   "Non-nil means that nnspool will never return NOV lines instead of headers.")
 
+(defvar nnspool-sift-nov-with-sed t
+  "If non-nil, use sed to get the relevant portion from the overview file.
+If nil, nnspool will load the entire file into a buffer and process it
+there.")
+
 
 
 (defconst nnspool-version "nnspool 2.0"
@@ -96,6 +101,7 @@ messages will be shown to indicate the current status.")
    (list 'nnspool-active-times-file nnspool-active-times-file)
    (list 'nnspool-large-newsgroup nnspool-large-newsgroup)
    (list 'nnspool-nov-is-evil nnspool-nov-is-evil)
+   (list 'nnspool-sift-nov-with-sed nnspool-sift-nov-with-sed)
    '(nnspool-current-directory nil)
    '(nnspool-current-group nil)
    '(nnspool-status-string "")))
@@ -277,7 +283,7 @@ Newsgroup must be selected before calling this function."
 	(while (and (not (looking-at 
 			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
 		    (zerop (forward-line -1))))
-	(let ((seconds (nnspool-seconds-since-epoch))
+	(let ((seconds (nnspool-seconds-since-epoch date))
 	      groups)
 	  ;; Go through lines and add the latest groups to a list.
 	  (while (and (looking-at "\\([^ ]+\\) +[0-9]+ ")
@@ -305,24 +311,26 @@ Newsgroup must be selected before calling this function."
 (defun nnspool-request-post (&optional server)
   "Post a new news in current buffer."
   (save-excursion
-    ;; We have to work in the server buffer because of NEmacs hack.
-    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
-    (set-buffer nntp-server-buffer)
-    (apply (function call-process-region)
-	   (point-min) (point-max)
-	   nnspool-inews-program 'delete t nil nnspool-inews-switches)
-    (prog1
-	(or (zerop (buffer-size))
-	    ;; If inews returns strings, it must be error message 
-	    ;;  unless SPOOLNEWS is defined.  
-	    ;; This condition is very weak, but there is no good rule 
-	    ;;  identifying errors when SPOOLNEWS is defined.  
-	    ;; Suggested by ohm@kaba.junet.
-	    (string-match "spooled" (buffer-string)))
+    (let* ((inews-buffer (generate-new-buffer " *nnspool post*"))
+	   (proc (apply 'start-process "*nnspool inews*" inews-buffer
+			nnspool-inews-program nnspool-inews-switches)))
+      (set-process-sentinel proc 'nnspool-inews-sentinel)
+      (process-send-region proc (point-min) (point-max))
+      (process-send-eof proc)
+      t)))
+
+(defun nnspool-inews-sentinel (proc status)
+  (save-excursion
+    (set-buffer (process-buffer proc))
+    (goto-char (point-min))
+    (if (or (zerop (buffer-size))
+	    (search-forward "spooled" nil t))
+	()
       ;; Make status message by unfolding lines.
       (subst-char-in-region (point-min) (point-max) ?\n ?\\ 'noundo)
       (setq nnspool-status-string (buffer-string))
-      (erase-buffer))))
+      (message "nnspool: %s" nnspool-status-string)
+      (kill-buffer (current-buffer)))))
 
 (fset 'nnspool-request-post-buffer 'nntp-request-post-buffer)
 
@@ -341,42 +349,52 @@ Newsgroup must be selected before calling this function."
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
-	    (insert-file-contents nov)
-	    ;; First we find the first wanted line. We issue a number
-	    ;; of search-forwards - the first article we are lookign
-	    ;; for may be expired, so we have to go on searching until
-	    ;; we find one of the articles we want.
-	    (while (and articles
-			(setq article (concat (int-to-string 
-					       (car articles)) "\t"))
-			(not (or (looking-at article)
-				 (search-forward (concat "\n" article) 
-						 nil t))))
-	      (setq articles (cdr articles)))
-	    (if (not articles)
-		()
-	      (beginning-of-line)
-	      (delete-region (point-min) (point))
-	      ;; Then we find the last wanted line. We go to the end
-	      ;; of the buffer and search backward much the same way
-	      ;; we did to find the first article.
-	      ;; !!! Perhaps it would be better just to do a (last articles), 
-	      ;; and go forward successively over each line and
-	      ;; compare to avoid this (reverse), like this:
-	      ;; (while (and (>= last (read nntp-server-buffer)))
-	      ;;             (zerop (forward-line 1))))
-	      (setq articles (reverse articles))
-	      (goto-char (point-max))
+	    (if nnspool-sift-nov-with-sed
+		(nnspool-sift-nov-with-sed articles nov)
+	      (insert-file-contents nov)
+	      ;; First we find the first wanted line. We issue a number
+	      ;; of search-forwards - the first article we are lookign
+	      ;; for may be expired, so we have to go on searching until
+	      ;; we find one of the articles we want.
 	      (while (and articles
-			  (not (search-backward 
-				(concat "\n" (int-to-string (car articles))
-					"\t") nil t)))
+			  (setq article (concat (int-to-string 
+						 (car articles)) "\t"))
+			  (not (or (looking-at article)
+				   (search-forward (concat "\n" article) 
+						   nil t))))
 		(setq articles (cdr articles)))
-	      (if articles
-		  (progn
-		    (forward-line 2)
-		    (delete-region (point) (point-max)))))
-	    (or articles (progn (erase-buffer) nil)))))))
+	      (if (not articles)
+		  ()
+		(beginning-of-line)
+		(delete-region (point-min) (point))
+		;; Then we find the last wanted line. We go to the end
+		;; of the buffer and search backward much the same way
+		;; we did to find the first article.
+		;; !!! Perhaps it would be better just to do a (last articles), 
+		;; and go forward successively over each line and
+		;; compare to avoid this (reverse), like this:
+		;; (while (and (>= last (read nntp-server-buffer)))
+		;;             (zerop (forward-line 1))))
+		(setq articles (reverse articles))
+		(goto-char (point-max))
+		(while (and articles
+			    (not (search-backward 
+				  (concat "\n" (int-to-string (car articles))
+					  "\t") nil t)))
+		  (setq articles (cdr articles)))
+		(if articles
+		    (progn
+		      (forward-line 2)
+		      (delete-region (point) (point-max)))))
+	      (or articles (progn (erase-buffer) nil))))))))
+
+(defun nnspool-sift-nov-with-sed (articles file)
+  (let ((first (car articles))
+	(last (progn (while (cdr articles) (setq articles (cdr articles)))
+		     (car articles))))
+    (call-process "sed" nil t nil "-e" 
+		  (format "1,/^%d\t/d\n/^%d\t/,$d"
+			  (1- first) (1+ last)) file)))
 
 (defun nnspool-find-article-by-message-id (id)
   "Return full pathname of an article identified by message-ID."
@@ -442,10 +460,22 @@ Newsgroup must be selected before calling this function."
 	 (setcar num (/ (car num) 10))
 	 (nnspool-number-base-10 num (1- pos))))))))
 
-(defun nnspool-seconds-since-epoch ()
-  (let ((time (current-time)))
-    (+ (* 1.0 (car time) 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-       (nth 1 time))))
+(defun nnspool-seconds-since-epoch (date)
+  (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-date date)))
+	 (ttime (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-time
+			 (aref (timezone-parse-date date) 3))))
+	 (edate (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-date "Jan 1 12:00:00 1970")))
+	 (tday (- (timezone-absolute-from-gregorian 
+		   (nth 1 tdate) (nth 2 tdate) (nth 0 tdate))
+		  (timezone-absolute-from-gregorian 
+		   (nth 1 edate) (nth 2 edate) (nth 0 edate)))))
+    (+ (nth 2 ttime)
+       (* (nth 1 ttime) 60)
+       (* 1.0 (nth 0 ttime) 60 60)
+       (* 1.0 tday 60 60 24))))
 
 (provide 'nnspool)
 

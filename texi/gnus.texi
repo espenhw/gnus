@@ -148,7 +148,7 @@ their names.
 The @code{gnus-uu} package has changed drastically. @xref{Decoding
 Articles}. 
 
-One major compatability question if the presence of several summary
+One major compatibility question if the presence of several summary
 buffers.  All variables that are relevant while reading a group are
 buffer-local to the summary buffer they belong in.  Although most
 important variables have their values copied into their global
@@ -165,7 +165,7 @@ peculiar results.
 @cindex hilit19
 @cindex highlighting
 Old hilit19 code does not work at all.  In fact, you should probably
-remove all hihit code from all Gnus hooks
+remove all hilit code from all Gnus hooks
 (@code{gnus-group-prepare-hook}, @code{gnus-summary-prepare-hook} and
 @code{gnus-summary-article-hook}).  (Well, at the very least the first
 two.)  Gnus provides various integrated functions for highlighting.
@@ -205,7 +205,7 @@ one of them.  Smooches.  The people on the list have been tried beyond
 endurance, what with my "oh, that's a neat idea <type type>, yup, I'll
 release it right away <ship off> no wait, that doesn't work at all <type
 type>, yup, I'll ship that one off right away <ship off> no, wait, that
-aboslutely does not work" policy for releases.  Microsoft - bah.  I'm
+absolutely does not work" policy for releases.  Microsoft - bah.  I'm
 @emph{much} worse.
 
 I would like to take this opportunity to thank the Academy for...  oops,
@@ -219,7 +219,7 @@ Many excellent functions, especially dealing with scoring and
 highlighting (as well as the soon-to-come @sc{soup} support) was written
 by Per Abrahamsen.
 @item
-Innumarable bug fixes were written by Sudish Joseph.
+Innumerable bug fixes were written by Sudish Joseph.
 @item
 I stole some pieces from the XGnus distribution by Felix Lee and JWZ.
 @item 
@@ -234,6 +234,8 @@ suggested and added by Hallvard B Furuseth.
 @item 
 Brian Edmonds has written @code{gnus-bbdb}, as well as other bits and
 pieces. 
+@item
+Kevin Davidson came up with the name @dfn{ding}, so blame him.
 @item 
 Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis and Andrew
 Eskilsson have all contributed code and suggestions.
@@ -261,7 +263,7 @@ compatibility problem here though, since hilit uses
 @emph{before} headers are hidden, via
 @code{gnus-article-hide-headers-if-wanted} which is run from
 @code{gnus-article-display-hook}.  The act of hiding the headers undoes
-all of the hilighting already done.  A similar effect occured in vanilla
+all of the hilighting already done.  A similar effect occurred in vanilla
 @sc{gnus 4.1} if @code{gnus-show-mime} was set to @code{t}, since
 @sc{mime} processing, too, is done after this hook is executed.
 
@@ -323,15 +325,6 @@ Also known as the @dfn{todo list}.  Sure to be implemented before the
 next millennium.
 
 @itemize @bullet
-@item 
-Asynchronous article and header fetching would be very nice.  Pleasant.
-Even useful.  I might even have come up with an idea as to how to
-implement it (two connections, a bit @code{run-at-time}, and lots of
-glue), but this will probably not be implemented within the next few
-months.  In fact, I would put money on it not being implemented before
-(ding) is released, so this is more for Gnus 6.0.  Asynchronous posting,
-however, could possibly be included much sooner, as it is a separate
-issue. 
 @item
 Native @sc{mime} support is something that should be done.  I was hoping
 I could steal code from @code{Mew}, the @sc{mime} mail reader for Emacs,
@@ -346,10 +339,6 @@ each time you request that article from that group, Gnus would fetch the
 local copy instead.)  Lots of quite interesting stuff to be considered
 (caching @sc{nov} headers or not?) before jumping into it.  It would
 require much twiddling of Gnus internals to make it work transparently.
-@item
-Gnus could detect which articles in you read and which articles you
-kill, and then employ some adaptive scoring scheme.  That could
-potentially be quite interesting, and it's easy enough to implement.
 @item
 When the user references the parent of an article, some sort of
 re-threading should be done to build a proper tree.  The same goes for
@@ -587,7 +576,7 @@ Subscribe all new groups randomly.
 Subscribe all new groups alphabetically.
 @item gnus-subscribe-hierarchically
 @vindex gnus-subscribe-hierarchically
-Subscribe all new groups hierarchially.
+Subscribe all new groups hierarchically.
 @item gnus-subscribe-interactively
 @vindex gnus-subscribe-interactively
 Subscribe new groups interactively.  This means that Gnus will ask
@@ -603,7 +592,7 @@ default.
 A closely related variable is
 @code{gnus-subscribe-hierarchical-interactive}.  (That's quite a
 mouthful.)  If this variable is non-@code{nil}, Gnus will ask you in a
-hierarchial fashion whether to subscribe to new groups or not.  Gnus
+hierarchical fashion whether to subscribe to new groups or not.  Gnus
 will ask you for each sub-hierarchy whether you want to descend the
 hierarchy or not.
 
@@ -711,7 +700,7 @@ file.
 @cindex auto-save
 
 Whenever you do something that changes the Gnus data (reading articles,
-cathing up, killing/subscribing groups), the change is added to a
+catching up, killing/subscribing groups), the change is added to a
 special @dfn{dribble buffer}.  This buffer is auto-saved the normal
 Emacs way.  If your Emacs should crash before you have saved the
 @file{.newsrc} files, all changes you have made can be recovered from
@@ -751,7 +740,7 @@ Gnus will try to make do by just getting information on the groups
 that you actually subscribe to.
 
 Note that if you subscribe to lots and lots of groups, setting this
-variable to @code{nil} will probabaly make Gnus slower, not faster.  At
+variable to @code{nil} will probably make Gnus slower, not faster.  At
 present, having this variable @code{nil} will slow Gnus down
 considerably, unless you read news over a 2400 baud modem.  
 
@@ -787,7 +776,7 @@ once in a while from the group buffer (@pxref{Group Maintenance}).
 @item gnus-inhibit-startup-message
 @vindex gnus-inhibit-startup-message
 If non-@code{nil}, the startup message won't be displayed.  That way,
-your boss might not notice thay you are reading news instead of doing
+your boss might not notice that you are reading news instead of doing
 your job.
 @item gnus-no-groups-message
 @vindex gnus-no-groups-message
@@ -804,7 +793,7 @@ long as Gnus is active.
 
 @menu
 * Group Buffer Format::    Information listed and how you can change it.
-* Group Manouvering::      Commands for moving in the group buffer.
+* Group Maneuvering::      Commands for moving in the group buffer.
 * Selecting a Group::      Actually reading news.
 * Group Subscribing::      Unsubscribing, killing, subscribing.
 * Group Levels::           Levels? What are those, then?
@@ -858,7 +847,7 @@ even the group name.  All displayed text is just window dressing, and is
 never examined by Gnus.  Gnus stores all real information it needs using
 text properties.
 
-(Note that if you make a really strange, wonderful, spreadsheat-like
+(Note that if you make a really strange, wonderful, spreadsheet-like
 layout, everybody will believe you are hard at work with the accounting
 instead of wasting time reading news.)
 
@@ -923,8 +912,8 @@ Default news server.
 Default select method.
 @end table
 
-@node Group Manouvering
-@section Group Manouvering
+@node Group Maneuvering
+@section Group Maneuvering
 @cindex group movement
 
 All movement commands understand the numeric prefix and will behave as
@@ -1125,10 +1114,9 @@ a given level or lower (@pxref{Misc Group Stuff}).
 @item S l
 @kindex S l (Group)
 @findex gnus-group-set-current-level
-Set the level of the current group depending on the numeric
-prefix.  For instance, @kbd{3 S l} will set the level of the current
-group to three (@code{gnus-group-set-current-level}).  If no numeric
-prefix is given, this command will prompt the user for a level.
+Set the level of the current group.  If a numeric prefix is given, the
+next @var{n} groups will have their levels set.  The user will be
+prompted for a level.
 @end table
 
 @vindex gnus-level-killed
@@ -1137,7 +1125,7 @@ prefix is given, this command will prompt the user for a level.
 @vindex gnus-level-subscribed
 Gnus considers groups on between levels 1 and
 @code{gnus-level-subscribed} (inclusive) to be subscribed,
-@code{gnus-level-subscribed} (ecxlusive) and
+@code{gnus-level-subscribed} (exclusive) and
 @code{gnus-level-unsubscribed} (inclusive) to be unsubscribed,
 @code{gnus-level-zombie} to be zombies (walking dead) and
 @code{gnus-level-killed} to be killed, completely dead.  Gnus treats
@@ -1156,7 +1144,7 @@ Set them once, and don't touch them ever again.
 @vindex gnus-level-default-unsubscribed
 @vindex gnus-level-default-subscribed
 Two closely related variables are @code{gnus-level-default-subscribed}
-and @code{gnus-level-default-unsubscribed}, which are the leves that new
+and @code{gnus-level-default-unsubscribed}, which are the levels that new
 groups will be put on if they are (un)subscribed.  These two variables
 should, of course, be inside the relevant legal ranges.
 
@@ -1382,6 +1370,13 @@ server.  The default value of this variable is @code{("XOVER"
 @vindex nntp-prepare-server-hook
 A hook run before attempting to connect to an @sc{nntp} server.
 
+@item nntp-async-number
+@vindex nntp-async-number
+How many articles should be pre-fetched when in asynchronous mode.  If
+this variable is @code{t}, @code{nntp} will pre-fetch all the articles
+that it can without bound.  If it is @code{nil}, no pre-fetching will be
+made.
+
 @end table
 
 @node nnspool
@@ -1442,6 +1437,13 @@ The path of the active date file.
 @vindex nnspool-nov-is-evil
 If non-@code{nil}, @code{nnspool} won't try to use any @sc{nov} files
 that it finds.
+
+@item nnspool-sift-nov-with-sed
+@vindex nnspool-sift-nov-with-sed
+If non-@code{nil}, which is the default, use @code{sed} to get the
+relevant portion from the overview file.  If nil, @code{nnspool} will
+load the entire file into a buffer and process it there.
+
 @end table
 
 @node nnvirtual
@@ -1522,7 +1524,7 @@ scoring process to determine if there are any articles in the groups
 that are to be part of the nnkiboze groups.
 
 Please limit the number of component groups by using restrictive
-regexps.  Otherwise your sysadm may become annoyed with you, and the
+regexps.  Otherwise your sysadmin may become annoyed with you, and the
 @sc{nntp} site may throw you off and never let you back in again.
 Stranger things have happened.
 
@@ -2029,6 +2031,11 @@ This is a real newsgroup, but the server has gotten the articles from a
 mail-to-news gateway.  Posting directly to this group is therefore
 impossible - you have to send mail to the mailing list address instead.
 
+@item to-group
+@cindex to-group
+IF the group parameter list contains an element like @code{(to-group
+. "some.group.name")}, all posts will be sent to that groups.
+
 @item auto-expire
 @cindex auto-expire
 If this symbol is present in the group parameter list, all articles that
@@ -2193,7 +2200,7 @@ Yes, Gnus is ex(c)iting.
 @kindex z (Group)
 @findex gnus-group-suspend
 Suspend Gnus (@code{gnus-group-suspend}).  This doesn't really exit Gnus,
-but it kills all buffers exept the Group buffer.  I'm not sure why this
+but it kills all buffers except the Group buffer.  I'm not sure why this
 is a gain, but then who am I to judge?
 @item q
 @kindex q (Group)
@@ -2301,7 +2308,7 @@ Display current Gnus version numbers (@code{gnus-version}).
 @kindex M-d (Group)
 @findex gnus-group-describe-all-groups
 Describe all groups (@code{gnus-group-describe-all-groups}).  If given a
-prefix, force Gnus to re-read the descriptoion file from the server.
+prefix, force Gnus to re-read the description file from the server.
 @item ?
 @kindex ? (Group)
 @findex gnus-group-describe-briefly
@@ -2325,14 +2332,15 @@ A line for each article is displayed in the summary buffer.  You can
 move around, read articles, post articles and reply to articles.
 
 @menu
-* Summary Buffer Format::       Deciding how the summar buffer is to look.
-* Summary Manouvering::         Moving around the summary buffer.
+* Summary Buffer Format::       Deciding how the summary buffer is to look.
+* Summary Maneuvering::         Moving around the summary buffer.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
 * Cancelling and Superseding::  "Whoops, I shouldn't have called him that."
 * Ticking and Marking::         Marking articles as read, expirable, etc.
 * Threading::                   How threads are made.
+* Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Exiting the Summary Buffer::  Returning to the Group buffer.
 * Process/Prefix::              A convention used by many treatment commands.
 * Saving Articles::             Ways of customizing article saving.
@@ -2409,7 +2417,7 @@ pushes everything after it off the screen).
 Opening bracket, which is normally @samp{\[}, but can also be @samp{<}
 for adopted articles.
 @item \]
-Closing bracked, which is normally @samp{\]}, but can also be @samp{>}
+Closing bracket, which is normally @samp{\]}, but can also be @samp{>}
 for adopted articles.
 @item <
 One space for each thread level.
@@ -2481,7 +2489,7 @@ Number of unread articles in this group.
 Number of unselected articles in this group.
 @item Z
 A string with the number of unread and unselected articles represented
-either as @samp{<%U(+%u) more>} if there are both anread and unselected
+either as @samp{<%U(+%u) more>} if there are both unread and unselected
 articles, and just as @samp{<%U more>} if there are just unread articles
 and no unselected ones.
 @item g
@@ -2496,8 +2504,8 @@ Name of the current score file.
 @end table
 
 
-@node Summary Manouvering
-@section Summary Manouvering
+@node Summary Maneuvering
+@section Summary Maneuvering
 @cindex summary movement
 
 All the straight movement commands understand the numeric prefix and
@@ -2543,6 +2551,18 @@ If Gnus asks you to press a key to confirm going to the next group, you
 can use the @kbd{C-n} and @kbd{C-p} keys to move around the group
 buffer, searching for the next group to read without actually returning
 to the group buffer.
+
+@vindex gnus-auto-select-same
+If @code{gnus-auto-select-same} is non-@code{nil}, all the movement
+commands will try to go to the next article with the same subject as the
+current.  This variable is not particularly useful if you use a threaded
+display.
+
+@vindex gnus-summary-check-current
+If @code{gnus-summary-check-current} is non-@code{nil}, all the "unread"
+movement commands will not proceed to the next (or previous) article if
+the current article is unread.  Instead, they will choose the current
+article.  
 
 @vindex gnus-auto-center-summary
 If @code{gnus-auto-center-summary} is non-@code{nil}, Gnus will keep the
@@ -2683,7 +2703,7 @@ next article (@code{gnus-summary-next-page}).
 @item DEL
 @kindex DEL (Summary)
 @findex gnus-summary-prev-page
-Scoll the current article back one page (@code{gnus-summary-prev-page}). 
+Scroll the current article back one page (@code{gnus-summary-prev-page}). 
 @item RET
 @kindex RET (Summary)
 @findex gnus-summary-scroll-up
@@ -2744,11 +2764,16 @@ Mail a reply to the author of the current article
 @findex gnus-summary-reply-with-original
 Mail a reply to the author of the current article and include the
 original message (@code{gnus-summary-reply-with-original}).
-@item S C-f
-@kindex S C-f (Summary)
+@item S o m
+@kindex S o m (Summary)
 @findex gnus-summary-mail-forward
 Forward the current article to some other person
 (@code{gnus-summary-mail-forward}). 
+@item S o p
+@kindex S o p (Summary)
+@findex gnus-summary-post-forward
+Forward the current article to a newsgroup
+(@code{gnus-summary-post-forward}).
 @item S m
 @itemx m
 @kindex m (Summary)
@@ -2756,12 +2781,17 @@ Forward the current article to some other person
 @findex gnus-summary-mail-other-window
 Send a mail to some other person
 (@code{gnus-summary-mail-other-window}).
-@item S M-f
-@kindex S M-f (Summary)
-@findex gnus-uu-digest-and-forward
+@item S O m
+@kindex S O m (Summary)
+@findex gnus-uu-digest-mail-forward
 Digest the current series and forward the result using mail
-(@code{gnus-uu-digest-and-forward}).  This command uses the
+(@code{gnus-uu-digest-mail-forward}).  This command uses the
 process/prefix convention (@pxref{Process/Prefix}). 
+@item S O p
+@kindex S O p (Summary)
+@findex gnus-uu-digest-post-forward
+Digest the current series and forward the result to a newsgroup
+(@code{gnus-uu-digest-mail-forward}).  
 @end table
 
 Variables for customizing outgoing mail:
@@ -3096,6 +3126,15 @@ of using the variable described above.
 
 @end table
 
+You may want to do spell-checking on messages that you send out.  Or, if
+you don't want to spell-check by hand, you could add automatic
+spell-checking via the @code{ispell} package:
+
+@lisp
+(add-hook 'news-inews-hook 'ispell-message)	;For news posts
+(add-hook 'mail-send-hook 'ispell-message)	;for mail posts via sendmail
+@end lisp
+
 @node Cancelling and Superseding
 @section Cancelling Articles
 @cindex cancelling articles
@@ -3206,7 +3245,7 @@ All the following marks mark articles as read.
 @table @samp
 @item D
 Articles that are marked as read.  They have a @samp{D}
-(@code{gnus-dread-mark}) in the first column.  These are articles that the
+(@code{gnus-del-mark}) in the first column.  These are articles that the
 user has marked as read more or less manually.
 @item d
 Articles that are actually read are marked with @samp{d}
@@ -3259,11 +3298,18 @@ encounters the article.
 All articles that you have replied to or made a followup to will be
 marked with an @samp{R} in the second column (@code{gnus-replied-mark}). 
 
-Finally we have the @dfn{process mark}.  A variety of commands react to
-the presence of the process mark.  For instance, @kbd{X u}
-(@code{gnus-uu-decode-uu}) will uudecode and view all articles that have
-been marked with the process mark.  Articles marked with the process
-mark have a @samp{#} in the second column.
+@vindex gnus-not-empty-thread-mark
+@vindex gnus-empty-thread-mark
+It the @samp{%e} spec is used, the presence of threads or not will be
+marked with @code{gnus-not-empty-thread-mark} and
+@code{gnus-empty-thread-mark}, respectively.
+
+@vindex gnus-process-mark
+Finally we have the @dfn{process mark} (@code{gnus-process-mark}.  A
+variety of commands react to the presence of the process mark.  For
+instance, @kbd{X u} (@code{gnus-uu-decode-uu}) will uudecode and view
+all articles that have been marked with the process mark.  Articles
+marked with the process mark have a @samp{#} in the second column.
 
 @node Setting Marks
 @subsection Setting Marks
@@ -3567,7 +3613,7 @@ The default is @samp{4}.
 @kindex T k (Summary)
 @kindex M-C-k (Summary)
 @findex gnus-summary-kill-thread
-Mark all articles in the current subtread as read
+Mark all articles in the current subthread as read
 (@code{gnus-summary-kill-thread}).  If the prefix argument is positive,
 remove all marks instead.  If the prefix argument is negative, tick
 articles instead.
@@ -3632,6 +3678,61 @@ Descend the thread (@code{gnus-summary-down-thread}).
 @findex gnus-summary-up-thread
 Ascend the thread (@code{gnus-summary-up-thread}).
 @end table
+
+@node Asynchronous Fetching
+@section Asynchronous Article Fetching
+@cindex asynchronous article fetching
+
+If you read your news from an @sc{nntp} server that's far away, the
+network latencies may make reading articles a chore.  You have to way
+for a while after pressing @kbd{n} to go to the next article before the
+article appears.  Why can't Gnus just go ahead and fetch the article
+while you are reading the previous one?  Why not, indeed.
+
+First, some caveats.  There are some pitfalls to using asynchronous
+article fetching, especially the way Gnus does it.  
+
+Let's say you are reading article 1, which is short, and article 2 is
+quite long, and you are not interested in reading that.  Gnus does not
+know this, so it goes ahead and fetches article 2.  You decide to read
+article 3, but since Gnus is in the process of fetching article 2, the
+connection is blocked.
+
+To avoid these situations, Gnus will open two (count 'em two)
+connections to the server.  Some people may think this isn't a very nice
+thing to do, but I don't see any real alternatives.  Setting up that
+extra connection takes some time, so Gnus startup will be slower.
+
+Gnus will fetch more articles than you will read.  This will mean that
+the link between your machine and the @sc{nntp} server will become more
+loaded than if you didn't use article pre-fetch.  The server itself will
+also become more loaded - both with the extra article requests, and the
+extra connection.
+
+Ok, so now you know that you shouldn't really use this thing... unless
+you really want to.
+
+@vindex gnus-asynchronous
+Here's how:  Set @code{gnus-asynchronous} to @code{t}.  The rest should
+happen automatically.
+
+@vindex nntp-async-number
+You can control how many articles that are to be pre-fetched by setting
+@code{nntp-async-number}.  This is five by default, which means that when
+you read an article in the group, @code{nntp} will pre-fetch the next
+five articles.  If this variable is @code{t}, @code{nntp} will pre-fetch
+all the articles that it can without bound.  If it is @code{nil}, no
+pre-fetching will be made.
+
+@vindex gnus-asynchronous-article-function
+You may wish to create some sort of scheme for choosing which articles
+that @code{nntp} should consider as candidates for pre-fetching.  For
+instance, you may wish to pre-fetch all articles with high scores, and
+not pre-fetch low-scored articles.  You can do that by setting the
+@code{gnus-asynchronous-article-function}, which will be called with an
+alist where the keys are the article numbers.  Your function should
+return an alist where the articles you are not interested in have been
+removed.  You could also do sorting on article score and the like. 
 
 @node Exiting the Summary Buffer
 @section Exiting the Summary Buffer
@@ -4059,7 +4160,7 @@ Where @code{gnus-uu} does its work.
 @item gnus-uu-do-not-unpack-archives
 @vindex gnus-uu-do-not-unpack-archives
 Non-@code{nil} means that @code{gnus-uu} won't peek inside archives
-looking for files to dispay.
+looking for files to display.
 
 @item gnus-uu-view-and-save
 @vindex gnus-uu-view-and-save
@@ -4172,7 +4273,13 @@ the pseudo-articles into the summary buffer, but view them
 immediately.  If this variable is @code{not-confirm}, the user won't even
 be asked for a confirmation before viewing is done.
 
-So; there you are, reading your @emph{pseduo-articles} in your
+@vindex gnus-view-pseudos-separately 
+If @code{gnus-view-pseudos-separately} is non-@code{nil}, one
+pseudo-article will be created for each file to be viewed.  If
+@code{nil}, all files that use the same viewing command will be given as
+a list of parameters to that command.
+
+So; there you are, reading your @emph{pseudo-articles} in your
 @emph{virtual newsgroup} from the @emph{virtual server}; and you think:
 Why isn't anything real anymore? How did we get here?
 
@@ -4290,7 +4397,7 @@ Commands}).
 @node Finding the Parent
 @section Finding the Parent
 @cindex parent articles
-@cindex refering articles
+@cindex referring articles
 
 @findex gnus-summary-refer-parent-article
 @kindex ^ (Summary)
@@ -4352,6 +4459,7 @@ silently to help keep the sizes of the score files down.
 * Score Variables::          Customize your scoring.  (My, what terminology).
 * Score File Format::        What a score file may contain.
 * Score File Editing::       You can edit score files by hand as well.
+* Adaptive Scoring::         Big Sister Gnus *knows* what you read.
 * Scoring Tips::             How to score effectively.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
@@ -4674,6 +4782,7 @@ Anyway, if you'd like to dig into it yourself, here's an example:
  (mark-and-expunge -10)
  (read-only nil)
  (orphan -10)
+ (adapt t)
  (files "/hom/larsi/News/gnu.SCORE")
  (eval (ding)))
 @end lisp
@@ -4726,12 +4835,13 @@ be used depends on what header you wish to perform the match on.
 @table @dfn
 @item From, Subject, References, Xref, Message-ID
 For most header types, there are the @code{r} and @code{R} (regexp) as
-well as @code{s} and @code{S} (substring) types.  If this element is not
-present, Gnus will assume that substring matching should be used.
-@code{R} and @code{S} differ from the other two in that the matches will
-be done in a case-sensitive manner.  All these one-letter types are
-really just abbreviations for the @code{regexp} and @code{string} types,
-which you can use instead, if you feel like.
+well as @code{s} and @code{S} (substring) types and @code{e} and
+@code{E} (exact match) types.  If this element is not present, Gnus will
+assume that substring matching should be used.  @code{R} and @code{S}
+differ from the other two in that the matches will be done in a
+case-sensitive manner.  All these one-letter types are really just
+abbreviations for the @code{regexp}, @code{string} and @code{exact}
+types, which you can use instead, if you feel like.
 @item Lines, Chars
 These two headers use different match types: @code{<}, @code{>},
 @code{=}, @code{>=} and @code{<=}.
@@ -4744,6 +4854,9 @@ Don't judge a book by its cover.  Never not have sex on a first date.
 @item Head, Body, All
 These three match keys use the same match types as the @code{From} (etc)
 header uses.
+@item Followup
+This match key will add a score entry on all articles that followup to
+some author.  Uses the same match types as the @code{From} header uses.
 @end table
 @end enumerate
 
@@ -4774,6 +4887,11 @@ should feature this atom (@pxref{Global Score Files}).
 @item orphan
 The value of this entry should be a number.  Articles that do not have
 parents will get this number added to their scores.
+@item adapt
+This entry controls the adaptive scoring.  If it is @code{t}, the
+default adaptive scoring rules will be used.  If it is @code{ignore}, no
+adaptive scoring will be performed on this group.  If it is a list, this
+list will be used as the adaptive scoring rules.
 @end table
 
 @node Score File Editing
@@ -4799,6 +4917,60 @@ Insert the current date in numerical format
 (@code{gnus-score-edit-insert-date}).  This is really the day number, if
 you were wondering.
 @end table
+
+@node Adaptive Scoring
+@subsection Adaptive Scoring
+@cindex adaptive scoring
+
+If all this scoring is getting you down, Gnus has a way of making it all
+happen automatically - as if by magic.  Or rather, as if by artificial
+stupidity, to be precise.
+
+@vindex gnus-use-adaptive-scoring
+When you read an article, or mark an article as read, or kill an
+article, you leave marks behind.  On exit from the group, Gnus can sniff
+these marks and add score elements depending on what marks it finds.
+You turn on this ability by setting @code{gnus-use-adaptive-scoring} to
+@code{t}. 
+
+@vindex gnus-default-adaptive-score-alist
+To give you complete control over the scoring process, you can customize
+the @code{gnus-default-adaptive-score-alist} variable.  By default, it
+looks something like this:
+
+@lisp
+(defvar gnus-default-adaptive-score-alist
+  '((gnus-unread-mark)
+    (gnus-ticked-mark (from 4))
+    (gnus-dormant-mark (from 5))
+    (gnus-del-mark (from -4) (subject -1))
+    (gnus-read-mark (from 4) (subject 2))
+    (gnus-expirable-mark (from -1) (subject -1))
+    (gnus-killed-mark (from -1) (subject -3))
+    (gnus-kill-file-mark)
+    (gnus-catchup-mark (from -1) (subject -1))))
+@end lisp
+
+As you see, each element in this alist has a mark as a key (either a
+variable name or a "real" mark - a character).  Following this key is a
+random number of header/score pairs.  
+
+To take @code{gnus-del-mark} as an example - this alist says that all
+articles that have that mark (ie. are marked with @samp{D}) will have a
+score entry added to lower based on the @code{From} header by -4, and
+lowered by @code{Subject} by -1.  Change this to fit your prejudices. 
+
+If you use this scheme, you should set @code{mark-below} to something
+small - like -300, perhaps, to avoid having small random changes result
+in articles getting marked as read.
+
+After using adaptive scoring for a week or so, Gnus should start to
+become properly trained and enhance the authors you like best, and kill
+the authors you like least, without you having to say so explicitly. 
+
+You can control what groups the adaptive scoring is to be performed on
+by using the score files (@pxref{Score File Format}).  This will also
+let you use different rules in different groups.
 
 @node Scoring Tips
 @subsection Scoring Tips
@@ -5262,14 +5434,14 @@ Other useful functions you might add to this hook is
 makes in The Hands Of The Mad); @code{gnus-article-treat-overstrike}
 (which treats @samp{^H_} in a reasonable manner);
 @code{gnus-article-remove-cr} (which removes trailing carriage returns);
-@code{gnus-article-de-quoted-unreadble} (which does a naive decoding of
+@code{gnus-article-de-quoted-unreadable} (which does a naive decoding of
 articles encoded with Quoted-Printable); and
 @code{gnus-article-display-x-face} (which displays any X-Face headers).
 
 You can, of course, write your own functions.  The functions are called
 from the article buffer, and you can do anything you like, pretty much.
 There is no information that you have to keep in the buffer - you can
-change everything.  However, you shouldn't delete anu headers.  Instead
+change everything.  However, you shouldn't delete any headers.  Instead
 make them invisible if you want to make them go away.
 
 @node Article Keymap
@@ -5343,11 +5515,11 @@ format specifications as that variable.
 @item gnus-break-pages
 Controls whether @dfn{page breaking} is to take place.  If this variable
 is non-@code{nil}, the articles will be divided into pages whenever a
-page delimeter appears in the article.  If this variable is @code{nil},
+page delimiter appears in the article.  If this variable is @code{nil},
 paging will not be done.
-@item gnus-page-delimeter
+@item gnus-page-delimiter
 @vindex gnus-page-delimiter
-This is the delimeter mentioned above.  By default, it is @samp{^L}
+This is the delimiter mentioned above.  By default, it is @samp{^L}
 (form linefeed).
 @end table
 
@@ -5452,7 +5624,7 @@ look like then:
 (nntp "news.funet.fi" (nntp-port-number 15))
 @end lisp
 
-You should read the documention to each backend to find out what
+You should read the documentation to each backend to find out what
 variables are relevant, but here's an @code{nnmh} example. 
 
 @code{nnmh} is a mail backend that reads a spool-like structure.  Say
@@ -5641,7 +5813,7 @@ support @sc{xover}; Gnus will detect this by itself.
 @node Slow Terminal Connection
 @section Slow Terminal Connection
 
-Let's say you use your home computer for dialling up the system that
+Let's say you use your home computer for dialing up the system that
 runs Emacs and Gnus.  If your modem is slow, you want to reduce the
 amount of data that is sent over the wires as much as possible.
 

@@ -164,16 +164,20 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnvirtual-request-group (group &optional server dont-check)
   "Make GROUP the current newsgroup."
   (nnvirtual-possibly-change-newsgroups group server dont-check)
-  (if (not dont-check)
-      (let ((map nnvirtual-current-mapping))
-	(while (cdr map)
-	  (setq map (cdr map)))
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (insert (format "211 %d 1 %d %s\n" (car (car map)) 
-			  (car (car map)) group)))))
-  t)
+  (let ((map nnvirtual-current-mapping))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
+      (if map
+	  (progn
+	    (while (cdr map)
+	      (setq map (cdr map)))
+	    (insert (format "211 %d 1 %d %s\n" (car (car map)) 
+			    (car (car map)) group))
+	    t)
+	(setq nnvirtual-status-string "No component groups")
+	(setq nnvirtual-current-group nil)
+	nil))))
     
 (defun nnvirtual-close-group (group &optional server)
   (nnvirtual-possibly-change-newsgroups group server t)
@@ -245,7 +249,7 @@ If the stream is opened, return T, otherwise return NIL."
 			 (delq inf nnvirtual-group-alist)))
 	  (setq nnvirtual-current-mapping nil)
 	  (setq nnvirtual-current-group group)
-	  (let ((newsrc gnus-newsrc-assoc))
+	  (let ((newsrc gnus-newsrc-alist))
 	    (setq nnvirtual-current-groups nil)
 	    (while newsrc
 	      (and (string-match regexp (car (car newsrc)))

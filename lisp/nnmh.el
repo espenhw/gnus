@@ -206,17 +206,19 @@
       (let ((files (mapcar
 		    (lambda (name) (string-to-int name))
 		    (directory-files dir nil "^[0-9]+$" t))))
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (insert 
-	   (format 
-	    "%s %d %d y\n" 
-	    (progn
-	      (string-match (expand-file-name nnmh-directory) dir)
-	      (nnmail-replace-chars-in-string
-	       (substring dir (match-end 0)) ?/ ?.))
-	    (if files (apply (function max) files) 0)
-	    (if files (apply (function min) files) 0))))))
+	(if (null files)
+	    ()
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (insert 
+	     (format 
+	      "%s %d %d y\n" 
+	      (progn
+		(string-match (expand-file-name nnmh-directory) dir)
+		(nnmail-replace-chars-in-string
+		 (substring dir (match-end 0)) ?/ ?.))
+	      (apply (function max) files) 
+	      (apply (function min) files)))))))
   t)
 
 (defun nnmh-request-newgroups (date &optional server)

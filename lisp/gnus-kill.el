@@ -28,7 +28,10 @@
 (require 'gnus)
 
 (defvar gnus-kill-file-mode-hook nil
-  "A hook for Gnus kill file mode.")
+  "*A hook for Gnus kill file mode.")
+
+(defvar gnus-kill-expiry-days 7
+  "*Number of days before expiring unused kill file entries.")
 
 (defvar gnus-winconf-kill-file nil)
 
@@ -416,7 +419,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(if (zerop (gnus-execute field (car kill-list) 
 					 command nil (not all)))
 		    (if (> (gnus-days-between date (cdr kill-list))
-			   gnus-score-expiry-days)
+			   gnus-kill-expiry-days)
 			(setq regexp nil))
 		  (setcdr kill-list date))
 	      (while (setq kill (car kill-list))
@@ -427,7 +430,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		      (if (zerop (gnus-execute 
 				  field (car kill) command nil (not all)))
 			  (if (> (gnus-days-between date kdate)
-				 gnus-score-expiry-days)
+				 gnus-kill-expiry-days)
 			      ;; Time limit has been exceeded, so we
 			      ;; remove the match.
 			      (if prev

@@ -211,6 +211,10 @@ To check for marks, e.g. to underline replied articles, use
    ""
    '("Article"
      ("Hide"
+      ("Date"
+       ["Local" gnus-article-date-local t]
+       ["UT" gnus-article-date-local t]
+       ["Lapsed" gnus-article-date-local t])
       ["Headers" gnus-article-hide-headers t]
       ["Signature" gnus-article-hide-signature t]
       ["Citation" gnus-article-hide-citation t]
@@ -303,8 +307,10 @@ To check for marks, e.g. to underline replied articles, use
      ["Cancel article" gnus-summary-cancel-article t]
      ["Reply" gnus-summary-reply t]
      ["Reply and yank" gnus-summary-reply-with-original t]
-     ["Forward" gnus-summary-mail-forward t]
-     ["Digest and forward" gnus-uu-digest-and-forward t]
+     ["Mail forward" gnus-summary-mail-forward t]
+     ["Post forward" gnus-summary-post-forward t]
+     ["Digest and mail" gnus-uu-digest-mail-forward t]
+     ["Digest and post" gnus-uu-digest-post-forward t]
      ["Send a mail" gnus-summary-mail-other-window t]
      ["Reply & followup" gnus-summary-followup-and-reply t]
      ["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
@@ -454,6 +460,11 @@ To check for marks, e.g. to underline replied articles, use
 	  (put-text-property beg end 'face face)))
     (goto-char p)))
 
+(defvar mode-motion-hook nil)
+(defun gnus-install-mouse-tracker ()
+  (require 'mode-motion)
+  (setq mode-motion-hook 'mode-motion-highlight-line))
+
 (if (not gnus-xemacs)
     ()
   (setq gnus-group-mode-hook
@@ -462,7 +473,8 @@ To check for marks, e.g. to underline replied articles, use
 	   (easy-menu-add gnus-group-reading-menu)
 	   (easy-menu-add gnus-group-group-menu)
 	   (easy-menu-add gnus-group-post-menu)
-	   (easy-menu-add gnus-group-misc-menu)) 
+	   (easy-menu-add gnus-group-misc-menu)
+           (gnus-install-mouse-tracker)) 
 	 gnus-group-mode-hook))
   (setq gnus-summary-mode-hook
 	(cons
@@ -473,7 +485,8 @@ To check for marks, e.g. to underline replied articles, use
 	   (easy-menu-add gnus-summary-thread-menu)
 	   (easy-menu-add gnus-summary-misc-menu)
 	   (easy-menu-add gnus-summary-post-menu)
-	   (easy-menu-add gnus-summary-kill-menu))
+	   (easy-menu-add gnus-summary-kill-menu)
+           (gnus-install-mouse-tracker)) 
 	 gnus-summary-mode-hook))
   (setq gnus-article-mode-hook
 	(cons

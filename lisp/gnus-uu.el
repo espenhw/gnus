@@ -27,6 +27,7 @@
 ;;; Code: 
 
 (require 'gnus)
+(require 'gnus-message)
 
 ;; Default viewing action rules
 
@@ -295,7 +296,7 @@ so I simply dropped them.")
 			 gnus-uu-default-dir
 			 gnus-uu-default-dir)))
   (setq gnus-uu-saved-article-name file)
-  (gnus-uu-decode-with-method 'gnus-uu-save-article n nil)
+  (gnus-uu-decode-with-method 'gnus-uu-save-article n nil t)
   (setq gnus-uu-generated-file-list 
 	(delete file gnus-uu-generated-file-list)))
 
@@ -361,25 +362,47 @@ so I simply dropped them.")
 
 ;; Digest and forward articles
 
-(defun gnus-uu-digest-and-forward (n)
+(defun gnus-uu-digest-mail-forward (n &optional post)
   "Digests and forwards all articles in this series."
   (interactive "P")
   (gnus-uu-initialize)
   (let ((gnus-uu-save-in-digest t)
-	(file (concat gnus-uu-work-dir (make-temp-name "forward"))))
+	(file (concat gnus-uu-work-dir (make-temp-name "forward")))
+	buf)
+    (setq gnus-winconf-post-news (current-window-configuration))
     (gnus-uu-decode-save n file)
-    (switch-to-buffer (get-buffer-create "*gnus-uu-forward*"))
+    (gnus-uu-add-file file)
+    (setq buf (switch-to-buffer (get-buffer-create " *gnus-uu-forward*")))
+    (gnus-add-current-to-buffer-list)
     (erase-buffer)
     (delete-other-windows)
     (insert-file file)
     (goto-char (point-min))
-    (funcall gnus-mail-forward-method)))
+    (and (re-search-forward "^Subject: ")
+	 (progn
+	   (delete-region (point) (gnus-point-at-eol))
+	   (insert "Digested Articles")))
+    (goto-char (point-min))
+    (and (re-search-forward "^From: ")
+	 (progn
+	   (delete-region (point) (gnus-point-at-eol))
+	   (insert "Various")))
+    (if post
+	(gnus-forward-using-post)
+      (funcall gnus-mail-forward-method))
+    (kill-buffer buf)))
+
+(defun gnus-uu-digest-post-forward (n)
+  "Digest and forward to a newsgroup."
+  (interactive "P")
+  (gnus-uu-digest-mail-forward n t))
 
 ;; Process marking.
 
 (defun gnus-uu-mark-by-regexp (regexp)
   "Ask for a regular expression and set the process mark on all articles that match."
   (interactive (list (read-from-minibuffer "Mark (regexp): ")))
+  (gnus-set-global-variables)
   (let ((articles (gnus-uu-find-articles-matching regexp)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
@@ -390,6 +413,7 @@ so I simply dropped them.")
 (defun gnus-uu-mark-series ()
   "Mark the current series with the process mark."
   (interactive)
+  (gnus-set-global-variables)
   (let ((articles (gnus-uu-find-articles-matching)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
@@ -400,6 +424,7 @@ so I simply dropped them.")
 (defun gnus-uu-mark-region (beg end)
   "Marks all articles between point and mark."
   (interactive "r")
+  (gnus-set-global-variables)
   (save-excursion
     (goto-char beg)
     (while (< (point) end)
@@ -410,6 +435,7 @@ so I simply dropped them.")
 (defun gnus-uu-mark-thread ()
   "Marks all articles downwards in this thread."
   (interactive)
+  (gnus-set-global-variables)
   (save-excursion
     (let ((level (gnus-summary-thread-level)))
     (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
@@ -420,16 +446,18 @@ so I simply dropped them.")
 (defun gnus-uu-mark-sparse ()
   "Mark all series that have some articles marked."
   (interactive)
+  (gnus-set-global-variables)
   (let ((marked (nreverse gnus-newsgroup-processable))
-	subject articles total)
+	subject articles total headers)
     (or marked (error "No articles marked with the process mark"))
     (setq gnus-newsgroup-processable nil)
     (save-excursion
       (while marked
-	(setq subject (header-subject (gnus-get-header-by-number (car marked)))
-	      articles (gnus-uu-find-articles-matching 
-			(gnus-uu-reginize-string subject))
-	      total (nconc total articles))
+	(and (setq headers (gnus-get-header-by-number (car marked)))
+	     (setq subject (header-subject headers)
+		   articles (gnus-uu-find-articles-matching 
+			     (gnus-uu-reginize-string subject))
+		   total (nconc total articles)))
 	(while articles
 	  (gnus-summary-set-process-mark (car articles))
 	  (setcdr marked (delq (car articles) (cdr marked)))
@@ -441,6 +469,7 @@ so I simply dropped them.")
 (defun gnus-uu-mark-all ()
   "Mark all articles in \"series\" order."
   (interactive)
+  (gnus-set-global-variables)
   (setq gnus-newsgroup-processable nil)
   (save-excursion
     (goto-char (point-min))
@@ -488,7 +517,7 @@ so I simply dropped them.")
 
 ;; Internal functions.
 
-(defun gnus-uu-decode-with-method (method n &optional save)
+(defun gnus-uu-decode-with-method (method n &optional save not-insert)
   (gnus-uu-initialize)
   (if save (setq gnus-uu-default-dir save))
   (let ((articles (gnus-uu-get-list-of-articles n))
@@ -498,7 +527,7 @@ so I simply dropped them.")
     (setq files (gnus-uu-unpack-files files))
     (gnus-uu-add-file (mapcar (lambda (file) (cdr (assq 'name file))) files))
     (setq files (nreverse (gnus-uu-get-actions files)))
-    (gnus-summary-insert-pseudos files)))
+    (or not-insert (gnus-summary-insert-pseudos files))))
 
 (defun gnus-uu-save-files (files dir)
   (let ((len (length files))
@@ -693,10 +722,11 @@ so I simply dropped them.")
       (setq name (cdr (assq 'name (car files))))
       (and 
        (setq action (gnus-uu-get-action name))
-       (setcar files (cons (cons 'execute (if (string-match "%" action)
-					      (format action name)
-					    (concat action " " name)))
-			   (car files))))
+       (setcar files (nconc (list (cons 'action action)
+				  (cons 'execute (if (string-match "%" action)
+						     (format action name)
+						   (concat action " " name))))
+			    (car files))))
       (setq files (cdr files)))
     ofiles))
 
@@ -955,6 +985,7 @@ so I simply dropped them.")
 				  nntp-server-buffer)
 	    (setq gnus-last-article gnus-current-article)
 	    (setq gnus-current-article article)
+	    (setq gnus-article-current (cons gnus-newsgroup-name article))
 	    (if (stringp nntp-server-buffer)
 		(setq article-buffer nntp-server-buffer)
 	      (setq article-buffer (buffer-name nntp-server-buffer))))
