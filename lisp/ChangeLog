@@ -1,3 +1,7 @@
+2003-08-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-summary-score-effect): Fix interactive use.
+
 2003-08-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-draft.el (gnus-draft-send-all-messages): ask if all drafts

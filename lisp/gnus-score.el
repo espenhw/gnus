@@ -875,7 +875,7 @@ If optional argument `EXTRA' is non-nil, it's a non-standard overview header."
     ;; Return the new scoring rule.
     new))
 
-(defun gnus-summary-score-effect (header match type score extra)
+(defun gnus-summary-score-effect (header match type score &optional extra)
   "Simulate the effect of a score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
@@ -887,8 +887,8 @@ EXTRA is the possible non-standard header."
 				      (lambda (x) (fboundp (nth 2 x)))
 				      t)
 		     (read-string "Match: ")
-		     (y-or-n-p "Use regexp match? ")
-		     (prefix-numeric-value current-prefix-arg)))
+		     (if (y-or-n-p "Use regexp match? ") 'r 's)
+		     (string-to-int (read-string "Score: "))))
   (save-excursion
     (unless (and (stringp match) (> (length match) 0))
       (error "No match"))
