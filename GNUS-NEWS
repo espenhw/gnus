@@ -11,14 +11,14 @@ For older news, see Gnus info node "New Features".
 ** Group Carbon Copy (GCC) quoting
 
 To support groups that contains SPC and other weird characters, groups
-are quoted before they are placed in the Gcc: header.  While this
-should not cause problems, errorenous local customization may cause
-problems.  In particular, if you have local customizations (e.g.,
-variables such as gnus-message-archive-group) that return the string
-"nnml:foo, nnml:bar" (indicating Gcc into two groups) you must change
-it to return the list ("nnml:foo" "nnml:bar"), otherwise the Gcc: line
-will be quoted incorrectly.  Note that returning the string "nnml:foo,
-nnml:bar" was incorrect earlier, it just didn't generate any problems.
+are quoted before they are placed in the Gcc: header.  This means
+variables such as `gnus-message-archive-group' should no longer
+contain quote characters to make groups containing SPC work.  Also, if
+you are using the string "nnml:foo, nnml:bar" (indicating Gcc into two
+groups) you must change it to return the list ("nnml:foo" "nnml:bar"),
+otherwise the Gcc: line will be quoted incorrectly.  Note that
+returning the string "nnml:foo, nnml:bar" was incorrect earlier, it
+just didn't generate any problems since it was inserted directly.
 
 ** gnus-agent
 
