@@ -163,7 +163,7 @@
   "Coding system of auto save file.")
 
 (defvar mm-universal-coding-system mm-auto-save-coding-system
-  "The universal Coding system.")
+  "The universal coding system.")
 
 ;; Fixme: some of the cars here aren't valid MIME charsets.  That
 ;; should only matter with XEmacs, though.
@@ -239,17 +239,16 @@
 	  (sort-coding-systems (coding-system-list 'base-only))))))
 
 (defvar mm-hack-charsets '(iso-8859-15 iso-2022-jp-2)
-  "A list of special charsets when encoding.
-The each element could be one of the following:
+  "A list of special charsets.
+Valid elements include:
 `iso-8859-15'    convert ISO-8859-1, -9 to ISO-8859-15 if ISO-8859-15 exists.
 `iso-2022-jp-2'  convert ISO-2022-jp to ISO-2022-jp-2 if ISO-2022-jp-2 exists."
 )
 
-;; FIXME: what the value should be?
 (defvar mm-iso-8859-15-compatible 
   '((iso-8859-1 "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE")
     (iso-8859-9 "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE\xD0\xDD\xDE\xF0\xFD\xFE"))
-  "Coding systems (inconvertible characters) to ISO-8859-15.")
+  "ISO-8859-15 exchangeable coding systems and inconvertible characters.")
 
 (defvar mm-iso-8859-x-to-15-table
   (and (fboundp 'coding-system-p)

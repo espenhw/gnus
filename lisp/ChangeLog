@@ -1,3 +1,8 @@
+2001-11-02 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-iso-8859-15-compatible): Fix doc.
+	(mm-hack-charsets): Fix doc.
+
 2001-11-02  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-int.el (gnus-check-server): Message "...done" when done.
