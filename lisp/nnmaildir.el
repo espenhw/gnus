@@ -23,7 +23,30 @@
 
 ;;; Commentary:
 
-;;; <URL:http://multivac.cwru.edu./nnmaildir/>
+;; Maildir format is documented in the maildir(5) man page from qmail
+;; and at <URL:http://cr.yp.to/proto/maildir.html>.  nnmaildir also
+;; stores extra information in the .nnmaildir/ directory within a
+;; maildir.
+;;
+;; Some goals of nnmaildir:
+;; * Everything Just Works, and correctly.  E.g., stale NOV data is
+;;   ignored when articles have been edited; no need for
+;;   -generate-nov-databases.
+;; * Perfect reliability: [C-g] will never corrupt its data in memory,
+;;   and SIGKILL will never corrupt its data in the filesystem.
+;; * We make it easy to manipulate marks, etc., from outside Gnus.
+;; * All information about a group is stored in the maildir, for easy
+;;   backup and restoring.
+;; * Use the filesystem as a database.
+;;
+;; Todo:
+;; * Ignore old NOV data when gnus-extra-headers has changed.
+;; * Don't force article renumbering, so nnmaildir can be used with
+;;   the cache and agent.  Alternatively, completely rewrite the Gnus
+;;   backend interface, which would have other advantages.
+;;
+;; See also <URL:http://multivac.cwru.edu./nnmaildir/> until that
+;; information is added to the Gnus manual.
 
 ;;; Code:
 
@@ -39,8 +62,7 @@
   (require 'cl)
   (require 'nnmail))
 
-(gnus-declare-backend "nnmaildir" 'mail 'respool 'address)
-(defconst nnmaildir-version "2001.12.19")
+(defconst nnmaildir-version "Gnus")
 
 (defvar nnmaildir-article-file-name nil
   "*The filename of the most recently requested article.  This variable is set

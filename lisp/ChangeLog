@@ -1,3 +1,10 @@
+2001-12-21  Paul Jarc <prj@po.cwru.edu>
+	
+	* gnus.el (gnus-valid-select-methods): Include nnmaildir.
+	* nnmaildir.el (top-level): Add commentary.
+	(nnmaildir-version): Indicate that nnmaildir is now a standard
+        part of Gnus, not separately released.
+	
 2001-12-21 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el, gnus-picon.el, gnus-sieve.el, gnus-sum.el:
