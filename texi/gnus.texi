@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.58 Manual
+@settitle Pterodactyl Gnus 0.59 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.58 Manual
+@title Pterodactyl Gnus 0.59 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.58.
+This manual corresponds to Pterodactyl Gnus 0.59.
 
 @end ifinfo
 
@@ -16208,15 +16208,16 @@ Gnus should work on :
 @itemize @bullet
 
 @item
-Emacs 20.2 and up.
+Emacs 20.3 and up.
 
 @item
 XEmacs 20.4 and up.
 
 @end itemize
 
-Gnus will absolutely not work on any Emacsen older than that.  Not
-reliably, at least.
+This Gnus version will absolutely not work on any Emacsen older than
+that.  Not reliably, at least.  Older versions of Gnus may work on older 
+Emacs versions.
 
 There are some vague differences between Gnus on the various
 platforms---XEmacs features more graphics (a logo and a toolbar)---but

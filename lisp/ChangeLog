@@ -1,3 +1,53 @@
+Wed Dec  2 01:43:48 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.59 is released.
+
+1998-12-02 01:38:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-mime-headers): Beep at multiple charsets.
+
+	* gnus-art.el (gnus-mime-copy-part): Set buffer-file-name.
+
+1998-11-30  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mml.el (mml-generate-mime-1): Handle unquoting end-tags.
+
+1998-12-02 00:15:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-all-images-fit): New variable.
+	(mm-image-fit-p): Use it.
+
+	* gnus-art.el (gnus-mime-display-single): Use it.
+	(gnus-mime-internalize-part): New command and keystroke.
+
+	* mm-decode.el (mm-user-automatic-external-display): New
+	variable. 
+	(mm-automatic-external-display-p): New function.
+
+	* gnus-picon.el (gnus-picons-xbm-face): Default to sensible
+	colors. 
+
+1998-12-01 23:52:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-repair-multipart): Reselect article. 
+
+	* gnus-art.el (gnus-with-article): Work in the original article
+	buffer. 
+	(gnus-with-article): Work in read-only groups.
+
+Tue Dec  1 00:15:36 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-string): Return original string if not
+	decode.
+
+Mon Nov 30 23:38:02 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Use mm-make-handle.
+
+1998-12-01 01:53:49  François Pinard  <pinard@iro.umontreal.ca>
+
+	* nndoc.el (nndoc-mime-parts-type-p): Do related.
+
 Tue Dec  1 00:46:20 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.58 is released.

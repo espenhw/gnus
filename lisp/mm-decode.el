@@ -91,6 +91,9 @@
   '("text/plain" "text/enriched" "text/richtext" "text/html" 
     "image/.*" "message/delivery-status" "multipart/.*"))
 
+(defvar mm-user-automatic-external-display nil
+  "List of MIME type regexps that will be displayed externally automatically.")
+
 (defvar mm-alternative-precedence
   '("image/jpeg" "image/gif" "text/html" "text/enriched"
     "text/richtext" "text/plain")
@@ -98,6 +101,9 @@
 
 (defvar mm-tmp-directory "/tmp/"
   "Where mm will store its temporary files.")
+
+(defvar mm-all-images-fit nil
+  "If non-nil, then all images fit in the buffer.")
 
 ;;; Internal variables.
 
@@ -399,6 +405,16 @@ external if displayed external."
 	      methods nil)))
     result))
 
+(defun mm-automatic-external-display-p (type)
+  "Return the user-defined method for TYPE."
+  (let ((methods mm-user-automatic-external-display)
+	method result)
+    (while (setq method (pop methods))
+      (when (string-match method type)
+	(setq result t
+	      methods nil)))
+    result))
+
 (defun add-mime-display-method (type method)
   "Make parts of TYPE be displayed with METHOD.
 This overrides entries in the mailcap file."
@@ -541,8 +557,9 @@ This overrides entries in the mailcap file."
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
   (let ((image (mm-get-image handle)))
-    (and (< (glyph-width image) (window-pixel-width))
- 	 (< (glyph-height image) (window-pixel-height)))))
+    (or mm-all-images-fit
+	(and (< (glyph-width image) (window-pixel-width))
+	     (< (glyph-height image) (window-pixel-height))))))
 
 (provide 'mm-decode)
 

@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.3 $
+;; $Revision: 5.4 $
 ;; Keywords: news postscript uudecode binhex shar
   
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -118,16 +118,16 @@
 			    (error nil))))
 	    (if (> start-char text-start)
 		(push
-		 (list (mm-uu-copy-to-buffer text-start start-char) 
-		       text-plain-type cte nil nil nil) 
+		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char) 
+		       text-plain-type cte) 
 		 result))
 	    (push 
 	     (cond
 	      ((eq type 'postscript)
-	       (list (mm-uu-copy-to-buffer start-char end-char) 
-		     '("application/postscript") nil nil nil nil))
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
+		     '("application/postscript")))
 	      ((eq type 'uu)
-	       (list (mm-uu-copy-to-buffer start-char end-char) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
 		     (list (or (and file-name
 				    (string-match "\\.[^\\.]+$" file-name) 
 				    (mailcap-extension-to-mime 
@@ -135,10 +135,9 @@
 			       "application/octet-stream"))
 		     mm-uu-decode-function nil 
 		     (if (and file-name (not (equal file-name "")))
-			 (list "attachment" (cons 'filename file-name)))
-		   file-name))
+			 (list "attachment" (cons 'filename file-name)))))
 	      ((eq type 'binhex)
-	       (list (mm-uu-copy-to-buffer start-char end-char) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
 		     (list (or (and file-name
 				    (string-match "\\.[^\\.]+$" file-name) 
 				    (mailcap-extension-to-mime 
@@ -146,18 +145,17 @@
 			       "application/octet-stream"))
 		     mm-uu-binhex-decode-function nil 
 		     (if (and file-name (not (equal file-name "")))
-			 (list "attachment" (cons 'filename file-name)))
-		     file-name))
+			 (list "attachment" (cons 'filename file-name)))))
 	      ((eq type 'shar)
-	       (list (mm-uu-copy-to-buffer start-char end-char) 
-		     '("application/x-shar") nil nil nil nil))) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
+		     '("application/x-shar")))) 
 	     result)
 	    (setq text-start end-char))))
       (when result
 	(if (> (point-max) (1+ text-start))
 	    (push
-	     (list (mm-uu-copy-to-buffer text-start (point-max)) 
-		   text-plain-type cte nil nil nil) 
+	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max)) 
+		   text-plain-type cte) 
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))

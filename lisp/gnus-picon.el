@@ -144,8 +144,12 @@ please tell me so that we can list it."
 		 (string))
   :group 'picons)
 
-(defface gnus-picons-xbm-face '((t (:foreground "black" :background "white")))
-  "Face to show X face"
+(defface gnus-picons-xbm-face
+  '((((background dark))
+     (:foreground "green" :background "black"))
+    (t
+     (:foreground "black" :background "blue")))
+  "Face to show xbm picons in."
   :group 'picons)
 
 ;;; Internal variables:

@@ -129,7 +129,7 @@
 (defun mml-generate-mime-1 (cont)
   (cond
    ((eq (car cont) 'part)
-    (let (coded encoding charset filename type parameters)
+    (let (coded encoding charset filename type)
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
       (if (equal (car (split-string type "/")) "text")
 	  (with-temp-buffer
@@ -141,7 +141,7 @@
 		;; Remove quotes from quoted tags.
 		(goto-char (point-min))
 		(while (re-search-forward
-			"<#!+\\(part\\|multipart\\|external\\)" nil t)
+			"<#!+/?\\(part\\|multipart\\|external\\)" nil t)
 		  (delete-region (+ (match-beginning 0) 2)
 				 (+ (match-beginning 0) 3)))))
 	    (setq charset (mm-encode-body)
@@ -246,6 +246,9 @@
 		    (mml-parameter-string
 		     cont '(name access-type expiration size permission)))
 	      (not (equal type "text/plain")))
+      (when (listp charset)
+	(error
+	 "Can't encode a part with several charsets.  Insert a <#part>."))
       (insert "Content-Type: " type)
       (when charset
 	(insert "; " (mail-header-encode-parameter

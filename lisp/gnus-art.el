@@ -637,33 +637,28 @@ Initialized from `text-mode-syntax-table.")
      b 'intangible (cddr (memq 'intangible props)))))
 
 (defmacro gnus-with-article (article &rest forms)
-  "Select ARTICLE, copy the contents of the original article buffer to a new buffer, and then perform FORMS there.
+  "Select ARTICLE and perform FORMS in the original article buffer.
 Then replace the article with the result."
   `(progn
      ;; We don't want the article to be marked as read.
      (let (gnus-mark-article-hook)
        (gnus-summary-select-article t t nil ,article))
      (set-buffer gnus-original-article-buffer)
-     (let ((buf (format "%s" (buffer-string))))
-       (with-temp-buffer
-	 (insert buf)
-	 ,@forms
-	 (unless (gnus-request-replace-article
-		  ,article (car gnus-article-current)
-		  (current-buffer) t)
-	   (error "Couldn't replace article"))
-	 ;; The cache and backlog have to be flushed somewhat.
-	 (when gnus-keep-backlog
-	   (gnus-backlog-remove-article
-	    (car gnus-article-current) (cdr gnus-article-current)))
-	 ;; Flush original article as well.
-	 (save-excursion
-	   (when (get-buffer gnus-original-article-buffer)
-	     (set-buffer gnus-original-article-buffer)
-	     (setq gnus-original-article nil)))
-	 (when gnus-use-cache
-	   (gnus-cache-update-article
-	    (car gnus-article-current) (cdr gnus-article-current)))))))
+     ,@forms
+     (if (not (gnus-check-backend-function
+	       'request-replace-article (car gnus-article-current)))
+	 (gnus-message 5 "Read-only group; not replacing")
+       (unless (gnus-request-replace-article
+		,article (car gnus-article-current)
+		(current-buffer) t)
+	 (error "Couldn't replace article")))
+     ;; The cache and backlog have to be flushed somewhat.
+     (when gnus-keep-backlog
+       (gnus-backlog-remove-article
+	(car gnus-article-current) (cdr gnus-article-current)))
+     (when gnus-use-cache
+       (gnus-cache-update-article
+	(car gnus-article-current) (cdr gnus-article-current)))))
 
 (put 'gnus-with-article 'lisp-indent-function 1)
 (put 'gnus-with-article 'edebug-form-spec '(form body))
@@ -2287,11 +2282,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defvar gnus-mime-button-commands
   '((gnus-article-press-button	"\r"	"Toggle Display")
-    ;(gnus-mime-view-part	"\M-\r"	"View Interactively...")
     (gnus-mime-view-part	"v"	"View Interactively...")
     (gnus-mime-save-part	"o"	"Save...")
     (gnus-mime-copy-part	"c"	"View As Text, In Other Buffer")
     (gnus-mime-inline-part	"i"	"View As Text, In This Buffer")
+    (gnus-mime-internalize-part	"E"	"View Internally")
     (gnus-mime-externalize-part	"e"	"View Externally")
     (gnus-mime-pipe-part	"|"	"Pipe To Command...")))
 
@@ -2355,8 +2350,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data))
-	;(url-standalone-mode (not gnus-plugged))
-	)
+	(url-standalone-mode (not gnus-plugged)))
     (mm-interactively-view-part data)))
 
 (defun gnus-mime-copy-part (&optional handle)
@@ -2364,17 +2358,22 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 (contents (mm-get-part handle))
-	 (buffer (generate-new-buffer
-		       (file-name-nondirectory
-			(or
-			 (mail-content-type-get (mm-handle-type handle) 'name)
-			 (mail-content-type-get (mm-handle-type handle)
-						'filename)
-			 "*decoded*")))))
+	 (contents (mm-get-part handle))|
+	 (base (file-name-nondirectory
+		(or
+		 (mail-content-type-get (mm-handle-type handle) 'name)
+		 (mail-content-type-get (mm-handle-type handle)
+					'filename)
+		 "*decoded*")))
+	 (buffer (generate-new-buffer base)))
     (switch-to-buffer buffer)
     (insert contents)
-    (normal-mode)
+    ;; We do it this way to make `normal-mode' set the appropriate mode.
+    (unwind-protect
+	(progn
+	  (setq buffer-file-name (expand-file-name base))
+	  (normal-mode))
+      (setq buffer-file-name nil))
     (goto-char (point-min))))
 
 (defun gnus-mime-inline-part (&optional charset)
@@ -2383,7 +2382,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 contents
-	 ;(url-standalone-mode (not gnus-plugged))
+	 (url-standalone-mode (not gnus-plugged))
 	 (b (point))
 	 buffer-read-only)
     (if (mm-handle-undisplayer data)
@@ -2398,12 +2397,26 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (goto-char b))))
 
 (defun gnus-mime-externalize-part (&optional handle)
-  "Insert the MIME part under point into the current buffer."
+  "View the MIME part under point with an external viewer."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 ;(url-standalone-mode (not gnus-plugged))
+	 (url-standalone-mode (not gnus-plugged))
 	 (mm-user-display-methods nil)
+	 (mm-all-images-fit t)
+	 (rfc2047-default-charset gnus-newsgroup-default-charset)
+	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
+    (if (mm-handle-undisplayer handle)
+	(mm-remove-part handle)
+      (mm-display-part handle))))
+
+(defun gnus-mime-internalize-part (&optional handle)
+  "View the MIME part under point with an internal viewer."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
+	 (url-standalone-mode (not gnus-plugged))
+	 (mm-user-display-methods '(".*"))
 	 (rfc2047-default-charset gnus-newsgroup-default-charset)
 	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (if (mm-handle-undisplayer handle)
@@ -2594,7 +2607,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (when (string-match (pop ignored) type)
 	    (throw 'ignored nil)))
 	(if (and (mm-automatic-display-p type)
-		 (mm-inlinable-part-p type)
+		 (or (mm-inlinable-part-p type)
+		     (mm-automatic-external-display-p type))
 		 (setq not-attachment
 		       (or (not (mm-handle-disposition handle))
 			   (equal (car (mm-handle-disposition handle))

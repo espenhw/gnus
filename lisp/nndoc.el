@@ -452,18 +452,18 @@ from the document.")
 	(limit (search-forward "\n\n" nil t)))
     (goto-char (point-min))
     (when (and limit
-		(re-search-forward
-		 (concat "\
-^Content-Type:[ \t]*multipart/[a-z]+ *;\\(.*;\\)*"
-			 "[ \t\n]*[ \t]boundary=\"?[^\"\n]*[^\" \t\n]")
-	   limit t))
+	       (re-search-forward
+		(concat "\
+^Content-Type:[ \t]*multipart/[a-z]+ *;\\(\\(\n[ \t]\\)?.*;\\)*"
+			"\\(\n[ \t]\\)?[ \t]*boundary=\"?[^\"\n]*[^\" \t\n]")
+		limit t))
       t)))
 
 (defun nndoc-transform-mime-parts (article)
   (let* ((entry (cdr (assq article nndoc-dissection-alist)))
 	 (headers (nth 5 entry)))
     (when headers
-    (goto-char (point-min))
+      (goto-char (point-min))
       (insert headers))))
 
 (defun nndoc-generate-mime-parts-head (article)

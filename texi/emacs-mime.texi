@@ -276,8 +276,8 @@ Decode the encoded words in the string and return the result.
 @end table
 
 Currently, @code{mail-parse} is an abstraction over @code{ietf-drums},
-@code{rfc2047} and @code{rfc2231}.  These are documented in the
-subsequent sections.
+@code{rfc2047}, @code{rfc2045} and @code{rfc2231}.  These are documented
+in the subsequent sections.
 
 
 

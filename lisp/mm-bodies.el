@@ -172,14 +172,16 @@ The characters in CHARSET should then be decoded."
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
   (setq charset (or charset rfc2047-default-charset))
-  (when (featurep 'mule)
-    (let (mule-charset)
-      (when (and charset
-		 (setq mule-charset (mm-charset-to-coding-system charset))
-		 enable-multibyte-characters
-		 (or (not (eq mule-charset 'ascii))
-		     (setq mule-charset rfc2047-default-charset)))
-	(mm-decode-coding-string string mule-charset)))))
+  (or
+   (when (featurep 'mule)
+     (let (mule-charset)
+       (when (and charset
+		  (setq mule-charset (mm-charset-to-coding-system charset))
+		  enable-multibyte-characters
+		  (or (not (eq mule-charset 'ascii))
+		      (setq mule-charset rfc2047-default-charset)))
+	 (mm-decode-coding-string string mule-charset))))
+   string))
 
 (provide 'mm-bodies)
 

@@ -9213,7 +9213,9 @@ save those articles instead."
 	(insert (format "Content-Type: multipart/mixed; boundary=\"%s\"\n"
 			separator))
 	(insert "Mime-Version: 1.0\n")
-	(widen)))))
+	(widen))))
+  (let (gnus-mark-article-hook)
+    (gnus-summary-select-article t t nil article)))
 
 (defun gnus-summary-toggle-display-buttonized ()
   "Toggle the buttonizing of the article buffer."
