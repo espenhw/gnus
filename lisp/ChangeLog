@@ -4,6 +4,7 @@
 	(gnus-agent-regenerate): New function.
 	(gnus-agent-save-alist): Sort.
 	(gnus-agent-copy-nov-line): Test eobp.
+	(gnus-agent-retrieve-headers): Erase buffer.
 
 2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -1793,6 +1793,7 @@ The following commands are available:
 			  (file-name-directory file) t))
       (when (file-exists-p file)
 	(with-current-buffer gnus-agent-overview-buffer
+	  (erase-buffer)
 	  (let ((coding-system-for-read
 		 gnus-agent-file-coding-system))
 	    (nnheader-insert-file-contents file))
