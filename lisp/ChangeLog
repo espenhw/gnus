@@ -1,3 +1,9 @@
+2000-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-insert-line): Work with quoted
+	double-quote charcters.
+	(gnus-summary-prepare-threads): Ditto.
+
 2000-10-31 08:36:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-display-single): Forward line -1.
