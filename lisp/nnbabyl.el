@@ -161,9 +161,10 @@
 	(while (and (not (looking-at ".+:"))
 		    (zerop (forward-line 1))))
 	(setq start (point))
-	(or (and (re-search-forward 
-		  (concat "^" nnbabyl-mail-delimiter) nil t)
-		 (forward-line -1))
+	(or (when (re-search-forward 
+		   (concat "^" nnbabyl-mail-delimiter) nil t)
+	      (beginning-of-line)
+	      t)
 	    (goto-char (point-max)))
 	(setq stop (point))
 	(let ((nntp-server-buffer (or buffer nntp-server-buffer)))
@@ -287,7 +288,6 @@
 
 (deffoo nnbabyl-request-move-article 
   (article group server accept-form &optional last)
-  (nnbabyl-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnbabyl move*"))
 	result)
     (and 
@@ -296,15 +296,16 @@
        (set-buffer buf)
        (insert-buffer-substring nntp-server-buffer)
        (goto-char (point-min))
-       (if (re-search-forward 
-	    "^X-Gnus-Newsgroup:" 
-	    (save-excursion (search-forward "\n\n" nil t) (point)) t)
-	   (delete-region (progn (beginning-of-line) (point))
-			  (progn (forward-line 1) (point))))
+       (while (re-search-forward 
+	       "^X-Gnus-Newsgroup:" 
+	       (save-excursion (search-forward "\n\n" nil t) (point)) t)
+	 (delete-region (progn (beginning-of-line) (point))
+			(progn (forward-line 1) (point))))
        (setq result (eval accept-form))
        (kill-buffer (current-buffer))
        result)
      (save-excursion
+       (nnbabyl-possibly-change-newsgroup group server)
        (set-buffer nnbabyl-mbox-buffer)
        (goto-char (point-min))
        (if (search-forward (nnbabyl-article-string article) nil t)
@@ -419,9 +420,7 @@
 	 (forward-line 1)
 	 (or (and (re-search-forward (concat "^" nnbabyl-mail-delimiter) 
 				     nil t)
-		  (if (and (not (bobp)) leave-delim)
-		      (progn (forward-line -2) (point))
-		    (match-beginning 0)))
+		  (match-beginning 0))
 	     (point-max))))
       (goto-char (point-min))
       ;; Only delete the article if no other groups owns it as well.

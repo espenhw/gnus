@@ -342,7 +342,6 @@ time saver for large mailboxes.")
 
 (deffoo nnfolder-request-move-article
   (article group server accept-form &optional last)
-  (nnfolder-possibly-change-group group server)
   (let ((buf (get-buffer-create " *nnfolder move*"))
 	result)
     (and 

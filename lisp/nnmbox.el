@@ -254,7 +254,6 @@
 
 (deffoo nnmbox-request-move-article
   (article group server accept-form &optional last)
-  (nnmbox-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnmbox move*"))
 	result)
     (and 
@@ -274,6 +273,7 @@
        (kill-buffer buf)
        result)
      (save-excursion
+       (nnmbox-possibly-change-newsgroup group server)
        (set-buffer nnmbox-mbox-buffer)
        (goto-char (point-min))
        (if (search-forward (nnmbox-article-string article) nil t)

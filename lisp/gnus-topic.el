@@ -571,6 +571,7 @@ articles in the topic and its subtopics."
   (make-string 
    (* gnus-topic-indent-level
       (or (save-excursion
+	    (forward-line -1)
 	    (gnus-topic-goto-topic (gnus-current-topic))
 	    (gnus-group-topic-level)) 0)) ? ))
 

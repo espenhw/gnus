@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.44 Manual
+@settitle Red Gnus 0.45 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.44 Manual
+@title Red Gnus 0.45 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1689,6 +1689,12 @@ Rename the current group to something else
 (@code{gnus-group-rename-group}).  This is legal only on some
 groups---mail groups mostly.  This command might very well be quite slow
 on some backends.
+
+@item G c
+@kindex G c (Group)
+@cindex customizing
+@findex gnus-group-customize
+Customize the group parameters (@code{gnus-group-customize}).
 
 @item G e
 @kindex G e (Group)
@@ -10580,13 +10586,25 @@ These three match keys use the same match types as the @code{From} (etc)
 header uses.
 
 @item Followup
-This match key will add a score entry on all articles that followup to
-some author.  Uses the same match types as the @code{From} header uses.
+This match key is somewhat special, in that it will match the
+@code{From} header, and affect the score of not only the matching
+articles, but also all followups to the matching articles.  This allows
+you e.g. increase the score of followups to your own articles, or
+decrease the score of followups to the articles of some known
+trouble-maker.  Uses the same match types as the @code{From} header
+uses.
 
 @item Thread
-This match key will add a score entry on all articles that are part of
-a thread.  Uses the same match types as the @code{References} header
-uses.
+This match key works along the same lines as the @code{Followup} match
+key.  If you say that you want to score on a (sub-)thread that is
+started by an article with a @code{Message-ID} @var{X}, then you add a
+@samp{thread} match.  This will add a new @samp{thread} match for each
+article that has @var{X} in its @code{References} header.  (These new
+@samp{thread} matches will use the @code{Message-ID}s of these matching
+articles.)  This will ensure that you can raise/lower the score of an
+entire thread, even though some articles in the thread may not have
+complete @code{References} headers.  Note that using this may lead to
+undeterministic scores of the articles in the thread.
 @end table
 @end enumerate
 
@@ -10615,7 +10633,7 @@ are assumed to be score files as well, and will be loaded the same way
 this one was.
 
 @item exclude-files
-The clue of this entry should be any number of files.  This files will
+The clue of this entry should be any number of files.  These files will
 not be loaded, even though they would normally be so, for some reason or
 other. 
 

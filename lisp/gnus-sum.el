@@ -4895,7 +4895,7 @@ Given a prefix, will force an `article' buffer configuration."
 		 (not (zerop gnus-current-article)))
 	(gnus-summary-goto-subject gnus-current-article))
       (gnus-summary-recenter)
-      (when gnus-use-trees
+      (when (and gnus-use-trees gnus-show-threads)
 	(gnus-possibly-generate-tree article)
 	(gnus-highlight-selected-tree article))
       ;; Successfully display article.

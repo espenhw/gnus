@@ -434,6 +434,7 @@ ticked: The number of ticked articles.")
     "f" gnus-group-make-doc-group
     "w" gnus-group-make-web-group
     "r" gnus-group-rename-group
+    "c" gnus-group-customize
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)
 
@@ -1388,6 +1389,7 @@ This means that no highlighting or scoring will be performed.
 If ALL (the prefix argument) is 0, don't even generate the summary
 buffer."
   (interactive "P")
+  (require 'gnus-score)
   (let (gnus-visual
 	gnus-score-find-score-files-function
 	gnus-apply-kill-hook
@@ -1435,7 +1437,7 @@ Return the name of the group is selection was successful."
     (unless (gnus-check-server method)
       (error "Unable to contact server: %s" (gnus-status-message method)))
     (when activate
-      (gnus-activate-group group 'scan t)
+      (gnus-activate-group group 'scan)
       (unless (gnus-request-group group)
 	(error "Couldn't request group: %s" 
 	       (nnheader-get-report (car method)))))

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.96
+;; Version: 0.98
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -16,11 +16,15 @@
 (require 'widget)
 (require 'cl)
 (autoload 'pp-to-string "pp")
+(autoload 'Info-goto-node "info")
 
 ;; The following should go away when bundled with Emacs.
-(require 'custom)
+(condition-case ()
+    (require 'custom)
+  (error nil))
+
 (eval-and-compile
-  (unless (fboundp 'custom-declare-variable)
+  (unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
     ;; We have the old custom-library, hack around it!
     (defmacro defgroup (&rest args) nil)
     (defmacro defcustom (&rest args) nil)
@@ -475,10 +479,7 @@ With optional ARG, move across that many fields."
 	     (goto-char (max button field)))
 	    (button (goto-char button))
 	    (field (goto-char field)))))
-  (let ((help-echo (or (get-text-property (point) 'button)
-		       (get-text-property (point) 'field))))
-    (if (and help-echo (setq help-echo (widget-get help-echo :help-echo)))
-	(message "%s" help-echo))))
+  (widget-echo-help (point)))
 
 (defun widget-backward (arg)
   "Move point to the previous field or button.
@@ -663,8 +664,45 @@ With optional ARG, move across that many fields."
      (widget-put widget :to to))))
 
 (defun widget-default-format-handler (widget escape)
-  ;; By default unknown escapes are errors.
-  (error "Unknown escape `%c'" escape))
+  ;; We recognize the %h escape by default.
+  (let* ((buttons (widget-get widget :buttons))
+	 (doc-property (widget-get widget :documentation-property))
+	 (doc-try (cond ((widget-get widget :doc))
+			((symbolp doc-property)
+			 (documentation-property (widget-get widget :value)
+						 doc-property))
+			(t
+			 (funcall doc-property (widget-get widget :value)))))
+	 (doc-text (and (stringp doc-try)
+			(> (length doc-try) 1)
+			doc-try)))
+    (cond ((eq escape ?h)
+	   (when doc-text
+	     (and (eq (preceding-char) ?\n)
+		  (widget-get widget :indent)
+		  (insert-char ?  (widget-get widget :indent)))
+	     ;; The `*' in the beginning is redundant.
+	     (when (eq (aref doc-text  0) ?*)
+	       (setq doc-text (substring doc-text 1)))
+	     ;; Get rid of trailing newlines.
+	     (when (string-match "\n+\\'" doc-text)
+	       (setq doc-text (substring doc-text 0 (match-beginning 0))))
+	     (push (if (string-match "\n." doc-text)
+		       ;; Allow multiline doc to be hiden.
+		       (widget-create-child-and-convert
+			widget 'widget-help 
+			:doc (progn
+			       (string-match "\\`.*" doc-text)
+			       (match-string 0 doc-text))
+			:widget-doc doc-text
+			"?")
+		     ;; A single line is just inserted.
+		     (widget-create-child-and-convert
+		      widget 'item :format "%d" :doc doc-text nil))
+		   buttons)))
+	  (t 
+	   (error "Unknown escape `%c'" escape)))
+    (widget-put widget :buttons buttons)))
 
 (defun widget-default-button-face-get (widget)
   ;; Use :button-face or widget-button-face
@@ -722,7 +760,7 @@ With optional ARG, move across that many fields."
   :match 'widget-item-match
   :match-inline 'widget-item-match-inline
   :action 'widget-item-action
-  :format "%t\n%d")
+  :format "%t")
 
 (defun widget-item-convert-widget (widget)
   ;; Initialize :value and :tag from :args in WIDGET.
@@ -763,13 +801,34 @@ With optional ARG, move across that many fields."
 
 (define-widget 'push-button 'item
   "A pushable button."
-  :format "%[[%t]%]%d")
+  :format "%[[%t]%]")
 
 ;;; The `link' Widget.
 
 (define-widget 'link 'item
   "An embedded link."
-  :format "%[_%t_%]%d")
+  :format "%[_%t_%]")
+
+;;; The `info-link' Widget.
+
+(define-widget 'info-link 'link
+  "A link to an info file."
+  :action 'widget-info-link-action)
+
+(defun widget-info-link-action (widget &optional event)
+  "Open the info node specified by WIDGET."
+  (Info-goto-node (widget-value widget)))
+
+;;; The `url-link' Widget.
+
+(define-widget 'url-link 'link
+  "A link to an www page."
+  :action 'widget-url-link-action)
+
+(defun widget-url-link-action (widget &optional event)
+  "Open the url specified by WIDGET."
+  (require 'browse-url)
+  (funcall browse-url-browser-function (widget-value widget)))
 
 ;;; The `editable-field' Widget.
 
@@ -793,9 +852,16 @@ With optional ARG, move across that many fields."
 	(invalid (widget-apply widget :validate)))
     (when invalid
       (error (widget-get invalid :error)))
-    (widget-value-set widget (read-string (concat tag ": ") 
-					  (widget-get widget :value)
-					  'widget-field-history))))
+    (widget-value-set widget 
+		      (widget-apply widget 
+				    :value-to-external
+				    (read-string (concat tag ": ") 
+						 (widget-apply 
+						  widget
+						  :value-to-internal
+						  (widget-value widget))
+						 'widget-field-history)))
+    (widget-setup)))
 
 (defun widget-field-value-create (widget)
   ;; Create an editable text field.
@@ -851,7 +917,7 @@ With optional ARG, move across that many fields."
 
 ;;; The `text' Widget.
 
-(define-widget 'text 'field
+(define-widget 'text 'editable-field
   "A multiline text area.")
 
 ;;; The `menu-choice' Widget.
@@ -918,10 +984,10 @@ With optional ARG, move across that many fields."
 	(tag (widget-apply widget :menu-tag-get))
 	current choices)
     ;; Remember old value.
-    (if (and old (widget-apply widget :validate))
+    (if (and old (not (widget-apply widget :validate)))
 	(let* ((external (widget-value widget))
 	       (internal (widget-apply old :value-to-internal external)))
-	(widget-put old :value internal)))
+	  (widget-put old :value internal)))
     ;; Find new choice.
     (setq current
 	  (cond ((= (length args) 0)
@@ -1631,57 +1697,15 @@ With optional ARG, move across that many fields."
     (widget-put widget :widget-doc old))
   (widget-value-set widget (widget-value widget)))
 
-(defun widget-help-format-handler (widget escape)
-  ;; We recognize extra escape sequences.
-  (let* ((symbol (widget-get widget :value))
-	 (buttons (widget-get widget :buttons))
-	 (doc-property (widget-get widget :documentation-property))
-	 (doc-try (cond ((widget-get widget :doc))
-			((symbolp doc-property)
-			 (documentation-property symbol doc-property))
-			(t
-			 (funcall doc-property symbol))))
-	 (doc-text (and (stringp doc-try)
-			(> (length doc-try) 1)
-			doc-try)))
-    (cond ((eq escape ?h)
-	   (when doc-text
-	     (and (eq (preceding-char) ?\n)
-		  (widget-get widget :indent)
-		  (insert-char ?  (widget-get widget :indent)))
-	     ;; The `*' in the beginning is redundant.
-	     (when (eq (aref doc-text  0) ?*)
-	       (setq doc-text (substring doc-text 1)))
-	     ;; Get rid of trailing newlines.
-	     (when (string-match "\n+\\'" doc-text)
-	       (setq doc-text (substring doc-text 0 (match-beginning 0))))
-	     (push (if (string-match "\n." doc-text)
-		       ;; Allow multiline doc to be hiden.
-		       (widget-create-child-and-convert
-			widget 'widget-help 
-			:doc (progn
-			       (string-match "\\`.*" doc-text)
-			       (match-string 0 doc-text))
-			:widget-doc doc-text
-			"?")
-		     ;; A single line is just inserted.
-		     (widget-create-child-and-convert
-		      widget 'item :format "%d" :doc doc-text nil))
-		   buttons)))
-	  (t 
-	   (widget-default-format-handler widget escape)))
-    (widget-put widget :buttons buttons)))
-
 ;;; The Sexp Widgets.
 
 (define-widget 'const 'item
   "An immutable sexp."
-  :format "%t\n")
+  :format "%t\n%d")
 
 (define-widget 'function-item 'item
   "An immutable function name."
   :format "%v\n%h"
-  :format-handler 'widget-help-format-handler
   :documentation-property (lambda (symbol)
 			    (condition-case nil
 				(documentation symbol t)
@@ -1692,7 +1716,6 @@ With optional ARG, move across that many fields."
 (define-widget 'variable-item 'item
   "An immutable variable name."
   :format "%v\n%h"
-  :format-handler 'widget-help-format-handler
   :documentation-property 'variable-documentation
   :value-delete 'widget-radio-value-delete
   :match (lambda (widget value) (symbolp value)))
@@ -1735,10 +1758,14 @@ It will read a directory name from the minibuffer when activated."
   :value nil
   :tag "Symbol"
   :match (lambda (widget value) (symbolp value))
-  :value-to-internal (lambda (widget value) (and (symbolp value)
-						 (symbol-name value)))
-  :value-to-external (lambda (widget value) (and (stringp value)
-						 (intern value))))
+  :value-to-internal (lambda (widget value)
+		       (if (symbolp value)
+			   (symbol-name value)
+			 value))
+  :value-to-external (lambda (widget value)
+		       (if (stringp value)
+			   (intern value)
+			 value)))
 
 (define-widget 'function 'symbol
   ;; Should complete on functions.
@@ -1796,6 +1823,10 @@ It will read a directory name from the minibuffer when activated."
   :tag "Integer"
   :value 0
   :type-error "This field should contain an integer"
+  :value-to-internal (lambda (widget value)
+		       (if (integerp value) 
+			   (prin1-to-string value)
+			 value))
   :match (lambda (widget value) (integerp value)))
 
 (define-widget 'number 'sexp
@@ -1803,6 +1834,10 @@ It will read a directory name from the minibuffer when activated."
   :tag "Number"
   :value 0.0
   :type-error "This field should contain a number"
+  :value-to-internal (lambda (widget value)
+		       (if (numberp value)
+			   (prin1-to-string value)
+			 value))
   :match (lambda (widget value) (numberp value)))
 
 (define-widget 'hook 'sexp 
@@ -1840,7 +1875,7 @@ It will read a directory name from the minibuffer when activated."
 (defun widget-cons-match (widget value) 
   (and (consp value)
        (widget-group-match widget
-			   (widget-apply :value-to-internal widget value))))
+			   (widget-apply widget :value-to-internal value))))
 
 (define-widget 'choice 'menu-choice
   "A union of several sexp types."
@@ -1855,12 +1890,12 @@ It will read a directory name from the minibuffer when activated."
 (define-widget 'repeat 'editable-list
   "A variable length homogeneous list."
   :tag "Repeat"
-  :format "%[%t%]:\n%v%i\n")
+  :format "%t:\n%v%i\n")
 
 (define-widget 'set 'checklist
   "A list of members from a fixed set."
   :tag "Set"
-  :format "%[%t%]:\n%v")
+  :format "%t:\n%v")
 
 (define-widget 'boolean 'toggle
   "To be nil or non-nil, that is the question."
@@ -1934,6 +1969,51 @@ It will read a directory name from the minibuffer when activated."
 			(read-string prompt (widget-value widget))))))
     (unless (zerop (length answer))
       (widget-value-set widget answer))))
+
+;;; The Help Echo
+
+(defun widget-echo-help-mouse ()
+  "Display the help message for the widget under the mouse.
+Enable with (run-with-idle-timer 2 t 'widget-echo-help-mouse)"
+  (let* ((pos (mouse-position))
+	 (frame (car pos))
+	 (x (car (cdr pos)))
+	 (y (cdr (cdr pos)))
+	 (win (window-at x y frame))
+	 (where (coordinates-in-window-p (cons x y) win)))
+    (when (consp where)
+      (save-window-excursion
+	(progn ; save-excursion
+	  (select-window win)
+	  (let* ((result (compute-motion (window-start win)
+					 '(0 . 0)
+					 (window-end win)
+					 where
+					 (window-width win)
+					 (cons (window-hscroll) 0)
+					 win)))
+	    (when (and (eq (nth 1 result) x)
+		       (eq (nth 2 result) y))
+	      (widget-echo-help (nth 0 result))))))))
+  (unless track-mouse
+    (setq track-mouse t)
+    (add-hook 'post-command-hook 'widget-stop-mouse-tracking)))
+
+(defun widget-stop-mouse-tracking (&rest args)
+  "Stop the mouse tracking done while idle."
+  (remove-hook 'post-command-hook 'widget-stop-mouse-tracking)
+  (setq track-mouse nil))
+
+(defun widget-echo-help (pos)
+  "Display the help echo for widget at POS."
+  (let* ((widget (or (get-text-property pos 'button)
+		     (get-text-property pos 'field)))
+	 (help-echo (and widget (widget-get widget :help-echo))))
+    (cond ((stringp help-echo)
+	   (message "%s" help-echo))
+	  ((and (symbolp help-echo) (fboundp help-echo)
+		(stringp (setq help-echo (funcall help-echo widget))))
+	   (message "%s" help-echo)))))
 
 ;;; The End:
 

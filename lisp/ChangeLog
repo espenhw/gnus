@@ -1,3 +1,40 @@
+Sun Sep 29 00:57:13 1996  Dave Disser  <disser@sdd.hp.com>
+
+	* gnus-sum.el (gnus-summary-display-article): Don't show tree
+	unless using threads.
+
+Sun Sep 29 00:19:35 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-score.el (gnus-all-score-files): Remove duplicates.
+
+Sat Sep 28 23:47:43 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-score.el (gnus-summary-increase-score): Wouldn't do regexp
+	bodies. 
+
+	* gnus-topic.el (gnus-topic-group-indentation): Give the right
+	indentation always.
+
+Sat Sep 28 23:23:58 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-quick-select-group): Require
+	gnus-score. 
+
+	* gnus-score.el (gnus-score-thread): New function.
+
+Sat Sep 28 00:41:54 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus.el: New file.
+
+Sat Sep 28 21:32:52 1996  Kevin Buhr  <buhr@stat.wisc.edu>
+
+	* nnbabyl.el (nnbabyl-request-article): Would delete wrong
+	articles. 
+
+Fri Sep 27 21:54:30 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.44 is released.
+
 Fri Sep 27 21:24:46 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-sum.el (gnus-nov-parse-line): Would double articles.

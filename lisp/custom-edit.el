@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.96
+;; Version: 0.98
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -223,7 +223,7 @@ The list should be sorted most significant first."
 	     (push magic buttons)
 	     (widget-put widget :buttons buttons)))
 	  (t 
-	   (widget-help-format-handler widget escape)))))
+	   (widget-default-format-handler widget escape)))))
 
 (defun custom-notify (widget &rest args)
   "Keep track of changes."
@@ -423,11 +423,13 @@ Optional EVENT is the location for the menu."
 	  ((setq val (widget-apply child :validate))
 	   (error "Invalid %S"))
 	  ((eq form 'lisp)
-	   (put symbol 'saved-value (list (widget-value child))))
+	   (put symbol 'saved-value (list (widget-value child)))
+	   (set symbol (eval (widget-value child))))
 	  (t
 	   (put symbol
 		'saved-value (list (custom-quote (widget-value
-						  child))))))
+						  child))))
+	   (set symbol (widget-value child))))
     (custom-variable-state-set widget)
     (custom-redraw-magic widget)))
 
@@ -851,7 +853,7 @@ Leave point at the location of the call, or after the last expression."
 (defun custom-mode ()
   "Major mode for editing customization buffers.
 
-Read the non-existing manual for information about how to use it.
+The following commands are available:
 
 \\[widget-forward]		Move to next button or editable field.
 \\[widget-backward]		Move to previous button or editable field.
@@ -975,10 +977,13 @@ that option."
   (kill-buffer (get-buffer-create "*Customization*"))
   (switch-to-buffer (get-buffer-create "*Customization*"))
   (custom-mode)
-  (widget-insert "This is a customization buffer. 
-Press `C-h m' for to get help.
-
-")
+  (widget-insert "This is a customization buffer.
+Push RET or click mouse-2 on the word ")
+  (widget-create 'info-link 
+		 :tag "help"
+		 :help-echo "Push me for help."
+		 "(custom)The Customization Buffer")
+  (widget-insert " for more information.\n\n")
   (setq custom-options 
 	(mapcar (lambda (entry)
 		  (prog1 
@@ -990,7 +995,7 @@ Press `C-h m' for to get help.
 		options))
   (widget-create 'push-button
 		 :tag "Apply"
-		 :help-echo "Push me to apply all modifications,"
+		 :help-echo "Push me to apply all modifications."
 		 :action (lambda (widget &optional event)
 			   (custom-apply)))
   (widget-insert " ")

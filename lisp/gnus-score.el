@@ -335,6 +335,7 @@ of the last successful match.")
   "a" gnus-summary-score-entry
   "S" gnus-summary-current-score
   "c" gnus-score-change-score-file
+  "C" gnus-score-customize
   "m" gnus-score-set-mark-below
   "x" gnus-score-set-expunge-below
   "R" gnus-summary-rescore
@@ -400,7 +401,7 @@ used as score."
 	    (?f f "fuzzy string" string)
 	    (?r r "regexp string" string)
 	    (?z s "substring" body-string)
-	    (?p s "regexp string" body-string)
+	    (?p r "regexp string" body-string)
 	    (?b before "before date" date)
 	    (?a at "at date" date) 
 	    (?n now "this date" date)
@@ -1483,12 +1484,12 @@ SCORE is the score to add."
 
 (defun gnus-score-body (scores header now expire &optional trace)
   (save-excursion
-    (set-buffer nntp-server-buffer)
     (setq gnus-scores-articles
 	  (sort gnus-scores-articles
 		(lambda (a1 a2)
 		  (< (mail-header-number (car a1))
 		     (mail-header-number (car a2))))))
+    (set-buffer nntp-server-buffer)
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
@@ -1519,19 +1520,18 @@ SCORE is the score to add."
 	      ;; If just parts of the article is to be searched, but the
 	      ;; backend didn't support partial fetching, we just narrow
 	      ;; to the relevant parts.
-	      (if ofunc
-		  (if (eq ofunc 'gnus-request-head)
-		      (narrow-to-region
-		       (point)
-		       (or (search-forward "\n\n" nil t) (point-max)))
+	      (when ofunc
+		(if (eq ofunc 'gnus-request-head)
 		    (narrow-to-region
-		     (or (search-forward "\n\n" nil t) (point))
-		     (point-max))))
+		     (point)
+		     (or (search-forward "\n\n" nil t) (point-max)))
+		  (narrow-to-region
+		   (or (search-forward "\n\n" nil t) (point))
+		   (point-max))))
 	      (setq scores all-scores)
 	      ;; Find matches.
 	      (while scores
-		(setq alist (car scores)
-		      scores (cdr scores)
+		(setq alist (pop scores)
 		      entries (assoc header alist))
 		(while (cdr entries)	;First entry is the header index.
 		  (let* ((rest (cdr entries))		
@@ -1555,31 +1555,32 @@ SCORE is the score to add."
 				(t
 				 (error "Illegal match type: %s" type)))))
 		    (goto-char (point-min))
-		    (if (funcall search-func match nil t)
-			;; Found a match, update scores.
-			(progn
-			  (setcdr (car articles) (+ score (cdar articles)))
-			  (setq found t)
-			  (and trace (setq gnus-score-trace 
-					   (cons
-					    (cons
-					     (car-safe
-					      (rassq alist gnus-score-cache))
-					     kill)
-					    gnus-score-trace)))))
+		    (when (funcall search-func match nil t)
+		      ;; Found a match, update scores.
+		      (setcdr (car articles) (+ score (cdar articles)))
+		      (setq found t)
+		      (when trace
+			(push
+			 (cons (car-safe (rassq alist gnus-score-cache)) kill)
+			 gnus-score-trace)))
 		    ;; Update expire date
-		    (cond
-		     ((null date))	;Permanent entry.
-		     ((and found gnus-update-score-entry-dates) ;Match, update date.
-		      (gnus-score-set 'touched '(t) alist)
-		      (setcar (nthcdr 2 kill) now))
-		     ((and expire (< date expire)) ;Old entry, remove.
-		      (gnus-score-set 'touched '(t) alist)
-		      (setcdr entries (cdr rest))
-		      (setq rest entries)))
+		    (unless trace
+		      (cond
+		       ((null date))	;Permanent entry.
+		       ((and found gnus-update-score-entry-dates) 
+			;; Match, update date.
+			(gnus-score-set 'touched '(t) alist)
+			(setcar (nthcdr 2 kill) now))
+		       ((and expire (< date expire)) ;Old entry, remove.
+			(gnus-score-set 'touched '(t) alist)
+			(setcdr entries (cdr rest))
+			(setq rest entries))))
 		    (setq entries rest)))))
 	    (setq articles (cdr articles)))))))
   nil)
+
+(defun gnus-score-thread (scores header now expire &optional trace)
+  (gnus-score-followup scores header now expire trace t))
 
 (defun gnus-score-followup (scores header now expire &optional trace thread)
   ;; Insert the unique article headers in the buffer.
@@ -1787,13 +1788,11 @@ SCORE is the score to add."
 		     (if trace
 			 (while (setq art (pop arts))
 			   (setcdr art (+ score (cdr art)))
-			   (setq gnus-score-trace
-				 (cons
-				  (cons
-				   (car-safe
-				    (rassq alist gnus-score-cache))
-				   kill)
-				  gnus-score-trace)))
+			   (push
+			    (cons 
+			     (car-safe (rassq alist gnus-score-cache))
+			     kill)
+			    gnus-score-trace))
 		       (while (setq art (pop arts))
 			 (setcdr art (+ score (cdr art)))))))
 	      (forward-line 1)))
@@ -1894,8 +1893,7 @@ SCORE is the score to add."
 	      (if trace
 		  (while (setq art (pop arts))
 		    (setcdr art (+ score (cdr art)))
-		    (push (cons
-			   (car-safe (rassq alist gnus-score-cache)) kill)
+		    (push (cons (car-safe (rassq alist gnus-score-cache)) kill)
 			  gnus-score-trace))
 		;; Found a match, update scores.
 		(while (setq art (pop arts))
@@ -2492,6 +2490,19 @@ The list is determined from the variable gnus-score-file-alist."
     (let ((param-file (gnus-group-find-parameter group 'score-file)))
       (when param-file
 	(push param-file score-files)))
+    ;; Expand all files names.
+    (let ((files score-files))
+      (while files
+	(setcar files (expand-file-name (pop files)))))
+    ;; Remove any duplicate score files.
+    (while (and score-files
+		(member (car score-files) (cdr score-files)))
+      (pop score-files))
+    (let ((files score-files))
+      (while (cdr files)
+	(when (member (cadr files) (cddr files))
+	  (setcdr files (cddr files)))
+	(pop files)))
     ;; Do the scoring if there are any score files for this group.
     score-files))
     
