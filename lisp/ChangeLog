@@ -1,4 +1,18 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-keys, smime-CA-directory, smime-CA-file) 
+	(smime-certificate-directory, smime-openssl-program) 
+	(smime-encrypt-cipher, smime-dns-server): Fix doc (leading "*").
+	(smime-extra-arguments): New variable.
+	(smime-dns-server): Fix customize group.
+	(smime-call-openssl-region): Use `smime-extra-arguments'.
+
+2001-07-29  Simon Josefsson  <jas@extundo.com>
+	From Vladimir Volovich <vvv@vsu.ru>
+
+	* smime.el (smime-call-openssl-region): Ignore stderr.
+
+2001-07-29  Simon Josefsson  <jas@extundo.com>
 	From Christoph Conrad <christoph.conrad@gmx.de>
 
 	* gnus-agent.el (gnus-agent-save-group-info): Don't destroy active

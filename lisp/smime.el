@@ -119,7 +119,7 @@
   "S/MIME configuration.")
 
 (defcustom smime-keys nil
-  "Map mail addresses to a file containing Certificate (and private key).
+  "*Map mail addresses to a file containing Certificate (and private key).
 The file is assumed to be in PEM format. You can also associate additional
 certificates to be sent with every message to each address."
   :type '(repeat (list (string :tag "Mail address")
@@ -129,7 +129,7 @@ certificates to be sent with every message to each address."
   :group 'smime)
 
 (defcustom smime-CA-directory nil
-  "Directory containing certificates for CAs you trust.
+  "*Directory containing certificates for CAs you trust.
 Directory should contain files (in PEM format) named to the X.509
 hash of the certificate.  This can be done using OpenSSL such as:
 
@@ -142,14 +142,14 @@ certificate."
   :group 'smime)
 
 (defcustom smime-CA-file nil
-  "Files containing certificates for CAs you trust.
+  "*Files containing certificates for CAs you trust.
 File should contain certificates in PEM format."
   :type '(choice (const :tag "none" nil)
 		 file)
   :group 'smime)
 
 (defcustom smime-certificate-directory "~/Mail/certs/"
-  "Directory containing other people's certificates.
+  "*Directory containing other people's certificates.
 It should contain files named to the X.509 hash of the certificate,
 and the files themself should be in PEM format."
 ;The S/MIME library provide simple functionality for fetching
@@ -163,14 +163,14 @@ and the files themself should be in PEM format."
 	   (eq 0 (call-process "openssl" nil nil nil "version"))
 	 (error nil))
        "openssl")
-  "Name of OpenSSL binary."
+  "*Name of OpenSSL binary."
   :type 'string
   :group 'smime)
 
 ;; OpenSSL option to select the encryption cipher
 
 (defcustom smime-encrypt-cipher "-des3"
-  "Cipher algorithm used for encryption."
+  "*Cipher algorithm used for encryption."
   :type '(choice (const :tag "Triple DES" "-des3")
 		 (const :tag "DES"  "-des")
 		 (const :tag "RC2 40 bits" "-rc2-40")
@@ -179,11 +179,18 @@ and the files themself should be in PEM format."
   :group 'smime)
 
 (defcustom smime-dns-server nil
-  "DNS server to query certificates from.
+  "*DNS server to query certificates from.
 If nil, use system defaults."
   :type '(choice (const :tag "System defaults")
 		 string)
-  :group 'dig)
+  :group 'smime)
+
+(defcustom smime-extra-arguments nil
+  "*List of additional arguments passed to OpenSSL.
+For instance, if you don't have a /dev/random you might be forced
+to set this to e.g. `(\"-rand\" \"/etc/entropy\")'."
+  :type '(repeat string)
+  :group 'smime)
 
 (defvar smime-details-buffer "*OpenSSL output*")
 
@@ -201,7 +208,8 @@ If nil, use system defaults."
 ;; OpenSSL wrappers.
 
 (defun smime-call-openssl-region (b e buf &rest args)
-  (case (apply 'call-process-region b e smime-openssl-program nil buf nil args)
+  (case (apply 'call-process-region b e smime-openssl-program nil
+	       (list buf nil) nil (append smime-extra-arguments args))
     (0 t)
     (1 (message "OpenSSL: An error occurred parsing the command options.") nil)
     (2 (message "OpenSSL: One of the input files could not be read.") nil)
