@@ -725,7 +725,8 @@ articles in the topic and its subtopics."
 	 (unread 0)
 	 (entries (gnus-topic-find-groups
 		   (car type) (car gnus-group-list-mode)
-		   (cdr gnus-group-list-mode))))
+		   (cdr gnus-group-list-mode)))
+	entry)
     (while children
       (incf unread (gnus-topic-unread (caar (pop children)))))
     (while (setq entry (pop entries))

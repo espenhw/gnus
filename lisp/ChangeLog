@@ -1,5 +1,13 @@
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-topic-display-missing-topic): Bind entry. 
+
+	* message.el (message-with-reply-buffer): New macro.
+	(message-fetch-reply-field): Use it.
+	(message-insert-wide-reply): New command and keystroke.
+	(message-carefully-insert-headers): New function.
+	(message-insert-to): Use new function.
+
 	* gnus-topic.el (gnus-topic-display-missing-topic): New function.
 	(gnus-topic-goto-missing-group): Use it.
 

@@ -1483,14 +1483,21 @@ is used by default."
 	    (insert (car headers) ?\n)))))
     (setq headers (cdr headers))))
 
+(defmacro message-with-reply-buffer (&rest forms)
+  "Evaluate FORMS in the reply buffer, if it exists."
+  `(when (and message-reply-buffer
+	      (buffer-name message-reply-buffer))
+     (save-excursion
+       (set-buffer message-reply-buffer)
+       ,@forms)))
+
+(put 'message-with-reply-buffer 'lisp-indent-function 0)
+(put 'message-with-reply-buffer 'edebug-form-spec '(body))
 
 (defun message-fetch-reply-field (header)
   "Fetch field HEADER from the message we're replying to."
-  (when (and message-reply-buffer
-	     (buffer-name message-reply-buffer))
-    (save-excursion
-      (set-buffer message-reply-buffer)
-      (message-fetch-field header))))
+  (message-with-reply-buffer
+    (message-fetch-field header)))
 
 (defun message-set-work-buffer ()
   (if (get-buffer " *message work*")
@@ -1973,6 +1980,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-i" 'message-goto-signature)
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
+  (define-key message-mode-map "\C-c\C-p" 'message-insert-wide-reply)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
   (define-key message-mode-map "\C-c\C-l" 'message-to-list-only)
 
@@ -2416,13 +2424,29 @@ With the prefix argument FORCE, insert the header anyway."
 	       (or (equal (downcase co) "never")
 		   (equal (downcase co) "nobody")))
       (error "The user has requested not to have copies sent via mail")))
-  (when (and (message-position-on-field "To")
-	     (mail-fetch-field "to")
-	     (not (string-match "\\` *\\'" (mail-fetch-field "to"))))
-    (insert ", "))
-  (insert (or (message-fetch-reply-field "mail-reply-to")
-	      (message-fetch-reply-field "reply-to")
-	      (message-fetch-reply-field "from") "")))
+  (message-carefully-insert-headers
+   (list (cons 'To
+	       (or (message-fetch-reply-field "mail-reply-to")
+		   (message-fetch-reply-field "reply-to")
+		   (message-fetch-reply-field "from")
+		   "")))))
+
+(defun message-insert-wide-reply ()
+  "Insert To and Cc headers as if you were doing a wide reply."
+  (interactive)
+  (let ((headers (message-with-reply-buffer
+		   (message-get-reply-headers t))))
+    (message-carefully-insert-headers headers)))
+
+(defun message-carefully-insert-headers (headers)
+  (dolist (header headers)
+    (let ((header-name (symbol-name (car header))))
+      (when (and (message-position-on-field header-name)
+		 (mail-fetch-field header-name)
+		 (not (string-match "\\` *\\'"
+				    (mail-fetch-field header-name))))
+	(insert ", "))
+      (insert (cdr header)))))
 
 (defun message-widen-reply ()
   "Widen the reply to include maximum recipients."
