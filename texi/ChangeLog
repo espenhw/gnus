@@ -1,3 +1,10 @@
+2002-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Conformity): Add MIME and Disposition Notifications.
+
+	* message.texi (Header Commands): Fix.  Add m-goto-from.
+	(Insertion): Add m-i-disposition-notification-to.
+
 2002-01-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (.latexi.pdf-x): Use thumbpdf.

@@ -359,13 +359,19 @@ inserted.
 
 @item C-c ?
 @kindex C-c ?
-@findex message-goto-to
+@findex describe-mode
 Describe the message mode.
 
 @item C-c C-f C-t
 @kindex C-c C-f C-t
 @findex message-goto-to
 Go to the @code{To} header (@code{message-goto-to}).
+
+@item C-c C-f C-o
+@kindex C-c C-f C-o
+@findex message-goto-from
+Go to the @code{From} header (@code{message-goto-from}).  (The ``o''
+in the key binding is for Originator.)
 
 @item C-c C-f C-b
 @kindex C-c C-f C-b
@@ -502,6 +508,14 @@ Insert a signature at the end of the buffer
 @kindex C-c M-h
 @findex message-insert-headers
 Insert the message headers (@code{message-insert-headers}).
+
+@item C-c M-n
+@kindex C-c M-n
+@findex message-insert-disposition-notification-to
+Insert a request for a disposition
+notification. (@code{message-insert-disposition-notification-to}).
+This means that if the recipient support RFC 2298 she might send you a
+notification that she received the message.
 
 @end table
 

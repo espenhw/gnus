@@ -20707,10 +20707,16 @@ on Son-of-RFC 1036.  They have produced a number of drafts proposing
 various changes to the format of news articles.  The Gnus towers will
 look into implementing the changes when the draft is accepted as an RFC.
 
+@item MIME - RFC 2045-2049 etc
+@cindex MIME
+All the various MIME RFCs are supported.
+
+@item Disposition Notifications - RFC 2289
+Message Mode is able to request notifications from the receiver.
+
 @item PGP - RFC 1991 and RFC 2440
 @cindex RFC 1991
 @cindex RFC 2440
-
 RFC 1991 is the original PGP message specification, published as a
 Information RFC.  RFC 2440 was the follow-up, now called Open PGP, and
 put on the Standards Track.  Both document a non-MIME aware PGP
@@ -20718,17 +20724,14 @@ format.  Gnus supports both encoding (signing and encryption) and
 decoding (verification and decryption).
 
 @item PGP/MIME - RFC 2015/3156
-
 RFC 2015 (superceded by 3156 which references RFC 2440 instead of RFC
 1991) describes the MIME-wrapping around the RF 1991/2440 format.
 Gnus supports both encoding and decoding.
 
 @item S/MIME - RFC 2633
-
 RFC 2633 describes the S/MIME format.
 
 @item IMAP - RFC 1730/2060, RFC 2195, RFC 2086, RFC 2359, RFC 2595, RFC 1731
-
 RFC 1730 is IMAP version 4, updated somewhat by RFC 2060 (IMAP 4
 revision 1).  RFC 2195 describes CRAM-MD5 authentication for IMAP. RFC
 2086 describes access control lists (ACLs) for IMAP. RFC 2359
