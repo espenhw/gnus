@@ -1006,7 +1006,8 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-fetch-headers (group &optional force)
   (let ((articles (gnus-list-of-unread-articles group))
 	(gnus-decode-encoded-word-function 'identity)
-	(file (gnus-agent-article-name ".overview" group)))
+	(file (gnus-agent-article-name ".overview" group))
+	gnus-agent-cache)
     ;; Add article with marks to list of article headers we want to fetch.
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
       (setq articles (gnus-range-add articles (cdr arts))))
@@ -1783,6 +1784,75 @@ The following commands are available:
     (gnus))
   (gnus-group-send-queue)
   (gnus-agent-fetch-session))
+
+(defun gnus-agent-retrieve-headers (articles group &optional fetch-old)
+  (save-excursion
+    (gnus-agent-create-buffer)
+    (let ((gnus-decode-encoded-word-function 'identity)
+	  (file (gnus-agent-article-name ".overview" group))
+	  cached-articles uncached-articles)
+      (gnus-make-directory (nnheader-translate-file-chars
+			  (file-name-directory file) t))
+      (when (file-exists-p file)
+	(with-current-buffer gnus-agent-overview-buffer
+	  (erase-buffer)
+	  (nnheader-insert-file-contents file)
+	  (goto-char (point-min)) 
+	  (while (not (eobp))
+	    (when (looking-at "[0-9]")
+	      (push (read (current-buffer)) cached-articles))
+	    (forward-line 1))
+	  (setq cached-articles (sort cached-articles '<))))
+      (when (setq uncached-articles 
+		  (gnus-set-difference articles cached-articles))
+	(let (gnus-agent-cache)
+	  (unless (eq 'nov 
+		      (gnus-retrieve-headers 
+		       uncached-articles group fetch-old))
+	    (nnvirtual-convert-headers)))
+	(set-buffer nntp-server-buffer)
+	(with-current-buffer gnus-agent-overview-buffer
+	  (erase-buffer))
+	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
+	(when (and uncached-articles (file-exists-p file))
+	  (gnus-agent-braid-nov group uncached-articles file))
+	(let ((coding-system-for-write
+	       gnus-agent-file-coding-system))
+	  (write-region (point-min) (point-max) file nil 'silent))
+	(gnus-agent-save-alist group uncached-articles nil)
+	(gnus-agent-open-history)
+	(setq gnus-agent-current-history (gnus-agent-history-buffer))
+	(gnus-agent-enter-history
+	 "last-header-fetched-for-session"
+	 (list (cons group (nth (- (length  articles) 1) articles)))
+	 (time-to-days (current-time)))
+	(gnus-agent-save-history)))
+    (set-buffer nntp-server-buffer)
+    (insert-buffer-substring gnus-agent-overview-buffer)
+    (if (and fetch-old
+	     (not (numberp fetch-old)))
+	t				; Don't remove anything.
+      (nnheader-nov-delete-outside-range
+       (if fetch-old (max 1 (- (car articles) fetch-old))
+	 (car articles))
+       (car (last articles)))
+      t)
+    'nov))
+
+(defun gnus-agent-request-article (article group)
+  "Retrieve ARTICLE in GROUP from the agent cache."
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (file (concat
+		  (gnus-agent-directory)
+		  (gnus-agent-group-path group) "/"
+		  (number-to-string article)))
+	(buffer-read-only nil))
+    (when (file-exists-p file)
+      (erase-buffer)
+      (gnus-kill-all-overlays)
+      (let ((coding-system-for-read gnus-cache-coding-system))
+	(insert-file-contents file))
+      t)))
 
 (provide 'gnus-agent)
 

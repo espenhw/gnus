@@ -300,11 +300,16 @@ this group uses will be queried."
   "Request headers for ARTICLES in GROUP.
 If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
   (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (if (and gnus-use-cache (numberp (car articles)))
-	(gnus-cache-retrieve-headers articles group fetch-old)
+    (cond
+     ((and gnus-use-cache (numberp (car articles)))
+      (gnus-cache-retrieve-headers articles group fetch-old))
+     ((and gnus-agent gnus-agent-cache gnus-plugged 
+	   (gnus-agent-method-p gnus-command-method))
+      (gnus-agent-retrieve-headers articles group fetch-old))
+     (t
       (funcall (gnus-get-function gnus-command-method 'retrieve-headers)
 	       articles (gnus-group-real-name group)
-	       (nth 1 gnus-command-method) fetch-old))))
+	       (nth 1 gnus-command-method) fetch-old)))))
 
 (defun gnus-retrieve-articles (articles group)
   "Request ARTICLES in GROUP."
@@ -369,6 +374,11 @@ If BUFFER, insert the article in that group."
 	   (gnus-cache-request-article article group))
       (setq res (cons group article)
 	    clean-up t))
+     ((and gnus-agent gnus-agent-cache gnus-plugged
+	   (numberp article)
+	   (gnus-agent-request-article article group))
+      (setq res (cons group article)
+	    clean-up t))
      ;; Use `head' function.
      ((fboundp head)
       (setq res (funcall head article (gnus-group-real-name group)
@@ -396,6 +406,12 @@ If BUFFER, insert the article in that group."
      ((and gnus-use-cache
 	   (numberp article)
 	   (gnus-cache-request-article article group))
+      (setq res (cons group article)
+	    clean-up t))
+     ;; Check the agent cache.
+     ((and gnus-agent gnus-agent-cache gnus-plugged
+	   (numberp article)
+	   (gnus-agent-request-article article group))
       (setq res (cons group article)
 	    clean-up t))
      ;; Use `head' function.

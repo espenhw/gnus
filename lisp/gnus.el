@@ -1760,6 +1760,9 @@ face."
 (defvar gnus-plugged t
   "Whether Gnus is plugged or not.")
 
+(defvar gnus-agent-cache t
+  "Whether Gnus use agent cache.")
+
 (defcustom gnus-default-charset 'iso-8859-1
   "Default charset assumed to be used when viewing non-ASCII characters.
 This variable is overridden on a group-to-group basis by the
@@ -2119,7 +2122,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-agent" gnus-open-agent gnus-agent-get-function
       gnus-agent-save-groups gnus-agent-save-active gnus-agent-method-p
       gnus-agent-get-undownloaded-list gnus-agent-fetch-session
-      gnus-summary-set-agent-mark gnus-agent-save-group-info)
+      gnus-summary-set-agent-mark gnus-agent-save-group-info
+      gnus-agent-request-article gnus-agent-retrieve-headers)
      ("gnus-agent" :interactive t
       gnus-unplugged gnus-agentize gnus-agent-batch)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm

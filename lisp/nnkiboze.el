@@ -109,7 +109,8 @@
       (setq num (string-to-int (match-string 2 xref))
 	    group (match-string 1 xref))
       (or (with-current-buffer buffer
-	    (gnus-cache-request-article num group))
+	    (or (gnus-cache-request-article num group)
+		(gnus-agent-request-article num group)))
 	  (gnus-request-article num group buffer)))))
 
 (deffoo nnkiboze-request-scan (&optional group server)

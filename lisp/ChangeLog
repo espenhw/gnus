@@ -1,3 +1,27 @@
+2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnkiboze.el (nnkiboze-request-article): Use
+	gnus-agent-request-article.
+
+	* nnagent.el (nnagent-retrieve-headers): Don't use nnml
+	function. Insert undownloaded NOV.
+	
+	* gnus-agent.el (gnus-agent-retrieve-headers): New function.
+	(gnus-agent-request-article): New function.
+
+	* gnus.el (gnus-agent-cache): New variable.
+
+	* gnus-int.el (gnus-retrieve-headers): Use
+	gnus-agent-retrieve-headers.
+	(gnus-request-head): Use gnus-agent-request-article.
+	(gnus-request-body): Ditto.
+
+	* gnus-art.el (gnus-request-article-this-buffer): Use 
+	gnus-agent-request-article.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Don't show the first
+	article if it is undownloaded.
+
 2002-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-spec.el (gnus-spec-tab): Deal with wide characters.
