@@ -119,7 +119,8 @@ The encoding used is returned."
 	 (bits (mm-body-7-or-8)))
     ;; We force buffers that are 7bit to be unencoded, no matter
     ;; what the preferred encoding is.
-    (when (eq bits '7bit)
+    ;; Only if the buffers don't contain lone lines.
+    (when (and (eq bits '7bit) (not (mm-long-lines-p 76)))
       (setq encoding bits))
     (mm-encode-content-transfer-encoding encoding mime-type)
     encoding))
