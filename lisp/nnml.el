@@ -313,6 +313,7 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (nnmail-check-syntax)
   (let (result)
+    (nnmail-cache-insert (nnmail-fetch-field "message-id"))
     (if (stringp group)
 	(and 
 	 (nnmail-activate 'nnml)
@@ -325,9 +326,10 @@ all.  This may very well take some time.")
        (nnmail-activate 'nnml)
        (setq result (car (nnml-save-mail
 			  (nnmail-article-group 'nnml-active-number))))
-       (progn
+       (when last
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
-	 (and last (nnml-save-nov)))))
+	 (nnmail-cache-close)
+	 (nnml-save-nov))))
     result))
 
 (deffoo nnml-request-replace-article (article group buffer)

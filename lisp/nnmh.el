@@ -290,6 +290,7 @@
 (deffoo nnmh-request-accept-article (group &optional server last noinsert)
   (nnmh-possibly-change-directory group server)
   (nnmail-check-syntax)
+  (nnmail-save-active nnml-group-alist nnml-active-file)
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)
@@ -299,7 +300,9 @@
     (and
      (nnmail-activate 'nnmh)
      (car (nnmh-save-mail (nnmail-article-group 'nnmh-active-number)
-			  noinsert)))))
+			  noinsert))))
+  (when last
+    (nnmail-cache-close)))
 
 (deffoo nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)

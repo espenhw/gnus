@@ -2168,7 +2168,9 @@ score file entries for articles to include in the group."
 
 (defun gnus-group-sort-groups (func &optional reverse)
   "Sort the group buffer according to FUNC.
-If REVERSE, reverse the sorting order."
+When used interactively, the sorting function used will be
+determined by the `gnus-group-sort-function' variable.
+If REVERSE (the prefix), reverse the sorting order."
   (interactive (list gnus-group-sort-function current-prefix-arg))
   (funcall gnus-group-sort-alist-function
 	   (gnus-make-sort-function func) reverse)
@@ -2579,7 +2581,7 @@ group line."
      (newsrc
       ;; Toggle subscription flag.
       (gnus-group-change-level
-       newsrc (if level level (if (<= (nth 1 (nth 2 newsrc))
+       newsrc (if level level (if (<= (gnus-info-level (nth 2 newsrc))
 				      gnus-level-subscribed)
 				  (1+ gnus-level-subscribed)
 				gnus-level-default-subscribed)))

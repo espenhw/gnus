@@ -6889,7 +6889,9 @@ delete these instead."
 	;; after all.
 	(unless (memq (car articles) not-deleted)
 	  (gnus-summary-mark-article (car articles) gnus-canceled-mark))
-	(setq articles (cdr articles))))
+	(setq articles (cdr articles)))
+      (when not-deleted
+	(gnus-message 4 "Couldn't delete articles %s" not-deleted)))
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)
     not-deleted))
@@ -6991,9 +6993,9 @@ groups."
   (let (gnus-mark-article-hook)
     (gnus-summary-select-article)
     (save-excursion
-      (set-buffer gnus-article-buffer)
+      (set-buffer gnus-original-article-buffer)
       (save-restriction
-	(gnus-narrow-to-body)
+	(message-narrow-to-head)
 	(message "This message would go to %s"
 		 (mapconcat 'car (nnmail-article-group 'identity) ", "))))))
 

@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.48
+Version: 1.55
 
 @menu
 * Introduction::                
@@ -546,21 +546,21 @@ defined:@refill
 
 @table @code
 @item type
-(the value of (window-system))@br
+(the value of (window-system))@*
 Should be one of @code{x} or @code{tty}.
 
 @item class
-(the frame's color support)@br
+(the frame's color support)@*
 Should be one of @code{color}, @code{grayscale}, or @code{mono}.
 
 @item background
-(what color is used for the background text)@br
+(what color is used for the background text)@*
 Should be one of @code{light} or @code{dark}.
 @end table
   
 Internally, custom uses the symbol property @code{factory-face} for the
 program specified default face properties, @code{saved-face} for
-properties saved by the user, and @code{face-documentation} for the
+properties saved by the user, and @code{face-doc-string} for the
 documentation string.@refill
 
 @end defun

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.48
+;; Version: 1.55
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -13,7 +13,7 @@
 
 ;;; Code:
 
-(require 'custom)
+(require 'cus-face)
 (require 'wid-edit)
 (require 'easymenu)
 
@@ -300,7 +300,8 @@ IF REGEXP is not a string, return it unchanged."
   
 (unless custom-mode-map
   (setq custom-mode-map (make-sparse-keymap))
-  (set-keymap-parent custom-mode-map widget-keymap))
+  (set-keymap-parent custom-mode-map widget-keymap)
+  (define-key custom-mode-map "q" 'bury-buffer))
 
 (easy-menu-define custom-mode-menu 
     custom-mode-map
@@ -1278,7 +1279,7 @@ Optional EVENT is the location for the menu."
   :sample-face 'custom-face-tag-face
   :help-echo "Push me to set or reset this face."
   :documentation-property '(lambda (face)
-			     (get-face-documentation face))
+			     (face-doc-string face))
   :value-create 'custom-face-value-create
   :action 'custom-face-action
   :custom-set 'custom-face-set
@@ -1367,6 +1368,8 @@ Optional EVENT is the location for the menu."
 	 (child (car (widget-get widget :children)))
 	 (value (widget-value child)))
     (put symbol 'customized-face value)
+    (when (fboundp 'copy-face)
+      (copy-face 'custom-face-empty symbol))
     (custom-face-display-set symbol value)
     (custom-face-state-set widget)
     (custom-redraw-magic widget)))
@@ -1376,6 +1379,8 @@ Optional EVENT is the location for the menu."
   (let* ((symbol (widget-value widget))
 	 (child (car (widget-get widget :children)))
 	 (value (widget-value child)))
+    (when (fboundp 'copy-face)
+      (copy-face 'custom-face-empty symbol))
     (custom-face-display-set symbol value)
     (put symbol 'saved-face value)
     (put symbol 'customized-face nil)
@@ -1390,6 +1395,8 @@ Optional EVENT is the location for the menu."
     (unless value
       (error "No saved value for this face"))
     (put symbol 'customized-face nil)
+    (when (fboundp 'copy-face)
+      (copy-face 'custom-face-empty symbol))
     (custom-face-display-set symbol value)
     (widget-value-set child value)
     (custom-face-state-set widget)
@@ -1406,6 +1413,8 @@ Optional EVENT is the location for the menu."
     (when (get symbol 'saved-face)
       (put symbol 'saved-face nil)
       (custom-save-all))
+    (when (fboundp 'copy-face)
+      (copy-face 'custom-face-empty symbol))
     (custom-face-display-set symbol value)
     (widget-value-set child value)
     (custom-face-state-set widget)

@@ -1515,9 +1515,10 @@ The text will also be indented the normal way."
 (defun message-kill-buffer ()
   "Kill the current buffer."
   (interactive)
-  (let ((actions message-kill-actions))
-    (kill-buffer (current-buffer))
-    (message-do-actions actions)))
+  (when (yes-or-no-p "Kill the buffer? ")
+    (let ((actions message-kill-actions))
+      (kill-buffer (current-buffer))
+      (message-do-actions actions))))
 
 (defun message-bury (buffer)
   "Bury this mail buffer."
@@ -3343,7 +3344,7 @@ which specify the range to operate on."
 ;;; Group name completion.
 
 (defvar message-newgroups-header-regexp
-  "^\\(Newsgroups\\|Followup-To\\|Posted-To\\):"
+  "^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):"
   "Regexp that match headers that lists groups.")
 
 (defun message-tab ()

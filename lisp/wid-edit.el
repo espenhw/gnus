@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.48
+;; Version: 1.55
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -188,9 +188,13 @@ minibuffer."
 			  (car (event-object val))))
 	   (cdr (assoc val items))))
 	(t
-	 (cdr (assoc (completing-read (concat title ": ")
-				      items nil t)
-		     items)))))
+	 (let ((val (completing-read (concat title ": ") items nil t)))
+	   (if (stringp val)
+	       (let ((try (try-completion val items)))
+		 (when (stringp try)
+		   (setq val try))
+		 (cdr (assoc val items)))
+	     nil)))))
 
 (defun widget-get-sibling (widget)
   "Get the item WIDGET is assumed to toggle.
@@ -422,24 +426,34 @@ automatically. This does not work yet."
 
 (defun widget-glyph-insert (widget tag image)
   "In WIDGET, insert the text TAG or, if supported, IMAGE.
-IMAGE should be a name sans extension of an xpm or xbm file located in 
-`widget-glyph-directory'"
-  (if (and (string-match "XEmacs" emacs-version)
-	   widget-glyph-enable
-	   (fboundp 'make-glyph)
-	   image)
-      (let ((file (concat widget-glyph-directory 
-			(if (string-match "/\\'" widget-glyph-directory)
-			    ""
-			  "/")
-			image
-			(if (featurep 'xpm) ".xpm" ".xbm"))))
-	(if (file-readable-p file)
-	    (widget-glyph-insert-glyph widget tag (make-glyph file))
-	  ;; File not readable, give up.
-	  (insert tag)))
-    ;; We don't want or can't use glyphs.
-    (insert tag)))
+IMAGE should either be a glyph, or a name sans extension of an xpm or
+xbm file located in `widget-glyph-directory'.
+
+WARNING: If you call this with a glyph, and you want theuser to be
+able to activate the glyph, make sure it is unique.  If you use the
+same glyph for multiple widgets, "
+  (cond ((not (and (string-match "XEmacs" emacs-version)
+		   widget-glyph-enable
+		   (fboundp 'make-glyph)
+		   image))
+	 ;; We don't want or can't use glyphs.
+	 (insert tag))
+	((and (fboundp 'glyphp)
+	      (glyphp image))
+	 ;; Already a glyph.  Insert it.
+	 (widget-glyph-insert-glyph widget tag image))
+	(t
+	 ;; A string.  Look it up in.
+	 (let ((file (concat widget-glyph-directory 
+			    (if (string-match "/\\'" widget-glyph-directory)
+				""
+			      "/")
+			    image
+			    (if (featurep 'xpm) ".xpm" ".xbm"))))
+	   (if (file-readable-p file)
+	       (widget-glyph-insert-glyph widget tag (make-glyph file))
+	     ;; File not readable, give up.
+	     (insert tag))))))
 
 (defun widget-glyph-insert-glyph (widget tag glyph)
   "In WIDGET, with alternative text TAG, insert GLYPH."

@@ -820,7 +820,8 @@ This function is supposed to be called from `nntp-server-opened-hook'."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
 		    nntp-server-buffer))
-    (let ((len (/ (point-max) 1024)))
+    (let ((len (/ (point-max) 1024))
+	  message-log-max)
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))

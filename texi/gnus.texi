@@ -9002,8 +9002,8 @@ Gnus to split the mail the normal way, you could set
 If you use @code{procmail} to split things directory into an @code{nnmh}
 directory (which you shouldn't do), you should set
 @code{nnmail-keep-last-article} to non-@code{nil} to prevent Gnus from
-ever expiring the final article in a mail newsgroup.  This is quite,
-quite important.
+ever expiring the final article (i. e., the article with the highest
+article number) in a mail newsgroup.  This is quite, quite important.
 
 Here's an example setup:  The incoming spools are located in
 @file{~/incoming/} and have @samp{""} as suffixes (i. e., the incoming
@@ -13831,6 +13831,7 @@ Jack Vinson.
 
 Also thanks to the following for patches and stuff:
 
+Adrian Aichner,
 Peter Arius, 
 Marc Auslander,
 Chris Bone,
@@ -13841,6 +13842,7 @@ Martin Buchholz,
 Kevin Buhr,
 Alastair Burt,
 Joao Cachopo,
+Zlatko Calusic,
 Massimo Campostrini,
 Michael R. Cook,
 Glenn Coombs, 
@@ -13868,17 +13870,20 @@ Rajappa Iyer,
 Randell Jesup,
 Fred Johansen, 
 Greg Klanderman,
+Karl Kleinpaste,
 Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,
 Jens Lautenbacher,
 Carsten Leonhardt,
+James LewisMoss,
 Christian Limpach,
 Markus Linnala,
 Dave Love,
 Tonny Madsen,
 Shlomo Mahlab,
 Nat Makarevitch,
+David Martin,
 Timo Metzemakers,
 Richard Mlynarik,
 Lantz Moore,

@@ -1,3 +1,60 @@
+Thu Mar  6 08:41:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.19 is released.
+
+Thu Mar  6 08:00:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-newgroups-header-regexp): Include Gcc
+	header. 
+
+	* gnus-sum.el (gnus-summary-delete-article): Message errors.
+
+	* gnus-group.el (gnus-group-unsubscribe-group): Work on ranked
+	groups. 
+
+Thu Mar  6 07:46:56 1997  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnmail.el (nnmail-move-inbox): Protect against nil results.
+
+Thu Mar  6 04:23:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-kill-buffer): Ask before killing.
+
+	* nnfolder.el (nnfolder-possibly-activate-groups): Removed.
+	(nnfolder-request-group): Changed servers too late.
+	(nnfolder-active-timestamp): New variable.
+
+	* gnus-sum.el (gnus-summary-respool-query): Narrow to head instead
+	of body.
+
+	* nntp.el (nntp-accept-process-output): Inhibit logging.
+
+	* gnus-group.el (gnus-group-sort-groups): Doc fix.
+
+	* nnfolder.el (nnfolder-request-accept-article): Insert Message-ID
+	into cache.
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+	* nnml.el (nnml-request-accept-article): Ditto.
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+
+	* nnmail.el (nnmail-cache-close): Kill buffer.
+	(nnmail-cache-insert): Make sure the cache is open.
+	(nnmail-fetch-field): New function.
+
+Thu Mar  6 02:19:31 1997  James LewisMoss  <dres@scsn.net>
+
+	* smiley.el (smiley-deformed-regexp-alist): Fix FaceIronic.
+
+Wed Mar  5 09:15:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-check-duplication): Ditto.
+
+Wed Mar  5 09:14:12 1997  Carsten Leonhardt  <leo@arioch.oche.de>
+
+	* nnmail.el (nnmail-check-duplication): Use a different
+	Message-ID. 
+
 Sun Mar  2 16:58:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.18 is released.

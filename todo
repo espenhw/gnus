@@ -1,0 +1,598 @@
+I would like the zombie-page to contain an URL to the source of the
+latest version of gnus or some explanation on where to find it.
+
+A way to continue editing the latest Message composition.
+http://www.sonicnet.com/feature/ari3/
+facep is not declared.
+Implement new "From " search.
+Install mh-e.
+No link to red gnus from ding page.
+Include a section in the manual on why the number of articles
+isn't the same in the group buffer and on the SPC prompt.
+Interacting with rmail fcc isn't easy.
+
+Hypermail:
+<URL:http://www.falch.no/people/pepper/DSSSL-Lite/archives/>
+<URL:http://www.eit.com/software/hypermail/hypermail.html>
+<URL:http://homer.ncm.com/>
+<URL:http://www.yahoo.com/Computers_and_Internet/Internet/World_Wide_Web/HTML_Converters/>
+http://www.uwsg.indiana.edu/hypermail/linux/kernel/9610/index.html
+<URL:http://union.ncsa.uiuc.edu/HyperNews/get/www/html/converters.html>
+http://www.miranova.com/gnus-list/
+
+
+{^-- } is made into - in LaTeX.
+filladapt in Message buffers:  > > recognition.
+gnus-kill is much slower than it was in GNUS 4.1.3.
+
+Bugs:
+
+* when expunging articles on low score, the sparse nodes keep hanging on?
+* starting the first time seems to hang Gnus on some systems.  Does
+NEWGROUPS answer too fast?
+* nndir doesn't read gzipped files.
+* FAQ doesn't have an up node?
+* when moving mail from a procmail spool to the crash-box,
+the crash-box is only appropriate to one specific group.
+* `t' `t' makes X-Faces disappear.
+* nnmh-be-safe means that crossposted articles will
+be marked as unread.
+* Orphan score entries dont show on "V t" score trace
+* when clearing out data, the cache data should also be reset.
+* rewrite gnus-summary-limit-children to be non-recursive
+to avoid exceeding lisp nesting on huge groups.
+* expinged articles are counted when computing scores.
+* implement gnus-batch-brew-soup
+* ticked articles aren't easy to read in pick mode -- `n' and
+stuff just skips past them.  Read articles are the same.
+* topics that contain just groups with ticked
+articles aren't displayed.
+* nndoc should always allocate unique Message-IDs.
+* implement gnus-score-thread
+* If there are mail groups the first time you use Gnus, Gnus'll
+make the mail groups killed. 
+* no "no news is good news" when using topics.
+* when doing crosspost marking, the cache has to be consulted
+and articles have to be removed.
+* nnweb should fetch complete articles when they are split into several
+parts.
+* scoring on head immediate doesn't work.
+* finding short score file names takes forever.
+* canceling articles in foreign groups.
+* nntp-open-rlogin no longer works.
+* C-u C-x C-s (Summary) switches to the group buffer.
+* move nnmail-split-history out to the backends.
+* nnweb doesn't work properly.
+* using a virtual server name as `gnus-select-method' doesn't work?
+* when killing/yanking a group from one topic to another in a slave, the 
+master will yank it first to one topic and then add it to another.  
+Perhaps.
+
+New features:
+
+* warn user about `=' redirection of a group in the active file?
+* really unbinhex binhex files.
+* take over the XEmacs menubar and offer a toggle between the XEmacs
+bar and the Gnus bar.
+* push active file and NOV file parsing down into C code.
+`(canonize-message-id id)'
+`(mail-parent-message-id references n)'
+`(parse-news-nov-line &optional dependency-hashtb)'
+`(parse-news-nov-region beg end &optional dependency-hashtb fullp)'
+`(parse-news-active-region beg end hashtb)'
+* nnml .overview directory with splits.
+* asynchronous cache
+* postponed commands.
+* the selected article show have its Subject displayed in its summary line.
+* when entering groups, get the real number of unread articles from
+the server?  
+* sort after gathering threads -- make false roots have the
+headers of the oldest orhpan with a 0 article number?
+* nndoc groups should inherit the score files of their parents?  Also
+inherit copy prompts and save files.
+* command to start up Gnus (if not running) and enter a mail mode buffer.
+* allow editing the group description from the group buffer
+for backends that support that.
+* gnus-{hide,show}-all-topics
+* groups and sub-topics should be allowed to mingle inside each topic,
+and not just list all subtopics at the end.
+* a command to remove all read articles that are not needed to connect
+threads -- `gnus-summary-limit-to-sparse-unread'?
+* a variable to turn off limiting/cutting of threads in the tree buffer.
+* a variable to limit how many files are uudecoded.
+* add zombie groups to a special "New Groups" topic.
+* server mode command: close/open all connections
+* put a file date in gnus-score-alist and check whether the file
+has been changed before using it.
+* on exit from a digest group, go to the next article in the parent group.
+* hide (sub)threads with low score.
+* when expiring, remove all marks from expired articles.
+* gnus-summary-limit-to-body
+* a regexp alist that says what level groups are to be subscribed
+on.  Eg. -- `(("nnml:" . 1))'.
+* easier interface to nnkiboze to create ephemeral groups that
+contaion groups that match a regexp.
+* allow newlines in <URL:> urls, but remove them before using
+the URL.
+* If there is no From line, the mail backends should fudge one from the
+"From " line.
+* fuzzy simplifying should strip all non-alpha-numerical info
+from subject lines.
+* gnus-soup-brew-soup-with-high-scores.
+* nntp-ping-before-connect
+* command to check whether NOV is evil.  "list overview.fmt".
+* when entering a group, Gnus should look through the score
+files very early for `local' atoms and set those local variables.
+* message annotations.
+* topics are always yanked before groups, and that's not good.
+* (set-extent-property extent 'help-echo "String to display in minibuf")
+to display help in the minibuffer on buttons under XEmacs.
+* allow group line format spec to say how many articles there
+are in the cache.
+* AUTHINFO GENERIC
+* support qmail maildir spools
+* `run-with-idle-timer' in gnus-demon.
+* stop using invisible text properties and start using overlays instead
+* C-c C-f C-e to add an Expires header.
+* go from one group to the next; everything is expunged; go to the
+next group instead of going to the group buffer.
+* gnus-renumber-cache -- to renumber the cache using "low" numbers.
+* record topic changes in the dribble buffer.
+* `nnfolder-generate-active-file' should look at the folders it
+finds and generate proper active ranges.
+* nneething-look-in-files-for-article-heads variable to control
+whether nneething should sniff all files in the directories.
+* gnus-fetch-article -- start Gnus, enter group, display article
+* gnus-dont-move-articles-to-same-group variable when respooling.
+* when messages are crossposted between several auto-expirable groups, 
+articles aren't properly marked as expirable.
+* nneething should allow deletion/moving.
+* TAB on the last button should go to the first button.
+* if the car of an element in `mail-split-methods' is a function,
+and the function returns non-nil, use that as the name of the group(s) to 
+save mail in.
+* command for listing all score files that have been applied.
+* a command in the article buffer to return to `summary' config.
+* `gnus-always-post-using-current-server' -- variable to override
+`C-c C-c' when posting.
+* nnmail-group-spool-alist -- says where each group should use
+as a spool file.
+* when an article is crossposted to an auto-expirable group, the article 
+should be marker as expirable.
+* article mode command/menu for "send region as URL to browser".
+* on errors, jump to info nodes that explain the error.  For instance,
+on invalid From headers, or on error messages from the nntp server.
+* when gathering threads, make the article that has no "Re: " the parent.
+Also consult Date headers.
+* a token in splits to call shrink-window-if-larger-than-buffer
+* `1 0 A M' to do matches on the active hashtb.
+* duplicates -- command to remove Gnus-Warning header, use the read 
+Message-ID, delete the "original".
+* when replying to several messages at once, put the "other" message-ids
+into a See-Also header.
+* support setext: URL:http://www.bsdi.com/setext/
+* support ProleText: <URL:http://proletext.clari.net/prole/proletext.html>
+* when browsing a foreign server, the groups that are already subscribed
+should be listed as such and not as "K".
+* generate font names dynamically.
+* score file mode auto-alist.
+* allow nndoc to change/add/delete things from documents.  Implement
+methods for each format for adding an article to the document.
+* `gnus-fetch-old-headers' `all' value to incorporate
+absolutely all headers there is.
+* function like `|', but concatenate all marked articles
+and pipe them to the process.
+* cache the list of killed (or active) groups in a separate file.  Update
+the file whenever we read the active file or the list
+of killed groups in the .eld file reaches a certain length.
+* function for starting to edit a file to put into 
+the current mail group.
+* score-find-trace should display the total score of the article. 
+* "ghettozie" -- score on Xref header and nix it out after using it 
+to avoid marking as read in other groups it has been crossposted to.
+* look at procmail splitting.  The backends should create
+the groups automatically if a spool file exists for that group.
+* function for backends to register themselves with Gnus.
+* when replying to several process-marked articles, 
+have all the From end up in Cc headers?  Variable to toggle.
+* command to delete a crossposted mail article from all 
+groups it has been mailed to.
+* `B c' and `B m' should be crosspost aware.  
+* hide-pgp should also hide PGP public key blocks.
+* Command in the group buffer to respoll process-marked groups.
+* `gnus-summary-find-matching' should accept
+pseudo-"headers" like "body", "head" and "all"
+* When buttifying <URL: > things, all white space (including
+newlines) should be ignored.
+* Process-marking all groups in a topic should process-mark
+groups in subtopics as well.
+* Add non-native groups to the list of killed groups when killing them. 
+* nntp-suggest-kewl-config to probe the nntp server and suggest
+variable settings.
+* add edit and forward secondary marks.
+* nnml shouldn't visit its .overview files.
+* allow customizing sorting within gathered threads.
+* `B q' shouldn't select the current article.
+* nnmbox should support a newsgroups file for descriptions.
+* allow fetching mail from several pop servers.
+* Be able to specify whether the saving commands save the original
+or the formatted article.
+* a command to reparent with the child process-marked (cf. `T ^'.).
+* I think the possibility to send a password with nntp-open-rlogin
+should be a feature in Red Gnus.
+* The `Z n' command should be possible to execute from a mouse click.
+* more limiting functions -- date, etc.
+* be able to limit on a random header; on body; using reverse matches.
+* a group parameter (`absofucking-total-expiry') that will make Gnus expire
+even unread articles.
+* a command to print the article buffer as postscript.
+* variable to disable password fetching when opening by nntp-open-telnet.
+* manual: more example servers -- nntp with rlogin, telnet
+* checking for bogus groups should clean topic alists as well.
+* cancelling articles in foreign groups.
+* article number in folded topics isn't properly updated by
+Xref handling.
+* Movement in the group buffer to the next unread group should go to the
+next closed topic with unread messages if no group can be found.
+* Extensive info pages generated on the fly with help everywhere --
+in the "*Gnus edit*" buffers, for instance.
+* Topic movement commands -- like thread movement.  Up, down, forward, next.
+* a way to tick/mark as read Gcc'd articles.
+* a way to say that all groups within a specific topic comes
+from a particular server?  Hm.
+* `gnus-article-fill-if-long-lines' -- a function to fill
+the article buffer if there are any looong lines there.
+* `T h' should jump to the parent topic and fold it.
+* a command to create an ephemeral nndoc group out of a file,
+and then splitting it/moving it to some other group/backend.
+* a group parameter for nnkiboze groups that says that
+all kibozed articles should be entered into the cache.
+* It should also probably be possible to delimit what
+`gnus-jog-cache' does -- for instance, work on just some groups, or on
+some levels, and entering just articles that have a score higher than
+a certain number.
+* function to request all articles in a thread.
+* nnfolder should append to the folder instead of re-writing
+the entire folder to disk when accepting new messages.
+* allow all backends to do the proper thing with .gz files.
+* a backend for reading collections of babyl files nnbabylfolder?
+* a command for making the native groups into foreign groups. 
+* server mode command for clearing read marks from all groups
+from a server.
+* when following up mulitple articles, include all To, Cc, etc headers
+from all articles.
+* a command for deciding what the total score of the current
+thread is.  Also a way to highlight based on this.
+* command to show and edit group scores
+* a gnus-tree-minimize-horizontal to minimize tree buffers
+horizontally.
+* variable to fetch-old-headers but not display any in the summary buffer
+so that the tree code can show entire threads.  Also not limit in 
+the tree buffer.
+* command to generate nnml overview file for one group.
+* `C-u C-u a' -- prompt for many crossposted groups.
+* keep track of which mail groups have received new articles (in this session).
+Be able to generate a report and perhaps do some marking in the group
+buffer.
+* gnus-build-sparse-threads to a number -- build only sparse threads
+that are of that length.
+* have nnmh respect mh's unseen sequence in .mh_profile.
+* cache the newsgroups descriptions locally.
+* asynchronous posting under nntp.
+* be able to control word adaptive scoring from the score files.
+* a variable to make `C-c C-c' post using the "current" select method. 
+* `limit-exclude-low-scored-articles'.
+* if `gnus-summary-show-thread' is a number, hide threads that have
+a score lower than this number.
+* split newsgroup subscription variable up into "order" and "method".
+* buttonize ange-ftp file names.
+* a command to make a duplicate copy of the current article
+so that each copy can be edited separately.
+* nnweb should allow fetching from the local nntp server.
+* record the sorting done in the summary buffer so that
+it can be repeated when limiting/regenerating the buffer.
+* nnml-generate-nov-databses should generate for
+all nnml servers.
+* when the user does commands in the group buffer, check
+the modification time of the .newsrc.eld file and use
+ask-user-about-supersession-threat.  Also warn when trying
+to save .newsrc.eld and it has changed.
+* M-g on a topic will display all groups with 0 articles in
+the topic.
+* command to remove all topic stuff.
+* allow exploding incoming digests when reading incoming mail
+and splitting the resulting digests.
+* nnsoup shouldn't set the `message-' variables.
+* command to nix out all nnoo state information.
+* nnmail-process-alist that calls functions if group names 
+matches an alist -- before saving.
+* use buffer-invisibility-spec everywhere for hiding text.
+* variable to activate each group before entering them
+to get the (new) number of articles.  `gnus-activate-before-entering'.
+* command to fetch a Message-ID from any buffer, even
+starting Gnus first if necessary.
+* when posting and checking whether a group exists or not, just 
+ask the nntp server instead of relying on the active hashtb.
+* buttonize the output of `C-c C-a' in an apropos-like way.
+* `G p' should understand process/prefix, and allow editing
+of several groups at once.
+* command to create an ephemeral nnvirtual group that
+matches some regexp(s).
+* nndoc should understand "Content-Type: message/rfc822" forwarded messages. 
+* it should be possible to score "thread" on the From header.
+* hitting RET on a "gnus-uu-archive" pseudo article should unpack it.
+* `B i' should display the article at once in the summary buffer.
+* remove the "*" mark at once when unticking an article.
+* `M-s' should highlight the matching text.
+* when checking for duplicated mails, use Resent-Message-ID if present.
+* killing and yanking groups in topics should be better.  If killing one copy
+of a group that exists in multiple topics, only that copy should
+be removed.  Yanking should insert the copy, and yanking topics
+should be possible to be interspersed with the other yankings.
+* command for enter a group just to read the cached articles.  A way to say
+"ignore the nntp connection; just read from the cache."
+* `X u' should decode base64 articles.
+* a way to hide all "inner" cited text, leaving just the most
+recently cited text.
+* nnvirtual should be asynchronous.
+* after editing an article, gnus-original-article-buffer should
+be invalidated.
+* there should probably be a way to make Gnus not connect to the
+server and just read the articles in the server
+* allow a `set-default' (or something) to change the default
+value of nnoo variables.
+* a command to import group infos from a .newsrc.eld file.
+* groups from secondary servers have the entire select method
+listed in each group info.
+* a command for just switching from the summary buffer to the group
+buffer.
+* a way to specify that some incoming mail washing functions
+should only be applied to some groups.
+* Message `C-f C-t' should ask the user whether to heed
+mail-copies-to: never.
+* new group parameter -- `post-to-server' that says to post
+using the current server.  Also a variable to do the same.
+* the slave dribble files should autosave to the slave file names.
+* a group parameter that says what articles to display on group entry, based
+on article marks.
+* a way to visually distinguish slave Gnusae from masters.  (Whip instead
+of normal logo?)
+* Use DJ Bernstein "From " quoting/dequoting, where appliccable.
+* Why is hide-citation-maybe and hide-citation different?  Also
+clear up info.
+* group user-defined meta-parameters.
+
+
+
+From: John Griffith <griffith@sfs.nphil.uni-tuebingen.de>
+* I like the option for trying to retrieve the FAQ for a group and I was
+thinking it would be great if for those newsgroups that had archives
+you could also try to read the archive for that group.  Part of the
+problem is that archives are spread all over the net, unlike FAQs.
+What would be best I suppose is to find the one closest to your site.
+
+In any case, there is a list of general news group archives at
+ftp://ftp.neosoft.com/pub/users/claird/news.lists/newsgroup_archives.html
+
+
+
+
+*From: Jason L Tibbitts III <tibbs@hpc.uh.edu>
+(add-hook 'gnus-select-group-hook
+  (lambda ()
+    (gnus-group-add-parameter group
+       (cons 'gnus-group-date-last-entered (list (current-time-string))))))
+
+(defun gnus-user-format-function-d (headers)
+  "Return the date the group was last read."
+  (cond ((car (gnus-group-get-parameter gnus-tmp-group 'gnus-group-date-last-entered)))
+      (t "")))
+
+ - J<
+
+* tanken var at når du bruker `gnus-startup-file' som prefix (FOO) til å lete
+opp en fil FOO-SERVER, FOO-SERVER.el, FOO-SERVER.eld, kan du la den være en
+liste hvor du bruker hvert element i listen som FOO, istedet.  da kunne man
+hatt forskjellige serveres startup-filer forskjellige steder.
+
+
+*LMI> Well, nnbabyl could alter the group info to heed labels like
+LMI> answered and read, I guess.  
+
+It could also keep them updated (the same for the Status: header of
+unix mbox files).
+
+They could be used like this:
+
+`M l <name> RET' add label <name> to current message.
+`M u <name> RET' remove label <name> from current message.
+`/ l <expr> RET' limit summary buffer according to <expr>.
+
+<expr> would be a boolean expression on the labels, e.g. 
+
+	`/ l bug & !fixed RET'
+
+would show all the messages which are labeled `bug' but not labeled
+`fixed'. 
+
+One could also immagine the labels being used for highliting, or
+affect the summary line format.
+
+
+*Sender: abraham@dina.kvl.dk
+
+I'd like a gnus-find-file which work like find file, except that it
+would recognize things that looks like messages or folders:
+
+- If it is a directory containing numbered files, create an nndir
+summary buffer.
+
+- For other directories, create a nneething summaru buffer.
+
+- For files matching "\\`From ", create a nndoc/mbox summary.
+
+- For files matching "\\`BABYL OPTIONS:", create a nndoc/baby summary.
+
+- For files matching "\\`[^ \t\n]+:", create an *Article* buffer.
+
+- For other files, just find them normally.
+
+I'd like `nneething' to use this function, so it would work on a
+directory potentially containing mboxes or babyl files.
+
+*Please send a mail to bwarsaw@cnri.reston.va.us (Barry A. Warsaw) and
+tell him what you are doing.
+
+*Currently, I get prompted:
+
+decend into sci?
+- type y
+decend into sci.something ?
+- type n
+decend into ucd?
+
+The problem above is that since there is really only one subsection of
+science, shouldn't it prompt you for only decending sci.something?  If
+there was a sci.somethingelse group or section, then it should prompt
+for sci? first the sci.something? then sci.somethingelse?...
+
+*Ja, det burde være en måte å si slikt.  Kanskje en ny variabel?
+`gnus-use-few-score-files'?  Så kunne score-regler legges til den
+"mest" lokale score-fila.  F. eks. ville no-gruppene betjenes av
+"no.all.SCORE", osv.
+
+*What i want is for Gnus to treat any sequence or combination of the following
+as a single spoiler warning and hide it all, replacing it with a "Next Page"
+button:
+ 
+
+	^L's
+
+	more than n blank lines
+	
+	more than m identical lines 
+	(which should be replaced with button to show them)
+
+	any whitespace surrounding any of the above
+
+
+*Well, we could allow a new value to `gnus-thread-ignore-subject' --
+`spaces', or something.  (We could even default to that.)  And then
+subjects that differ in white space only could be considered the
+"same" subject for threading purposes. 
+
+*Modes to preprocess the contents (e.g. jka-compr) use the second form
+"(REGEXP FUNCTION NON-NIL)" while ordinary modes (e.g. tex) use the first
+form "(REGEXP . FUNCTION)", so you could use it to distinguish between
+those two types of modes. (auto-modes-alist, insert-file-contents-literally.)
+
+* Under XEmacs -- do funny article marks:
+tick - thumb tack
+killed - skull
+soup - bowl of soup
+score below - dim light bulb
+score over - bright light bulb
+
+*Yes. I think the algorithm is as follows:
+
+Group-mode
+	show-list-of-articles-in-group
+	if (key-pressed == SPACE) {
+		if (no-more-articles-in-group-to-select) {
+			if (articles-selected)
+				start-reading-selected-articles;
+			junk-unread-articles;
+			next-group;
+		} else {
+			show-next-page;
+		}
+	} else if (key-pressed = '.') {
+		if (consolidated-menus)		# same as hide-thread in Gnus
+			select-thread-under-cursor;
+		else
+			select-article-under-cursor;
+	}
+
+Article-mode
+	if (key-pressed == SPACE) {
+		if (more-pages-in-article)
+			next-page;
+		else if (more-selected-articles-to-read)
+			next-article;
+		else 
+			next-group;
+	}
+
+*My precise need here would have been to limit files to Incoming*.
+One could think of some `nneething-only-files' variable, but I guess
+it would have been unacceptable if one was using many unrelated such
+nneething groups.
+
+A more useful approach would be to, in response to the `G D' prompt, be
+allowed to say something like: `~/.mail/Incoming*', somewhat limiting
+the top-level directory only (in case directories would be matched by
+the wildcard expression).
+
+*It would be nice if it also handled 
+
+	<URL:news://sunsite.auc.dk/>
+
+which should correspond to `B nntp RET sunsite.auc.dk' in *Group*.
+
+
+*
+  Take a look at w3-menu.el in the Emacs-W3 distribution - this works out
+really well.  Each menu is 'named' by a symbol that would be on a
+gnus-*-menus (where * would be whatever, but at least group, summary, and
+article versions) variable.
+
+  So for gnus-summary-menus, I would set to '(sort mark dispose ...)
+
+  A value of '1' would just put _all_ the menus in a single 'GNUS' menu in
+the main menubar.  This approach works really well for Emacs-W3 and VM.
+
+
+* nndoc should take care to create unique Message-IDs for all its
+articles.
+* gnus-score-followup-article only works when you have a summary buffer
+active.  Make it work when posting from the group buffer as well.
+(message-sent-hook).
+* rewrite gnus-demon to use run-with-idle-timers.
+
+* * Enhancements to Gnus:
+
+  Add two commands:
+
+  * gnus-servers (gnus-start-server-buffer?)--enters Gnus and goes
+    straight to the server buffer, without opening any connections to
+    servers first.
+
+  * gnus-server-read-server-newsrc--produces a buffer very similar to
+    the group buffer, but with only groups from that server listed;
+    quitting this buffer returns to the server buffer.
+
+* add a command to check the integrity of an nnfolder folder --
+go through the article numbers and see that there are no duplicates,
+and stuff.
+
+* `unsmileyfy-buffer' to undo smileification.
+
+* a command to give all relevant info on an article, including all
+secondary marks.
+
+* when doing `-request-accept-article', the backends should do
+the nnmail duplicate checking.
+
+* allow `message-signature-file' to be a function to return the
+value of the signature file.
+
+* In addition, I would love it if I could configure message-tab so that it
+could call `bbdb-complete-name' in other headers.  So, some sort of
+interface like
+
+(setq message-tab-alist
+      '((message-header-regexp message-expand-group)
+        ("^\\(To\\|[cC]c\\|[bB]cc\\)"  bbdb-complete-name)))
+
+then you could run the relevant function to complete the information in
+the header

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.48
+;; Version: 1.55
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -23,6 +23,18 @@
     "Return FRAME's value for property PROPERTY."
     (or (cdr (assq property (frame-parameters frame)))
 	default)))
+
+(unless (fboundp 'face-doc-string)
+  ;; XEmacs function missing in Emacs.
+  (defun face-doc-string (face)
+    "Get the documentation string for FACE."
+    (get face 'face-doc-string)))
+
+(unless (fboundp 'set-face-doc-string)
+  ;; XEmacs function missing in Emacs.
+  (defun set-face-doc-string (face string)
+    "Set the documentation string for FACE to STRING."
+    (put face 'face-doc-string string)))
 
 (unless (fboundp 'x-color-values)
   ;; Emacs function missing in XEmacs 19.14.
@@ -45,42 +57,105 @@ If FRAME is omitted or nil, use the selected frame."
       (t
        (defalias 'custom-facep 'facep)))
 
-;; Overwrite Emacs definition.
+(unless (fboundp 'make-empty-face)
+  ;; This should be moved to `faces.el'.
+  (if (string-match "XEmacs" emacs-version)
+      ;; Give up for old XEmacs pre 19.15/20.1.
+      (defalias 'make-empty-face 'make-face)
+    ;; Define for Emacs pre 19.35.
+    (defun make-empty-face (name)
+      "Define a new FACE on all frames, ignoring X resources."
+      (interactive "SMake face: ")
+      (or (internal-find-face name)
+	  (let ((face (make-vector 8 nil)))
+	    (aset face 0 'face)
+	    (aset face 1 name)
+	    (let* ((frames (frame-list))
+		   (inhibit-quit t)
+		   (id (internal-next-face-id)))
+	      (make-face-internal id)
+	      (aset face 2 id)
+	      (while frames
+		(set-frame-face-alist (car frames)
+				      (cons (cons name (copy-sequence face))
+					    (frame-face-alist (car frames))))
+		(setq frames (cdr frames)))
+	      (setq global-face-data (cons (cons name face) global-face-data)))
+	    ;; add to menu
+	    (if (fboundp 'facemenu-add-new-face)
+		(facemenu-add-new-face name))
+	    face))
+      name)))
+
+(defcustom initialize-face-resources t
+  "If non nil, allow X resources to initialize face properties.
+This only affects faces declared with `defface', and only NT or X11 frames."
+  :group 'customize
+  :type 'boolean)
+
+(cond ((fboundp 'initialize-face-resources)
+       ;; Already bound, do nothing.
+       )
+      ((fboundp 'make-face-x-resource-internal)
+       ;; Emacs or new XEmacs.
+       (defun initialize-face-resources (face &optional frame)
+	 "Initialize face according to the X11 resources.
+This might overwrite existing face properties.
+Does nothing when the variable initialize-face-resources is nil."
+	 (when initialize-face-resources
+	   (make-face-x-resource-internal face frame t))))
+      (t 
+       ;; Too hard to do right on XEmacs.
+       (defalias 'initialize-face-resources 'ignore)))
+
+(unless (fboundp 'reverse-face)
+  ;; This should be moved to `faces.el'.
+  (if (string-match "XEmacs" emacs-version)
+      ;; Xemacs.
+      (defun reverse-face (face &optional frame)
+	"Swap the foreground and background colors of face FACE.
+If the colors are not specified in the face, use the default colors."
+	(interactive (list (read-face-name "Reverse face: ")))
+	(let ((fg (color-name (face-foreground face frame) frame))
+	      (bg (color-name (face-background face frame) frame)))
+	  (set-face-foreground face bg frame)
+	  (set-face-background face fg frame)))
+    ;; Emacs.
+    (defun reverse-face (face &optional frame)
+      "Swap the foreground and background colors of face FACE.
+If the colors are not specified in the face, use the default colors."
+      (interactive (list (read-face-name "Reverse face: ")))
+      (let ((fg (or (face-foreground face frame)
+		    (face-foreground 'default frame)
+		    (frame-property (or frame (selected-frame))
+				    'foreground-color)
+		    "black"))
+	    (bg (or (face-background face frame)
+		    (face-background 'default frame)
+		    (frame-property (or frame (selected-frame))
+				    'background-color)
+		    "white")))
+	(set-face-foreground face bg frame)
+	(set-face-background face fg frame)))))
+
 (if (string-match "XEmacs" emacs-version)
-    (progn 
-      (defun custom-extract-frame-properties (frame)
-	"Return a plist with the frame properties of FRAME used by custom."
-	(list 'type (device-type (frame-device frame))
-	      'class (device-class (frame-device frame))
-	      'background (or custom-background-mode
-			      (frame-property frame
-					      'background-mode)
-			      (custom-background-mode frame))))
-
-      (defun get-face-documentation (face)
-	"Get the documentation string for FACE."
-	(face-property face 'doc-string))
-
-      (defun set-face-documentation (face string)
-	"Set the documentation string for FACE to STRING."
-	(set-face-property face 'doc-string string)))
-  
+    ;; XEmacs.
+    (defun custom-extract-frame-properties (frame)
+      "Return a plist with the frame properties of FRAME used by custom."
+      (list 'type (device-type (frame-device frame))
+	    'class (device-class (frame-device frame))
+	    'background (or custom-background-mode
+			    (frame-property frame
+					    'background-mode)
+			    (custom-background-mode frame))))
+  ;; Emacs.
   (defun custom-extract-frame-properties (frame)
     "Return a plist with the frame properties of FRAME used by custom."
     (list 'type window-system
 	  'class (frame-property frame 'display-type)
 	  'background (or custom-background-mode
-			  (frame-property frame
-					  'background-mode)
-			  (custom-background-mode frame))))  
-
-  (defun get-face-documentation (face)
-    "Get the documentation string for FACE."
-    (get face 'face-documentation))
-
-  (defun set-face-documentation (face string)
-    "Set the documentation string for FACE to STRING."
-    (put face 'face-documentation string)))
+			  (frame-property frame 'background-mode)
+			  (custom-background-mode frame)))))  
 
 ;;; Declaring a face.
 
@@ -100,14 +175,16 @@ If FRAME is omitted or nil, use the selected frame."
 	      (frames (custom-relevant-frames))
 	      frame)
 	  ;; Create global face.
+	  (make-empty-face face)
 	  (custom-face-display-set face value)
 	  ;; Create frame local faces
 	  (while frames
 	    (setq frame (car frames)
 		  frames (cdr frames))
-	    (custom-face-display-set face value frame)))))
-    (when (and doc (null (get-face-documentation face)))
-      (set-face-documentation face doc))
+	    (custom-face-display-set face value frame))
+	  (initialize-face-resources face))))
+    (when (and doc (null (face-doc-string face)))
+      (set-face-doc-string face doc))
     (custom-handle-all-keywords face args 'custom-face)
     (run-hooks 'custom-define-hook))
   face)
@@ -135,6 +212,10 @@ If FRAME is nil, set the default face."
      (toggle :format "Underline: %[%v%]\n") set-face-underline-p)
     (:foreground (color :tag "Foreground") set-face-foreground)
     (:background (color :tag "Background") set-face-background)
+    (:reverse (const :format "Reverse Video\n" t) 
+	      (lambda (face value &optional frame)
+		;; We don't use VALUE.
+		(reverse-face face frame)))
     (:stipple (editable-field :format "Stipple: %v") set-face-stipple))
   "Alist of face attributes. 
 
@@ -184,22 +265,15 @@ be changed.")
 	 '((:family (editable-field :format "Family: %v") 
 		    custom-set-face-font-family)
 	   (:size (editable-field :format "Size: %v")
-		  custom-set-face-font-size)))
-
-  ;; Disable frame local faces.
-  (setq custom-relevant-frames nil)
-  (remove-hook 'after-make-frame-hook 'custom-initialize-frame))
+		  custom-set-face-font-size))))
 
 ;;; Frames.
-
-(and (fboundp 'make-face)
-     (make-face 'custom-face-empty))
 
 (defun custom-face-display-set (face spec &optional frame)
   "Set FACE to the attributes to the first matching entry in SPEC.
 Iff optional FRAME is non-nil, set it for that frame only.
 See `defface' for information about SPEC."
-  (when (fboundp 'copy-face)
+  (when (fboundp 'make-face)
     (while spec 
       (let* ((entry (car spec))
 	     (display (nth 0 entry))
@@ -208,7 +282,6 @@ See `defface' for information about SPEC."
 	(when (custom-display-match-frame display frame)
 	  ;; Avoid creating frame local duplicates of the global face.
 	  (unless (and frame (eq display (get face 'custom-face-display)))
-	    (copy-face 'custom-face-empty face frame)
 	    (apply 'custom-face-attribites-set face frame atts))
 	  (unless frame
 	    (put face 'custom-face-display display))
@@ -241,6 +314,8 @@ examine the brightness for you."
 						(specifier-instance
 						 (face-background 'default))))
 					 (error nil)))
+			   (or (string-match "XEmacs" emacs-version)
+			       window-system)
 			   (< (apply '+ (x-color-values color))
 			      (/ (apply '+ (x-color-values "white"))
 				 3)))
@@ -302,31 +377,29 @@ If FRAME is nil, the current FRAME is used."
 				  req options)))))
       match)))
 
-(defvar custom-relevant-frames t
-  "List of frames whose custom properties differ from the default.")
-
 (defun custom-relevant-frames ()
   "List of frames whose custom properties differ from the default."
-  (when (eq custom-relevant-frames t)
-    (setq custom-relevant-frames nil)
-    (let ((default (custom-get-frame-properties))
-	  (frames (frame-list))
-	  frame)
-      (while frames
-	(setq frame (car frames)
-	      frames (cdr frames))
-	(unless (equal default (custom-get-frame-properties frame))
-	  (push frame custom-relevant-frames)))))
-  custom-relevant-frames)
+  (let ((relevant nil)
+	(default (custom-get-frame-properties))
+	(frames (frame-list))
+	frame)
+    (while frames
+      (setq frame (car frames)
+	    frames (cdr frames))
+      (unless (equal default (custom-get-frame-properties frame))
+	(push frame relevant)))
+    relevant))
 
 (defun custom-initialize-faces (&optional frame)
   "Initialize all custom faces for FRAME.
 If FRAME is nil or omitted, initialize them for all frames."
-  (mapatoms (lambda (symbol)
-	      (let ((spec (or (get symbol 'saved-face)
-			      (get symbol 'factory-face))))
-		(when spec 
-		  (custom-face-display-set symbol spec frame))))))
+  (mapcar (lambda (symbol)
+	    (let ((spec (or (get symbol 'saved-face)
+			    (get symbol 'factory-face))))
+	      (when spec 
+		(custom-face-display-set symbol spec frame)
+		(initialize-face-resources symbol frame))))
+	  (face-list)))
 
 (defun custom-initialize-frame (&optional frame)
   "Initialize local faces for FRAME if necessary.
@@ -335,13 +408,16 @@ If FRAME is missing or nil, the first member (frame-list) is used."
     (setq frame (car (frame-list))))
   (unless (equal (custom-get-frame-properties) 
 		 (custom-get-frame-properties frame))
-    (custom-initialize-faces frame)
-    (push frame custom-relevant-frames)))
+    (custom-initialize-faces frame)))
 
 ;; Enable.  This should go away when bundled with Emacs.
-(add-hook 'after-make-frame-hook 'custom-initialize-frame)
+(unless (string-match "XEmacs" emacs-version)
+  (add-hook 'after-make-frame-hook 'custom-initialize-frame))
 
 ;;; Initializing.
+
+(and (fboundp 'make-face)
+     (make-face 'custom-face-empty))
 
 ;;;###autoload
 (defun custom-set-faces (&rest args)
@@ -363,6 +439,8 @@ See `defface' for the format of SPEC."
 	    (put face 'saved-face spec)
 	    (when now
 	      (put face 'force-face t)
+	      (when (fboundp 'copy-face)
+		(copy-face 'custom-face-empty face))
 	      (custom-face-display-set face spec))
 	    (setq args (cdr args)))
 	;; Old format, a plist of FACE SPEC pairs.

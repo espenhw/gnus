@@ -333,6 +333,7 @@
        (save-excursion
 	 (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
 	   (delete-region (point) (progn (forward-line 1) (point)))))
+       (nnmail-cache-insert (nnmail-fetch-field "message-id"))
        (setq result (car (nnbabyl-save-mail
 			  (if (stringp group)
 			      (list (cons group (nnbabyl-active-number group)))
@@ -343,6 +344,7 @@
        (goto-char (match-end 0))
        (insert-buffer-substring buf)
        (when last
+	 (nnmail-cache-insert (nnmail-fetch-field "message-id"))
 	 (save-buffer)
 	 (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
        result))))

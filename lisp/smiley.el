@@ -49,14 +49,15 @@
   :type 'directory
   :group 'smiley)
 
-;; Notice the subtle differences in the regular expressions in the two alists below
+;; Notice the subtle differences in the regular expressions in the
+;; two alists below.
 
 (defcustom smiley-deformed-regexp-alist
   '(("\\(:-*[<«]+\\)\\W" 1 "FaceAngry.xpm")
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-*D\\)\\W" 1 "FaceGrinning.xpm")
-    ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm")
-    ("\\(:-*[/\\\"]\\)[^/]" 1 "FaceIronic.xpm")
+    ("\\(:-*[)>}»]+\\)\\W" 1 "FaceHappy.xpm") 
+    ("\\(:-*[/\\\"]\\)[^/]\\W" 1 "FaceIronic.xpm")
     ("\\([8|]-*[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
     ("\\([:|]-*#+\\)\\W" 1 "FaceNyah.xpm")
     ("\\(:-*[({]+\\)\\W" 1 "FaceSad.xpm")
@@ -99,9 +100,9 @@
 
 (defcustom smiley-regexp-alist smiley-deformed-regexp-alist
   "A list of regexps to map smilies to real images.
-Defaults to the content of smiley-deformed-regexp-alist.
-An alternative smiley-nosey-regexp-alist that
-matches less aggressively is available.
+Defaults to the contents of `smiley-deformed-regexp-alist'.
+An alternative is `smiley-nosey-regexp-alist' that matches less
+aggressively.
 If this is a symbol, take its value."
   :type '(radio (variable-item smiley-deformed-regexp-alist)
 		(variable-item smiley-nosey-regexp-alist)
@@ -144,7 +145,7 @@ above them."
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))
 
 (defvar smiley-map (make-sparse-keymap "smiley-keys")
- "keymap to toggle smiley states")
+ "Keymap to toggle smiley states.")
 
 (define-key smiley-map [(button2)] 'smiley-toggle-extent)
 

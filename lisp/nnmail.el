@@ -347,7 +347,7 @@ GROUP: Mail will be stored in GROUP (a string).
 
 FIELD must match a complete field name.  VALUE must match a complete
 word according to the `nnmail-split-fancy-syntax-table' syntax table.
-You can use .* in the regexps to match partial field names or words.
+You can use \".*\" in the regexps to match partial field names or words.
 
 FIELD and VALUE can also be lisp symbols, in that case they are expanded
 as specified in `nnmail-split-abbrev-alist'.
@@ -581,7 +581,15 @@ parameter.  It should return nil, `warn' or `delete'."
 		(buffer-disable-undo errors)
 		(let ((default-directory "/"))
 		  (if (nnheader-functionp nnmail-movemail-program)
-		      (funcall nnmail-movemail-program inbox tofile)
+		      (condition-case err
+			  (progn
+			    (funcall nnmail-movemail-program inbox tofile)
+			    (setq result 0))
+			(error
+			 (save-excursion
+			   (set-buffer errors)
+			   (insert (prin1-to-string err))
+			   (setq result 255))))
 		    (setq result
 			  (apply 
 			   'call-process
@@ -1342,19 +1350,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(save-excursion
 	  (or (eq timestamp 'none)
 	      (set (intern (format "%s-active-timestamp" backend)) 
-;;; dmoore@ucsd.edu 25.10.96
-;;; it's not always the case that current-time
-;;; does correspond to changes in the file's time.  So just compare
-;;; the file's new time against its own previous time.
-;;;		   (current-time)
-		   file-time
-		   ))
-	  (funcall (intern (format "%s-request-list" backend)))
-;;; dmoore@ucsd.edu 25.10.96
-;;; BACKEND-request-list already does this itself!
-;;;	  (set (intern (format "%s-group-alist" backend)) 
-;;;	       (nnmail-get-active))
-	  ))
+		   file-time))
+	  (funcall (intern (format "%s-request-list" backend)))))
     t))
 
 (defun nnmail-message-id ()
@@ -1402,11 +1399,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			   nnmail-message-id-cache-file nil 'silent)
       (set-buffer-modified-p nil)
       (setq nnmail-cache-buffer nil)
-      ;;(kill-buffer (current-buffer))
-      )))
+      (kill-buffer (current-buffer)))))
 
 (defun nnmail-cache-insert (id)
   (when nnmail-treat-duplicates
+    (unless (gnus-buffer-live-p nnmail-cache-buffer)
+      (nnmail-cache-open))
     (save-excursion
       (set-buffer nnmail-cache-buffer)
       (goto-char (point-max))
@@ -1418,6 +1416,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (set-buffer nnmail-cache-buffer)
       (goto-char (point-max))
       (search-backward id nil t))))
+
+(defun nnmail-fetch-field (header)
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-head)
+      (message-fetch-field header))))
 
 (defun nnmail-check-duplication (message-id func artnum-func)
   (run-hooks 'nnmail-prepare-incoming-message-hook)
@@ -1444,7 +1448,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
      ((eq action 'warn)
       ;; We insert a warning.
       (let ((case-fold-search t)
-	    (newid (nnmail-message-id)))
+	    (newid (concat "<" (message-unique-id)
+			   "@duplicate-message-id>")))
 	(goto-char (point-min))
 	(when (re-search-forward "^message-id[ \t]*:" nil t)
 	  (beginning-of-line)

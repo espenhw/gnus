@@ -1,3 +1,7 @@
+Thu Mar  6 08:01:37 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Mail and Procmail): Fix.
+
 Sun Mar  2 02:08:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Startup Files): Addition.

@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 3.60 1997/03/05 06:00:44 larsi Exp $
+@c $Id: widget.texi,v 1.83 1997/03/05 16:43:09 abraham Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.48
+Version: 1.55
 
 @menu
 * Introduction::                
@@ -401,7 +401,7 @@ The inserted text will be read only.
 There is a standard widget keymap which you might find useful.
 
 @defvr Const widget-keymap
-A keymap with the global keymap as its parent.@br
+A keymap with the global keymap as its parent.@*
 @key{TAB} and @kbd{C-@key{TAB}} are bound to @code{widget-forward} and
 @code{widget-backward}, respectively.  @kbd{@key{RET}} and @kbd{mouse-2}
 are bound to @code{widget-button-press} and
@@ -635,7 +635,7 @@ The following extra properties are recognized.
 
 @table @code
 @item :size
-The width of the editable field.@br
+The width of the editable field.@*
 By default the field will reach to the end of the line.
 
 @item :value-face
