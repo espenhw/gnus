@@ -1,0 +1,4 @@
+2000-11-16  Simon Josefsson  <sj@extundo.com>
+
+	* gpg.el (gpg-command-verify-cleartext): New variable.
+	(gpg-verify-cleartext): New function.

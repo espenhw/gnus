@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 6.2 2000/10/31 22:16:42 zsh Exp $
+;; $Id: gpg.el,v 1.1 2000/11/04 12:22:17 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -301,6 +301,25 @@ charsets or line endings; the input data shall be treated as binary."
 		   :value message-file)
 	    (const :tag "Insert name of file containing the signature here."
 		   :value signature-file)
+	    (string :format "%v"))))
+  :group 'gpg-commands)
+
+(defcustom gpg-command-verify-cleartext
+  '(gpg . ("--batch" "--verbose" "--verify" message-file))
+  "Command to verify a message.
+The invoked program has to read the signed message from the given
+file.  It should write human-readable information to standard output
+and/or standard error.  The program shall not convert charsets or line
+endings; the input data shall be treated as binary."
+  :tag "Cleartext Verify Command"
+  :type '(cons 
+	  gpg-command-program
+	  (repeat 
+	   :tag "Arguments"
+	   (choice 
+	    :format "%[Type%] %v"
+	    (const :tag "Insert name of file containing the message here." 
+		   :value message-file)
 	    (string :format "%v"))))
   :group 'gpg-commands)
 
@@ -808,6 +827,39 @@ buffer RESULT for details."
 					    message
 					  (list message))))
       (setq res (apply 'call-process-region 
+		       (point-min) (point-min) ; no data
+		       cmd
+		       nil		; don't delete
+		       result
+		       nil		; don't display
+		       args))
+      (if (or (stringp res) (> res 0))
+	  ;; Signal or abnormal exit.
+	  (with-current-buffer result
+	    (insert (format "\nCommand exit status: %s\n" res))
+	    nil)
+	t))))
+
+;;;###autoload
+(defun gpg-verify-cleartext (message result)
+  "Verify message in buffer MESSAGE.
+Returns t if everything worked out well, nil otherwise.  Consult
+buffer RESULT for details.
+
+NOTE: Use of this function is deprecated."
+  (interactive "bBuffer containing message: \nbBuffor for result: ")
+  (gpg-with-temp-files 1
+    (let* ((msg-file    (nth 0 gpg-temp-files))
+	   (cmd (gpg-exec-path gpg-command-verify-cleartext))
+	   (args (gpg-build-arg-list (cdr gpg-command-verify-cleartext)
+				     `((message-file . ,msg-file))))
+	   res)
+      (with-temp-file msg-file 
+	(buffer-disable-undo)
+	(apply 'insert-buffer-substring (if (listp message)
+					    message
+					  (list message))))
+      (setq res (apply 'call-process-region
 		       (point-min) (point-min) ; no data
 		       cmd
 		       nil		; don't delete
