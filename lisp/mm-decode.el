@@ -1325,25 +1325,26 @@ If RECURSIVE, search recursively."
 		      protocols nil)
 	      (setq protocols (cdr protocols))))))
       (setq func (nth 1 (assoc protocol mm-verify-function-alist)))
-      (if (cond
-	   ((eq mm-verify-option 'never) nil)
-	   ((eq mm-verify-option 'always) t)
-	   ((eq mm-verify-option 'known)
-	    (and func
-		 (or (not (setq functest
-				(nth 3 (assoc protocol
-					      mm-verify-function-alist))))
-		     (funcall functest parts ctl))))
-	   (t (y-or-n-p
+      (when (cond
+	     ((eq mm-verify-option 'never) nil)
+	     ((eq mm-verify-option 'always) t)
+	     ((eq mm-verify-option 'known)
+	      (and func
+		   (or (not (setq functest
+				  (nth 3 (assoc protocol
+						mm-verify-function-alist))))
+		       (funcall functest parts ctl))))
+	     (t
+	      (y-or-n-p
 	       (format "Verify signed (%s) part? "
 		       (or (nth 2 (assoc protocol mm-verify-function-alist))
 			   (format "protocol=%s" protocol))))))
-	  (save-excursion
-	    (if func
-		(funcall func parts ctl)
-	      (mm-set-handle-multipart-parameter
-	       mm-security-handle 'gnus-details
-	       (format "Unknown sign protocol (%s)" protocol))))))
+	(save-excursion
+	  (if func
+	      (funcall func parts ctl)
+	    (mm-set-handle-multipart-parameter
+	     mm-security-handle 'gnus-details
+	     (format "Unknown sign protocol (%s)" protocol))))))
      ((equal subtype "encrypted")
       (unless (setq protocol
 		    (mm-handle-multipart-ctl-parameter ctl 'protocol))
@@ -1356,25 +1357,26 @@ If RECURSIVE, search recursively."
 		      parts nil)
 	      (setq parts (cdr parts))))))
       (setq func (nth 1 (assoc protocol mm-decrypt-function-alist)))
-      (if (cond
-	   ((eq mm-decrypt-option 'never) nil)
-	   ((eq mm-decrypt-option 'always) t)
-	   ((eq mm-decrypt-option 'known)
-	    (and func
-		 (or (not (setq functest
-				(nth 3 (assoc protocol
-					      mm-decrypt-function-alist))))
-		     (funcall functest parts ctl))))
-	   (t (y-or-n-p
+      (when (cond
+	     ((eq mm-decrypt-option 'never) nil)
+	     ((eq mm-decrypt-option 'always) t)
+	     ((eq mm-decrypt-option 'known)
+	      (and func
+		   (or (not (setq functest
+				  (nth 3 (assoc protocol
+						mm-decrypt-function-alist))))
+		       (funcall functest parts ctl))))
+	     (t
+	      (y-or-n-p
 	       (format "Decrypt (%s) part? "
 		       (or (nth 2 (assoc protocol mm-decrypt-function-alist))
 			   (format "protocol=%s" protocol))))))
-	  (save-excursion
-	    (if func
-		(setq parts (funcall func parts ctl))
-	      (mm-set-handle-multipart-parameter
-	       mm-security-handle 'gnus-details
-	       (format "Unknown encrypt protocol (%s)" protocol))))))
+	(save-excursion
+	  (if func
+	      (setq parts (funcall func parts ctl))
+	    (mm-set-handle-multipart-parameter
+	     mm-security-handle 'gnus-details
+	     (format "Unknown encrypt protocol (%s)" protocol))))))
      (t nil))
     parts))
 
