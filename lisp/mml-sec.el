@@ -1,5 +1,5 @@
 ;;; mml-sec.el --- A package with security functions for MML documents
-;; Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; This file is not part of GNU Emacs, but the same permissions apply.
@@ -219,7 +219,7 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (save-excursion
     (goto-char (point-max))
     (when (re-search-backward "^<#secure.*>\n" nil t)
-      (kill-region (match-beginning 0) (match-end 0)))))
+      (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun mml-secure-message-sign-smime ()
   "Add MML tag to encrypt/sign the entire message."

@@ -1,3 +1,8 @@
+2003-02-07  Simon Josefsson  <jas@extundo.com>
+
+	* mml-sec.el (mml-unsecure-message): Don't use kill-region.  Tiny
+	patch from deskpot@myrealbox.com (Vasily Korytov).
+
 2003-02-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (article-display-face): Get the Face header from
