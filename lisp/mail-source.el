@@ -231,6 +231,11 @@ See Info node `(gnus)Mail Source Specifiers'."
 					  (const :format "" :value :plugged)
 					  (boolean :tag "Plugged")))))))
 
+(defcustom mail-source-ignore-errors nil
+  "*Ignore errors when querying mail sources.
+If nil, the user will be prompted when an error occurs.  If non-nil,
+the error will be ignored.")
+
 (defcustom mail-source-primary-source nil
   "*Primary source for incoming mail.
 If non-nil, this maildrop will be checked periodically for new mail."
@@ -476,15 +481,16 @@ Return the number of files that were found."
 		 (condition-case err
 		     (funcall function source callback)
 		   (error
-		    (unless (yes-or-no-p
-			     (format "Mail source %s error (%s).  Continue? "
-				     (if (memq ':password source)
-					 (let ((s (copy-sequence source)))
-					   (setcar (cdr (memq ':password s)) 
-						   "********")
-					   s)
-				       source)
-				     (cadr err)))
+		    (if (and (not mail-source-ignore-error)
+			     (yes-or-no-p
+			      (format "Mail source %s error (%s).  Continue? "
+				      (if (memq ':password source)
+					  (let ((s (copy-sequence source)))
+					    (setcar (cdr (memq ':password s)) 
+						    "********")
+					    s)
+					source)
+				      (cadr err))))
 		      (error "Cannot get new mail"))
 		    0)))))))))
 

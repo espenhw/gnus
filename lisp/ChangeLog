@@ -1,5 +1,8 @@
 2003-02-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mail-source.el (mail-source-fetch): Ignore errors.
+	(mail-source-ignore-errors): New variable.
+
 	* gnus-sum.el (gnus-summary-refer-thread): Don't re-fetch current
 	articles. 
 
