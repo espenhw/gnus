@@ -850,8 +850,10 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       ;; Read the newsrc file and create `gnus-newsrc-hashtb'.
       (gnus-read-newsrc-file rawfile))
 
-    (when (and (not (assoc "archive" gnus-server-alist))
-	       (gnus-archive-server-wanted-p))
+    ;; Make sure the archive server is available to all and sundry.
+    (setq gnus-server-alist (delq (assoc "archive" gnus-server-alist)
+				  gnus-server-alist))
+    (when (gnus-archive-server-wanted-p)
       (push (cons "archive" gnus-message-archive-method)
 	    gnus-server-alist))
 

@@ -1579,7 +1579,6 @@ This format is defined by the `gnus-article-time-format' variable."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
-  (gnus-set-global-variables)
   (setq filename (gnus-read-save-file-name
 		  "Save %s in rmail file:" filename
 		  gnus-rmail-save-name gnus-newsgroup-name
@@ -1595,7 +1594,6 @@ Directory to save to is default to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
-  (gnus-set-global-variables)
   (setq filename (gnus-read-save-file-name
 		  "Save %s in Unix mail file:" filename
 		  gnus-mail-save-name gnus-newsgroup-name
@@ -1614,7 +1612,6 @@ Directory to save to is default to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
-  (gnus-set-global-variables)
   (setq filename (gnus-read-save-file-name
 		  "Save %s in file:" filename
 		  gnus-file-save-name gnus-newsgroup-name
@@ -1640,7 +1637,6 @@ The directory to save in defaults to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
-  (gnus-set-global-variables)
   (setq filename (gnus-read-save-file-name
 		  "Save %s body in file:" filename
 		  gnus-file-save-name gnus-newsgroup-name
@@ -1657,7 +1653,6 @@ The directory to save in defaults to `gnus-article-save-directory'."
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."
   (interactive)
-  (gnus-set-global-variables)
   (setq command
 	(cond ((eq command 'default)
 	       gnus-last-shell-command)

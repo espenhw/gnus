@@ -132,7 +132,6 @@ If N is a negative number, add the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 move those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let* ((articles (gnus-summary-work-articles n))
 	 (tmp-buf (get-buffer-create "*soup work*"))
 	 (area (gnus-soup-area gnus-newsgroup-name))

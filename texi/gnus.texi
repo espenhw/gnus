@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.110 Manual
+@settitle Quassia Gnus 0.15 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.110 Manual
+@title Quassia Gnus 0.15 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.110.
+This manual corresponds to Quassia Gnus 0.15.
 
 @end ifinfo
 
@@ -1288,6 +1288,8 @@ background is dark:
          ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
 	(t . my-group-face-5)))
 @end lisp
+
+Also @pxref{Faces & Fonts}.
 
 Variables that are dynamically bound when the forms are evaluated
 include:
@@ -6008,10 +6010,10 @@ Highlight the headers (@code{gnus-article-highlight-headers}).  The
 highlighting will be done according to the @code{gnus-header-face-alist}
 variable, which is a list where each element has the form @var{(regexp
 name content)}.  @var{regexp} is a regular expression for matching the
-header, @var{name} is the face used for highlighting the header name and
-@var{content} is the face for highlighting the header value.  The first
-match made will be used.  Note that @var{regexp} shouldn't have @samp{^}
-prepended---Gnus will add one.
+header, @var{name} is the face used for highlighting the header name
+(@pxref{Faces & Fonts}) and @var{content} is the face for highlighting
+the header value.  The first match made will be used.  Note that
+@var{regexp} shouldn't have @samp{^} prepended---Gnus will add one.
 
 @item W H c
 @kindex W H c (Summary)
@@ -6037,10 +6039,10 @@ Maximum possible length for a citation prefix (default 20).
 
 @item gnus-cite-face-list
 @vindex gnus-cite-face-list
-List of faces used for highlighting citations.  When there are citations
-from multiple articles in the same message, Gnus will try to give each
-citation from each article its own face.  This should make it easier to
-see who wrote what.
+List of faces used for highlighting citations (@pxref{Faces & Fonts}).
+When there are citations from multiple articles in the same message,
+Gnus will try to give each citation from each article its own face.
+This should make it easier to see who wrote what.
 
 @item gnus-supercite-regexp
 @vindex gnus-supercite-regexp
@@ -13221,6 +13223,7 @@ four days, Gnus will decay the scores four times, for instance.
 * Symbolic Prefixes::          How to supply some Gnus functions with options.
 * Formatting Variables::       You can specify what buffers should look like.
 * Windows Configuration::      Configuring the Gnus buffer windows.
+* Faces & Fonts::              How to change how faces look.
 * Compilation::                How to speed Gnus up.
 * Mode Lines::                 Displaying information in the mode lines.
 * Highlighting and Menus::     Making buffers look all nice and cozy.
@@ -13759,6 +13762,18 @@ If all windows mentioned in the configuration are already visible, Gnus
 won't change the window configuration.  If you always want to force the
 ``right'' window configuration, you can set
 @code{gnus-always-force-window-configuration} to non-@code{nil}.
+
+
+@node Faces & Fonts
+@section Faces & Fonts
+@cindex faces
+@cindex fonts
+@cindex colors
+
+Fiddling with fonts and faces used to be very difficult, but these days
+it is very simple.  You simply say @kbd{M-x customize-face}, pick out
+the face you want to alter, and alter it via the standard Customize
+interface.  
 
 
 @node Compilation
@@ -14477,7 +14492,7 @@ don't need to worry about.
 @vindex gnus-picons-database
 The location of the picons database.  Should point to a directory
 containing the @file{news}, @file{domains}, @file{users} (and so on)
-subdirectories.  Defaults to @file{/usr/local/faces}.
+subdirectories.  Defaults to @file{/usr/local/faces/}.
 
 @item gnus-picons-news-directory
 @vindex gnus-picons-news-directory
@@ -15266,6 +15281,7 @@ Dave Disser,
 Joev Dubach,
 Michael Welsh Duggan,
 Paul Eggert,
+Enami Tsugutomo, @c Enami
 Michael Ernst,
 Luc Van Eycken,
 Sam Falkner,
@@ -15279,7 +15295,7 @@ David S. Goldberg,
 Michelangelo Grigni,
 D. Hall, 
 Magnus Hammerin,
-Kenichi Handa, @c ?
+Kenichi Handa, @c Handa
 Raja R. Harinath,
 Hisashige Kenji, @c Hisashige
 Marc Horowitz,
@@ -15298,7 +15314,7 @@ Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,
 Jens Lautenbacher,
-Seokchan Lee, @c ?
+Seokchan Lee, @c Lee
 Carsten Leonhardt,
 James LewisMoss,
 Christian Limpach,
@@ -15353,7 +15369,6 @@ Teddy,
 Chuck Thompson,
 Philippe Troin,
 James Troup,
-Enami Tsugutomo, @c ?
 Aaron M. Ucko, 
 Didier Verna,
 Jan Vroonhof,
@@ -17721,6 +17736,9 @@ high-number = <non-negative integer>
 low-number  = <positive integer>
 flag        = "y" / "n" / "m" / "j" / "x" / "=" group
 @end example
+
+For a full description of this file, see the manual pages for
+@samp{innd}, in particular @samp{active(5)}.
 
 
 @node Newsgroups File Format

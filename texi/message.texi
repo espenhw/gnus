@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 0.110 Manual
+@settitle Message 0.15 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 0.110 Manual
+@title Message 0.15 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 0.110.  Message is distributed with
+This manual corresponds to Message 0.15.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -478,7 +478,7 @@ The default is @samp{~/.signature}.
 
 @end table
 
-Note that RFC1036 says that a signature should be preceded by the three
+Note that RFC1036bis says that a signature should be preceded by the three
 characters @samp{-- } on a line by themselves.  This is to make it
 easier for the recipient to automatically recognize and process the
 signature.  So don't remove those characters, even though you might feel

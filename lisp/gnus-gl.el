@@ -688,7 +688,6 @@ recommend using both scores and grouplens predictions together."
 	    article)
 	(while (setq article (pop articles))
 	  (gnus-summary-goto-subject article)
-	  (gnus-set-global-variables)
 	  (bbb-summary-rate-article score
 				    (mail-header-id
 				     (gnus-summary-article-header article)))))

@@ -231,7 +231,6 @@ If ARG is 1, prompt for a group name."
 (defun gnus-summary-post-news ()
   "Start composing a news message."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-post-news 'post gnus-newsgroup-name))
 
 (defun gnus-summary-followup (yank &optional force-news)
@@ -240,7 +239,6 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (interactive
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
-  (gnus-set-global-variables)
   (when yank
     (gnus-summary-goto-subject (car yank)))
   (save-window-excursion
@@ -293,7 +291,6 @@ Uses the process-prefix convention.  If given the symbolic
 prefix `a', cancel using the standard posting method; if not
 post using the current select method."
   (interactive (gnus-interactive "P\ny"))
-  (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
 	(message-post-method
 	 `(lambda (arg)
@@ -313,7 +310,6 @@ post using the current select method."
 This is done simply by taking the old article and adding a Supersedes
 header line with the old Message-ID."
   (interactive)
-  (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number)))
     (gnus-setup-message 'reply-yank
       (gnus-summary-select-article t)
@@ -593,7 +589,6 @@ automatically."
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
-  (gnus-set-global-variables)
   (when yank
     (gnus-summary-goto-subject (car yank)))
   (let ((gnus-article-reply t))
@@ -630,7 +625,6 @@ The original article will be yanked."
   "Forward the current message to another user.
 If FULL-HEADERS (the prefix), include full headers when forwarding."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-setup-message 'forward
     (gnus-summary-select-article)
     (set-buffer gnus-original-article-buffer)

@@ -30,6 +30,7 @@
 
 (defvar nnoo-definition-alist nil)
 (defvar nnoo-state-alist nil)
+(defvar nnoo-parent-backend nil)
 
 (defmacro defvoo (var init &optional doc &rest map)
   "The same as `defvar', only takes list of variables to MAP to."
@@ -88,23 +89,28 @@
 	    (or (cdr imp)
 		(nnoo-functions (car imp))))
       (while functions
-	(unless (fboundp (setq function
-			       (nnoo-symbol backend (nnoo-rest-symbol
-						     (car functions)))))
+	(unless (fboundp
+		 (setq function
+		       (nnoo-symbol backend
+				    (nnoo-rest-symbol (car functions)))))
 	  (eval `(deffoo ,function (&rest args)
 		   (,call-function ',backend ',(car functions) args))))
 	(pop functions)))))
 
 (defun nnoo-parent-function (backend function args)
-  (let ((pbackend (nnoo-backend function)))
-    (nnoo-change-server pbackend (nnoo-current-server backend)
+  (let ((pbackend (nnoo-backend function))
+	(nnoo-parent-backend backend))
+    (nnoo-change-server pbackend
+			(nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
     (apply function args)))
 
 (defun nnoo-execute (backend function &rest args)
   "Execute FUNCTION on behalf of BACKEND."
-  (let ((pbackend (nnoo-backend function)))
-    (nnoo-change-server pbackend (nnoo-current-server backend)
+  (let ((pbackend (nnoo-backend function))
+	(nnoo-parent-backend backend))
+    (nnoo-change-server pbackend
+			(nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
     (apply function args)))
 
@@ -157,8 +163,13 @@
   (let* ((bstate (cdr (assq backend nnoo-state-alist)))
 	 (current (car bstate))
 	 (parents (nnoo-parents backend))
+	 (server (if nnoo-parent-backend
+		     (format "%s+%s" nnoo-parent-backend server)
+		   server))
 	 (bvariables (nnoo-variables backend))
 	 state def)
+    ;; If we don't have a current state, we push an empty state
+    ;; onto the alist.
     (unless bstate
       (push (setq bstate (list backend nil))
 	    nnoo-state-alist)
@@ -181,7 +192,7 @@
 	  (set (car def) (cadr def))))
       (while parents
 	(nnoo-change-server
-	 (caar parents) server
+	 (caar parents) (format "%s+%s" backend server)
 	 (mapcar (lambda (def) (list (car def) (symbol-value (cadr def))))
 		 (cdar parents)))
 	(pop parents))))

@@ -164,8 +164,9 @@
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)
   (let* ((nnmh-allow-delete-final t)
-	 (res (nnmh-request-expire-articles
-	       articles group server force))
+	 (res (nnoo-parent-function 'nndraft
+				    'nnmh-request-expire-articles
+				    (list articles group server force)))
 	 article)
     ;; Delete all the "state" files of articles that have been expired.
     (while articles
@@ -179,7 +180,8 @@
 (deffoo nndraft-request-accept-article (group &optional server last noinsert)
   (nndraft-possibly-change-group group)
   (let ((gnus-verbose-backends nil))
-    (nnmh-request-accept-article group server last noinsert)))
+    (nnoo-parent-function 'nndraft 'nnmh-request-accept-article
+			  (list group server last noinsert))))
 
 (deffoo nndraft-request-create-group (group &optional server args)
   (nndraft-possibly-change-group group)

@@ -1,3 +1,7 @@
+Mon Nov 24 16:01:20 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Faces & Fonts): New.
+
 Mon Oct 13 00:08:06 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Agent Commands): Addition.

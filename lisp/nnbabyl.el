@@ -30,7 +30,9 @@
 ;;; Code:
 
 (require 'nnheader)
-(require 'rmail)
+(condition-case nil
+    (require 'rmail)
+  (t (message "Ignore rmail errors from this file, you don't have rmail")))
 (require 'nnmail)
 (require 'nnoo)
 (eval-when-compile (require 'cl))

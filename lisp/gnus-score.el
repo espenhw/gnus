@@ -472,7 +472,6 @@ The user will be prompted for header to score on, match type,
 permanence, and the string to be used.  The numerical prefix will be
 used as score."
   (interactive (gnus-interactive "P\ny"))
-  (gnus-set-global-variables)
   (let* ((nscore (gnus-score-default score))
 	 (prefix (if (< nscore 0) ?L ?I))
 	 (increase (> nscore 0))
@@ -972,14 +971,12 @@ SCORE is the score to add."
 (defun gnus-summary-raise-score (n)
   "Raise the score of the current article by N."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-set-score (+ (gnus-summary-article-score)
 			     (or n gnus-score-interactive-default-score ))))
 
 (defun gnus-summary-set-score (n)
   "Set the score of the current article to N."
   (interactive "p")
-  (gnus-set-global-variables)
   (save-excursion
     (gnus-summary-show-thread)
     (let ((buffer-read-only nil))
@@ -998,7 +995,6 @@ SCORE is the score to add."
 (defun gnus-summary-current-score ()
   "Return the score of the current article."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-message 1 "%s" (gnus-summary-article-score)))
 
 (defun gnus-score-change-score-file (file)
@@ -1012,7 +1008,6 @@ SCORE is the score to add."
 (defun gnus-score-edit-current-scores (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
-  (gnus-set-global-variables)
   (let ((winconf (current-window-configuration)))
     (when (buffer-name gnus-summary-buffer)
       (gnus-score-save))

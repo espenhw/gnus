@@ -42,12 +42,12 @@
   "The directory containing the Sound Files.")
 
 (defvar gnus-audio-au-player "/usr/bin/showaudio"
-  "Executable program for playing sun AU format sound files")
+  "Executable program for playing sun AU format sound files.")
+
 (defvar gnus-audio-wav-player "/usr/local/bin/play"
-  "Executable program for playing WAV files")
+  "Executable program for playing WAV files.")
 
-
-;;; The following isn't implemented yet.  Wait for Red Gnus.
+;;; The following isn't implemented yet.  Wait for Millennium Gnus.
 ;(defvar gnus-audio-effects-enabled t
 ;  "When t, Gnus will use sound effects.")
 ;(defvar gnus-audio-enable-hooks nil

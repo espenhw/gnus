@@ -84,6 +84,8 @@ all.  This may very well take some time.")
 
 (defvoo nnml-generate-active-function 'nnml-generate-active-info)
 
+(defvar nnml-nov-buffer-file-name nil)
+
 
 
 ;;; Interface functions.
@@ -658,9 +660,10 @@ all.  This may very well take some time.")
   (save-excursion
     (save-restriction
       (goto-char (point-min))
-      (narrow-to-region
-       (point)
-       (1- (or (search-forward "\n\n" nil t) (point-max))))
+      (unless (zerop (buffer-size))
+	(narrow-to-region
+	 (point)
+	 (1- (or (search-forward "\n\n" nil t) (point-max)))))
       ;; Fold continuation lines.
       (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
@@ -674,12 +677,14 @@ all.  This may very well take some time.")
 
 (defun nnml-open-nov (group)
   (or (cdr (assoc group nnml-nov-buffer-alist))
-      (let ((buffer (nnheader-find-file-noselect
-		     (concat (nnmail-group-pathname group nnml-directory)
-			     nnml-nov-file-name))))
+      (let ((buffer (get-buffer-create (format " *nnml overview %s*" group))))
 	(save-excursion
 	  (set-buffer buffer)
-	  (buffer-disable-undo (current-buffer)))
+	  (set (make-local-variable 'nnml-nov-buffer-file-name)
+	       (concat (nnmail-group-pathname group nnml-directory)
+		       nnml-nov-file-name))
+	  (erase-buffer)
+	  (nnheader-insert-file-contents nnml-nov-buffer-file-name))
 	(push (cons group buffer) nnml-nov-buffer-alist)
 	buffer)))
 
@@ -689,7 +694,8 @@ all.  This may very well take some time.")
       (when (buffer-name (cdar nnml-nov-buffer-alist))
 	(set-buffer (cdar nnml-nov-buffer-alist))
 	(when (buffer-modified-p)
-	  (nnmail-write-region 1 (point-max) (buffer-file-name) nil 'nomesg))
+	  (nnmail-write-region 1 (point-max) nnml-nov-buffer-file-name
+			       nil 'nomesg))
 	(set-buffer-modified-p nil)
 	(kill-buffer (current-buffer)))
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))

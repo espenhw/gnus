@@ -93,7 +93,8 @@
     (gnus-xmas-define))
 
    ((or (not (boundp 'emacs-minor-version))
-	(< emacs-minor-version 30))
+	(and (< emacs-major-version 20)
+	     (< emacs-minor-version 30)))
     ;; Remove the `intangible' prop.
     (let ((props (and (boundp 'gnus-hidden-properties)
 		      gnus-hidden-properties)))

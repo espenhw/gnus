@@ -316,7 +316,6 @@ variable to \"^nnml\"."
 If not given a prefix, use the process marked articles instead.
 Returns the list of articles entered."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
 	article out)
     (while (setq article (pop articles))
@@ -338,7 +337,6 @@ Returns the list of articles entered."
 If not given a prefix, use the process marked articles instead.
 Returns the list of articles removed."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-cache-change-buffer gnus-newsgroup-name)
   (let ((articles (gnus-summary-work-articles n))
 	article out)

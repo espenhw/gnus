@@ -512,16 +512,16 @@ call it with the value of the `gnus-data' text property."
     (let* ((logo-xpm (expand-file-name "gnus.xpm" gnus-xmas-glyph-directory))
 	   (logo-xbm (expand-file-name "gnus.xbm" gnus-xmas-glyph-directory))
 	   (glyph (make-glyph
-		   `(,@(if (featurep 'xpm)
-			   (list
-			    (vector 'xpm
-			     ':file logo-xpm
-			     ':color-symbols
-			     `(("thing" . ,(car gnus-xmas-logo-colors))
-			       ("shadow" . ,(cadr gnus-xmas-logo-colors))
-			       ("background" . ,(face-background 'default))))))
-		       ,(vector 'xbm :file logo-xbm)
-		       ,(vector 'nothing)))))
+		   (cond ((featurep 'xpm)
+			  `[xpm
+			    :file ,logo-xpm
+			    :color-symbols
+			    (("thing" . ,(car gnus-xmas-logo-colors))
+			     ("shadow" . ,(cadr gnus-xmas-logo-colors))
+			     ("background" . ,(face-background 'default)))])
+			 ((featurep 'xbm)
+			  `[xbm :file ,logo-xbm])
+			 (t [nothing])))))
       (insert " ")
       (set-extent-begin-glyph (make-extent (point) (point)) glyph)
       (goto-char (point-min))
@@ -754,19 +754,19 @@ XEmacs compatibility workaround."
   (progn
     (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
     (let* ((file-xpm (expand-file-name "gnus-pointer.xpm"
-				    gnus-xmas-glyph-directory))
+				       gnus-xmas-glyph-directory))
 	   (file-xbm (expand-file-name "gnus-pointer.xbm"
-				    gnus-xmas-glyph-directory))
+				       gnus-xmas-glyph-directory))
 	   (glyph (make-glyph
 		   ;; Gag gag gag.
-		   `(
-		     ,@(if (featurep 'xpm)
-			   ;; Let's try a nifty XPM
-			   (list (vector 'xpm ':file file-xpm)))
-		       ;; Then a not-so-nifty XBM
-		       ,(vector 'xbm ':file file-xbm)
-		       ;; Then the simple string
-		       ,(vector 'string ':data "Gnus:")))))
+		   (cond ((featurep 'xpm)
+			  ;; Let's try a nifty XPM
+			  `[xpm :file ,file-xpm])
+			 ((featurep 'xbm)
+			  ;; Then a not-so-nifty XBM
+			  [xbm :file ,file-xbm])
+			 ;; Then the simple string
+			 (t [string :data "Gnus:"])))))
       (set-glyph-face glyph 'modeline-buffer-id)
       glyph)))
 

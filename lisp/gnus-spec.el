@@ -502,8 +502,6 @@ If PROPS, insert the result."
 (defun gnus-compile ()
   "Byte-compile the user-defined format specs."
   (interactive)
-  (when gnus-xemacs
-    (error "Can't compile specs under XEmacs"))
   (let ((entries gnus-format-specs)
 	(byte-compile-warnings '(unresolved callargs redefine))
 	entry gnus-tmp-func)
@@ -515,7 +513,10 @@ If PROPS, insert the result."
 	(if (eq (car entry) 'version)
 	    (setq gnus-format-specs (delq entry gnus-format-specs))
 	  (when (and (listp (caddr entry))
-		     (not (eq 'byte-code (caaddr entry))))
+		     (not (eq 'byte-code (caaddr entry)))
+		     ;; Under XEmacs, it's (funcall #<compiled-function ...>)
+		     (not (and (eq 'funcall (caaddr entry))
+			       (compiled-function-p (car (cdaddr entry))))))
 	    (fset 'gnus-tmp-func `(lambda () ,(caddr entry)))
 	    (byte-compile 'gnus-tmp-func)
 	    (setcar (cddr entry) (gnus-byte-code 'gnus-tmp-func)))))

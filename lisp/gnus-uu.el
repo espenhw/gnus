@@ -558,7 +558,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-by-regexp (regexp &optional unmark)
   "Ask for a regular expression and set the process mark on all articles that match."
   (interactive (list (read-from-minibuffer "Mark (regexp): ")))
-  (gnus-set-global-variables)
   (let ((articles (gnus-uu-find-articles-matching regexp)))
     (while articles
       (if unmark
@@ -575,7 +574,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-series ()
   "Mark the current series with the process mark."
   (interactive)
-  (gnus-set-global-variables)
   (let ((articles (gnus-uu-find-articles-matching)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
@@ -586,7 +584,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-region (beg end &optional unmark)
   "Set the process mark on all articles between point and mark."
   (interactive "r")
-  (gnus-set-global-variables)
   (save-excursion
     (goto-char beg)
     (while (< (point) end)
@@ -614,7 +611,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-thread ()
   "Marks all articles downwards in this thread."
   (interactive)
-  (gnus-set-global-variables)
   (let ((level (gnus-summary-thread-level)))
     (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
 		(zerop (gnus-summary-next-subject 1))
@@ -624,7 +620,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-unmark-thread ()
   "Unmarks all articles downwards in this thread."
   (interactive)
-  (gnus-set-global-variables)
   (let ((level (gnus-summary-thread-level)))
     (while (and (gnus-summary-remove-process-mark
 		 (gnus-summary-article-number))
@@ -663,7 +658,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-sparse ()
   "Mark all series that have some articles marked."
   (interactive)
-  (gnus-set-global-variables)
   (let ((marked (nreverse gnus-newsgroup-processable))
 	subject articles total headers)
     (unless marked
@@ -688,7 +682,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-all ()
   "Mark all articles in \"series\" order."
   (interactive)
-  (gnus-set-global-variables)
   (setq gnus-newsgroup-processable nil)
   (save-excursion
     (let ((data gnus-newsgroup-data)

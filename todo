@@ -771,3 +771,7 @@ X characters in the body.
 * include the texi/dir file in the distribution.
 
 * format spec to "tab" to a position.
+
+* Move all prompting to the new `M-n' default style.
+
+* have nntp cache the authinfo passwords.

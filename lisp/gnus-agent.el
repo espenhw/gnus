@@ -378,7 +378,6 @@ If N is negative, mark backward instead.  If UNMARK is non-nil, remove
 the mark instead.  The difference between N and the actual number of
 articles marked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((backward (< n 0))
 	(n (abs n)))
     (while (and
@@ -399,7 +398,6 @@ articles marked is returned."
 If N is negative, unmark backward instead.  The difference between N and
 the actual number of articles unmarked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-agent-mark-article n t))
 
 (defun gnus-agent-toggle-mark (n)
@@ -407,7 +405,6 @@ the actual number of articles unmarked is returned."
 If N is negative, toggle backward instead.  The difference between N and
 the actual number of articles toggled is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-agent-mark-article n 'toggle))
 
 (defun gnus-summary-set-agent-mark (article &optional unmark)

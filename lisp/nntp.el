@@ -634,7 +634,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (when (memq (process-status process) '(open run))
 	(set-process-sentinel process nil)
 	(ignore-errors
-	  (nntp-send-string process "QUIT")))
+	  (nntp-send-string process "QUIT")
+	  (sleep-for 1)))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))
     (nnoo-close-server 'nntp)))
@@ -645,7 +646,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (when (memq (process-status process) '(open run))
 	(set-process-sentinel process nil)
 	(ignore-errors
-	  (nntp-send-string process "QUIT")))
+	  (nntp-send-string process "QUIT")
+	  (sleep-for 1)))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))))
 

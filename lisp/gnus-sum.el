@@ -1943,6 +1943,8 @@ The following commands are available:
   (make-local-variable 'gnus-summary-mark-positions)
   (make-local-hook 'post-command-hook)
   (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
+  (make-local-hook 'pre-command-hook)
+  (add-hook 'pre-command-hook 'gnus-set-global-variables nil t)
   (run-hooks 'gnus-summary-mode-hook)
   (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
   (gnus-update-summary-mark-positions))
@@ -2340,17 +2342,17 @@ This is all marks except unread, ticked, dormant, and expirable."
 	  (score-file gnus-current-score-file))
       (save-excursion
 	(set-buffer gnus-group-buffer)
-	(setq gnus-newsgroup-name name)
-	(setq gnus-newsgroup-marked marked)
-	(setq gnus-newsgroup-unreads unread)
-	(setq gnus-current-headers headers)
-	(setq gnus-newsgroup-data data)
-	(setq gnus-article-current gac)
-	(setq gnus-summary-buffer summary)
-	(setq gnus-article-buffer article-buffer)
-	(setq gnus-original-article-buffer original)
-	(setq gnus-reffed-article-number reffed)
-	(setq gnus-current-score-file score-file)
+	(setq gnus-newsgroup-name name
+	      gnus-newsgroup-marked marked
+	      gnus-newsgroup-unreads unread
+	      gnus-current-headers headers
+	      gnus-newsgroup-data data
+	      gnus-article-current gac
+	      gnus-summary-buffer summary
+	      gnus-article-buffer article-buffer
+	      gnus-original-article-buffer original
+	      gnus-reffed-article-number reffed
+	      gnus-current-score-file score-file)
 	;; The article buffer also has local variables.
 	(when (gnus-buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
@@ -2606,6 +2608,9 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(kill-buffer (current-buffer))
 	(if (not quit-config)
 	    (progn
+	      ;; Update the info -- marks might need to be removed,
+	      ;; for instance.
+	      (gnus-summary-update-info)
 	      (set-buffer gnus-group-buffer)
 	      (gnus-group-jump-to-group group)
 	      (gnus-group-next-unread-group 1))
@@ -2771,7 +2776,6 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defun gnus-summary-simplify-subject-query ()
   "Query where the respool algorithm would put this article."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (message (gnus-general-simplify-subject (gnus-summary-article-subject))))
 
@@ -3973,7 +3977,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	    (set var (delq article (symbol-value var))))))))))
 
 (defun gnus-update-missing-marks (missing)
-  "Go through the list of MISSING articles and remove them mark lists."
+  "Go through the list of MISSING articles and remove them from the mark lists."
   (when missing
     (let ((types gnus-article-mark-lists)
 	  var m)
@@ -4915,7 +4919,6 @@ displayed, no centering will be performed."
 (defun gnus-summary-universal-argument (arg)
   "Perform any operation on all articles that are process/prefixed."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles arg))
 	func article)
     (if (eq
@@ -4949,7 +4952,6 @@ With arg, turn line truncation on iff arg is positive."
   "Exit and then reselect the current newsgroup.
 The prefix argument ALL means to select all articles."
   (interactive "P")
-  (gnus-set-global-variables)
   (when (gnus-ephemeral-group-p gnus-newsgroup-name)
     (error "Ephemeral groups can't be reselected"))
   (let ((current-subject (gnus-summary-article-number))
@@ -5001,11 +5003,6 @@ The prefix argument ALL means to select all articles."
 	;; Do the cross-ref thing.
 	(when gnus-use-cross-reference
 	  (gnus-mark-xrefs-as-read group headers gnus-newsgroup-unreads))
-	;; Do adaptive scoring, and possibly save score files.
-	(when gnus-newsgroup-adaptive
-	  (gnus-score-adaptive))
-	(when gnus-use-scoring
-	  (gnus-score-save))
 	;; Do not switch windows but change the buffer to work.
 	(set-buffer gnus-group-buffer)
 	(unless (gnus-ephemeral-group-p gnus-newsgroup-name)
@@ -5025,7 +5022,6 @@ If FORCE (the prefix), also save the .newsrc file(s)."
   "Exit reading current newsgroup, and then return to group selection mode.
 gnus-exit-group-hook is called with no arguments if that value is non-nil."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-kill-save-kill-buffer)
   (let* ((group gnus-newsgroup-name)
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
@@ -5048,7 +5044,12 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     ;; Make all changes in this group permanent.
     (unless quit-config
       (run-hooks 'gnus-exit-group-hook)
-      (gnus-summary-update-info))
+      (gnus-summary-update-info)
+      ;; Do adaptive scoring, and possibly save score files.
+      (when gnus-newsgroup-adaptive
+	(gnus-score-adaptive))
+      (when gnus-use-scoring
+	(gnus-score-save)))
     (gnus-close-group group)
     ;; Make sure where we were, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
@@ -5100,7 +5101,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 (defun gnus-summary-exit-no-update (&optional no-questions)
   "Quit reading current newsgroup without updating read article info."
   (interactive)
-  (gnus-set-global-variables)
   (let* ((group gnus-newsgroup-name)
 	 (quit-config (gnus-group-quit-config group)))
     (when (or no-questions
@@ -5286,7 +5286,6 @@ If prefix argument NO-ARTICLE is non-nil, no article is selected
 initially.  If NEXT-GROUP, go to this group.  If BACKWARD, go to
 previous group instead."
   (interactive "P")
-  (gnus-set-global-variables)
   ;; Stop pre-fetching.
   (gnus-async-halt-prefetch)
   (let ((current-group gnus-newsgroup-name)
@@ -5430,7 +5429,6 @@ If FORCE, also allow jumping to articles not currently shown."
   "Make the summary buffer take up the entire Emacs frame.
 Given a prefix, will force an `article' buffer configuration."
   (interactive "P")
-  (gnus-set-global-variables)
   (if arg
       (gnus-configure-windows 'article 'force)
     (gnus-configure-windows 'summary 'force)))
@@ -5507,7 +5505,6 @@ If UNREAD, only unread articles are selected.
 If SUBJECT, only articles with SUBJECT are selected.
 If BACKWARD, the previous article is selected instead of the next."
   (interactive "P")
-  (gnus-set-global-variables)
   (cond
    ;; Is there such an article?
    ((and (gnus-summary-search-forward unread subject backward)
@@ -5681,7 +5678,6 @@ Argument LINES specifies lines to be scrolled down.
 If MOVE, move to the previous unread article if point is at
 the beginning of the buffer."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
 	(article-window (get-buffer-window gnus-article-buffer t))
 	endp)
@@ -5717,7 +5713,6 @@ If at the beginning of the article, go to the next article."
   "Scroll up (or down) one line current article.
 Argument LINES specifies lines to be scrolled up (or down if negative)."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-configure-windows 'article)
   (gnus-summary-show-thread)
   (when (eq (gnus-summary-select-article nil nil 'pseudo) 'old)
@@ -5733,32 +5728,27 @@ Argument LINES specifies lines to be scrolled up (or down if negative)."
 (defun gnus-summary-next-same-subject ()
   "Select next article which has the same subject as current one."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-next-article nil (gnus-summary-article-subject)))
 
 (defun gnus-summary-prev-same-subject ()
   "Select previous article which has the same subject as current one."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-prev-article nil (gnus-summary-article-subject)))
 
 (defun gnus-summary-next-unread-same-subject ()
   "Select next unread article which has the same subject as current one."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-next-article t (gnus-summary-article-subject)))
 
 (defun gnus-summary-prev-unread-same-subject ()
   "Select previous unread article which has the same subject as current one."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-prev-article t (gnus-summary-article-subject)))
 
 (defun gnus-summary-first-unread-article ()
   "Select the first unread article.
 Return nil if there are no unread articles."
   (interactive)
-  (gnus-set-global-variables)
   (prog1
       (when (gnus-summary-first-subject t)
 	(gnus-summary-show-thread)
@@ -5770,7 +5760,6 @@ Return nil if there are no unread articles."
   "Select the first article.
 Return nil if there are no articles."
   (interactive)
-  (gnus-set-global-variables)
   (prog1
       (when (gnus-summary-first-subject)
       (gnus-summary-show-thread)
@@ -5781,7 +5770,6 @@ Return nil if there are no articles."
 (defun gnus-summary-best-unread-article ()
   "Select the unread article with the highest score."
   (interactive)
-  (gnus-set-global-variables)
   (let ((best -1000000)
 	(data gnus-newsgroup-data)
 	article score)
@@ -5853,7 +5841,6 @@ NUMBER articles will be popped off."
   "Limit the summary buffer to the next N articles.
 If not given a prefix, use the process marked articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (prog1
       (let ((articles (gnus-summary-work-articles n)))
 	(setq gnus-newsgroup-processable nil)
@@ -5864,7 +5851,6 @@ If not given a prefix, use the process marked articles instead."
   "Restore the previous limit.
 If given a prefix, remove all limits."
   (interactive "P")
-  (gnus-set-global-variables)
   (when total
     (setq gnus-newsgroup-limits
 	  (list (mapcar (lambda (h) (mail-header-number h))
@@ -5953,7 +5939,6 @@ not marked with MARKS.  MARKS can either be a string of marks or a
 list of marks.
 Returns how many articles were removed."
   (interactive "sMarks: \nP")
-  (gnus-set-global-variables)
   (prog1
       (let ((data gnus-newsgroup-data)
 	    (marks (if (listp marks) marks
@@ -5970,7 +5955,6 @@ Returns how many articles were removed."
 (defun gnus-summary-limit-to-score (&optional score)
   "Limit to articles with score at or above SCORE."
   (interactive "P")
-  (gnus-set-global-variables)
   (setq score (if score
 		  (prefix-numeric-value score)
 		(or gnus-summary-default-score 0)))
@@ -5988,7 +5972,6 @@ Returns how many articles were removed."
 (defun gnus-summary-limit-include-thread (id)
   "Display all the hidden articles that in the current thread."
   (interactive (list (mail-header-id (gnus-summary-article-header))))
-  (gnus-set-global-variables)
   (let ((articles (gnus-articles-in-thread
 		   (gnus-id-to-thread (gnus-root-id id)))))
     (prog1
@@ -5998,7 +5981,6 @@ Returns how many articles were removed."
 (defun gnus-summary-limit-include-dormant ()
   "Display all the hidden articles that are marked as dormant."
   (interactive)
-  (gnus-set-global-variables)
   (unless gnus-newsgroup-dormant
     (error "There are no dormant articles in this group"))
   (prog1
@@ -6008,7 +5990,6 @@ Returns how many articles were removed."
 (defun gnus-summary-limit-exclude-dormant ()
   "Hide all dormant articles."
   (interactive)
-  (gnus-set-global-variables)
   (prog1
       (gnus-summary-limit-to-marks (list gnus-dormant-mark) 'reverse)
     (gnus-summary-position-point)))
@@ -6016,7 +5997,6 @@ Returns how many articles were removed."
 (defun gnus-summary-limit-exclude-childless-dormant ()
   "Hide all dormant articles that have no children."
   (interactive)
-  (gnus-set-global-variables)
   (let ((data (gnus-data-list t))
 	articles d children)
     ;; Find all articles that are either not dormant or have
@@ -6280,7 +6260,6 @@ fetch-old-headers verbiage, and so on."
 If N is negative, go to ancestor -N instead.
 The difference between N and the number of articles fetched is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((skip 1)
 	error header ref)
     (when (not (natnump n))
@@ -6323,7 +6302,6 @@ The difference between N and the number of articles fetched is returned."
   "Fetch all articles mentioned in the References header.
 Return the number of articles fetched."
   (interactive)
-  (gnus-set-global-variables)
   (let ((ref (mail-header-references (gnus-summary-article-header)))
 	(current (gnus-summary-article-number))
 	(n 0))
@@ -6346,7 +6324,6 @@ Return the number of articles fetched."
 If LIMIT (the numerical prefix), fetch that many old headers instead
 of what's specified by the `gnus-refer-thread-limit' variable."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((id (mail-header-id (gnus-summary-article-header)))
 	(limit (if limit (prefix-numeric-value limit)
 		 gnus-refer-thread-limit))
@@ -6418,7 +6395,6 @@ or `gnus-select-method', no matter what backend the article comes from."
 If FORCE, force a digest interpretation.  If not, try
 to guess what the document format is."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((conf gnus-current-window-configuration))
     (save-excursion
       (gnus-summary-select-article))
@@ -6516,12 +6492,12 @@ Obeys the standard process/prefix convention."
   "Do incremental search forward on the current article.
 If REGEXP-P (the prefix) is non-nil, do regexp isearch."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window gnus-article-buffer
-    ;;(goto-char (point-min))
-    (isearch-forward regexp-p)))
+    (save-restriction
+      (widen)
+      (isearch-forward regexp-p))))
 
 (defun gnus-summary-search-article-forward (regexp &optional backward)
   "Search for an article containing REGEXP forward.
@@ -6534,7 +6510,6 @@ If BACKWARD, search backward instead."
 		      (concat ", default " gnus-last-search-regexp)
 		    "")))
 	 current-prefix-arg))
-  (gnus-set-global-variables)
   (if (string-equal regexp "")
       (setq regexp (or gnus-last-search-regexp ""))
     (setq gnus-last-search-regexp regexp))
@@ -6656,7 +6631,6 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 	 current-prefix-arg))
   (when (equal header "Body")
     (setq header ""))
-  (gnus-set-global-variables)
   ;; Hidden thread subtrees must be searched as well.
   (gnus-summary-show-all-threads)
   ;; We don't want to change current point nor window configuration.
@@ -6672,7 +6646,6 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 (defun gnus-summary-beginning-of-article ()
   "Scroll the article back to the beginning."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window gnus-article-buffer
@@ -6684,7 +6657,6 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 (defun gnus-summary-end-of-article ()
   "Scroll to the end of the article."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window gnus-article-buffer
@@ -6719,7 +6691,6 @@ to save in."
 If ARG (the prefix) is non-nil, show the raw article without any
 article massaging functions being run."
   (interactive "P")
-  (gnus-set-global-variables)
   (if (not arg)
       ;; Select the article the normal way.
       (gnus-summary-select-article nil 'force)
@@ -6739,7 +6710,6 @@ article massaging functions being run."
 If ARG is a positive number, turn header display on.
 If ARG is a negative number, turn header display off."
   (interactive "P")
-  (gnus-set-global-variables)
   (setq gnus-show-all-headers
 	(cond ((or (not (numberp arg))
 		   (zerop arg))
@@ -6753,7 +6723,6 @@ If ARG is a negative number, turn header display off."
 If ARG is a positive number, show the entire header.
 If ARG is a negative number, hide the unwanted header lines."
   (interactive "P")
-  (gnus-set-global-variables)
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let* ((buffer-read-only nil)
@@ -6779,14 +6748,12 @@ If ARG is a negative number, hide the unwanted header lines."
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-article-show-all-headers))
 
 (defun gnus-summary-toggle-mime (&optional arg)
   "Toggle MIME processing.
 If ARG is a positive number, turn MIME processing on."
   (interactive "P")
-  (gnus-set-global-variables)
   (setq gnus-show-mime
 	(if (null arg) (not gnus-show-mime)
 	  (> (prefix-numeric-value arg) 0)))
@@ -6797,7 +6764,6 @@ If ARG is a positive number, turn MIME processing on."
 The numerical prefix specifies how many places to rotate each letter
 forward."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (let ((mail-header-separator ""))
     (gnus-eval-in-buffer-window gnus-article-buffer
@@ -6811,7 +6777,6 @@ forward."
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
   (interactive)
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-eval-in-buffer-window gnus-article-buffer
     (widen)
@@ -6837,7 +6802,6 @@ and `request-accept' functions."
   (interactive "P")
   (unless action
     (setq action 'move))
-  (gnus-set-global-variables)
   ;; Disable marking as read.
   (let (gnus-mark-article-hook)
     (save-window-excursion
@@ -7094,7 +7058,6 @@ latter case, they will be copied into the relevant groups."
 	     (let ((ms-alist (mapcar (lambda (m) (cons (cadr m) m)) ms)))
 	       (cdr (assoc (completing-read "Server name: " ms-alist nil t)
 			   ms-alist))))))))
-  (gnus-set-global-variables)
   (unless method
     (error "No method given for respooling"))
   (if (assoc (symbol-name
@@ -7106,7 +7069,6 @@ latter case, they will be copied into the relevant groups."
 (defun gnus-summary-import-article (file)
   "Import a random file into a mail newsgroup."
   (interactive "fImport file: ")
-  (gnus-set-global-variables)
   (let ((group gnus-newsgroup-name)
 	(now (current-time))
 	atts lines)
@@ -7155,7 +7117,6 @@ This will be the case if the article has both been mailed and posted."
 (defun gnus-summary-expire-articles (&optional now)
   "Expire all articles that are marked as expirable in the current group."
   (interactive)
-  (gnus-set-global-variables)
   (when (gnus-check-backend-function
 	 'request-expire-articles gnus-newsgroup-name)
     ;; This backend supports expiry.
@@ -7205,7 +7166,6 @@ This will be the case if the article has both been mailed and posted."
 This means that *all* articles that are marked as expirable will be
 deleted forever, right now."
   (interactive)
-  (gnus-set-global-variables)
   (or gnus-expert-user
       (gnus-yes-or-no-p
        "Are you really, really, really sure you want to delete all these messages? ")
@@ -7222,7 +7182,6 @@ If N is negative, delete backwards.
 If N is nil and articles have been marked with the process mark,
 delete these instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (unless (gnus-check-backend-function 'request-expire-articles
 				       gnus-newsgroup-name)
     (error "The current newsgroup does not support article deletion"))
@@ -7349,7 +7308,6 @@ groups."
 (defun gnus-summary-respool-query (&optional silent)
   "Query where the respool algorithm would put this article."
   (interactive)
-  (gnus-set-global-variables)
   (let (gnus-mark-article-hook)
     (gnus-summary-select-article)
     (save-excursion
@@ -7371,7 +7329,6 @@ groups."
 If UNMARK is positive, remove any kind of mark.
 If UNMARK is negative, tick articles."
   (interactive "P")
-  (gnus-set-global-variables)
   (when unmark
     (setq unmark (prefix-numeric-value unmark)))
   (let ((count
@@ -7390,7 +7347,6 @@ If UNMARK is negative, tick articles."
 If UNMARK is positive, remove any kind of mark.
 If UNMARK is negative, tick articles."
   (interactive "P")
-  (gnus-set-global-variables)
   (when unmark
     (setq unmark (prefix-numeric-value unmark)))
   (let ((count
@@ -7441,7 +7397,6 @@ If N is negative, mark backward instead.  If UNMARK is non-nil, remove
 the process mark instead.  The difference between N and the actual
 number of articles marked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((backward (< n 0))
 	(n (abs n)))
     (while (and
@@ -7463,13 +7418,11 @@ number of articles marked is returned."
 If N is negative, unmark backward instead.  The difference between N and
 the actual number of articles unmarked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-mark-as-processable n t))
 
 (defun gnus-summary-unmark-all-processable ()
   "Remove the process mark from all articles."
   (interactive)
-  (gnus-set-global-variables)
   (save-excursion
     (while gnus-newsgroup-processable
       (gnus-summary-remove-process-mark (car gnus-newsgroup-processable))))
@@ -7480,7 +7433,6 @@ the actual number of articles unmarked is returned."
 If N is negative, mark backward instead.  The difference between N and
 the actual number of articles marked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-mark-forward n gnus-expirable-mark))
 
 (defun gnus-summary-mark-article-as-replied (article)
@@ -7493,7 +7445,6 @@ the actual number of articles marked is returned."
 (defun gnus-summary-set-bookmark (article)
   "Set a bookmark in current article."
   (interactive (list (gnus-summary-article-number)))
-  (gnus-set-global-variables)
   (when (or (not (get-buffer gnus-article-buffer))
 	    (not gnus-current-article)
 	    (not gnus-article-current)
@@ -7523,7 +7474,6 @@ the actual number of articles marked is returned."
 (defun gnus-summary-remove-bookmark (article)
   "Remove the bookmark from the current article."
   (interactive (list (gnus-summary-article-number)))
-  (gnus-set-global-variables)
   ;; Remove old bookmark, if one exists.
   (let ((old (assq article gnus-newsgroup-bookmarks)))
     (if old
@@ -7539,7 +7489,6 @@ the actual number of articles marked is returned."
 If N is negative, mark backward instead.  The difference between N and
 the actual number of articles marked is returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-mark-forward n gnus-dormant-mark))
 
 (defun gnus-summary-set-process-mark (article)
@@ -7570,7 +7519,6 @@ If N is negative, mark backwards instead.  Mark with MARK, ?r by default.
 The difference between N and the actual number of articles marked is
 returned."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((backward (< n 0))
 	(gnus-summary-goto-unread
 	 (and gnus-summary-goto-unread
@@ -7877,7 +7825,6 @@ even ticked and dormant ones."
 (defun gnus-summary-mark-below (score mark)
   "Mark articles with score less than SCORE with MARK."
   (interactive "P\ncMark: ")
-  (gnus-set-global-variables)
   (setq score (if score
 		  (prefix-numeric-value score)
 		(or gnus-summary-default-score 0)))
@@ -7893,25 +7840,21 @@ even ticked and dormant ones."
 (defun gnus-summary-kill-below (&optional score)
   "Mark articles with score below SCORE as read."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-mark-below score gnus-killed-mark))
 
 (defun gnus-summary-clear-above (&optional score)
   "Clear all marks from articles with score above SCORE."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-mark-above score gnus-unread-mark))
 
 (defun gnus-summary-tick-above (&optional score)
   "Tick all articles with score above SCORE."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-mark-above score gnus-ticked-mark))
 
 (defun gnus-summary-mark-above (score mark)
   "Mark articles with score over SCORE with MARK."
   (interactive "P\ncMark: ")
-  (gnus-set-global-variables)
   (setq score (if score
 		  (prefix-numeric-value score)
 		(or gnus-summary-default-score 0)))
@@ -7929,7 +7872,6 @@ even ticked and dormant ones."
 (defun gnus-summary-limit-include-expunged (&optional no-error)
   "Display all the hidden articles that were expunged for low scores."
   (interactive)
-  (gnus-set-global-variables)
   (let ((buffer-read-only nil))
     (let ((scored gnus-newsgroup-scored)
 	  headers h)
@@ -7959,7 +7901,6 @@ Note that this function will only catch up the unread article
 in the current summary buffer limitation.
 The number of articles marked as read is returned."
   (interactive "P")
-  (gnus-set-global-variables)
   (prog1
       (save-excursion
 	(when (or quietly
@@ -7996,7 +7937,6 @@ The number of articles marked as read is returned."
   "Mark all unticked articles before the current one as read.
 If ALL is non-nil, also mark ticked and dormant articles as read."
   (interactive "P")
-  (gnus-set-global-variables)
   (save-excursion
     (gnus-save-hidden-threads
       (let ((beg (point)))
@@ -8008,14 +7948,12 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 (defun gnus-summary-catchup-all (&optional quietly)
   "Mark all articles in this newsgroup as read."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-catchup t quietly))
 
 (defun gnus-summary-catchup-and-exit (&optional all quietly)
   "Mark all articles not marked as unread in this newsgroup as read, then exit.
 If prefix argument ALL is non-nil, all articles are marked as read."
   (interactive "P")
-  (gnus-set-global-variables)
   (when (gnus-summary-catchup all quietly nil 'fast)
     ;; Select next newsgroup or exit.
     (if (eq gnus-auto-select-next 'quietly)
@@ -8025,7 +7963,6 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 (defun gnus-summary-catchup-all-and-exit (&optional quietly)
   "Mark all articles in this newsgroup as read, and then exit."
   (interactive "P")
-  (gnus-set-global-variables)
   (gnus-summary-catchup-and-exit t quietly))
 
 ;; Suggested by "Arne Eofsson" <arne@hodgkin.mbi.ucla.edu>.
@@ -8034,7 +7971,6 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 If given a prefix, mark all articles, unread as well as ticked, as
 read."
   (interactive "P")
-  (gnus-set-global-variables)
   (save-excursion
     (gnus-summary-catchup all))
   (gnus-summary-next-article t nil nil t))
@@ -8081,7 +8017,6 @@ with that article."
 (defun gnus-summary-rethread-current ()
   "Rethread the thread the current article is part of."
   (interactive)
-  (gnus-set-global-variables)
   (let* ((gnus-show-threads t)
 	 (article (gnus-summary-article-number))
 	 (id (mail-header-id (gnus-summary-article-header)))
@@ -8145,7 +8080,6 @@ is non-nil or the Subject: of both articles are the same."
   "Toggle showing conversation threads.
 If ARG is positive number, turn showing conversation threads on."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((current (or (gnus-summary-article-number) gnus-newsgroup-end)))
     (setq gnus-show-threads
 	  (if (null arg) (not gnus-show-threads)
@@ -8158,7 +8092,6 @@ If ARG is positive number, turn showing conversation threads on."
 (defun gnus-summary-show-all-threads ()
   "Show all threads."
   (interactive)
-  (gnus-set-global-variables)
   (save-excursion
     (let ((buffer-read-only nil))
       (subst-char-in-region (point-min) (point-max) ?\^M ?\n t)))
@@ -8168,7 +8101,6 @@ If ARG is positive number, turn showing conversation threads on."
   "Show thread subtrees.
 Returns nil if no thread was there to be shown."
   (interactive)
-  (gnus-set-global-variables)
   (let ((buffer-read-only nil)
 	(orig (point))
 	;; first goto end then to beg, to have point at beg after let
@@ -8184,7 +8116,6 @@ Returns nil if no thread was there to be shown."
 (defun gnus-summary-hide-all-threads ()
   "Hide all thread subtrees."
   (interactive)
-  (gnus-set-global-variables)
   (save-excursion
     (goto-char (point-min))
     (gnus-summary-hide-thread)
@@ -8196,7 +8127,6 @@ Returns nil if no thread was there to be shown."
   "Hide thread subtrees.
 Returns nil if no threads were there to be hidden."
   (interactive)
-  (gnus-set-global-variables)
   (let ((buffer-read-only nil)
 	(start (point))
 	(article (gnus-summary-article-number)))
@@ -8245,7 +8175,6 @@ done.
 
 If SILENT, don't output messages."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((backward (< n 0))
 	(n (abs n)))
     (while (and (> n 0)
@@ -8262,7 +8191,6 @@ If SILENT, don't output messages."
 Returns the difference between N and the number of skips actually
 done."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-next-thread (- n)))
 
 (defun gnus-summary-go-down-thread ()
@@ -8283,7 +8211,6 @@ If N is negative, go up instead.
 Returns the difference between N and how many steps down that were
 taken."
   (interactive "p")
-  (gnus-set-global-variables)
   (let ((up (< n 0))
 	(n (abs n)))
     (while (and (> n 0)
@@ -8301,13 +8228,11 @@ If N is negative, go up instead.
 Returns the difference between N and how many steps down that were
 taken."
   (interactive "p")
-  (gnus-set-global-variables)
   (gnus-summary-down-thread (- n)))
 
 (defun gnus-summary-top-thread ()
   "Go to the top of the thread."
   (interactive)
-  (gnus-set-global-variables)
   (while (gnus-summary-go-up-thread))
   (gnus-summary-article-number))
 
@@ -8316,7 +8241,6 @@ taken."
 If the prefix argument is positive, remove any kinds of marks.
 If the prefix argument is negative, tick articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (when unmark
     (setq unmark (prefix-numeric-value unmark)))
   (let ((articles (gnus-summary-articles-in-thread)))
@@ -8385,7 +8309,6 @@ Argument REVERSE means reverse order."
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."
-  (gnus-set-global-variables)
   (let* ((thread (intern (format "gnus-thread-sort-by-%s" predicate)))
 	 (article (intern (format "gnus-article-sort-by-%s" predicate)))
 	 (gnus-thread-sort-functions
@@ -8418,7 +8341,6 @@ If N is nil and any articles have been marked with the process mark,
 save those articles instead.
 The variable `gnus-default-article-saver' specifies the saver function."
   (interactive "P")
-  (gnus-set-global-variables)
   (let* ((articles (gnus-summary-work-articles n))
 	 (save-buffer (save-excursion
 			(nnheader-set-temp-buffer " *Gnus Save*")))
@@ -8455,7 +8377,6 @@ If N is a negative number, pipe the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 pipe those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-pipe))
     (gnus-summary-save-article arg t))
   (gnus-configure-windows 'pipe))
@@ -8467,7 +8388,6 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-mail))
     (gnus-summary-save-article arg)))
 
@@ -8478,7 +8398,6 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-rmail))
     (gnus-summary-save-article arg)))
 
@@ -8489,7 +8408,6 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-file))
     (gnus-summary-save-article arg)))
 
@@ -8500,7 +8418,6 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-write-to-file))
     (gnus-summary-save-article arg)))
 
@@ -8511,14 +8428,12 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-body-in-file))
     (gnus-summary-save-article arg)))
 
 (defun gnus-summary-pipe-message (program)
   "Pipe the current article through PROGRAM."
   (interactive "sProgram: ")
-  (gnus-set-global-variables)
   (gnus-summary-select-article)
   (let ((mail-header-separator "")
         (art-buf (get-buffer gnus-article-buffer)))
@@ -8721,15 +8636,12 @@ save those articles instead."
 (defun gnus-summary-edit-global-kill (article)
   "Edit the \"global\" kill file."
   (interactive (list (gnus-summary-article-number)))
-  (gnus-set-global-variables)
   (gnus-group-edit-global-kill article))
 
 (defun gnus-summary-edit-local-kill ()
   "Edit a local kill file applied to the current newsgroup."
   (interactive)
-  (gnus-set-global-variables)
   (setq gnus-current-headers (gnus-summary-article-header))
-  (gnus-set-global-variables)
   (gnus-group-edit-local-kill
    (gnus-summary-article-number) gnus-newsgroup-name))
 

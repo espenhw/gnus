@@ -87,7 +87,6 @@
 (defun gnus-draft-edit-message ()
   "Enter a mail/post buffer to edit and send the draft."
   (interactive)
-  (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number)))
     (gnus-draft-setup article gnus-newsgroup-name)
     (push
@@ -102,7 +101,6 @@
 (defun gnus-draft-send-message (&optional n)
   "Send the current draft."
   (interactive "P")
-  (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
 	article)
     (while (setq article (pop articles))
