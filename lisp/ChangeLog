@@ -1,4 +1,19 @@
 2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Suggested by Felix Natter <fnatter@gmx.net>
+
+	* gnus-art.el (gnus-mime-view-part-externally): Rename from
+	gnus-mime-externalize-view.
+	(gnus-mime-view-part-internally): Rename from
+	gnus-mime-internalize-view.
+	(gnus-article-view-part-externally): Rename from
+	gnus-article-externalize-part.
+	(gnus-mime-action-alist): Change correspondingly.
+	(gnus-mime-button-commands): Ditto.
+	(gnus-mime-action-alist): Remove duplication.
+
+	* gnus-sum.el (gnus-summary-mime-map): Change correspondingly.
+
+2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-dissect-buffer): Add loose-mime parameter.
 

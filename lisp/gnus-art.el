@@ -767,24 +767,9 @@ used."
     ("toggle display" . gnus-article-press-button)
     ("toggle display" . gnus-article-view-part-as-charset)
     ("view as type" . gnus-mime-view-part-as-type)
-    ("internalize type" . gnus-mime-internalize-part)
-    ("externalize type" . gnus-mime-externalize-part))
+    ("view internally" . gnus-mime-view-part-internally)
+    ("view externally" . gnus-mime-view-part-externally))
   "An alist of actions that run on the MIME attachment."
-  :group 'gnus-article-mime
-  :type '(repeat (cons (string :tag "name")
-		       (function))))
-
-(defcustom gnus-mime-action-alist
-  '(("save to file" . gnus-mime-save-part)
-    ("display as text" . gnus-mime-inline-part)
-    ("view the part" . gnus-mime-view-part)
-    ("pipe to command" . gnus-mime-pipe-part)
-    ("toggle display" . gnus-article-press-button)
-    ("view as type" . gnus-mime-view-part-as-type)
-    ("internalize type" . gnus-mime-internalize-part)
-    ("externalize type" . gnus-mime-externalize-part))
-  "An alist of actions that run on the MIME attachment."
-  :version "21.1"
   :group 'gnus-article-mime
   :type '(repeat (cons (string :tag "name")
 		       (function))))
@@ -3593,8 +3578,8 @@ General format specifiers can also be used.  See
     (gnus-mime-save-part-and-strip "\C-o" "Save and Strip")
     (gnus-mime-copy-part "c" "View As Text, In Other Buffer")
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
-    (gnus-mime-internalize-part "E" "View Internally")
-    (gnus-mime-externalize-part "e" "View Externally")
+    (gnus-mime-view-part-internally "E" "View Internally")
+    (gnus-mime-view-part-externally "e" "View Externally")
     (gnus-mime-print-part "p" "Print")
     (gnus-mime-pipe-part "|" "Pipe To Command...")
     (gnus-mime-action-on-part "." "Take action on the part")))
@@ -3879,7 +3864,7 @@ specified charset."
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
 	(gnus-article-press-button)))))
 
-(defun gnus-mime-externalize-part (&optional handle)
+(defun gnus-mime-view-part-externally (&optional handle)
   "View the MIME part under point with an external viewer."
   (interactive)
   (gnus-article-check-buffer)
@@ -3895,7 +3880,7 @@ specified charset."
 	  (mm-remove-part handle)
 	(mm-display-part handle)))))
 
-(defun gnus-mime-internalize-part (&optional handle)
+(defun gnus-mime-view-part-internally (&optional handle)
   "View the MIME part under point with an internal viewer.
 If no internal viewer is available, use an external viewer."
   (interactive)
@@ -3955,10 +3940,10 @@ If no internal viewer is available, use an external viewer."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-view-part-as-charset))
 
-(defun gnus-article-externalize-part (n)
+(defun gnus-article-view-part-externally (n)
   "View MIME part N externally, which is the numerical prefix."
   (interactive "p")
-  (gnus-article-part-wrapper n 'gnus-mime-externalize-part))
+  (gnus-article-part-wrapper n 'gnus-mime-view-part-externally))
 
 (defun gnus-article-inline-part (n)
   "Inline MIME part N, which is the numerical prefix."
