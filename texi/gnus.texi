@@ -2703,12 +2703,14 @@ Elements that look like @code{(adapt-file . "file")} will make
 All adaptive score entries will be put into this file.
 
 @item admin-address
+@cindex admin-address
 When unsubscribing from a mailing list you should never send the
 unsubscription notice to the mailing list itself.  Instead, you'd send
 messages to the administrative address.  This parameter allows you to
 put the admin address somewhere convenient.
 
 @item display
+@cindex display
 Elements that look like @code{(display . MODE)} say which articles to
 display on entering the group.  Valid values are:
 
@@ -2732,27 +2734,31 @@ Display only unread articles.
 @item [not expire]
 Display everything except expirable articles.
 
-@item [and (not reply) (not expirable)]
+@item [and (not reply) (not expire)]
 Display everything except expirable and articles you've already
 responded to.
 @end table
 
 The available operators are @code{not}, @code{and} and @code{or}.
 Predicates include @code{tick}, @code{unsend}, @code{undownload},
-@code{unread}, @code{read}, @code{dormant}, @code{}, @code{}, @code{},
-@code{expire}, @code{reply}, @code{killed}, @code{bookmark},
-@code{score}, @code{save}, @code{cache}, @code{forward}, and
-@code{recent}.
+@code{read}, @code{dormant}, @code{expire}, @code{reply},
+@code{killed}, @code{bookmark}, @code{score}, @code{save},
+@code{cache}, @code{forward}, @code{seen} and @code{recent}.
 
 @end table
 
+The @code{display} parameter works by limiting the summary buffer to
+the subset specified.  You can pop the limit by using the @kbd{/ w}
+command (@pxref{Limiting}). 
 
 @item comment
+@cindex comment
 Elements that look like @code{(comment . "This is a comment")}
 are arbitrary comments on the group.  They are currently ignored by
 Gnus, but provide a place for you to store information on particular
 groups.
 
+@item charset
 @item charset
 Elements that look like @code{(charset . iso-8859-1)} will make
 @code{iso-8859-1} the default charset; that is, the charset that will be
@@ -2761,6 +2767,7 @@ used for all articles that do not specify a charset.
 See also @code{gnus-group-charset-alist}.
 
 @item ignored-charsets
+@item ignored-charset
 Elements that look like @code{(ignored-charsets x-known iso-8859-1)}
 will make @code{iso-8859-1} and @code{x-unknown} ignored; that is, the
 default charset will be used for decoding articles.
@@ -2768,6 +2775,7 @@ default charset will be used for decoding articles.
 See also @code{gnus-group-ignored-charsets-alist}.
 
 @item posting-style
+@cindex posting-style
 You can store additional posting style information for this group only
 here (@pxref{Posting Styles}).  The format is that of an entry in the
 @code{gnus-posting-styles} alist, except that there's no regexp matching
@@ -2790,6 +2798,7 @@ If it is set, the value is used as the method for posting message
 instead of @code{gnus-post-method}.
 
 @item banner
+@cindex banner
 An item like @code{(banner . "regex")} causes any part of an article
 that matches the regular expression "regex" to be stripped. Instead of
 "regex", you can also use the symbol @code{signature} which strips the
@@ -4102,12 +4111,13 @@ the @code{a} spec.
 @item L
 Number of lines in the article.
 @item c
-Number of characters in the article. This specifier is not supported in some
-methods (like nnfolder).
+Number of characters in the article. This specifier is not supported
+in some methods (like nnfolder).
 @item I
 Indentation based on thread level (@pxref{Customizing Threading}).
 @item B
-A complex trn-style thread tree, showing response-connecting trace lines.
+A complex trn-style thread tree, showing response-connecting trace
+lines.
 @item T
 Nothing if the article is a root and lots of spaces if it isn't (it
 pushes everything after it off the screen).
@@ -5676,6 +5686,14 @@ the stack.
 @findex gnus-summary-limit-to-score
 Limit the summary buffer to articles that have a score at or above some
 score (@code{gnus-summary-limit-to-score}).
+
+@item / p
+@kindex / p (Summary)
+@findex gnus-summary-limit-to-display-parameter
+Limit the summary buffer to articles that satisfy the @code{display}
+group parameter predicate
+(@code{gnus-summary-limit-to-display-parameter}).  See @pxref{Group
+Parameters} for more on this predicate.
 
 @item / E
 @itemx M S
