@@ -18274,7 +18274,10 @@ Display the score of the current article
 @kindex V t (Summary)
 @findex gnus-score-find-trace
 Display all score rules that have been used on the current article
-(@code{gnus-score-find-trace}).
+(@code{gnus-score-find-trace}).  In the @code{*Score Trace*} buffer, you
+can use @kbd{q} to quit.  @kbd{e} edits the corresponding score file.
+When point is on a string within the match element, @kbd{e} will try to
+bring you to this string in the score file.
 
 @item V w
 @kindex V w (Summary)
@@ -23098,6 +23101,7 @@ renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 @cindex Pterodactyl Gnus
 @cindex Oort Gnus
 @cindex No Gnus
+@cindex Gnus versions
 
 The first ``proper'' release of Gnus 5 was done in November 1995 when it
 was included in the Emacs 19.30 distribution (132 (ding) Gnus releases
