@@ -729,7 +729,8 @@ command whose response triggered the error."
                            (set-buffer buf)
                            (goto-char (point-max))
                            (if (not nntp-server-list-active-group)
-                               (not (re-search-backward "\r?\n" (- (point) 3) t))
+                               (not (re-search-backward "\r?\n"
+							(- (point) 3) t))
                              (not (re-search-backward "^\\.\r?\n"
                                                       (- (point) 4) t)))))
                (nntp-accept-response)))
