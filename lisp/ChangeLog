@@ -1,3 +1,9 @@
+2002-03-04  Paul Jarc  <prj@po.cwru.edu>
+
+	* message.el (message-hierarchical-addresses): New variable.
+	(message-get-reply-headers): Use it.
+	From Ted Zlatanov <teodor.zlatanov@divine.com>
+
 2002-03-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-mode): If buffer-file-name, don't set auto

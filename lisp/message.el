@@ -1047,6 +1047,19 @@ The first matched address (not primary one) is used in the From field."
   :type '(choice (const :tag "Always use primary" nil)
 		 regexp))
 
+(defcustom message-hierarchical-addresses nil
+  "A list of hierarchical mail address definitions.
+
+Inside each entry, the first address is the \"top\" address, and
+subsequent addresses are subaddresses; this is used to indicate that
+mail sent to the first address will automatically be delivered to the
+subaddresses.  So if the first address appears in the recipient list
+for a message, the subaddresses will be removed (if present) before
+the mail is sent.  All addresses in this structure should be
+downcased."
+  :group 'message-headers
+  :type '(repeat (repeat string)))
+
 (defcustom message-mail-user-agent nil
   "Like `mail-user-agent'.
 Except if it is nil, use Gnus native MUA; if it is t, use
@@ -4599,6 +4612,24 @@ responses here are directed to other addresses.")))
       (let ((s recipients))
 	(while s
 	  (setq recipients (delq (assoc (car (pop s)) s) recipients))))
+
+      ;; Remove hierarchical lists that are contained within each other,
+      ;; if message-hierarchical-addresses is defined.
+      (when message-hierarchical-addresses
+	(let ((plain-addrs (mapcar 'car recipients))
+	      subaddrs recip)
+	  (while plain-addrs
+	    (setq subaddrs (assoc (car plain-addrs)
+				  message-hierarchical-addresses)
+		  plain-addrs (cdr plain-addrs))
+	    (when subaddrs
+	      (setq subaddrs (cdr subaddrs))
+	      (while subaddrs
+		(setq recip (assoc (car subaddrs) recipients)
+		      subaddrs (cdr subaddrs))
+		(if recip
+		    (setq recipients (delq recip recipients))))))))
+
       ;; Build the header alist.  Allow the user to be asked whether
       ;; or not to reply to all recipients in a wide reply.
       (setq follow-to (list (cons 'To (cdr (pop recipients)))))
