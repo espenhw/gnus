@@ -1,3 +1,10 @@
+1999-12-12  Florian Weimer  <fw@s.netic.de>
+
+	* rfc2047.el (rfc2047-encodable-p): New parameter header used to
+	indicate that only US-ASCII is permitted.
+	(rfc2047-encode-message-header): Use it.  Now, Gnus should never
+	use unencoded 8-bit characters in message headers.
+
 1999-12-12 03:08:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* ietf-drums.el (ietf-drums-narrow-to-header): Make it work with
