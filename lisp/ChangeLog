@@ -1,3 +1,9 @@
+1999-12-04 11:34:22  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-8bit-char-regexps): Removed.
+	(mm-7bit-chars): New variable.
+	(mm-body-7-or-8): Use it in both cases.
+
 1999-12-04  Simon Josefsson  <jas@pdc.kth.se>
 
 	* mm-decode.el (mm-display-part): Let mm-display-external return

@@ -36,7 +36,7 @@
 
 ;; 8bit treatment gets any char except: 0x32 - 0x7f, CR, LF, TAB, BEL,
 ;; BS, vertical TAB, form feed, and ^_
-(defvar mm-8bit-char-regexp "[^\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f]")
+(defvar mm-7bit-chars "\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f")
 
 (defvar mm-body-charset-encoding-alist nil
   "Alist of MIME charsets to encodings.
@@ -116,9 +116,10 @@ If no encoding was done, nil is returned."
    ((not (featurep 'mule))
     (if (save-excursion
 	  (goto-char (point-min))
-	  (re-search-forward mm-8bit-char-regexp nil t))
-	'8bit
-      '7bit))
+	  (skip-chars-forward mm-7bit-chars)
+	  (eobp))
+	'7bit
+      '8bit))
    (t
     ;; Mule version
     (if (and (null (delq 'ascii
@@ -128,7 +129,7 @@ If no encoding was done, nil is returned."
 	     ;;!!!Emacs 20.3.  Sometimes.
 	     (save-excursion
 	       (goto-char (point-min))
-	       (skip-chars-forward "\0-\177")
+	       (skip-chars-forward mm-7bit-chars)
 	       (eobp)))
 	'7bit
       '8bit))))
