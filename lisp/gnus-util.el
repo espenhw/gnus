@@ -1301,12 +1301,11 @@ CHOICE is a list of the choice char and help message at IDX."
     (save-window-excursion
       (save-excursion
 	(while (not tchar)
-	  (setq tchar 
-		(read-char
-		 (format "%s (%s?): "
-			 prompt
-			 (mapconcat (lambda (s) (char-to-string (car s)))
-				    choice ""))))
+	  (message "%s (%s?): "
+		   prompt
+		   (mapconcat (lambda (s) (char-to-string (car s)))
+			      choice ""))
+	  (setq tchar (read-char))
 	  (when (not (assq tchar choice))
 	    (setq tchar nil)
 	    (setq buf (get-buffer-create "*Gnus Help*"))

@@ -1,6 +1,10 @@
 2002-03-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-util.el (gnus-multiple-choice): Use message. XEmacs only
+	takes one argument in read-char.
+
 	* message.el (message-fix-before-sending): Forward a char.
+	Check mmu-multibyte-p, add control-1.
 
 2002-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
