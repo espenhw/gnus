@@ -192,10 +192,17 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
   :group 'message-news
   :type '(repeat sexp))			; Fixme: improve this
 
+(defcustom message-required-headers '((optional . References))
+  "*Headers to be generated or promted for when sending a message.
+Also see `message-required-news-headers' and
+1message-required-mail-headers'."
+  :group 'message-news
+  :group 'message-headers
+  :type '(repeat sexp))
+
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID
 	 (optional . Organization)
-	 (optional . References)
 	 (optional . User-Agent))
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
@@ -208,8 +215,7 @@ header, remove it from this list."
 
 (defcustom message-required-mail-headers
   '(From Subject Date (optional . In-Reply-To) Message-ID
-	 (optional . User-Agent)
-	 (optional . References))
+	 (optional . User-Agent))
   "*Headers to be generated or prompted for when mailing a message.
 It is recommended that From, Date, To, Subject and Message-ID be
 included.  Organization and User-Agent are optional."
@@ -4488,6 +4494,7 @@ not the additional To and Cc header contents)."
 (defun message-generate-headers (headers)
   "Prepare article HEADERS.
 Headers already prepared in the buffer are not modified."
+  (setq headers (append headers message-required-headers))
   (save-restriction
     (message-narrow-to-headers)
     (let* ((Date (message-make-date))
