@@ -1,6 +1,8 @@
 2003-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail and Post): Updated `gnus-user-agent'.
+	(Mail Source Customization): Added `mail-source-delete-incoming'
+	and `mail-source-delete-old-incoming-confirm'.
 
 2003-03-01  Jesper Harder  <harder@ifa.au.dk>
 
@@ -14,7 +16,7 @@
 
 	* gnus.texi: New values, 'to-list and 'cc-list, for
 	gnus-boring-article-headers.
-	
+
 2003-02-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Extending the spam elisp package): added mention of

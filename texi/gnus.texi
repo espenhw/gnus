@@ -13351,7 +13351,18 @@ File where mail will be stored while processing it.  The default is
 
 @item mail-source-delete-incoming
 @vindex mail-source-delete-incoming
-If non-@code{nil}, delete incoming files after handling them.
+If non-@code{nil}, delete incoming files after handling them.  If
+@code{t}, delete the files immediately, if @code{nil}, never delete any
+files.  If a positive number, delete files older than number of days
+(This will only happen, when reveiving new mail).  You may also set
+@code{mail-source-delete-incoming} to @code{nil} and call
+@code{mail-source-delete-old-incoming} from a hook or interactively.
+
+@item mail-source-delete-old-incoming-confirm
+@vindex mail-source-delete-old-incoming-confirm
+If @code{non-nil}, ask for for confirmation before deleting old incoming
+files.  This variable only applies when
+@code{mail-source-delete-incoming} is a positive number.
 
 @item mail-source-ignore-errors
 @vindex mail-source-ignore-errors
