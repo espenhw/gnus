@@ -1,3 +1,18 @@
+2001-02-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-make-menu-bar): Make
+	gnus-article-post-menu.
+
+	* gnus-xmas.el (gnus-xmas-article-menu-add): Add post menu.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Use t if XEmacs.
+
+	* gnus-group.el (gnus-group-make-menu-bar): Ditto.
+	
+	* message.el (message-mode-menu): Ditto.
+	
+	* gnus-art.el (defvar): eval-when-compile.
+
 2001-02-02 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agentize): Fix doc.

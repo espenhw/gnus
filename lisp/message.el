@@ -1465,20 +1465,20 @@ Point is left at the beginning of the narrowed-to region."
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message
-    ,@(if (featurep 'xemacs) nil
+    ,@(if (featurep 'xemacs) '(t)
 	'(:help "Spellcheck this message"))]
    ["Attach file as MIME" mml-attach-file
-    ,@(if (featurep 'xemacs) nil
+    ,@(if (featurep 'xemacs) '(t)
 	'(:help "Attach a file at point"))]
    "----"
    ["Send Message" message-send-and-exit
-    ,@(if (featurep 'xemacs) nil
+    ,@(if (featurep 'xemacs) '(t)
 	'(:help "Send this message"))]
    ["Abort Message" message-dont-send
-    ,@(if (featurep 'xemacs) nil
+    ,@(if (featurep 'xemacs) '(t)
 	'(:help "File this draft message and exit"))]
    ["Kill Message" message-kill-buffer
-    ,@(if (featurep 'xemacs) nil
+    ,@(if (featurep 'xemacs) '(t)
 	'(:help "Delete this message without sending"))]))
 
 (easy-menu-define
