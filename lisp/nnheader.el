@@ -149,13 +149,13 @@ on your system, you could say something like:
   "Set the extra headers in HEADER to EXTRA."
   `(aset ,header 9 ',extra))
 
-(defun make-mail-header (&optional init)
+(defsubst make-mail-header (&optional init)
   "Create a new mail header structure initialized with INIT."
   (make-vector 10 init))
 
-(defun make-full-mail-header (&optional number subject from date id
-					references chars lines xref
-					extra)
+(defsubst make-full-mail-header (&optional number subject from date id
+					   references chars lines xref
+					   extra)
   "Create a new mail header structure initialized with the parameters given."
   (vector number subject from date id references chars lines xref extra))
 

@@ -7427,6 +7427,20 @@ would, perhaps, be best if the @sc{nntp} server you consult is the one
 updating the spool you are reading from, but that's not really
 necessary.
 
+It can also be a list of select methods, as well as the special symbol
+@code{current}, which means to use the current select method.  If it
+is a list, Gnus will try all the methods in the list until it finds a
+match.
+
+Here's an example setting that will first try the current method, and
+then ask Deja if that fails:
+
+@lisp
+(setq gnus-article-refer-method
+      '(current
+        (nnweb "refer" (nnweb-type dejanews))))
+@end lisp
+
 Most of the mail backends support fetching by @code{Message-ID}, but do
 not do a particularly excellent job at it.  That is, @code{nnmbox} and
 @code{nnbabyl} are able to locate articles from any groups, while

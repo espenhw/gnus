@@ -996,7 +996,11 @@ articles by Message-ID is painfully slow.  By setting this method to an
 nntp method, you might get acceptable results.
 
 The value of this variable must be a valid select method as discussed
-in the documentation of `gnus-select-method'."
+in the documentation of `gnus-select-method'.
+
+It can also be a list of select methods, as well as the special symbol
+`current', which means to use the current select method.  If it is a
+list, Gnus will try all the methods in the list until it finds a match."
   :group 'gnus-server
   :type '(choice (const :tag "default" nil)
 		 (const :tag "DejaNews" (nnweb "refer" (nnweb-type dejanews)))

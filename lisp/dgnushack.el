@@ -88,7 +88,10 @@ Modify to suit your needs."))
 	file elc)
     (condition-case ()
  	(require 'w3-forms)
-      (error (setq files (delete "nnweb.el" (delete "nnlistserv.el" files)))))
+      (error
+       (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
+		       "nnslashdot.el" "nnwarchive.el"))
+	 (setq files (delete file files)))))
     (while (setq file (pop files))
       (setq file (expand-file-name file srcdir))
       (when (or (and (not xemacs)

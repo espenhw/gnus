@@ -3159,6 +3159,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
 (defun gnus-build-sparse-threads ()
   (let ((headers gnus-newsgroup-headers)
+	(mail-parse-charset gnus-newsgroup-charset)
 	(gnus-summary-ignore-duplicates t)
 	header references generation relations
 	subject child end new-child date)
@@ -3211,7 +3212,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   ;; fetch the headers for the articles that aren't there.  This will
   ;; build complete threads - if the roots haven't been expired by the
   ;; server, that is.
-  (let (id heads)
+  (let ((mail-parse-charset gnus-newsgroup-charset)
+	id heads)
     (mapatoms
      (lambda (refs)
        (when (not (car (symbol-value refs)))
@@ -3300,6 +3302,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 (defun gnus-build-all-threads ()
   "Read all the headers."
   (let ((gnus-summary-ignore-duplicates t)
+	(mail-parse-charset gnus-newsgroup-charset)
 	(dependencies gnus-newsgroup-dependencies)
 	header article)
     (save-excursion
@@ -6718,10 +6721,8 @@ of what's specified by the `gnus-refer-thread-limit' variable."
       (gnus-message 5 "Fetching headers for %s...done" gnus-newsgroup-name))
     (gnus-summary-limit-include-thread id)))
 
-(defun gnus-summary-refer-article (message-id &optional arg)
-  "Fetch an article specified by MESSAGE-ID.
-If ARG (the prefix), fetch the article using `gnus-refer-article-method'
-or `gnus-select-method', no matter what backend the article comes from."
+(defun gnus-summary-refer-article (message-id)
+  "Fetch an article specified by MESSAGE-ID."
   (interactive "sMessage-ID: \nP")
   (when (and (stringp message-id)
 	     (not (zerop (length message-id))))
@@ -6736,7 +6737,8 @@ or `gnus-select-method', no matter what backend the article comes from."
 			(gnus-summary-article-sparse-p
 			 (mail-header-number header))
 			(memq (mail-header-number header)
-			      gnus-newsgroup-limit))))
+			      gnus-newsgroup-limit)))
+	   number)
       (cond
        ;; If the article is present in the buffer we just go to it.
        ((and header
@@ -6749,22 +6751,23 @@ or `gnus-select-method', no matter what backend the article comes from."
 	  (when sparse
 	    (gnus-summary-update-article (mail-header-number header)))))
        (t
-	;; We fetch the article
-	(let ((gnus-override-method
-	       (cond ((gnus-news-group-p gnus-newsgroup-name)
-		      gnus-refer-article-method)
-		     (arg
-		      (or gnus-refer-article-method gnus-select-method))
-		     (t nil)))
-	      number)
-	  ;; Start the special refer-article method, if necessary.
-	  (when (and gnus-refer-article-method
-		     (gnus-news-group-p gnus-newsgroup-name))
-	    (gnus-check-server gnus-refer-article-method))
-	  ;; Fetch the header, and display the article.
-	  (if (setq number (gnus-summary-insert-subject message-id))
+	;; We fetch the article.
+	(catch 'found
+	  (dolist (gnus-override-method
+		   (cond ((null gnus-refer-article-method)
+			  (list 'current gnus-select-method))
+			 ((consp (car gnus-refer-article-method))
+			  gnus-refer-article-method)
+			 (t
+			  (list gnus-refer-article-method))))
+	    (when (eq 'current gnus-override-method)
+	      (setq gnus-override-method gnus-current-select-method))
+	    (gnus-check-server gnus-override-method)
+	    ;; Fetch the header, and display the article.
+	    (when (setq number (gnus-summary-insert-subject message-id))
 	      (gnus-summary-select-article nil nil nil number)
-	    (gnus-message 3 "Couldn't fetch article %s" message-id))))))))
+	      (throw 'found t)))
+	  (gnus-message 3 "Couldn't fetch article %s" message-id)))))))
 
 (defun gnus-summary-edit-parameters ()
   "Edit the group parameters of the current group."
