@@ -1,3 +1,13 @@
+1999-12-19  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-cite.el (gnus-article-toggle-cited-text): Restore beg and
+	end (referenced by instructions in
+	`gnus-cited-opened-text-button-line-format-alist').
+	
+1999-12-18  Simon Josefsson  <jas@pdc.kth.se>
+
+	* imap.el (imap-starttls-open): Typo.
+
 1999-12-18 16:43:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-charset-after): Non-MULE case.
