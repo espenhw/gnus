@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.34 Manual
+@settitle Pterodactyl Gnus 0.35 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.34 Manual
+@title Pterodactyl Gnus 0.35 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.34.
+This manual corresponds to Pterodactyl Gnus 0.35.
 
 @end ifinfo
 
@@ -822,6 +822,10 @@ If you don't have access to both the old and new server, all your marks
 and read ranges have become worthless.  You can use the @kbd{M-x
 gnus-group-clear-data-on-native-groups} command to clear out all data
 that you have on your native groups.  Use with caution.
+
+After changing servers, you @strong{must} move the cache hierarchy away,
+since the cached articles will have wrong article numbers, which will
+affect which articles Gnus thinks are read.
 
 
 @node Startup Files
@@ -6477,7 +6481,13 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @item W d
 @kindex W d (Summary)
 @findex gnus-article-treat-dumbquotes
-Treat M******** sm*rtq**t*s (@code{gnus-article-treat-dumbquotes}).
+@vindex gnus-article-dumbquotes-map
+@cindex Smartquotes
+@cindex M******** sm*rtq**t*s
+@cindex Latin 1
+Treat M******** sm*rtq**t*s according to
+@code{gnus-article-dumbquotes-map}
+(@code{gnus-article-treat-dumbquotes}).
 
 @item W w
 @kindex W w (Summary)
@@ -14572,6 +14582,11 @@ won't change the window configuration.  If you always want to force the
 ``right'' window configuration, you can set
 @code{gnus-always-force-window-configuration} to non-@code{nil}.
 
+If you're using tree displays (@pxref{Tree Display}), and the tree
+window is displayed vertically next to another window, you may also want
+to fiddle with @code{gnus-tree-minimize-window} to avoid having the
+windows resized.
+
 
 @node Faces and Fonts
 @section Faces and Fonts
@@ -17576,7 +17591,7 @@ mail-copies-to: never.
  new group parameter -- `post-to-server' that says to post
 using the current server.  Also a variable to do the same.
 @item
- the slave dribble files should autosave to the slave file names.
+ the slave dribble files should auto-save to the slave file names.
 @item
  a group parameter that says what articles to display on group entry, based
 on article marks.
@@ -18050,7 +18065,7 @@ home-brewed stuff for better reliability.
  add a way to select which NoCeM type to apply -- spam, troll, etc.
 
 @item
- nndraft-request-group should tally autosave files.
+ nndraft-request-group should tally auto-save files.
 
 @item
  implement nntp-retry-on-break and nntp-command-timeout.
@@ -18805,7 +18820,7 @@ Takes two parameters, @var{function} and @var{group}.  If the backend
 
 @lisp
 (gnus-check-backend-function "request-scan" "nnml:misc")
-=> t
+@result{} t
 @end lisp
 
 @item gnus-read-method
@@ -19146,6 +19161,48 @@ and @var{article} may be @code{nil}.
 
 There should be no result data from this function.
 
+
+@item (nnchoke-request-set-mark GROUP ACTION &optional SERVER)
+
+Set/remove/add marks on articles. Normally Gnus handles the article
+marks (such as read, ticked, expired etc) internally, and store them in
+@code{~/.newsrc.eld}. Some backends (such as IMAP) however carry all
+information about the articles on the server, so Gnus need to propagate
+the mark information to the server.
+
+ACTION is a list of mark setting requests, having this format:
+
+@example
+(RANGE ACTION MARK)
+@end example
+
+Range is a range of articles you wish to update marks on. Action is
+@code{set}, @code{add} or @code{del}, respectively used for removing all
+existing marks and setting them as specified, adding (preserving the
+marks not mentioned) mark and removing (preserving the marks not
+mentioned) marks. Mark is a list of marks; where each mark is a
+symbol. Currently used marks are @code{read}, @code{tick}, @code{reply},
+@code{expire}, @code{killed}, @code{dormant}, @code{save},
+@code{download} and @code{unsend}, but your backend should, if possible,
+not limit itself to theese.
+
+Given contradictory actions, the last action in the list should be the
+effective one. That is, if your action contains a request to add the
+@code{tick} mark on article 1 and, later in the list, a request to
+remove the mark on the same article, the mark should in fact be removed.
+
+An example action list:
+
+@example
+(((5 12 30) 'del '(tick))
+ ((10 . 90) 'add '(read expire))
+ ((92 94) 'del '(read)))
+@end example
+
+The function should return a range of articles it wasn't able to set the
+mark on (currently not used for anything).
+
+There should be no result data from this function.
 
 @item (nnchoke-request-update-mark GROUP ARTICLE MARK)
 
@@ -19772,7 +19829,7 @@ Here are two example group infos; one is a very simple group while the
 second is a more complex one:
 
 @example
-("no.group" 5 (1 . 54324))
+("no.group" 5 ((1 . 54324)))
 
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
                 ((tick (15 . 19)) (replied 3 6 (19 . 3)))

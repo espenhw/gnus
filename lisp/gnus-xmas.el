@@ -386,6 +386,7 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
+  (setq gnus-mouse-3 [button3])
   (setq gnus-widget-button-keymap widget-button-keymap)
 
   (unless (memq 'underline (face-list))
@@ -463,7 +464,8 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-key-press-event-p 'key-press-event-p)
   (fset 'gnus-region-active-p 'region-active-p)
   (fset 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
-
+  (fset 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
+  
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
   (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
@@ -791,6 +793,18 @@ XEmacs compatibility workaround."
 
 (defun gnus-xmas-annotation-in-region-p (b e)
   (map-extents (lambda (e u) t) nil b e nil nil 'mm t))
+
+(defun gnus-xmas-mime-button-menu (event)
+  "Construct a context-sensitive menu of MIME commands."
+  (interactive "e")
+  (let ((response (get-popup-menu-response
+		   `("MIME Part"
+		     ,@(mapcar (lambda (c) `[,(caddr c) ,(car c) t])
+			       gnus-mime-button-commands)))))
+    (set-buffer (event-buffer event))
+    (goto-char (event-point event))
+    (funcall (event-function response) (event-object response))))
+
 
 (provide 'gnus-xmas)
 

@@ -117,7 +117,7 @@
       (viewer . "maplay %s")
       (type   . "audio/x-mpeg"))
      (".*"
-      (viewer . mm-view-sound-file)
+      (viewer . mailcap-save-binary-file)
       (test   . (or (featurep 'nas-sound)
 		      (featurep 'native-sound)))
       (type   . "audio/*"))
@@ -322,7 +322,8 @@ If FORCE, re-parse even if already parsed."
 	  fname)
       (while fnames
 	(setq fname (car fnames))
-	(if (and (file-exists-p fname) (file-readable-p fname))
+       (if (and (file-exists-p fname) (file-readable-p fname)
+                (file-regular-p fname))
 	    (mailcap-parse-mailcap (car fnames)))
 	(setq fnames (cdr fnames))))
     (setq mailcap-parsed-p t)))
@@ -632,7 +633,7 @@ this type is returned."
 	    (if (mailcap-viewer-passes-test (car viewers) info)
 		(setq passed (cons (car viewers) passed)))
 	    (setq viewers (cdr viewers)))
-	  (setq passed (sort passed 'mailcap-viewer-lessp))
+	  (setq passed (sort (nreverse passed) 'mailcap-viewer-lessp))
 	  (setq viewer (car passed))))
       (when (and (stringp (cdr (assq 'viewer viewer)))
 		 passed)

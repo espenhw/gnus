@@ -229,7 +229,7 @@ Note: LIST has to be sorted over `<'."
 Note: LIST has to be sorted over `<'."
   ;; !!! This function shouldn't look like this, but I've got a headache.
   (gnus-compress-sequence
-   (gnus-sorted-complement
+   (gnus-set-difference
     (gnus-uncompress-range ranges) list)))
 
 (defun gnus-member-of-range (number ranges)

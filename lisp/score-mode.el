@@ -39,7 +39,8 @@
 
 (defvar gnus-score-mode-map nil)
 (unless gnus-score-mode-map
-  (setq gnus-score-mode-map (copy-keymap emacs-lisp-mode-map))
+  (setq gnus-score-mode-map (make-sparse-keymap))
+  (set-keymap-parent gnus-score-mode-map emacs-lisp-mode-map)
   (define-key gnus-score-mode-map "\C-c\C-c" 'gnus-score-edit-exit)
   (define-key gnus-score-mode-map "\C-c\C-d" 'gnus-score-edit-insert-date)
   (define-key gnus-score-mode-map "\C-c\C-p" 'gnus-score-pretty-print))

@@ -33,6 +33,7 @@
   "Non-nil if running under XEmacs.")
 
 (defvar gnus-mouse-2 [mouse-2])
+(defvar gnus-mouse-3 [mouse-3])
 (defvar gnus-down-mouse-2 [down-mouse-2])
 (defvar gnus-widget-button-keymap nil)
 (defvar gnus-mode-line-modified

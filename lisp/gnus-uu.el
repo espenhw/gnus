@@ -1796,7 +1796,9 @@ is t."
 
   (gnus-summary-post-news)
 
-  (use-local-map (copy-keymap (current-local-map)))
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map (current-local-map))
+    (use-local-map map))
   (local-set-key "\C-c\C-c" 'gnus-summary-edit-article-done)
   (local-set-key "\C-c\C-c" 'gnus-uu-post-news-inews)
   (local-set-key "\C-c\C-s" 'gnus-uu-post-news-inews)

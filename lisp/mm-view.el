@@ -26,6 +26,7 @@
 (require 'mail-parse)
 (require 'mailcap)
 (require 'mm-bodies)
+(require 'mm-decode)
 
 ;;;
 ;;; Functions for displaying various formats inline

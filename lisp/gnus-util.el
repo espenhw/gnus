@@ -908,6 +908,12 @@ ARG is passed to the first function."
 	  re
 	  (unless (string-match "\\$$" re) ".*$")))
 
+(defun gnus-set-window-start (&optional point)
+  "Set the window start to POINT, or (point) if nil."
+  (let ((win (get-buffer-window (current-buffer) t)))
+    (when win
+      (set-window-start win (or point (point))))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -1,3 +1,199 @@
+Tue Oct 20 00:24:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.35 is released.
+
+1998-10-20 00:00:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* uudecode.el (uudecode-decode-region-external): Insert
+	literally. 
+
+	* gnus-xmas.el (gnus-xmas-mime-button-menu): Moved here.
+
+	* mm-bodies.el (mm-decode-body): Optional encoding.
+
+1998-10-19 23:57:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-ems.el (gnus-mouse-3): New variable.
+
+	* binhex.el (binhex-decode-region-external): Don't use -internally.
+
+1998-10-16 14:54:02  Simon Josefsson  <jas@pdc.kth.se>
+
+	* mailcap.el (mailcap-parse-mailcaps): Only open regular
+	files.
+
+1998-09-26 22:28:01  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-group.el (gnus-add-marked-articles): Request backend update
+	of flags.
+
+1998-09-26 19:39:31  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-update-read-articles): 
+	(gnus-update-marks): Request backend update of mark.
+
+1998-09-26 19:33:58  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi (Optional Backend Functions): New item,
+	nnchoke-request-set-mark.
+
+1998-09-26 16:27:27  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-range.el (gnus-remove-from-range): Don't add stuff in
+          list to range.
+
+1998-10-19 23:45:13  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Don't expire.
+
+1998-10-14  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-sum.el: Move gnus-save-hidden-threads above where it is
+	first used.
+
+1998-10-10  SL Baur  <steve@altair.xemacs.org>
+
+	* mm-view.el: Require mm-decode for macros.
+
+	* mm-decode.el (mm-handle-type): Move macro declarations above the
+	place where they are used.
+
+Sun Oct 18 13:59:07 1998  Kurt Swanson  <ksw@dna.lth.se>
+
+        * gnus-msg.el (gnus-summary-mail-forward): Erase old forward
+        buffer.
+
+1998-10-19 23:38:11  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnagent.el (nnagent-open-server): Error message.
+
+1998-10-19 23:35:08  Joerg Lenneis  <lenneis@statrix2.wu-wien.ac.at>
+
+	* nnheader.el (nnheader-article-p): Recognize lower-case headers. 
+
+1998-10-19  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* score-mode.el (gnus-score-mode-map): Ditto.
+
+	* message.el (message-mode-map): Ditto.
+
+	* gnus-uu.el (gnus-uu-post-news): Ditto.
+
+	* gnus-kill.el (gnus-kill-file-mode-map): Ditto.
+
+	* gnus-eform.el (gnus-edit-form-mode-map): Ditto.
+
+	* gnus-art.el (gnus-article-edit-mode-map): Use
+	`set-keymap-parent' rather than `copy-keymap'.
+
+1998-10-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (gnus-mime-button-commands): New variable.
+	(gnus-mime-button-map): Initialize it from
+ 	`gnus-mime-button-commands'.
+	(gnus-mime-button-menu): New function.
+	(gnus-insert-mime-button): Use `gnus-mime-button-map'.
+
+1998-10-11  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-insert-to): Make `nobody' and `poster'
+ 	synonymous to `never' and `always' in Mail-Copies-To.
+	(message-reply): Ditto.
+	(message-followup): Ditto.
+
+1998-10-19 23:17:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-data): Save sound.
+
+1998-09-24  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-ignored-supersedes-headers): Include
+ 	`NNTP-Posting-Date'.
+
+1998-10-19 01:25:27  Jonas Steverud  <d4jonas@dtek.chalmers.se>
+
+	* gnus-art.el (gnus-article-dumbquotes-table): New variable.
+
+1998-10-19 00:50:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Use
+	uudecode. 
+
+1998-10-18 18:20:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-display-external): Don't switch on save.
+
+1998-10-18 18:14:06  Andy Piper  <andyp@parallax.co.uk>
+
+	* nnmail.el (nnmail-movemail-args): New variable.
+
+1998-10-18 00:17:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-translate-strings): 
+
+1998-10-17 22:51:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-view-part): Use it.
+	(gnus-mm-display-part): New function.
+	(article-de-quoted-unreadable): Yse mm-default-coding-system.
+
+	* mm-decode.el (mm-handle-displayed-p): New function.
+
+	* gnus-art.el (gnus-mime-copy-part): Create better names.
+	(gnus-mime-button-line-format): Include dots spec.
+
+1998-10-15  Matt Pharr  <mmp@graphics.stanford.edu>
+
+      * gnus-msg.el (gnus-summary-mail-forward): Erase contents of old
+      forward buffer first.
+
+1998-10-17 21:16:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-set-window-start): New function.
+
+	* message.el (message-send): Don't check changed.
+
+1998-10-12 15:26:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-setup-buffer): Set params.
+
+	* mm-decode.el (mm-user-display-methods): Inline
+	"message/delivery-status". 
+
+1998-10-11 07:06:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-auto-save-directory): Rename.
+	(message-mode): Dof fix.
+
+	* gnus-art.el (gnus-summary-save-in-pipe): Default to "cat".
+	(gnus-summary-save-in-pipe): No, check gnus-last-shell-command. 
+
+	* nndoc.el (nndoc-mime-parts-type-p): Be a bit more forgiving.
+
+	* message.el (message-make-date): Avoid locale.
+
+	* gnus-art.el (gnus-article-edit-done): Allow update before doing
+	cache. 
+
+	* mm-decode.el (mm-display-inline): Goto point-min.
+
+	* gnus-art.el (gnus-article-prepare-display): Not read-only.
+
+	* mm-decode.el (mm-display-external): Reverse before sorting.
+
+	* gnus-draft.el (gnus-draft-send): Allow mail.
+
+1998-10-10  SL Baur  <steve@altair.xemacs.org>
+
+	* message.el (message-check): Move message-check macro above where 
+	it is first used.
+
+	* gnus-art.el (article-hide-pgp): Hide the PGP 5/GNUPG Hash: line.
+
+1998-10-11 06:45:37  Lloyd Zusman  <ljz@asfast.com>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Fix.
+
 Sun Oct 11 02:28:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.34 is released.
@@ -124,6 +320,10 @@ Sat Sep 26 03:04:18 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
 1998-09-24 22:27:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-decode.el (mm-inlinable-part-p): New function.
+
+1998-09-25 22:28:01  Simon Josefsson  <jas@pdc.kth.se>
+
+       * mm-util.el (mm-disable-multibyte): New function.
 
 Thu Sep 24 20:28:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

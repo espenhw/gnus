@@ -73,7 +73,8 @@
 	     (ftp-error (setq err (format "%s" arg)))))
       (nnagent-close-server)
       (nnheader-report
-       'nnagent (or err "No such file or directory: %s" dir)))
+       'nnagent (or err
+		    (format "No such file or directory: %s" dir))))
      ((not (file-directory-p (file-truename dir)))
       (nnagent-close-server)
       (nnheader-report 'nnagent "Not a directory: %s" dir))

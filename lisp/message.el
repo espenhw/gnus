@@ -212,7 +212,7 @@ included.  Organization, Lines and User-Agent are optional."
   :group 'message-headers
   :type 'regexp)
 
-(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|^X-Trace:\\|^X-Complaints-To:\\|Return-Path:\\|^Supersedes:\\|^X-Trace:\\|^X-Complaints-To:"
+(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|^X-Trace:\\|^X-Complaints-To:\\|Return-Path:\\|^Supersedes:\\|^NNTP-Posting-Date:\\|^X-Trace:\\|^X-Complaints-To:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion."
@@ -646,10 +646,10 @@ the prefix.")
 The default is `abbrev', which uses mailabbrev.  nil switches
 mail aliases off.")
 
-(defcustom message-autosave-directory
+(defcustom message-auto-save-directory
   (nnheader-concat message-directory "drafts/")
-  "*Directory where Message autosaves buffers if Gnus isn't running.
-If nil, Message won't autosave."
+  "*Directory where Message auto-saves buffers if Gnus isn't running.
+If nil, Message won't auto-save."
   :group 'message-buffers
   :type 'directory)
 
@@ -1227,7 +1227,8 @@ Point is left at the beginning of the narrowed-to region."
 (defvar message-mode-map nil)
 
 (unless message-mode-map
-  (setq message-mode-map (copy-keymap text-mode-map))
+  (setq message-mode-map (make-keymap))
+  (set-keymap-parent message-mode-map text-mode-map)
   (define-key message-mode-map "\C-c?" 'describe-mode)
 
   (define-key message-mode-map "\C-c\C-f\C-t" 'message-goto-to)
@@ -1327,6 +1328,7 @@ C-c C-w  message-insert-signature (insert `message-signature-file' file).
 C-c C-y  message-yank-original (insert current message, if any).
 C-c C-q  message-fill-yanked-message (fill what was yanked).
 C-c C-e  message-elide-region (elide the text between point and mark).
+C-c C-v  message-delete-not-region (remove the text outside the region).
 C-c C-z  message-kill-to-signature (kill the text up to the signature).
 C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (interactive)
@@ -1503,7 +1505,8 @@ With the prefix argument FORCE, insert the header anyway."
   (let ((co (message-fetch-reply-field "mail-copies-to")))
     (when (and (null force)
 	       co
-	       (equal (downcase co) "never"))
+	       (or (equal (downcase co) "never")
+		   (equal (downcase co) "nobody")))
       (error "The user has requested not to have copies sent via mail")))
   (when (and (message-position-on-field "To")
 	     (mail-fetch-field "to")
@@ -1945,46 +1948,42 @@ or error messages, and inform user.
 Otherwise any failure is reported in a message back to
 the user from the mailer."
   (interactive "P")
-  ;; Disabled test.
-  (when (or (buffer-modified-p)
-	    (message-check-element 'unchanged)
-	    (y-or-n-p "No changes in the buffer; really send? "))
-    ;; Make it possible to undo the coming changes.
-    (undo-boundary)
-    (let ((inhibit-read-only t))
-      (put-text-property (point-min) (point-max) 'read-only nil))
-    (message-fix-before-sending)
-    (run-hooks 'message-send-hook)
-    (message "Sending...")
-    (let ((alist message-send-method-alist)
-	  (success t)
-	  elem sent)
-      (while (and success
-		  (setq elem (pop alist)))
-	(when (and (or (not (funcall (cadr elem)))
-		       (and (or (not (memq (car elem)
-					   message-sent-message-via))
-				(y-or-n-p
-				 (format
-				  "Already sent message via %s; resend? "
-				  (car elem))))
-			    (setq success (funcall (caddr elem) arg)))))
-	  (setq sent t)))
-      (when (and success sent)
-	(message-do-fcc)
-	;;(when (fboundp 'mail-hist-put-headers-into-history)
-	;; (mail-hist-put-headers-into-history))
-	(run-hooks 'message-sent-hook)
-	(message "Sending...done")
-	;; Mark the buffer as unmodified and delete autosave.
-	(set-buffer-modified-p nil)
-	(delete-auto-save-file-if-necessary t)
-	(message-disassociate-draft)
-	;; Delete other mail buffers and stuff.
-	(message-do-send-housekeeping)
-	(message-do-actions message-send-actions)
-	;; Return success.
-	t))))
+  ;; Make it possible to undo the coming changes.
+  (undo-boundary)
+  (let ((inhibit-read-only t))
+    (put-text-property (point-min) (point-max) 'read-only nil))
+  (message-fix-before-sending)
+  (run-hooks 'message-send-hook)
+  (message "Sending...")
+  (let ((alist message-send-method-alist)
+	(success t)
+	elem sent)
+    (while (and success
+		(setq elem (pop alist)))
+      (when (and (or (not (funcall (cadr elem)))
+		     (and (or (not (memq (car elem)
+					 message-sent-message-via))
+			      (y-or-n-p
+			       (format
+				"Already sent message via %s; resend? "
+				(car elem))))
+			  (setq success (funcall (caddr elem) arg)))))
+	(setq sent t)))
+    (when (and success sent)
+      (message-do-fcc)
+      ;;(when (fboundp 'mail-hist-put-headers-into-history)
+      ;; (mail-hist-put-headers-into-history))
+      (run-hooks 'message-sent-hook)
+      (message "Sending...done")
+      ;; Mark the buffer as unmodified and delete auto-save.
+      (set-buffer-modified-p nil)
+      (delete-auto-save-file-if-necessary t)
+      (message-disassociate-draft)
+      ;; Delete other mail buffers and stuff.
+      (message-do-send-housekeeping)
+      (message-do-actions message-send-actions)
+      ;; Return success.
+      t)))
 
 (defun message-send-via-mail (arg)
   "Send the current message via mail."
@@ -1993,6 +1992,15 @@ the user from the mailer."
 (defun message-send-via-news (arg)
   "Send the current message via news."
   (funcall message-send-news-function arg))
+
+(defmacro message-check (type &rest forms)
+  "Eval FORMS if TYPE is to be checked."
+  `(or (message-check-element ,type)
+       (save-excursion
+	 ,@forms)))
+
+(put 'message-check 'lisp-indent-function 1)
+(put 'message-check 'edebug-form-spec '(form body))
 
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
@@ -2265,15 +2273,6 @@ to find out how to use this."
 ;;;
 ;;; Header generation & syntax checking.
 ;;;
-
-(defmacro message-check (type &rest forms)
-  "Eval FORMS if TYPE is to be checked."
-  `(or (message-check-element ,type)
-       (save-excursion
-	 ,@forms)))
-
-(put 'message-check 'lisp-indent-function 1)
-(put 'message-check 'edebug-form-spec '(form body))
 
 (defun message-check-element (type)
   "Returns non-nil if this type is not to be checked."
@@ -2638,12 +2637,15 @@ If NOW, use that time instead."
 	 (sign "+"))
     (when (< zone 0)
       (setq sign ""))
-    ;; We do all of this because XEmacs doesn't have the %z spec.
-    (concat (format-time-string
-	     "%d %b %Y %H:%M:%S " (or now (current-time)))
-	    (format "%s%02d%02d"
-		    sign (/ zone 3600)
-		    (% zone 3600)))))
+    (concat
+     (format-time-string "%d" now)
+     ;; The month name of the %b spec is locale-specific.  Pfff.
+     (format " %s "
+	     (capitalize (car (rassoc (nth 4 (decode-time now))
+				      parse-time-months))))
+     (format-time-string "%Y %H:%M:%S " now)
+     ;; We do all of this because XEmacs doesn't have the %z spec.
+     (format "%s%02d%02d" sign (/ zone 3600) (% zone 3600)))))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."
@@ -3254,12 +3256,12 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-set-auto-save-file-name ()
   "Associate the message buffer with a file in the drafts directory."
-  (when message-autosave-directory
+  (when message-auto-save-directory
     (if (gnus-alive-p)
 	(setq message-draft-article
 	      (nndraft-request-associate-buffer "drafts"))
       (setq buffer-file-name (expand-file-name "*message*"
-					       message-autosave-directory))
+					       message-auto-save-directory))
       (setq buffer-auto-save-file-name (make-auto-save-file-name)))
     (clear-visited-file-modtime)))
 
@@ -3341,10 +3343,12 @@ OTHER-HEADERS is an alist of header/value pairs."
 
       ;; Handle special values of Mail-Copies-To.
       (when mct
-	(cond ((equal (downcase mct) "never")
+	(cond ((or (equal (downcase mct) "never")
+		   (equal (downcase mct) "nobody"))
 	       (setq never-mct t)
 	       (setq mct nil))
-	      ((equal (downcase mct) "always")
+	      ((or (equal (downcase mct) "always")
+		   (equal (downcase mct) "poster"))
 	       (setq mct (or reply-to from)))))
 
       (unless follow-to
@@ -3511,8 +3515,10 @@ responses here are directed to other newsgroups."))
 	     `((References . ,(concat (or references "") (and references " ")
 				      (or message-id "")))))
        ,@(when (and mct
-		    (not (equal (downcase mct) "never")))
-	   (list (cons 'Cc (if (equal (downcase mct) "always")
+		    (not (or (equal (downcase mct) "never")
+			     (equal (downcase mct) "nobody"))))
+	   (list (cons 'Cc (if (or (equal (downcase mct) "always")
+				   (equal (downcase mct) "poster"))
 			       (or reply-to from "")
 			     mct)))))
 

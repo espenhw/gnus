@@ -34,7 +34,7 @@
 		     set-buffer-multibyte
 		     find-non-ascii-charset-region char-charset
 		     mule-write-region-no-coding-system
-		     find-charset-region base64-decode-string
+		     find-charset-region 
 		     find-coding-systems-region get-charset-property
 		     coding-system-get w3-region
 		     rmail-summary-exists rmail-select-summary
@@ -69,7 +69,7 @@
 		 mm-copy-tree url-view-url w3-prepare-buffer
 		 mule-write-region-no-coding-system char-int
 		 annotationp delete-annotation make-image-specifier
-		 make-annotation base64-decode-string base64-encode-region
+		 make-annotation 
 		 w3-do-setup w3-region
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
 		 )))

@@ -26,7 +26,8 @@
 
 (eval-and-compile
   (or (fboundp  'base64-decode-region)
-      (autoload 'base64-decode-region "base64" nil t)))
+      (require 'base64)))
+
 (require 'mm-util)
 (require 'rfc2047)
 (require 'qp)
@@ -113,12 +114,12 @@ If no encoding was done, nil is returned."
     )
    ((eq encoding 'x-uuencode)
     (condition-case ()
-	(uu-decode-region (point-min) (point-max))
+	(uudecode-decode-region (point-min) (point-max))
       (error nil)))
    (t
     (error "Can't decode encoding %s" encoding))))
 
-(defun mm-decode-body (charset encoding)
+(defun mm-decode-body (charset &optional encoding)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
   (setq charset (or charset rfc2047-default-charset))

@@ -135,7 +135,8 @@
 	(message-remove-header gnus-agent-meta-information-header)))
     ;; Then we send it.  If we have no meta-information, we just send
     ;; it and let Message figure out how.
-    (when (and (or (gnus-server-opened method)
+    (when (and (or (null method)
+		   (gnus-server-opened method)
 		   (gnus-open-server method))
 	       (if type
 		   (let ((message-this-is-news (eq type 'news))

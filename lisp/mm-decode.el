@@ -28,6 +28,23 @@
 (require 'mailcap)
 (require 'mm-bodies)
 
+;;; Convenience macros.
+
+(defmacro mm-handle-buffer (handle)
+  `(nth 0 ,handle))
+(defmacro mm-handle-type (handle)
+  `(nth 1 ,handle))
+(defmacro mm-handle-encoding (handle)
+  `(nth 2 ,handle))
+(defmacro mm-handle-undisplayer (handle)
+  `(nth 3 ,handle))
+(defmacro mm-handle-set-undisplayer (handle function)
+  `(setcar (nthcdr 3 ,handle) ,function))
+(defmacro mm-handle-disposition (handle)
+  `(nth 4 ,handle))
+(defmacro mm-handle-description (handle)
+  `(nth 5 ,handle))
+
 (defvar mm-inline-media-tests
   '(("image/jpeg" mm-inline-image (featurep 'jpeg))
     ("image/png" mm-inline-image (featurep 'png))
@@ -51,10 +68,12 @@
 
 (defvar mm-user-display-methods
   '(("image/.*" . inline)
-    ("text/.*" . inline)))
+    ("text/.*" . inline)
+    ("message/delivery-status" . inline)))
 
 (defvar mm-user-automatic-display
-  '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"))
+  '("text/plain" "text/enriched" "text/richtext" "text/html" "image/gif"
+    "message/delivery-status"))
 
 (defvar mm-alternative-precedence
   '("text/plain" "text/enriched" "text/richtext" "text/html")
@@ -68,23 +87,6 @@
 (defvar mm-dissection-list nil)
 (defvar mm-last-shell-command "")
 (defvar mm-content-id-alist nil)
-
-;;; Convenience macros.
-
-(defmacro mm-handle-buffer (handle)
-  `(nth 0 ,handle))
-(defmacro mm-handle-type (handle)
-  `(nth 1 ,handle))
-(defmacro mm-handle-encoding (handle)
-  `(nth 2 ,handle))
-(defmacro mm-handle-undisplayer (handle)
-  `(nth 3 ,handle))
-(defmacro mm-handle-set-undisplayer (handle function)
-  `(setcar (nthcdr 3 ,handle) ,function))
-(defmacro mm-handle-disposition (handle)
-  `(nth 4 ,handle))
-(defmacro mm-handle-description (handle)
-  `(nth 5 ,handle))
 
 ;;; The functions.
 
@@ -186,7 +188,7 @@
   "Display the MIME part represented by HANDLE."
   (save-excursion
     (mailcap-parse-mailcaps)
-    (if (mm-handle-undisplayer handle)
+    (if (mm-handle-displayed-p handle)
 	(mm-remove-part handle)
       (let* ((type (car (mm-handle-type handle)))
 	     (method (mailcap-mime-info type))
@@ -209,7 +211,10 @@
      (mm-handle-encoding handle) (car (mm-handle-type handle)))
     (if (functionp method)
 	(let ((cur (current-buffer)))
-	  (switch-to-buffer (generate-new-buffer "*mm*"))
+	  (if (eq method 'mailcap-save-binary-file)
+	      (set-buffer (generate-new-buffer "*mm*"))
+	    (select-window (get-buffer-window cur t))
+	    (switch-to-buffer (generate-new-buffer "*mm*")))
 	  (buffer-disable-undo)
 	  (mm-set-buffer-file-coding-system 'no-conversion)
 	  (insert-buffer-substring cur)
@@ -277,7 +282,8 @@
 (defun mm-display-inline (handle)
   (let* ((type (car (mm-handle-type handle)))
 	 (function (cadr (assoc type mm-inline-media-tests))))
-    (funcall function handle)))
+    (funcall function handle)
+    (goto-char (point-min))))
 
 (defun mm-inlinable-p (type)
   "Say whether TYPE can be displayed inline."
@@ -324,6 +330,10 @@ This overrides entries in the mailcap file."
   (when (buffer-live-p (mm-handle-buffer handle))
     (kill-buffer (mm-handle-buffer handle))))
 
+(defun mm-handle-displayed-p (handle)
+  "Say whether HANDLE is displayed or not."
+  (mm-handle-undisplayer handle))
+  
 (defun mm-quote-arg (arg)
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)

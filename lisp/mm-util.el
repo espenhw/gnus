@@ -171,6 +171,11 @@ used as the line break code type of the coding system."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte t)))
 
+(defsubst mm-disable-multibyte ()
+  "Disable multibyte in the current buffer."
+  (when (fboundp 'set-buffer-multibyte)
+    (set-buffer-multibyte nil)))
+
 (defun mm-mime-charset (charset b e)
   (if (fboundp 'coding-system-get)
       (or

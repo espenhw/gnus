@@ -2,27 +2,29 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 1.1 $
+;; $Revision: 1.3 $
 ;; Keywords: uudecode
 
-;; This file is part of GNU Emacs.
-;;
+;; This file is not part of GNU Emacs, but the same permissions
+;; apply.
+
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.
-;;
+
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;;
+
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;; Commentary:
+;;; Commentary:
+
 ;;     Lots of codes are stolen from mm-decode.el, gnus-uu.el and
 ;;     base64.el
 
@@ -31,34 +33,37 @@
 (if (not (fboundp 'char-int))
     (fset 'char-int 'identity))
 
-(defvar uu-decoder-program "uudecode"
+(defvar uudecode-decoder-program "uudecode"
   "*Non-nil value should be a string that names a uu decoder.
 The program should expect to read uu data on its standard
 input and write the converted data to its standard output.")
 
-(defvar uu-decoder-switches nil
-  "*List of command line flags passed to the command named by uu-decoder-program.")
+(defvar uudecode-decoder-switches nil
+  "*List of command line flags passed to the command named by uudecode-decoder-program.")
 
-(defvar uu-alphabet "\040-\140")
+(defconst uudecode-alphabet "\040-\140")
 
-(defvar uu-begin-string "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
-(defvar uu-end-string "^end[ \t]*$")
+(defconst uudecode-begin-line "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
+(defconst uudecode-end-line "^end[ \t]*$")
 
-(defvar uu-body-line
+(defconst uudecode-body-line
   (let ((i 61) (str "^M"))
     (while (> (setq i (1- i)) 0)
       (setq str (concat str "[^a-z]")))
     (concat str ".?$")))
 
-(defvar uu-temporary-file-directory "/tmp/")
+(defvar uudecode-temporary-file-directory "/tmp/")
 
-(defun uu-decode-region-external (start end &optional file-name)
-  "Decode uuencoded files using an external program."
+;;;###autoload
+(defun uudecode-decode-region-external (start end &optional file-name)
+  "uudecode region between START and END with external decoder.
+
+If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
   (let ((cbuf (current-buffer)) tempfile firstline work-buffer status) 
     (save-excursion
       (goto-char start)
-      (when (re-search-forward uu-begin-string nil t)
+      (when (re-search-forward uudecode-begin-line nil t)
 	(forward-line 1)
 	(setq firstline (point))
 	(cond ((null file-name))
@@ -68,7 +73,7 @@ input and write the converted data to its standard output.")
 					       nil nil nil 
 					       (match-string 1)))))
 	(setq tempfile (expand-file-name
-			(or file-name (concat uu-temporary-file-directory
+			(or file-name (concat uudecode-temporary-file-directory
 					      (make-temp-name "uu")))))
 	(let ((cdir default-directory) default-process-coding-system)
 	  (unwind-protect
@@ -82,11 +87,11 @@ input and write the converted data to its standard output.")
 		(apply 'call-process-region
 		       (point-min)
 		       (point-max)
-		       uu-decoder-program 
+		       uudecode-decoder-program 
 		       nil
 		       nil
 		       nil
-		       uu-decoder-switches))
+		       uudecode-decoder-switches))
 	    (cd cdir) (set-buffer cbuf)))
 	(if (file-exists-p tempfile)
 	    (unless file-name
@@ -98,25 +103,30 @@ input and write the converted data to its standard output.")
       (and work-buffer (kill-buffer work-buffer))
       (condition-case ()
 	  (or file-name (delete-file tempfile))
-	(error)))))
+	(error))
+      )))
 
-(defun uu-insert-char (char &optional count ignored buffer)
+(defun uudecode-insert-char (char &optional count ignored buffer)
   (condition-case nil
       (progn
 	(insert-char char count ignored buffer)
-	(fset 'uu-insert-char 'insert-char))
+	(fset 'uudecode-insert-char 'insert-char))
     (wrong-number-of-arguments
-     (fset 'uu-insert-char 'uu-xemacs-insert-char)
-     (uu-insert-char char count ignored buffer))))
+     (fset 'uudecode-insert-char 'uudecode-xemacs-insert-char)
+     (uudecode-insert-char char count ignored buffer))))
 
-(defun uu-xemacs-insert-char (char &optional count ignored buffer)
+(defun uudecode-xemacs-insert-char (char &optional count ignored buffer)
   (if (or (null buffer) (eq buffer (current-buffer)))
       (insert-char char count)
     (save-excursion
       (set-buffer buffer)
       (insert-char char count))))
 
-(defun uu-decode-region (start end &optional file-name)
+;;;###autoload
+
+(defun uudecode-decode-region (start end &optional file-name)
+  "uudecode region between START and END.
+If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
   (let ((work-buffer nil)
 	(done nil)
@@ -124,11 +134,11 @@ input and write the converted data to its standard output.")
 	(remain 0)
 	(bits 0)
 	(lim 0) inputpos
-	(non-data-chars (concat "^" uu-alphabet)))
+	(non-data-chars (concat "^" uudecode-alphabet)))
     (unwind-protect
 	(save-excursion
 	  (goto-char start)
-	  (when (re-search-forward uu-begin-string nil t)
+	  (when (re-search-forward uudecode-begin-line nil t)
 	    (cond ((null file-name))
 		  ((stringp file-name))
 		  (t 
@@ -144,7 +154,7 @@ input and write the converted data to its standard output.")
 	      (setq inputpos (point))
 	      (setq remain 0 bits 0 counter 0)
 	      (cond
-	       ((> (skip-chars-forward uu-alphabet end) 0)
+	       ((> (skip-chars-forward uudecode-alphabet end) 0)
 		(setq lim (point))
 		(setq remain 
 		      (logand (- (char-int (char-after inputpos)) 32) 63))
@@ -159,10 +169,11 @@ input and write the converted data to its standard output.")
 		  (setq counter (1+ counter)
 			inputpos (1+ inputpos))
 		  (cond ((= counter 4)
-			 (uu-insert-char (lsh bits -16) 1 nil work-buffer)
-			 (uu-insert-char (logand (lsh bits -8) 255) 1 nil
-					 work-buffer)
-			 (uu-insert-char (logand bits 255) 1 nil
+			 (uudecode-insert-char 
+			  (lsh bits -16) 1 nil work-buffer)
+			 (uudecode-insert-char 
+			  (logand (lsh bits -8) 255) 1 nil work-buffer)
+			 (uudecode-insert-char (logand bits 255) 1 nil
 					 work-buffer)
 			 (setq bits 0 counter 0))
 			(t (setq bits (lsh bits 6)))))))
@@ -172,15 +183,15 @@ input and write the converted data to its standard output.")
 		  (error "uucode line ends unexpectly")
 		  (setq done t))
 		 ((and (= (point) end) (not done))
-		  (error "uucode ends unexpectly")
+		  ;(error "uucode ends unexpectly")
 		  (setq done t))
 		 ((= counter 3)
-		  (uu-insert-char (logand (lsh bits -16) 255) 1 nil 
+		  (uudecode-insert-char (logand (lsh bits -16) 255) 1 nil 
 				  work-buffer)
-		  (uu-insert-char (logand (lsh bits -8) 255) 1 nil
+		  (uudecode-insert-char (logand (lsh bits -8) 255) 1 nil
 				  work-buffer))
 		 ((= counter 2)
-		  (uu-insert-char (logand (lsh bits -10) 255) 1 nil 
+		  (uudecode-insert-char (logand (lsh bits -10) 255) 1 nil 
 				  work-buffer)))
 	      (skip-chars-forward non-data-chars end))
 	    (if file-name

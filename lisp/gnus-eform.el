@@ -53,7 +53,8 @@
 
 (defvar gnus-edit-form-mode-map nil)
 (unless gnus-edit-form-mode-map
-  (setq gnus-edit-form-mode-map (copy-keymap emacs-lisp-mode-map))
+  (setq gnus-edit-form-mode-map (make-sparse-keymap))
+  (set-keymap-parent gnus-edit-form-mode-map emacs-lisp-mode-map)
   (gnus-define-keys gnus-edit-form-mode-map
     "\C-c\C-c" gnus-edit-form-done
     "\C-c\C-k" gnus-edit-form-exit))

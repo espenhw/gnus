@@ -446,7 +446,7 @@ the line could be found."
       nil
     (narrow-to-region (point-min) (1- (point)))
     (goto-char (point-min))
-    (while (looking-at "[A-Z][^ \t]+:.*\n\\([ \t].*\n\\)*\\|From .*\n")
+    (while (looking-at "[a-zA-Z][^ \t]+:.*\n\\([ \t].*\n\\)*\\|From .*\n")
       (goto-char (match-end 0)))
     (prog1
 	(eobp)

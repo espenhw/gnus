@@ -454,7 +454,7 @@ from the document.")
     (when (and limit
 		(re-search-forward
 		 (concat "\
-^Content-Type:[ \t]*multipart/[a-z]+;\\(.*;\\)*"
+^Content-Type:[ \t]*multipart/[a-z]+ *;\\(.*;\\)*"
 			 "[ \t\n]*[ \t]boundary=\"?[^\"\n]*[^\" \t\n]")
 	   limit t))
       t)))

@@ -86,40 +86,21 @@ recommended that anyone who intends writing @sc{mime}-compliant software
 read at least RFC2045 and RFC2047.
 
 @menu
+* Interface Functions::   An abstraction over the basic functions.
 * Basic Functions::       Utility and basic parsing functions.
 * Decoding and Viewing::  A framework for decoding and viewing.
+* Standards::             A summary of RFCs and working documents used.
 * Index::                 Function and variable index.
 @end menu
 
 
-@node Basic Functions
-@chapter Basic Functions
+@node Interface Functions
+@chapter Interface Functions
+@cindex interface functions
+@cindex mail-parse
 
-This chapter describes the basic, ground-level functions for parsing and
-handling.  Covered here is parsing @code{From} lines, removing comments
-from header lines, decoding encoded words, parsing date headers and so
-on.  High-level functionality is dealt with in the next chapter
-(@pxref{Decoding and Viewing}).
-
-@menu
-* mail-parse::   The generalized @sc{mime} and mail interface.
-* rfc2231::      Parsing @code{Content-Type} headers.
-* drums::        Handling mail headers defined by RFC822bis.
-* rfc2047::      En/decoding encoded words in headers.
-* time-date::    Functions for parsing dates and manipulating time.
-* qp::           Quoted-Printable en/decoding.
-* base64::       Base64 en/decoding.
-* mailcap::      How parts are displayed is specified by the @file{.mailcap} file
-@end menu
-
-
-@node mail-parse
-@section mail-parse
-
-It is perhaps misleading to place the @code{mail-parse} library in this
-chapter.  It is not a basic low-level library---rather, it is an
-abstraction over the actual low-level libraries that are described in the
-subsequent sections.
+The @code{mail-parse} library is an abstraction over the actual
+low-level libraries that are described in the next chapter.
 
 Standards change, and so programs have to change to fit in the new
 mold.  For instance, RFC2045 describes a syntax for the
@@ -165,7 +146,7 @@ Here's an example:
 @example
 (mail-header-parse-content-type
  "image/gif; name=\"b980912.gif\"")
-=> ("image/gif" (name . "b980912.gif"))
+@result{} ("image/gif" (name . "b980912.gif"))
 @end example
 
 @item mail-header-parse-content-disposition
@@ -181,7 +162,7 @@ Returns the value of the attribute.
 @example
 (mail-content-type-get
  '("image/gif" (name . "b980912.gif")) 'name)
-=> "b980912.gif"
+@result{} "b980912.gif"
 @end example
 
 @item mail-header-remove-comments
@@ -191,7 +172,7 @@ Return a comment-free version of a header.
 @example
 (mail-header-remove-comments
  "Gnus/5.070027 (Pterodactyl Gnus v0.27) (Finnish Landrace)")
-=> "Gnus/5.070027  "
+@result{} "Gnus/5.070027  "
 @end example
 
 @item mail-header-remove-whitespace
@@ -202,7 +183,7 @@ and comments is preserved.
 @example
 (mail-header-remove-whitespace
  "image/gif; name=\"Name with spaces\"")
-=> "image/gif;name=\"Name with spaces\""
+@result{} "image/gif;name=\"Name with spaces\""
 @end example
 
 @item mail-header-get-comment
@@ -212,7 +193,7 @@ Return the last comment in a header.
 @example
 (mail-header-get-comment 
  "Gnus/5.070027 (Pterodactyl Gnus v0.27) (Finnish Landrace)")
-=> "Finnish Landrace" 
+@result{} "Finnish Landrace" 
 @end example
 
 @item mail-header-parse-address
@@ -223,7 +204,7 @@ plaintext name.
 @example
 (mail-header-parse-address
  "Hrvoje Niksic <hniksic@@srce.hr>")
-=> ("hniksic@@srce.hr" . "Hrvoje Niksic")
+@result{} ("hniksic@@srce.hr" . "Hrvoje Niksic")
 @end example
 
 @item mail-header-parse-addresses
@@ -234,7 +215,7 @@ the one described above.
 @example
 (mail-header-parse-addresses
  "Hrvoje Niksic <hniksic@@srce.hr>, Steinar Bang <sb@@metis.no>")
-=> (("hniksic@@srce.hr" . "Hrvoje Niksic")
+@result{} (("hniksic@@srce.hr" . "Hrvoje Niksic")
      ("sb@@metis.no" . "Steinar Bang"))
 @end example
 
@@ -268,7 +249,7 @@ Encode the words that need encoding in a string, and return the result.
 @example
 (mail-encode-encoded-word-string
  "This is naïve, baby")
-=> "This is =?iso-8859-1?q?na=EFve,?= baby"
+@result{} "This is =?iso-8859-1?q?na=EFve,?= baby"
 @end example
 
 @item mail-decode-encoded-word-region
@@ -282,14 +263,38 @@ Decode the encoded words in the string and return the result.
 @example
 (mail-decode-encoded-word-string
  "This is =?iso-8859-1?q?na=EFve,?= baby")
-=> "This is naïve, baby"
+@result{} "This is naïve, baby"
 @end example
 
 @end table
 
-Currently, @code{mail-parse} is an abstraction over @code{drums},
+Currently, @code{mail-parse} is an abstraction over @code{ietf-drums},
 @code{rfc2047} and @code{rfc2231}.  These are documented in the
 subsequent sections.
+
+
+
+@node Basic Functions
+@chapter Basic Functions
+
+This chapter describes the basic, ground-level functions for parsing and
+handling.  Covered here is parsing @code{From} lines, removing comments
+from header lines, decoding encoded words, parsing date headers and so
+on.  High-level functionality is dealt with in the next chapter
+(@pxref{Decoding and Viewing}).
+
+@menu
+* rfc2231::      Parsing @code{Content-Type} headers.
+* ietf-drums::   Handling mail headers defined by RFC822bis.
+* rfc2047::      En/decoding encoded words in headers.
+* time-date::    Functions for parsing dates and manipulating time.
+* qp::           Quoted-Printable en/decoding.
+* base64::       Base64 en/decoding.
+* binhex::       Binhex decoding.
+* uudecode::     Uuencode decoding.
+* rfc1843::      Decoding HZ-encoded text.
+* mailcap::      How parts are displayed is specified by the @file{.mailcap} file
+@end menu
 
 
 @node rfc2231
@@ -325,7 +330,7 @@ elements.
  title*0*=us-ascii'en'This%20is%20even%20more%20;
  title*1*=%2A%2A%2Afun%2A%2A%2A%20;
  title*2=\"isn't it!\"")
-=> ("application/x-stuff"
+@result{} ("application/x-stuff"
     (title . "This is even more ***fun*** isn't it!"))
 @end example
 
@@ -337,8 +342,8 @@ the value of the specified attribute.
 @end table
 
 
-@node drums
-@section drums
+@node ietf-drums
+@section ietf-drums
 
 @dfn{drums} is an IETF working group that is working on the replacement
 for RFC822.
@@ -346,35 +351,35 @@ for RFC822.
 The functions provided by this library include:
 
 @table @code
-@item drums-remove-comments
-@findex drums-remove-comments
+@item ietf-drums-remove-comments
+@findex ietf-drums-remove-comments
 Remove the comments from the argument and return the results.
 
-@item drums-remove-whitespace
-@findex drums-remove-whitespace
+@item ietf-drums-remove-whitespace
+@findex ietf-drums-remove-whitespace
 Remove linear white space from the string and return the results.
 Spaces inside quoted strings and comments are left untouched.
 
-@item drums-get-comment
-@findex drums-get-comment
+@item ietf-drums-get-comment
+@findex ietf-drums-get-comment
 Return the last most comment from the string.
 
-@item drums-parse-address
-@findex drums-parse-address
+@item ietf-drums-parse-address
+@findex ietf-drums-parse-address
 Parse an address string and return a list that contains the mailbox and
 the plain text name.
 
-@item drums-parse-addresses
-@findex drums-parse-addresses
+@item ietf-drums-parse-addresses
+@findex ietf-drums-parse-addresses
 Parse a string that contains any number of comma-separated addresses and
 return a list that contains mailbox/plain text pairs.
 
-@item drums-parse-date
-@findex drums-parse-date
+@item ietf-drums-parse-date
+@findex ietf-drums-parse-date
 Parse a date string and return an Emacs time structure.
 
-@item drums-narrow-to-header
-@findex drums-narrow-to-header
+@item ietf-drums-narrow-to-header
+@findex ietf-drums-narrow-to-header
 Narrow the buffer to the header section of the current buffer.
 
 @end table
@@ -470,7 +475,7 @@ document this library here.  It deals with parsing @code{Date} headers
 and manipulating time.  (Not by using tesseracts, though, I'm sorry to
 say.)
 
-These functions converts between five formats: A date string, an Emacs
+These functions convert between five formats: A date string, an Emacs
 time structure, a decoded time list, a second number, and a day number.
 
 The functions have quite self-explanatory names, so the following just
@@ -478,41 +483,41 @@ gives an overview of which functions are available.
 
 @example
 (parse-time-string "Sat Sep 12 12:21:54 1998 +0200")
-=> (54 21 12 12 9 1998 6 nil 7200)
+@result{} (54 21 12 12 9 1998 6 nil 7200)
 
 (date-to-time "Sat Sep 12 12:21:54 1998 +0200")
-=> (13818 19266)
+@result{} (13818 19266)
 
 (time-to-seconds '(13818 19266))
-=> 905595714.0
+@result{} 905595714.0
 
 (seconds-to-time 905595714.0)
-=> (13818 19266 0)
+@result{} (13818 19266 0)
 
 (time-to-day '(13818 19266))
-=> 729644
+@result{} 729644
 
 (days-to-time 729644)
-=> (961933 65536)
+@result{} (961933 65536)
 
 (time-since '(13818 19266))
-=> (0 430)
+@result{} (0 430)
 
 (time-less-p '(13818 19266) '(13818 19145))
-=> nil
+@result{} nil
 
 (subtract-time '(13818 19266) '(13818 19145))
-=> (0 121)
+@result{} (0 121)
 
 (days-between "Sat Sep 12 12:21:54 1998 +0200"
               "Sat Sep 07 12:21:54 1998 +0200")
-=> 5
+@result{} 5
 
 (date-leap-year-p 2000)
-=> t
+@result{} t
 
 (time-to-day-in-year '(13818 19266))
-=> 255
+@result{} 255
 
 @end example
 
@@ -559,6 +564,7 @@ results.
 
 @node base64
 @section base64
+@cindex base64
 
 Base64 is an encoding that encodes three bytes into four characters,
 thereby increasing the size by about 33%.  The alphabet used for
@@ -591,6 +597,69 @@ decoded, @code{nil} is returned.
 @end table
 
 
+@node binhex
+@section binhex
+@cindex binhex
+@cindex Apple
+@cindex Macintosh
+
+@code{binhex} is an encoding that originated in Macintosh environments.
+The following function is supplied to deal with these:
+
+@table @code
+@item binhex-decode-region
+@findex binhex-decode-region
+Decode the encoded text in the region.  If given a third parameter, only
+decode the @code{binhex} header and return the filename.
+
+@end table
+
+
+@node uudecode
+@section uudecode
+@cindex uuencode
+@cindex uudecode
+
+@code{uuencode} is probably still the most popular encoding of binaries
+used on Usenet, although @code{base64} rules the mail world.
+
+The following function is supplied by this package:
+
+@table @code
+@item uudecode-decode-region
+@findex uudecode-decode-region
+Decode the text in the region.
+@end table
+
+
+@node rfc1843
+@section rfc1843
+@cindex rfc1843
+@cindex HZ
+@cindex Chinese
+
+RFC1843 deals with mixing Chinese and ASCII characters in messages.  In
+essence, RFC1843 switches between ASCII and Chinese by doing this:
+
+@example
+This sentence is in ASCII.
+The next sentence is in GB.~@{<:Ky2;S@{#,NpJ)l6HK!#~@}Bye.
+@end example
+
+Simple enough, and widely used in China.
+
+The following functions are available to handle this encoding:
+
+@table @code
+@item rfc1843-decode-region
+Decode HZ-encoded text in the region.
+
+@item rfc1843-decode-string
+Decode a HZ-encoded string and return the result.
+
+@end table
+
+
 @node mailcap
 @section mailcap
 
@@ -599,8 +668,8 @@ handlers and describes how elements are supposed to be displayed.
 Here's an example file:
 
 @example
-image/*; xv -8 %s
-audio/x-pn-realaudio; rvplayer %s
+image/*; gimp -8 %s
+audio/wav; wavplayer %s
 @end example
 
 This says that all image files should be displayed with @samp{xv}, and
@@ -743,6 +812,54 @@ Prompt for a mailcap method to use to view the part.
 @end table
  
 
+@node Standards
+@chapter Standards
+
+The Emacs @sc{mime} library implements handling of various elements
+according to a (somewhat) large number of RFCs, drafts and standards
+documents.  This chapter lists the relevant ones.  They can all be
+fetched from @samp{http://www.stud.ifi.uio.no/~larsi/notes/}.
+
+@table @dfn
+@item RFC822
+@itemx STD11
+Standard for the Format of ARPA Internet Text Messages.
+
+@item RFC1036
+Standard for Interchange of USENET Messages
+
+@item RFC2045
+Format of Internet Message Bodies
+
+@item RFC2046
+Media Types
+
+@item RFC2047
+Message Header Extensions for Non-ASCII Text
+
+@item RFC2048
+Registration Procedures
+
+@item RFC2049
+Conformance Criteria and Examples
+
+@item RFC2231
+MIME Parameter Value and Encoded Word Extensions: Character Sets,
+Languages, and Continuations
+
+@item RFC1843
+HZ - A Data Format for Exchanging Files of Arbitrarily Mixed Chinese and
+ASCII characters
+
+@item draft-ietf-drums-msg-fmt-05.txt
+Draft for the successor of RFC822
+
+@item RFC1892
+The Multipart/Report Content Type for the Reporting of Mail System
+Administrative Messages
+
+@end table
+ 
  
 @node Index
 @chapter Index

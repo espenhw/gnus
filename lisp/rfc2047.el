@@ -27,8 +27,8 @@
 (eval-and-compile
   (eval
    '(unless (fboundp 'base64-decode-string)
-      (autoload 'base64-decode-string "base64")
-      (autoload 'base64-encode-region "base64" nil t))))
+      (require 'base64))))
+
 (require 'qp)
 (require 'mm-util)
 (require 'ietf-drums)

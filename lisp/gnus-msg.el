@@ -620,6 +620,7 @@ If FULL-HEADERS (the prefix), include full headers when forwarding."
 	(set-buffer gnus-original-article-buffer)
 	(setq text (buffer-string)))
       (set-buffer (gnus-get-buffer-create " *Gnus forward*"))
+      (erase-buffer)
       (insert text)
       (run-hooks 'gnus-article-decode-hook)
       (let ((message-included-forward-headers

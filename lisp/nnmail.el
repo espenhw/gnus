@@ -241,6 +241,13 @@ to be moved to."
   :group 'nnmail-retrieve
   :type 'string)
 
+(defcustom nnmail-movemail-args nil
+  "*Extra arguments to give to `nnmail-movemail-program'  to move mail from the inbox.
+The default is nil"
+  :group 'nnmail-files
+  :group 'nnmail-retrieve
+  :type 'string)
+
 (defcustom nnmail-pop-password-required nil
   "*Non-nil if a password is required when reading mail using POP."
   :group 'nnmail-retrieve
@@ -597,7 +604,9 @@ parameter.  It should return nil, `warn' or `delete'."
 			      nnmail-movemail-program exec-directory)
 			     nil errors nil inbox tofile)
 			    (when nnmail-internal-password
-			      (list nnmail-internal-password)))))))
+			      (list nnmail-internal-password))
+			    (when nnmail-movemail-args
+			      nnmail-movemail-args))))))
 		(push inbox nnmail-moved-inboxes)
 		(if (and (not (buffer-modified-p errors))
 			 (zerop result))

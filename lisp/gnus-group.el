@@ -3336,26 +3336,26 @@ and the second element is the address."
 
 (defun gnus-add-marked-articles (group type articles &optional info force)
   ;; Add ARTICLES of TYPE to the info of GROUP.
-  ;; If INFO is non-nil, use that info.	 If FORCE is non-nil, don't
+  ;; If INFO is non-nil, use that info.         If FORCE is non-nil, don't
   ;; add, but replace marked articles of TYPE with ARTICLES.
   (let ((info (or info (gnus-get-info group)))
 	marked m)
     (or (not info)
 	(and (not (setq marked (nthcdr 3 info)))
 	     (or (null articles)
-		 (setcdr (nthcdr 2 info)
-			 (list (list (cons type (gnus-compress-sequence
-						 articles t)))))))
+                (setcdr (nthcdr 2 info)
+                        (list (list (cons type (gnus-compress-sequence
+                                                articles t)))))))
 	(and (not (setq m (assq type (car marked))))
 	     (or (null articles)
-		 (setcar marked
-			 (cons (cons type (gnus-compress-sequence articles t) )
-			       (car marked)))))
+                (setcar marked
+                        (cons (cons type (gnus-compress-sequence articles t) )
+                              (car marked)))))
 	(if force
 	    (if (null articles)
-		(setcar (nthcdr 3 info)
-			(gnus-delete-alist type (car marked)))
-	      (setcdr m (gnus-compress-sequence articles t)))
+               (setcar (nthcdr 3 info)
+                       (gnus-delete-alist type (car marked)))
+             (setcdr m (gnus-compress-sequence articles t)))
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))
 				  (copy-sequence articles)) '<) t))))))
