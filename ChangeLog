@@ -1,3 +1,9 @@
+2004-06-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* etc/gnus/gnus-setup.ast (Setting up a NNTP server)
+	(Setting up local mail storage (nnml)): fixed some bugs, added a
+	new screen - still testing
+
 2004-06-01  Simon Josefsson  <jas@extundo.com>
 
 	* make.bat: Add SASL manual.
