@@ -15,17 +15,18 @@ W3DIR = @W3@
 URLDIR = @URL@
 EMACS_COMP = URLDIR=$(URLDIR) W3DIR=$(W3DIR) lispdir=$(lispdir) srcdir=$(srcdir) $(EMACS) $(FLAGS)
 
-all total:
-	rm -f *.elc
+all total: clean-some gnus-load.elc
 	$(EMACS_COMP) -f dgnushack-compile
 
-warn:
-	rm -f *.elc
+clean-some:
+	rm -f *.elc gnus-load.el
+
+warn: clean-some gnus-load.elc
 	$(EMACS_COMP) --eval '(dgnushack-compile t)' 2>&1 | egrep -v "variable G|inhibit-point-motion-hooks|coding-system|temp-results|variable gnus|variable nn|scroll-in-place|deactivate-mark|filladapt-mode|byte-code-function-p|print-quoted|ps-right-header|ps-left-header|article-inhibit|print-escape|ssl-program-arguments|message-log-max"
 
 # The "clever" rule is unsafe, since redefined macros are loaded from
 # .elc files, and not the .el file.
-clever some:
+clever some: gnus-load.elc
 	$(EMACS_COMP) -f dgnushack-compile
 
 install: clever
@@ -53,17 +54,10 @@ separately:
 pot:
 	xpot -drgnus -r`cat ./version` *.el > rgnus.pot
 
-gnus-load.el:
-	echo ";;; gnus-load.el --- automatically extracted custom dependencies" > gnus-load.el
-	echo ";;" >> gnus-load.el
-	echo ";;; Code:" >> gnus-load.el
-	echo >> gnus-load.el
-	$(EMACS)  $(FLAGS) -l ./dgnushack.el -l cus-edit.el *.el \
-		-f custom-make-dependencies >> gnus-load.el
-	echo >> gnus-load.el
-	echo "(provide 'gnus-load)" >> gnus-load.el
-	echo >> gnus-load.el
-	echo ";;; gnus-load.el ends here" >> gnus-load.el
+gnus-load.elc:
+	$(EMACS_COMP) -f dgnushack-make-cus-load $(srcdir)
+	$(EMACS_COMP) -f dgnushack-make-auto-load $(srcdir)
+	$(EMACS_COMP) -f dgnushack-make-load
 
 distclean:
 	rm -f *.orig *.rej *.elc *~ Makefile

@@ -167,4 +167,67 @@ Modify to suit your needs."))
   (require 'gnus)
   (byte-recompile-directory "." 0))
 
+(defvar dgnushack-gnus-load-file (expand-file-name "gnus-load.el"))
+(defvar	dgnushack-cus-load-file (expand-file-name "cus-load.el"))
+
+(defun dgnushack-make-cus-load ()
+  (load "cus-dep")
+  (let ((cusload-base-file dgnushack-cus-load-file))
+    (if (fboundp 'custom-make-dependencies)
+	(custom-make-dependencies)
+      (Custom-make-dependencies))))
+
+(defun dgnushack-make-auto-load ()
+  (require 'autoload)
+  (let ((generated-autoload-file dgnushack-gnus-load-file)
+	(make-backup-files nil)
+	(autoload-package-name "gnus"))
+    (if (featurep 'xemacs) 
+	(if (file-exists-p generated-autoload-file)
+	    (delete-file generated-autoload-file))
+      (with-temp-file generated-autoload-file
+	(insert ?\014)))
+    (batch-update-autoloads)))
+
+(defun dgnushack-make-load ()
+  (message (format "Generating %s..." dgnushack-gnus-load-file))
+  (with-temp-file dgnushack-gnus-load-file
+    (insert-file-contents dgnushack-cus-load-file)
+    (delete-file dgnushack-cus-load-file)
+    (goto-char (point-min))
+    (search-forward ";;; Code:")
+    (forward-line)
+    (delete-region (point-min) (point))
+    (insert "\
+;;; gnus-load.el --- automatically extracted custom dependencies and autoload
+;;
+;;; Code:
+")
+    (goto-char (point-max))
+    (if (search-backward "custom-versions-load-alist" nil t)
+	(forward-line -1)
+      (forward-line -1)
+      (while (eq (char-after) ?\;)
+	(forward-line -1))
+      (forward-line))
+    (delete-region (point) (point-max))
+    (insert "\n")
+    (insert-file-contents dgnushack-gnus-load-file)
+    (goto-char (point-max))
+    (when (search-backward "\n(provide " nil t)
+      (forward-line -1)
+      (delete-region (point) (point-max)))
+    (insert "\
+
+\(provide 'gnus-load)
+
+;;; Local Variables:
+;;; version-control: never
+;;; no-byte-compile: t
+;;; no-update-autoloads: t
+;;; End:
+;;; gnus-load.el ends here\n"))
+  (message (format "Compiling %s..." dgnushack-gnus-load-file))
+  (byte-compile-file dgnushack-gnus-load-file))
+
 ;;; dgnushack.el ends here
