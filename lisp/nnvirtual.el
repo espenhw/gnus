@@ -203,14 +203,14 @@ virtual group.")
 
 (deffoo nnvirtual-request-group (group &optional server dont-check)
   (nnvirtual-possibly-change-server server)
+  (setq nnvirtual-component-groups
+	(delete (nnvirtual-current-group) nnvirtual-component-groups))
   (cond
    ((null nnvirtual-component-groups)
     (setq nnvirtual-current-group nil)
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
     (unless dont-check
-      (setq nnvirtual-component-groups
-	    (delete (nnvirtual-current-group) nnvirtual-component-groups))
       (nnvirtual-create-mapping))
     (setq nnvirtual-current-group group)
     (let ((len (length nnvirtual-mapping)))

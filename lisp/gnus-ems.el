@@ -41,6 +41,7 @@
 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
 (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
 (defalias 'gnus-make-local-hook 'make-local-hook)
+(defalias 'gnus-add-hook 'add-hook)
 (defalias 'gnus-character-to-event 'identity)
 (defalias 'gnus-add-text-properties 'add-text-properties)
 (defalias 'gnus-put-text-property 'put-text-property)

@@ -48,6 +48,11 @@
 (defvar gnus-nocem-expiry-wait 15
   "*Number of days to keep NoCeM headers in the cache.")
 
+(defvar gnus-nocem-verifyer 'mc-verify
+  "*Function called to verify that the NoCeM message is valid.
+If the function in this variable isn't bound, the message will
+be used unconditionally.")
+
 ;;; Internal variables
 
 (defvar gnus-nocem-active nil)
@@ -146,7 +151,10 @@
   
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
-  t)
+  (if (fboundp gnus-nocem-verifyer)
+      (funcall gnus-nocem-verifyer)
+    ;; If we don't have MailCrypt, then we use the message anyway.
+    t))
 
 (defun gnus-nocem-enter-article ()
   "Enter the current article into the NoCeM cache."

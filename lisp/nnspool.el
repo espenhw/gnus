@@ -162,6 +162,9 @@ there.")
 	   (file-truename nnspool-spool-directory))))
     (nnspool-close-server)
     (nnheader-report 'nnspool "Not a directory: %s" nnspool-spool-directory))
+   ((not (file-exists-p nnspool-active-file))
+    (nnheader-report 'nnspool "The active file doesn't exist: %s" 
+		     nnspool-active-file))
    (t
     (nnheader-report 'nnspool "Opened server %s using directory %s"
 		     server nnspool-spool-directory)

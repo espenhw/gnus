@@ -1,3 +1,8 @@
+Tue May 28 21:19:29 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Composing Messages): Deletia.
+	(Emacs/XEmacs code): New.
+
 Sun May 26 18:28:19 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Paging the Article): Moved.

@@ -1723,8 +1723,11 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.2.1"
+(defconst gnus-version-number "5.2.2"
   "Version number for this version of Gnus.")
+
+(defconst gnus-version (format "Gnus v%s" gnus-version-number)
+  "Version string for this version of Gnus.")
 
 (defvar gnus-info-nodes
   '((gnus-group-mode "(gnus)The Group Buffer")
@@ -4266,7 +4269,7 @@ The following commands are available:
   (setq truncate-lines t)
   (setq buffer-read-only t)
   (gnus-make-local-hook 'post-command-hook)
-  (add-hook 'post-command-hook 'gnus-clear-inboxes-moved)
+  (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (run-hooks 'gnus-group-mode-hook))
 
 (defun gnus-clear-inboxes-moved ()
@@ -16068,6 +16071,7 @@ Returns whether the updating was successful."
 		  (unless (equal method gnus-message-archive-method)
 		    (gnus-error 1 "Cannot read active file from %s server."
 				(car method)))
+		(gnus-message 5 mesg)
 		(gnus-active-to-gnus-format method gnus-active-hashtb)
 		;; We mark this active file as read.
 		(push method gnus-have-read-active-file)
@@ -16290,7 +16294,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		    ((string= alpha "September") "5.01")
 		    ((string= alpha "Red") "5.03"))
 		   minor least)
-	 (format "%d.%02d%20d" major minor least))))))
+	 (format "%d.%02d%02d" major minor least))))))
 
 (defun gnus-convert-old-newsrc ()
   "Convert old newsrc into the new format, if needed."

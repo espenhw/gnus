@@ -1528,7 +1528,8 @@ SCORE is the score to add."
 			 (setq art (car arts)
 			       arts (cdr arts))
 			 (gnus-score-add-followups 
-			  (car art) score all-scores thread)))))
+			  (car art) score all-scores thread))))
+		(end-of-line))
 	    (while (funcall search-func match nil t)
 	      (end-of-line)
 	      (setq found (setq arts (get-text-property (point) 'articles)))

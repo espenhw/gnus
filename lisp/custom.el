@@ -1,12 +1,30 @@
 ;;; custom.el --- User friendly customization support.
-;; Copyright (C) 1995 Free Software Foundation, Inc.
-;;
+
+;; Copyright (C) 1995, 1996 Free Software Foundation, Inc.
+
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: help
 ;; Version: 0.5
 
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
 ;;; Commentary:
-;;
+
 ;; WARNING: This package is still under construction and not all of
 ;; the features below are implemented.
 ;;
@@ -15,7 +33,7 @@
 ;; editing a text file in some arcane syntax is user hostile in the
 ;; extreme, and to most users emacs lisp definitely count as arcane.
 ;;
-;; The intension is that authors of emacs lisp packages declare the
+;; The intent is that authors of emacs lisp packages declare the
 ;; variables intended for user customization with `custom-declare'.
 ;; Custom can then automatically generate a customization buffer with
 ;; `custom-buffer-create' where the user can edit the package
@@ -46,18 +64,42 @@
 ;; - Make it possible to declare default value and type for a single
 ;;   variable, storing the data in a symbol property.
 ;; - Syntactic sugar for CUSTOM declarations.
-;; - Use W3 for variable documenation.
+;; - Use W3 for variable documentation.
 
 ;;; Code:
 
 ;;; Compatibility:
+
+(defun custom-xmas-add-text-properties (start end props &optional object)
+  (add-text-properties start end props object)
+  (put-text-property start end 'start-open t object)
+  (put-text-property start end 'end-open t object))
+
+(defun custom-xmas-put-text-property (start end prop value &optional object)
+  (put-text-property start end prop value object)
+  (put-text-property start end 'start-open t object)
+  (put-text-property start end 'end-open t object))
+
+(defun custom-xmas-extent-start-open ()
+  (map-extents (lambda (extent arg)
+		 (set-extent-property extent 'start-open t))
+	       nil (point) (min (1+ (point)) (point-max))))
+		  
+(if (string-match "XEmacs\\|Lucid" emacs-version)
+    (progn
+      (fset 'custom-add-text-properties 'custom-xmas-add-text-properties)
+      (fset 'custom-put-text-property 'custom-xmas-put-text-property)
+      (fset 'custom-extent-start-open 'custom-xmas-extent-start-open))
+  (fset 'custom-add-text-properties 'add-text-properties)
+  (fset 'custom-put-text-property 'put-text-property)
+  (fset 'custom-extent-start-open 'ignore))
 
 (or (fboundp 'buffer-substring-no-properties)
     ;; Introduced in Emacs 19.29.
     (defun buffer-substring-no-properties (beg end)
       "Return the text from BEG to END, without text properties, as a string."
       (let ((string (buffer-substring beg end)))
-	(custom-set-text-properties 0 (length string) nil string)
+	(set-text-properties 0 (length string) nil string)
 	string)))
 
 (or (fboundp 'add-to-list)
@@ -153,24 +195,18 @@ STRING should be given if the last search was by `string-match' on STRING."
       (and (fboundp 'set-face-underline-p)
 	   (funcall 'set-face-underline-p 'underline t))))
 
-(defun custom-xmas-set-text-properties (start end props &optional buffer)
-  "You should NEVER use this function.  It is ideologically blasphemous.
-It is provided only to ease porting of broken FSF Emacs programs."
-  (if (stringp buffer) 
-      nil
-    (map-extents (lambda (extent ignored)
-		   (remove-text-properties 
-		    start end
-		    (list (extent-property extent 'text-prop) nil)
-		    buffer))
-		 buffer start end nil nil 'text-prop)
-    (add-text-properties start end props buffer)))
+(or (fboundp 'set-text-properties)
+    ;; Missing in XEmacs 19.12.
+    (defun set-text-properties (start end props &optional buffer)
+      (if (or (null buffer) (bufferp buffer))
+	  (if props
+	      (while props
+		(custom-put-text-property 
+		 start end (car props) (nth 1 props) buffer)
+		(setq props (nthcdr 2 props)))
+	    (remove-text-properties start end ())))))
 
-(if (string-match "XEmacs" emacs-version)
-    (fset 'custom-set-text-properties 'gnus-xmas-set-text-properties)
-  (fset 'custom-set-text-properties 'set-text-properties))
-
-(or (fboundp 'event-point)
+(or (fboundp 'event-closest-point)
     ;; Missing in Emacs 19.29.
     (defun event-point (event)
       "Return the character position of the given mouse-motion, button-press,
@@ -250,12 +286,12 @@ If called interactively, prompts for a face and face attributes."
 				       (> emacs-minor-version 28))))
 			 (setq intangible 'intangible)
 		       (setq intangible 'intangible-if-it-had-been-working))
-  "The symbol making text intangible")
+  "The symbol making text intangible.")
 
 (defconst rear-nonsticky (if (string-match "XEmacs" emacs-version)
 			     'end-open
 			   'rear-nonsticky)
-  "The symbol making text proeprties non-sticky in the rear end.")
+  "The symbol making text properties non-sticky in the rear end.")
 
 (defconst front-sticky (if (string-match "XEmacs" emacs-version)
 			   'front-closed
@@ -347,7 +383,7 @@ If called interactively, prompts for a face and face attributes."
 
   (defun custom-category-set (from to category)
     "Make text between FROM and TWO have category CATEGORY."
-    (put-text-property from to 'category category)))
+    (custom-put-text-property from to 'category category)))
 
 ;;; External Data:
 ;; 
@@ -400,10 +436,10 @@ If called interactively, prompts for a face and face attributes."
 ;; The following functions are part of the public interface to the
 ;; CUSTOM datastructure.  Each CUSTOM describes a group of variables,
 ;; a single variable, or a component of a structured variable.  The
-;; CUSTOM instances are part of two hiearachies, the first is the
+;; CUSTOM instances are part of two hierarchies, the first is the
 ;; `part-of' hierarchy in which each CUSTOM is a component of another
 ;; CUSTOM, except for the top level CUSTOM which is contained in
-;; `custom-data'.  The second hiearachy is a `is-a' type hierarchy
+;; `custom-data'.  The second hierarchy is a `is-a' type hierarchy
 ;; where each CUSTOM is a leaf in the hierarchy defined by the `type'
 ;; property and `custom-type-properties'.
 
@@ -502,6 +538,17 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 		  ((type . const)
 		   (tag . "Off")
 		   (default . nil))))
+    (triggle (type . choice)
+	     ;; On/Off/Default.
+	     (data ((type . const)
+		    (tag . "On ")
+		    (default . t))
+		   ((type . const)
+		    (tag . "Off")
+		    (default . nil))
+		   ((type . const)
+		    (tag . "Def")
+		    (default . custom:asis))))
     (choice (type . default)
 	    ;; See `custom-match'.
 	    (query . custom-choice-query)
@@ -609,17 +656,17 @@ Select the properties you want this face to have.")
 			(type . string))
 		       "\n"
 		       ((tag . "Bold")
-			(default . nil)
-			(type . toggle))
+			(default . custom:asis)
+			(type . triggle))
 		       "              "
 		       ((tag . "Italic")
-			(default . nil)
-			(type . toggle))
+			(default . custom:asis)
+			(type . triggle))
 		       "             "
 		       ((tag . "Underline")
 			(hidden . t)
-			(default . nil)
-			(type . toggle)))
+			(default . custom:asis)
+			(type . triggle)))
 		 (default . (custom-face-lookup "default" "default" "default"
 						nil nil nil))
 		 (type . list))
@@ -710,6 +757,9 @@ Entries in this list take precedence over `custom-type-properties'.")
 (defconst custom-invalid '__invalid__
   "Special value representing an invalid field.")
 
+(defconst custom:asis 'custom:asis)
+;; Bad, ugly, and horrible kludge.
+
 (defun custom-property (custom property)
   "Extract from CUSTOM property PROPERTY."
   (let ((entry (assq property custom)))
@@ -735,7 +785,7 @@ Entries in this list take precedence over `custom-type-properties'.")
     (cdr entry)))
 
 (defun custom-property-set (custom property value)
-  "Set CUSTOM PROPERY to VALUE by side effect.
+  "Set CUSTOM PROPERTY to VALUE by side effect.
 CUSTOM must have at least one property already."
   (let ((entry (assq property custom)))
     (if entry
@@ -884,7 +934,7 @@ position of the error, and the cdr is a text describing the error."
 ;; FIELD datatype.  The FIELD instance hold information about a
 ;; specific editing field in the customization buffer.
 ;;
-;; Each FIELD can be seen as an instanciation of a CUSTOM.
+;; Each FIELD can be seen as an instantiation of a CUSTOM.
 
 (defvar custom-field-last nil)
 ;; Last field containing point.
@@ -943,7 +993,7 @@ START and END are markers to the start and end of the field."
 
 (defun custom-field-accept (field value &optional original)
   "Store a new value into field FIELD, taking it from VALUE.
-If optional ORIGINAL is non-nil, concider VALUE for the original value."
+If optional ORIGINAL is non-nil, consider VALUE for the original value."
   (let ((inhibit-point-motion-hooks t))
     (funcall (custom-property (custom-field-custom field) 'accept) 
 	     field value original)))
@@ -1054,6 +1104,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	 (end (make-marker))
 	 (data (vector repeat nil start end))
 	 field)
+    (custom-extent-start-open)
     (insert-before-markers "\n")
     (backward-char 1)
     (set-marker start (point))
@@ -1106,7 +1157,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     (cons (nreverse matches) values)))
 
 (defun custom-repeat-extract (custom field)
-  "Extract list of childrens values."
+  "Extract list of children's values."
   (let ((values (custom-field-value field))
 	(data (custom-data custom))
 	result)
@@ -1153,7 +1204,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     (custom-default-quote custom value)))
 
 (defun custom-pair-extract (custom field)
-  "Extract cons of childrens values."
+  "Extract cons of children's values."
   (let ((values (custom-field-value field))
 	(data (custom-data custom))
 	result)
@@ -1174,7 +1225,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     (custom-default-quote custom value)))
 
 (defun custom-list-extract (custom field)
-  "Extract list of childrens values."
+  "Extract list of children's values."
   (let ((values (custom-field-value field))
 	(data (custom-data custom))
 	result)
@@ -1283,7 +1334,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	 (face-tag (custom-face-tag custom))
 	 current)
     (if face-tag 
-	(put-text-property from (+ from (length (custom-tag custom)))
+	(custom-put-text-property from (+ from (length (custom-tag custom)))
 			   'face (funcall face-tag field value)))
     (if original 
 	(custom-field-original-set field value))
@@ -1369,9 +1420,10 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	  ()
 	(setq begin (point)
 	      found (custom-insert (custom-property custom 'none) nil))
-	(add-text-properties begin (point)
-			     (list rear-nonsticky t
-				   'face custom-field-uninitialized-face)))
+	(custom-add-text-properties 
+	 begin (point)
+	 (list rear-nonsticky t
+	       'face custom-field-uninitialized-face)))
       (or original
 	  (custom-field-original-set found (custom-field-original field)))
       (custom-field-accept found value original)
@@ -1379,12 +1431,12 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
       (custom-field-move field from end))))
 
 (defun custom-choice-extract (custom field)
-  "Extract childs value."
+  "Extract child's value."
   (let ((value (custom-field-value field)))
     (custom-field-extract (custom-field-custom value) value)))
 
 (defun custom-choice-validate (custom field)
-  "Validate childs value."
+  "Validate child's value."
   (let ((value (custom-field-value field))
 	(custom (custom-field-custom field)))
     (if (or (eq value custom-nil)
@@ -1492,8 +1544,8 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 (defun custom-face-hack (field value)
   "Face that should be used for highlighting FIELD containing VALUE."
   (let* ((custom (custom-field-custom field))
-	 (face (eval (funcall (custom-property custom 'export) 
-			      custom value))))
+	 (form (funcall (custom-property custom 'export) custom value))
+	 (face (apply (car form) (cdr form))))
     (if (custom-facep face) face nil)))
 
 (defun custom-const-insert (custom level)
@@ -1502,7 +1554,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 	 (face (custom-field-face field))
 	 (from (point)))
     (custom-text-insert (custom-tag custom))
-    (add-text-properties from (point) 
+    (custom-add-text-properties from (point) 
 			 (list 'face face
 			       rear-nonsticky t))
     (custom-documentation-insert custom)
@@ -1513,7 +1565,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
   "Update face of FIELD."
   (let ((from (custom-field-start field))
 	(custom (custom-field-custom field)))
-    (put-text-property from (+ from (length (custom-tag custom)))
+    (custom-put-text-property from (+ from (length (custom-tag custom)))
 		       'face (custom-field-face field))))
 
 (defun custom-const-valid (custom value)
@@ -1672,7 +1724,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
     (cond ((eq value custom-nil)
 	   (cons start "Uninitialized field"))
 	  ((and (consp value) (eq (car value) custom-invalid))
-	   (cons start "Unparseable field content"))
+	   (cons start "Unparsable field content"))
 	  ((custom-valid custom value)
 	   nil)
 	  (t
@@ -1802,9 +1854,9 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   (let ((from (point)))
     (insert tag)
     (custom-category-set from (point) 'custom-button-properties)
-    (put-text-property from (point) 'custom-tag field)
+    (custom-put-text-property from (point) 'custom-tag field)
     (if data
-	(add-text-properties from (point) (list 'custom-data data)))))
+	(custom-add-text-properties from (point) (list 'custom-data data)))))
 
 (defun custom-documentation-insert (custom &rest ignore)
   "Insert documentation from CUSTOM in current buffer."
@@ -1823,11 +1875,13 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   "Describe how to execute COMMAND."
   (let ((from (point)))
     (insert "`" (key-description (where-is-internal command nil t)) "'")
-    (custom-set-text-properties from (point)
+    (set-text-properties from (point)
 			 (list 'face custom-button-face
 			       mouse-face custom-mouse-face
 			       'custom-jump t ;Make TAB jump over it.
-			       'custom-tag command))
+			       'custom-tag command
+			       'start-open t
+			       'end-open t))
     (custom-category-set from (point) 'custom-documentation-properties))
   (custom-help-insert ": " (custom-first-line (documentation command)) "\n"))
 
@@ -1836,7 +1890,7 @@ If the optional argument SAVE is non-nil, use that for saving changes."
 ;; The Customization major mode and interactive commands. 
 
 (defvar custom-mode-map nil
-  "Keymap for Custum Mode.")
+  "Keymap for Custom Mode.")
 (if custom-mode-map
     nil
   (setq custom-mode-map (make-sparse-keymap))
@@ -2149,12 +2203,13 @@ If the optional argument is non-nil, show text iff the argument is positive."
     (insert-char (custom-padding custom)
 		 (- (custom-width custom) (- (point) from)))
     (custom-field-move field from (point))
-    (custom-set-text-properties 
+    (set-text-properties 
      from (point)
      (list 'custom-field field
 	   'custom-tag field
 	   'face (custom-field-face field)
-	   front-sticky t))))
+	   'start-open t
+	   'end-open t))))
 
 (defun custom-field-read (field)
   ;; Read the screen content of FIELD.
@@ -2170,7 +2225,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
   ;; Deactivate FIELD.
   (let ((before-change-functions nil)
 	(after-change-functions nil))
-    (put-text-property (custom-field-start field) (custom-field-end field)
+    (custom-put-text-property (custom-field-start field) (custom-field-end field)
 		       'face (custom-field-face field))))
 
 (defun custom-field-enter (field)
@@ -2188,7 +2243,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	    (setq pos (1- pos)))
 	  (if (< pos (point))
 	      (goto-char pos))))
-    (put-text-property start end 'face custom-field-active-face)))
+    (custom-put-text-property start end 'face custom-field-active-face)))
 
 (defun custom-field-resize (field)
   ;; Resize FIELD after change.
@@ -2270,7 +2325,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
     (let ((field custom-field-was))
       (custom-assert '(prog1 field (setq custom-field-was nil)))
       ;; Prevent mixing fields properties.
-      (put-text-property begin end 'custom-field field)
+      (custom-put-text-property begin end 'custom-field field)
       ;; Update the field after modification.
       (if (eq (custom-field-property begin) field)
 	  (let ((field-end (custom-field-end field)))

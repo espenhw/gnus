@@ -117,9 +117,7 @@ The text matching the first grouping will be used as a button.")
 
 ;;; Internal Variables:
 
-(defvar gnus-article-length nil)
-;; Length of article last time we parsed it.
-;; BUG! KLUDGE! UGLY! FIX ME!
+(defvar gnus-cite-article nil)
 
 (defvar gnus-cite-prefix-alist nil)
 ;; Alist of citation prefixes.  
@@ -416,7 +414,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-parse-maybe (&optional force)
   ;; Parse if the buffer has changes since last time.
-  (if (eq gnus-article-length (- (point-max) (point-min)))
+  (if (equal gnus-cite-article gnus-article-current)
       ()
     ;;Reset parser information.
     (setq gnus-cite-prefix-alist nil
@@ -428,7 +426,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	     gnus-cite-parse-max-size
 	     (> (buffer-size) gnus-cite-parse-max-size))
 	()
-      (setq gnus-article-length (- (point-max) (point-min)))
+      (setq gnus-cite-article (cons (car gnus-article-current)
+				    (cdr gnus-article-current)))
       (gnus-cite-parse))))
 
 (defun gnus-cite-parse ()

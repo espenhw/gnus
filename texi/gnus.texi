@@ -5421,7 +5421,7 @@ Commands}).
 @findex gnus-summary-refer-parent-article
 @kindex ^ (Summary)
 If you'd like to read the parent of the current article, and it is not
-displayed in the article buffer, you might still be able to.  That is,
+displayed in the summary buffer, you might still be able to.  That is,
 if the current group is fetched by @sc{nntp}, the parent hasn't expired
 and the @code{References} in the current article are not mangled, you
 can just press @kbd{^} or @kbd{A r}
@@ -6414,9 +6414,9 @@ to @kbd{C-c C-c} to make Gnus try to post using the foreign server.
 * Posting Server::       What server should you post via?
 * Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
-* Posting Styles::       An easier way to configure some key elements.
+@c * Posting Styles::       An easier way to configure some key elements.
 @c * Drafts::               Postponing messages and rejected messages.
-* Rejected Articles::    What happens if the server doesn't like your article?
+@c * Rejected Articles::    What happens if the server doesn't like your article?
 @end menu
 
 Also see @pxref{Canceling and Superseding} for information on how to
@@ -6671,84 +6671,83 @@ of names).
 @end table
 
 
-@node Posting Styles
-@section Posting Styles
-@cindex posting styles
-@cindex styles
-
-All them variables, they make my head swim.  
-
-So what if you want a different @code{Organization} and signature based
-on what groups you post to?  And you post both from your home machine
-and your work machine, and you want different @code{From} lines, and so
-on? 
-
-@vindex gnus-posting-styles
-One way to do stuff like that is to write clever hooks that change the
-variables you need to have changed.  That's a bit boring, so somebody
-came up with the bright idea of letting the user specify these things in
-a handy alist.  Here's an example of a @code{gnus-posting-styles}
-variable: 
-
-@lisp
-((".*" 
-  (signature . "Peace and happiness")
-  (organization . "What me?"))
- ("^comp" 
-  (signature . "Death to everybody"))
- ("comp.emacs.i-love-it" 
-  (organization . "Emacs is it")))
-@end lisp
-
-As you might surmise from this example, this alist consists of several
-@dfn{styles}.  Each style will be applicable if the first element
-``matches'', in some form or other.  The entire alist will be iterated
-over, from the beginning towards the end, and each match will be
-applied, which means that attributes in later styles that match override
-the same attributes in earlier matching styles.  So
-@samp{comp.programming.literate} will have the @samp{Death to everybody}
-signature and the @samp{What me?} @code{Organization} header.
-
-The first element in each style is called the @code{match}.  If it's a
-string, then Gnus will try to regexp match it against the group name.
-If it's a function symbol, that function will be called with no
-arguments.  If it's a variable symbol, then the variable will be
-referenced.  If it's a list, then that list will be @code{eval}ed.  In
-any case, if this returns a non-@code{nil} value, then the style is said
-to @dfn{match}.
-
-Each style may contain a arbitrary amount of @dfn{attributes}.  Each
-attribute consists of a @var{(name . value)} pair.  The attribute name
-can be one of @code{signature}, @code{organization} or @code{from}.  The
-attribute name can also be a string.  In that case, this will be used as
-a header name, and the value will be inserted in the headers of the
-article.
-
-The attribute value can be a string (used verbatim), a function (the
-return value will be used), a variable (its value will be used) or a
-list (it will be @code{eval}ed and the return value will be used).
-
-So here's a new example:
-
-@lisp
-(setq gnus-posting-styles
-      '((".*" 
-          (signature . "~/.signature") 
-          (from . "user@@foo (user)")
-          ("X-Home-Page" . (getenv "WWW_HOME"))
-          (organization . "People's Front Against MWM"))
-        ("^rec.humor" 
-          (signature . my-funny-signature-randomizer))
-        ((equal (system-name) "gnarly")
-          (signature . my-quote-randomizer))
-        (posting-from-work-p
-          (signature . "~/.work-signature")
-          (from . "user@@bar.foo (user)")
-          (organization . "Important Work, Inc"))
-        ("^nn.+:" 
-          (signature . "~/.mail-signature"))))
-@end lisp
-
+@c @node Posting Styles
+@c @section Posting Styles
+@c @cindex posting styles
+@c @cindex styles
+@c 
+@c All them variables, they make my head swim.  
+@c 
+@c So what if you want a different @code{Organization} and signature based
+@c on what groups you post to?  And you post both from your home machine
+@c and your work machine, and you want different @code{From} lines, and so
+@c on? 
+@c 
+@c @vindex gnus-posting-styles
+@c One way to do stuff like that is to write clever hooks that change the
+@c variables you need to have changed.  That's a bit boring, so somebody
+@c came up with the bright idea of letting the user specify these things in
+@c a handy alist.  Here's an example of a @code{gnus-posting-styles}
+@c variable: 
+@c 
+@c @lisp
+@c ((".*" 
+@c   (signature . "Peace and happiness")
+@c   (organization . "What me?"))
+@c  ("^comp" 
+@c   (signature . "Death to everybody"))
+@c  ("comp.emacs.i-love-it" 
+@c   (organization . "Emacs is it")))
+@c @end lisp
+@c 
+@c As you might surmise from this example, this alist consists of several
+@c @dfn{styles}.  Each style will be applicable if the first element
+@c ``matches'', in some form or other.  The entire alist will be iterated
+@c over, from the beginning towards the end, and each match will be
+@c applied, which means that attributes in later styles that match override
+@c the same attributes in earlier matching styles.  So
+@c @samp{comp.programming.literate} will have the @samp{Death to everybody}
+@c signature and the @samp{What me?} @code{Organization} header.
+@c 
+@c The first element in each style is called the @code{match}.  If it's a
+@c string, then Gnus will try to regexp match it against the group name.
+@c If it's a function symbol, that function will be called with no
+@c arguments.  If it's a variable symbol, then the variable will be
+@c referenced.  If it's a list, then that list will be @code{eval}ed.  In
+@c any case, if this returns a non-@code{nil} value, then the style is said
+@c to @dfn{match}.
+@c 
+@c Each style may contain a arbitrary amount of @dfn{attributes}.  Each
+@c attribute consists of a @var{(name . value)} pair.  The attribute name
+@c can be one of @code{signature}, @code{organization} or @code{from}.  The
+@c attribute name can also be a string.  In that case, this will be used as
+@c a header name, and the value will be inserted in the headers of the
+@c article.
+@c 
+@c The attribute value can be a string (used verbatim), a function (the
+@c return value will be used), a variable (its value will be used) or a
+@c list (it will be @code{eval}ed and the return value will be used).
+@c 
+@c So here's a new example:
+@c 
+@c @lisp
+@c (setq gnus-posting-styles
+@c       '((".*" 
+@c           (signature . "~/.signature") 
+@c           (from . "user@@foo (user)")
+@c           ("X-Home-Page" . (getenv "WWW_HOME"))
+@c           (organization . "People's Front Against MWM"))
+@c         ("^rec.humor" 
+@c           (signature . my-funny-signature-randomizer))
+@c         ((equal (system-name) "gnarly")
+@c           (signature . my-quote-randomizer))
+@c         (posting-from-work-p
+@c           (signature . "~/.work-signature")
+@c           (from . "user@@bar.foo (user)")
+@c           (organization . "Important Work, Inc"))
+@c         ("^nn.+:" 
+@c           (signature . "~/.mail-signature"))))
+@c @end lisp
 
 @c @node Drafts
 @c @section Drafts
@@ -11965,6 +11964,7 @@ and general method of operations.
 * Headers::                  How Gnus stores headers internally.
 * Ranges::                   A handy format for storing mucho numbers.
 * Group Info::               The group info format.
+* Emacs/XEmacs Code::        Gnus can be run under all modern Emacsen.
 * Various File Formats::     Formats of files that Gnus use.
 @end menu
 
@@ -12849,6 +12849,48 @@ parameters    = "(" *elisp-forms ")"
 Actually that @samp{marks} rule is a fib.  A @samp{marks} is a
 @samp{<string>} consed on to a @samp{range}, but that's a bitch to say
 in pseudo-BNF.
+
+
+@node Emacs/XEmacs Code
+@subsection Emacs/XEmacs Code
+@cindex XEmacs
+@cindex Emacsen
+
+While Gnus runs under Emacs, XEmacs and Mule, I decided that one of the
+platforms must be the primary one.  I chose Emacs.  Not because I don't
+like XEmacs or Mule, but because it comes first alphabetically.
+
+This means that Gnus will byte-compile under Emacs with nary a warning,
+while XEmacs will pump out gigabytes of warnings while byte-compiling.
+As I use byte-compilation warnings to help me root out trivial errors in
+Gnus, that's very useful.  
+
+I've also consistently used Emacs function interfaces, but have used
+Gnusey aliases for the functions.  To take an example:  Emacs defines a
+@code{run-at-time} function while XEmacs defines a @code{start-itimer}
+function.  I then define a function called @code{gnus-run-at-time} that
+takes the same parameters as the Emacs @code{run-at-time}.  When running
+Gnus under Emacs, the former function is just an alias for the latter.
+However, when running under XEmacs, the former is an alias for the
+following function:
+
+@lisp
+(defun gnus-xmas-run-at-time (time repeat function &rest args)
+  (start-itimer
+   "gnus-run-at-time"
+   `(lambda ()
+      (,function ,@@args))
+   time repeat))
+@end lisp
+
+This sort of thing has been done for bunches of functions.  Gnus does
+not redefine any native Emacs functions while running under XEmacs -- it
+does this @code{defalias} thing with Gnus equivalents instead.  Cleaner
+all over.
+
+Of course, I could have chosen XEmacs as my native platform and done
+mapping functions the other way around.  But I didn't.  The performance
+hit these indirections impose on Gnus under XEmacs should be slight.
 
 
 @node Various File Formats

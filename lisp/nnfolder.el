@@ -66,6 +66,9 @@ it.")
 (defvoo nnfolder-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
+(defvoo nnfolder-save-buffer-hook nil
+  "Hook run before saving the nnfolder mbox buffer.")
+
 (defvoo nnfolder-inhibit-expiry nil
   "If non-nil, inhibit expiry.")
 
@@ -222,7 +225,7 @@ it.")
 	       (setq nnfolder-buffer-alist 
 		     (delq (car bufs) nnfolder-buffer-alist))
 	     (set-buffer (nth 1 (car bufs)))
-	     (and (buffer-modified-p) (save-buffer))
+	     (nnfolder-save-buffer)
 	     (kill-buffer (current-buffer)))
 	   (setq bufs (cdr bufs))))))
    nnfolder-directory
@@ -251,7 +254,7 @@ it.")
       (save-excursion
 	(set-buffer nnfolder-current-buffer)
 	;; If the buffer was modified, write the file out now.
-	(and (buffer-modified-p) (save-buffer))
+	(nnfolder-save-buffer)
 	;; If we're shutting the server down, we need to kill the
 	;; buffer and remove it from the open buffer list.  Or, of
 	;; course, if we're trying to minimize our space impact.
@@ -310,7 +313,7 @@ it.")
 		  (nnfolder-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
-      (and (buffer-modified-p) (save-buffer))
+      (nnfolder-save-buffer)
       ;; Find the lowest active article in this group.
       (let* ((active (cadr (assoc newsgroup nnfolder-group-alist)))
 	     (marker (concat "\n" nnfolder-article-marker))
@@ -354,9 +357,7 @@ it.")
        (goto-char (point-min))
        (if (search-forward (nnfolder-article-string article) nil t)
 	   (nnfolder-delete-mail))
-       (and last 
-	    (buffer-modified-p)
-	    (save-buffer))))
+       (and last (nnfolder-save-buffer))))
     result))
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
@@ -379,7 +380,7 @@ it.")
        (setq result (car (nnfolder-save-mail (and (stringp group) group)))))
      (save-excursion
        (set-buffer nnfolder-current-buffer)
-       (and last (buffer-modified-p) (save-buffer))))
+       (and last (nnfolder-save-buffer))))
     (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
     (unless result
       (nnheader-report 'nnfolder "Couldn't store article"))
@@ -394,7 +395,7 @@ it.")
 	nil
       (nnfolder-delete-mail t t)
       (insert-buffer-substring buffer)
-      (and (buffer-modified-p) (save-buffer))
+      (nnfolder-save-buffer)
       t)))
 
 (deffoo nnfolder-request-delete-group (group &optional force server)
@@ -719,6 +720,12 @@ it.")
 	(concat dir group)
       ;; If not, we translate dots into slashes.
       (concat dir (nnheader-replace-chars-in-string group ?. ?/)))))
+
+(defun nnfolder-save-buffer ()
+  "Save the buffer."
+  (when (buffer-modified-p)
+    (run-hooks 'nnfolder-save-buffer-hook)
+    (save-buffer)))
 
 (provide 'nnfolder)
 

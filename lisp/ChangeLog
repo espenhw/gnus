@@ -1,3 +1,72 @@
+Wed May 29 05:08:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* custom.el (custom-xmas-add-text-properties,
+	custom-xmas-put-text-property): New functions used throughout.
+	May now work under XEmacs.
+
+Wed May 29 00:07:13 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus-cite.el (gnus-cite-article): New variable.
+	(gnus-cite-parse-maybe): Use it.
+
+	* nnspool.el (nnspool-open-server): Refuse opening if the active
+	file doesn't exist.
+
+	* gnus.el (gnus-read-active-file): Message more.
+
+	* nntp.el (nntp-request-article): Wouldn't wait until the entire
+	article had arrived.
+
+	* nnvirtual.el (nnvirtual-request-group): Make sure that things
+	don't recurse endlessly.
+
+	* message.el (message-expand-group): Make buffer not read-only. 
+
+	* gnus-nocem.el (gnus-nocem-verifyer): New variable.
+	(gnus-nocem-verify-issuer): Use it.
+
+	* gnus-xmas.el (gnus-xmas-logo-color-alist): New variable.
+	(gnus-xmas-logo-color-style): New variable.
+	(gnus-xmas-logo-colors): Use them.
+
+Tue May 28 00:28:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-followup): Would infloop on exact
+	matches. 
+
+	* message.el (message-forward): Insert separator at the start of
+	the line. 
+
+	* nnfolder.el (nnfolder-save-buffer): New function.
+	(nnfolder-save-buffer-hook): New variable.
+
+	* message.el (message-mode-hook): Defined variable.
+
+	* nntp.el (nntp-request-close): Remove the sentinel before closing
+	connection.
+
+	* gnus.el (gnus-group-mode): Add to local hook.
+	(gnus-continuum-version): Would return wrong answer for non-alpha
+	releases. 
+	(gnus-version-number): New variable.
+	(gnus-version): Use it.
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Add to local hook.
+
+	* gnus-xmas.el (gnus-xmas-add-hook): New function.
+
+	* gnus-ems.el (gnus-add-hook): New alias.
+
+Tue May 28 00:23:17 1996  Joao Cachopo  <jcachopo@gia.ist.utl.pt>
+
+	* gnus-salt.el (gnus-binary-mode): Would put wrong minor mode
+	keymap into alist.
+
+Tue May 28 00:18:19 1996  Thor Kristoffersen  <thor@unik.no>
+
+	* nntp.el (nntp-close-server): Supply parameter to
+	`nntp-server-opened'. 
+
 Sun May 26 20:29:02 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 
 	* gnus.el (gnus-article-sort-by-date): Inline.
@@ -17,6 +86,10 @@ Sun May 26 20:29:02 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 	articles into the original buffer as well.
 
 Sun May 26 03:51:38 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.1 is released.
+
+	* gnus.el: Gnus v5.2.0 is released.
 
 	* gnus.el: September Gnus v0.96 is released.
 

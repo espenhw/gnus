@@ -257,8 +257,8 @@ instead use `nntp-server-buffer'.")
 	      (and (numberp nntp-large-newsgroup)
 		   (> number nntp-large-newsgroup)
 		   (zerop (% received 20))
-		   (message "NNTP: Receiving headers... %d%%"
-			    (/ (* received 100) number)))
+		   (nnheader-message 7 "NNTP: Receiving headers... %d%%"
+				     (/ (* received 100) number)))
 	      (nntp-accept-response))))
 	;; Wait for text of last command.
 	(goto-char (point-max))
@@ -270,7 +270,7 @@ instead use `nntp-server-buffer'.")
 	    (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
-	     (message "NNTP: Receiving headers...done"))
+	     (nnheader-message 7 "NNTP: Receiving headers...done"))
 
 	;; Now all of replies are received.  Fold continuation lines.
 	(nnheader-fold-continuation-lines)
@@ -370,7 +370,7 @@ servers."
 		 (process-sentinel nntp-server-process))
 	     (set-process-sentinel nntp-server-process nil))
 	;; We cannot send QUIT command unless the process is running.
-	(when (nntp-server-opened)
+	(when (nntp-server-opened server)
 	  (nntp-send-command nil "QUIT")
 	  ;; Give the QUIT time to arrive.
 	  (sleep-for 1)))
@@ -378,9 +378,12 @@ servers."
 
 (deffoo nntp-request-close ()
   "Close all server connections."
-  (let (proc entry)
+  (let (proc)
     (while nntp-opened-connections
       (when (setq proc (pop nntp-opened-connections))
+	;; Un-set default sentinel function before closing connection.
+	(when (eq 'nntp-default-sentinel (process-sentinel proc))
+	  (set-process-sentinel proc nil))
 	(condition-case ()
 	    (process-send-string proc (concat "QUIT" nntp-end-of-line))
 	  (error nil))
@@ -391,7 +394,8 @@ servers."
     (and nntp-async-buffer
 	 (buffer-name nntp-async-buffer)
 	 (kill-buffer nntp-async-buffer))
-    (let ((alist (cddr (assq 'nntp nnoo-state-alist))))
+    (let ((alist (cddr (assq 'nntp nnoo-state-alist)))
+	  entry)
       (while (setq entry (pop alist))
 	(and (setq proc (cdr (assq 'nntp-async-buffer entry)))
 	     (buffer-name proc)
@@ -462,7 +466,7 @@ servers."
 	      (prog1
 		  (and (nntp-send-command 
 			;; A bit odd regexp to ensure working over rlogin.
-			"^\\.\\(\r?\n\\|\r$\\)" "ARTICLE" art)
+			"^\\.\r?\n" "ARTICLE" art)
 		       (if (numberp id) 
 			   (cons nntp-current-group id)
 			 ;; We find out what the article number was.
@@ -664,7 +668,7 @@ It will prompt for a password."
       (setq server (caar servers)))
     (when (and server
 	       nntp-warn-about-losing-connection)
-      (message "nntp: Connection closed to server %s" server)
+      (nnheader-message 3 "nntp: Connection closed to server %s" server)
       (setq nntp-current-group "")
       (ding))))
 
@@ -845,8 +849,8 @@ It will prompt for a password."
 		    (message-log-max nil))
 		(unless (= dotnum newnum)
 		  (setq dotnum newnum)
-		  (message "NNTP: Reading %s"
-			   (make-string dotnum ?.)))))
+		  (nnheader-message 7 "NNTP: Reading %s"
+				    (make-string dotnum ?.)))))
 	    (nntp-accept-response)))
 	;; Remove "...".
 	(when (and nntp-debug-read (> dotnum 0))
@@ -1076,7 +1080,7 @@ If SERVICE, this this as the port number."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (setq nntp-status-string "")
-      (message "nntp: Connecting to server on %s..." nntp-address)
+      (nnheader-message 5 "nntp: Connecting to server on %s..." nntp-address)
       (cond ((and server (nntp-open-server-internal server service))
 	     (setq nntp-address server)
 	     (setq status
@@ -1222,9 +1226,9 @@ defining this function as macro."
 		;; We cannot use `accept-process-output'.
 		;; Fujitsu UTS requires messages during sleep-for.
 		;; I don't know why.
-		(message "NNTP: Reading...")
+		(nnheader-message 5 "NNTP: Reading...")
 		(sleep-for 1)
-		(message ""))
+		(nnheader-message 5 ""))
 	    (condition-case errorcode
 		(accept-process-output nntp-server-process 1)
 	      (error

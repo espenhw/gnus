@@ -35,8 +35,27 @@
 If this variable is nil, Gnus will try to locate the directory
 automatically.")
 
-(defvar gnus-xmas-logo-colors '("#bf9900" "#ffcc00")
-  "Colors user for the Gnus logo.")
+(defvar gnus-xmas-logo-color-alist
+  '((flame "##cc3300" "##ff2200") 
+    (pine "##c0cc93" "##f8ffb8") 
+    (moss "##a1cc93" "##d2ffb8")
+    (irish "##04cc90" "##05ff97")
+    (sky "##049acc" "##05deff")
+    (tin "##6886cc" "##82b6ff")
+    (velvet "##7c68cc" "##8c82ff")
+    (grape "##b264cc" "##cf7df")
+    (labia "##cc64c2" "##fd7dff")
+    (berry "##cc6485" "##ff7db5")
+    (neutral "##b4b4b4" "##878787")
+    (september "#bf9900" "#ffcc00"))
+  "Color alist used for the Gnus logo.")
+
+(defvar gnus-xmas-logo-color-style 'september
+  "Color styles used for the Gnus logo.")
+
+(defvar gnus-xmas-logo-colors (cdr (assq gnus-xmas-logo-color-style 
+					 gnus-xmas-logo-color-alist))
+  "Colors used for the Gnus logo.")
 
 ;;; Internal variables.
 
@@ -144,6 +163,9 @@ displayed, no centering will be performed."
 	  (gnus-summary-position-point)
 	  (gnus-horizontal-recenter)
 	  (select-window selected))))))
+
+(defun gnus-xmas-add-hook (hook function &optional append local)
+  (add-hook hook function))
 
 (defun gnus-xmas-add-text-properties (start end props &optional object)
   (add-text-properties start end props object)
@@ -453,6 +475,7 @@ pounce directly on the real variables themselves.")
 	'gnus-xmas-appt-select-lowest-window)
   (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
   (fset 'gnus-make-local-hook 'make-local-variable)
+  (fset 'gnus-add-hook 'gnus-xmas-add-hook)
   (fset 'gnus-character-to-event 'character-to-event)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)

@@ -167,8 +167,8 @@ If given a prefix, mark all unpicked articles as read."
 	(gnus-binary-make-menu-bar))
       (unless (assq 'gnus-binary-mode minor-mode-alist)
 	(push '(gnus-binary-mode " Binary") minor-mode-alist))
-      (unless (assq 'gnus-topic-mode minor-mode-map-alist)
-	(push (cons 'gnus-topic-mode gnus-binary-mode-map)
+      (unless (assq 'gnus-binary-mode minor-mode-map-alist)
+	(push (cons 'gnus-binary-mode gnus-binary-mode-map)
 	      minor-mode-map-alist))
       (run-hooks 'gnus-binary-mode-hook))))
 

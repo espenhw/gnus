@@ -252,6 +252,9 @@ always use the value.")
   "Normal hook, run each time a new outgoing message is initialized.
 The function `message-setup' runs this hook.")
 
+(defvar message-mode-hook nil
+  "Hook run in message mode buffers.")
+
 (defvar message-header-setup-hook nil
   "Hook called narrowed to the headers when setting up a message buffer.")
 
@@ -708,6 +711,8 @@ Return the number of headers removed."
     "----"
     ["To" message-goto-to t]
     ["Subject" message-goto-subject t]
+    ["Cc" message-goto-cc t]
+    ["Reply-to" message-goto-reply-to t]
     ["Summary" message-goto-summary t]
     ["Keywords" message-goto-keywords t]
     ["Newsgroups" message-goto-newsgroups t]
@@ -2557,6 +2562,9 @@ Optional NEWS will use news to forward instead of mail."
     (if message-signature-before-forwarded-message
 	(goto-char (point-max))
       (message-goto-body))
+    ;; Make sure we're at the start of the line.
+    (unless (eolp)
+      (insert "\n"))
     ;; Narrow to the area we are to insert.
     (narrow-to-region (point) (point))
     ;; Insert the separators and the forwarded buffer.
@@ -2792,11 +2800,12 @@ Do a `tab-to-tab-stop' if not in those headers."
 	  (message "No matching groups")
 	(pop-to-buffer "*Completions*")
 	(buffer-disable-undo (current-buffer))
-	(erase-buffer)
-	(let ((standard-output (current-buffer)))
-	  (display-completion-list (sort completions 'string<)))
-	(goto-char (point-min))
-	(pop-to-buffer cur))))))
+	(let ((buffer-read-only nil))
+	  (erase-buffer)
+	  (let ((standard-output (current-buffer)))
+	    (display-completion-list (sort completions 'string<)))
+	  (goto-char (point-min))
+	  (pop-to-buffer cur)))))))
 
 ;;; Help stuff.
 
