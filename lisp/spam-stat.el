@@ -208,7 +208,7 @@ This is set by hooking into Gnus.")
   "Name of the `spam-stat-buffer'.")
 
 (defvar spam-stat-coding-system
-  (if (coding-system-p 'emacs-mule) 'emacs-mule 'raw-text)
+  (if (mm-coding-system-p 'emacs-mule) 'emacs-mule 'raw-text)
   "Coding system used for `spam-stat-file'.")
 
 ;; Hooking into Gnus

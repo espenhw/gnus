@@ -1,3 +1,7 @@
+2004-03-10  Malcolm Purvis <malcolmpurvis@optushome.com.au>  (tiny change)
+
+	* spam-stat.el (spam-stat-coding-system): Use mm-coding-system-p.
+
 2004-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-complicated-handles): New function reviving
