@@ -1291,7 +1291,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.91"
+(defconst gnus-version "(ding) Gnus v0.91.1"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1845,6 +1845,7 @@ Thank you for your help in stamping out bugs.
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
 	  (gnus-score-over-mark 130)
+	  (thread nil)
 	  pos)
       (gnus-set-work-buffer)
       (gnus-summary-insert-line 
