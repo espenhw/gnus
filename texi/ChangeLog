@@ -1,3 +1,7 @@
+1999-11-07 01:28:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (MIME Commands): Addition.
+
 1999-11-06 23:09:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Customizing Articles): Fix.
@@ -15,6 +19,10 @@
 1999-09-27 16:07:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* emacs-mime.texi (New Viewers): Fix.
+
+1999-10-29  David S. Goldberg  <dsg@mitre.org>
+
+	* emacs-mime.texi (Customization): Document mm-inline-override-types
 
 1999-09-25 10:58:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

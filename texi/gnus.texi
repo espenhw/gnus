@@ -7108,7 +7108,51 @@ Translate the article from one language to another
 @section @sc{mime} Commands
 @cindex MIME decoding
 
+The following commands all understand the numerical prefix.  For
+instance, @kbd{3 b} means ``view the third @sc{mime} part''.
+
+@table @kdb
+@item b
+@itemx K b
+@kindex b (Summary)
+@kindex K b (Summary)
+View the @sc{mime} part.
+
+@item K o
+@kindex K o (Summary)
+Save the @sc{mime} part.
+
+@item K c
+@kindex K c (Summary)
+Copy the @sc{mime} part.
+
+@item K e
+@kindex K e (Summary)
+View the @sc{mime} part externally.
+
+@item K i
+@kindex K i (Summary)
+View the @sc{mime} part internally.
+
+@item K |
+@kindex K | (Summary)
+Pipe the @sc{mime} part to an external command.
+@end table
+
+The rest of these @sc{mime} commands do not use the numerical prefix in
+the same manner:
+
 @table @kbd
+@item K b
+@kindex K b (Summary)
+Make all the @sc{mime} parts have buttons in from of them.
+
+@item K m
+@kindex K m (Summary)
+Some multipart messages are transmitted with missing or faulty headers.
+This command will attempt to ``repair'' these messages so that they can
+be viewed in a more pleasant manner.
+
 @item X m
 @kindex X m (Summary)
 @findex gnus-summary-save-parts

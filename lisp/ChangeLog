@@ -1,3 +1,37 @@
+1999-11-07 01:17:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndraft.el (nndraft-request-expire-articles): Do all the backup
+	files. 
+
+1999-10-29  David S. Goldberg  <dsg@mitre.org>
+
+	* emacs-mime.texi (Customization): Document mm-inline-override-types
+
+1999-10-29  David S. Goldberg  <dsg@mitre.org>
+
+	* emacs-mime.texi (Customization): Document mm-inline-override-types
+
+1999-10-29  David S. Goldberg  <dsg@mitre.org>
+
+	* emacs-mime.texi (Customization): Document mm-inline-override-types
+
+1999-10-26  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* smiley.el (gnus-smiley-display): Use `smiley-toggle-buffer'.
+	(smiley-toggle-buffer): New function.
+	(smiley-buffer): Don't quote the function.
+	(smiley-toggle-extents): Ditto.
+
+1999-11-07 01:00:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-goto-missing-topic): Work even in
+	empty buffers.
+
+1999-11-06 23:16:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-mode-map): Use the summary article
+	edit. 
+
 1999-11-06 22:56:49  Jens-Ulrik Petersen  <Jens-Ulrik.Petersen@nokia.com>
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Doc fix.
@@ -299,9 +333,17 @@ Fri Nov  5 19:10:02 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* mm-decode.el mm-inline-override-types: New variable
 
-	* mm-decode.el (mm-inline-override-p): Use it
+	* mm-decode.el (mm-inline-override-p): New function
 
-	* gnus-art.el (gnus-mime-display-single): Then use that
+	* mm-decode.el (mm-inlined-p): Use it
+
+1999-10-20  David S. Goldberg  <dsg@mitre.org>
+
+	* mm-decode.el mm-inline-override-types: New variable
+
+	* mm-decode.el (mm-inline-override-p): New function
+
+	* mm-decode.el (mm-inlined-p): Use it
 
 Mon Sep 27 15:18:05 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

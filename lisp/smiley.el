@@ -213,18 +213,17 @@ above them."
 (defun smiley-toggle-extents (e)
   (interactive "e")
   (map-extents
-   '(lambda (e void)
-      (let (ant)
-	(if (annotationp (setq ant (extent-property e 'smiley-annotation)))
-	    (progn
-	      (if (eq (extent-property e 'invisible) nil)
-		  (progn
-		    (reveal-annotation ant)
-		    (set-extent-property e 'invisible t)
-		    )
-		(hide-annotation ant)
-		(set-extent-property e 'invisible nil))))
-	nil))
+   (lambda (e void)
+     (let (ant)
+       (if (annotationp (setq ant (extent-property e 'smiley-annotation)))
+	   (if (eq (extent-property e 'invisible) nil)
+	       (progn
+		 (reveal-annotation ant)
+		 (set-extent-property e 'invisible t)
+		 )
+	     (hide-annotation ant)
+	     (set-extent-property e 'invisible nil)))
+       nil))
    (event-buffer e)))
 
 ;;;###autoload
@@ -241,10 +240,10 @@ above them."
 	    (case-fold-search nil)
 	    entry regexp beg group file)
 	(map-extents
-	 '(lambda (e void)
-	    (when (or (extent-property e 'smiley-extent)
-		      (extent-property e 'smiley-annotation))
-	      (delete-extent e)))
+	 (lambda (e void)
+	   (when (or (extent-property e 'smiley-extent)
+		     (extent-property e 'smiley-annotation))
+	     (delete-extent e)))
 	 buffer st nd)
 	(goto-char (or st (point-min)))
 	(setq beg (point))
@@ -304,15 +303,46 @@ Mouse button3 - menu"))
 		   (eq (char-after (1- (point))) ?\()))
       t)))
 
+(defun smiley-toggle-buffer (&optional arg buffer st nd)
+  "Toggle displaying smiley faces.
+With arg, turn displaying on if and only if arg is positive."
+  (interactive "P")
+  (let (on off)
+    (map-extents
+     (lambda (e void)
+       (let (ant)
+	 (if (annotationp (setq ant (extent-property e 'smiley-annotation)))
+	     (if (eq (extent-property e 'invisible) nil)
+		 (setq off (cons (cons ant e) off))
+	       (setq on (cons (cons ant e) on)))))
+       nil)
+     buffer st nd)
+    (if (and (not (and (numberp arg) (< arg 0)))
+	     (or (and (numberp arg) (> arg 0))
+		 (null on)))
+	(if off
+	    (while off
+	      (reveal-annotation (caar off))
+	      (set-extent-property (cdar off) 'invisible t)
+	      (setq off (cdr off)))
+	  (smiley-buffer))
+      (while on
+	(hide-annotation (caar on))
+	(set-extent-property (cdar on) 'invisible nil)
+	(setq on (cdr on))))))
+
 (defvar gnus-article-buffer)
 ;;;###autoload
-(defun gnus-smiley-display ()
-  "Display \"smileys\" as small graphical icons."
-  (interactive)
+(defun gnus-smiley-display (&optional arg)
+  "Display \"smileys\" as small graphical icons.
+With arg, turn displaying on if and only if arg is positive."
+  (interactive "P")
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (article-goto-body)
-    (smiley-buffer (current-buffer) (point-min) (point-max))))
+    (save-restriction
+      (widen)
+      (article-goto-body)
+      (smiley-toggle-buffer arg (current-buffer) (point) (point-max)))))
 
 (provide 'smiley)
 

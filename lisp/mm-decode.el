@@ -127,23 +127,28 @@
      (lambda (handle)
        (and (or (featurep 'nas-sound) (featurep 'native-sound))
 	    (device-sound-enabled-p))))
+    ("application/pgp-signature" ignore identity)
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity))
   "Alist of media types/test that say whether the media types can be displayed inline.")
 
 (defvar mm-inlined-types
-  '("image/.*" "text/.*" "message/delivery-status" "message/rfc822")
+  '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
+    "application/pgp-signature")
   "List of media types that are to be displayed inline.")
   
 (defvar mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822" "text/x-patch")
+    "message/rfc822" "text/x-patch" "application/pgp-signature")
   "A list of MIME types to be displayed automatically.")
 
 (defvar mm-attachment-override-types '("text/x-vcard")
   "Types that should have \"attachment\" ignored if they can be displayed inline.")
+
+(defvar mm-inline-override-types nil
+  "Types that should be treated as attachments even if they can be displayed inline.")
 
 (defvar mm-inline-override-types nil
   "Types that should be treated as attachments even if they can be displayed inline.")
@@ -474,7 +479,8 @@ external if displayed external."
 	(type (mm-handle-media-type handle))
 	method result)
     (while (setq method (pop methods))
-      (when (and (string-match method type)
+      (when (and (not (mm-inline-override-p handle))
+		 (string-match method type)
 		 (mm-inlinable-p handle))
 	(setq result t
 	      methods nil)))
@@ -486,7 +492,8 @@ external if displayed external."
 	(type (mm-handle-media-type handle))
 	method result)
     (while (setq method (pop methods))
-      (when (and (string-match method type)
+      (when (and (not (mm-inline-override-p handle))
+		 (string-match method type)
 		 (mm-inlinable-p handle))
 	(setq result t
 	      methods nil)))
@@ -501,6 +508,16 @@ external if displayed external."
       (while (setq ty (pop types))
 	(when (and (string-match ty type)
 		   (mm-inlinable-p handle))
+	  (throw 'found t))))))
+
+(defun mm-inline-override-p (handle)
+  "Say whether HANDLE should have inline behavior overridden."
+  (let ((types mm-inline-override-types)
+	(type (mm-handle-media-type handle))
+	ty)
+    (catch 'found
+      (while (setq ty (pop types))
+	(when (string-match ty type)
 	  (throw 'found t))))))
 
 (defun mm-inline-override-p (handle)

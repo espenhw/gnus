@@ -899,6 +899,14 @@ library will display it externally (e.g. with @samp{ImageMagick} or
 makes the library display all inline images as inline, regardless of
 their size.
 
+@item mm-inline-override-p
+@code{mm-inlined-types} may include regular expressions, for example to
+specify that all @samp{text/.*} parts be displayed inline.  If a user
+prefers to have a type that matches such a regular expression be treated
+as an attachment, that can be accomplished by setting this variable to a
+list containing that type.  For example assuming @code{mm-inlined-types}
+includes @samp{text/.*}, then including @samp{text/html} in this
+variable will cause @samp{text/html} parts to be treated as attachments.
 
 @end table
 

@@ -618,15 +618,18 @@ articles in the topic and its subtopics."
     (let* ((top (gnus-topic-find-topology
 		 (gnus-topic-parent-topic topic)))
 	   (tp (reverse (cddr top))))
-      (while (not (equal (caaar tp) topic))
-	(setq tp (cdr tp)))
-      (pop tp)
-      (while (and tp
-		  (not (gnus-topic-goto-topic (caaar tp))))
-	(pop tp))
-      (if tp
-	  (gnus-topic-forward-topic 1)
-	(gnus-topic-goto-missing-topic (caadr top))))
+      (if (not top)
+	  (gnus-topic-insert-topic-line
+	   topic t t (car (gnus-topic-find-topology topic)) nil 0)
+	(while (not (equal (caaar tp) topic))
+	  (setq tp (cdr tp)))
+	(pop tp)
+	(while (and tp
+		    (not (gnus-topic-goto-topic (caaar tp))))
+	  (pop tp))
+	(if tp
+	    (gnus-topic-forward-topic 1)
+	  (gnus-topic-goto-missing-topic (caadr top)))))
     nil))
 
 (defun gnus-topic-update-topic-line (topic-name &optional reads)

@@ -2458,7 +2458,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   "s" gnus-article-show-summary
   "\C-c\C-m" gnus-article-mail
   "?" gnus-article-describe-briefly
-  "e" gnus-article-edit
+  "e" gnus-summary-article-edit
   "<" beginning-of-buffer
   ">" end-of-buffer
   "\C-c\C-i" gnus-info-find-node
@@ -3177,11 +3177,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (when (string-match (pop ignored) type)
 	    (throw 'ignored nil)))
 	(if (and (setq not-attachment
-		       (or (not (mm-handle-disposition handle))
-			   (equal (car (mm-handle-disposition handle))
-				  "inline")
-			   (mm-attachment-override-p handle)
-			   (not (mm-inline-override-p handle))))
+		       (and (not (mm-inline-override-p handle))
+			    (or (not (mm-handle-disposition handle))
+				(equal (car (mm-handle-disposition handle))
+				       "inline")
+				(mm-attachment-override-p handle))))
 		 (mm-automatic-display-p handle)
 		 (or (mm-inlined-p handle)
 		     (mm-automatic-external-display-p type)))
