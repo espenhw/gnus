@@ -1,3 +1,7 @@
+2000-05-19  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el (gnus-article-next-page): Revert last change.
+
 2000-05-19 09:56:07  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-open-history): Open history in binary mode.
