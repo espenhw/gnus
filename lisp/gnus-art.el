@@ -2510,13 +2510,13 @@ This format is defined by the `gnus-article-time-format' variable."
 		face (nth 3 elem))
 	  (while (re-search-forward regexp nil t)
 	    (when (and (match-beginning visible) (match-beginning invisible))
-	      (push 'emphasis gnus-article-wash-types)
 	      (gnus-article-hide-text
 	       (match-beginning invisible) (match-end invisible) props)
 	      (gnus-article-unhide-text-type
 	       (match-beginning visible) (match-end visible) 'emphasis)
 	      (gnus-put-text-property-excluding-newlines
 	       (match-beginning visible) (match-end visible) 'face face)
+	      (push 'emphasis gnus-article-wash-types)
 	      (goto-char (match-end invisible)))))))))
 
 (defun gnus-article-setup-highlight-words (&optional highlight-words)

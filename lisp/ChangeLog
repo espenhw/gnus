@@ -1,5 +1,8 @@
 2001-10-12  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (article-emphasize): Set `g-a-wash-types' after
+	doing stuff that clears it.
+
 	* gnus-cache.el (gnus-summary-limit-include-cached): Rewrite.
 	From Eric Marsden <emarsden@laas.fr>.
 
