@@ -677,7 +677,7 @@ If LOW, update the lower bound instead."
       (gnus-message 5 "Generating the cache active file...")
       (setq gnus-cache-active-hashtb (gnus-make-hashtable 123)))
     (when (string-match "^\\(nn[^_]+\\)_" group)
-      (setq group (replace-match "\\1:" t t group)))
+      (setq group (replace-match "\\1:" t nil group)))
     ;; Separate articles from all other files and directories.
     (while files
       (if (string-match "^[0-9]+$" (file-name-nondirectory (car files)))
