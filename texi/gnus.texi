@@ -277,15 +277,20 @@ Copyright \copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with the
-Invariant Sections being none, with the Front-Cover texts being ``A GNU
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
 Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
 license is included in the section entitled ``GNU Free Documentation
-License''.
+License'' in the Emacs manual.
 
 (a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
 this GNU Manual, like GNU software.  Copies published by the Free
 Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
 \newpage
 \end{titlepage}
 @end iflatex
@@ -303,11 +308,16 @@ any later version published by the Free Software Foundation; with the
 Invariant Sections being none, with the Front-Cover texts being ``A GNU
 Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
 license is included in the section entitled ``GNU Free Documentation
-License''.
+License'' in the Emacs manual.
 
 (a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
 this GNU Manual, like GNU software.  Copies published by the Free
 Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
 @end ifnottex
 
 @tex
@@ -321,17 +331,22 @@ Software Foundation raise funds for GNU development.''
 @vskip 0pt plus 1filll
 Copyright @copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
 
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the
-entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
 
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
 
 @end titlepage
 @page
@@ -718,6 +733,7 @@ Scoring
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
+* Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -15002,6 +15018,7 @@ silently to help keep the sizes of the score files down.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
+* Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -16291,8 +16308,7 @@ A hook called in kill-file mode buffers.
 
 @end table
 
-@c The URL below is invalid and the code isn't on gnus.org.
-@ignore
+
 @node Converting Kill Files
 @section Converting Kill Files
 @cindex kill files
@@ -16311,7 +16327,6 @@ If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
 hand.  Or just let them be as they are.  Gnus will still use them as
 before.
-@end ignore
 
 
 @node GroupLens
