@@ -490,6 +490,8 @@ If ARG is 1, prompt for a group name to find the posting style."
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
   (let ((group gnus-newsgroup-name)
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy)
 	(buffer (current-buffer)))
     (unwind-protect
 	(progn
@@ -519,6 +521,8 @@ network.  The corresponding backend must have a 'request-post method."
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
   (let ((group gnus-newsgroup-name)
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy)
 	(buffer (current-buffer)))
     (unwind-protect
 	(progn
@@ -550,7 +554,9 @@ a news."
 		 (completing-read "Newsgroup: " gnus-active-hashtb nil
 				  (gnus-read-active-file-p))
 	       (gnus-group-group-name))
-	   "")))
+	   ""))
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy))
     (gnus-post-news 'post gnus-newsgroup-name)))
 
 (defun gnus-summary-mail-other-window (&optional arg)
@@ -562,6 +568,8 @@ posting style."
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
   (let ((group gnus-newsgroup-name)
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy)
 	(buffer (current-buffer)))
     (unwind-protect
 	(progn
@@ -591,6 +599,8 @@ network.  The corresponding backend must have a 'request-post method."
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
   (let ((group gnus-newsgroup-name)
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy)
 	(buffer (current-buffer)))
     (unwind-protect
 	(progn
@@ -622,7 +632,9 @@ a news."
 		 (completing-read "Newsgroup: " gnus-active-hashtb nil
 				  (gnus-read-active-file-p))
 	       "")
-	   gnus-newsgroup-name)))
+	   gnus-newsgroup-name))
+	;; make sure last viewed article doesn't affect posting styles:
+	(gnus-article-copy))
     (gnus-post-news 'post gnus-newsgroup-name)))
 
 

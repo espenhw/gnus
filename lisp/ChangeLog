@@ -1,3 +1,12 @@
+2002-06-04  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-msg.el (gnus-group-mail, gnus-group-news)
+	(gnus-group-post-news, gnus-summary-mail-other-window)
+	(gnus-summary-news-other-window, gnus-summary-post-news): Bind
+	gnus-article-copy to nil, thereby inhibiting the `header' posting
+	style match to use data from last viewed article.
+	Suggested by Hrvoje Niksic.
+
 2002-06-04  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* spam.el (spam-point-at-eol): New alias.
