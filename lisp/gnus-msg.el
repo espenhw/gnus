@@ -399,7 +399,7 @@ header line with the old Message-ID."
 			 (or (search-forward "\n\n" nil t) (point)))
 	  ;; Insert the original article headers.
 	  (insert-buffer-substring gnus-original-article-buffer beg end)
-	  (gnus-article-decode-rfc1522)))
+	  (gnus-article-decode-encoded-words)))
       gnus-article-copy)))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject

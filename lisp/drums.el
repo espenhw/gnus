@@ -62,7 +62,9 @@
     (modify-syntax-entry ?@ "w" table)
     (modify-syntax-entry ?/ "w" table)
     (modify-syntax-entry ?= " " table)
+    (modify-syntax-entry ?* " " table)
     (modify-syntax-entry ?\; " " table)
+    (modify-syntax-entry ?\' " " table)
     table))
 
 (defun drums-token-to-list (token)
@@ -215,59 +217,8 @@
   "Return an Emacs time spec from STRING."
   (apply 'encode-time (parse-time-string string)))
 
-(defun drums-content-type-get (ct attribute)
-  "Return the value of ATTRIBUTE from CT."
-  (cdr (assq attribute (cdr ct))))
-
-(defun drums-parse-content-type (string)
-  "Parse STRING and return a list."
-  (with-temp-buffer
-    (let ((ttoken (drums-token-to-list drums-text-token))
-	  (stoken (drums-token-to-list drums-tspecials))
-	  display-name mailbox c display-string parameters
-	  attribute value type subtype)
-      (drums-init (drums-remove-whitespace (drums-remove-comments string)))
-      (setq c (following-char))
-      (when (and (memq c ttoken)
-		 (not (memq c stoken)))
-	(setq type (downcase (buffer-substring
-			      (point) (progn (forward-sexp 1) (point)))))
-	;; Do the params
-	(while (not (eobp))
-	  (setq c (following-char))
-	  (unless (eq c ?\;)
-	    (error "Invalid header: %s" string))
-	  (forward-char 1)
-	  (setq c (following-char))
-	  (if (and (memq c ttoken)
-		   (not (memq c stoken)))
-	      (setq attribute
-		    (intern
-		     (downcase
-		      (buffer-substring
-		       (point) (progn (forward-sexp 1) (point))))))
-	    (error "Invalid header: %s" string))
-	  (setq c (following-char))
-	  (unless (eq c ?=)
-	    (error "Invalid header: %s" string))
-	  (forward-char 1)
-	  (setq c (following-char))
-	  (cond
-	   ((eq c ?\")
-	    (setq value
-		  (buffer-substring (1+ (point))
-				    (progn (forward-sexp 1) (1- (point))))))
-	   ((and (memq c ttoken)
-		 (not (memq c stoken)))
-	    (setq value (buffer-substring
-			 (point) (progn (forward-sexp 1) (point)))))
-	   (t
-	    (error "Invalid header: %s" string)))
-	  (push (cons attribute value) parameters))
-	`(,type ,@(nreverse parameters))))))
-
 (defun drums-narrow-to-header ()
-  "Narrow to the header of the current buffer."
+  "Narrow to the header section in the current buffer."
   (narrow-to-region
    (goto-char (point-min))
    (if (search-forward "\n\n" nil 1)

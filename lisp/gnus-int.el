@@ -437,8 +437,8 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
     (insert "\n"))
   (unless no-encode
     (save-restriction
-      (message-narrow-to-headers)
-      (rfc2047-encode-message-header))
+      (message-narrow-to-head)
+      (mail-encode-encoded-word-buffer))
     (message-encode-message-body))
   (let ((func (car (or gnus-command-method
 		       (gnus-find-method-for-group group)))))
@@ -450,7 +450,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 (defun gnus-request-replace-article (article group buffer)
   (save-restriction
     (message-narrow-to-headers)
-    (rfc2047-encode-message-header))
+    (mail-encode-encoded-word-buffer))
   (message-encode-message-body)
   (let ((func (car (gnus-group-name-to-method group))))
     (funcall (intern (format "%s-request-replace-article" func))

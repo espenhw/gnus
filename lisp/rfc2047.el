@@ -101,7 +101,6 @@ Valid encodings are nil, `Q' and `B'.")
        (point-max))))
   (goto-char (point-min)))
 
-;;;###autoload
 (defun rfc2047-encode-message-header ()
   "Encode the message header according to `rfc2047-header-encoding-alist'.
 Should be called narrowed to the head of the message."
@@ -230,7 +229,6 @@ Should be called narrowed to the head of the message."
 (defvar rfc2047-encoded-word-regexp
   "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~ ]+\\)\\?=")
 
-;;;###autoload
 (defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."
   (interactive "r")
@@ -261,7 +259,6 @@ Should be called narrowed to the head of the message."
 	(when (mm-multibyte-p)
 	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
 
-;;;###autoload
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
   (let ((m (mm-multibyte-p)))

@@ -28,7 +28,7 @@
 
 (eval-and-compile
   (require 'cl))
-(require 'drums)
+(require 'mail-parse)
 
 (defvar mailcap-parse-args-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
@@ -42,169 +42,169 @@
 (defvar mailcap-mime-data
   '(("application"
      ("x-x509-ca-cert"
-      ("viewer" . ssl-view-site-cert)
-      ("test" . (fboundp 'ssl-view-site-cert))
-      ("type" . "application/x-x509-ca-cert"))
+      (viewer . ssl-view-site-cert)
+      (test . (fboundp 'ssl-view-site-cert))
+      (type . "application/x-x509-ca-cert"))
      ("x-x509-user-cert"
-      ("viewer" . ssl-view-user-cert)
-      ("test" . (fboundp 'ssl-view-user-cert))
-      ("type" . "application/x-x509-user-cert"))
+      (viewer . ssl-view-user-cert)
+      (test . (fboundp 'ssl-view-user-cert))
+      (type . "application/x-x509-user-cert"))
      ("octet-stream"
-      ("viewer" . mailcap-save-binary-file)
-      ("type" ."application/octet-stream"))
+      (viewer . mailcap-save-binary-file)
+      (type ."application/octet-stream"))
      ("dvi"
-      ("viewer" . "open %s")
-      ("type"   . "application/dvi")
-      ("test"   . (eq (mm-device-type) 'ns)))
+      (viewer . "open %s")
+      (type   . "application/dvi")
+      (test   . (eq (mm-device-type) 'ns)))
      ("dvi"
-      ("viewer" . "xdvi %s")
-      ("test"   . (eq (mm-device-type) 'x))
+      (viewer . "xdvi %s")
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11")
-      ("type"   . "application/dvi"))
+      (type   . "application/dvi"))
      ("dvi"
-      ("viewer" . "dvitty %s")
-      ("test"   . (not (getenv "DISPLAY")))
-      ("type"   . "application/dvi"))
+      (viewer . "dvitty %s")
+      (test   . (not (getenv "DISPLAY")))
+      (type   . "application/dvi"))
      ("emacs-lisp"
-      ("viewer" . mailcap-maybe-eval)
-      ("type"   . "application/emacs-lisp"))
+      (viewer . mailcap-maybe-eval)
+      (type   . "application/emacs-lisp"))
      ("x-tar"
-      ("viewer" . mailcap-save-binary-file)
-      ("type"   . "application/x-tar"))
+      (viewer . mailcap-save-binary-file)
+      (type   . "application/x-tar"))
      ("x-latex"
-      ("viewer" . tex-mode)
-      ("test"   . (fboundp 'tex-mode))
-      ("type"   . "application/x-latex"))
+      (viewer . tex-mode)
+      (test   . (fboundp 'tex-mode))
+      (type   . "application/x-latex"))
      ("x-tex"
-      ("viewer" . tex-mode)
-      ("test"   . (fboundp 'tex-mode))
-      ("type"   . "application/x-tex"))
+      (viewer . tex-mode)
+      (test   . (fboundp 'tex-mode))
+      (type   . "application/x-tex"))
      ("latex"
-      ("viewer" . tex-mode)
-      ("test"   . (fboundp 'tex-mode))
-      ("type"   . "application/latex"))
+      (viewer . tex-mode)
+      (test   . (fboundp 'tex-mode))
+      (type   . "application/latex"))
      ("tex"
-      ("viewer" . tex-mode)
-      ("test"   . (fboundp 'tex-mode))
-      ("type"   . "application/tex"))
+      (viewer . tex-mode)
+      (test   . (fboundp 'tex-mode))
+      (type   . "application/tex"))
      ("texinfo"
-      ("viewer" . texinfo-mode)
-      ("test"   . (fboundp 'texinfo-mode))
-      ("type"   . "application/tex"))
+      (viewer . texinfo-mode)
+      (test   . (fboundp 'texinfo-mode))
+      (type   . "application/tex"))
      ("zip"
-      ("viewer" . mailcap-save-binary-file)
-      ("type"   . "application/zip")
+      (viewer . mailcap-save-binary-file)
+      (type   . "application/zip")
       ("copiousoutput"))
      ("pdf"
-      ("viewer" . "acroread %s")
-      ("type"   . "application/pdf"))
+      (viewer . "acroread %s")
+      (type   . "application/pdf"))
      ("postscript"
-      ("viewer" . "open %s")
-      ("type"   . "application/postscript")
-      ("test"   . (eq (mm-device-type) 'ns)))
+      (viewer . "open %s")
+      (type   . "application/postscript")
+      (test   . (eq (mm-device-type) 'ns)))
      ("postscript" 
-      ("viewer" . "ghostview %s")
-      ("type" . "application/postscript")
-      ("test"   . (eq (mm-device-type) 'x))
+      (viewer . "ghostview %s")
+      (type . "application/postscript")
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11"))
      ("postscript"
-      ("viewer" . "ps2ascii %s")
-      ("type" . "application/postscript")
-      ("test" . (not (getenv "DISPLAY")))
+      (viewer . "ps2ascii %s")
+      (type . "application/postscript")
+      (test . (not (getenv "DISPLAY")))
       ("copiousoutput")))
     ("audio"
      ("x-mpeg"
-      ("viewer" . "maplay %s")
-      ("type"   . "audio/x-mpeg"))
+      (viewer . "maplay %s")
+      (type   . "audio/x-mpeg"))
      (".*"
-      ("viewer" . mm-play-sound-file)
-      ("test"   . (or (featurep 'nas-sound)
+      (viewer . mm-view-sound-file)
+      (test   . (or (featurep 'nas-sound)
 		      (featurep 'native-sound)))
-      ("type"   . "audio/*"))
+      (type   . "audio/*"))
      (".*"
-      ("viewer" . "showaudio")
-      ("type"   . "audio/*")))
+      (viewer . "showaudio")
+      (type   . "audio/*")))
     ("message"
      ("rfc-*822"
-      ("viewer" . vm-mode)
-      ("test"   . (fboundp 'vm-mode))
-      ("type"   . "message/rfc-822"))
+      (viewer . vm-mode)
+      (test   . (fboundp 'vm-mode))
+      (type   . "message/rfc-822"))
      ("rfc-*822"
-      ("viewer" . w3-mode)
-      ("test"   . (fboundp 'w3-mode))
-      ("type"   . "message/rfc-822"))
+      (viewer . w3-mode)
+      (test   . (fboundp 'w3-mode))
+      (type   . "message/rfc-822"))
      ("rfc-*822"
-      ("viewer" . view-mode)
-      ("test"   . (fboundp 'view-mode))
-      ("type"   . "message/rfc-822"))
+      (viewer . view-mode)
+      (test   . (fboundp 'view-mode))
+      (type   . "message/rfc-822"))
      ("rfc-*822" 
-      ("viewer" . fundamental-mode)
-      ("type"   . "message/rfc-822")))
+      (viewer . fundamental-mode)
+      (type   . "message/rfc-822")))
     ("image"
      ("x-xwd"
-      ("viewer"  . "xwud -in %s")
-      ("type"    . "image/x-xwd")
+      (viewer  . "xwud -in %s")
+      (type    . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      ("test"    . (eq (mm-device-type) 'x))
+      (test    . (eq (mm-device-type) 'x))
       ("needsx11"))
      ("x11-dump"
-      ("viewer" . "xwud -in %s")
-      ("type" . "image/x-xwd")
+      (viewer . "xwud -in %s")
+      (type . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      ("test"   . (eq (mm-device-type) 'x))
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11"))
      ("windowdump"
-      ("viewer" . "xwud -in %s")
-      ("type" . "image/x-xwd")
+      (viewer . "xwud -in %s")
+      (type . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      ("test"   . (eq (mm-device-type) 'x))
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11"))
      (".*"
-      ("viewer" . "aopen %s")
-      ("type"   . "image/*")
-      ("test"   . (eq (mm-device-type) 'ns)))
+      (viewer . "aopen %s")
+      (type   . "image/*")
+      (test   . (eq (mm-device-type) 'ns)))
      (".*"
-      ("viewer" . "xv -perfect %s")
-      ("type" . "image/*")
-      ("test"   . (eq (mm-device-type) 'x))
+      (viewer . "xv -perfect %s")
+      (type . "image/*")
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11")))
     ("text"
      ("plain"
-      ("viewer"  . w3-mode)
-      ("test"    . (fboundp 'w3-mode))
-      ("type"    . "text/plain"))
+      (viewer  . w3-mode)
+      (test    . (fboundp 'w3-mode))
+      (type    . "text/plain"))
      ("plain"
-      ("viewer"  . view-mode)
-      ("test"    . (fboundp 'view-mode))
-      ("type"    . "text/plain"))
+      (viewer  . view-mode)
+      (test    . (fboundp 'view-mode))
+      (type    . "text/plain"))
      ("plain"
-      ("viewer"  . fundamental-mode)
-      ("type"    . "text/plain"))
+      (viewer  . fundamental-mode)
+      (type    . "text/plain"))
      ("enriched"
-      ("viewer" . enriched-decode-region)
-      ("test"   . (fboundp 'enriched-decode-region))
-      ("type"   . "text/enriched"))
+      (viewer . enriched-decode-region)
+      (test   . (fboundp 'enriched-decode-region))
+      (type   . "text/enriched"))
      ("html"
-      ("viewer" . mm-w3-prepare-buffer)
-      ("test"   . (fboundp 'w3-prepare-buffer))
-      ("type"   . "text/html")))
+      (viewer . mm-w3-prepare-buffer)
+      (test   . (fboundp 'w3-prepare-buffer))
+      (type   . "text/html")))
     ("video"
      ("mpeg"
-      ("viewer" . "mpeg_play %s")
-      ("type"   . "video/mpeg")
-      ("test"   . (eq (mm-device-type) 'x))
+      (viewer . "mpeg_play %s")
+      (type   . "video/mpeg")
+      (test   . (eq (mm-device-type) 'x))
       ("needsx11")))
     ("x-world"
      ("x-vrml"
-      ("viewer"  . "webspace -remote %s -URL %u")
-      ("type"    . "x-world/x-vrml")
+      (viewer  . "webspace -remote %s -URL %u")
+      (type    . "x-world/x-vrml")
       ("description"
        "VRML document")))
     ("archive"
      ("tar"
-      ("viewer" . tar-mode)
-      ("type" . "archive/tar")
-      ("test" . (fboundp 'tar-mode)))))
+      (viewer . tar-mode)
+      (type . "archive/tar")
+      (test . (fboundp 'tar-mode)))))
      "*The mailcap structure is an assoc list of assoc lists.
 1st assoc list is keyed on the major content-type
 2nd assoc list is keyed on the minor content-type (which can be a regexp)
@@ -219,9 +219,9 @@ Which looks like:
 Where <info> is another assoc list of the various information
 related to the mailcap RFC.  This is keyed on the lowercase
 attribute name (viewer, test, etc).  This looks like:
- ((\"viewer\" . viewerinfo)
-  (\"test\"   . testinfo)
-  (\"xxxx\"   . \"string\"))
+ ((viewer . viewerinfo)
+  (test   . testinfo)
+  (xxxx   . \"string\"))
 
 Where viewerinfo specifies how the content-type is viewed.  Can be
 a string, in which case it is run through a shell, with
@@ -373,10 +373,10 @@ If FORCE, re-parse even if already parsed."
 	  (setq viewer (buffer-substring save-pos (point))))
 	(setq save-pos (point))
 	(end-of-line)
-	(setq info (nconc (list (cons "viewer" viewer)
-				(cons "type" (concat major "/"
-						     (if (string= minor ".*")
-							 "*" minor))))
+	(setq info (nconc (list (cons 'viewer viewer)
+				(cons 'type (concat major "/"
+						    (if (string= minor ".*")
+							"*" minor))))
 			  (mailcap-parse-mailcap-extras save-pos (point))))
 	(mailcap-mailcap-entry-passes-test info)
 	(mailcap-add-mailcap-entry major minor info)))))
@@ -430,7 +430,7 @@ If FORCE, re-parse even if already parsed."
   ;; Return t iff a mailcap entry passes its test clause or no test
   ;; clause is present.
   (let (status				; Call-process-regions return value
-	(test (assoc "test" info))	; The test clause
+	(test (assq 'test info))	; The test clause
 	)
     (setq status (and test (split-string (cdr test) " ")))
     (if (and (assoc "needsx11" info) (not (getenv "DISPLAY")))
@@ -494,7 +494,7 @@ If FORCE, re-parse even if already parsed."
 	     ((null save-chr) nil)
 	     ((= save-chr ?t)
 	      (delete-region save-pos (progn (forward-char 1) (point)))
-	      (insert (or (cdr (assoc "type" type-info)) "\"\"")))
+	      (insert (or (cdr (assq 'type type-info)) "\"\"")))
 	     ((= save-chr ?M)
 	      (delete-region save-pos (progn (forward-char 1) (point)))
 	      (insert "\"\""))
@@ -520,10 +520,10 @@ If FORCE, re-parse even if already parsed."
 (defun mailcap-viewer-passes-test (viewer-info type-info)
   ;; Return non-nil iff the viewer specified by VIEWER-INFO passes its
   ;; test clause (if any).
-  (let* ((test-info   (assoc "test"   viewer-info))
+  (let* ((test-info (assq 'test viewer-info))
 	 (test (cdr test-info))
 	 (otest test)
-	 (viewer (cdr (assoc "viewer" viewer-info)))
+	 (viewer (cdr (assoc 'viewer viewer-info)))
 	 (default-directory (expand-file-name "~/"))
 	 status parsed-test cache result)
     (if (setq cache (assoc test mailcap-viewer-test-cache))
@@ -561,10 +561,10 @@ If FORCE, re-parse even if already parsed."
       (let ((cur-minor (assoc minor old-major)))
 	(cond
 	 ((or (null cur-minor)		; New minor area, or
-	      (assoc "test" info))	; Has a test, insert at beginning
+	      (assq 'test info))	; Has a test, insert at beginning
 	  (setcdr old-major (cons (cons minor info) (cdr old-major))))
-	 ((and (not (assoc "test" info)) ; No test info, replace completely
-	       (not (assoc "test" cur-minor)))
+	 ((and (not (assq 'test info)) ; No test info, replace completely
+	       (not (assq 'test cur-minor)))
 	  (setcdr cur-minor info))
 	 (t
 	  (setcdr old-major (cons (cons minor info) (cdr old-major)))))))))
@@ -575,10 +575,10 @@ If FORCE, re-parse even if already parsed."
 
 (defun mailcap-viewer-lessp (x y)
   ;; Return t iff viewer X is more desirable than viewer Y
-  (let ((x-wild (string-match "[*?]" (or (cdr-safe (assoc "type" x)) "")))
-	(y-wild (string-match "[*?]" (or (cdr-safe (assoc "type" y)) "")))
-	(x-lisp (not (stringp (or (cdr-safe (assoc "viewer" x)) ""))))
-	(y-lisp (not (stringp (or (cdr-safe (assoc "viewer" y)) "")))))
+  (let ((x-wild (string-match "[*?]" (or (cdr-safe (assq 'type x)) "")))
+	(y-wild (string-match "[*?]" (or (cdr-safe (assq 'type y)) "")))
+	(x-lisp (not (stringp (or (cdr-safe (assq 'viewer x)) ""))))
+	(y-lisp (not (stringp (or (cdr-safe (assq 'viewer y)) "")))))
     (cond
      ((and x-lisp (not y-lisp))
       t)
@@ -612,7 +612,7 @@ this type is returned."
 	viewer				; The one and only viewer
 	ctl)
     (save-excursion
-      (setq ctl (drums-parse-content-type (or string "text/plain")))
+      (setq ctl (mail-header-parse-content-type (or string "text/plain")))
       (setq major (split-string (car ctl) "/"))
       (setq minor (cadr major)
 	    major (car major))
@@ -627,16 +627,16 @@ this type is returned."
 	    (setq viewers (cdr viewers)))
 	  (setq passed (sort (nreverse passed) 'mailcap-viewer-lessp))
 	  (setq viewer (car passed))))
-      (when (and (stringp (cdr (assoc "viewer" viewer)))
+      (when (and (stringp (cdr (assq 'viewer viewer)))
 		 passed)
 	(setq viewer (car passed)))
       (cond
        ((and (null viewer) (not (equal major "default")) request)
 	(mailcap-mime-info "default" request))
        ((or (null request) (equal request ""))
-	(mailcap-unescape-mime-test (cdr (assoc "viewer" viewer)) info))
+	(mailcap-unescape-mime-test (cdr (assq 'viewer viewer)) info))
        ((stringp request)
-	(if (or (string= request "test") (string= request "viewer"))
+	(if (or (eq request 'test) (eq request 'viewer))
 	    (mailcap-unescape-mime-test
 	     (cdr-safe (assoc request viewer)) info)))
        ((eq request 'all)
@@ -644,8 +644,8 @@ this type is returned."
        (t
 	;; MUST make a copy *sigh*, else we modify mailcap-mime-data
 	(setq viewer (copy-tree viewer))
-	(let ((view (assoc "viewer" viewer))
-	      (test (assoc "test" viewer)))
+	(let ((view (assq 'viewer viewer))
+	      (test (assq 'test viewer)))
 	  (if view (setcdr view (mailcap-unescape-mime-test (cdr view) info)))
 	  (if test (setcdr test (mailcap-unescape-mime-test (cdr test) info))))
 	viewer)))))

@@ -28,6 +28,7 @@
   (if (not (fboundp 'base64-encode-string))
       (require 'base64)))
 (require 'mm-util)
+(require 'rfc2047)
 (require 'qp)
 
 (defun mm-encode-body ()

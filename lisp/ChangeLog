@@ -1,3 +1,47 @@
+Sat Sep 12 09:17:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.28 is released.
+
+1998-09-12 04:57:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-button-map): Use the article keymap as a
+	starting point.
+	(article-decode-encoded-words): Rename.
+
+	* message.el (message-narrow-to-headers-or-head): New function.
+
+	* gnus-int.el (gnus-request-accept-article): Narrow to the right
+	region. 
+
+	* message.el (message-send-news): Encode body after checking
+	syntax. 
+
+	* gnus-art.el (gnus-mime-button-line-format): Allow descriptions.
+
+	* mm-decode.el (mm-save-part): Use Content-Disposition filename.
+
+	* gnus-art.el (gnus-display-mime): Respect disposition.
+
+	* mm-decode.el (mm-preferred-alternative): Respect disposition.
+
+	* gnus-art.el (article-strip-multiple-blank-lines): Don't delete
+	text with annotations.
+
+	* message.el (message-make-date): Fix sign for negative time
+	zones. 
+
+	* mm-view.el (mm-inline-image): Insert a space at the end of the
+	image. 
+
+	* mail-parse.el: New file.
+
+	* rfc2231.el: New file.
+
+	* drums.el (drums-content-type-get): Removed.
+	(drums-parse-content-type): Ditto.
+
+	* mailcap.el (mailcap-mime-data): Use symbols instead of strings. 
+
 Fri Sep 11 18:23:34 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.27 is released.

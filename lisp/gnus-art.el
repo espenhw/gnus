@@ -34,7 +34,7 @@
 (require 'gnus-int)
 (require 'browse-url)
 (require 'mm-bodies)
-(require 'drums)
+(require 'mail-parse)
 (require 'mm-decode)
 (require 'mm-view)
 
@@ -532,7 +532,7 @@ displayed by the first non-nil matching CONTENT face."
 			       (face :value default)))))
 
 (defcustom gnus-article-decode-hook
-  '(article-decode-charset article-decode-rfc1522)
+  '(article-decode-charset article-decode-encoded-words)
   "*Hook run to decode charsets in articles."
   :group 'gnus-article-headers
   :type 'hook)
@@ -951,7 +951,7 @@ characters to translate to."
     (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
-      (rfc2047-decode-region (point-min) (point-max)))))
+      (mail-decode-encoded-word-region (point-min) (point-max)))))
 
 (defun article-decode-charset (&optional prompt)
   "Decode charset-encoded text in the article.
@@ -963,13 +963,14 @@ If PROMPT (the prefix), prompt for a coding system to use."
       (let* ((inhibit-point-motion-hooks t)
 	     (ct (message-fetch-field "Content-Type" t))
 	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
-	     (ctl (and ct (condition-case () (drums-parse-content-type ct)
+	     (ctl (and ct (condition-case ()
+			      (mail-header-parse-content-type ct)
 			    (error nil))))
 	     (charset (cond
 		       (prompt
 			(mm-read-coding-system "Charset to decode: "))
 		       (ctl
-			(drums-content-type-get ctl 'charset))
+			(mail-content-type-get ctl 'charset))
 		       (gnus-newsgroup-name
 			(gnus-group-find-parameter
 			 gnus-newsgroup-name 'charset))))
@@ -983,15 +984,13 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	   charset (and cte (intern (downcase
 				     (gnus-strip-whitespace cte))))))))))
 
-(defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
-(defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
-(defun article-decode-rfc1522 ()
-  "Remove QP encoding from headers."
+(defun article-decode-encoded-words ()
+  "Remove encoded-word encoding from headers."
   (let ((inhibit-point-motion-hooks t)
 	(buffer-read-only nil))
     (save-restriction
       (message-narrow-to-head)
-      (rfc2047-decode-region (point-min) (point-max)))))
+      (mail-decode-encoded-word-region (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
   "Translate a quoted-printable-encoded article.
@@ -1001,7 +1000,6 @@ or not."
   (save-excursion
     (let ((buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
-      ;;(gnus-article-decode-rfc1522)
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))
@@ -1110,7 +1108,9 @@ always hide."
       (goto-char (point-min))
       (search-forward "\n\n" nil t)
       (while (re-search-forward "^[ \t]+$" nil t)
-	(replace-match "" nil t))
+	(unless (gnus-annotation-in-region-p
+		 (match-beginning 0) (match-end 0))
+	  (replace-match "" nil t)))
       ;; Then replace multiple empty lines with a single empty line.
       (goto-char (point-min))
       (search-forward "\n\n" nil t)
@@ -1852,6 +1852,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-date-original
      article-date-ut
      article-decode-mime-words
+     article-decode-charset
+     article-decode-encoded-words
      article-date-user
      article-date-lapsed
      article-emphasize
@@ -2130,14 +2132,15 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 ;;; Gnus MIME viewing functions
 ;;;
 
-(defvar gnus-mime-button-line-format "%{%([%t%n]%)%}\n")
+(defvar gnus-mime-button-line-format "%{%([%t%d%n]%)%}\n")
 (defvar gnus-mime-button-line-format-alist
   '((?t gnus-tmp-type ?s)
-    (?n gnus-tmp-name ?s)))
+    (?n gnus-tmp-name ?s)
+    (?d gnus-tmp-description ?s)))
 
 (defvar gnus-mime-button-map nil)
 (unless gnus-mime-button-map
-  (setq gnus-mime-button-map (make-sparse-keymap))
+  (setq gnus-mime-button-map (copy-keymap gnus-article-mode-map))
   (define-key gnus-mime-button-map gnus-mouse-2 'gnus-article-push-button)
   (define-key gnus-mime-button-map "\r" 'gnus-article-press-button)
   (define-key gnus-mime-button-map "\M-\r" 'gnus-mime-view-part)
@@ -2174,11 +2177,16 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (goto-char (point-min))))
 
 (defun gnus-insert-mime-button (handle)
-  (let ((gnus-tmp-name (drums-content-type-get (cadr handle) 'name))
-	(gnus-tmp-type (caadr handle)))
+  (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
+	(gnus-tmp-type (car (mm-handle-type handle)))
+	(gnus-tmp-description (mm-handle-description handle)))
     (setq gnus-tmp-name
       (if gnus-tmp-name
 	  (concat " (" gnus-tmp-name ")")
+	""))
+    (setq gnus-tmp-description
+      (if gnus-tmp-description
+	  (concat " (" gnus-tmp-description ")")
 	""))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
@@ -2191,9 +2199,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Insert MIME buttons in the buffer."
   (let (ct ctl)
     (save-restriction
-      (drums-narrow-to-header)
+      (mail-narrow-to-head)
       (when (setq ct (mail-fetch-field "content-type"))
-	(setq ctl (drums-parse-content-type ct))))
+	(setq ctl (mail-header-parse-content-type ct))))
     (let* ((handles (mm-dissect-buffer))
 	   handle name type b e)
       (mapcar 'mm-destroy-part gnus-article-mime-handles)
@@ -2206,7 +2214,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (while (setq handle (pop handles))
 	      (gnus-insert-mime-button handle)
 	      (insert "\n\n")
-	      (when (mm-automatic-display-p (caadr handle))
+	      (when (and (mm-automatic-display-p (car (mm-handle-type handle)))
+			 (or (not (mm-handle-disposition handle))
+			     (equal (car (mm-handle-disposition handle))
+				    "inline")))
 		(forward-line -2)
 		(mm-display-part handle)
 		(goto-char (point-max))))
@@ -2228,14 +2239,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
        (progn
 	 (insert (format "[%c] %-18s"
 			 (if (equal handle preferred) ?* ? )
-			 (caadr handle)))
+			 (car (mm-handle-type handle))))
 	 (point))
        `(local-map ,gnus-mime-button-map
 		   keymap ,gnus-mime-button-map
 		   gnus-callback
 		   (lambda (handles)
 		     (gnus-mime-display-alternative
-		      ',ihandles ,(caadr handle)))
+		      ',ihandles ,(car (mm-handle-type handle))))
 		   gnus-data ,handle))
       (insert "  "))
     (insert "\n\n")
