@@ -1,3 +1,8 @@
+2004-12-17  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-expire-articles): Articles moved
+	by expiry now get marked as read.
+
 2004-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-xemacs-find-mime-charset): New macro.

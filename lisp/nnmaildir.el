@@ -41,6 +41,8 @@
 ;;   copying, restoring, etc.
 ;;
 ;; Todo:
+;; * When moving an article for expiry, copy all the marks except 'expire
+;;   from the original article.
 ;; * Add a hook for when moving messages from new/ to cur/, to support
 ;;   nnmail's duplicate detection.
 ;; * Improve generated Xrefs, so crossposts are detectable.
@@ -1517,7 +1519,12 @@ by nnmaildir-request-article.")
 			(not (string-equal target pgname))) ;; Move it.
 	       (erase-buffer)
 	       (nnheader-insert-file-contents nnmaildir--file)
-	       (gnus-request-accept-article target nil nil 'no-encode))
+	       (let ((group-art (gnus-request-accept-article
+				 target nil nil 'no-encode)))
+		 (when (consp group-art)
+		   ;; Maybe also copy: dormant forward reply save tick
+		   ;; (gnus-add-mark? gnus-request-set-mark?)
+		   (gnus-group-mark-article-read target (cdr group-art)))))
 	     (if (equal target pgname)
 		 ;; Leave it here.
 		 (setq didnt (cons (nnmaildir--art-num article) didnt))
