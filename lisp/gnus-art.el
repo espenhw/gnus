@@ -602,8 +602,8 @@ displayed by the first non-nil matching CONTENT face."
     ("\223" "``")
     ("\224" "\"")
     ("\225" "*")
-    ("\226" "---")
-    ("\227" "-")
+    ("\226" "-")
+    ("\227" "--")
     ("\231" "(TM)")
     ("\233" ">")
     ("\234" "oe")
@@ -1553,9 +1553,11 @@ or not."
       (unless charset 
 	(setq charset gnus-newsgroup-charset))
       (when (or force
-		(and type (string-match "quoted-printable" (downcase type))))
+		(and type (let ((case-fold-search t))
+			    (string-match "quoted-printable" type))))
 	(article-goto-body)
-	(quoted-printable-decode-region (point) (point-max) charset)))))
+	(quoted-printable-decode-region
+	 (point) (point-max) (mm-charset-to-coding-system charset))))))
 
 (defun article-de-base64-unreadable (&optional force)
   "Translate a base64 article.
@@ -1578,13 +1580,14 @@ If FORCE, decode the article whether it is marked as base64 not."
       (unless charset 
 	(setq charset gnus-newsgroup-charset))
       (when (or force
-		(and type (string-match "base64" (downcase type))))
+		(and type (let ((case-fold-search t))
+			    (string-match "base64" type))))
 	(article-goto-body)
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
 	  (base64-decode-region (point-min) (point-max))
-	  (if (mm-coding-system-p charset)
-	      (mm-decode-coding-region (point-min) (point-max) charset)))))))
+	  (mm-decode-coding-region
+	   (point-min) (point-max) (mm-charset-to-coding-system charset)))))))
 
 (eval-when-compile
   (require 'rfc1843))
@@ -3049,9 +3052,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			     gnus-summary-show-article-charset-alist))
 		  (read-coding-system "Charset: ")))))
       (forward-line 2)
-      (mm-insert-inline handle (if charset 
-				   (mm-decode-coding-string contents charset)
-				 contents))
+      (mm-insert-inline handle
+			(if charset 
+			    (mm-decode-coding-string
+			     contents (mm-charset-to-coding-system charset))
+			  contents))
       (goto-char b))))
 
 (defun gnus-mime-externalize-part (&optional handle)
@@ -4597,16 +4602,14 @@ forbidden in URL encoding."
       (message-goto-subject))))
 
 (defun gnus-button-mailto (address)
-  ;; Mail to ADDRESS.
+  "Mail to ADDRESS."
   (set-buffer (gnus-copy-article-buffer))
   (message-reply address))
 
-(defun gnus-button-reply (address)
-  ;; Reply to ADDRESS.
-  (message-reply address))
+(defalias 'gnus-button-reply 'message-reply)
 
 (defun gnus-button-embedded-url (address)
-  "Browse ADDRESS."
+  "Activate ADDRESS with `browse-url'."
   (browse-url (gnus-strip-whitespace address)))
 
 ;;; Next/prev buttons in the article buffer.
