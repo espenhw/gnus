@@ -1320,7 +1320,8 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-a" 'message-insert-mime-part)
   (define-key message-mode-map "\C-c\C-m\C-a" 'message-insert-mime-part)
   (define-key message-mode-map "\C-c\C-m\C-e" 'message-mime-insert-external)
-
+  (define-key message-mode-map "\C-c\C-m\C-q" 'mml-quote-region)
+  
   (define-key message-mode-map "\t" 'message-tab))
 
 (easy-menu-define
@@ -1854,11 +1855,7 @@ prefix, and don't delete any headers."
 	   (if (listp message-indent-citation-function)
 	       message-indent-citation-function
 	     (list message-indent-citation-function)))))
-    (goto-char start)
-    ;; Quote parts.
-    (while (re-search-forward "<#/?!*\\(multipart\\|part\\|external\\)" end t)
-      (goto-char (match-beginning 1))
-      (insert "!"))
+    (mml-quote-region start end)
     (goto-char end)
     (when (re-search-backward "^-- $" start t)
       ;; Also peel off any blank lines before the signature.
@@ -1888,12 +1885,7 @@ prefix, and don't delete any headers."
 	     (if (listp message-indent-citation-function)
 		 message-indent-citation-function
 	       (list message-indent-citation-function)))))
-      (goto-char start)
-      ;; Quote parts.
-      (while (re-search-forward
-	      "<#/?!*\\(multipart\\|part\\|external\\)" end t)
-	(goto-char (match-beginning 1))
-	(insert "!"))
+      (mml-quote-region start end)
       (goto-char start)
       (while functions
 	(funcall (pop functions)))
@@ -4131,24 +4123,50 @@ regexp varstr."
 ;;; MIME functions
 ;;;
 
+
+;; I really think this function should be renamed.  It is only useful
+;; for inserting file attachments.
+
 (defun message-insert-mime-part (file type description)
-  "Insert a multipart/alternative part into the buffer."
+  "Attach a file to the outgoing MIME message.
+The file is not inserted or encoded until you send the message with
+`\\[message-send-and-exit]' or `\\[message-send]'.
+
+FILE is the name of the file to attach.  TYPE is its content-type, a
+string of the form \"type/subtype\".  DESCRIPTION is a one-line
+description of the attachment."
   (interactive
-   (let* ((file (read-file-name "Insert file: " nil nil t))
-	  (type (mm-default-file-encoding file)))
-     (list file
-	   (completing-read
-	    (format "MIME type for %s: " file)
-	    (delete-duplicates
-	     (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions))
-	    nil nil type)
-	   (read-string "Description: "))))
-  (insert (format "<#part type=%s filename=\"%s\"%s><#/part>\n"
-		  type file
-		  (if (zerop (length description))
-		      ""
-		    (format " description=%s"
-			    (prin1-to-string description))))))
+   (let* ((file (read-file-name "Attach file: " nil nil t))
+	  (type (completing-read
+		 (format "Content type (default %s): "
+			 (or (mm-default-file-encoding file)
+			     ;; Perhaps here we should check
+			     ;; what the file looks like, and
+			     ;; offer text/plain if it looks
+			     ;; like text/plain.
+			     "application/octet-stream"))
+		 (delete-duplicates
+		  (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions)
+		  :test 'equal)))
+	  (description (read-string "One line description: ")))
+     (list file type description)))
+  (when (string-match "\\`[ \t]*\\'" description)
+    (setq description nil))
+  (when (string-match "\\`[ \t]*\\'" type)
+    (setq type (mm-default-file-encoding file))) nil
+  ;; Prevent some common errors.  This is inspired by similar code in
+  ;; VM.
+  (when (file-directory-p file)
+    (error "%s is a directory, cannot attach" file))
+  (unless (file-exists-p file)
+    (error "No such file: %s" file))
+  (unless (file-readable-p file)
+    (error "Permission denied: %s" file))
+  (insert (format "<#part type=%s filename=%s%s><#/part>\n"
+		  type (prin1-to-string file)
+		  (if description
+		      (format " description=%s" (prin1-to-string description))
+		    ""))))
 
 (defun message-mime-insert-external (file type)
   "Insert a message/external-body part into the buffer."

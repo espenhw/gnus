@@ -1,3 +1,61 @@
+Fri Dec  4 04:09:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.63 is released.
+
+1998-12-04 04:59:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-base-boundary): Shorten.
+
+	* message.el (message-insert-mime-part): Use default.
+
+	* gnus-art.el (gnus-insert-mime-button): Bind gnus-tmp-type-long.
+
+1998-12-03  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el (gnus-mime-display-alternative): Use (*) for radio
+	buttons, not [*].
+
+1998-12-04  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (gnus-insert-mime-button): Do proper help-echo.
+
+1998-12-04 04:48:37  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (gnus-insert-mime-button): Fix.
+
+1998-12-03  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-insert-mime-part): Nicify prompts.
+	(message-insert-mime-part): Really delete duplicates.
+	(message-insert-mime-part): Check against common errors.
+	(message-insert-mime-part): Fix docstring.
+
+1998-12-04 04:41:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-internalize-part): Bugged out.
+
+1998-12-03  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (gnus-mime-button-line-format): Nicify.
+	(gnus-insert-mime-button): Modify accordingly.
+
+1998-12-04 01:50:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-display-mime): Set window point.
+
+	* mm-decode.el (mm-display-external): Only decode when not
+	saving. 
+	(mm-alternative-precedence): Prefer multiparts.
+	(mm-inline-media-tests): Inline multiparts.
+
+	* gnus-picon.el (gnus-picons-next-job-internal): Do bar if asked.
+	Ignore errors when requiring url.
+
+	* mml.el (mml-quote-region): New command.
+
+	* message.el (message-cite-original): Use it.
+	(message-cite-original-without-signature): Ditto.
+
 Thu Dec  3 12:53:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.62 is released.
@@ -43,6 +101,10 @@ Thu Dec  3 12:53:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* mm-encode.el (mm-content-transfer-encoding-defaults): Default
 	application/emacs-lisp to 8bit.
+
+1998-12-03  Dale Hagglund  <rdh@best.com>
+
+	* mm-decode.el (mm-quote-arg): Add quoting of '()', '<>', and '|'.
 
 Wed Dec  2 20:24:27 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

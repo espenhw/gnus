@@ -2292,17 +2292,19 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 ;;; Gnus MIME viewing functions
 ;;;
 
-(defvar gnus-mime-button-line-format "%{%([%p. %t%d%n]%)%}%e\n"
+(defvar gnus-mime-button-line-format "%{%([%p. %d%T]%)%}%e\n"
   "The following specs can be used:
 %t  The MIME type
+%T  MIME type, along with additional info
 %n  The `name' parameter
 %d  The description, if any
 %l  The length of the encoded part
-%p  The part identifier
+%p  The part identifier number
 %e  Dots if the part isn't displayed")
 
 (defvar gnus-mime-button-line-format-alist
   '((?t gnus-tmp-type ?s)
+    (?T gnus-tmp-type-long ?s)
     (?n gnus-tmp-name ?s)
     (?d gnus-tmp-description ?s)
     (?p gnus-tmp-id ?s)
@@ -2446,7 +2448,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (url-standalone-mode (not gnus-plugged))
-	 (mm-user-display-methods '(".*"))
+	 (mm-user-display-methods '((".*" . inline)))
+	 (mm-all-images-fit t)
 	 (rfc2047-default-charset gnus-newsgroup-default-charset)
 	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (if (mm-handle-undisplayer handle)
@@ -2530,28 +2533,27 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (goto-char point))))
 
 (defun gnus-insert-mime-button (handle gnus-tmp-id &optional displayed)
-  (let ((gnus-tmp-name (mail-content-type-get (mm-handle-type handle) 'name))
-	(filename (mail-content-type-get (mm-handle-disposition handle)
-					 'filename))
+  (let ((gnus-tmp-name
+	 (or (mail-content-type-get (mm-handle-type handle)
+				    'name)
+	     (mail-content-type-get (mm-handle-disposition handle)
+				    'filename)
+	     ""))
 	(gnus-tmp-type (car (mm-handle-type handle)))
-	(gnus-tmp-description (mm-handle-description handle))
+	(gnus-tmp-description (or (mm-handle-description handle)
+				  ""))
 	(gnus-tmp-dots
 	 (if (if displayed (car displayed)
 	       (mm-handle-displayed-p handle))
 	     "" "..."))
-	(gnus-tmp-length (save-excursion
-			   (set-buffer (mm-handle-buffer handle))
+	(gnus-tmp-length (with-current-buffer (mm-handle-buffer handle)
 			   (buffer-size)))
-	b e)
-    (setq gnus-tmp-name (or gnus-tmp-name filename))
-    (setq gnus-tmp-name
-	  (if gnus-tmp-name
-	      (concat " (" gnus-tmp-name ")")
-	    ""))
-    (setq gnus-tmp-description
-	  (if gnus-tmp-description
-	      (concat " (" gnus-tmp-description ")")
-	    ""))
+	gnus-tmp-type-long b e)
+    (setq gnus-tmp-type-long (concat gnus-tmp-type
+				     (and (not (equal gnus-tmp-name ""))
+					  (concat "; " gnus-tmp-name))))
+    (or (equal gnus-tmp-description "")
+	(setq gnus-tmp-type-long (concat " --- " gnus-tmp-type-long)))
     (unless (bolp)
       (insert "\n"))
     (setq b (point))
@@ -2564,8 +2566,21 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		 article-type annotation
 		 gnus-data ,handle))
     (setq e (point))
-    (widget-convert-button 'link b e :action 'gnus-widget-press-button
-			   :button-keymap gnus-mime-button-map)))
+    (widget-convert-button 'link b e
+			   :mime-handle handle
+			   :action 'gnus-widget-press-button
+			   :button-keymap gnus-mime-button-map
+			   :help-echo
+			   (lambda (widget)
+			     ;; Needed to properly clear the message
+			     ;; due to a bug in wid-edit
+			     (setq help-echo-owns-message t)
+			     (format
+			      "Click to %s the MIME part; %s for more options"
+			      (if (mm-handle-displayed-p
+				   (widget-get widget :mime-handle))
+				  "hide" "show")
+			      (if gnus-xemacs "button3" "mouse-3"))))))
 
 (defun gnus-widget-press-button (elems el)
   (goto-char (widget-get elems :from))
@@ -2576,9 +2591,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Insert MIME buttons in the buffer."
   (save-excursion
     (save-selected-window
-      (let ((window (get-buffer-window gnus-article-buffer)))
+      (let ((window (get-buffer-window gnus-article-buffer))
+	    (point (point)))
 	(when window
-	  (select-window window)))
+	  (select-window window)
+	  ;; We have to do this since selecting the window
+	  ;; may change the point.  So we set the window point.
+	  (set-window-point window point)))
       (let* ((handles (or ihandles (mm-dissect-buffer) (mm-uu-dissect)))
 	     handle name type b e display)
 	(unless ihandles
@@ -2737,7 +2756,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (gnus-add-text-properties
 	     (setq from (point))
 	     (progn
-	       (insert (format "[%c] %-18s"
+	       (insert (format "(%c) %-18s"
 			       (if (equal handle preferred) ?* ? )
 			       (if (stringp (car handle))
 				   (car handle)

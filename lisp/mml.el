@@ -177,7 +177,7 @@
       (buffer-substring-no-properties beg (goto-char (point-max))))))
 
 (defvar mml-boundary nil)
-(defvar mml-base-boundary "=-=-=")
+(defvar mml-base-boundary "-=-=")
 (defvar mml-multipart-number 0)
 
 (defun mml-generate-mime ()
@@ -360,6 +360,17 @@
       (list (match-string 1 path) (match-string 2 path)
 	    (substring path (1+ (match-end 2))))
     path))
+
+(defun mml-quote-region (beg end)
+  "Quote the MML tags in the region."
+  (interactive "r")
+  (save-excursion
+    (goto-char beg)
+    ;; Quote parts.
+    (while (re-search-forward
+	    "<#/?!*\\(multipart\\|part\\|external\\)" end t)
+      (goto-char (match-beginning 1))
+      (insert "!"))))
 
 (provide 'mml)
 

@@ -81,7 +81,10 @@
 	  (device-sound-enabled-p)))
     ("audio/au" mm-inline-audio
      (and (or (featurep 'nas-sound) (featurep 'native-sound))
-	  (device-sound-enabled-p))))
+	  (device-sound-enabled-p)))
+    ("multipart/alternative" ignore t)
+    ("multipart/mixed" ignore t)
+    ("multipart/related" ignore t))
   "Alist of media types/test that say whether the media types can be displayed inline.")
 
 (defvar mm-user-display-methods
@@ -97,7 +100,8 @@
   "List of MIME type regexps that will be displayed externally automatically.")
 
 (defvar mm-alternative-precedence
-  '("image/jpeg" "image/gif" "text/html" "text/enriched"
+  '("multipart/related" "multipart/mixed" "multipart/alternative"
+    "image/jpeg" "image/gif" "text/html" "text/enriched"
     "text/richtext" "text/plain")
   "List that describes the precedence of alternative parts.")
 
@@ -250,15 +254,15 @@ external if displayed external."
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
   (mm-with-unibyte-buffer
-    (insert-buffer-substring (mm-handle-buffer handle))
-    (mm-decode-content-transfer-encoding
-     (mm-handle-encoding handle) (car (mm-handle-type handle)))
     (if (functionp method)
 	(let ((cur (current-buffer)))
 	  (if (eq method 'mailcap-save-binary-file)
 	      (progn
 		(set-buffer (generate-new-buffer "*mm*"))
 		(setq method nil))
+	    (insert-buffer-substring (mm-handle-buffer handle))
+	    (mm-decode-content-transfer-encoding
+	     (mm-handle-encoding handle) (car (mm-handle-type handle)))
 	    (let ((win (get-buffer-window cur t)))
 	      (when win
 		(select-window win)))
@@ -273,6 +277,10 @@ external if displayed external."
 		    (funcall method)
 		  (mm-save-part handle))
 	      (mm-handle-set-undisplayer handle mm))))
+      ;; The function is a string to be executed.
+      (insert-buffer-substring (mm-handle-buffer handle))
+      (mm-decode-content-transfer-encoding
+       (mm-handle-encoding handle) (car (mm-handle-type handle)))
       (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
 	     (filename (mail-content-type-get
 			(mm-handle-disposition handle) 'filename))
@@ -437,7 +445,7 @@ This overrides entries in the mailcap file."
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)
     ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[;!`\"$\\& \t{} ]" arg pos))
+    (while (setq new-pos (string-match "[;!`\"$\\& \t{} |()<>]" arg pos))
       (push (substring arg pos new-pos) accum)
       (push "\\" accum)
       (push (list (aref arg new-pos)) accum)

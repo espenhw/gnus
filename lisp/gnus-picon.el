@@ -514,8 +514,10 @@ none, and whose CDR is the corresponding element of DOMAINS."
 
 ;;; Query a remote DB.  This requires some stuff from w3 !
 
-(require 'url)
-(require 'w3-forms)
+(eval-and-compile
+  (ignore-errors
+    (require 'url)
+    (require 'w3-forms)))
 
 (defun gnus-picons-url-retrieve (url fn arg)
   (let ((old-asynch (default-value 'url-be-asynchronous))
@@ -731,30 +733,31 @@ none, and whose CDR is the corresponding element of DOMAINS."
 ;;; Main jobs dispatcher function
 
 (defun gnus-picons-next-job-internal ()
-  (if (setq gnus-picons-job-already-running (pop gnus-picons-jobs-alist))
-      (let* ((job gnus-picons-job-already-running)
-	     (sym-ann (pop job))
-	     (tag (pop job)))
-	(if tag
-	    (cond ((stringp tag);; (SYM-ANN "..." RIGHT-P)
-		   (gnus-picons-network-display-internal sym-ann nil tag
-							 (pop job)))
-		  ((and (eq 'bar tag)
-			gnus-picons-display-article-move-p)
-		   (gnus-picons-network-display-internal
-		    sym-ann
-		    (let ((gnus-picons-file-suffixes '("xbm")))
-		      (gnus-picons-try-face
-		       gnus-xmas-glyph-directory "bar."))
-		    nil (pop job)))
-		  ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P)
-		   (gnus-picons-network-search
-		    (pop job) (pop job) (pop job) sym-ann (pop job)))
-		  ((eq 'picon tag);; (SYM-ANN 'picon URL PART RIGHT-P)
-		   (gnus-picons-network-display
-		    (pop job) (pop job) sym-ann (pop job)))
-		  (t (setq gnus-picons-job-already-running nil)
-		     (error "Unknown picon job tag %s" tag)))))))
+  (when (setq gnus-picons-job-already-running (pop gnus-picons-jobs-alist))
+    (let* ((job gnus-picons-job-already-running)
+	   (sym-ann (pop job))
+	   (tag (pop job)))
+      (when tag
+	(cond
+	 ((stringp tag);; (SYM-ANN "..." RIGHT-P)
+	  (gnus-picons-network-display-internal
+	   sym-ann nil tag (pop job)))
+	 ((eq 'bar tag)
+	  (gnus-picons-network-display-internal
+	   sym-ann
+	   (let ((gnus-picons-file-suffixes '("xbm")))
+	     (gnus-picons-try-face
+	      gnus-xmas-glyph-directory "bar."))
+	   nil (pop job)))
+	 ((eq 'search tag);; (SYM-ANN 'search USER ADDRS DBS RIGHT-P)
+	  (gnus-picons-network-search
+	   (pop job) (pop job) (pop job) sym-ann (pop job)))
+	 ((eq 'picon tag);; (SYM-ANN 'picon URL PART RIGHT-P)
+	  (gnus-picons-network-display
+	   (pop job) (pop job) sym-ann (pop job)))
+	 (t
+	  (setq gnus-picons-job-already-running nil)
+	  (error "Unknown picon job tag %s" tag)))))))
 
 (defun gnus-picons-next-job ()
   "Start processing the job queue if it is not in progress."
