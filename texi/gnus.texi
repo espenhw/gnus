@@ -7539,7 +7539,8 @@ non-ASCII (i. e., 8-bit) articles.  It typically makes strings like
 @samp{déjà vu} look like @samp{d=E9j=E0 vu}, which doesn't look very
 readable to me.  Note that the this is usually done automatically by
 Gnus if the message in question has a @code{Content-Transfer-Encoding}
-header that says that this encoding has been done.
+header that says that this encoding has been done. 
+If a prefix is given, a charset will be asked for.
 
 @item W 6
 @kindex W 6 (Summary)
@@ -7550,6 +7551,7 @@ Base64 is one common @sc{mime} encoding employed when sending non-ASCII
 automatically by Gnus if the message in question has a
 @code{Content-Transfer-Encoding} header that says that this encoding has
 been done.
+If a prefix is given, a charset will be asked for.
 
 @item W Z
 @kindex W Z (Summary)
@@ -7565,6 +7567,7 @@ Treat HTML (@code{gnus-article-wash-html}).
 Note that the this is usually done automatically by Gnus if the message
 in question has a @code{Content-Type} header that says that this type
 has been done.
+If a prefix is given, a charset will be asked for.
 
 @item W f
 @kindex W f (Summary)
