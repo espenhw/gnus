@@ -542,6 +542,7 @@ A string or a list of strings is returned."
     mailaddr))
 
 (defun smime-cert-by-dns (mail)
+  "Find certificate via DNS for address MAIL."
   (let* ((dig-dns-server smime-dns-server)
 	 (digbuf (dig-invoke (smime-mail-to-domain mail) "cert" nil nil "+vc"))
 	 (retbuf (generate-new-buffer (format "*certificate for %s*" mail)))
@@ -564,15 +565,17 @@ A string or a list of strings is returned."
 
 (defun smime-cert-by-ldap-1 (mail host)
   "Get cetificate for MAIL from the ldap server at HOST."
-  (let ((ldapresult (smime-ldap-search (concat "mail=" mail) host '("userCertificate") nil))
+  (let ((ldapresult (smime-ldap-search (concat "mail=" mail)
+				       host '("userCertificate") nil))
 	(retbuf (generate-new-buffer (format "*certificate for %s*" mail))))
     (if (> (length ldapresult) 1)
 	(with-current-buffer retbuf
 	  (set-buffer-multibyte nil)
 	  (insert (nth 1 (car (nth 1 ldapresult))))
 	  (goto-char (point-min))
-	  (if (smime-call-openssl-region (point-min) (point-max) t "x509" "-inform" "DER" "-outform" "PEM")
-	      (progn 
+	  (if (smime-call-openssl-region (point-min) (point-max) t "x509"
+					 "-inform" "DER" "-outform" "PEM")
+	      (progn
 		(delete-region (point) (point-max))
 		retbuf)
 	    (kill-buffer retbuf)
@@ -581,14 +584,14 @@ A string or a list of strings is returned."
       nil)))
 
 (defun smime-cert-by-ldap (mail)
-  "Find certificate for MAIL."
+  "Find certificate via LDAP for address MAIL."
   (if smime-ldap-host-list
       (catch 'certbuf
 	(dolist (host smime-ldap-host-list)
 	  (let ((retbuf (smime-cert-by-ldap-1 mail host)))
-	    (when retbuf 
+	    (when retbuf
 	      (throw 'certbuf retbuf)))))))
-  
+
 ;; User interface.
 
 (defvar smime-buffer "*SMIME*")

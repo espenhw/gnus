@@ -1,5 +1,8 @@
 2005-02-14  Simon Josefsson  <jas@extundo.com>
 
+	* smime.el (smime-cert-by-dns): Add doc-string.
+	(smime-cert-by-ldap-1): Indent.
+
 	* mml-smime.el (mml-smime-get-ldap-cert): Renamed from
 	mml-smime-get-dns-ldap.
 	(mml-smime-encrypt-query): Use new function.  Default to ldap.
