@@ -123,7 +123,6 @@
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
     (defalias 'gnus-max-width-function 'gnus-mule-max-width-function)
-    (defalias 'gnus-summary-set-display-table 'ignore)
 
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
