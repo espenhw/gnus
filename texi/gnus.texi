@@ -18885,12 +18885,6 @@ There aren't many of these as yet, I'm afraid.
 
 @table @kbd
 
-@item W e
-@kindex W e (Group)
-@findex gnus-score-edit-all-score
-Edit the apply-to-all-groups all.SCORE file.  You will be popped into
-a @code{gnus-score-mode} buffer (@pxref{Score File Editing}).
-
 @item W f
 @kindex W f (Group)
 @findex gnus-score-flush-cache
