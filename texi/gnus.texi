@@ -3864,7 +3864,7 @@ for group to post to.  @xref{Composing Messages}.
 This function actually prepares a news even when using mail groups.
 This is useful for "posting" messages to mail groups without actually
 sending them over the network: they're just saved directly to the group
-in question.  The corresponding backend must have a request-post method
+in question.  The corresponding back end must have a request-post method
 for this to work though.
 
 @end table
@@ -4991,7 +4991,7 @@ prefix is 1, prompt for a group to post to.
 This function actually prepares a news even when using mail groups.
 This is useful for "posting" messages to mail groups without actually
 sending them over the network: they're just saved directly to the group
-in question.  The corresponding backend must have a request-post method
+in question.  The corresponding back end must have a request-post method
 for this to work though.
 
 @item S D b
