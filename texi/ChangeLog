@@ -1,3 +1,8 @@
+2005-02-08  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Spam ELisp Package Configuration Examples):
+	"training.ham" should be "training.spam"
+
 2005-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi (Mail Variables): Fix the default value for

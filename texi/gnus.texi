@@ -23332,7 +23332,7 @@ an excellent tool for filtering those unwanted mails for me.)
 In my ham folders, I just hit @kbd{S x}
 (@code{gnus-summary-mark-as-spam}) whenever I see an unrecognized spam
 mail (false negative).  On group exit, those messages are moved to
-@samp{training.ham}.
+@samp{training.spam}.
 @end itemize
 
 @subsubheading Reporting spam articles in Gmane groups with @code{spam-report.el}
