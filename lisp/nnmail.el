@@ -484,7 +484,7 @@ parameter.  It should return nil, `warn' or `delete'."
   :group 'nnmail
   :type 'symbol)
 
-(defcustom nnmail-mail-splitting-decodes t
+(defcustom nnmail-mail-splitting-decodes nil
   "Whether the nnmail splitting functionality should MIME decode headers."
   :group 'nnmail
   :type 'boolean)
