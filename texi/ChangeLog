@@ -1,3 +1,11 @@
+2004-09-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-news.texi: Comment out comment stuff.
+	Don't use xref's, GNUS-NEWS look wrong.
+	Add nntp marks stuff.
+
+	* Makefile.in (GNUS-NEWS): Move to "..".
+
 2004-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* infohack.el: Support @copying and @insertcopying for Emacs 21.3

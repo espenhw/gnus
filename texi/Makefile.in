@@ -37,10 +37,10 @@ most: texi2latex.elc latex latexps
 # Files included in gnus.texi
 gnus.texi: gnus-faq.texi gnus-news.texi
 
-# FIXME: Target should be in parent directory.  A cvs commit script could
-# automatically create it.
+# FIXME: A cvs commit script could automatically create it.
 GNUS-NEWS:	gnus-news.texi
 	$(EMACSCOMP) -l $(srcdir)/gnus-news.el -f batch-gnus-news $< $@
+	mv $@ ../$@
 
 dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi sieve.dvi pgg.dvi sasl.dvi
 
