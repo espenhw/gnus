@@ -160,11 +160,7 @@ it's not cached."
       (when (and number
 		 (> number 0)		; Reffed article.
 		 (or force
-		     (and (or (not gnus-cacheable-groups)
-			      (string-match gnus-cacheable-groups group))
-			  (or (not gnus-uncacheable-groups)
-			      (not (string-match
-				    gnus-uncacheable-groups group)))
+		     (and (gnus-cache-fully-p group)
 			  (gnus-cache-member-of-class
 			   gnus-cache-enter-articles ticked dormant unread)))
 		 (not (file-exists-p (setq file (gnus-cache-file-name

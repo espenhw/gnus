@@ -1,3 +1,8 @@
+2001-08-05  Nuutti Kotivuori  <nuutti.kotivuori@smarttrust.com>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Use
+	gnus-cache-fully-p.
+
 2001-08-04  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-cache.el (gnus-cache-possibly-update-active): Create active
