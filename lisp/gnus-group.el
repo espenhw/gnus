@@ -1581,7 +1581,9 @@ and with point over the group in question."
 	(let ((,groups (gnus-group-process-prefix arg))
 	      (,window (selected-window))
 	      ,group)
-	  (while (setq ,group (pop ,groups))
+	  (while ,groups
+	    (setq ,group (car ,groups)
+		  ,groups (cdr ,groups))
 	    (select-window ,window)
 	    (gnus-group-remove-mark ,group)
 	    (save-selected-window
