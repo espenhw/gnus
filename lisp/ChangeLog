@@ -1,6 +1,7 @@
 2000-11-20 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-describe-key): New function.
+	(gnus-article-describe-key-briefly): New function.
 
 2000-11-19 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
