@@ -354,7 +354,7 @@ This must be bound to a button-down mouse event."
       (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
       (gnus-add-minor-mode 'gnus-binary-mode " Binary"
-			   gnus-binary-mode-map nil 'gnus-binary-mode-map)
+			   gnus-binary-mode-map nil 'gnus-binary-mode)
       (gnus-run-hooks 'gnus-binary-mode-hook))))
 
 (defun gnus-binary-display-article (article &optional all-header)
