@@ -1356,8 +1356,8 @@ It is a string, such as \"PGP\". If nil, ask user."
     (modify-syntax-entry ?> ")<" table)
     (modify-syntax-entry ?< "(>" table)
     ;; make M-. in article buffers work for `foo' strings
-    (modify-syntax-entry ?' "-" table)
-    (modify-syntax-entry ?` "-" table)
+    (modify-syntax-entry ?' " " table)
+    (modify-syntax-entry ?` " " table)
     table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")

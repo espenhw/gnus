@@ -1,3 +1,8 @@
+2002-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From Mats Lidell <matsl@contactor.se>.
+
+	* gnus-art.el (gnus-article-mode-syntax-table): Replace "-" to " ".
+
 2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* gnus-sum.el (gnus-nov-parse-line): When an error is signaled in
