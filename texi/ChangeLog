@@ -1,3 +1,11 @@
+2003-06-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* emacs-mime.texi: Use two spaces consistently to end sentences.
+
+	* message.texi: do.
+
+	* gnus.texi: do.
+
 2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): new

@@ -805,14 +805,14 @@ coding system symbols (aliases of coding systems does not work, use
 an alias in this variable).  For example, if you have configured Emacs
 to use prefer UTF-8, but wish that outgoing messages should be sent in
 ISO-8859-1 if possible, you can set this variable to
-@code{(iso-latin-1)}. You can override this setting on a per-message
+@code{(iso-latin-1)}.  You can override this setting on a per-message
 basis by using the @code{charset} MML tag (@pxref{MML Definition}).
 
 @item mm-content-transfer-encoding-defaults
 @vindex mm-content-transfer-encoding-defaults
 Mapping from @acronym{MIME} types to encoding to use.  This variable is usually
 used except, e.g., when other requirements force a safer encoding
-(digitally signed messages require 7bit encoding). Besides the normal
+(digitally signed messages require 7bit encoding).  Besides the normal
 @acronym{MIME} encodings, @code{qp-or-base64} may be used to indicate that for
 each case the most efficient of quoted-printable and base64 should be
 used.  You can override this setting on a per-message basis by using
