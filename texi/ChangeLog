@@ -1,3 +1,8 @@
+2002-11-17  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Expiring in IMAP): Add.
+	(Group Parameters): Add reference.
+
 2002-10-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (RSS): Add gnus-summary-mark-as-read-forward into the
