@@ -2,6 +2,7 @@
 
 	* gnus-ems.el (gnus-article-display-xface)
 	[gnus-article-compface-xbm]: Fix.
+	(gnus-x-splash): Bind width, height.
 
 2000-10-04 11:45:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
