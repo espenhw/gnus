@@ -438,7 +438,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
   "Encode words in STRING.
 By default, the string is treated as containing addresses (see
 `rfc2047-encoding-type')."
-  (with-temp-buffer
+  (mm-with-multibyte-buffer
     (insert string)
     (rfc2047-encode-region (point-min) (point-max))
     (buffer-string)))

@@ -609,6 +609,14 @@ Use unibyte mode for this."
 (put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
 
+(defmacro mm-with-multibyte-buffer (&rest forms)
+  "Create a temporary buffer, and evaluate FORMS there like `progn'.
+Use multibyte mode for this."
+  `(let ((default-enable-multibyte-characters t))
+     (with-temp-buffer ,@forms)))
+(put 'mm-with-multibyte-buffer 'lisp-indent-function 0)
+(put 'mm-with-multibyte-buffer 'edebug-form-spec '(body))
+
 (defmacro mm-with-unibyte-current-buffer (&rest forms)
   "Evaluate FORMS with current buffer temporarily made unibyte.
 Also bind `default-enable-multibyte-characters' to nil.
