@@ -1,6 +1,6 @@
 @echo off
 
-rem Written by Frank Schmitt <ich@frank-schmitt.net>
+rem Written by Frank Schmitt (ich@frank-schmitt.net)
 rem based on the work by David Charlap (shamino@writeme.com)
 rem .
 rem Clear PWD so emacs doesn't get confused
@@ -38,8 +38,8 @@ goto emacs
 
 :emacs
 if not "%2" == "/copy" goto emacsnocopy
-if not exist %1\..\site-lisp mkdir %1\..\site-lisp
-if not exist %1\..\site-lisp\gnus mkdir %1\..\site-lisp\gnus
+if not exist %1\..\site-lisp\nul mkdir %1\..\site-lisp
+if not exist %1\..\site-lisp\gnus\nul mkdir %1\..\site-lisp\gnus
 if not exist %1\..\site-lisp\subdirs.el set subdirwarning=yes
 :emacsnocopy
 set EMACS_ARGS=-batch -q -no-site-file
@@ -51,10 +51,10 @@ goto lisp
 :xemacs
 set EMACS=xemacs.exe
 if not "%2" == "/copy" goto xemacsnocopy
-if not exist %1\..\..\site-packages\ mkdir %1\..\..\site-packages\
-if not exist %1\..\..\site-packages\info mkdir %1\..\..\site-packages\info
-if not exist %1\..\..\site-packages\lisp mkdir %1\..\..\site-packages\lisp
-if not exist %1\..\..\site-packages\etc mkdir %1\..\..\site-packages\etc
+if not exist %1\..\..\site-packages\nul mkdir %1\..\..\site-packages\
+if not exist %1\..\..\site-packages\info\nul mkdir %1\..\..\site-packages\info
+if not exist %1\..\..\site-packages\lisp\nul mkdir %1\..\..\site-packages\lisp
+if not exist %1\..\..\site-packages\etc\nul mkdir %1\..\..\site-packages\etc
 :xemacsnocopy
 set EMACS_ARGS=-batch -no-autoloads
 set GNUS_INFO_DIR=%1\..\..\site-packages\info
@@ -90,7 +90,7 @@ if not "%2" == "/copy" goto infotest
 echo.
 echo Stand by while copying lisp files.
 echo.
-if not exist %GNUS_LISP_DIR% mkdir %GNUS_LISP_DIR%
+if not exist %GNUS_LISP_DIR%\nul mkdir %GNUS_LISP_DIR%
 xcopy /R /Q /Y *.el* %GNUS_LISP_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-lisp
 goto infotest
@@ -134,7 +134,7 @@ if ErrorLevel 1 set ERROR=%ERROR%,pgg.texi
 if ErrorLevel 1 set ERROR=%ERROR%,message.texi
 
 if not "%2" == "/copy" goto nocopy
-if not exist %GNUS_INFO_DIR% mkdir %GNUS_INFO_DIR%
+if not exist %GNUS_INFO_DIR%\nul mkdir %GNUS_INFO_DIR%
 
 echo.
 echo Stand by while copying info files.
@@ -172,13 +172,13 @@ cd ..\etc
 echo.
 echo Stand by while copying etc files.
 echo.
-if not exist %GNUS_ETC_DIR% mkdir %GNUS_ETC_DIR%
+if not exist %GNUS_ETC_DIR%\nul mkdir %GNUS_ETC_DIR%
 xcopy /R /Q /Y gnus-tut.txt %GNUS_ETC_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-tut-txt
-if not exist %GNUS_ETC_DIR%\gnus mkdir %GNUS_ETC_DIR%\gnus
+if not exist %GNUS_ETC_DIR%\gnus\nul mkdir %GNUS_ETC_DIR%\gnus
 xcopy /R /Q /Y .\gnus\* %GNUS_ETC_DIR%\gnus\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-*
-if not exist %GNUS_ETC_DIR%\smilies mkdir %GNUS_ETC_DIR%\smilies
+if not exist %GNUS_ETC_DIR%\smilies\nul mkdir %GNUS_ETC_DIR%\smilies
 xcopy /R /Q /Y .\smilies\* %GNUS_ETC_DIR%\smilies\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-smilies-*
 goto warnings

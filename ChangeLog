@@ -1,3 +1,8 @@
+2004-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Fix directory test for Windows 9x/ME.  From Michael
+	Schierl <schierlm-public@gmx.de> (tiny change).
+
 2004-01-07  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
 
 	* etc/gnus-tut.txt: `G m' instead of `G V' (tiny patch).
