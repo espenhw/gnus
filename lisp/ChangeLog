@@ -1,3 +1,8 @@
+2003-06-23  Didier Verna  <didier@xemacs.org>
+
+	* gnus-art.el (article-display-face): Check for existence of the
+	original article buffer before switching to it.
+
 2003-06-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-append-to-file): Say "Appended to".  Suggested by
@@ -110,7 +115,7 @@
 	is requested but the message is not spam
 
 2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
-	From Eric 
+	From Eric
 	<knauel@informatik.uni-tuebingen.de>
 
 	* spam.el (spam-use-spamoracle): new variable
@@ -118,12 +123,12 @@
 	for activation of spam-install-hooks
 	(spam-spamoracle): new variable customization group
 	(spam-spamoracle, spam-spamoracle): new variables
-	(spam-group-spam-processor-spamoracle-p) 
+	(spam-group-spam-processor-spamoracle-p)
 	(spam-group-ham-processor-spamoracle-p): new functions
 	(spam-summary-prepare-exit): added spamoracle ham/spam exit processing
 	(spam-list-of-checks, spam-list-of-statistical-checks): add
 	spam-use-spamoracle
-	(spam-check-spamoracle, spam-spamoracle-learn) 
+	(spam-check-spamoracle, spam-spamoracle-learn)
 	(spam-spamoracle-learn-ham, spam-spamoracle-learn-spam): new functions
 
 	* gnus.el (gnus-group-spam-exit-processor-spamoracle)
@@ -179,7 +184,7 @@
 2003-06-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2047.el (rfc2047-encode-region): Don't error out on invalid
-	strings. 
+	strings.
 
 2003-06-04  Jesper Harder  <harder@ifa.au.dk>
 
@@ -285,7 +290,7 @@
 2003-05-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-dirty): flag for modified registry
-	(gnus-registry-save, gnus-registry-read) 
+	(gnus-registry-save, gnus-registry-read)
 	(gnus-registry-store-extra, gnus-registry-clear): use it (note
 	that gnus-registry-store-extra is invoked for all modifications to
 	set the mtime, so gnus-registry-dirty only needs to be set there)
@@ -326,7 +331,7 @@
 	* gnus-agent.el (gnus-agentize): Updated documentation to match
 	usage.
 	(gnus-agent-expire-group-1): Do not skip over a group when the
-	force argument is set. 
+	force argument is set.
 	* gnus.el (gnus-agent): Updated documentation to reflect that
 	gnus-agent now defaults to t.
 
@@ -340,31 +345,31 @@
 
 2003-05-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* mail-source.el (mail-source-delete-incoming): Changed to t. 
+	* mail-source.el (mail-source-delete-incoming): Changed to t.
 
 	* rfc2047.el (rfc2047-syntax-table): Funcall.
 
-	* lpath.el ((featurep 'xemacs)): Added set-char-table-range. 
+	* lpath.el ((featurep 'xemacs)): Added set-char-table-range.
 	((featurep 'xemacs)): No, don't.
 
-	* rfc2047.el (rfc2047-encodable-p): Use the header charset. 
+	* rfc2047.el (rfc2047-encodable-p): Use the header charset.
 
 	* gnus-sum.el (gnus-summary-reselect-current-group): Supply
-	leave-hidden. 
+	leave-hidden.
 
 2003-05-14  Jonathan Kamens  <jik@kamens.brookline.ma.us>
 
 	* gnus-sum.el (gnus-summary-exit): Added `leave-hidden'.  (Tiny
-	patch.) 
+	patch.)
 
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-registry.el (gnus-registry-store-extra-entry): Use
-	gnus-assq-delete-all. 
+	gnus-assq-delete-all.
 
 	* gnus-xmas.el (gnus-xmas-assq-delete-all): New function.
 
-	* message.el (message-ignored-bounced-headers): Add Delivered-To. 
+	* message.el (message-ignored-bounced-headers): Add Delivered-To.
 
 	* gnus-sum.el (gnus-summary-find-next): Indent.
 	(gnus-summary-find-prev): Ditto.
@@ -374,7 +379,7 @@
 
 	* gnus-util.el (gnus-user-date): Use %d instead of %m.
 	(gnus-user-date): Use floating point time so that we don't get
-	overflows. 
+	overflows.
 
 	* gnus-sum.el (gnus-summary-local-variables): Clean up.
 
@@ -400,8 +405,8 @@
 2003-05-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-install): new variable
-	(gnus-registry-fetch-extra, gnus-registry-fetch-extra-entry) 
-	(gnus-registry-store-extra-entry, gnus-registry-delete-group) 
+	(gnus-registry-fetch-extra, gnus-registry-fetch-extra-entry)
+	(gnus-registry-store-extra-entry, gnus-registry-delete-group)
 	(gnus-registry-add-group): add a modification timestamp to each entry
 	(gnus-registry-install-hooks): new function
 
@@ -418,14 +423,14 @@
 	references to each field's symbol.
 	gnus-sum.el (gnus-summary-use-undownloaded-faces): New local variable.
 	(gnus-select-newgroup): Initialize it.
-	(gnus-summary-highlight-line): Use it.	
+	(gnus-summary-highlight-line): Use it.
 
 2003-05-12  Dave Love  <fx@gnu.org>
 
 	* mm-util.el (mm-read-charset): Deleted.
 	(mm-coding-system-mime-charset): New.
-	(mm-read-coding-system, mm-mule-charset-to-mime-charset) 
-	(mm-charset-to-coding-system, mm-mime-charset) 
+	(mm-read-coding-system, mm-mule-charset-to-mime-charset)
+	(mm-charset-to-coding-system, mm-mime-charset)
 	(mm-find-mime-charset-region): Use it.
 	(mm-default-multibyte-p): Fix non-mule case.
 
@@ -443,7 +448,7 @@
 2003-05-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-expire-unagentized-dirs): Added
-	space. 
+	space.
 
 2003-05-11  Jesper Harder  <harder@ifa.au.dk>
 
@@ -547,7 +552,7 @@
 
 	* message.el (message-setup-1): Setup alternative email before
 	generate-headers.
-	
+
 	(message-forward-subject-name-subject): Fix the case when the
 	field "from" doesn't exist.
 
@@ -721,9 +726,9 @@
 	* gnus.el (gnus-install-group-spam-parameters): docstring fix.
 	From Jon Ericson <Jon.Ericson@jpl.nasa.gov> (tiny change)
 
-	* gnus-registry.el (gnus-registry-fetch-extra) 
+	* gnus-registry.el (gnus-registry-fetch-extra)
 	(gnus-registry-store-extra, gnus-registry-group-count): new functions
-	(gnus-registry-fetch-group, gnus-registry-delete-group) 
+	(gnus-registry-fetch-group, gnus-registry-delete-group)
 	(gnus-registry-add-group): changed to work with extra data element
 	if present
 
@@ -756,12 +761,12 @@
 
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* spam-stat.el (spam-stat-test-directory): Compare against zero. 
+	* spam-stat.el (spam-stat-test-directory): Compare against zero.
 
 2003-05-01  Trey Jackson <tjackson@ichips.intel.com>  (tiny change)
 
 	* spam-stat.el (spam-stat-test-directory): Skip 0 length files.
-	
+
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-forward-subject-name-subject): Decode
@@ -809,7 +814,7 @@
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-check-news-header-syntax): Alter "posting"
-	message. 
+	message.
 
 	* nnrss.el (nnrss-node-text): Don't use char classes.
 
@@ -911,7 +916,7 @@
 	(gnus-registry-add-group): new function
 	(gnus-register-spool-action): use it
 	(gnus-register-action): use it
-	(gnus-registry-translate-from-alist) 
+	(gnus-registry-translate-from-alist)
 	(gnus-registry-translate-to-alist): remove the headers registry
 	for now
 
@@ -981,8 +986,8 @@
 
 2003-04-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-art.el (gnus-mime-display-multipart-as-mixed) 
-	(gnus-mime-display-multipart-alternative-as-mixed) 
+	* gnus-art.el (gnus-mime-display-multipart-as-mixed)
+	(gnus-mime-display-multipart-alternative-as-mixed)
 	(gnus-mime-display-multipart-related-as-mixed): Added doc-strings,
 	allow customization.
 
@@ -993,7 +998,7 @@
 
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-sum.el (gnus-summary-catchup): Don't mark ticked messages. 
+	* gnus-sum.el (gnus-summary-catchup): Don't mark ticked messages.
 	(gnus-summary-mark-read-and-unread-as-read): Take an optional
 	mark.
 
@@ -1013,13 +1018,13 @@
 	* gnus-sum.el (gnus-summary-catchup-from-here): Doc fix.
 
 	* nnrss.el (nnrss-node-text): Use only one
-	gnus-replace-in-string. 
+	gnus-replace-in-string.
 
 	* gnus.el: Remove gnus-functionp throughout.
 
 	* gnus-util.el (gnus-functionp): Removed.
 
-	* gnus-msg.el (gnus-summary-wide-reply-with-original): Doc fix. 
+	* gnus-msg.el (gnus-summary-wide-reply-with-original): Doc fix.
 
 	* message.el (message-required-headers): Add In-Reply-To.
 
@@ -1073,7 +1078,7 @@
 	systems property.
 
 	* mml-sec.el (mml2015, mml1991): Don't require.
-	(mml2015-sign, mml2015-encrypt, mml1991-sign, mml1991-encrypt) 
+	(mml2015-sign, mml2015-encrypt, mml1991-sign, mml1991-encrypt)
 	(message-goto-body, mml-insert-tag): Autoload.
 
 	* mm-decode.el (mm-tmp-directory): Re-write to help avoid warnings.
@@ -1092,7 +1097,7 @@
 
 2003-04-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-group.el (gnus-large-ephemeral-newsgroup) 
+	* gnus-group.el (gnus-large-ephemeral-newsgroup)
 	(gnus-fetch-old-ephemeral-headers): News variables.
 	(gnus-group-read-ephemeral-group): Use them.
 
@@ -1382,7 +1387,7 @@
 	* message.el (message-hide-headers): Don't do intangible.
 
 	* gnus.el (gnus-group-prefixed-name): Comment out the test for
-	colon. 
+	colon.
 
 	* gnus-srvr.el (gnus-browse-read-group): Don't give the real name
 	to the ephemeral entry, but the prefixed name.
@@ -1411,7 +1416,7 @@
 
 2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-draft.el (gnus-draft-send): Add message-hidden-headers. 
+	* gnus-draft.el (gnus-draft-send): Add message-hidden-headers.
 
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -1422,7 +1427,7 @@
 	* message.el (message-newline-and-reformat): Place a boundary
 	before filling.
 	(message-make-forward-subject-function): Changed default to
-	message-forward-subject-name-subject. 
+	message-forward-subject-name-subject.
 	(message-forward-subject-name-subject): New function.
 
 	* nnimap.el (nnimap-split-fancy): Ditto.
@@ -1438,7 +1443,7 @@
 	(message-fix-before-sending): Make hidden headers visible.
 	(message-hide-headers): Bind after-change-functions to nil.
 	(message-forbidden-properties): Put invisible and intangible
-	back. 
+	back.
 	(message-strip-forbidden-properties): Ignore message-hidden text.
 
 	* gnus-msg.el: Hide headers.
@@ -1448,7 +1453,7 @@
 	(message-hide-header-p): New function.
 	(message-hide-header-p): Change logic.
 	(message-forbidden-properties): Remove intangible nil invisible
-	nil. 
+	nil.
 	(message-hide-headers): Narrow to headers.
 
 	* lpath.el (featurep): Bind Info-directory, Info-menu.
@@ -1587,7 +1592,7 @@
 	(pgg-pgp5-snarf-keys-region, pgg-pgp5-process-region): do.
 
 	* pgg.el (pgg-make-temp-file, pgg-temporary-file-directory): do.
-	
+
 2003-04-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-split): (save-excursion) around (widen)
@@ -1705,7 +1710,7 @@
 	nnheader-accept-process-output.
 	(pop3-retr): Ditto.
 
-	* mm-view.el (mm-text-html-renderer-alist): Add -nolist to Lynx. 
+	* mm-view.el (mm-text-html-renderer-alist): Add -nolist to Lynx.
 	(mm-text-html-washer-alist): Ditto.
 
 2003-03-31  Simon Josefsson  <jas@extundo.com>
@@ -1749,7 +1754,7 @@
 
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* nndoc.el (nndoc-type-alist): Move mime-parts further ahead. 
+	* nndoc.el (nndoc-type-alist): Move mime-parts further ahead.
 
 	* gnus-registry.el (gnus-registry-translate-to-alist): Make a
 	valid lambda.
