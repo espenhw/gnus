@@ -1,3 +1,9 @@
+2005-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-request-delete-group): Delete entries in
+	nnrss-group-alist as well.
+	(nnrss-save-server-data): Inser newline.
+
 2005-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.el (gnus-user-agent): Use list of symbols instead of
