@@ -384,12 +384,6 @@ If SILENT, don't prompt the user."
      ;; Use the normal select method.
      (t gnus-select-method))))
 
-(defun gnus-news-group-p (group &optional article)
-  "Return non-nil if GROUP (and ARTICLE) come from a news server."
-  (or (gnus-member-of-valid 'post group) ; Ordinary news group.
-      (and (gnus-member-of-valid 'post-mail group) ; Combined group.
-	   (eq (gnus-request-type group article) 'news))))
-
 (defun gnus-inews-narrow-to-headers ()
   (widen)
   (narrow-to-region
@@ -558,8 +552,8 @@ The current group name will be inserted at \"%s\".")
 (defun gnus-summary-mail-other-window ()
   "Compose mail in other window."
   (interactive)
-  (gnus-set-global-variables)
-  (message-mail))
+  (gnus-setup-message 'message
+    (message-mail)))
 
 (defun gnus-mail-parse-comma-list ()
   (let (accumulated

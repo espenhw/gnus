@@ -1323,8 +1323,7 @@ SCORE is the score to add."
 	(while articles
 	  (setq article (mail-header-number (caar articles)))
 	  (gnus-message 7 "Scoring on article %s of %s..." article last)
-	  (if (not (funcall request-func article gnus-newsgroup-name))
-	      ()
+	  (when (funcall request-func article gnus-newsgroup-name)
 	    (widen)
 	    (goto-char (point-min))
 	    ;; If just parts of the article is to be searched, but the

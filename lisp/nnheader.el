@@ -39,7 +39,6 @@
 
 (require 'mail-utils)
 (require 'sendmail)
-(require 'message)
 (require 'rmail)
 (eval-when-compile (require 'cl))
 
@@ -329,7 +328,7 @@ on your system, you could say something like:
 (defvar nnheader-numerical-full-files (concat "/" nnheader-numerical-files)
   "Regexp that matches numerical full file paths.")
 
-(defun nnheader-file-to-number (file)
+(defsubst nnheader-file-to-number (file)
   "Take a file name and return the article number."
   (if (not (boundp 'jka-compr-compression-info-list))
       (string-to-int file)

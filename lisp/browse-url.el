@@ -525,19 +525,25 @@ used instead of browse-url-new-window-p."
   (interactive (append (browse-url-interactive-arg "Netscape URL: ")
 		       (list (not (eq (null browse-url-new-window-p)
 				      (null current-prefix-arg))))))
-  (or (zerop
-       (apply 'call-process "netscape" nil nil nil
-	      (append browse-url-netscape-arguments
-		      (if new-window '("-noraise"))
-		      (list "-remote" 
-			    (concat "openURL(" url 
-				    (if new-window ",new-window")
-				    ")")))))
-      (progn				; Netscape not running - start it
-	(message "Starting Netscape...")
-	(apply 'start-process "netscape" nil
-	       browse-url-netscape-command
-	       (append browse-url-netscape-arguments (list url))))))
+  (let ((process (apply 'start-process
+			(concat "netscape " url) nil
+			browse-url-netscape-command
+			(append browse-url-netscape-arguments
+				(if new-window '("-noraise"))
+				(list "-remote" 
+				      (concat "openURL(" url 
+					      (if new-window ",new-window")
+					      ")"))))))
+    (set-process-sentinel 
+     process 
+     `(lambda (process change)
+	(or (eq (process-exit-status process) 0)
+	    (progn
+	      ;; Netscape not running - start it
+	      (message "Starting Netscape...")
+	      (apply 'start-process (concat "netscape" ,url) nil
+		     browse-url-netscape-command
+		     (append browse-url-netscape-arguments (list ,url)))))))))
 
 (defun browse-url-netscape-reload ()
   "Ask Netscape to reload its current document."

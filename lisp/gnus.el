@@ -1688,7 +1688,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.60"
+(defconst gnus-version "September Gnus v0.61"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3565,6 +3565,12 @@ that that variable is buffer-local to the summary buffers."
   (memq 'virtual (assoc (symbol-name (car (gnus-find-method-for-group group)))
 			gnus-valid-select-methods)))
 
+(defun gnus-news-group-p (group &optional article)
+  "Return non-nil if GROUP (and ARTICLE) come from a news server."
+  (or (gnus-member-of-valid 'post group) ; Ordinary news group.
+      (and (gnus-member-of-valid 'post-mail group) ; Combined group.
+	   (eq (gnus-request-type group article) 'news))))
+
 (defsubst gnus-simplify-subject-fully (subject)
   "Simplify a subject string according to the user's wishes."
   (cond
@@ -5320,7 +5326,8 @@ If EXCLUDE-GROUP, do not go to that group."
   (goto-char (point-min))
   (let ((best 100000)
 	unread best-point)
-    (while (setq unread (get-text-property (point) 'gnus-unread))
+    (while (not (eobp))
+      (setq unread (get-text-property (point) 'gnus-unread))
       (if (and (numberp unread) (> unread 0))
 	  (progn
 	    (if (and (get-text-property (point) 'gnus-level)
@@ -10813,7 +10820,9 @@ Return how many articles were fetched."
 	  ;; The article is present in the buffer, to we just go to it.
 	  (gnus-summary-goto-article (mail-header-number header) nil t)
 	;; We fetch the article
-	(let ((gnus-override-method gnus-refer-article-method)
+	(let ((gnus-override-method 
+	       (and (gnus-news-group-p gnus-newsgroup-name)
+		    gnus-refer-article-method))
 	      number)
 	  ;; Start the special refer-article method, if necessary.
 	  (when gnus-refer-article-method
@@ -15736,9 +15745,7 @@ Returns whether the updating was successful."
 	     ((and (eq gnus-read-active-file 'some)
 		   (gnus-check-backend-function 'retrieve-groups (car method)))
 	      (let ((newsrc (cdr gnus-newsrc-alist))
-		    (gmethod (if (stringp method)
-				 (gnus-server-get-method nil method)
-			       method))
+		    (gmethod (gnus-server-get-method nil method))
 		    groups info)
 		(while (setq info (pop newsrc))
 		  (when (gnus-server-equal

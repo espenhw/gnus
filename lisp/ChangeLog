@@ -1,4 +1,48 @@
+Fri Mar 29 07:38:59 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-read-active-file): Activate secondary groups.
+
+Fri Mar 29 07:44:06 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nneething.el (nneething-get-head): Would return nil on proper
+	heads. 
+
+Sat Mar 23 22:19:09 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* browse-url.el (browse-url-netscape): Start remote netscape in
+	the background.  Use sentinel to start a new netscape if the
+	remote can't connect.
+
+Fri Mar 29 05:22:50 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-send-mail): Would remove ignored news
+	headers. 
+
+	* gnus.el (gnus-news-group-p): Moved function here. 
+	(gnus-summary-refer-article): Use it.
+	(gnus-group-best-unread-group): Wouldn't work under topics.
+
+	* message.el (message-cite-function): New variable.
+	(message-cite-original): New function.
+	(message-yank-original): Use it.
+	(message-make-domain): New definition.
+	(message-make-address): Ditto.
+	(message-make-message-id): New definition.
+	(message-insert-signature): Interactive `force' of signature.
+
+Fri Mar 29 06:01:56 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
+
+	* gnus-msg.el (gnus-summary-mail-other-window): Restore window
+	conf. 
+
+Thu Mar 28 10:15:06 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (nnheader): Require nnheader.
+	(message-mode): Doc fix.
+
 Thu Mar 28 06:12:28 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.60 is released.
 
 	* message.el (message-send-mail): Remove Gcc header.
 	(message-setup): Would insert default headers in the body.

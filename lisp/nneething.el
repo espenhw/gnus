@@ -284,7 +284,8 @@ If this variable is nil, no files will be excluded.")
 (defun nneething-insert-head (file)
   "Insert the head of FILE."
   (when (nneething-get-head file)
-    (insert-buffer-substring nneething-work-buffer)))
+    (insert-buffer-substring nneething-work-buffer)
+    (goto-char (point-max))))
 
 (defun nneething-make-head (file &optional buffer)
   "Create a head by looking at the file attributes of FILE."
@@ -368,8 +369,8 @@ If this variable is nil, no files will be excluded.")
 	   (point-max))
 	(goto-char (point-min))
 	(nneething-make-head file (current-buffer))
-	(delete-region (point) (point-max))
-	t)))))
+	(delete-region (point) (point-max)))
+      t))))
 
 (defun nneething-file-name (article)
   "Return the file name of ARTICLE."
