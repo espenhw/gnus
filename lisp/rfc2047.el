@@ -110,7 +110,8 @@ The values can be:
     (cn-gb-2312 . B)
     (euc-kr . B)
     (iso-2022-jp-2 . B)
-    (iso-2022-int-1 . B))
+    (iso-2022-int-1 . B)
+    (viscii . Q))
   "Alist of MIME charsets to RFC2047 encodings.
 Valid encodings are nil, `Q' and `B'.  These indicate binary (no) encoding,
 quoted-printable and base64 respectively.")
@@ -414,6 +415,7 @@ By default, the region is treated as containing addresses (see
 		 (downcase (symbol-name encoding)) "?"))
 	 (factor (case mime-charset
 		   ((iso-8859-5 iso-8859-7 iso-8859-8 koi8-r) 1)
+		   ((big5 gb2312 euc-kr) 2)
 		   (utf-8 4)
 		   (t 8)))
 	 ;; encoded-words must not be longer than 75 characters,

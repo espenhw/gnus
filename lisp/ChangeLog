@@ -1,5 +1,8 @@
 2003-09-13  Jesper Harder  <harder@ifa.au.dk>
 
+	* rfc2047.el (rfc2047-charset-encoding-alist): Add viscii.
+	(rfc2047-encode): Add factors for big5, gb2312 and euc-kr.
+
 	* nnweb.el (nnweb-google-parse-1): Fix parsing.
 
 2003-09-12  Jesper Harder  <harder@ifa.au.dk>
