@@ -356,7 +356,14 @@ Modify to suit your needs."))
     (with-temp-file (expand-file-name "gnus-load.el")
       (insert "\
 
-\(provide 'gnus-load)"))))
+\(provide 'gnus-load)
+
+;;; Local Variables:
+;;; version-control: never
+;;; no-byte-compile: t
+;;; no-update-autoloads: t
+;;; End:
+;;; gnus-load.el ends here"))))
 
 
 ;;; dgnushack.el ends here

@@ -1,3 +1,12 @@
+2003-10-25  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* Makefile.in (clean-some): Remove auto-autoloads.* and
+	custom-load.* as well.
+	(distclean): Ditto.
+
+	* dgnushack.el (dgnushack-make-load): Add a local vars section to
+	the dummy gnus-load.el.
+
 2003-10-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-copy-or-move-routine): do not delete if copy
