@@ -1,3 +1,8 @@
+2002-06-30  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.texi (News Headers): Include example for removing an
+	entry from message-required-news-headers.
+
 2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Add nntp-via-rlogin-command-switches.

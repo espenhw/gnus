@@ -1363,6 +1363,15 @@ If the list contains a cons where the car of the cons is
 @code{optional}, the cdr of this cons will only be inserted if it is
 non-@code{nil}.
 
+If you want to delete an entry from this list, the following Lisp
+snippet might be useful.  Adjust accordingly if you want to remove
+another element.
+
+@lisp
+(setq message-required-news-headers
+      (delq 'Message-ID message-required-news-headers))
+@end lisp
+
 Other variables for customizing outgoing news articles:
 
 @table @code
