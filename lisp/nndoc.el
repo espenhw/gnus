@@ -56,7 +56,7 @@ Possible values:
      "^-+ Start of forwarded message -+\n+"
      "^-+ End of forwarded message -+\n"
      nil "^ ?$" nil nil nil)
-    (mmfd
+    (mmdf
      "^\^A\^A\^A\^A\n" "^\^A\^A\^A\^A\n" nil "^$"
      nil nil nil))
   "Regular expressions for articles of the various types.
@@ -407,13 +407,13 @@ first-article, end-of-file, body-begin.")
 
 (defun nndoc-guess-doc-type ()
   "Guess what document type is in the current buffer.
-Returns one of `babyl', `mbox', `digest', `forward', `mmfd' or nil."
+Returns one of `babyl', `mbox', `digest', `forward', `mmdf' or nil."
   (goto-char (point-min))
   (cond 
    ((looking-at rmail-unix-mail-delimiter)
     'mbox)
    ((looking-at "\^A\^A\^A\^A$")
-    'mmfd)
+    'mmdf)
    ((and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
 	 (not (re-search-forward "^Subject:.*digest" nil t)))
     'forward)

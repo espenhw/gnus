@@ -246,10 +246,7 @@
 
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
   (nnmh-possibly-change-directory newsgroup)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function newsgroup))
-		   nnmail-expiry-wait))
-	 (active-articles 
+  (let* ((active-articles 
 	  (mapcar
 	   (function
 	    (lambda (name)
@@ -265,13 +262,8 @@
 			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (nnmh-deletable-article-p newsgroup (car articles))
-		   (or force
-		       (and (not (equal mod-time '(0 0)))
-			    (setq is-old
-				  (> (nnmail-days-between
-				      (current-time-string)
-				      (current-time-string mod-time))
-				     days)))))
+		   (setq is-old
+			 (nnmail-expired-article-p newsgroup mod-time force)))
 	      (progn
 		(and gnus-verbose-backends 
 		     (message "Deleting article %s in %s..." 

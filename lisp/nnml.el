@@ -260,10 +260,7 @@ all. This may very well take some time.")
 
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function newsgroup))
-		   nnmail-expiry-wait))
-	 (active-articles 
+  (let* ((active-articles 
 	  (mapcar
 	   (function
 	    (lambda (name)
@@ -271,33 +268,28 @@ all. This may very well take some time.")
 	   (directory-files nnml-current-directory nil "^[0-9]+$" t)))
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
-	 article rest mod-time)
+	 article rest mod-time number)
     (nnmail-activate 'nnml)
 
     (while (and articles is-old)
       (setq article (concat nnml-current-directory 
-			    (int-to-string (car articles))))
-      (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (and (nnml-deletable-article-p newsgroup (car articles))
-		   (or force
-		       (and (not (equal mod-time '(0 0)))
-			    (setq is-old
-				  (> (nnmail-days-between
-				      (current-time-string)
-				      (current-time-string mod-time))
-				     days)))))
-	      (progn
-		(and gnus-verbose-backends 
-		     (message "Deleting article %s in %s..."
-			      article newsgroup))
-		(condition-case ()
-		    (funcall nnmail-delete-file-function article)
-		  (file-error
-		   (setq rest (cons (car articles) rest))))
-		(setq active-articles (delq (car articles) active-articles))
-		(nnml-nov-delete-article newsgroup (car articles)))
-	    (setq rest (cons (car articles) rest))))
-      (setq articles (cdr articles)))
+			    (int-to-string 
+			     (setq number (pop articles)))))
+      (when (setq mod-time (nth 5 (file-attributes article)))
+	(if (and (nnml-deletable-article-p newsgroup number)
+		 (setq is-old 
+		       (nnmail-expired-article-p newsgroup mod-time force)))
+	    (progn
+	      (and gnus-verbose-backends 
+		   (message "Deleting article %s in %s..."
+			    article newsgroup))
+	      (condition-case ()
+		  (funcall nnmail-delete-file-function article)
+		(file-error
+		 (push number rest)))
+	      (setq active-articles (delq number active-articles))
+	      (nnml-nov-delete-article newsgroup number))
+	  (push number rest))))
     (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
       (and active
 	   (setcar active (or (and active-articles

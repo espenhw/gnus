@@ -211,6 +211,12 @@ If the stream is opened, return T, otherwise return NIL."
 	(setq nnvirtual-status-string "No component groups")
 	(setq nnvirtual-current-group nil)
 	nil))))
+
+(defun nnvirtual-request-type (group &optional article)
+  (nnvirtual-possibly-change-newsgroups group nil)
+  (if (not article)
+      'unknown
+    (gnus-request-type (car (nnvirtual-art-group article)))))
     
 (defun nnvirtual-close-group (group &optional server)
   (if (not nnvirtual-current-group)

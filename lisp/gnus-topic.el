@@ -95,6 +95,7 @@ use the `gnus-group-topics' to sort the groups.
 If ALL is non-nil, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
+  (setq gnus-topic-indentation "")
   (let ((buffer-read-only nil)
         (lowest (or lowest 1))
 	tlist info)
@@ -234,6 +235,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	 (indentation (make-string (* 2 level) ? ))
 	 (number-of-articles (gnus-topic-articles-in-topic entries))
 	 (number-of-groups (length entries)))
+    (setq gnus-topic-indentation "")
     (beginning-of-line)
     ;; Insert the text.
     (add-text-properties 
@@ -242,7 +244,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        (eval gnus-topic-line-format-spec))
      (list 'gnus-topic name
 	   'gnus-topic-level level
-	   'gnus-topic-visible visiblep))))
+	   'gnus-topic-visible visiblep))
+    (gnus-group-remove-excess-properties)))
 
 (defun gnus-topic-previous-topic (topic)
   "Return the previous topic on the same level as TOPIC."
@@ -370,12 +373,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	 (entries (gnus-topic-find-groups (car type)))
 	 (visiblep (eq (nth 1 type) 'visible)))
     ;; Insert the topic line.
-    (if topic
-	(progn
-	  (gnus-delete-line)
-	  (gnus-topic-insert-topic-line 
-	   (car type) visiblep
-	   (not (eq (nth 2 type) 'hidden)) level entries)))))
+    (when topic
+      (gnus-delete-line)
+      (gnus-topic-insert-topic-line 
+       (car type) visiblep
+       (not (eq (nth 2 type) 'hidden)) level entries))))
 
 ;;; Topic mode, commands and keymap.
 
@@ -475,9 +477,11 @@ group."
   ;; Check whether this topic already exists.
   (when (gnus-topic-find-topology topic)
     (error "Topic aleady exists"))
+  (unless parent
+    (setq parent (car (car gnus-topic-topology))))
   (let ((top (cdr (gnus-topic-find-topology parent))))
     (unless top
-      (error "No such topic: %s" parent))
+      (error "No such parent topic: %s" parent))
     (if previous
 	(progn
 	  (while (and (cdr top)
@@ -570,9 +574,10 @@ group."
   "Move all groups that match REGEXP to some topic."
   (interactive
    (let (topic)
-     (list
-      (setq topic (completing-read "Move to topic: " gnus-topic-alist nil t))
-      (read-string (format "Move to %s (regexp): " topic)))))
+     (nreverse
+      (list
+       (setq topic (completing-read "Move to topic: " gnus-topic-alist nil t))
+       (read-string (format "Move to %s (regexp): " topic))))))
   (gnus-group-mark-regexp regexp)
   (gnus-topic-move-group nil topic copyp))
 
@@ -580,9 +585,10 @@ group."
   "Copy all groups that match REGEXP to some topic."
   (interactive
    (let (topic)
-     (list
-      (setq topic (completing-read "Copy to topic: " gnus-topic-alist nil t))
-      (read-string (format "Copy to %s (regexp): " topic)))))
+     (nreverse
+      (list
+       (setq topic (completing-read "Copy to topic: " gnus-topic-alist nil t))
+       (read-string (format "Copy to %s (regexp): " topic))))))
   (gnus-topic-move-matching regexp topic t))
 
 (defun gnus-topic-delete (topic)
@@ -605,15 +611,17 @@ group."
 (defun gnus-topic-rename (old-name new-name)
   "Rename a topic."
   (interactive
-   (list
-    (completing-read "Rename topic: " gnus-topic-alist nil t)
-    (read-string (format "Rename %s to: "))))
+   (let (topic)
+     (list
+      (setq topic (completing-read "Rename topic: " gnus-topic-alist nil t))
+      (read-string (format "Rename %s to: " topic)))))
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))
     (when top
       (setcar (car (cdr top)) new-name))
     (when entry 
-      (setcar entry new-name))))
+      (setcar entry new-name))
+    (gnus-group-list-groups)))
 
 (defun gnus-topic-indent (&optional unindent)
   "Indent a topic -- make it a sub-topic of the previous topic.

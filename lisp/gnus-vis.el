@@ -1266,7 +1266,7 @@ to do the hiding.  See the documentation for those functions."
 			 (skip-chars-forward ": \t")
 			 (let ((from (point)))
 			   (goto-char end)
-			   (skip-chars-backward " \t")
+			   (skip-chars-backward " \t\n")
 			   (put-text-property from (point) 'face field-face)
 			   (setq field-found t))))))
 	    (goto-char begin)))))))

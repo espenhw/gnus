@@ -315,10 +315,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function newsgroup))
-		   nnmail-expiry-wait))
-	 (is-old t)
+  (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnfolder)
 
@@ -327,13 +324,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnfolder-article-string (car articles)) nil t)
-	    (if (or force
-		    (setq is-old
-			  (> (nnmail-days-between 
-			      (current-time-string)
-			      (buffer-substring 
-			       (point) (progn (end-of-line) (point))))
-			     days)))
+	    (if (setq is-old
+		      (nnmail-expired-article-p 
+		       newsgroup
+		       (buffer-substring 
+			(point) (progn (end-of-line) (point))) force))
 		(progn
 		  (and gnus-verbose-backends
 		       (message "Deleting article %d..." 

@@ -253,6 +253,18 @@ The SOUP packet file name will be inserted at the %s.")
 			(max (1+ (- max min)) 0) min max group)))))
   t)
 
+(defun nnsoup-request-type (group &optional article)
+  (nnsoup-possibly-change-group group)
+  (if (not article)
+      'unknown
+    (let ((kind (gnus-soup-encoding-kind 
+		 (gnus-soup-area-encoding
+		  (nth 1 (nnsoup-article-to-area
+			  article nnsoup-current-group))))))
+      (cond ((= kind ?m) 'mail)
+	    ((= kind ?n) 'news)
+	    (t 'unknown)))))
+
 (defun nnsoup-close-group (group &optional server)
   ;; Kill all nnsoup buffers.
   (let ((buffers nnsoup-buffers)
@@ -300,10 +312,7 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defun nnsoup-request-expire-articles (articles group &optional server force)
   (nnsoup-possibly-change-group group)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function group))
-		   nnmail-expiry-wait))
-	 (total-infolist (assoc group nnsoup-group-alist))
+  (let* ((total-infolist (assoc group nnsoup-group-alist))
 	 (infolist (cdr total-infolist))
 	 info range-list mod-time prefix)
     (while infolist
@@ -312,16 +321,9 @@ The SOUP packet file name will be inserted at the %s.")
 	    prefix (gnus-soup-area-prefix (nth 1 info)))
       (when ;; All the articles in this file are marked for expiry.
 	  (and (gnus-sublist-p articles range-list)
-	       ;; This file is old enough.  We have to check for 
-	       ;; `(0 0)', since that's what ange-ftp files reply with.
-	       (or force
-		   (and (not (equal
-			      (setq mod-time (nth 5 (nnsoup-file prefix)))
-			      '(0 0)))
-			(> (nnmail-days-between
-			    (current-time-string)
-			    (current-time-string mod-time))
-			   days))))
+	       ;; This file is old enough. 
+	       (setq mod-time (nth 5 (nnsoup-file prefix)))
+	       (nnmail-expired-article-p group mod-time force))
 	;; Ok, we delete this file.
 	(when (condition-case nil
 		  (and
@@ -585,10 +587,19 @@ The SOUP packet file name will be inserted at the %s.")
 	(goto-char (1+ delimline))
 	(if (eval mail-mailer-swallows-blank-line)
 	    (newline)))
-      (gnus-soup-store 
-       nnsoup-replies-directory 
-       (nnsoup-kind-to-prefix kind) nil nnsoup-replies-format-type
-       nnsoup-replies-index-type)
+      (let ((msg-buf
+	     (gnus-soup-store 
+	      nnsoup-replies-directory 
+	      (nnsoup-kind-to-prefix kind) nil nnsoup-replies-format-type
+	      nnsoup-replies-index-type))
+	    (num 0))
+	(when (and msg-buf (bufferp msg-buf))
+	  (save-excursion
+	    (set-buffer msg-buf)
+	    (goto-char (point-min))
+	    (while (re-search-forward "^#! *rnews" nil t)
+	      (incf num)))
+	  (message "Stored %d messages" num)))
       (kill-buffer tembuf))))
 
 (defun nnsoup-kind-to-prefix (kind)

@@ -241,10 +241,7 @@
 (defun nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup)
-  (let* ((days (or (and nnmail-expiry-wait-function
-			(funcall nnmail-expiry-wait-function newsgroup))
-		   nnmail-expiry-wait))
-	 (is-old t)
+  (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnmbox)
 
@@ -253,13 +250,11 @@
       (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnmbox-article-string (car articles)) nil t)
-	    (if (or force
-		    (setq is-old
-			  (> (nnmail-days-between 
-			      (current-time-string)
-			      (buffer-substring 
-			       (point) (progn (end-of-line) (point))))
-			     days)))
+	    (if (setq is-old
+		      (nnmail-expired-article-p
+		       newsgroup
+		       (buffer-substring 
+			(point) (progn (end-of-line) (point))) force))
 		(progn
 		  (and gnus-verbose-backends
 		       (message "Deleting article %d in %s..."

@@ -404,7 +404,7 @@ Newsgroup must be selected before calling this function."
 	(prev (point-min))
 	num found)
     (if (or (eobp)
-	    (>= (read cur) article))
+	    (>= (setq num (read cur)) article))
 	(beginning-of-line)
       (while (not found)
 	(goto-char (/ (+ max min) 2))
@@ -419,8 +419,8 @@ Newsgroup must be selected before calling this function."
 		 (setq min (point)))
 		(t
 		 (setq found t))))
-	(beginning-of-line))
-      (or (not num) (= num article)))))
+	(beginning-of-line)))
+    (or (not num) (= num article))))
     
 
 (defun nnspool-sift-nov-with-sed (articles file)

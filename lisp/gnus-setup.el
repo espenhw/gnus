@@ -4,7 +4,7 @@
 ;; Author: Steven L. Baur <steve@miranova.com>
 ;; Keywords: news
 
-;; This file is part of GNU Emacs.
+;; This file is not yet a part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,18 +24,38 @@
 ;; My head is starting to spin with all the different mail/news packages.
 ;; Stop The Madness!
 
+;; Given that Emacs Lisp byte codes may be diverging, it is probably best
+;; not to byte compile this, and just arrange to have the .el loaded out
+;; of .emacs.
+
 ;;; Code:
 
-(defvar gnus-gnus-lisp-directory "/usr/lib/xemacs/gnus-5.0/lisp/"
+(defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version))
+
+(defvar gnus-emacs-lisp-directory (if running-xemacs
+				      "/usr/local/lib/xemacs/"
+				    "/usr/local/share/emacs/")
+  "Directory where Emacs site lisp is located.")
+
+(defvar gnus-gnus-lisp-directory (concat gnus-emacs-lisp-directory
+					 "gnus-5.0.12/lisp/")
   "Directory where Gnus Emacs lisp is found.")
-(defvar gnus-sgnus-lisp-directory "/usr/lib/xemacs/sgnus/lisp/"
+
+(defvar gnus-sgnus-lisp-directory (concat gnus-emacs-lisp-directory
+					  "sgnus/lisp/")
   "Directory where September Gnus Emacs lisp is found.")
-(defvar gnus-tm-lisp-directory "/usr/lib/xemacs/site-lisp/"
+
+(defvar gnus-tm-lisp-directory (concat gnus-emacs-lisp-directory
+				       "site-lisp/")
   "Directory where TM Emacs lisp is found.")
 
-(defvar gnus-mailcrypt-lisp-directory
-  "/usr/lib/xemacs/site-lisp/mailcrypt-3.4/"
+(defvar gnus-mailcrypt-lisp-directory (concat gnus-emacs-lisp-directory
+					      "site-lisp/mailcrypt-3.4/")
   "Directory where Mailcrypt Emacs Lisp is found.")
+
+(defvar gnus-bbdb-lisp-directory (concat gnus-emacs-lisp-directory
+					 "site-lisp/bbdb-1.50/")
+  "Directory where Big Brother Database is found.")
 
 (defvar gnus-use-tm t
   "Set this if you want MIME support for Gnus")
@@ -69,9 +89,8 @@
 (if gnus-use-tm
     (progn
       (if (null (member gnus-tm-lisp-directory load-path))
-	  (setq load-path (cons gnus-tm-lisp-directory load-path))))
-      (load "tm-setup")
-      (load "mime-setup"))
+ 	  (setq load-path (cons gnus-tm-lisp-directory load-path)))
+       (load "mime-setup")))
 
 ;;; Mailcrypt by
 ;;; Jin Choi <jin@atype.com>
@@ -80,7 +99,7 @@
 (if gnus-use-mailcrypt
     (progn
       (if (null (member gnus-mailcrypt-lisp-directory load-path))
-	  (setq load-path (cons gnus-mailcrypt-lisp-directory load-path))))
+ 	  (setq load-path (cons gnus-mailcrypt-lisp-directory load-path)))
       (autoload 'mc-install-write-mode "mailcrypt" nil t)
       (autoload 'mc-install-read-mode "mailcrypt" nil t)
       (add-hook 'mail-mode-hook 'mc-install-write-mode)
@@ -90,13 +109,15 @@
       (if gnus-use-mhe
 	  (progn
 	    (add-hook 'mh-folder-mode-hook 'mc-install-read-mode)
-	    (add-hook 'mh-letter-mode-hook 'mc-install-write-mode))))
+ 	    (add-hook 'mh-letter-mode-hook 'mc-install-write-mode)))))
 
 ;;; BBDB by
 ;;; Jamie Zawinski <jwz@lucid.com>
 
 (if gnus-use-bbdb
     (progn
+      (if (null (member gnus-bbdb-lisp-directory load-path))
+ 	  (setq load-path (cons gnus-bbdb-lisp-directory load-path)))
       (autoload 'bbdb "bbdb-com"
 	"Insidious Big Brother Database" t)
       (autoload 'bbdb-name "bbdb-com"
@@ -144,6 +165,9 @@
 
 (autoload 'gnus-update-format "gnus" "\
 Update the format specification near point." t nil)
+
+(autoload 'gnus-slave-no-server "gnus" "\
+Read network news as a slave without connecting to local server." t nil)
 
 (autoload 'gnus-no-server "gnus" "\
 Read network news.

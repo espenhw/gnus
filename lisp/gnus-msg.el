@@ -192,9 +192,9 @@ be used instead.")
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
-Message-ID.  Organization, Lines, In-Reply-To and X-Newsreader are
-optional.  If you want Gnus not to insert some header, remove it from
-this list.")
+Message-ID.  Organization, Lines, In-Reply-To, Expires, and
+X-Newsreader are optional.  If you want Gnus not to insert some
+header, remove it from this list.")
 
 (defvar gnus-required-mail-headers 
   '(From Date To Subject (optional . In-Reply-To) Message-ID Organization Lines)
@@ -207,6 +207,20 @@ included.  Organization, Lines and X-Mailer are optional.")
 
 (defvar gnus-removable-headers '(NNTP-Posting-Host Bcc Xref)
   "*Headers to be removed unconditionally before posting.")
+
+(defvar gnus-article-expires 14
+  "*Number of days before your article expires.
+This variable isn't used unless you have the `Expires' element in
+`gnus-required-headers'.")
+
+(defvar gnus-distribution-function nil
+  "*Function that should return the Distribution header for outgoing articles.
+It will be called from the buffer where the outgoing article
+is being prepared with the group name as the only parameter.
+It should return a valid distribution.  
+
+The function will only be called if you have the `Distribution' header in 
+`gnus-required-headers'.")
 
 (defvar gnus-check-before-posting 
   '(subject-cmsg multiple-headers sendsys message-id from
@@ -355,7 +369,7 @@ buffer."
       (setq gnus-newsgroup-name
 	    (setq group 
 		  (completing-read "Group: " gnus-active-hashtb nil nil
-				   (cons group 0)))))
+				   (cons (or group "") 0)))))
     (gnus-post-news 'post group nil gnus-article-buffer)))
 
 (defun gnus-summary-post-news ()
@@ -490,7 +504,9 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 			   (string-match gnus-mailing-list-groups group))
 	    group (gnus-group-real-name group)))
     (if (or to-group
-	    (and (gnus-member-of-valid 'post (or pgroup gnus-newsgroup-name))
+	    (and (gnus-news-group-p 
+		  (or pgroup gnus-newsgroup-name)
+		  (if header (mail-header-number header) gnus-current-article))
 		 (not mailing-list)
 		 (not to-list)
 		 (not to-address)))
@@ -509,6 +525,12 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	      (setq gnus-add-to-address group)))
 	(gnus-mail-reply yank to-address 'followup)))))
 
+(defun gnus-news-group-p (group &optional article)
+  "Return non-nil if GROUP (and ARTICLE) come from a news server."
+  (or (gnus-member-of-valid 'post group) ; Ordinary news group.
+      (and (gnus-member-of-valid 'post-mail group) ; Combined group.
+	   (eq (gnus-request-type group article) 'post))))
+	   
 (defun gnus-inews-news (&optional use-group-method)
   "Send a news message.
 If given a prefix, and the group is a foreign group, this function
@@ -835,7 +857,7 @@ called."
 	    (newsgroups nil)
 	    (message-id nil)
 	    (distribution nil))
-	(or (gnus-member-of-valid 'post gnus-newsgroup-name)
+	(or (gnus-news-group-p gnus-newsgroup-name)
 	    (error "This backend does not support canceling"))
 	(save-excursion
 	  ;; Get header info. from original article.
@@ -1072,22 +1094,23 @@ called."
   "Prepare article headers.
 Headers already prepared in the buffer are not modified.
 Headers in `gnus-required-headers' will be generated."
-  (let ((Date (gnus-inews-date))
-	(Message-ID (gnus-inews-message-id))
-	(Organization (gnus-inews-organization))
-	(From (gnus-inews-user-name))
-	(Path (gnus-inews-path))
-	(Subject nil)
-	(Newsgroups nil)
-	(In-Reply-To (gnus-inews-in-reply-to))
-	(To nil)
-	(Distribution nil)
-	(Lines (gnus-inews-lines))
-	(X-Newsreader (gnus-extended-version))
-	(X-Mailer (gnus-extended-version))
-	(headers (or headers gnus-required-headers))
-	(case-fold-search t)
-	header value elem)
+  (let* ((Date (gnus-inews-date))
+	 (Message-ID (gnus-inews-message-id))
+	 (Organization (gnus-inews-organization))
+	 (From (gnus-inews-user-name))
+	 (Path (gnus-inews-path))
+	 (Subject nil)
+	 (Newsgroups nil)
+	 (In-Reply-To (gnus-inews-in-reply-to))
+	 (To nil)
+	 (Distribution (gnus-inews-distribution))
+	 (Lines (gnus-inews-lines))
+	 (X-Newsreader (gnus-extended-version))
+	 (X-Mailer X-Newsreader)
+	 (Expires (gnus-inews-expires))
+	 (headers (or headers gnus-required-headers))
+	 (case-fold-search t)
+	 header value elem)
     ;; First we remove any old generated headers.
     (let ((headers gnus-deletable-headers))
       (while headers
@@ -1182,12 +1205,12 @@ Headers in `gnus-required-headers' will be generated."
       (if (and from 
 	       (not (gnus-check-before-posting 'sender))
 	       (not (string=
-		     (downcase (car (gnus-extract-address-components from)))
+		     (downcase (car (cdr (gnus-extract-address-components from))))
 		     (downcase (gnus-inews-real-user-address))))
 	       (or (null sender)
 		   (not 
 		    (string=
-		     (downcase (car (gnus-extract-address-components sender)))
+		     (downcase (car (cdr (gnus-extract-address-components sender))))
 		     (downcase (gnus-inews-real-user-address))))))
 	  (progn
 	    (goto-char (point-min))    
@@ -1292,7 +1315,8 @@ a program specified by the rest of the value."
 		(funcall gnus-author-copy-saver file)
 	      (if (and (file-readable-p file) (mail-file-babyl-p file))
 		  (gnus-output-to-rmail file)
-		(rmail-output file 1 t t)))))))))
+		(let ((mail-use-rfc822 t))
+		  (rmail-output file 1 t t))))))))))
 
 (defun gnus-inews-path ()
   "Return uucp path."
@@ -1368,8 +1392,10 @@ domain is undefined, the domain name is got from it."
 	      (t domain)))
     (if (string-match "\\." (system-name))
 	(system-name)
-      (substring user-mail-address 
-		 (1+ (string-match "@" user-mail-address))))))
+      (if (string-match "@\\([^ ]+\\)\\($\\| \\)" user-mail-address)
+	  (substring user-mail-address 
+		     (match-beginning 1) (match-end 1))
+	"bogus-domain"))))
 
 (defun gnus-inews-full-address ()
   (let ((domain (gnus-inews-domain-name))
@@ -1378,6 +1404,23 @@ domain is undefined, the domain name is got from it."
     (if (string-match "\\." system) system
       (if (string-match (concat "^" (regexp-quote system)) domain) domain
 	(concat system "." domain)))))
+
+(defun gnus-inews-expires ()
+  "Return an Expires header based on `gnus-article-expires'."
+  (let ((current (current-time))
+	(future (* 1.0 gnus-article-expires 60 60 24)))
+    ;; Add the future to current.
+    (setcar current (+ (car current) (round (/ future (expt 2 16)))))
+    (setcar (cdr current) (+ (nth 1 current) (% (round future) (expt 2 16))))
+    ;; Return the date in the future in UT.
+    (timezone-make-date-arpa-standard 
+     (current-time-string current) (current-time-zone) '(0 "UT"))))
+
+(defun gnus-inews-distribution ()
+  "Return the current Distribution header, if any."
+  (when (and gnus-distribution-function
+	     (fboundp gnus-distribution-function))
+    (funcall gnus-distribution-function (or gnus-newsgroup-name ""))))
 
 (defun gnus-inews-message-id ()
   "Generate unique Message-ID for user."
@@ -1512,16 +1555,24 @@ Customize the variable gnus-mail-forward-method to use another mailer."
     (let (resent)
       ;; We first set up a normal mail buffer.
       (nnheader-set-temp-buffer " *Gnus resend*")
-      (gnus-mail-setup 'new address)
+      ;; This code from sendmail.el
+      (insert "To: ")
+      (let ((fill-prefix "\t")
+	    (address-start (point)))
+	(insert address "\n")
+	(fill-region-as-paragraph address-start (point-max)))
+      (insert mail-header-separator "\n")
       ;; Insert our usual headers.
       (gnus-inews-narrow-to-headers)
-      (let ((headers '(From Date To Message-ID Organization)))
+      (let ((headers '(From Date To)))
 	(gnus-inews-insert-headers headers))
       (goto-char (point-min))
       ;; Rename them all to "Resent-*".
-      (while (re-search-forward "^" nil t)
+      (while (re-search-forward "^[A-Za-z]" nil t)
+	(forward-char -1)
 	(insert "Resent-"))
       (widen)
+      (forward-line)
       (delete-region (point) (point-max))
       ;; Insert the message to be resent.
       (insert-buffer-substring gnus-original-article-buffer)
@@ -1721,11 +1772,12 @@ mailer."
 		  (gnus-summary-select-article nil nil nil (car yank))
 		  (gnus-summary-remove-process-mark (car yank)))
 		(save-excursion
+		  (setq end (point))
 		  (gnus-copy-article-buffer)
 		  (mail-yank-original nil)
 		  (save-restriction
 		    (narrow-to-region (point-min) (point))
-		    (goto-char (mark))
+		    (goto-char (mark t))
 		    (let ((news-reply-yank-from
 			   (save-excursion 
 			     (set-buffer gnus-article-buffer)
@@ -2182,7 +2234,7 @@ If YANK is non-nil, include the original article."
   "Attemps to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el"))
+  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el" "nnmail.el"))
 	file dirs expr olist sym)
     (message "Please wait while we snoop your variables...")
     (sit-for 0)
@@ -2219,6 +2271,7 @@ The source file has to be in the Emacs load path."
 	(setq files (cdr files)))
       (kill-buffer (current-buffer)))
     (insert "------------------- Environment follows -------------------\n\n")
+    (setq olist (nreverse olist))
     (while olist
       (if (boundp (car olist))
 	  (insert "(setq " (symbol-name (car olist)) 
@@ -2355,7 +2408,6 @@ Headers will be generated before sending."
        (concat "^" (regexp-quote mail-header-separator) "$") nil t)
       (forward-line 1)
     (goto-char (point-max)))
-;  (insert "\n\n")
   (gnus-inews-modify-mail-mode-map))
   
 ;;; Gcc handling.

@@ -62,15 +62,20 @@ Optional argument FOLDER specifies folder name."
 		   (funcall gnus-folder-save-name gnus-newsgroup-name
 			    gnus-current-headers gnus-newsgroup-last-folder)
 		   t))))
-	(errbuf (get-buffer-create " *Gnus rcvstore*")))
+	(errbuf (get-buffer-create " *Gnus rcvstore*"))
+	;; Find the rcvstore program.
+	(rcvstore
+	 (expand-file-name
+	  (mh-search-path
+	   (if mh-lib (cons mh-lib exec-path) exec-path)
+	   "rcvstore"))))
     (gnus-eval-in-buffer-window 
      gnus-original-article-buffer
      (save-restriction
        (widen)
        (unwind-protect
-	   (call-process-region (point-min) (point-max)
-				(expand-file-name "rcvstore" mh-lib)
-				nil errbuf nil folder)
+	   (call-process-region 
+	    (point-min) (point-max) rcvstore nil errbuf nil folder)
 	 (set-buffer errbuf)
 	 (if (zerop (buffer-size))
 	     (message "Article saved in folder: %s" folder)
@@ -82,8 +87,10 @@ Optional argument FOLDER specifies folder name."
   (let ((config (current-window-configuration))) 
     (mh-find-path)
     (mh-send-sub (or to "") (or cc "") (or subject "") config)
-    (goto-char (point-min))
-    (and in-reply-to (insert "In-Reply-To: " in-reply-to "\n"))
+    (when in-reply-to 
+      (save-excursion
+	(goto-char (point-min))
+	(insert "In-Reply-To: " in-reply-to "\n")))
     (setq mh-sent-from-folder gnus-article-copy)
     (setq mh-sent-from-msg 1)
     (setq gnus-mail-buffer (buffer-name (current-buffer)))

@@ -1,4 +1,4 @@
-This package contains a beta version of Gnus. The lisp directory
+This package contains an alpha version of Gnus.  The lisp directory
 contains the source lisp files, and the texi directory contains a
 draft of the Gnus info pages.
 
@@ -7,8 +7,9 @@ done, because you are reading this.
 
 You should definitely byte-compile the source files. To do that, you
 can simply say "make" in this directory.  If you are using XEmacs, you
-*must* say "make EMACS=xemacs".  If you use XEmacs 19.12 (or earlier)
-you should rename "lisp/x-easymenu.el" to "lisp/easymenu.el". 
+*must* say "make EMACS=xemacs".  If you use XEmacs 19.13 (or earlier)
+you should rename "lisp/x-easymenu.el" to "lisp/easymenu.el".  Ignore
+all error messages you get when byte-compiling under XEmacs.
 
 Then you have to tell Emacs where Gnus is. You might put something
 like

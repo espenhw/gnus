@@ -75,14 +75,17 @@ If nil, groups like \"mail.misc\" will end up in directories like
 \"mail/misc/\".")
 
 (defvar nnmail-expiry-wait 7
-  "*Articles that are older than `nnmail-expiry-wait' days will be expired.")
+  "*Expirable articles that are older than this will be expired.
+This variable can either be a number (which will be interpreted as a
+number of days) -- this doesn't have to be an integer.  This variable
+can also be `immediate' and `never'.")
 
 (defvar nnmail-expiry-wait-function nil
   "*Variable that holds function to specify how old articles should be before they are expired.
   The function will be called with the name of the group that the
 expiry is to be performed in, and it should return an integer that
 says how many days an article can be stored before it is considered
-'old'. 
+\"old\".  It can also return the values `never' and `immediate'.
 
 Eg.:
 
@@ -90,6 +93,7 @@ Eg.:
       (lambda (newsgroup)
         (cond ((string-match \"private\" newsgroup) 31)
               ((string-match \"junk\" newsgroup) 1)
+	      ((string-match \"important\" 'never))
 	      (t 7))))")
 
 (defvar nnmail-spool-file 
@@ -234,6 +238,8 @@ perfomed.")
 (defvar nnmail-delete-duplicates nil
   "*If non-nil, nnmail will delete any duplicate mails it sees.")
 
+;;; Internal variables.
+
 
 
 (defconst nnmail-version "nnmail 1.0"
@@ -274,16 +280,40 @@ perfomed.")
       (setq idx (1+ idx)))
     string))
 
-(defun nnmail-days-between (date1 date2)
-  ;; Return the number of days between date1 and date2.
-  (let ((d1 (mapcar (lambda (s) (and s (string-to-int s)) )
-		    (timezone-parse-date date1)))
-	(d2 (mapcar (lambda (s) (and s (string-to-int s)) )
-		    (timezone-parse-date date2))))
-    (- (timezone-absolute-from-gregorian 
-	(nth 1 d1) (nth 2 d1) (car d1))
-       (timezone-absolute-from-gregorian 
-	(nth 1 d2) (nth 2 d2) (car d2)))))
+(defun nnmail-date-to-time (date)
+  "Convert DATE into time."
+  (let* ((d1 (timezone-parse-date date))
+	 (t1 (timezone-parse-time (aref d1 3))))
+    (apply 'encode-time
+	   (mapcar (lambda (el)
+		     (and el (string-to-number el)))
+		   (list
+		    (aref t1 2) (aref t1 1) (aref t1 0)
+		    (aref d1 2) (aref d1 1) (aref d1 0)
+		    (aref d1 4))))))
+
+(defun nnmail-time-less (t1 t2)
+  "Say whether time T1 is less than time T2."
+  (or (< (car t1) (car t2))
+      (and (= (car t1) (car t2))
+	   (< (nth 1 t1) (nth 1 t2)))))
+
+(defun nnmail-days-to-time (days)
+  "Convert DAYS into time."
+  (let ((seconds (round (* days 60 60 24)))
+	(rest (expt 2 16)))
+  (list (/ seconds rest) (% seconds rest))))
+
+(defun nnmail-time-since (time)
+  "Return the time since DATE."
+  (let* ((current (current-time))
+	 rest)
+    (when (stringp time)
+      (setq time (nnmail-date-to-time time)))
+    (setq rest (if (< (nth 1 current) (nth 1 time)) (expt 2 16)))
+    (setcar (cdr time) (- (+ (or rest 0) (nth 1 current)) (nth 1 time)))
+    (setcar time (- (+ (car current) (if rest -1 0)) (car time)))
+    time))
 
 ;; Function taken from rmail.el.
 (defun nnmail-move-inbox (inbox)
@@ -384,18 +414,19 @@ nn*-request-list should have been called before calling this function."
     group-assoc))
 
 (defun nnmail-save-active (group-assoc file-name)
-  (let (group)
-    (save-excursion
-      (set-buffer (get-buffer-create " *nnmail active*"))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (while group-assoc
-	(setq group (car group-assoc))
-	(insert (format "%s %d %d y\n" (car group) (cdr (car (cdr group)) )
-			(car (car (cdr group)))))
-	(setq group-assoc (cdr group-assoc)))
-      (write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
-      (kill-buffer (current-buffer)))))
+  "Save GROUP-ASSOC in ACTIVE-FILE."
+  (when file-name
+    (let (group)
+      (save-excursion
+	(set-buffer (get-buffer-create " *nnmail active*"))
+	(buffer-disable-undo (current-buffer))
+	(erase-buffer)
+	(while group-assoc
+	  (setq group (pop group-assoc))
+	  (insert (format "%s %d %d y\n" (car group) (cdr (car (cdr group)) )
+			  (car (car (cdr group))))))
+	(write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
+	(kill-buffer (current-buffer))))))
 
 (defun nnmail-get-split-group (file group)
   (if (or (eq nnmail-spool-file 'procmail)
@@ -481,7 +512,7 @@ nn*-request-list should have been called before calling this function."
     (if (not (and (re-search-forward delim nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
-	()
+	(error "Error, unknown mail format! (Possibly corrupted.)")
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point)
@@ -548,14 +579,14 @@ nn*-request-list should have been called before calling this function."
 	    (setq end (point-max))))
 	(goto-char end)))))
 
-(defun nnmail-process-mmfd-mail-format (func)
+(defun nnmail-process-mmdf-mail-format (func)
   (let ((delim "^\^A\^A\^A\^A$")
 	start message-id end)
     (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)
 		  (forward-line 1)))
 	;; Possibly wrong format?
-	()
+	(error "Error, unknown mail format! (Possibly corrupted.)")
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point))
@@ -594,7 +625,8 @@ nn*-request-list should have been called before calling this function."
 	      (nnmail-cache-insert message-id)
 	      (funcall func))
 	    (setq end (point-max))))
-	(goto-char end)))))
+	(goto-char end)
+	(forward-line 2)))))
 
 (defun nnmail-split-incoming (incoming func &optional exit-func group)
   "Go through the entire INCOMING file and pick out each individual mail.
@@ -618,13 +650,13 @@ FUNC will be called with the buffer narrowed to each mail."
       (insert-file-contents incoming)
       (goto-char (point-min))
       (save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
-      ;; Handle both babyl, MMFD and unix mail formats, since movemail will
+      ;; Handle both babyl, MMDF and unix mail formats, since movemail will
       ;; use the former when fetching from a mailbox, the latter when
       ;; fetches from a file.
       (cond ((looking-at "\^L")
 	     (nnmail-process-babyl-mail-format func))
 	    ((looking-at "\^A\^A\^A\^A")
-	     (nnmail-process-mmfd-mail-format func))
+	     (nnmail-process-mmdf-mail-format func))
 	    (t
 	     (nnmail-process-unix-mail-format func)))
       ;; Close the message-id cache.
@@ -804,10 +836,12 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			    nnmail-procmail-suffix "$") t)))
 	   (p procmails)
 	   (crash (when (and (file-exists-p nnmail-crash-box)
-			     (> (nth 7 (file-attributes nnmail-crash-box)) 0))
+			     (> (nth 7 (file-attributes
+					(file-truename nnmail-crash-box))) 0))
 		    (list nnmail-crash-box))))
       ;; Remove any directories that inadvertantly match the procmail
-      ;; suffix, which might happen if the suffix is "".
+      ;; suffix, which might happen if the suffix is "".  We also
+      ;; ditch symlinks. 
       (while p
 	(and (or (file-directory-p (car p))
 		 (file-symlink-p (car p)))
@@ -964,7 +998,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	;; existance of POPped mail.
 	(when (or (string-match "^po:" spool)
 		  (and (file-exists-p spool)
-		       (> (nth 7 (file-attributes spool)) 0)))
+		       (> (nth 7 (file-attributes (file-truename spool))) 0)))
 	  (when gnus-verbose-backends 
 	    (message "%s: Reading incoming mail..." method))
 	  (when (and (nnmail-move-inbox spool)
@@ -1005,6 +1039,27 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (file-writable-p incoming)
 	     (delete-file incoming))))))
 
+(defun nnmail-expired-article-p (group time force)
+  "Say whether an article that is TIME old in GROUP should be expired."
+  (if force
+      t
+    (let ((days (or (and nnmail-expiry-wait-function
+			 (funcall nnmail-expiry-wait-function group))
+		    nnmail-expiry-wait)))
+      (cond ((eq days 'never)
+	     ;; This isn't an expirable group.
+	     nil)
+	    ((eq days 'immediate)
+	     ;; We expire all articles on sight.
+	     t)
+	    ((equal time '(0 0))
+	     ;; This is an ange-ftp group, and we don't have any dates.
+	     nil)
+	    ((numberp days)
+	     (setq days (nnmail-days-to-time days))
+	     ;; Compare the time with the current time.
+	     (nnmail-time-less days (nnmail-time-since time)))))))
+	    
 (provide 'nnmail)
 
 ;;; nnmail.el ends here

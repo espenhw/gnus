@@ -67,12 +67,6 @@ format.")
 `n' means no index file and `c' means standard Cnews overview
 format.") 
 
-(defvar gnus-soup-group-type ?u
-  "*Soup message area type.
-`u' is unknown, `m' is private mail, and `n' is news.
-Gnus will determine by itself what type to use in what group, so
-setting this variable won't do much.")
-
 (defvar gnus-soup-areas nil)
 (defvar gnus-soup-last-prefix nil)
 (defvar gnus-soup-prev-prefix nil)
@@ -211,7 +205,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 		     (concat directory prefix ".IDX"))))
 	 (article-buf (current-buffer))
 	 from head-line beg type)
-    (setq gnus-soup-buffers (cons msg-buf gnus-soup-buffers))
+    (setq gnus-soup-buffers (cons msg-buf (delq msg-buf gnus-soup-buffers)))
     (buffer-disable-undo msg-buf)
     (and idx-buf 
 	 (progn
@@ -255,7 +249,9 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 	     (set-buffer idx-buf)
 	     (gnus-soup-insert-idx beg headers))
 	    ((/= index ?n)
-	     (error "Unknown index type: %c" type))))))
+	     (error "Unknown index type: %c" type)))
+      ;; Return the MSG buf.
+      msg-buf)))
 
 (defun gnus-soup-group-brew (group)
   (let ((gnus-expert-user t)
