@@ -1,3 +1,7 @@
+2003-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Topic Commands): Addition.
+
 2003-02-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (BBDB Whitelists, Blacklists and Whitelists):

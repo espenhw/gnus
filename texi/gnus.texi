@@ -3669,13 +3669,15 @@ Toggle hiding empty topics
 @kindex T # (Topic)
 @findex gnus-topic-mark-topic
 Mark all groups in the current topic with the process mark
-(@code{gnus-topic-mark-topic}).
+(@code{gnus-topic-mark-topic}).  This command works recursively on
+sub-topics unless given a prefix.
 
 @item T M-#
 @kindex T M-# (Topic)
 @findex gnus-topic-unmark-topic
 Remove the process mark from all groups in the current topic
-(@code{gnus-topic-unmark-topic}).
+(@code{gnus-topic-unmark-topic}).  This command works recursively on
+sub-topics unless given a prefix.
 
 @item C-c C-x
 @kindex C-c C-x (Topic)
