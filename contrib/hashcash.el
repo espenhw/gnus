@@ -20,17 +20,20 @@
 
 ;;; Code:
 
-(defvar hashcash-default-payment 0
+(defcustom hashcash-default-payment 0
   "*The default number of bits to pay to unknown users.
- If this is zero, no payment header will be generated.
- See hashcash-payment-alist.")
-(defvar hashcash-payment-alist nil
+If this is zero, no payment header will be generated.
+See `hashcash-payment-alist'."
+  :type 'integer)
+
+(defcustom hashcash-payment-alist nil
   "*An association list mapping email addresses to payment amounts.
- Elements may consist of (ADDR AMOUNT) or (ADDR STRING AMOUNT), where
- ADDR is the email address of the intended recipient and AMOUNT is
- the value of hashcash payment to be made to that user.  STRING, if
- present, is the string to be hashed; if not present ADDR will be used.")
-(defvar hashcash "/usr/local/bin/hashcash"
+Elements may consist of (ADDR AMOUNT) or (ADDR STRING AMOUNT), where
+ADDR is the email address of the intended recipient and AMOUNT is
+the value of hashcash payment to be made to that user.  STRING, if
+present, is the string to be hashed; if not present ADDR will be used.")
+
+(defcustom hashcash "hashcash"
   "*The path to the hashcash binary.")
 
 (require 'mail-utils)
@@ -65,25 +68,22 @@
       (save-excursion
 	(set-buffer (get-buffer-create " *hashcash*"))
 	(erase-buffer)
-	(call-process hashcash nil t nil (concat "-" (number-to-string val))
+	(call-process hashcash nil t nil (concat "-b " (number-to-string val))
 		      str)
-	(search-backward "collision: ")
-	(forward-char 11)
-	(let ((pos (point-marker)))
-	  (end-of-line)
-	  (buffer-substring pos (point))))
+	(goto-char (point-min))
+	(buffer-substring (point-at-bol) (point-at-eol)))
     nil))
 
 (defun hashcash-insert-payment (arg)
-  "Insert an X-Payment header with a payment for ARG"
+  "Insert an X-Hashcode header with a payment for ARG"
   (interactive "sPay to: ")
   (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
 					(hashcash-payment-required arg))))
     (when pay
-      (insert-before-markers "X-Payment: " pay "\n"))))
+      (insert-before-markers "X-Hashcode: " pay "\n"))))
 
 (defun mail-add-payment (&optional arg)
-  "Add an X-Payment: header with a hashcash payment for each recipient address
+  "Add an X-Hashcode: header with a hashcash payment for each recipient address
 Prefix arg sets default payment temporarily."
   (interactive "P")
   (let ((hashcash-default-payment (if arg (prefix-numeric-value arg)
@@ -96,11 +96,19 @@ Prefix arg sets default payment temporarily."
 	(beginning-of-line)
 	(narrow-to-region (point-min) (point))
 	(let ((to (hashcash-strip-quoted-names (mail-fetch-field "To" nil t)))
-	      (cc (hashcash-strip-quoted-names (mail-fetch-field "Cc" nil t))))
+	      (cc (hashcash-strip-quoted-names (mail-fetch-field "Cc" nil t)))
+	      (ng (hashcash-strip-quoted-names 
+		   (mail-fetch-field "Newsgroups" nil t))))
 	  (when to
 	    (setq addrlist (split-string to ",[ \t\n]*")))
 	  (when cc
-	    (setq addrlist (nconc addrlist (split-string cc ",[ \t\n]*")))))
+	    (setq addrlist (nconc addrlist (split-string cc ",[ \t\n]*"))))
+	  (when ng
+	    (setq addrlist (nconc addrlist (split-string ng ",[ \t\n]*")))))
 	(when addrlist
 	  (mapc #'hashcash-insert-payment addrlist)))))
   t)
+
+(provide 'hashcash)
+
+;;; hashcash.el ends here

@@ -1,6 +1,13 @@
 2002-06-22  Simon Josefsson  <jas@extundo.com>
 
 	* hashcash.el: New file.
+	(hashcash-default-payment, hashcash-payment-alist, hashcash):
+	Defcustom.
+	(hashcash-generate-payment): Update to recent hashcode command
+	line syntax.
+	(hashcash-insert-payment): Use X-Hashcode:.
+	(mail-add-payment): Also look at Newsgroups.
+	(top-level): Add provide and EOF comment.
 
 2002-05-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
