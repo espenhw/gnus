@@ -1,5 +1,8 @@
 2003-06-20  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-msg.el (gnus-configure-posting-styles): Remove unused
+	variable.  From Jan Rychter <jan@rychter.com>.
+
 	* spam.el (spam-spamoracle-learn): insert-string is obsolete.
 
 2003-06-19  Teodor Zlatanov  <tzz@lifelogs.com>

@@ -1820,7 +1820,7 @@ this is a reply."
   (unless gnus-inhibit-posting-styles
     (let ((group (or group-name gnus-newsgroup-name ""))
 	  (styles gnus-posting-styles)
-	  style match variable attribute value v results
+	  style match attribute value v results
 	  filep name address element)
       ;; If the group has a posting-style parameter, add it at the end with a
       ;; regexp matching everything, to be sure it takes precedence over all
@@ -1868,7 +1868,6 @@ this is a reply."
 	  ;; We have a match, so we set the variables.
 	  (dolist (attribute style)
 	    (setq element (pop attribute)
-		  variable nil
 		  filep nil)
 	    (setq value
 		  (cond
