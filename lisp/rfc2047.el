@@ -562,8 +562,13 @@ By default, the region is treated as containing addresses (see
 	 b e nil
 	 ;; = (\075), _ (\137), ? (\077) are used in the encoded word.
 	 ;; Avoid using 8bit characters.
-	 ;; Equivalent to "^\000-\007\011\013\015-\037\200-\377=_?"
-	 "\010\012\014\040-\074\076\100-\136\140-\177")
+	 ;; This list excludes `especials' (see the RFC2047 syntax),
+	 ;; meaning that some characters in non-structured fields will
+	 ;; get encoded when they con't need to be.  The following is
+	 ;; what it used to be.
+;;;  	 ;; Equivalent to "^\000-\007\011\013\015-\037\200-\377=_?"
+;;;  	 "\010\012\014\040-\074\076\100-\136\140-\177")
+	 "-\b\n\f !#-'*+0-9A-Z\\^`-~\d")
 	(subst-char-in-region (point-min) (point-max) ?  ?_)
 	;; The size of QP encapsulation is about 20, so set limit to
 	;; 56=76-20.
