@@ -1,3 +1,9 @@
+2001-06-16  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-split-articles): Support 'junk to-groups.
+	(nnimap-expunge-search-string): New variable.
+	(nnimap-request-expire-articles): Use it.
+
 2001-06-15 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-with-qmail): wrong exit status is

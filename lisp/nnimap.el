@@ -237,7 +237,8 @@ There are two wildcards * and %. * matches everything, % matches
 everything in the current hierarchy.")
 
 (defvoo nnimap-news-groups nil
-  "IMAP support a news-like mode, also known as bulletin board mode, where replies is sent via IMAP instead of SMTP.
+  "IMAP support a news-like mode, also known as bulletin board mode,
+where replies is sent via IMAP instead of SMTP.
 
 This variable should contain a regexp matching groups where you wish
 replies to be stored to the mailbox directly.
@@ -251,6 +252,16 @@ Note that there is nothing technically different between mail-like and
 news-like mailboxes.  If you wish to have a group with todo items or
 similar which you wouldn't want to set up a mailing list for, you can
 use this to make replies go directly to the group.")
+
+(defvoo nnimap-expunge-search-string "UID %s NOT SINCE %s"
+  "*IMAP search command to use for articles that are to be expired.
+The first %s is replaced by a UID set of articles to search on,
+and the second %s is replaced by a date criterium.
+
+One useful (and perhaps the only useful) value to change this to would
+be `UID %s NOT SENTSINCE %s' to make nnimap use the Date: header
+instead of the internal date of messages.  See section 6.4.4 of RFC
+2060 for more information on valid strings.")
 
 (defvoo nnimap-server-address nil
   "Obsolete.  Use `nnimap-address'.")
@@ -1024,16 +1035,20 @@ function is generally only called when Gnus is shutting down."
 		;; copy article to right group(s)
 		(setq removeorig nil)
 		(dolist (to-group (nnimap-split-to-groups rule))
-		  (if (imap-message-copy (number-to-string article)
-					 to-group nil 'nocopyuid)
-		      (progn
-			(message "IMAP split moved %s:%s:%d to %s" server inbox
-				 article to-group)
-			(setq removeorig t)
-			;; Add the group-art list to the history list.
-			(push (list (cons to-group 0)) nnmail-split-history))
-		    (message "IMAP split failed to move %s:%s:%d to %s" server
-			     inbox article to-group)))
+		  (cond ((eq to-group 'junk)
+			 (message "IMAP split removed %s:%s:%d" server inbox
+				  article)
+			 (setq removeorig t))
+			((imap-message-copy (number-to-string article)
+					    to-group nil 'nocopyuid)
+			 (message "IMAP split moved %s:%s:%d to %s" server
+				  inbox article to-group)
+			 (setq removeorig t)
+			 ;; Add the group-art list to the history list.
+			 (push (list (cons to-group 0)) nnmail-split-history))
+			(t
+			 (message "IMAP split failed to move %s:%s:%d to %s"
+				  server inbox article to-group))))
 		;; remove article if it was successfully copied somewhere
 		(and removeorig
 		     (imap-message-flags-add (format "%d" article)
@@ -1133,7 +1148,7 @@ function is generally only called when Gnus is shutting down."
 		     (setq articles nil)))
 		  ((numberp days)
 		   (let ((oldarts (imap-search
-				   (format "UID %s NOT SINCE %s"
+				   (format nnimap-expunge-search-string
 					   (imap-range-to-message-set artseq)
 					   (nnimap-date-days-ago days))))
 			 (imap-fetch-data-hook
