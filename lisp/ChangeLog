@@ -1,3 +1,10 @@
+2002-03-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-highlight): Use `eq' when comparing
+	symbols.
+	(gnus-summary-highlight-line): Use `gnus-point-at-bol' and
+	`gnus-point-at-eol'.
+
 2002-03-27  Paul Jarc <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--subdir, nnmaildir--nov-dir,
