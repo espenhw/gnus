@@ -1,3 +1,15 @@
+2001-10-30 04:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-decode-group-name): Use nnmail-fetch-field
+	instead.
+
+	* message.el (message-forward-subject-author-subject): Don't use
+	message-news-p, which widens the buffer.
+	(message-forward-make-body): New function.
+	(message-forward): Use it.
+	(message-insinuate-rmail): New.
+	(message-forward-rmail-make-body): New.
+
 2001-10-30 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-extern.el (mm-extern): Provide it.
