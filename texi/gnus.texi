@@ -2771,6 +2771,11 @@ List all groups that have names or descriptions that match a regexp
 @findex gnus-group-list-cached
 List all groups with cached articles (@code{gnus-group-list-cached}).
 
+@item A ?
+@kindex A ? (Group)
+@findex gnus-group-list-dormant
+List all groups with dormant articles (@code{gnus-group-list-dormant}).
+
 @end table
 
 @vindex gnus-permanently-visible-groups
