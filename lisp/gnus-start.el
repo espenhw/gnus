@@ -404,6 +404,11 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-group-new
   :type 'hook)
 
+(defcustom gnus-read-newsrc-el-hook nil
+  "A hook called after reading the newsrc.eld? file."
+  :group 'gnus-newsrc
+  :type 'hook)
+
 (defcustom gnus-save-newsrc-hook nil
   "A hook called before saving any of the newsrc files."
   :group 'gnus-newsrc
@@ -2231,7 +2236,8 @@ If FORCE is non-nil, the .newsrc file is read."
       (gnus-message 5 "Reading %s..." file)
       ;; The .el file is newer than the .eld file, so we read that one
       ;; as well.
-      (gnus-read-old-newsrc-el-file file))))
+      (gnus-read-old-newsrc-el-file file)))
+  (gnus-run-hooks 'gnus-read-newsrc-el-hook))
 
 ;; Parse the old-style quick startup file
 (defun gnus-read-old-newsrc-el-file (file)

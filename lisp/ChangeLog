@@ -1,3 +1,17 @@
+2003-03-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-start.el (gnus-read-newsrc-el-hook): new hook called by gnus-read-newsrc-el-file
+	(gnus-read-newsrc-el-file): call the gnus-read-newsrc-el-hook
+
+	* gnus-registry.el (gnus-registry-translate-to-alist) 
+	(gnus-registry-translate-from-alist, alist-to-hashtable) 
+	(hashtable-to-alist): new functions
+	(gnus-register-spool-action): add a spool item to the registry
+
+	* gnus.el (gnus-variable-list): added gnus-registry-alist to the
+	list of saved variables
+	(gnus-registry-alist): new variable
+
 2003-03-27  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (article-decode-group-name): Be correct instead of

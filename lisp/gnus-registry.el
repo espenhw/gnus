@@ -52,6 +52,31 @@
     ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
 
+(defun gnus-registry-translate-to-alist
+  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb)))
+
+(defun gnus-registry-translate-from-alist
+  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
+
+(defun alist-to-hashtable (alist)
+  "Build a hashtable from the values in ALIST."
+  (let ((ht (make-hash-table 			    
+	     :size 4096
+	     :test 'equal)))
+    (mapc
+     (lambda (kv-pair)
+       (puthash (car kv-pair) (cdr kv-pair) ht))
+     alist)
+     ht))
+
+(defun hashtable-to-alist (hash)
+  "Build an alist from the values in HASH."
+  (let ((list nil))
+    (maphash
+     (lambda (key value)
+       (setq list (cons (cons key value) list)))
+     hash)))
+
 (defun gnus-register-action (action data-header from &optional to method)
   (let* ((id (mail-header-id data-header))
 	(hash-entry (gethash id gnus-registry-hashtb)))
@@ -71,15 +96,19 @@
 	   (gnus-group-prefixed-name 
 	    group 
 	    gnus-internal-registry-spool-current-method 
-	    t)))
+	    t))
+  (puthash id (cons (list 'spool nil group nil) 
+		    (gethash id gnus-registry-hashtb)) gnus-registry-hashtb))
 
 (add-hook 'gnus-summary-article-move-hook 'gnus-register-action) ; also does copy, respool, and crosspost
 (add-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
 (add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
 (add-hook 'nnmail-spool-hook 'gnus-register-spool-action)
 
+(add-hook 'gnus-save-newsrc-hook 'gnus-registry-translate-to-alist)
+(add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-translate-from-alist)
+
 ;; TODO: a lot of things
-;; TODO: we have to load and save the registry through gnus-save-newsrc-file
 
 (provide 'gnus-registry)
 
