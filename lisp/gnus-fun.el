@@ -118,7 +118,7 @@ Output to the current buffer, replace text, and don't mingle error."
 		       (length attempt) quant))
 	  (setq done t)))
       (if done
-	  (mm-with-unibyte-buffer	
+	  (mm-with-unibyte-buffer
 	    (insert attempt)
 	    (gnus-face-encode))
 	nil))))
@@ -147,7 +147,7 @@ The PNG is returned as a string."
       (base64-decode-region (point-min) (point-max)))
     (buffer-string)))
 
-;;;#autoload
+;;;###autoload
 (defun gnus-convert-png-to-face (file)
   "Convert FILE to a Face.
 FILE should be a PNG file that's 48x48 and smaller than or equal to

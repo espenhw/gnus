@@ -1,3 +1,8 @@
+2003-04-15  Reiner Steib  <Reiner.Steib@gmx.de>
+	From Julien Avarre <julien@avarre.com>
+
+	* gnus-fun.el: Fixed autoload cookie.
+
 2003-04-15  Paul Jarc  <prj@po.cwru.edu>
 	From Remi Letot  <remi.letot@easynet.be>
 
