@@ -1,3 +1,8 @@
+2004-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-ems.el: Autoload appt-select-lowest-window (revert
+	2004-03-04 change).
+
 2004-04-25  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam-stat.el (spam-stat-score-buffer): Simplify mapcar usage.

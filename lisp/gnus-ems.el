@@ -44,6 +44,7 @@
 (eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")
+  (autoload 'appt-select-lowest-window "appt")
   (autoload 'gnus-get-buffer-create "gnus")
   (autoload 'nnheader-find-etc-directory "nnheader"))
 
