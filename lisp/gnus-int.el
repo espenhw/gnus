@@ -110,7 +110,8 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
   "Check whether the connection to METHOD is down.
 If METHOD is nil, use `gnus-select-method'.
 If it is down, start it up (again)."
-  (let ((method (or method gnus-select-method)))
+  (let ((method (or method gnus-select-method))
+	result)
     ;; Transform virtual server names into select methods.
     (when (stringp method)
       (setq method (gnus-server-to-method method)))
@@ -125,11 +126,14 @@ If it is down, start it up (again)."
       (gnus-run-hooks 'gnus-open-server-hook)
       (prog1
 	  (condition-case ()
-	      (gnus-open-server method)
+	      (setq result (gnus-open-server method))
 	    (quit (message "Quit gnus-check-server")
 		  nil))
 	(unless silent
-	  (message ""))))))
+	  (gnus-message 5 "Opening %s server%s...%s" (car method)
+			(if (equal (nth 1 method) "") ""
+			  (format " on %s" (nth 1 method)))
+			(if result "done" "failed")))))))
 
 (defun gnus-get-function (method function &optional noerror)
   "Return a function symbol based on METHOD and FUNCTION."

@@ -1022,9 +1022,8 @@ password is remembered in the buffer."
   "Close connection to server in BUFFER.
 If BUFFER is nil, the current buffer is used."
   (with-current-buffer (or buffer (current-buffer))
-    (and (imap-opened)
-	 (not (imap-ok-p (imap-send-command-wait "LOGOUT")))
-	 (message "Server %s didn't let me log out" imap-server))
+    (when (imap-opened)
+      (imap-send-command-wait "LOGOUT"))
     (when (and imap-process
 	       (memq (process-status imap-process) '(open run)))
       (delete-process imap-process))
@@ -1678,20 +1677,23 @@ on failure."
 
 (defun imap-wait-for-tag (tag &optional buffer)
   (with-current-buffer (or buffer (current-buffer))
-    (while (and (null imap-continuation)
-		(memq (process-status imap-process) '(open run))
-		(< imap-reached-tag tag))
-      (let ((len (/ (point-max) 1024))
-	    message-log-max)
-	(unless (< len 10)
-	  (message "imap read: %dk" len))
-	(accept-process-output imap-process 1)))
-    (message "")
-    (and (memq (process-status imap-process) '(open run))
-	 (or (assq tag imap-failed-tags)
-	     (if imap-continuation
-		 'INCOMPLETE
-	       'OK)))))
+    (let (imap-have-messaged)
+      (while (and (null imap-continuation)
+		  (memq (process-status imap-process) '(open run))
+		  (< imap-reached-tag tag))
+	(let ((len (/ (point-max) 1024))
+	      message-log-max)
+	  (unless (< len 10)
+	    (setq imap-have-messaged t)
+	    (message "imap read: %dk" len))
+	  (accept-process-output imap-process 1)))
+      (when imap-have-messaged
+	(message ""))
+      (and (memq (process-status imap-process) '(open run))
+	   (or (assq tag imap-failed-tags)
+	       (if imap-continuation
+		   'INCOMPLETE
+		 'OK))))))
 
 (defun imap-sentinel (process string)
   (delete-process process))

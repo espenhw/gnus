@@ -1,5 +1,11 @@
 2001-11-02  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-int.el (gnus-check-server): Message "...done" when done.
+
+	* imap.el (imap-close): Don't message (imap-send-command-wait
+	returns if the connection is dropped).
+	(imap-wait-for-tag): Nix out message only when necessary.
+
 	* gnus-sieve.el (gnus-sieve-script): Use "stop" instead of "elsif"
 	for non-crossposting.
 	(gnus-sieve-crosspost): Default to t to be consistent with other
