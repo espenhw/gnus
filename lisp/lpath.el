@@ -16,6 +16,7 @@
 	       find-image font-create-object gnus-mule-get-coding-system
 	       font-lock-set-defaults
 	       image-size image-type-available-p insert-image
+	       make-temp-file
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
