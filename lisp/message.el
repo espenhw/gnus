@@ -4149,8 +4149,9 @@ responses here are directed to other addresses.")))
 	(if to  (setq recipients (concat recipients ", " to)))
 	(if cc  (setq recipients (concat recipients ", " cc)))
 	(if mct (setq recipients (concat recipients ", " mct)))))
-      ;; Strip the leading ", ".
-      (setq recipients (substring recipients 2))
+      (if (>= (length recipients) 2)
+	  ;; Strip the leading ", ".
+	  (setq recipients (substring recipients 2)))
       ;; Squeeze whitespace.
       (while (string-match "[ \t][ \t]+" recipients)
 	(setq recipients (replace-match " " t t recipients)))

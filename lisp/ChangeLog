@@ -1,5 +1,7 @@
 2001-10-30 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-get-reply-headers): Make sure there is ", ".
+
 	* mm-util.el (mm-mime-mule-charset-alist): Move down and call
 	mm-coding-system-p. Don't correct it only in XEmacs.
 	(mm-charset-to-coding-system): Use mm-coding-system-p and
