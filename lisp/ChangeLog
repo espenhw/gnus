@@ -1,3 +1,8 @@
+2000-11-09 08:53:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Bind the original
+	select method.
+
 2000-11-08 19:58:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-gpg-decrypt-1): 

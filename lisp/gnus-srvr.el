@@ -660,13 +660,15 @@ The following commands are available:
 	       (insert
 		(format "%c%7d: %s\n" 
 			(let ((level
-			       (gnus-group-level
-				(gnus-group-prefixed-name (car group) method))))
-			(cond 
-			 ((<= level gnus-level-subscribed) ? )
-			 ((<= level gnus-level-unsubscribed) ?U)
-			 ((= level gnus-level-zombie) ?Z)
-			 (t ?K)))
+			       (let ((gnus-select-method orig-select-method))
+				 (gnus-group-level
+				  (gnus-group-prefixed-name (car group) 
+							    method)))))
+			      (cond 
+			       ((<= level gnus-level-subscribed) ? )
+			       ((<= level gnus-level-unsubscribed) ?U)
+			       ((= level gnus-level-zombie) ?Z)
+			       (t ?K)))
 			(max 0 (- (1+ (cddr group)) (cadr group)))
 			(gnus-group-name-decode (car group) charset))))
 	     (list 'gnus-group (car group)))
