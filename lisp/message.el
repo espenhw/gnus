@@ -1348,8 +1348,15 @@ the user from the mailer."
 
 (defun message-send-mail-with-mh ()
   "Send the prepared message buffer with mh."
-  (let (mh-previous-window-config)
-    (mh-send-letter)))
+  (let ((mh-previous-window-config nil)
+	(name (make-temp-name
+	       (concat (file-name-as-directory message-autosave-directory)
+		       "msg."))))
+    (setq buffer-file-name name)
+    (mh-send-letter)
+    (condition-case ()
+	(delete-file name)
+      (error nil))))
 
 (defun message-send-news (&optional arg)
   (let ((tembuf (generate-new-buffer " *message temp*"))
@@ -1625,17 +1632,19 @@ the user from the mailer."
        (y-or-n-p
 	"It looks like no new text has been added.  Really post? "))
    ;; Check the length of the signature.
-   (or (message-check-element 'signature)
-       (progn
-	 (goto-char (point-max))
-	 (if (not (re-search-backward "^-- $" nil t))
-	     t
-	   (if (> (count-lines (point) (point-max)) 5)
-	       (y-or-n-p
-		(format
-		 "Your .sig is %d lines; it should be max 4.  Really post? "
-		 (count-lines (point) (point-max))))
-	     t))))))
+   (or
+    (message-check-element 'signature)
+    (progn
+      (goto-char (point-max))
+      (if (or (not (re-search-backward "^-- $" nil t))
+	      (search-forward message-forward-end-separator nil t))
+	  t
+	(if (> (count-lines (point) (point-max)) 5)
+	    (y-or-n-p
+	     (format
+	      "Your .sig is %d lines; it should be max 4.  Really post? "
+	      (count-lines (point) (point-max))))
+	  t))))))
 
 (defun message-check-element (type)
   "Returns non-nil if this type is not to be checked."

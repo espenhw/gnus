@@ -532,7 +532,7 @@ articles in the topic and its subtopics."
 		gnus-active-hashtb)
       (setq groups (sort groups 'string<))
       ;; Init the variables.
-      (setq gnus-topic-active-topology '(("" visible)))
+      (setq gnus-topic-active-topology (list (list "" 'visible)))
       (setq gnus-topic-active-alist nil)
       ;; Descend the top-level hierarchy.
       (gnus-topic-grok-active-1 gnus-topic-active-topology groups)

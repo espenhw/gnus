@@ -356,7 +356,7 @@ It uses the same syntax as the `gnus-split-methods' variable.")
 (defvar gnus-use-adaptive-scoring nil
   "*If non-nil, use some adaptive scoring scheme.")
 
-(defvar gnus-use-cache nil
+(defvar gnus-use-cache 'passive
   "*If nil, Gnus will ignore the article cache.
 If `passive', it will allow entering (and reading) articles
 explicitly entered into the cache.  If anything else, use the
@@ -1723,7 +1723,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.96"
+(defconst gnus-version "September Gnus v0.97"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -8295,8 +8295,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defsubst gnus-article-sort-by-date (h1 h2)
   "Sort articles by root article date."
   (string-lessp
-   (gnus-sortable-date (mail-header-date h1))
-   (gnus-sortable-date (mail-header-date h2))))
+   (inline (gnus-sortable-date (mail-header-date h1)))
+   (inline (gnus-sortable-date (mail-header-date h2)))))
 
 (defun gnus-thread-sort-by-date (h1 h2)
   "Sort threads by root article date."
@@ -12837,12 +12837,19 @@ Argument REVERSE means reverse order."
 (defun gnus-sortable-date (date)
   "Make sortable string by string-lessp from DATE.
 Timezone package is used."
-  (setq date (timezone-fix-time date nil nil))
-  (timezone-make-sortable-date
-   (aref date 0) (aref date 1) (aref date 2)
-   (timezone-make-time-string
-    (aref date 3) (aref date 4) (aref date 5))))
-
+  (condition-case ()
+      (progn
+	(setq date (inline (timezone-fix-time 
+			    date nil 
+			    (aref (inline (timezone-parse-date date)) 4))))
+	(inline
+	  (timezone-make-sortable-date
+	   (aref date 0) (aref date 1) (aref date 2)
+	   (inline
+	     (timezone-make-time-string
+	      (aref date 3) (aref date 4) (aref date 5))))))
+    (error "")))
+  
 ;; Summary saving commands.
 
 (defun gnus-summary-save-article (&optional n not-saved)
@@ -13563,7 +13570,7 @@ The following commands are available:
       ;; Take the article from the original article buffer
       ;; and place it in the buffer it's supposed to be in.
       (when (and (get-buffer gnus-article-buffer)
-		 (numberp article)
+		 ;;(numberp article)
 		 (equal (buffer-name (current-buffer))
 			(buffer-name (get-buffer gnus-article-buffer))))
 	(save-excursion

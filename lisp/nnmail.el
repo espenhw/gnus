@@ -285,9 +285,11 @@ parameter.  It should return nil, `warn' or `delete'.")
   "Insert FILE in server buffer safely."
   (set-buffer nntp-server-buffer)
   (erase-buffer)
-  (condition-case ()
-      (progn (nnheader-insert-file-contents-literally file) t)
-    (file-error nil)))
+  (let ((format-alist nil)
+        (after-insert-file-functions nil))
+    (condition-case ()
+	(progn (insert-file-contents file) t)
+      (file-error nil))))
 
 (defun nnmail-group-pathname (group dir &optional file)
   "Make pathname for GROUP."

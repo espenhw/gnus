@@ -114,7 +114,7 @@ the group.")
 (gnus-define-keys
  (gnus-send-bounce-map "D" gnus-summary-send-map)
  "b" gnus-summary-resend-bounced-mail
- "c" gnus-summary-send-draft
+; "c" gnus-summary-send-draft
  "r" gnus-summary-resend-message)
 
 ;;; Internal functions.

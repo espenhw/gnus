@@ -332,7 +332,7 @@ always hide."
 	    (forward-line gnus-cited-lines-visible)
 	    (if (> (point) end)
 		(setq beg nil)
-	      (setq beg (point))))
+	      (setq beg (point-marker))))
 	  (when (and beg end)
 	    (gnus-add-text-properties beg end props)
 	    (goto-char beg)

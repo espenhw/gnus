@@ -2941,6 +2941,16 @@ Scroll the current article back one page (@code{gnus-summary-prev-page}).
 Scroll the current article one line forward
 (@code{gnus-summary-scroll-up}).
 
+@item A g
+@itemx g
+@kindex A g (Summary)
+@kindex g (Summary)
+@findex gnus-summary-show-article
+(Re)fetch the current article (@code{gnus-summary-show-article}).  If
+given a prefix, fetch the current article, but don't run any of the
+article treatment functions.  This will give you a ``raw'' article, just
+the way it came from the server.
+
 @item A <
 @itemx <
 @kindex < (Summary)
@@ -5165,14 +5175,6 @@ Remove page breaks from the current article
 @findex gnus-summary-caesar-message
 Do a Caesar rotate (rot13) on the article buffer
 (@code{gnus-summary-caesar-message}). 
-
-@item A g
-@kindex A g (Summary)
-@findex gnus-summary-show-article
-(Re)fetch the current article (@code{gnus-summary-show-article}).  If
-given a prefix, fetch the current article, but don't run any of the
-article treatment functions.  This will give you a ``raw'' article, just
-the way it came from the server.
 
 @item W t
 @kindex W t (Summary)

@@ -1,4 +1,24 @@
+Sun May 26 20:29:02 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-article-sort-by-date): Inline.
+
+	* nnmail.el (nnmail-find-file): Don't insert literally.
+
+	* message.el (message-send-mail-with-mh): Save before sending.
+
+	* gnus-cite.el (gnus-article-hide-citation): Would bug out.
+
+	* gnus-topic.el (gnus-topic-grok-active): Could only be run once.
+
+	* message.el (message-check-news-syntax): Don't warn on long
+	signatures on forwarded articles.
+
+	* gnus.el (gnus-request-article-this-buffer): Put un-numbered
+	articles into the original buffer as well.
+
 Sun May 26 03:51:38 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: September Gnus v0.96 is released.
 
 	* nnheader-ems.el: Raw-file confusion.
 
