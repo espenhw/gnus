@@ -1,3 +1,8 @@
+2002-10-10  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-decrypt): Set gnus details even when
+	decrypt failed.
+
 2002-10-10  Ted Zlatanov <tzz@lifelogs.com>
         * spam.el: compilation fixes, spam-check-bbdb function is nil if no
         BBDB installed

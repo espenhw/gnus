@@ -663,7 +663,10 @@ by you.")
 		    (pgg-decrypt-region (point-min) (point-max))
 		  (setq decrypt-status 
 			(with-current-buffer mml2015-result-buffer
-			  (buffer-string))))
+			  (buffer-string)))
+		  (mm-set-handle-multipart-parameter
+		   mm-security-handle 'gnus-details
+		   decrypt-status))
 	      (error
 	       (mm-set-handle-multipart-parameter
 		mm-security-handle 'gnus-details (mml2015-format-error err))
