@@ -103,7 +103,7 @@ base64-encoder-program.")
       (ignore-errors
 	(delete-file tempfile)))))
 
-(if (string-match "XEmacs" emacs-version)
+(if (featurep 'xemacs)
     (defalias 'base64-insert-char 'insert-char)
   (defun base64-insert-char (char &optional count ignored buffer)
     (if (or (null buffer) (eq buffer (current-buffer)))

@@ -1,3 +1,12 @@
+2000-10-02 20:14:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (dgnushack-compile): Don't compile dgnushack.el,
+	lpath.el. Don't compile base64.el if there is builtin base64.
+
+2000-10-02  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
+
+	* base64.el (Repository): Use featurep for XEmacs test.
+
 2000-10-02 17:38:12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-data): Don't ignore quit.
