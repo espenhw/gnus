@@ -345,7 +345,8 @@ active file."
 
 (defun gnus-nocem-unwanted-article-p (id)
   "Say whether article ID in the current group is wanted."
-  (gnus-gethash id gnus-nocem-hashtb))
+  (and gnus-nocem-hashtb
+       (gnus-gethash id gnus-nocem-hashtb)))
 
 (provide 'gnus-nocem)
 

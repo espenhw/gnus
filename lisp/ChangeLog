@@ -1,3 +1,47 @@
+Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.28 is released.
+
+1998-02-16  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-dont-send): Make sure the article really is
+	saved. 
+
+	* nnmail.el (nnmail-purge-split-history): Alist; not a list of
+	alists. 
+
+1998-02-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-kill-to-signature): Do the right thing when
+	there is no signature.
+
+1998-02-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-elide-elipsis): Add type and group.
+	(message-elide-region): Docfix.
+
+1998-02-16  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-run-hooks): Use unwind-protect instead of
+	save-excursion. 
+
+1998-02-16  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nntp.el (nntp-authinforc-file): Customized.
+
+Mon Feb 16 03:18:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-unwanted-article-p): Don't look if the
+	hashtable doesn't exist.
+
+	* gnus-start.el (gnus-ask-server-for-new-groups): Make sure the
+	killed groups hashtable exists.
+
+Sun Feb 15 23:02:11 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-authinforc-file): Changed name and default.
+	(nntp-send-authinfo): Use it.
+
 Sun Feb 15 19:50:10 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.27 is released.

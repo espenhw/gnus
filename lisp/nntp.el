@@ -166,8 +166,22 @@ server there that you can connect to.  See also
 (defvoo nntp-coding-system-for-write 'binary
   "*Coding system to write to NNTP.")
 
-(defvar nntp-netrc-file "~/.netrc"
-  "*The location of the file containing authinfo information.")
+(defcustom nntp-authinforc-file "~/.authinforc"
+  "Docstring."
+  :type
+  '(choice file
+	   (repeat :tag "Entries"
+		   :menu-tag "Inline"
+		   (list :format "%v"
+			 :value ("" ("login" . "") ("password" . ""))
+			 (string :tag "Host")
+			 (checklist :inline t
+				    (cons :format "%v"
+					  (const :format "" "login")
+					  (string :format "Login: %v"))
+				    (cons :format "%v"
+					  (const :format "" "password")
+					  (string :format "Password: %v")))))))
 
 
 
@@ -715,10 +729,10 @@ reading."
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
-It will look in the \"~/.netrc\" file for matching entries.  If
+It will look in the \"~/.authinforc\" file for matching entries.  If
 nothing suitable is found there, it will prompt for a user name
 and a password."
-  (let* ((list (gnus-parse-netrc nntp-netrc-file))
+  (let* ((list (gnus-parse-netrc nntp-authinforc-file))
 	 (alist (gnus-netrc-machine list nntp-address))
 	 (user (gnus-netrc-get alist "login"))
 	 (passwd (gnus-netrc-get alist "password")))

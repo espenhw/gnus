@@ -1,3 +1,7 @@
+Sun Feb 15 23:04:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Change.
+
 Sat Feb 14 17:46:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Virtual Groups): Fix.

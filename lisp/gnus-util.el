@@ -835,8 +835,10 @@ ARG is passed to the first function."
 
 (defun gnus-run-hooks (&rest funcs)
   "Does the same as `run-hooks', but saves excursion."
-  (save-excursion
-    (apply 'run-hooks funcs)))
+  (let ((buf (current-buffer)))
+    (unwind-protect
+	(apply 'run-hooks funcs)
+      (set-buffer buf))))
   
 ;;;
 ;;; .netrc and .authinforc parsing

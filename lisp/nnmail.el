@@ -1739,15 +1739,15 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(princ "\n")))))
 
 (defun nnmail-purge-split-history (group)
-  (let ((history nnmail-split-history))
+  (let ((history nnmail-split-history)
+	prev)
     (while history
-      (let ((pairs (car history)))
-	(while pairs
-	  (if (string= (car (car pairs)) group)
-	      (setcar pairs (cdr pairs))
-	    (setq pairs (cdr pairs)))))
-      (setq history (cdr history))))
-  (setq nnmail-split-history (delq nil nnmail-split-history)))
+      (if (string= (caar history) group)
+	  (if prev
+	      (setcdr prev (cdr history))
+	    (setq nnmail-split-history (cdr history)))
+	(setq prev history
+	      history (cdr history))))))
 
 (defun nnmail-new-mail-p (group)
   "Say whether GROUP has new mail."

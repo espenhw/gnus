@@ -1026,6 +1026,8 @@ for new groups."
 	 (new-date (current-time-string))
 	 group new-newsgroups got-new method hashtb
 	 gnus-override-subscribe-method)
+    (unless gnus-killed-hashtb
+      (gnus-make-hashtable-from-killed))
     ;; Go through both primary and secondary select methods and
     ;; request new newsgroups.
     (while (setq method (gnus-server-get-method nil (pop methods)))
