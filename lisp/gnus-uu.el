@@ -674,37 +674,37 @@ The headers will be included in the sequence they are matched.")
     (or not-insert (not gnus-insert-pseudo-articles)
 	(gnus-summary-insert-pseudos files save))))
 
-;; Return a list of files in dir.
-(defun gnus-uu-scan-directory (dir)
+(defun gnus-uu-scan-directory (dir &optional rec)
+  "Return a list of all files under DIR."
   (let ((files (directory-files dir t))
-	dirs out)
-    (while files
-      (cond ((string-match "/\\.\\.?$" (car files)))
-	    ((file-directory-p (car files))
-	     (setq dirs (cons (car files) dirs)))
-	    (t (setq out (cons (list (cons 'name (car files))
-				     (cons 'article gnus-current-article))
-			       out))))
-      (setq files (cdr files)))
-    (apply 'nconc out (mapcar (lambda (d) (gnus-uu-scan-directory d))
-			      dirs))))
+	out file)
+    (while (setq file (pop files))
+      (unless (string-match "/\\.\\.?$" file)
+	(push (list (cons 'name file)
+		    (cons 'article gnus-current-article))
+	      out)
+	(when (file-directory-p file)
+	  (setq out (nconc (gnus-uu-scan-directory file t) out)))))
+    (if rec 
+	out
+      (nreverse out))))
 
 (defun gnus-uu-save-files (files dir)
+  "Save FILES in DIR."
   (let ((len (length files))
-	to-file file)
-    (while files
-      (and 
-       (setq file (cdr (assq 'name (car files))))
-       (file-exists-p file)
-       (progn
-	 (setq to-file (if (file-directory-p dir)
-			   (concat dir (file-name-nondirectory file))
-			 dir))
-	 (and (or (not (file-exists-p to-file))
-		  (gnus-y-or-n-p (format "%s exists; overwrite? "
-					 to-file)))
-	      (copy-file file to-file t t))))
-      (setq files (cdr files)))
+	(reg (concat "^" (regexp-quote gnus-uu-work-dir)))
+	to-file file fromdir)
+    (while (setq file (cdr (assq 'name (pop files))))
+      (when (file-exists-p file)
+	(string-match reg file)
+	(setq fromdir (substring file (match-end 0)))
+	(if (file-directory-p file)
+	    (unless (file-exists-p (concat dir fromdir))
+	      (make-directory (concat dir fromdir) t))
+	  (setq to-file (concat dir fromdir))
+	  (when (or (not (file-exists-p to-file))
+		    (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
+	    (copy-file file to-file t t)))))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
 ;; Functions for saving and possibly digesting articles without
@@ -1613,23 +1613,17 @@ The headers will be included in the sequence they are matched.")
 ;; with `C-g'.
 (defun gnus-uu-check-for-generated-files ()
   (let (file dirs)
-    (while gnus-uu-generated-file-list
-      (setq file (car gnus-uu-generated-file-list))
-      (setq gnus-uu-generated-file-list (cdr gnus-uu-generated-file-list))
-      (if (not (string-match "/\\.[\\.]?$" file))
-	  (progn
-	    (if (file-directory-p file)
-		(setq dirs (cons file dirs))
-	      (if (file-exists-p file)
-		  (delete-file file))))))
+    ;; First delete the generated files.
+    (while (setq file (pop gnus-uu-generated-file-list))
+      (unless (string-match "/\\.[\\.]?$" file)
+	(if (file-directory-p file)
+	    (push file dirs)
+	  (when (file-exists-p file)
+	    (delete-file file)))))
+    ;; Then delete the directories.
     (setq dirs (nreverse dirs))
-    (while dirs
-      (setq file (car dirs))
-      (setq dirs (cdr dirs))
-      (if (file-directory-p file)
-	  (if (string-match "/$" file)
-	      (delete-directory (substring file 0 (match-beginning 0)))
-	    (delete-directory file))))))
+    (while (setq file (pop dirs))
+      (delete-directory (directory-file-name file)))))
 
 ;; Add a file (or a list of files) to be checked (and deleted if it/they
 ;; still exists upon exiting the newsgroup).

@@ -223,16 +223,12 @@ all. This may very well take some time.")
    (t
     (nnmail-activate 'nnml)
     (let ((active (nth 1 (assoc group nnml-group-alist))))
-      (save-excursion
-	(set-buffer nntp-server-buffer)
-	(erase-buffer)
-	(if (not active)
-	    (nnheader-report 'nnml "No such group: %s" group)
-	  (insert (format "211 %d %d %d %s\n" 
-			  (max (1+ (- (cdr active) (car active))) 0)
-			  (car active) (cdr active) group))
-	  (nnheader-report 'nnml "Group %s selected" group)
-	  t))))))
+      (if (not active)
+	  (nnheader-report 'nnml "No such group: %s" group)
+	(nnheader-report 'nnml "Selected group %s" group)
+	(nnheader-insert "211 %d %d %d %s\n" 
+			 (max (1+ (- (cdr active) (car active))) 0)
+			 (car active) (cdr active) group))))))
 
 (defun nnml-request-scan (&optional group server)
   (setq nnml-article-file-alist nil)

@@ -216,13 +216,14 @@ there.")
 (defun nnspool-request-body (id &optional group server)
   "Select article body by message ID (or number)."
   (nnspool-possibly-change-directory group)
-  (if (nnspool-request-article id)
+  (let ((res (nnspool-request-article id)))
+    (when res
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
-	(if (search-forward "\n\n" nil t)
-	    (delete-region (point-min) (point)))
-	t)))
+	(when (search-forward "\n\n" nil t)
+	  (delete-region (point-min) (point)))
+	res))))
 
 (defun nnspool-request-head (id &optional group server)
   "Select article head by message ID (or number)."
@@ -249,25 +250,18 @@ there.")
 	  (progn
 	    (nnheader-report 'nnspool "Selected group %s" group)
 	    t)
-	;; Yes, completely empty spool directories *are* possible
+	;; Yes, completely empty spool directories *are* possible.
 	;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
 	(when (setq dir (directory-files pathname nil "^[0-9]+$" t))
 	  (setq dir 
 		(sort (mapcar (lambda (name) (string-to-int name)) dir) '<)))
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (if dir
-	      (progn
-		(insert
-		 (format "211 %d %d %d %s\n" (length dir) (car dir)
-			 (progn (while (cdr dir) (setq dir (cdr dir)))
-				(car dir))
-			 group))
-		t)
-	    (insert (format "211 0 0 0 %s\n" group))
-	    (nnheader-report 'nnspool "Empty group %s" group)
-	    t))))))
+	(if dir
+	    (nnheader-insert
+	     "211 %d %d %d %s\n" (length dir) (car dir)
+	     (progn (while (cdr dir) (setq dir (cdr dir))) (car dir))
+	     group)
+	  (nnheader-report 'nnspool "Empty group %s" group)
+	  (nnheader-insert "211 0 0 0 %s\n" group))))))
 
 (defun nnspool-request-type (group &optional article)
   'news)
@@ -335,12 +329,11 @@ there.")
 		(apply 'start-process "*nnspool inews*" inews-buffer
 		       nnspool-inews-program nnspool-inews-switches)
 	      (error
-	       (setq nnspool-status-string (format "inews error: %S" err))
-	       nil))))
+	       (nnheader-report 'nnspool "inews error: %S" err)))))
       (if (not proc)
 	  ;; The inews program failed.
 	  ()
-	(setq nnspool-status-string "")
+	(nnheader-report 'nnspool "")
 	(set-process-sentinel proc 'nnspool-inews-sentinel)
 	(process-send-region proc (point-min) (point-max))
 	;; We slap a condition-case around this, because the process may
@@ -360,7 +353,7 @@ there.")
       ;; Make status message by folding lines.
       (while (re-search-forward "[ \t\n]+" nil t)
 	(replace-match " " t t))
-      (setq nnspool-status-string (buffer-string))
+      (nnheader-report 'nnspool "%s" (buffer-string))
       (message "nnspool: %s" nnspool-status-string)
       (ding)
       (run-hooks 'nnspool-rejected-article-hook))))
@@ -461,16 +454,13 @@ there.")
     (file-error nil)))
 
 (defun nnspool-possibly-change-directory (group)
-  (if group
-      (let ((pathname (nnspool-article-pathname group)))
-	(if (file-directory-p pathname)
-	    (progn
-	      (setq nnspool-current-directory pathname)
-	      (setq nnspool-current-group group))
-	  (setq nnspool-status-string 
-		(format "No such newsgroup: %s" group))
-	  nil))
-    t))
+  (if (not group)
+      t
+    (let ((pathname (nnspool-article-pathname group)))
+      (if (file-directory-p pathname)
+	  (setq nnspool-current-directory pathname
+		nnspool-current-group group)
+	(nnheader-report 'nnspool "No such newsgroup: %s" group)))))
 
 (defun nnspool-article-pathname (group &optional article)
   "Find the path for GROUP."

@@ -47,7 +47,7 @@ the score file and the value of the global variable
 		  (query . gnus-score-custom-save))
 		 ((name . file)
 		  (tag . "File")
-		  (directory . "~/News/")
+		  (directory . gnus-kill-files-directory)
 		  (default-file . "SCORE")
 		  (type . file))))
 	  ((name . files)

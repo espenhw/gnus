@@ -280,7 +280,6 @@ The following commands are available:
 	(while (and (cdr alist)
 		    (not (string= server (car (car (cdr alist))))))
 	  (setq alist (cdr alist)))
-	(setcdr alist (cons killed (cdr alist)))
 	(if alist
 	    (setcdr alist (cons killed (cdr alist)))
  	  (setq gnus-server-alist (list killed)))))
@@ -621,15 +620,15 @@ buffer.
 (defun gnus-browse-unsubscribe-current-group (arg)
   "(Un)subscribe to the next ARG groups."
   (interactive "p")
-  (and (eobp)
-       (error "No group at current line."))
+  (when (eobp)
+    (error "No group at current line."))
   (let ((ward (if (< arg 0) -1 1))
 	(arg (abs arg)))
     (while (and (> arg 0)
 		(not (eobp))
 		(gnus-browse-unsubscribe-group)
 		(zerop (gnus-browse-next-group ward)))
-      (setq arg (1- arg)))
+      (decf arg))
     (gnus-group-position-point)
     (if (/= 0 arg) (gnus-message 7 "No more newsgroups"))
     arg))
@@ -670,12 +669,15 @@ buffer.
 (defun gnus-browse-exit ()
   "Quit browsing and return to the group buffer."
   (interactive)
-  (if (eq major-mode 'gnus-browse-mode)
-      (kill-buffer (current-buffer)))
+  (when (eq major-mode 'gnus-browse-mode)
+    (kill-buffer (current-buffer)))
+  ;; Insert the newly subscribed groups in the group buffer.
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (gnus-group-list-groups nil))
   (if gnus-browse-return-buffer
       (gnus-configure-windows 'server 'force)
-    (gnus-configure-windows 'group 'force)
-    (gnus-group-list-groups nil)))
+    (gnus-configure-windows 'group 'force)))
 
 (defun gnus-browse-describe-briefly ()
   "Give a one line description of the group mode commands."

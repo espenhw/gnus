@@ -459,9 +459,10 @@ Two predefined functions are available:
       (gnus-tree-minimize)
       (gnus-tree-recenter)
       (let ((selected (selected-window)))
-	(select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
-	(gnus-horizontal-recenter)
-	(select-window selected)))))
+	(when (get-buffer-window (set-buffer gnus-tree-buffer) t)
+	  (select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	  (gnus-horizontal-recenter)
+	  (select-window selected))))))
 
 (defun gnus-generate-horizontal-tree (thread level &optional dummyp)
   "Generate a horizontal tree."
@@ -609,9 +610,10 @@ Two predefined functions are available:
       (gnus-tree-minimize)
       (gnus-tree-recenter)
       (let ((selected (selected-window)))
-	(select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
-	(gnus-horizontal-recenter)
-	(select-window selected)))
+	(when (get-buffer-window (set-buffer gnus-tree-buffer) t)
+	  (select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	  (gnus-horizontal-recenter)
+	  (select-window selected))))
     ;; If we remove this save-excursion, it updates the wrong mode lines?!?
     (save-excursion
       (set-buffer gnus-tree-buffer)

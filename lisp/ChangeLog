@@ -1,5 +1,65 @@
+Fri Feb 23 00:24:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-read-active-file): Would put wrong method on
+	`gnus-have-read-active-file'. 
+
+	* gnus-srvr.el (gnus-browse-exit): Make sure all newly subscribed
+	groups are listed in the group buffer.
+
+	* gnus-uu.el (gnus-uu-check-for-generated-files): New
+	implementation. 
+	(gnus-uu-save-files): Save directories properly.
+	(gnus-uu-scan-directory): Scan directories properly.
+
+	* gnus.el (gnus-configure-windows): Would create repeating
+	windows in multiple frames.
+	(gnus-group-make-group): Would bug out.
+
+	* gnus-salt.el (gnus-generate-tree): Make sure the tree window is
+	displayed before selecting it.
+	(gnus-highlight-selected-tree): Ditto.
+
+Fri Feb 23 00:01:25 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus-srvr.el (gnus-server-yank-server): Would try to setcdr
+	nil. 
+
+	* nndraft.el (nndraft-request-post): Removed function.
+
+	* gnus-score.el (gnus-score-followup): Apply "followup" scores
+	after generating them.
+
+Thu Feb 22 23:33:35 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-followup): Change to the adapt score
+ 	file properly.
+	(gnus-summary-score-entry): Return the added score entry.
+
+Thu Feb 22 01:03:16 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-unread-mark-p): New function.
+	(gnus-read-mark-p): New function.
+	(gnus-summary-mark-unread-and-read-as-read): New function.
+	(gnus-mark-article-hook): New default value.
+
+	* x-easymenu.el: Double up.
+
+	* gnus-edit.el (gnus-score-custom-data): Use kill file directory. 
+
+	* gnus-msg.el (gnus-debug): Pp the entire setq.
+
+Wed Feb 21 04:10:12 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnspool.el: Use nnheader-report/nnheader-insert.
+	* nnml.el: Ditto.
+	* nnmbox.el: Ditto.
+	* nnkiboze.el: Ditto.
+	* nnbabyl.el: Ditto.
+
 Wed Feb 21 00:21:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
+	* gnus.el: 0.40 is released.
+	
 	* gnus.el (gnus-summary-refer-parent-article): Also check the NOV
 	references. 
 

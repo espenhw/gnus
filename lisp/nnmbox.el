@@ -228,8 +228,7 @@
   (nnmbox-request-list server))
 
 (defun nnmbox-request-list-newsgroups (&optional server)
-  (setq nnmbox-status-string "nnmbox: LIST NEWSGROUPS is not implemented.")
-  nil)
+  (nnheader-report 'nnmbox "LIST NEWSGROUPS is not implemented."))
 
 (defun nnmbox-request-post (&optional server)
   (mail-send-and-exit nil))

@@ -178,19 +178,14 @@ If the stream is opened, return T, otherwise return NIL."
     (setq nnkiboze-current-group nil)))
 
 (defun nnkiboze-request-list (&optional server) 
-  (setq nnkiboze-status-string "nnkiboze: LIST is not implemented.")
-  nil)
+  (nnheader-report 'nnkiboze "LIST is not implemented."))
 
 (defun nnkiboze-request-newgroups (date &optional server)
   "List new groups."
-  (setq nnkiboze-status-string "NEWGROUPS is not supported.")
-  nil)
+  (nnheader-report 'nnkiboze "NEWGROUPS is not supported."))
 
 (defun nnkiboze-request-list-newsgroups (&optional server)
-  (setq nnkiboze-status-string "nnkiboze: LIST NEWSGROUPS is not implemented.")
-  nil)
-
-(defalias 'nnkiboze-request-post 'nntp-request-post)
+  (nnheader-report 'nnkiboze "LIST NEWSGROUPS is not implemented."))
 
 (defun nnkiboze-request-delete-group (group &optional force server)
   (nnkiboze-possibly-change-newsgroups group)

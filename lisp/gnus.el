@@ -1226,6 +1226,7 @@ with some simple extensions:
     ("nnbabyl" mail address respool)
     ("nnkiboze" post address virtual)
     ("nnsoup" post-mail address)
+    ("nndraft" post-mail)
     ("nnfolder" mail respool address))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
@@ -1502,7 +1503,7 @@ The default function `gnus-group-highlight-line' will
 highlight the line according to the `gnus-group-highlight'
 variable.")
 
-(defvar gnus-mark-article-hook (list 'gnus-summary-mark-unread-as-read)
+(defvar gnus-mark-article-hook '(gnus-summary-mark-read-and-unread-as-read)
   "*A hook called when an article is selected for the first time.
 The hook is intended to mark an article as read (or unread)
 automatically when it is selected.")
@@ -1685,7 +1686,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.40"
+(defconst gnus-version "September Gnus v0.41"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3276,8 +3277,8 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
     (unless split
       (error "No such setting: %s" setting))
 
-    (if (and (not force)
-	     (setq all-visible (gnus-all-windows-visible-p split)))
+    (if (and (setq all-visible (gnus-all-windows-visible-p split))
+	     (not force))
 	;; All the windows mentioned are already visible, so we just
 	;; put point in the assigned buffer, and do not touch the
 	;; winconf.
@@ -5298,9 +5299,9 @@ ADDRESS."
 	   (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
       (gnus-group-insert-group-line-info nname)
 
-      (when (assoc (symbol-name (car method)) gnus-valid-select-methods)
-	(require (car method)))
-      (gnus-check-server method)
+      (when (assoc (symbol-name (car meth)) gnus-valid-select-methods)
+	(require (car meth)))
+      (gnus-check-server meth)
       (and (gnus-check-backend-function 'request-create-group nname)
 	   (gnus-request-create-group nname))
       t)))
@@ -7128,6 +7129,18 @@ article number."
       (while (and (setq data (cdr data))
 		  (not (< (gnus-data-level (car data)) level))))
       (and data (gnus-data-number (car data))))))
+
+(defun gnus-unread-mark-p (mark)
+  "Say whether MARK is the unread mark."
+  (= mark gnus-unread-mark))
+
+(defun gnus-read-mark-p (mark)
+  "Say whether MARK is one of the marks that mark as read.
+This is all marks except unread, ticked, dormant, and expirable."
+  (not (or (= mark gnus-unread-mark)
+	   (= mark gnus-ticked-mark)
+	   (= mark gnus-dormant-mark)
+	   (= mark gnus-expirable-mark))))
 
 ;; Various summary mode internalish functions.
 
@@ -11849,6 +11862,13 @@ The difference between N and the number of marks cleared is returned."
   (when (memq gnus-current-article gnus-newsgroup-unreads)
     (gnus-summary-mark-article gnus-current-article gnus-read-mark)))
 
+(defun gnus-summary-mark-unread-and-read-as-read ()
+  "Intended to be used by `gnus-summary-mark-article-hook'."
+  (let ((mark (gnus-summary-article-mark)))
+    (when (or (gnus-unread-mark-p mark)
+	      (gnus-read-mark-p mark))
+      (gnus-summary-mark-article gnus-current-article gnus-read-mark))))
+
 (defun gnus-summary-mark-region-as-read (point mark all)
   "Mark all unread articles between point and mark as read.
 If given a prefix, mark all articles between point and mark as read,
@@ -15410,7 +15430,9 @@ Returns whether the updating was successful."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (while methods
-	(let* ((method (gnus-server-get-method nil (car methods)))
+	(let* ((method (if (stringp (car methods))
+			   (gnus-server-get-method nil (car methods))
+			 (car methods)))
 	       (where (nth 1 method))
 	       (mesg (format "Reading active file%s via %s..."
 			     (if (and where (not (zerop (length where))))

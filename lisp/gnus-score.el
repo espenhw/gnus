@@ -522,6 +522,8 @@ If optional argument `SILENT' is nil, show effect of score entry."
 			     (if (numberp match)
 				 (int-to-string match)
 			       match))))
+
+    ;; Score the current buffer.
     (and (>= (nth 1 (assoc header gnus-header-index)) 0)
 	 (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-string)
 	 (not silent)
@@ -531,9 +533,9 @@ If optional argument `SILENT' is nil, show effect of score entry."
     (and (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
 	 (setq match (string-to-int match)))
 
-    (if (eq date 'now)
-	()
-      (and (= score gnus-score-interactive-default-score)
+    (unless (eq date 'now)
+      ;; Add the score entry to the score file.
+      (when (= score gnus-score-interactive-default-score)
 	   (setq score nil))
       (let ((new (cond 
 		  (type
@@ -560,8 +562,9 @@ If optional argument `SILENT' is nil, show effect of score entry."
 				  (or (nth 1 new)
 				      gnus-score-interactive-default-score)))
 	  ;; Nope, we have to add a new elem.
-	  (gnus-score-set header (if old (cons new old) (list new)))))
-      (gnus-score-set 'touched '(t)))))
+	  (gnus-score-set header (if old (cons new old) (list new))))
+	(gnus-score-set 'touched '(t))
+	new))))
 
 (defun gnus-summary-score-effect (header match type score)
   "Simulate the effect of a score file entry.
@@ -1009,7 +1012,7 @@ SCORE is the score to add."
   
 (defun gnus-score-headers (score-files &optional trace)
   ;; Score `gnus-newsgroup-headers'.
-  (let (scores)
+  (let (scores news)
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
     (setq gnus-scores-articles nil)
@@ -1033,69 +1036,72 @@ SCORE is the score to add."
 	       (member (car c) gnus-scores-exclude-files)
 	       (setq scores (delq (car s) scores)))
 	  (setq s (cdr s)))))
+    (setq news scores)
     ;; Do the scoring.
-    (when (and gnus-summary-default-score
-	       scores
-	       (> (length gnus-newsgroup-headers)
-		  (length gnus-newsgroup-scored)))
-      (let* ((entries gnus-header-index)
-	     (now (gnus-day-number (current-time-string)))
-	     (expire (and gnus-score-expiry-days
-			  (- now gnus-score-expiry-days)))
-	     (headers gnus-newsgroup-headers)
-	     (current-score-file gnus-current-score-file)
-	     entry header)
-	(gnus-message 5 "Scoring...")
-	;; Create articles, an alist of the form `(HEADER . SCORE)'.
-	(while headers
-	  (setq header (car headers)
-		headers (cdr headers))
-	  ;; WARNING: The assq makes the function O(N*S) while it could
-	  ;; be written as O(N+S), where N is (length gnus-newsgroup-headers)
-	  ;; and S is (length gnus-newsgroup-scored).
-	  (or (assq (mail-header-number header) gnus-newsgroup-scored)
-	      (setq gnus-scores-articles ;Total of 2 * N cons-cells used.
-		    (cons (cons header (or gnus-summary-default-score 0))
-			  gnus-scores-articles))))
+    (while news
+      (setq scores news
+	    news nil)
+      (when (and gnus-summary-default-score
+		 scores
+		 (> (length gnus-newsgroup-headers)
+		    (length gnus-newsgroup-scored)))
+	(let* ((entries gnus-header-index)
+	       (now (gnus-day-number (current-time-string)))
+	       (expire (and gnus-score-expiry-days
+			    (- now gnus-score-expiry-days)))
+	       (headers gnus-newsgroup-headers)
+	       (current-score-file gnus-current-score-file)
+	       entry header new)
+	  (gnus-message 5 "Scoring...")
+	  ;; Create articles, an alist of the form `(HEADER . SCORE)'.
+	  (while (setq header (pop headers))
+	    ;; WARNING: The assq makes the function O(N*S) while it could
+	    ;; be written as O(N+S), where N is (length gnus-newsgroup-headers)
+	    ;; and S is (length gnus-newsgroup-scored).
+	    (or (assq (mail-header-number header) gnus-newsgroup-scored)
+		(setq gnus-scores-articles ;Total of 2 * N cons-cells used.
+		      (cons (cons header (or gnus-summary-default-score 0))
+			    gnus-scores-articles))))
 
-	(save-excursion
-	  (set-buffer (get-buffer-create "*Headers*"))
-	  (buffer-disable-undo (current-buffer))
+	  (save-excursion
+	    (set-buffer (get-buffer-create "*Headers*"))
+	    (buffer-disable-undo (current-buffer))
 
-	  ;; Set the global variant of this variable.
-	  (setq gnus-current-score-file current-score-file)
-          ;; score orphans
-          (if gnus-orphan-score 
-              (progn
-                (setq gnus-score-index 
-                      (nth 1 (assoc "references" gnus-header-index)))
-                (gnus-score-orphans gnus-orphan-score)))
-	  ;; Run each header through the score process.
-	  (while entries
-	    (setq entry (car entries)
-		  header (downcase (nth 0 entry))
-		  entries (cdr entries))
-	    (setq gnus-score-index (nth 1 (assoc header gnus-header-index)))
-	    (if (< 0 (apply 'max (mapcar
-				  (lambda (score)
-				    (length (gnus-score-get header score)))
-				  scores)))
+	    ;; Set the global variant of this variable.
+	    (setq gnus-current-score-file current-score-file)
+	    ;; score orphans
+	    (when gnus-orphan-score 
+	      (setq gnus-score-index 
+		    (nth 1 (assoc "references" gnus-header-index)))
+	      (gnus-score-orphans gnus-orphan-score))
+	    ;; Run each header through the score process.
+	    (while entries
+	      (setq entry (car entries)
+		    header (downcase (nth 0 entry))
+		    entries (cdr entries))
+	      (setq gnus-score-index (nth 1 (assoc header gnus-header-index)))
+	      (when (< 0 (apply 'max (mapcar
+				      (lambda (score)
+					(length (gnus-score-get header score)))
+				      scores)))
 		;; Call the scoring function for this type of "header".
-		(funcall (nth 2 entry) scores header now expire trace)))
-	  ;; Remove the buffer.
-	  (kill-buffer (current-buffer)))
+		(when (setq new (funcall (nth 2 entry) scores header
+					 now expire trace))
+		  (push new news))))
+	    ;; Remove the buffer.
+	    (kill-buffer (current-buffer)))
 
-	;; Add articles to `gnus-newsgroup-scored'.
-	(while gnus-scores-articles
-	  (or (= gnus-summary-default-score (cdr (car gnus-scores-articles)))
-	      (setq gnus-newsgroup-scored
-		    (cons (cons (mail-header-number 
-				 (car (car gnus-scores-articles)))
-				(cdr (car gnus-scores-articles)))
-			  gnus-newsgroup-scored)))
-	  (setq gnus-scores-articles (cdr gnus-scores-articles)))
+	  ;; Add articles to `gnus-newsgroup-scored'.
+	  (while gnus-scores-articles
+	    (or (= gnus-summary-default-score (cdr (car gnus-scores-articles)))
+		(setq gnus-newsgroup-scored
+		      (cons (cons (mail-header-number 
+				   (car (car gnus-scores-articles)))
+				  (cdr (car gnus-scores-articles)))
+			    gnus-newsgroup-scored)))
+	    (setq gnus-scores-articles (cdr gnus-scores-articles)))
 
-	(gnus-message 5 "Scoring...done")))))
+	  (gnus-message 5 "Scoring...done"))))))
 
 
 (defun gnus-get-new-thread-ids (articles)
@@ -1218,7 +1224,8 @@ SCORE is the score to add."
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
-	  (setq entries rest))))))
+	  (setq entries rest)))))
+  nil)
 
 (defun gnus-score-date (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
@@ -1272,7 +1279,8 @@ SCORE is the score to add."
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
-	  (setq entries rest))))))
+	  (setq entries rest)))))
+  nil)
 
 (defun gnus-score-body (scores header now expire &optional trace)
   (save-excursion
@@ -1367,7 +1375,8 @@ SCORE is the score to add."
 		    (setcdr entries (cdr rest))
 		    (setq rest entries)))
 		  (setq entries rest)))))
-	  (setq articles (cdr articles)))))))
+	  (setq articles (cdr articles))))))
+  nil)
 
 (defun gnus-score-followup (scores header now expire &optional trace thread)
   ;; Insert the unique article headers in the buffer.
@@ -1375,12 +1384,15 @@ SCORE is the score to add."
 	(current-score-file gnus-current-score-file)
 	(all-scores scores)
 	;; gnus-score-index is used as a free variable.
-	alike last this art entries alist articles)
+	alike last this art entries alist articles
+	new news)
 
     ;; Change score file to the adaptive score file.  All entries that
     ;; this function makes will be put into this file.
-    (gnus-score-load-file (gnus-score-file-name 
-			   gnus-newsgroup-name gnus-adaptive-file-suffix))
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (gnus-score-load-file (gnus-score-file-name 
+			     gnus-newsgroup-name gnus-adaptive-file-suffix)))
 
     (setq gnus-scores-articles (sort gnus-scores-articles 'gnus-score-string<)
 	  articles gnus-scores-articles)
@@ -1445,10 +1457,10 @@ SCORE is the score to add."
 	      (end-of-line)
 	      (setq found (setq arts (get-text-property (point) 'articles)))
 	      ;; Found a match, update scores.
-	      (while arts
-		(setq art (car arts)
-		      arts (cdr arts))
-		(gnus-score-add-followups (car art) score all-scores thread))))
+	      (while (setq art (pop arts))
+		(when (setq new (gnus-score-add-followups
+				 (car art) score all-scores thread))
+		  (push new news)))))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
 		((and found gnus-update-score-entry-dates) ;Match, update date.
@@ -1460,29 +1472,29 @@ SCORE is the score to add."
 		 (setq rest entries)))
 	  (setq entries rest))))
     ;; We change the score file back to the previous one.
-    (gnus-score-load-file current-score-file)))
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (gnus-score-load-file current-score-file))
+    (list (cons "references" news))))
 
 (defun gnus-score-add-followups (header score scores &optional thread)
+  "Add a score entry to the adapt file."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (let* ((id (mail-header-id header))
 	   (scores (car scores))
 	   entry dont)
       ;; Don't enter a score if there already is one.
-      (while scores
-	(setq entry (car scores))
+      (while (setq entry (pop scores))
 	(and (equal "references" (car entry))
 	     (or (null (nth 3 (car (cdr entry))))
 		 (eq 's (nth 3 (car (cdr entry)))))
-	     (progn
-	       (if (assoc id entry)
-		   (setq dont t))))
-	(setq scores (cdr scores)))
-      (or dont
-	  (gnus-summary-score-entry 
-	   (if thread "thread" "references")
-	   id 's score (current-time-string) nil t)))))
-
+	     (assoc id entry)
+	     (setq dont t)))
+      (unless dont
+	(gnus-summary-score-entry 
+	 (if thread "thread" "references")
+	 id 's score (current-time-string) nil t)))))
 
 (defun gnus-score-string (score-list header now expire &optional trace)
   ;; Score ARTICLES according to HEADER in SCORE-LIST.
@@ -1668,7 +1680,8 @@ SCORE is the score to add."
 		  (gnus-score-set 'touched '(t) alist)
 		  (setcdr entries (cdr rest))
 		  (setq rest entries)))))
-	    (setq entries rest)))))))
+	    (setq entries rest))))))
+  nil)
 
 (defun gnus-score-string< (a1 a2)
   ;; Compare headers in articles A2 and A2.

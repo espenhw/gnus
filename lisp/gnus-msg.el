@@ -2533,13 +2533,16 @@ The source file has to be in the Emacs load path."
       (insert "------------------ Environment follows ------------------\n\n"))
     (while olist
       (if (boundp (car olist))
-	  (insert "(setq " (symbol-name (car olist)) 
-		  (if (or (consp (setq sym (symbol-value (car olist))))
-			  (and (symbolp sym)
-			       (not (or (eq sym nil)
-					(eq sym t)))))
-		      " '" " ")
-		  (pp-to-string (symbol-value (car olist))) ")\n")
+	  (insert 
+	   (pp-to-string
+	    `(setq ,(symbol-name (car olist))
+		   ,(if (or (consp (setq sym (symbol-value (car olist))))
+			    (and (symbolp sym)
+				 (not (or (eq sym nil)
+					  (eq sym t)))))
+			(cons 'quote (symbol-value (car olist)))
+		      (symbol-value (car olist)))
+		   "\n")))
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")

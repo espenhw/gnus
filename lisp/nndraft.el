@@ -180,9 +180,6 @@
   (nndraft-execute-nnmh-command
    `(nnmh-request-newgroups ,date ,server)))
 
-(defun nndraft-request-post (&optional server)
-  (mail-send-and-exit nil))
-
 (defun nndraft-request-expire-articles 
   (articles group &optional server force)
   (let ((res (nndraft-execute-nnmh-command

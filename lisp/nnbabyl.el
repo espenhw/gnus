@@ -259,8 +259,7 @@
   (nnbabyl-request-list server))
 
 (defun nnbabyl-request-list-newsgroups (&optional server)
-  (setq nnbabyl-status-string "nnbabyl: LIST NEWSGROUPS is not implemented.")
-  nil)
+  (nnheader-report 'nnbabyl "nnbabyl: LIST NEWSGROUPS is not implemented."))
 
 (defun nnbabyl-request-post (&optional server)
   (mail-send-and-exit nil))
@@ -452,8 +451,7 @@
   (if newsgroup
       (if (assoc newsgroup nnbabyl-group-alist)
 	  (setq nnbabyl-current-group newsgroup)
-	(setq nnbabyl-status-string "No such group in file")
-	nil)
+	(nnheader-report 'nnbabyl "No such group in file"))
     t))
 
 (defun nnbabyl-article-string (article)
