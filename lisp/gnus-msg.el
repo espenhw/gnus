@@ -650,6 +650,10 @@ automatically."
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
       (gnus-msg-treat-broken-reply-to)
+      (save-restriction
+	(message-narrow-to-head)
+	(goto-char (point-max)))
+      (mml-quote-region (point) (point-max))
       (message-reply nil wide)
       (when yank
 	(gnus-inews-yank-articles yank)))))

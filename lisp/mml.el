@@ -753,7 +753,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
       (goto-char (point-min))
       ;; Quote parts.
       (while (re-search-forward
-	      "<#/?!*\\(multipart\\|part\\|external\\|mml\\)" nil t)
+	      "<#!*/?\\(multipart\\|part\\|external\\|mml\\)" nil t)
 	;; Insert ! after the #.
 	(goto-char (+ (match-beginning 0) 2))
 	(insert "!")))))
