@@ -1,3 +1,11 @@
+Wed Sep  4 06:42:34 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Reverse logic.
+
+Wed Sep  4 06:35:05 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.25 is released.
+
 Wed Sep  4 05:19:58 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* nnmail.el (nnmail-move-inbox): Refuse to move if

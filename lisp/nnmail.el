@@ -382,7 +382,7 @@ parameter.  It should return nil, `warn' or `delete'.")
 ;; Function rewritten from rmail.el.
 (defun nnmail-move-inbox (inbox)
   "Move INBOX to `nnmail-crash-box'."
-  (if (file-writable-p nnmail-crash-box)
+  (if (not (file-writable-p nnmail-crash-box))
       (gnus-error 1 "Can't write to crash box %s.  Not moving mail."
 		  nnmail-crash-box)
     (let ((inbox (file-truename (expand-file-name inbox)))
