@@ -1353,11 +1353,11 @@ subscribed, and if it matches the latter, it will be ignored.
 @vindex gnus-auto-subscribed-groups
 Yet another variable that meddles here is
 @code{gnus-auto-subscribed-groups}.  It works exactly like
-@code{gnus-options-subscribe}, and is therefore really superfluous, but I
-thought it would be nice to have two of these.  This variable is more
-meant for setting some ground rules, while the other variable is used
-more for user fiddling.  By default this variable makes all new groups
-that come from mail back ends (@code{nnml}, @code{nnbabyl},
+@code{gnus-options-subscribe}, and is therefore really superfluous,
+but I thought it would be nice to have two of these.  This variable is
+more meant for setting some ground rules, while the other variable is
+used more for user fiddling.  By default this variable makes all new
+groups that come from mail back ends (@code{nnml}, @code{nnbabyl},
 @code{nnfolder}, @code{nnmbox}, @code{nnmh}, and @code{nnmaildir})
 subscribed.  If you don't like that, just set this variable to
 @code{nil}.
@@ -6658,16 +6658,16 @@ something like:
 @item gnus-fetch-old-headers
 @vindex gnus-fetch-old-headers
 If non-@code{nil}, Gnus will attempt to build old threads by fetching
-more old headers---headers to articles marked as read.  If you
-would like to display as few summary lines as possible, but still
-connect as many loose threads as possible, you should set this variable
-to @code{some} or a number.  If you set it to a number, no more than
-that number of extra old headers will be fetched.  In either case,
-fetching old headers only works if the back end you are using carries
-overview files---this would normally be @code{nntp}, @code{nnspool},
+more old headers---headers to articles marked as read.  If you would
+like to display as few summary lines as possible, but still connect as
+many loose threads as possible, you should set this variable to
+@code{some} or a number.  If you set it to a number, no more than that
+number of extra old headers will be fetched.  In either case, fetching
+old headers only works if the back end you are using carries overview
+files---this would normally be @code{nntp}, @code{nnspool},
 @code{nnml}, and @code{nnmaildir}.  Also remember that if the root of
-the thread has been expired by the server, there's not much Gnus can do
-about that.
+the thread has been expired by the server, there's not much Gnus can
+do about that.
 
 This variable can also be set to @code{invisible}.  This won't have any
 visible effects, but is useful if you use the @kbd{A T} command a lot
@@ -9637,13 +9637,13 @@ then ask Google if that fails:
         (nnweb "google" (nnweb-type google))))
 @end lisp
 
-Most of the mail back ends support fetching by @code{Message-ID}, but do
-not do a particularly excellent job at it.  That is, @code{nnmbox},
+Most of the mail back ends support fetching by @code{Message-ID}, but
+do not do a particularly excellent job at it.  That is, @code{nnmbox},
 @code{nnbabyl}, @code{nnmaildir}, @code{nnml}, are able to locate
 articles from any groups, while @code{nnfolder}, and @code{nnimap} are
-only able to locate articles that have been posted to the current group.
-(Anything else would be too time consuming.)  @code{nnmh} does not
-support this at all.
+only able to locate articles that have been posted to the current
+group.  (Anything else would be too time consuming.)  @code{nnmh} does
+not support this at all.
 
 
 @node Alternative Approaches
@@ -14835,8 +14835,8 @@ files.
 @end table
 
 @findex nnml-generate-nov-databases
-If your @code{nnml} groups and @acronym{NOV} files get totally out of whack,
-you can do a complete update by typing @kbd{M-x
+If your @code{nnml} groups and @acronym{NOV} files get totally out of
+whack, you can do a complete update by typing @kbd{M-x
 nnml-generate-nov-databases}.  This command will trawl through the
 entire @code{nnml} hierarchy, looking at each and every article, so it
 might take a while to complete.  A better interface to this
@@ -14850,9 +14850,10 @@ Commands}).
 @cindex mh-e mail spool
 
 @code{nnmh} is just like @code{nnml}, except that is doesn't generate
-@acronym{NOV} databases and it doesn't keep an active file or marks file.
-This makes @code{nnmh} a @emph{much} slower back end than @code{nnml},
-but it also makes it easier to write procmail scripts for.
+@acronym{NOV} databases and it doesn't keep an active file or marks
+file.  This makes @code{nnmh} a @emph{much} slower back end than
+@code{nnml}, but it also makes it easier to write procmail scripts
+for.
 
 Virtual server settings:
 
@@ -14871,11 +14872,11 @@ If non-@code{nil}, @code{nnmh} will read incoming mail.  The default is
 @item nnmh-be-safe
 @vindex nnmh-be-safe
 If non-@code{nil}, @code{nnmh} will go to ridiculous lengths to make
-sure that the articles in the folder are actually what Gnus thinks they
-are.  It will check date stamps and stat everything in sight, so
+sure that the articles in the folder are actually what Gnus thinks
+they are.  It will check date stamps and stat everything in sight, so
 setting this to @code{t} will mean a serious slow-down.  If you never
-use anything but Gnus to read the @code{nnmh} articles, you do not have
-to set this variable to @code{t}.  The default is @code{nil}.
+use anything but Gnus to read the @code{nnmh} articles, you do not
+have to set this variable to @code{t}.  The default is @code{nil}.
 @end table
 
 
@@ -14887,40 +14888,40 @@ to set this variable to @code{t}.  The default is @code{nil}.
 @code{nnmaildir} stores mail in the maildir format, with each maildir
 corresponding to a group in Gnus.  This format is documented here:
 @uref{http://cr.yp.to/proto/maildir.html} and here:
-@uref{http://www.qmail.org/man/man5/maildir.html}.  nnmaildir also
-stores extra information in the @file{.nnmaildir/} directory within a
-maildir.
+@uref{http://www.qmail.org/man/man5/maildir.html}.  @code{nnmaildir}
+also stores extra information in the @file{.nnmaildir/} directory
+within a maildir.
 
 Maildir format was designed to allow concurrent deliveries and
 reading, without needing locks.  With other back ends, you would have
 your mail delivered to a spool of some kind, and then you would
 configure Gnus to split mail from that spool into your groups.  You
-can still do that with nnmaildir, but the more common configuration is
-to have your mail delivered directly to the maildirs that appear as
-group in Gnus.
+can still do that with @code{nnmaildir}, but the more common
+configuration is to have your mail delivered directly to the maildirs
+that appear as group in Gnus.
 
-nnmaildir is designed to be perfectly reliable: @kbd{C-g} will never
-corrupt its data in memory, and @code{SIGKILL} will never corrupt its
-data in the filesystem.
+@code{nnmaildir} is designed to be perfectly reliable: @kbd{C-g} will
+never corrupt its data in memory, and @code{SIGKILL} will never
+corrupt its data in the filesystem.
 
-nnmaildir stores article marks and @acronym{NOV} data in each maildir.  So you
-can copy a whole maildir from one Gnus setup to another, and you will
-keep your marks.
+@code{nnmaildir} stores article marks and @acronym{NOV} data in each
+maildir.  So you can copy a whole maildir from one Gnus setup to
+another, and you will keep your marks.
 
 Virtual server settings:
 
 @table @code
 @item directory
-For each of your nnmaildir servers (it's very unlikely that you'd need
-more than one), you need to create a directory and populate it with
-maildirs or symlinks to maildirs (and nothing else; do not choose a
-directory already used for other purposes).  Each maildir will be
-represented in Gnus as a newsgroup on that server; the filename of the
-symlink will be the name of the group.  Any filenames in the directory
-starting with @samp{.} are ignored.  The directory is scanned when you
-first start Gnus, and each time you type @kbd{g} in the group buffer;
-if any maildirs have been removed or added, nnmaildir notices at these
-times.
+For each of your @code{nnmaildir} servers (it's very unlikely that
+you'd need more than one), you need to create a directory and populate
+it with maildirs or symlinks to maildirs (and nothing else; do not
+choose a directory already used for other purposes).  Each maildir
+will be represented in Gnus as a newsgroup on that server; the
+filename of the symlink will be the name of the group.  Any filenames
+in the directory starting with @samp{.} are ignored.  The directory is
+scanned when you first start Gnus, and each time you type @kbd{g} in
+the group buffer; if any maildirs have been removed or added,
+@code{nnmaildir} notices at these times.
 
 The value of the @code{directory} parameter should be a Lisp form
 which is processed by @code{eval} and @code{expand-file-name} to get
@@ -14931,7 +14932,8 @@ don't worry---a simple string will work.)  This parameter is not
 optional; you must specify it.  I don't recommend using
 @code{"~/Mail"} or a subdirectory of it; several other parts of Gnus
 use that directory by default for various things, and may get confused
-if nnmaildir uses it too.  @code{"~/.nnmaildir"} is a typical value.
+if @code{nnmaildir} uses it too.  @code{"~/.nnmaildir"} is a typical
+value.
 
 @item target-prefix
 This should be a Lisp form which is processed by @code{eval} and
@@ -14939,12 +14941,12 @@ This should be a Lisp form which is processed by @code{eval} and
 server is opened; the resulting string is used until the server is
 closed.
 
-When you create a group on an nnmaildir server, the maildir is created
-with @code{target-prefix} prepended to its name, and a symlink
+When you create a group on an @code{nnmaildir} server, the maildir is
+created with @code{target-prefix} prepended to its name, and a symlink
 pointing to that maildir is created, named with the plain group name.
 So if @code{directory} is @code{"~/.nnmaildir"} and
 @code{target-prefix} is @code{"../maildirs/"}, then when you create
-the group @code{foo}, nnmaildir will create
+the group @code{foo}, @code{nnmaildir} will create
 @file{~/.nnmaildir/../maildirs/foo} as a maildir, and will create
 @file{~/.nnmaildir/foo} as a symlink pointing to
 @file{../maildirs/foo}.
@@ -14981,20 +14983,21 @@ the conventional Gnus way, from @code{mail-sources} according to
 value is @code{nil}.
 
 Do @emph{not} use the same maildir both in @code{mail-sources} and as
-an nnmaildir group.  The results might happen to be useful, but that
-would be by chance, not by design, and the results might be different
-in the future.  If your split rules create new groups, remember to
-supply a @code{create-directory} server parameter.
+an @code{nnmaildir} group.  The results might happen to be useful, but
+that would be by chance, not by design, and the results might be
+different in the future.  If your split rules create new groups,
+remember to supply a @code{create-directory} server parameter.
 @end table
 
 @subsubsection Group parameters
 
-nnmaildir uses several group parameters.  It's safe to ignore all
-this; the default behavior for nnmaildir is the same as the default
-behavior for other mail back ends: articles are deleted after one week,
-etc.  Except for the expiry parameters, all this functionality is
-unique to nnmaildir, so you can ignore it if you're just trying to
-duplicate the behavior you already have with another back end.
+@code{nnmaildir} uses several group parameters.  It's safe to ignore
+all this; the default behavior for @code{nnmaildir} is the same as the
+default behavior for other mail back ends: articles are deleted after
+one week, etc.  Except for the expiry parameters, all this
+functionality is unique to @code{nnmaildir}, so you can ignore it if
+you're just trying to duplicate the behavior you already have with
+another back end.
 
 If the value of any of these parameters is a vector, the first element
 is evaluated as a Lisp form and the result is used, rather than the
@@ -15008,15 +15011,15 @@ quote and wrap the value in a vector when appropriate.)
 
 @table @code
 @item expire-age
-An integer specifying the minimum age, in seconds, of an article before
-it will be expired, or the symbol @code{never} to specify that
+An integer specifying the minimum age, in seconds, of an article
+before it will be expired, or the symbol @code{never} to specify that
 articles should never be expired.  If this parameter is not set,
-nnmaildir falls back to the usual
+@code{nnmaildir} falls back to the usual
 @code{nnmail-expiry-wait}(@code{-function}) variables (overrideable by
 the @code{expiry-wait}(@code{-function}) group parameters.  If you
 wanted a value of 3 days, you could use something like @code{[(* 3 24
-60 60)]}; nnmaildir will evaluate the form and use the result.  An
-article's age is measured starting from the article file's
+60 60)]}; @code{nnmaildir} will evaluate the form and use the result.
+An article's age is measured starting from the article file's
 modification time.  Normally, this is the same as the article's
 delivery time, but editing an article makes it younger.  Moving an
 article (other than via expiry) may also make an article younger.
@@ -15028,30 +15031,30 @@ If this is set to a string such as a full Gnus group name, like
 @end example
 and if it is not the name of the same group that the parameter belongs
 to, then articles will be moved to the specified group during expiry
-before being deleted.  @emph{If this is set to an nnmaildir group, the
-article will be just as old in the destination group as it was in the
-source group.}  So be careful with @code{expire-age} in the
+before being deleted.  @emph{If this is set to an @code{nnmaildir}
+group, the article will be just as old in the destination group as it
+was in the source group.}  So be careful with @code{expire-age} in the
 destination group.  If this is set to the name of the same group that
 the parameter belongs to, then the article is not expired at all.  If
 you use the vector form, the first element is evaluated once for each
 article.  So that form can refer to
 @code{nnmaildir-article-file-name}, etc., to decide where to put the
-article.  @emph{If this parameter is not set, nnmaildir does not fall
-back to the @code{expiry-target} group parameter or the
+article.  @emph{If this parameter is not set, @code{nnmaildir} does
+not fall back to the @code{expiry-target} group parameter or the
 @code{nnmail-expiry-target} variable.}
 
 @item read-only
-If this is set to @code{t}, nnmaildir will treat the articles in this
-maildir as read-only.  This means: articles are not renamed from
-@file{new/} into @file{cur/}; articles are only found in @file{new/},
-not @file{cur/}; articles are never deleted; articles cannot be
-edited.  @file{new/} is expected to be a symlink to the @file{new/}
-directory of another maildir---e.g., a system-wide mailbox containing
-a mailing list of common interest.  Everything in the maildir outside
-@file{new/} is @emph{not} treated as read-only, so for a shared
-mailbox, you do still need to set up your own maildir (or have write
-permission to the shared mailbox); your maildir just won't contain
-extra copies of the articles.
+If this is set to @code{t}, @code{nnmaildir} will treat the articles
+in this maildir as read-only.  This means: articles are not renamed
+from @file{new/} into @file{cur/}; articles are only found in
+@file{new/}, not @file{cur/}; articles are never deleted; articles
+cannot be edited.  @file{new/} is expected to be a symlink to the
+@file{new/} directory of another maildir---e.g., a system-wide mailbox
+containing a mailing list of common interest.  Everything in the
+maildir outside @file{new/} is @emph{not} treated as read-only, so for
+a shared mailbox, you do still need to set up your own maildir (or
+have write permission to the shared mailbox); your maildir just won't
+contain extra copies of the articles.
 
 @item directory-files
 A function with the same interface as @code{directory-files}.  It is
@@ -15060,45 +15063,45 @@ group to find articles.  The default is the function specified by the
 server's @code{directory-files} parameter.
 
 @item distrust-Lines:
-If non-@code{nil}, nnmaildir will always count the lines of an
+If non-@code{nil}, @code{nnmaildir} will always count the lines of an
 article, rather than use the @code{Lines:} header field.  If
 @code{nil}, the header field will be used if present.
 
 @item always-marks
-A list of mark symbols, such as
-@code{['(read expire)]}.  Whenever Gnus asks nnmaildir for
-article marks, nnmaildir will say that all articles have these
-marks, regardless of whether the marks stored in the filesystem
-say so.  This is a proof-of-concept feature that will probably be
-removed eventually; it ought to be done in Gnus proper, or
-abandoned if it's not worthwhile.
+A list of mark symbols, such as @code{['(read expire)]}.  Whenever
+Gnus asks @code{nnmaildir} for article marks, @code{nnmaildir} will
+say that all articles have these marks, regardless of whether the
+marks stored in the filesystem say so.  This is a proof-of-concept
+feature that will probably be removed eventually; it ought to be done
+in Gnus proper, or abandoned if it's not worthwhile.
 
 @item never-marks
 A list of mark symbols, such as @code{['(tick expire)]}.  Whenever
-Gnus asks nnmaildir for article marks, nnmaildir will say that no
-articles have these marks, regardless of whether the marks stored in
-the filesystem say so.  @code{never-marks} overrides
+Gnus asks @code{nnmaildir} for article marks, @code{nnmaildir} will
+say that no articles have these marks, regardless of whether the marks
+stored in the filesystem say so.  @code{never-marks} overrides
 @code{always-marks}.  This is a proof-of-concept feature that will
 probably be removed eventually; it ought to be done in Gnus proper, or
 abandoned if it's not worthwhile.
 
 @item nov-cache-size
-An integer specifying the size of the @acronym{NOV} memory cache.  To speed
-things up, nnmaildir keeps @acronym{NOV} data in memory for a limited number of
-articles in each group.  (This is probably not worthwhile, and will
-probably be removed in the future.)  This parameter's value is noticed
-only the first time a group is seen after the server is opened---i.e.,
-when you first start Gnus, typically.  The @acronym{NOV} cache is never resized
-until the server is closed and reopened.  The default is an estimate
-of the number of articles that would be displayed in the summary
-buffer: a count of articles that are either marked with @code{tick} or
-not marked with @code{read}, plus a little extra.
+An integer specifying the size of the @acronym{NOV} memory cache.  To
+speed things up, @code{nnmaildir} keeps @acronym{NOV} data in memory
+for a limited number of articles in each group.  (This is probably not
+worthwhile, and will probably be removed in the future.)  This
+parameter's value is noticed only the first time a group is seen after
+the server is opened---i.e., when you first start Gnus, typically.
+The @acronym{NOV} cache is never resized until the server is closed
+and reopened.  The default is an estimate of the number of articles
+that would be displayed in the summary buffer: a count of articles
+that are either marked with @code{tick} or not marked with
+@code{read}, plus a little extra.
 @end table
 
 @subsubsection Article identification
 Articles are stored in the @file{cur/} subdirectory of each maildir.
 Each article file is named like @code{uniq:info}, where @code{uniq}
-contains no colons.  nnmaildir ignores, but preserves, the
+contains no colons.  @code{nnmaildir} ignores, but preserves, the
 @code{:info} part.  (Other maildir readers typically use this part of
 the filename to store marks.)  The @code{uniq} part uniquely
 identifies the article, and is used in various places in the
@@ -15108,36 +15111,37 @@ available in the variable @code{nnmaildir-article-file-name} after you
 request the article in the summary buffer.
 
 @subsubsection NOV data
-An article identified by @code{uniq} has its @acronym{NOV} data (used to
-generate lines in the summary buffer) stored in
+An article identified by @code{uniq} has its @acronym{NOV} data (used
+to generate lines in the summary buffer) stored in
 @code{.nnmaildir/nov/uniq}.  There is no
 @code{nnmaildir-generate-nov-databases} function.  (There isn't much
-need for it---an article's @acronym{NOV} data is updated automatically when the
-article or @code{nnmail-extra-headers} has changed.)  You can force
-nnmaildir to regenerate the @acronym{NOV} data for a single article simply by
-deleting the corresponding @acronym{NOV} file, but @emph{beware}: this will also
-cause nnmaildir to assign a new article number for this article, which
-may cause trouble with @code{seen} marks, the Agent, and the cache.
+need for it---an article's @acronym{NOV} data is updated automatically
+when the article or @code{nnmail-extra-headers} has changed.)  You can
+force @code{nnmaildir} to regenerate the @acronym{NOV} data for a
+single article simply by deleting the corresponding @acronym{NOV}
+file, but @emph{beware}: this will also cause @code{nnmaildir} to
+assign a new article number for this article, which may cause trouble
+with @code{seen} marks, the Agent, and the cache.
 
 @subsubsection Article marks
 An article identified by @code{uniq} is considered to have the mark
 @code{flag} when the file @file{.nnmaildir/marks/flag/uniq} exists.
-When Gnus asks nnmaildir for a group's marks, nnmaildir looks for such
-files and reports the set of marks it finds.  When Gnus asks nnmaildir
-to store a new set of marks, nnmaildir creates and deletes the
-corresponding files as needed.  (Actually, rather than create a new
-file for each mark, it just creates hard links to
-@file{.nnmaildir/markfile}, to save inodes.)
+When Gnus asks @code{nnmaildir} for a group's marks, @code{nnmaildir}
+looks for such files and reports the set of marks it finds.  When Gnus
+asks @code{nnmaildir} to store a new set of marks, @code{nnmaildir}
+creates and deletes the corresponding files as needed.  (Actually,
+rather than create a new file for each mark, it just creates hard
+links to @file{.nnmaildir/markfile}, to save inodes.)
 
 You can invent new marks by creating a new directory in
 @file{.nnmaildir/marks/}.  You can tar up a maildir and remove it from
 your server, untar it later, and keep your marks.  You can add and
 remove marks yourself by creating and deleting mark files.  If you do
-this while Gnus is running and your nnmaildir server is open, it's
-best to exit all summary buffers for nnmaildir groups and type @kbd{s}
-in the group buffer first, and to type @kbd{g} or @kbd{M-g} in the
-group buffer afterwards.  Otherwise, Gnus might not pick up the
-changes, and might undo them.
+this while Gnus is running and your @code{nnmaildir} server is open,
+it's best to exit all summary buffers for @code{nnmaildir} groups and
+type @kbd{s} in the group buffer first, and to type @kbd{g} or
+@kbd{M-g} in the group buffer afterwards.  Otherwise, Gnus might not
+pick up the changes, and might undo them.
 
 
 @node Mail Folders
@@ -15146,10 +15150,10 @@ changes, and might undo them.
 @cindex mbox folders
 @cindex mail folders
 
-@code{nnfolder} is a back end for storing each mail group in a separate
-file.  Each file is in the standard Un*x mbox format.  @code{nnfolder}
-will add extra headers to keep track of article numbers and arrival
-dates.
+@code{nnfolder} is a back end for storing each mail group in a
+separate file.  Each file is in the standard Un*x mbox format.
+@code{nnfolder} will add extra headers to keep track of article
+numbers and arrival dates.
 
 @cindex self contained nnfolder servers
 @cindex marks
@@ -15159,19 +15163,19 @@ similar, and later be able to restore them into Gnus (by adding the
 proper @code{nnfolder} server) and have all your marks be preserved.
 Marks for a group is usually stored in a file named as the mbox file
 with @code{.mrk} concatenated to it (but see
-@code{nnfolder-marks-file-suffix}) within the @code{nnfolder} directory.
-Individual @code{nnfolder} groups are also possible to backup, use
-@kbd{G m} to restore the group (after restoring the backup into the
-@code{nnfolder} directory).
+@code{nnfolder-marks-file-suffix}) within the @code{nnfolder}
+directory.  Individual @code{nnfolder} groups are also possible to
+backup, use @kbd{G m} to restore the group (after restoring the backup
+into the @code{nnfolder} directory).
 
 Virtual server settings:
 
 @table @code
 @item nnfolder-directory
 @vindex nnfolder-directory
-All the @code{nnfolder} mail boxes will be stored under this directory.
-The default is the value of @code{message-directory} (whose default is
-@file{~/Mail})
+All the @code{nnfolder} mail boxes will be stored under this
+directory.  The default is the value of @code{message-directory}
+(whose default is @file{~/Mail})
 
 @item nnfolder-active-file
 @vindex nnfolder-active-file
@@ -15184,16 +15188,16 @@ Format}.  The default is @file{~/Mail/newsgroups}
 
 @item nnfolder-get-new-mail
 @vindex nnfolder-get-new-mail
-If non-@code{nil}, @code{nnfolder} will read incoming mail.  The default
-is @code{t}
+If non-@code{nil}, @code{nnfolder} will read incoming mail.  The
+default is @code{t}
 
 @item nnfolder-save-buffer-hook
 @vindex nnfolder-save-buffer-hook
 @cindex backup files
 Hook run before saving the folders.  Note that Emacs does the normal
-backup renaming of files even with the @code{nnfolder} buffers.  If you
-wish to switch this off, you could say something like the following in
-your @file{.emacs} file:
+backup renaming of files even with the @code{nnfolder} buffers.  If
+you wish to switch this off, you could say something like the
+following in your @file{.emacs} file:
 
 @lisp
 (defun turn-off-backup ()
