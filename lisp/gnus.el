@@ -1960,6 +1960,88 @@ spam processing, associated with the appropriate processor."
    "Which spam or ham processors will be applied when the summary is exited.")
 
   (gnus-define-group-parameter
+   spam-autodetect
+   :type list
+   :parameter-type 
+   '(boolean :tag "Spam autodetection")
+   :function-document
+   "Should spam be autodetected (with spam-split) in this group?"
+   :variable gnus-spam-autodetect
+   :variable-default nil
+   :variable-document
+   "*Groups in which spam should be autodetected when they are entered.
+   Only unseen articles will be examined, unless
+   spam-autodetect-recheck-messages is set."
+   :variable-group spam
+   :variable-type 
+   '(repeat
+     :tag "Autodetection setting"
+     (list
+      (regexp :tag "Group Regexp")
+      boolean))
+   :parameter-document
+   "Spam autodetection.
+Only unseen articles will be examined, unless
+spam-autodetect-recheck-messages is set.")
+
+  (gnus-define-group-parameter
+   spam-autodetect-methods
+   :type list
+   :parameter-type 
+   '(choice :tag "Spam autodetection-specific methods"
+     (const none)
+     (const default)
+     (set :tag "Use specific methods"
+	  (variable-item spam-use-blacklist)
+	  (variable-item spam-use-regex-headers)
+	  (variable-item spam-use-regex-body)
+	  (variable-item spam-use-whitelist)
+	  (variable-item spam-use-BBDB)
+	  (variable-item spam-use-ifile)
+	  (variable-item spam-use-spamoracle)
+	  (variable-item spam-use-stat)
+	  (variable-item spam-use-blackholes)
+	  (variable-item spam-use-hashcash)
+	  (variable-item spam-use-bogofilter-headers)
+	  (variable-item spam-use-bogofilter)))
+   :function-document
+   "Methods to be used for autodetection in each group"
+   :variable gnus-spam-autodetect-methods
+   :variable-default nil
+   :variable-document
+   "*Methods for autodetecting spam per group.
+Requires the spam-autodetect parameter.  Only unseen articles
+will be examined, unless spam-autodetect-recheck-messages is
+set."
+   :variable-group spam
+   :variable-type 
+   '(repeat
+     :tag "Autodetection methods"
+     (list
+      (regexp :tag "Group Regexp")
+      (choice
+       (const none)
+       (const default)
+       (set :tag "Use specific methods"
+	(variable-item spam-use-blacklist)
+	(variable-item spam-use-regex-headers)
+	(variable-item spam-use-regex-body)
+	(variable-item spam-use-whitelist)
+	(variable-item spam-use-BBDB)
+	(variable-item spam-use-ifile)
+	(variable-item spam-use-spamoracle)
+	(variable-item spam-use-stat)
+	(variable-item spam-use-blackholes)
+	(variable-item spam-use-hashcash)
+	(variable-item spam-use-bogofilter-headers)
+	(variable-item spam-use-bogofilter)))))
+     :parameter-document
+   "Spam autodetection methods.  
+Requires the spam-autodetect parameter.  Only unseen articles
+will be examined, unless spam-autodetect-recheck-messages is
+set.")
+
+  (gnus-define-group-parameter
    spam-process-destination
    :type list
    :parameter-type 

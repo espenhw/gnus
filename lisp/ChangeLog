@@ -1,3 +1,33 @@
+2003-12-13  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el: added some gnus-registry autoloads
+	(spam-split-symbolic-return): makes spam-split return 'spam
+	instead of the value of spam-split-group when spam is detected
+	(spam-split-symbolic-return-positive): makes spam-split return
+	'ham instead of nil when ham is detected
+	(spam-autodetect-recheck-messages): tells spam.el whether it
+	should recheck all messages in a group, or only the unseen ones
+	(spam-split-last-successful-check): spam-split will set this to
+	the last successful check; this was seen as a cleaner approach
+	than returning a cell like '(spam spam-use-bogofilter)
+	(spam-list-of-checks): documentation appended
+	(spam-split): accomodate the spam-split-symbolic-return and
+	spam-split-symbolic-return-positive variables
+	(spam-find-spam): new function called when the summary is built
+	(spam-log-registered-p): checks if a ham or spam registration has
+	already been done for an article
+	(spam-check-regex-headers, spam-check-blackholes, spam-check-BBDB)
+	(spam-check-ifile, spam-check-stat, spam-check-whitelist)
+	(spam-check-blacklist, spam-check-bogofilter-headers)
+	(spam-check-spamoracle): respect the spam-split-symbolic-return
+	and spam-split-symbolic-return-positive variables
+	(spam-initialize): add spam-find-spam to gnus-summary-prepare-hook
+	(spam-unload-hook): remove spam-find-spam from
+	gnus-summary-prepare-hook
+
+	* gnus.el (spam-autodetect, spam-autodetect-methods): new
+	configuration items for spam autodetection
+
 2003-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-draft.el (gnus-draft-mode-map): Bind `e' to
