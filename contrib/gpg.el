@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.5 2000/12/01 04:13:45 zsh Exp $
+;; $Id: gpg.el,v 1.6 2000/12/14 15:48:28 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -616,7 +616,8 @@ adjust according to `gpg-command-passphrase-env'."
       ;; make-temp-name doesn't create the file, and an ordinary
       ;; write-file operation is prone to nasty symlink attacks if the
       ;; temporary file resides in a world-writable directory.
-      (unless (eq (file-modes gpg-temp-directory) 448) ; mode 0700
+      (unless (or (memq system-type '(windows-nt cygwin32 win32 w32 mswindows))
+		  (eq (file-modes gpg-temp-directory) 448)) ; mode 0700
 	(error "Directory for temporary files must have mode 0700."))
       (setq name (make-temp-name name))
       (let ((mode (default-file-modes)))

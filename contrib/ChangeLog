@@ -1,3 +1,7 @@
+2000-12-14 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gpg.el (gpg-make-temp-file): Don't check file-modes of M$Windows.
+
 2000-12-14 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gpg.el (gpg-passphrase-store): Don't activate timer if it is live.
@@ -12,7 +16,7 @@
 	(gpg-with-temp-files): Ditto.
 	(gpg-show-result): Ditto.
 
-2000-11-08  Bj-Aörn Torkelsson  <torkel@hpc2n.umu.se>$)A
+2000-11-08  Bj,Av(Brn Torkelsson  <torkel@hpc2n.umu.se>
 
 	* gpg.el: In Xemacs it is called point-at-eol, not
 	line-end-position
@@ -29,7 +33,7 @@
 
 	* gpg.el (gpg-verify): The last argument of apply is a list.
 	(gpg-encrypt): Add passphrase as a parameter.
-	
+
 ;; Local Variables:
 ;; coding: iso-2022-7bit
 ;; End:
