@@ -21675,7 +21675,7 @@ whether the host machine is slow, being controlled by
 A number of seconds to check whether the host machine is slow.  If the
 host takes time larger than this value for decoding an @code{X-Face}
 using the internal ELisp-based @code{uncompface} program, it will be
-changed to using the external decoder.
+changed to using the external decoder.  The default is 0.1 seconds.
 @end table
 
 If the internal decoder is invalidated or if you are using XEmacs,
@@ -21708,6 +21708,43 @@ like @code{netpbm}, @code{libgr-progs} and @code{compface}.})
 
 (Note: @code{x-face} is used in the variable/function names, not
 @code{xface}).
+
+@noindent
+Face and variable:
+
+@table @code
+@item gnus-x-face
+@vindex gnus-x-face
+Face to show X-Face.  The colors from this face are used as the
+foreground and background colors of the displayed X-Faces.  The
+default colors are black and white.
+
+@item gnus-face-properties-alist
+@vindex gnus-face-properties-alist
+Alist of image types and properties applied to Face (@pxref{Face}) and
+X-Face images.  The default value is @code{((pbm . (:face gnus-x-face))
+(png . nil))} for Emacs or @code{((xface . (:face gnus-x-face)))} for
+XEmacs.  Here are examples:
+
+@lisp
+;; Specify the altitude of Face and X-Face images in the From header.
+(setq gnus-face-properties-alist
+      '((pbm . (:face gnus-x-face :ascent 80))
+        (png . (:ascent 80))))
+
+;; Show Face and X-Face images as pressed buttons.
+(setq gnus-face-properties-alist
+      '((pbm . (:face gnus-x-face :relief -2))
+        (png . (:relief -2))))
+@end lisp
+
+@pxref{Image Descriptors, ,Image Descriptors, elisp, The Emacs Lisp
+Reference Manual} for the valid properties for various image types.
+Currently, @code{pbm} is used for X-Face images and @code{png} is used
+for Face images in Emacs.  Only the @code{:face} property is effective
+on the @code{xface} image type in XEmacs if it is built with the
+@samp{libcompface} library.
+@end table
 
 Gnus provides a few convenience functions and variables to allow
 easier insertion of X-Face headers in outgoing messages.
@@ -21768,6 +21805,9 @@ represent the author of the message.
 The contents of a @code{Face} header must be a base64 encoded PNG image.
 See @uref{http://quimby.gnus.org/circus/face/} for the precise
 specifications.
+
+The @code{gnus-face-properties-alist} variable affects the appearance of
+displayed Face images.  @xref{X-Face}.
 
 Gnus provides a few convenience functions and variables to allow
 easier insertion of Face headers in outgoing messages.

@@ -1,3 +1,8 @@
+2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (X-Face, Face): Add gnus-x-face and
+	gnus-face-properties-alist.
+
 2004-03-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* texi2latex.el (latexi-translate-file): Support accents.
