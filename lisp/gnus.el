@@ -1784,7 +1784,7 @@ covered by that variable."
     (scored . score) (saved . save)
     (cached . cache) (downloadable . download)
     (unsendable . unsend) (forwarded . forward)
-    (recent . recent)))
+    (recent . recent) (seen . seen)))
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)

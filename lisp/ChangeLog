@@ -1,5 +1,15 @@
 2001-08-19 16:14:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-select-newsgroup): Set
+	gnus-newsgroup-articles. 
+	(gnus-unseen-mark): New variable.
+	(gnus-newsgroup-unseen): Ditto.
+	(gnus-newsgroup-seen): Ditto.
+	(gnus-adjust-marked-articles): Use them.
+	(gnus-update-marks): Use them.
+	(gnus-summary-update-secondary-mark): Display.
+	(gnus-summary-prepare-threads): Display.
+
 	* gnus-msg.el (gnus-inews-group-method): Use and return the
 	method, not the server.
 

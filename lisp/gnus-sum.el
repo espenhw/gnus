@@ -450,7 +450,12 @@ this variable specifies group names."
   :type 'character)
 
 (defcustom gnus-saved-mark ?S
-  "*Mark used for articles that have been saved to."
+  "*Mark used for articles that have been saved."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom gnus-unseen-mark ?.
+  "*Mark used for articles that haven't been seen."
   :group 'gnus-summary-marks
   :type 'character)
 
@@ -1178,6 +1183,15 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-dormant nil
   "List of dormant articles in the current newsgroup.")
 
+(defvar gnus-newsgroup-unseen nil
+  "List of unseen articles in the current newsgroup.")
+
+(defvar gnus-newsgroup-seen nil
+  "Range of seen articles in the current newsgroup.")
+
+(defvar gnus-newsgroup-articles nil
+  "List of articles in the current newsgroup.")
+
 (defvar gnus-newsgroup-scored nil
   "List of scored articles in the current newsgroup.")
 
@@ -1219,7 +1233,8 @@ the type of the variable (string, integer, character, etc).")
     gnus-newsgroup-expirable
     gnus-newsgroup-processable gnus-newsgroup-killed
     gnus-newsgroup-downloadable gnus-newsgroup-undownloaded
-    gnus-newsgroup-unsendable
+    gnus-newsgroup-unsendable gnus-newsgroup-unseen
+    gnus-newsgroup-seen gnus-newsgroup-articles
     gnus-newsgroup-bookmarks gnus-newsgroup-dormant
     gnus-newsgroup-headers gnus-newsgroup-threads
     gnus-newsgroup-prepared gnus-summary-highlight-line-function
@@ -4333,6 +4348,8 @@ or a straight list of headers."
 		    gnus-saved-mark)
 		   ((memq number gnus-newsgroup-recent)
 		    gnus-recent-mark)
+		   ((memq number gnus-newsgroup-unseen)
+		    gnus-unseen-mark)
 		   (t gnus-no-mark))
 	     gnus-tmp-from (mail-header-from gnus-tmp-header)
 	     gnus-tmp-name
@@ -4523,10 +4540,6 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       
     (gnus-summary-setup-default-charset)
 
-    ;; Adjust and set lists of article marks.
-    (when info
-      (gnus-adjust-marked-articles info))
-
     ;; Kludge to avoid having cached articles nixed out in virtual groups.
     (when (gnus-virtual-group-p group)
       (setq cached gnus-newsgroup-cached))
@@ -4571,12 +4584,18 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; Set the initial limit.
       (setq gnus-newsgroup-limit (copy-sequence articles))
       ;; Remove canceled articles from the list of unread articles.
+      (setq fetched-articles
+	    (mapcar (lambda (headers) (mail-header-number headers))
+		    gnus-newsgroup-headers))
+      (setq gnus-newsgroup-articles fetched-articles)
       (setq gnus-newsgroup-unreads
 	    (gnus-set-sorted-intersection
-	     gnus-newsgroup-unreads
-	     (setq fetched-articles
-		   (mapcar (lambda (headers) (mail-header-number headers))
-			   gnus-newsgroup-headers))))
+	     gnus-newsgroup-unreads fetched-articles))
+
+      ;; Adjust and set lists of article marks.
+      (when info
+	(gnus-adjust-marked-articles info))
+
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
        (gnus-sorted-complement fetched-articles articles))
@@ -4774,35 +4793,45 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	 (uncompressed '(score bookmark killed))
 	 marks var articles article mark)
 
-    (while marked-lists
-      (setq marks (pop marked-lists))
-      (set (setq var (intern (format "gnus-newsgroup-%s"
-				     (car (rassq (setq mark (car marks))
-						 types)))))
-	   (if (memq (car marks) uncompressed)
-	       (cdr marks)
-	     (gnus-uncompress-range (cdr marks))))
+    (dolist (marks marked-lists)
+      (setq mark (car marks))
+      (if (eq mark 'seen)
+	  ;; The `seen' marks are treated specially.
+	  (progn
+	    (when (setq gnus-newsgroup-seen (cdr marks))
+	      (dolist (article gnus-newsgroup-articles)
+		(unless (gnus-member-of-range
+			 article gnus-newsgroup-seen)
+		  (push article gnus-newsgroup-unseen)))))
+	;; Do the rest of the marks.
+	(set (setq var (intern (format "gnus-newsgroup-%s"
+				       (car (rassq mark types)))))
+	     (cond
+	      ((memq mark uncompressed)
+	       (cdr marks))
+	      (t
+	       (gnus-uncompress-range (cdr marks)))))
 
-      (setq articles (symbol-value var))
+	(setq articles (symbol-value var))
 
-      ;; All articles have to be subsets of the active articles.
-      (cond
-       ;; Adjust "simple" lists.
-       ((memq mark '(tick dormant expire reply save))
-	(while articles
-	  (when (or (< (setq article (pop articles)) min) (> article max))
-	    (set var (delq article (symbol-value var))))))
-       ;; Adjust assocs.
-       ((memq mark uncompressed)
-	(when (not (listp (cdr (symbol-value var))))
-	  (set var (list (symbol-value var))))
-	(when (not (listp (cdr articles)))
-	  (setq articles (list articles)))
-	(while articles
-	  (when (or (not (consp (setq article (pop articles))))
-		    (< (car article) min)
-		    (> (car article) max))
-	    (set var (delq article (symbol-value var))))))))))
+	;; All articles have to be subsets of the active articles.
+	(cond
+	 ;; Adjust "simple" lists.
+	 ((memq mark '(tick dormant expire reply save))
+	  (while articles
+	    (when (or (< (setq article (pop articles)) min) (> article max))
+	      (set var (delq article (symbol-value var))))))
+	 ;; Adjust assocs.
+	 ((memq mark uncompressed)
+	  (when (not (listp (cdr (symbol-value var))))
+	    (set var (list (symbol-value var))))
+	  (when (not (listp (cdr articles)))
+	    (setq articles (list articles)))
+	  (while articles
+	    (when (or (not (consp (setq article (pop articles))))
+		      (< (car article) min)
+		      (> (car article) max))
+	      (set var (delq article (symbol-value var)))))))))))
 
 (defun gnus-update-missing-marks (missing)
   "Go through the list of MISSING articles and remove them from the mark lists."
@@ -4823,15 +4852,14 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   "Enter the various lists of marked articles into the newsgroup info list."
   (let ((types gnus-article-mark-lists)
 	(info (gnus-get-info gnus-newsgroup-name))
-	(uncompressed '(score bookmark killed))
+	(uncompressed '(score bookmark killed seen))
 	type list newmarked symbol delta-marks)
     (when info
       ;; Add all marks lists to the list of marks lists.
       (while (setq type (pop types))
 	(setq list (symbol-value
 		    (setq symbol
-			  (intern (format "gnus-newsgroup-%s"
-					  (car type))))))
+			  (intern (format "gnus-newsgroup-%s" (car type))))))
 
 	(when list
 	  ;; Get rid of the entries of the articles that have the
@@ -4849,6 +4877,12 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		  (setq prev arts))
 		(setq arts (cdr arts)))
 	      (setq list (cdr all)))))
+
+	(when (eq (cdr type) 'seen)
+	  (setq list 
+		(if list
+		    (gnus-add-to-range list gnus-newsgroup-unseen)
+		  (gnus-compress-sequence gnus-newsgroup-articles))))
 
 	(unless (memq (cdr type) uncompressed)
 	  (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
@@ -8943,6 +8977,8 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	  gnus-saved-mark)
 	 ((memq article gnus-newsgroup-recent)
 	  gnus-recent-mark)
+	 ((memq article gnus-newsgroup-unseen)
+	  gnus-unseen-mark)
 	 (t gnus-no-mark))
    'replied)
   (when (gnus-visual-p 'summary-highlight 'highlight)
