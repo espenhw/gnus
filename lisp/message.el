@@ -4457,9 +4457,9 @@ regexp varstr."
   (if (fboundp 'mail-abbrevs-setup)
       (let ((mail-abbrev-mode-regexp "")
 	    (minibuffer-setup-hook 'mail-abbrevs-setup))
-	(read-from-minibuffer prompt)))
-  (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook))
-    (read-string prompt)))
+	(read-from-minibuffer prompt))
+    (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook))
+      (read-string prompt))))
 
 (provide 'message)
 
