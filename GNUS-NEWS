@@ -12,12 +12,12 @@ For older news, see Gnus info node "New Features".
 
 This provide a clean API to SASL mechanisms from within Emacs.  The
 user visible aspects of this, compared to the earlier situation,
-include support for DIGEST-MD5.
+include support for DIGEST-MD5 and NTLM.
 
 ** ManageSieve connections uses the SASL library by default.
 
-The primary change this brings is support for DIGEST-MD5, when the
-server support it.
+The primary change this brings is support for DIGEST-MD5 and NTLM,
+when the server support it.
 
 ** Gnus include a password cache mechanism in password.el.
 

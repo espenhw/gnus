@@ -2,6 +2,7 @@
 
 	* GNUS-NEWS: Mention SASL, and that sieve-manage uses it.
 	Mention password.el.
+	Mention NTLM.
 
 2004-01-04  Simon Josefsson  <jas@extundo.com>
 
