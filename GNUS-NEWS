@@ -8,6 +8,8 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Menu bar: "Misc" -> "Gnus".
+
 ** gnus-group-charset-alist and gnus-group-ignored-charsets-alist
 
 The regexps in these variables are compared with full group names
