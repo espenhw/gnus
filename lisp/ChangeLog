@@ -1,3 +1,9 @@
+2004-01-25  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir--condcase, nnmaildir--enoent-p):
+	New macro and function.
+	(nnmaildir--new-number, nnmaildir-request-set-mark): Use them.
+
 2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-enrich-utf-8-by-mule-ucs): Fix cleaning of

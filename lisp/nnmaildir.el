@@ -54,6 +54,7 @@
    (put 'nnmaildir--with-work-buffer 'lisp-indent-function 0)
    (put 'nnmaildir--with-nov-buffer  'lisp-indent-function 0)
    (put 'nnmaildir--with-move-buffer 'lisp-indent-function 0)
+   (put 'nnmaildir--condcase         'lisp-indent-function 2)
    )
 ]
 
@@ -302,9 +303,18 @@ by nnmaildir-request-article.")
       (setq pos (match-end 0))))
   string)
 
+(defmacro nnmaildir--condcase (errsym body &rest handler)
+  `(condition-case ,errsym
+       (let ((system-messages-locale "C")) ,body)
+     (error . ,handler)))
+
 (defun nnmaildir--emlink-p (err)
   (and (eq (car err) 'file-error)
        (string= (caddr err) "too many links")))
+
+(defun nnmaildir--enoent-p (err)
+  (and (eq (car err) 'file-error)
+       (string= (caddr err) "no such file or directory")))
 
 (defun nnmaildir--eexist-p (err)
   (eq (car err) 'file-already-exists))
@@ -336,21 +346,20 @@ by nnmaildir-request-article.")
 	    ;; and failed.
 	    (signal 'error `("Corrupt internal nnmaildir data" ,path-open)))
 	(setq path-link (concat numdir (number-to-string number-link)))
-	(condition-case err
+	(nnmaildir--condcase err
 	    (progn
 	      (add-name-to-file path-open path-link)
 	      (throw 'return number-link))
-	  (error
-	   (cond
-	    ((nnmaildir--emlink-p err)
-	     (setq make-new-file t
-		   number-open number-link))
-	    ((nnmaildir--eexist-p err)
-	     (let ((attr (file-attributes path-link)))
-	       (if (/= (nth 10 attr) ino-open)
-		   (setq number-open number-link
-			 number-link 0))))
-	    (t (signal (car err) (cdr err))))))))))
+	  (cond
+	   ((nnmaildir--emlink-p err)
+	    (setq make-new-file t
+		  number-open number-link))
+	   ((nnmaildir--eexist-p err)
+	    (let ((attr (file-attributes path-link)))
+	      (if (/= (nth 10 attr) ino-open)
+		  (setq number-open number-link
+			number-link 0))))
+	   (t (signal (car err) (cdr err)))))))))
 
 (defun nnmaildir--update-nov (server group article)
   (let ((nnheader-file-coding-system 'binary)
@@ -1379,15 +1388,13 @@ by nnmaildir-request-article.")
 					  nnmaildir--cur-server)
 					"24-hour timer expired")
 				  (throw 'return nil))))
-      (condition-case nil
-	  (add-name-to-file nnmaildir--file tmpfile)
+      (condition-case nil (add-name-to-file nnmaildir--file tmpfile)
 	(error
 	 (write-region (point-min) (point-max) tmpfile nil 'no-message nil
 		       'excl)
 	 (unix-sync))) ;; no fsync :(
       (cancel-timer 24h)
-      (condition-case err
-	  (add-name-to-file tmpfile curfile)
+      (condition-case err (add-name-to-file tmpfile curfile)
 	(error
 	 (setf (nnmaildir--srv-error nnmaildir--cur-server)
 	       (concat "Error linking: " (prin1-to-string err)))
@@ -1540,22 +1547,19 @@ by nnmaildir-request-article.")
 	       (setq mdir (nnmaildir--subdir marksdir (symbol-name mark))
 		     permarkfile (concat mdir ":")
 		     mfile (concat mdir (nnmaildir--art-prefix article)))
-	       (condition-case err
-		   (add-name-to-file permarkfile mfile)
-		 (error
-		  (cond
-		   ((nnmaildir--eexist-p err))
-		   ((and (eq (car err) 'file-error)
-			 (string= (caddr err) "no such file or directory"))
-		    (nnmaildir--mkdir mdir)
-		    (nnmaildir--mkfile permarkfile)
-		    (add-name-to-file permarkfile mfile))
-		   ((nnmaildir--emlink-p err)
-		    (let ((permarkfilenew (concat permarkfile "{new}")))
-		      (nnmaildir--mkfile permarkfilenew)
-		      (rename-file permarkfilenew permarkfile 'replace)
-		      (add-name-to-file permarkfile mfile)))
-		   (t (signal (car err) (cdr err)))))))
+	       (nnmaildir--condcase err (add-name-to-file permarkfile mfile)
+		 (cond
+		  ((nnmaildir--eexist-p err))
+		  ((nnmaildir--enoent-p err)
+		   (nnmaildir--mkdir mdir)
+		   (nnmaildir--mkfile permarkfile)
+		   (add-name-to-file permarkfile mfile))
+		  ((nnmaildir--emlink-p err)
+		   (let ((permarkfilenew (concat permarkfile "{new}")))
+		     (nnmaildir--mkfile permarkfilenew)
+		     (rename-file permarkfilenew permarkfile 'replace)
+		     (add-name-to-file permarkfile mfile)))
+		  (t (signal (car err) (cdr err))))))
 	     todo-marks))
 	  set-action (lambda (article)
 		       (funcall add-action)
