@@ -327,13 +327,18 @@ A string or a list of strings is returned."
       (insert-buffer-substring buffer)
       t)))  
 
+(defalias 'smime-point-at-eol
+  (if (fboundp 'point-at-eol)
+      'point-at-eol
+    'line-end-position))
+
 (defun smime-buffer-as-string-region (b e)
   "Return each line in region between B and E as a list of strings."
   (save-excursion
     (goto-char b)
     (let (res)
       (while (< (point) e)
-	(push (buffer-substring (point) (point-at-eol)) res)
+	(push (buffer-substring (point) (smime-point-at-eol)) res)
 	(forward-line))
       res)))
 
