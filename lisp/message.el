@@ -5858,7 +5858,9 @@ news, Source is the list of newsgroups is was posted to."
 	  (let ((prefix
 		 (or (message-fetch-field "newsgroups")
 		     (cdr
-		      (mail-header-parse-address (message-fetch-field "from")))
+		      (mail-header-parse-address
+		       (mail-decode-encoded-word-string
+			(message-fetch-field "from"))))
 		     "(nowhere)")))
 	    (if message-forward-decoded-p
 		prefix
