@@ -11220,11 +11220,14 @@ The first element in each style is called the @code{match}.  If it's a
 string, then Gnus will try to regexp match it against the group name.
 If it is the form @code{(header MATCH REGEXP)}, then Gnus will look in
 the original article for a header whose name is MATCH and compare that
-REGEXP.  MATCH and REGEXP are strings. If it's a function symbol, that
-function will be called with no arguments.  If it's a variable symbol,
-then the variable will be referenced.  If it's a list, then that list
-will be @code{eval}ed.  In any case, if this returns a non-@code{nil}
-value, then the style is said to @dfn{match}.
+REGEXP.  MATCH and REGEXP are strings.  (There original article is the
+one you are replying or following up to.  If you are not composing a
+reply or a followup, then there is nothing to match against.)  If the
+@code{match} is a function symbol, that function will be called with no
+arguments.  If it's a variable symbol, then the variable will be
+referenced.  If it's a list, then that list will be @code{eval}ed.  In
+any case, if this returns a non-@code{nil} value, then the style is said
+to @dfn{match}.
 
 Each style may contain an arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The

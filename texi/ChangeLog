@@ -1,3 +1,8 @@
+2002-12-10  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus.texi (Posting Styles): Clarify the `(header MATCH REGEXP)'
+	case.
+
 2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.texi (MIME Commands): Document gnus-inhibit-mime-unbuttonizing.
