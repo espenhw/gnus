@@ -113,7 +113,7 @@
   "Send the current draft."
   (interactive "P")
   (let* ((articles (gnus-summary-work-articles n))
-	 total (length articles)
+	 (total (length articles))
 	 article)
     (while (setq article (pop articles))
       (gnus-summary-remove-process-mark article)
