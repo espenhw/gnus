@@ -761,7 +761,7 @@ Gnus Unplugged
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
-* Example Setup::               An example @file{.gnus.el} file for offline people.
+* Example Setup::               An example @file{~/.gnus.el} file for offline people.
 * Batching Agents::             How to fetch news from a @code{cron} job.
 * Agent Caveats::               What you think it'll do and what it does.
 
@@ -948,7 +948,7 @@ If you want to start Gnus in a different frame, you can use the command
 @kbd{M-x gnus-other-frame} instead.
 
 If things do not go smoothly at startup, you have to twiddle some
-variables in your @file{~/.gnus} file.  This file is similar to
+variables in your @file{~/.gnus.el} file.  This file is similar to
 @file{~/.emacs}, but is read when gnus starts.
 
 If you puzzle at any terms used in this manual, please refer to the
@@ -1627,7 +1627,7 @@ in a while from the group buffer instead (@pxref{Group Maintenance}).
 If non-@code{nil}, the startup message won't be displayed.  That way,
 your boss might not notice as easily that you are reading news instead
 of doing your job.  Note that this variable is used before
-@file{.gnus.el} is loaded, so it should be set in @file{.emacs} instead.
+@file{~/.gnus.el} is loaded, so it should be set in @file{.emacs} instead.
 
 @item gnus-no-groups-message
 @vindex gnus-no-groups-message
@@ -3492,7 +3492,7 @@ Hot and bothered?
 
 If you want this permanently enabled, you should add that minor mode to
 the hook for the group mode.  Put the following line in your
-@file{~/.gnus} file:
+@file{~/.gnus.el} file:
 
 @lisp
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
@@ -4261,7 +4261,7 @@ trick:
 @vindex gnus-init-file
 @cindex reading init file
 Re-read the init file (@code{gnus-init-file}, which defaults to
-@file{~/.gnus}) (@code{gnus-group-read-init-file}).
+@file{~/.gnus.el}) (@code{gnus-group-read-init-file}).
 
 @item s
 @kindex s (Group)
@@ -4678,7 +4678,7 @@ You also have to instruct Gnus to display the data by changing the
 @code{gnus-summary-line-format} variable.
 
 In summary, you'd typically put something like the following in
-@file{~/.gnus}:
+@file{~/.gnus.el}:
 
 @lisp
 (setq gnus-extra-headers
@@ -8892,7 +8892,7 @@ If you want to have this line updated continually, you can put
 (gnus-start-date-timer)
 @end lisp
 
-in your @file{.gnus.el} file, or you can run it off of some hook.  If
+in your @file{~/.gnus.el} file, or you can run it off of some hook.  If
 you want to stop the timer, you can use the @code{gnus-stop-date-timer}
 command.
 
@@ -9264,7 +9264,7 @@ such unenlightened users, you can make live easier by adding
 @end lisp
 
 @noindent
-to your @file{.gnus.el} file.
+to your @file{~/.gnus.el} file.
 
 @end table
 
@@ -9783,7 +9783,7 @@ Here's the same thread displayed in a vertical tree buffer:
 
 If you're using horizontal trees, it might be nice to display the trees
 side-by-side with the summary buffer.  You could add something like the
-following to your @file{.gnus.el} file:
+following to your @file{~/.gnus.el} file:
 
 @lisp
 (setq gnus-use-trees t
@@ -12910,7 +12910,7 @@ mail back end of your choice into @code{gnus-secondary-select-methods},
 and things will happen automatically.
 
 For instance, if you want to use @code{nnml} (which is a ``one file per
-mail'' back end), you could put the following in your @file{.gnus.el} file:
+mail'' back end), you could put the following in your @file{~/.gnus.el} file:
 
 @lisp
 (setq gnus-secondary-select-methods '((nnml "")))
@@ -13990,7 +13990,7 @@ However, if you change group parameters, you'd have to update
 @code{nnmail-split-fancy} manually.  You can do it by running
 @code{gnus-group-split-update}.  If you'd rather have it updated
 automatically, just tell @code{gnus-group-split-setup} to do it for
-you.  For example, add to your @file{.gnus.el}:
+you.  For example, add to your @file{~/.gnus.el}:
 
 @lisp
 (gnus-group-split-setup AUTO-UPDATE CATCH-ALL)
@@ -14120,7 +14120,7 @@ By default, if you have auto expiry switched on, Gnus will mark all the
 articles you read as expirable, no matter if they were read or unread
 before.  To avoid having articles marked as read marked as expirable
 automatically, you can put something like the following in your
-@file{.gnus.el} file:
+@file{~/.gnus.el} file:
 
 @vindex gnus-mark-article-hook
 @lisp
@@ -15392,7 +15392,7 @@ lively discussion following the news articles.  @code{nnslashdot} will
 let you read this forum in a convenient manner.
 
 The easiest way to read this source is to put something like the
-following in your @file{.gnus.el} file:
+following in your @file{~/.gnus.el} file:
 
 @lisp
 (setq gnus-secondary-select-methods
@@ -15655,7 +15655,7 @@ entry in @code{gnus-secondary-select-methods}.  With this, Gnus will
 manipulate mails stored on the @sc{imap} server.  This is the kind of
 usage explained in this section.
 
-A server configuration in @file{~/.gnus} with a few @sc{imap} servers
+A server configuration in @file{~/.gnus.el} with a few @sc{imap} servers
 might look something like the following. (Note that for TLS/SSL, you
 need external programs and libraries, see below.)
 
@@ -17135,7 +17135,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
-* Example Setup::               An example @file{.gnus.el} file for offline people.
+* Example Setup::               An example @file{~/.gnus.el} file for offline people.
 * Batching Agents::             How to fetch news from a @code{cron} job.
 * Agent Caveats::               What you think it'll do and what it does.
 @end menu
@@ -18108,7 +18108,7 @@ ignores articles that have not been fetched), @code{unfetched}
 
 If you don't want to read this manual, and you have a fairly standard
 setup, you may be able to use something like the following as your
-@file{.gnus.el} file to get started.
+@file{~/.gnus.el} file to get started.
 
 @lisp
 ;;; Define how Gnus is to fetch news.  We do this over @sc{nntp}
@@ -19342,7 +19342,7 @@ Newsgroups} section of the manual, it's explained in greater detail what
 this mechanism does, but here's a cookbook example for @code{nnml} on
 how to allow scoring on the @samp{To} and @samp{Cc} headers.
 
-Put the following in your @file{.gnus.el} file.
+Put the following in your @file{~/.gnus.el} file.
 
 @lisp
 (setq gnus-extra-headers '(To Cc Newsgroups Keywords)
@@ -20734,7 +20734,7 @@ you want to change the @code{article} setting, you could say:
 @end lisp
 
 You'd typically stick these @code{gnus-add-configuration} calls in your
-@file{.gnus.el} file or in some startup hook---they should be run after
+@file{~/.gnus.el} file or in some startup hook---they should be run after
 Gnus has been loaded.
 
 @vindex gnus-always-force-window-configuration
@@ -20819,7 +20819,7 @@ satisfied.  This will result in the new specs being byte-compiled, and
 you'll get top speed again.  Gnus will save these compiled specs in the
 @file{.newsrc.eld} file.  (User-defined functions aren't compiled by
 this function, though---you should compile them yourself by sticking
-them into the @file{.gnus.el} file and byte-compiling that file.)
+them into the @file{~/.gnus.el} file and byte-compiling that file.)
 
 
 @node Mode Lines
@@ -21073,7 +21073,7 @@ seconds.  This is 60 by default.  If you change that variable,
 all the timings in the handlers will be affected.)
 
 So, if you want to add a handler, you could put something like this in
-your @file{.gnus.el} file:
+your @file{~/.gnus.el} file:
 
 @findex gnus-demon-add-handler
 @lisp
@@ -21090,7 +21090,7 @@ Some ready-made functions to do this have been created:
 @code{gnus-demon-add-nntp-close-connection},
 @code{gnus-demon-add-scan-timestamps}, @code{gnus-demon-add-rescan}, and
 @code{gnus-demon-add-scanmail}.  Just put those functions in your
-@file{.gnus.el} if you want those abilities.
+@file{~/.gnus.el} if you want those abilities.
 
 @findex gnus-demon-init
 @findex gnus-demon-cancel
@@ -21314,7 +21314,7 @@ buffers.  Put
 (add-hook 'gnus-summary-mode-hook 'gnus-moderate)
 @end lisp
 
-in your @file{.gnus.el} file.
+in your @file{~/.gnus.el} file.
 
 If you are the moderator of @samp{rec.zoofle}, this is how it's
 supposed to work:
@@ -21449,7 +21449,7 @@ Ordered list of suffixes on picon file names to try.  Defaults to
 currently the only package that uses Smiley, it is documented here.
 
 In short---to use Smiley in Gnus, put the following in your
-@file{.gnus.el} file:
+@file{~/.gnus.el} file:
 
 @lisp
 (setq gnus-treat-display-smileys t)
@@ -21559,7 +21559,7 @@ converts the file to X-Face format by using the
 @code{gnus-convert-image-to-x-face-command} shell command.
 
 Here's how you would typically use the first function.  Put something
-like the following in your @file{.gnus.el} file:
+like the following in your @file{~/.gnus.el} file:
 
 @lisp
 (setq message-required-news-headers
@@ -22729,7 +22729,7 @@ The filename used to store the dictionary.  This defaults to
 @subsubsection Splitting mail using spam-stat
 
 In order to use @code{spam-stat} to split your mail, you need to add the
-following to your @file{~/.gnus} file:
+following to your @file{~/.gnus.el} file:
 
 @lisp
 (require 'spam-stat)
@@ -22850,7 +22850,7 @@ spam-stat-split-fancy)} to @code{nnmail-split-fancy}
 @end defun
 
 Make sure you load the dictionary before using it.  This requires the
-following in your @file{~/.gnus} file:
+following in your @file{~/.gnus.el} file:
 
 @lisp
 (require 'spam-stat)
@@ -22905,10 +22905,10 @@ Most Gnus storage file and directory variables will be initialized from
 this variable, which defaults to the @samp{SAVEDIR} environment
 variable, or @file{~/News/} if that variable isn't set.
 
-Note that Gnus is mostly loaded when the @file{.gnus.el} file is read.
+Note that Gnus is mostly loaded when the @file{~/.gnus.el} file is read.
 This means that other directory variables that are initialized from this
 variable won't be set properly if you set this variable in
-@file{.gnus.el}.  Set this variable in @file{.emacs} instead.
+@file{~/.gnus.el}.  Set this variable in @file{.emacs} instead.
 
 @item gnus-default-directory
 @vindex gnus-default-directory
@@ -23786,8 +23786,8 @@ manner, so it should be difficult to lose much data on what you have
 read if your machine should go down (@pxref{Auto Save}).
 
 @item
-Gnus now has its own startup file (@file{.gnus.el}) to avoid cluttering up
-the @file{.emacs} file.
+Gnus now has its own startup file (@file{~/.gnus.el}) to avoid
+cluttering up the @file{.emacs} file.
 
 @item
 You can set the process mark on both groups and articles and perform
