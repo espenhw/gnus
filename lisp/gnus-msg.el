@@ -322,19 +322,27 @@ Gcc: header for archiving purposes."
   ;; COMPOSEFUNC should return t if succeed.  Undocumented ???
   t)
 
+(defvar save-selected-window-window)
+
 ;;;###autoload
 (defun gnus-button-mailto (address)
   "Mail to ADDRESS."
   (set-buffer (gnus-copy-article-buffer))
   (gnus-setup-message 'message
-    (message-reply address)))
+    (message-reply address))
+  (and (boundp 'save-selected-window-window)
+       (not (window-live-p save-selected-window-window))
+       (setq save-selected-window-window (selected-window))))
 
 ;;;###autoload
 (defun gnus-button-reply (&optional to-address wide)
   "Like `message-reply'."
   (interactive)
   (gnus-setup-message 'message
-    (message-reply to-address wide)))
+    (message-reply to-address wide))
+  (and (boundp 'save-selected-window-window)
+       (not (window-live-p save-selected-window-window))
+       (setq save-selected-window-window (selected-window))))
 
 ;;;###autoload
 (define-mail-user-agent 'gnus-user-agent

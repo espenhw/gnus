@@ -1,3 +1,7 @@
+2001-09-23 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-button-mailto): Hack save-selected-window-window.
+
 2001-09-22  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-group.el (gnus-group-sort-function): Fix customize type to
