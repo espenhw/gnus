@@ -1,3 +1,7 @@
+2000-05-19 01:45:40  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-parse-1): Don't test multiple-charsets within mml tag.
+
 2000-05-18  Dave Love  <fx@gnu.org>
 
 	* gnus-art.el: Use defalias, not fset.
