@@ -499,6 +499,7 @@ instead call function `nntp-status-message' to get status message.")
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
   (nntp-send-command "^.*\r?\n" "GROUP" group)
+  (setq nntp-current-group group)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
@@ -1170,14 +1171,10 @@ defining this function as macro."
   (car list))
 
 (defun nntp-possibly-change-server (newsgroup server)
-  (let ((result t))
-    ;; We see whether it is necessary to change newsgroup.
-    (and newsgroup 
-	 (or (not (string= newsgroup nntp-current-group)))
-	 (progn
-	   (setq result (nntp-request-group newsgroup server))
-	   (setq nntp-current-group newsgroup)))
-    result))
+  ;; We see whether it is necessary to change newsgroup.
+  (and newsgroup 
+       (not (equal newsgroup nntp-current-group))
+       (nntp-request-group newsgroup server)))
 
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)
@@ -1243,7 +1240,6 @@ defining this function as macro."
 			nntp-async-articles nntp-async-fetched
 			nntp-async-process)
 		  (delq asyncs nntp-async-group-alist)))
-      (setq nntp-current-group group)
       (and asyncs
 	   (progn
 	     (setq nntp-async-articles (nth 1 asyncs))

@@ -1,3 +1,26 @@
+Wed Sep 13 05:38:21 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* nntp.el (nntp-async-fetch-articles): Wouldn't allow entry into
+		groups.	
+
+Tue Sep 12 17:02:03 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-request-post-buffer): Don't CC the address in
+	the To field.
+
+Tue Sep 12 06:11:12 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* gnus-ems.el: Use the new definition of `set-text-properties'. 
+
+Tue Sep 12 05:28:03 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 5.0.1 is released.
+
+Tue Sep 12 13:53:48 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-active-number) Save away the active file
+ 	after bumping the highest active number.
+
 Sun Sep 10 00:39:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus-msg.el (gnus-post-news): Set the name of the newsgroup for

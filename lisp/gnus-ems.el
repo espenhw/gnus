@@ -131,15 +131,20 @@ pounce directly on the real variables themselves."))
       ;; portable!
       (or (face-differs-from-default-p 'underline)
 	  (funcall 'set-face-underline-p 'underline t))
-      ; (or (fboundp 'set-text-properties) Fuckit!
-	  (defun set-text-properties (start end props &optional buffer)
-	    (if (or (null buffer) (bufferp buffer))
-		(if props
-		    (while props
-		      (put-text-property 
-		       start end (car props) (nth 1 props) buffer)
-		      (setq props (nthcdr 2 props)))
-		  (remove-text-properties start end ()))))
+
+      (defun set-text-properties (start end props &optional buffer)
+	"You should NEVER use this function.  It is ideologically blasphemous.
+It is provided only to ease porting of broken FSF Emacs programs."
+	(if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
+	    nil
+	  (map-extents (symbol-function
+			(lambda (extent ignored)
+			  (remove-text-properties 
+			   start end
+			   (list (extent-property extent 'text-prop) nil)
+			   buffer)))
+		       buffer start end nil nil 'text-prop)
+	  (add-text-properties start end props buffer)))
 
       (defalias 'gnus-make-overlay 'make-extent)
       (defalias 'gnus-overlay-put 'set-extent-property)

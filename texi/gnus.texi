@@ -5993,7 +5993,7 @@ forms into this file, which means that you can use kill files as some
 sort of primitive hook function to be run on group entry, even though
 that isn't a very good idea.
 
-Normal kill files look like this:
+XCNormal kill files look like this:
 
 @lisp
 (gnus-kill "From" "Lars Ingebrigtsen")
@@ -6844,14 +6844,14 @@ section is designed to give general pointers on how to customize Gnus
 for some quite common situations.
 
 @menu
-* Slow NNTP Connection::      You run a local Emacs and get the news elsewhere.
+* Slow/Expensive Connection:: You run a local Emacs and get the news elsewhere.
 * Slow Terminal Connection::  You run a remote Emacs.
 * Little Disk Space::         You feel that having large setup files is icky.
 * Slow Machine::              You feel like buying a faster machine.
 @end menu
 
-@node Slow NNTP Connection
-@section Slow @sc{nntp} Connection
+@node Slow/Expensive Connection
+@section Slow/Expensive @sc{nntp} Connection
 
 If you run Emacs on a machine locally, and get your news from a machine
 over some very thin strings, you want to cut down on the amount of data
