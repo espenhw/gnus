@@ -1,3 +1,9 @@
+2003-04-21  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* gnus-fun.el (gnus-face-from-file, gnus-convert-png-to-face):
+	Max length of header is 726, not 740.  From Gaute B Strokkenes
+	<gs234@cam.ac.uk>.
+
 2003-04-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* nndb.el, mml1991.el: Fix license template.

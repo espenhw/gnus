@@ -115,7 +115,7 @@ Output to the current buffer, replace text, and don't mingle error."
 	       (format gnus-convert-image-to-face-command
 		       (shell-quote-argument (expand-file-name file))
 		       quant)))
-	(if (> (length attempt) 740)
+	(if (> (length attempt) 726)
 	    (progn
 	      (setq quant (- quant 2))
 	      (message "Length %d; trying quant %d"
@@ -155,10 +155,10 @@ The PNG is returned as a string."
 (defun gnus-convert-png-to-face (file)
   "Convert FILE to a Face.
 FILE should be a PNG file that's 48x48 and smaller than or equal to
-740 bytes."
+726 bytes."
   (mm-with-unibyte-buffer
     (insert-file-contents file)
-    (when (> (buffer-size) 740)
+    (when (> (buffer-size) 726)
       (error "The file is %d bytes long, which is too long"
 	     (buffer-size)))
     (gnus-face-encode)))
