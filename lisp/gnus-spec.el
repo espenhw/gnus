@@ -409,7 +409,7 @@ characters when given a pad value."
   ;; them will have the balloon-help text property.
   (let ((case-fold-search nil))
     (if (string-match
-	 "\\`\\(.*\\)%[0-9]?[{(«]\\(.*\\)%[0-9]?[»})]\\(.*\n?\\)\\'\\|%[-0-9]*=\\|%[-0-9]*~"
+	 "\\`\\(.*\\)%[0-9]?[{(«]\\(.*\\)%[0-9]?[»})]\\(.*\n?\\)\\'\\|%[-0-9]*=\\|%[-0-9]*\\*"
 	 format)
 	(gnus-parse-complex-format format spec-alist)
       ;; This is a simple format.
@@ -445,7 +445,7 @@ characters when given a pad value."
       ;; Convert point position commands.
       (goto-char (point-min))
       (let ((case-fold-search nil))
-	(while (re-search-forward "%\\([-0-9]+\\)?~" nil t)
+	(while (re-search-forward "%\\([-0-9]+\\)?\\*" nil t)
 	  (replace-match "\"(point)\"" t t)
 	  (setq cursor-spec t)))
       ;; Convert TAB commands.

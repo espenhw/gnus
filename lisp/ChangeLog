@@ -1,5 +1,7 @@
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-spec.el (gnus-parse-complex-format): %~ => ~*.
+
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Use
 	gnus-summary-update-article-line. 
 
