@@ -216,7 +216,7 @@ on your system, you could say something like:
 	   ;; From.
 	   (progn
 	     (goto-char p)
-	     (if (search-forward "\nfrom: " nil t)
+	     (if (search-forward "\nfrom:" nil t)
 		 (nnheader-header-value) "(nobody)"))
 	   ;; Date.
 	   (progn

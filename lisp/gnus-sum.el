@@ -4745,7 +4745,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; From.
 	    (progn
 	      (goto-char p)
-	      (if (search-forward "\nfrom: " nil t)
+	      (if (search-forward "\nfrom:" nil t)
 		  (funcall gnus-decode-encoded-word-function
 			   (nnheader-header-value))
 		"(nobody)"))

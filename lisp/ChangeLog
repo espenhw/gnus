@@ -1,3 +1,12 @@
+2000-10-17  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Search for "from:"
+	instead of "from: " for rfc822 compliance.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Ditto. Insert SPC.
+
+	* nnheader.el (nnheader-parse-head): Ditto.
+
 2000-10-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* mail-source.el (defvar mail-source-keyword-map): Use
