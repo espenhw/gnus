@@ -1,3 +1,8 @@
+2002-04-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Saving Articles): Add xref to Mail Group Commands
+	because people might be interested in `B c' for saving articles.
+
 2002-04-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Sorting Groups): Add gnus-group-sort-selected-groups.
