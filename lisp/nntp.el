@@ -245,8 +245,9 @@ server there that you can connect to.  See also
   (save-excursion
     (set-buffer (process-buffer process))
     (goto-char (point-min))
-    (while (or (not (memq (char-after (point)) '(?2 ?3 ?4 ?5)))
-	       (looking-at "480"))
+    (while (and (or (not (memq (char-after (point)) '(?2 ?3 ?4 ?5)))
+		    (looking-at "480"))
+		(memq (process-status process) '(open run)))
       (when (looking-at "480")
 	(nntp-handle-authinfo process))
       (nntp-accept-process-output process)

@@ -268,11 +268,14 @@ See the Gnus manual for an explanation of the syntax used.")
 (defvar gnus-frame-list nil)
 
 (defun gnus-window-to-buffer-helper (obj)
-  (if (symbolp obj)
-      (if (boundp obj)
-	  (symbol-value obj)
-	(funcall obj))
-    obj))
+  (cond ((not (symbolp obj))
+	 obj)
+	((boundp obj)
+	 (symbol-value obj))
+	((fboundp obj)
+	 (funcall obj))
+	(t
+	 nil)))
 
 (defun gnus-configure-frame (split &optional window)
   "Split WINDOW according to SPLIT."

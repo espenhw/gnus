@@ -2594,8 +2594,6 @@ the thread are to be displayed."
       (and (consp elem)			; Has to be a cons.
 	   (consp (cdr elem))		; The cdr has to be a list.
 	   (symbolp (car elem))		; Has to be a symbol in there.
-	   (not (memq (car elem)
-		      '(quit-config to-address to-list to-group)))
 	   (ignore-errors		; So we set it.
 	     (make-local-variable (car elem))
 	     (set (car elem) (eval (nth 1 elem))))))))

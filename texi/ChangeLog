@@ -1,3 +1,11 @@
+Sun Mar  8 13:56:37 1998  James Troup  <J.J.Troup@scm.brad.ac.uk>
+
+	* gnus.texi (Group Highlighting): Removed old example.
+
+Sun Mar  8 00:19:24 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Info): Fix ".".
+
 Sat Mar  7 17:09:49 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi: Took direntries out again, since makeinfo doesn't

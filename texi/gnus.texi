@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.1 Manual
+@settitle Gnus 5.6.2 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.1 Manual
+@title Gnus 5.6.2 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.1.
+This manual corresponds to Gnus 5.6.2.
 
 @end ifinfo
 
@@ -1281,17 +1281,6 @@ background is dark:
 	((and (< level 3) (zerop unread)) . my-group-face-2)
 	((< level 3) . my-group-face-3)
 	((zerop unread) . my-group-face-4)
-(setq gnus-group-highlight
-      `(((> unread 200) . 
-         ,(custom-face-lookup "Red" nil nil t nil nil))
-        ((and (< level 3) (zerop unread)) . 
-         ,(custom-face-lookup "SeaGreen" nil nil t nil nil))
-        ((< level 3) . 
-         ,(custom-face-lookup "SpringGreen" nil nil t nil nil))
-        ((zerop unread) . 
-         ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
-        (t . 
-         ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
 	(t . my-group-face-5)))
 @end lisp
 
@@ -1952,19 +1941,35 @@ groups from different @sc{nntp} servers.
 @section Group Parameters
 @cindex group parameters
 
-The group parameters store information local to a particular group:
+The group parameters store information local to a particular group.
+Here's an example group parameter list:
+
+@example
+((to-address . "ding@@gnus.org")
+ (auto-expire . t))
+@end example
+
+We see that each element consists of a "dotted pair"---the thing before
+the dot is the key, while the thing after the dot is the value.  All the
+parameters have this form @emph{except} local variable specs, which are
+not dotted pairs, but proper lists.
+
+The following group parameters can be used:
 
 @table @code
 @item to-address
 @cindex to-address
-If the group parameter list contains an element that looks like
-@code{(to-address .  "some@@where.com")}, that address will be used by
-the backend when doing followups and posts.  This is primarily useful in
-mail groups that represent closed mailing lists---mailing lists where
-it's expected that everybody that writes to the mailing list is
-subscribed to it.  Since using this parameter ensures that the mail only
-goes to the mailing list itself, it means that members won't receive two
-copies of your followups.
+Address used by when doing followups and new posts.
+
+@example
+(to-address .  "some@@where.com")
+@end example
+
+This is primarily useful in mail groups that represent closed mailing
+lists---mailing lists where it's expected that everybody that writes to
+the mailing list is subscribed to it.  Since using this parameter
+ensures that the mail only goes to the mailing list itself, it means
+that members won't receive two copies of your followups.
 
 Using @code{to-address} will actually work whether the group is foreign
 or not.  Let's say there's a group on the server that is called
@@ -1975,11 +1980,15 @@ list address instead.
 
 @item to-list
 @cindex to-list
-If the group parameter list has an element that looks like
-@code{(to-list . "some@@where.com")}, that address will be used when
-doing a @kbd{a} in that group.  It is totally ignored when doing a
-followup---except that if it is present in a news group, you'll get mail
-group semantics when doing @kbd{f}.
+Address used when doing a @kbd{a} in that group.
+
+@example
+(to-list . "some@@where.com")
+@end example
+
+It is totally ignored
+when doing a followup---except that if it is present in a news group,
+you'll get mail group semantics when doing @kbd{f}.
 
 If you do an @kbd{a} command in a mail group and you have neither a
 @code{to-list} group parameter nor a @code{to-address} group paramater,
@@ -2012,19 +2021,20 @@ posts in that group will be sent to @code{some.group.name}.
 
 @item newsgroup
 @cindex newsgroup
-If this symbol is present in the group parameter list, Gnus will treat
-all responses as if they were responses to news articles.  This can be
-useful if you have a mail group that's really a mirror of a news group. 
+If you have @code{(newsgroup . t)} in the group parameter list, Gnus
+will treat all responses as if they were responses to news articles.
+This can be useful if you have a mail group that's really a mirror of a
+news group.
 
 @item gcc-self
 @cindex gcc-self
-If this symbol is present in the group parameter list and set to
-@code{t}, newly composed messages will be @code{Gcc}'d to the current
-group. If it is present and set to @code{none}, no @code{Gcc:} header
-will be generated, if it is present and a string, this string will be
-inserted literally as a @code{gcc} header (this symbol takes precedence
-over any default @code{Gcc} rules as described later).  @xref{Archived
-Messages}
+If @code{(gcc-self . t)} is present in the group parameter list, newly
+composed messages will be @code{Gcc}'d to the current group. If
+@code{(gcc-self . none)} is present, no @code{Gcc:} header will be
+generated, if @code{(gcc-self . "string")} is present, this string will
+be inserted literally as a @code{gcc} header.  This parameter takes
+precedence over any default @code{Gcc} rules as described later
+(@pxref{Archived Messages}).
 
 @item auto-expire
 @cindex auto-expire
@@ -2105,13 +2115,6 @@ group.  @code{dummy-variable} will be set to the result of the
 Use the @kbd{G p} command to edit group parameters of a group.  You
 might also be interested in reading about topic parameters (@pxref{Topic
 Parameters}).
-
-Here's an example group parameter list:
-
-@example
-((to-address . "ding@@gnus.org")
- (auto-expire . t))
-@end example
 
 
 @node Listing Groups
@@ -15642,7 +15645,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.1.7.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.2.7.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16177,7 +16180,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.1.7:
+New features in Gnus 5.6.2.7:
 
 @itemize @bullet
 
@@ -19024,7 +19027,7 @@ second is a more complex one:
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
                 ((tick (15 . 19)) (replied 3 6 (19 . 3)))
                 (nnml "")
-                ((auto-expire . t) (to-address "ding@@gnus.org")))
+                ((auto-expire . t) (to-address . "ding@@gnus.org")))
 @end example
 
 The first element is the @dfn{group name}---as Gnus knows the group,

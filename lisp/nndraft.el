@@ -125,7 +125,7 @@
   "Request a new buffer that is restored to the state of ARTICLE."
   (nndraft-possibly-change-group group)
   (when (nndraft-request-article article group server (current-buffer))
-    (message-remove-header "xrefs")
+    (message-remove-header "xref")
     (message-remove-header "lines")
     (let ((gnus-verbose-backends nil))
       (nndraft-request-expire-articles (list article) group server t))

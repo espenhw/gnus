@@ -184,7 +184,8 @@ arguments necessary for the job.")
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
-  (buffer-name (get-buffer (gnus-window-to-buffer-helper variable))))
+  (buffer-name (get-buffer (gnus-window-to-buffer-helper
+			    (cdr (assq variable gnus-window-to-buffer))))))
 
 (defun gnus-picons-buffer-name ()
   (cond ((or (stringp gnus-picons-display-where)

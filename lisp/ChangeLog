@@ -1,3 +1,22 @@
+Sun Mar  8 14:05:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.2 is released.
+
+Sun Mar  8 00:35:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-get-buffer-name): Look in the assoc for the
+	variable. 
+
+	* nntp.el (nntp-wait-for): Check more for dead connections.
+
+	* gnus-eform.el (gnus-edit-form-buffer): Moved back here.
+
+	* gnus-win.el (gnus-window-to-buffer-helper): Return nil when
+	buffers don't exist.
+
+	* nndraft.el (nndraft-request-restore-buffer): Remove Xref header,
+	not Xrefs.
+
 Sun Mar  8 00:00:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.1 is released.
