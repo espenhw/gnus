@@ -1,3 +1,11 @@
+2003-10-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-initialize): new function, does the spam-face
+	update and all the hooks, replaces spam-install-hooks-function
+
+	* gnus-registry.el (gnus-registry-initialize): new autoloaded
+	function to explicitly initialize the registry
+
 2003-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-w3m-safe-url-regexp): Doc fix.

@@ -370,13 +370,6 @@ spamoracle database."
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
-;;; How to highlight a spam summary line.
-
-;; TODO: How do we redo this every time spam-face is customized?
-
-(push '((eq mark gnus-spam-mark) . spam-face)
-      gnus-summary-highlight)
-
 ;; convenience functions
 (defun spam-group-ham-mark-p (group mark &optional spam)
   (when (stringp group)
@@ -1224,9 +1217,13 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 ;;;; Hooks
 
 ;;;###autoload
-(defun spam-install-hooks-function ()
-  "Install the spam.el hooks"
+(defun spam-initialize ()
+  "Install the spam.el hooks and do other initialization"
   (interactive)
+  (setq spam-install-hooks t)
+  ;; TODO: How do we redo this every time spam-face is customized?
+  (push '((eq mark gnus-spam-mark) . spam-face)
+	gnus-summary-highlight)
   ;; Add hooks for loading and saving the spam stats
   (when spam-use-stat
     (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
@@ -1247,7 +1244,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (remove-hook 'gnus-get-new-news-hook 'spam-setup-widening))
 
 (when spam-install-hooks
-  (spam-install-hooks-function))
+  (spam-initialize))
 
 (provide 'spam)
 

@@ -569,6 +569,14 @@ Returns the first place where the trail finds a group name."
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
   (setq gnus-registry-dirty t))
 
+;;;###autoload
+(defun gnus-registry-initialize ()
+  (interactive)
+  (setq gnus-registry-install t)
+  (gnus-registry-install-hooks)
+  (gnus-registry-read))
+
+;;;###autoload
 (defun gnus-registry-install-hooks ()
   "Install the registry hooks."
   (interactive)
