@@ -9,7 +9,8 @@
 2001-02-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Unread Articles): Say that Gnus itself never expires
-	ticked articles.  Suggested by `Poster 2000'.
+	ticked articles.  Suggested by M D Greenhow
+	mdg@greenhow36.clara.co.uk.
 
 2001-02-13 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
