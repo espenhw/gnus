@@ -1,3 +1,8 @@
+2001-09-11  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Delayed Articles): Fix.  Suggested by Paul Jarc
+	<prj@po.cwru.edu>.
+
 2001-09-08  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (MIME Commands): Add gnus-buttonized-mime-types.

@@ -5074,7 +5074,7 @@ Message mode.  To delay a message, use @kbd{C-c C-j}
 (@code{gnus-delay-article}) instead.  This will ask you for how long the
 message should be delayed.  Possible answers are:
 
-@itemize
+@itemize @bullet
 @item
 A time span.  Consists of an integer and a letter.  For example,
 @code{42d} means to delay for 42 days.  Available letters are @code{m}
