@@ -134,8 +134,11 @@ see which group that message was put in.  This group is returned.
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (let ((refstr (or (message-fetch-field "references")
 		    (message-fetch-field "in-reply-to")))
-	(references nil)
-	(res nil))
+	(nnmail-split-fancy-with-parent-ignore-groups
+	 (if (listp nnmail-split-fancy-with-parent-ignore-groups)
+	     nnmail-split-fancy-with-parent-ignore-groups
+	   (list nnmail-split-fancy-with-parent-ignore-groups)))
+	references res)
     (when refstr
       (setq references (nreverse (gnus-split-references refstr)))
       (mapcar (lambda (x)
