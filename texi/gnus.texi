@@ -10285,6 +10285,33 @@ Or using the default path:
 (file)
 @end lisp
 
+If the mail spool file is not located on the local machine, it's best to 
+use POP or IMAP or the like to fetch the mail.  You can not you ange-ftp 
+file names here---it has no way to lock the mail spool while moving the
+mail.
+
+If it's impossible to set up a proper server, you can use ssh instead.
+
+@lisp
+(setq mail-sources
+      '((file :prescript "ssh host bin/getmail >%t")))
+@end lisp
+
+The @samp{getmail} script would look something like the following:
+
+@example
+#!/bin/sh
+#  getmail - move mail from spool to stdout
+#  flu@iki.fi
+
+MOVEMAIL=/usr/lib/emacs/20.3/i386-redhat-linux/movemail
+TMP=~/Mail/tmp
+rm -f $TMP; $MOVEMAIL $MAIL $TMP >/dev/null && cat $TMP
+@end example
+
+Alter this script to fit find the @samp{movemail} you want to use.
+
+
 @item directory
 Get mail from several files in a directory.  This is typically used when
 you have procmail split the incoming mail into several files.

@@ -319,7 +319,7 @@
 		       (point)
 		       (progn
 			 (re-search-forward
-			  "^<p>.*A href=http://slashdot.org/article.pl")
+			  "<p>.*A href=http://slashdot.org/article.pl")
 			 (match-beginning 0)))))
 	    (search-forward (format "<a name=\"%d\">" (1- article)))
 	    (setq contents
