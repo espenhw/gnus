@@ -2065,44 +2065,35 @@ be fetched.
 
 @vindex gnus-select-group-hook
 @vindex gnus-auto-select-first
-@code{gnus-auto-select-first} control whether any articles are selected
+If @code{gnus-auto-select-first} is non-@code{nil}, select an article
 automatically when entering a group with the @kbd{SPACE} command.
+Which article this is is controlled by the
+@code{gnus-auto-select-subject} variable.  Valid values for this
+variable is:
 
 @table @code
 
-@item nil
-Don't select any articles when entering the group.  Just display the
-full summary buffer.
+@item unread
+Place point on the subject line of the first unread article.
 
-@item t
-Select the first unread article when entering the group.
+@item first
+Place point on the subject line of the first article.
+
+@item unseen
+Place point on the subject line of the first unseen article.
 
 @item best
-Select the highest scored article in the group when entering the
-group.
+Place point on the subject line of the highest-scored unread article.
 
 @end table
 
-This variable can also be a function.  In that case, that function will
-be called to place point on a subject line, and/or select some article.
-Useful functions include:
-
-@table @code
-@item gnus-summary-first-unread-subject
-Place point on the subject line of the first unread article, but
-don't select the article.
-
-@item gnus-summary-first-unread-article
-Select the first unread article.
-
-@item gnus-summary-best-unread-article
-Select the highest-scored unread article.
-@end table
-
+This variable can also be a function.  In that case, that function
+will be called to place point on a subject line.  
 
 If you want to prevent automatic selection in some group (say, in a
-binary group with Huge articles) you can set this variable to @code{nil}
-in @code{gnus-select-group-hook}, which is called when a group is
+binary group with Huge articles) you can set the
+@code{gnus-auto-select-first} variable to @code{nil} in
+@code{gnus-select-group-hook}, which is called when a group is
 selected.
 
 
@@ -9075,6 +9066,14 @@ higher than that number.  The default is @code{t}.  Note that if you
 have several windows displayed side-by-side in a frame and the tree
 buffer is one of these, minimizing the tree window will also resize all
 other windows displayed next to it.
+
+You may also wish to add the following hook to keep the window minimized
+at all times:
+
+@lisp
+(add-hook 'gnus-configure-windows-hook
+          'gnus-tree-perhaps-minimize)
+@end lisp
 
 @item gnus-generate-tree-function
 @vindex gnus-generate-tree-function

@@ -1,3 +1,8 @@
+2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Selecting a Group): Addition.
+	(Tree Display): Addition.
+
 2001-12-26  Florian Weimer  <fw@deneb.enyo.de>
 
 	* gnus.texi (Using GPG): Remove obsolete reference to gpg-2comp.
