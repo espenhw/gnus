@@ -1,3 +1,10 @@
+2003-04-29  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-sign): Use mml-sender instead of
+	message-sender.
+
+	* mml.el (mml-generate-mime-1): Set mml-sender too.
+
 2003-04-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-display-while-building): Docstring fix.
