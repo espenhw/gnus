@@ -34,7 +34,7 @@
 (defvar srcdir (or (getenv "srcdir") "."))
 
 (defun my-getenv (str)
-  (let ((val (getenv "lispdir")))
+  (let ((val (getenv str)))
     (if (equal val "no") nil val)))
 
 (if (my-getenv "lispdir")

@@ -1,3 +1,7 @@
+2001-02-11  Jesper Harder <harder@ifa.au.dk>
+
+	* dgnushack.el (my-getenv): Typo.
+
 2001-02-11 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-make-load): Don't autoload smiley functions.
