@@ -8,6 +8,8 @@
 * Support for RFC2015, PGP-MIME. Probably has to involve the people in
   the Mailcrypt project.
 
+  [done]
+
 * Agent (Can someone write some subtopics here? I don't use it myself
   so I don't know what is lacking.)
 
@@ -520,6 +522,8 @@ exceeding lisp nesting on huge groups.
 *  when browsing a foreign server, the groups that are already
  subscribed should be listed as such and not as "K".
 
+ [done]
+
 *  generate font names dynamically.
 
 *  score file mode auto-alist.
@@ -589,6 +593,8 @@ exceeding lisp nesting on huge groups.
 *  nnmbox should support a newsgroups file for descriptions.
 
 *  allow fetching mail from several pop servers.
+
+  [done]
 
 *  Be able to specify whether the saving commands save the original
  or the formatted article.
@@ -1163,6 +1169,8 @@ exceeding lisp nesting on huge groups.
 	    (while (search-forward "\224" nil t)
 	      (replace-match "\"" t t)))))
 
+  [done]
+
 *       (add-hook 'gnus-exit-query-functions
       '(lambda ()
 	 (if (and (file-exists-p nnmail-spool-file)
@@ -1366,6 +1374,8 @@ exceeding lisp nesting on huge groups.
  while fetching.
 
 * Be able to forward groups of messages as MIME digests.
+
+ [done]
 
 * nnweb should include the "get whole article" article when getting
  articles.
