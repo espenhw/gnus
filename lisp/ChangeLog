@@ -1,3 +1,10 @@
+2003-11-29  Kevin Greiner <kgreiner@xpediantsolutions.com>
+	* gnus-start.el (gnus-activate-group): The active range of the
+	group must include the articles known to the agent.
+
+	* gnus.el (gnus-agent-method-p): Accept a server name as the
+	method being tested.
+
 2003-11-29  Alexander Kreuzer <alex@freesources.org>  (tiny change)
 
 	* nnrss.el (nnrss-check-group): Set xml when nnrss-use-local is t.
