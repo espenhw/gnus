@@ -2673,6 +2673,17 @@ entering summary buffer.
 
 See also @code{gnus-parameter-to-list-alist}.
 
+@item subscribed
+@cindex subscribed
+If this parameter is set to @code{t}, Gnus will consider the
+to-address and to-list parameters for this group as addresses of
+mailing lists you are subscribed to.  Giving Gnus this information
+will help it to generate correct Mail-Followup-To headers for your
+posts to these lists.  
+
+See also @code{gnus-find-subscribed-addresses}, the function that
+directly uses this group parameter.
+
 @item visible
 @cindex visible
 If the group parameter list has the element @code{(visible . t)},

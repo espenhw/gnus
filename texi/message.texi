@@ -112,6 +112,7 @@ sending it.
 * Forwarding::           Forwarding a message via news or mail.
 * Resending::            Resending a mail message.
 * Bouncing::             Bouncing a mail message.
+* Mailing Lists::        Send mail to mailing lists.
 @end menu
 
 
@@ -315,6 +316,119 @@ Headers that match the @code{message-ignored-bounced-headers} regexp
 will be removed before popping up the buffer.  The default is
 @samp{^\\(Received\\|Return-Path\\):}.
 
+
+@node Mailing Lists
+@section Mailing Lists
+
+Sometimes while posting to mailing lists, the poster needs to direct
+followups to the post to specific places.  The Mail-Followup-To (MFT)
+was created to enable just this.  Two example scenarios where this is
+useful:
+
+@itemize
+@item
+A mailing list poster can use MFT to express that responses should be
+sent to just the list, and not the poster as well.  This will happen
+if the poster is already subscribed to the list.
+
+@item
+If a message is posted to several mailing lists, MFT may also be used
+to direct the following discussion to one list only, because
+discussions that are spread over several lists tend to be fragmented
+and very difficult to follow.
+
+@end itemize
+
+Gnus honors the MFT header in other's messages (i.e. while following
+up to someone else's post) and also provides support for generating
+sensible MFT headers for outgoing messages as well.
+
+@c @menu
+@c * Honoring an MFT post::        What to do when one already exists
+@c * Composing with a MFT header:: Creating one from scratch.
+@c @end menu
+
+@c @node Composing with a MFT header
+@subsection  Composing a correct MFT header automagically
+
+The first step in getting Gnus to automagically generate a MFT header
+in posts you make is to give Gnus a list of the mailing lists
+addresses you are subscribed to.  You can do this in more than one
+way.  The following variables would come in handy.
+
+@table @code
+
+@item message-subscribed-addresses
+This should be a list of addresses the user is subscribed to.  Its
+default value is @code{nil}.   Example: 
+@lisp
+(setq message-subscribed-addresses 
+      '("ding@@gnus.org" "bing@@noose.org"))
+@end lisp
+
+@item message-subscribed-regexps
+This should be a list of regexps denoting the addresses of mailing
+lists subscribed to.  Default value is @code{nil}.  Example: If you
+want to achieve the same result as above:
+@lisp
+(setq message-subscribed-regexps
+      '("[bd]ing@@\\(gnus\\|noose\\)\\.org"))
+@end lisp
+
+@item message-subscribed-address-functions
+This can be a list of functions to be called (one at a time!!) to
+determine the value of MFT headers.  It is advisable that these
+functions not take any arguments.  Default value is @code{nil}.
+
+@item message-subscribed-address-file
+You might be one organised human freak and have a list of addresses of
+all subscribed mailing lists in a separate file!  Then you can just
+set this variable to the name of the file and life would be good.
+
+@end table
+
+You can use one or more of the above variables.  All their values are
+``added'' in some way that works :-)
+
+Now you are all set.  Just start composing a message as you normally
+do.  And just send it; as always.  Just before the message is sent
+out, Gnus' MFT generation thingy kicks in and checks if the message
+already has a MFT header.  If there is one, the header is left alone.
+If not then the list of recipient addresses (in the To: and Cc:
+headers) is checked to see if one of them is a list address you are
+subscribed to.  If none of them is a list address, then no MFT is
+generated; otherwise, a MFT is added to the other headers and set to
+the value of all addresses in To: and Cc:
+
+Hm. ``So'', you ask, ``what if I send an email to a list I am not
+subscribed to?''  Well, the kind folks at Gnus Towers are working on a
+database of all known mailing list addresses that can be used for this
+purpose.  Till then, you could, like, insert a MFT header manually,
+with the help of @kbd{C-c C-f m} !!
+
+@c @node Honoring an MFT post
+@subsection Honoring an MFT post
+
+When you followup to a post on a mailing list, and the post has a MFT
+header, Gnus' action will depend on the value of the variable
+@code{message-use-mail-followup-to}.  This variable can be one of:
+
+@table @code
+@item t
+ Always honor MFTs.  The To: and Cc: headers in your followup will be
+ derived from the MFT header of the original post.
+
+@item nil
+ Always dishonor MFTs (just ignore the darned thing)
+
+@item ask
+Gnus will prompt you for an action.  This is the default.
+
+@end table
+
+It is considered good nettiquette to honor MFT, as it is assumed the
+fellow who posted a message knows where the followups need to go
+better than you do.
 
 @node Commands
 @chapter Commands

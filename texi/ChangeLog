@@ -1,3 +1,9 @@
+2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.texi (Mailing Lists): Addition.
+	* gnus.texi (Group Parameters): Addition. 
+	From Sriram Karra <karra@cs.utah.edu>.
+
 2002-01-10  Colin Marquardt  <c.marquardt@alcatel.de>
 
 	* gnus.texi (Changing Servers): Addition.
