@@ -1,3 +1,7 @@
+2003-10-27  Romain FRANCOISE  <romain@orebokech.com>
+
+	* gnus-art.el (gnus-article-goto-prev-page): Doc fix. 
+
 2003-10-27  Simon Josefsson  <jas@extundo.com>
 
 	* mm-bodies.el (mm-body-encoding): Don't use QP when message body

@@ -4973,7 +4973,7 @@ If given a numerical ARG, move forward ARG pages."
 
 
 (defun gnus-article-goto-prev-page ()
-  "Show the next page of the article."
+  "Show the previous page of the article."
   (interactive)
   (if (bobp)
       (gnus-article-read-summary-keys nil (gnus-character-to-event ?p))
