@@ -1,5 +1,8 @@
 2002-07-05  Katsumi Yamaoka <yamaoka@jpl.org>
 
+	* gnus-sum.el (gnus-summary-toggle-header): Show headers anyway;
+	don't break a narrowed article.
+
 	* nntp.el (nntp-via-rlogin-command-switches): Doc fix.
 	(nntp-open-via-rlogin-and-telnet): Ditto.
 

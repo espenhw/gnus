@@ -43,7 +43,7 @@
 (autoload 'gnus-mailing-list-insinuate "gnus-ml" nil t)
 (autoload 'turn-on-gnus-mailing-list-mode "gnus-ml" nil t)
 (autoload 'mm-uu-dissect "mm-uu")
-(autoload 'gnus-article-outlook-deuglify-article "deuglify" 
+(autoload 'gnus-article-outlook-deuglify-article "deuglify"
   "Deuglify broken Outlook (Express) articles and redisplay."
   t)
 
@@ -5023,7 +5023,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		       (numberp gnus-large-newsgroup)
 		       (> number gnus-large-newsgroup))
 		  (let* ((cursor-in-echo-area nil)
-			 (initial (gnus-parameter-large-newsgroup-initial 
+			 (initial (gnus-parameter-large-newsgroup-initial
 				   gnus-newsgroup-name))
 			 (input
 			  (read-string
@@ -6715,7 +6715,7 @@ be displayed."
   (interactive)
   (let ((mm-verify-option 'known)
 	(mm-decrypt-option 'known)
-	(gnus-buttonized-mime-types (append (list "multipart/signed" 
+	(gnus-buttonized-mime-types (append (list "multipart/signed"
 						  "multipart/encrypted")
 					    gnus-buttonized-mime-types)))
     (gnus-summary-select-article nil 'force)))
@@ -8296,35 +8296,39 @@ If ARG is a negative number, turn header display off."
 If ARG is a positive number, show the entire header.
 If ARG is a negative number, hide the unwanted header lines."
   (interactive "P")
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (save-restriction
-      (let* ((buffer-read-only nil)
-	     (inhibit-point-motion-hooks t)
-	     hidden s e)
-	(save-restriction
-	  (article-narrow-to-head)
-	  (setq e (point-max)
-		hidden (if (numberp arg)
+  (let ((window (and (gnus-buffer-live-p gnus-article-buffer)
+		     (get-buffer-window gnus-article-buffer t))))
+    (when window
+      (with-current-buffer gnus-article-buffer
+	(widen)
+	(article-narrow-to-head)
+	(let* ((buffer-read-only nil)
+	       (inhibit-point-motion-hooks t)
+	       (hidden (if (numberp arg)
 			   (>= arg 0)
-			 (gnus-article-hidden-text-p 'headers))))
-	(delete-region (point-min) e)
-	(goto-char (point-min))
- 	(with-current-buffer gnus-original-article-buffer
- 	  (goto-char (setq s (point-min)))
-	  (setq e (search-forward "\n\n" nil t)
-		e (if e (1- e) (point-max))))
-	(insert-buffer-substring gnus-original-article-buffer s e)
-	(save-restriction
-	  (narrow-to-region (point-min) (point))
+			 (gnus-article-hidden-text-p 'headers)))
+	       s e)
+	  (delete-region (point-min) (point-max))
+	  (with-current-buffer gnus-original-article-buffer
+	    (goto-char (setq s (point-min)))
+	    (setq e (if (search-forward "\n\n" nil t)
+			(1- (point))
+		      (point-max))))
+	  (insert-buffer-substring gnus-original-article-buffer s e)
 	  (article-decode-encoded-words)
-	  (if  hidden
+	  (if hidden
 	      (let ((gnus-treat-hide-headers nil)
 		    (gnus-treat-hide-boring-headers nil))
 		(gnus-delete-wash-type 'headers)
 		(gnus-treat-article 'head))
-	    (gnus-treat-article 'head)))
-	(gnus-set-mode-line 'article)))))
+	    (gnus-treat-article 'head))
+	  (widen)
+	  (set-window-start window (goto-char (point-min)))
+	  (setq gnus-page-broken
+		(when gnus-break-pages
+		  (gnus-narrow-to-page)
+		  t))
+	  (gnus-set-mode-line 'article))))))
 
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
@@ -11028,7 +11032,7 @@ If ALL is a number, fetch this number of articles."
 	  (if (and (numberp gnus-large-newsgroup)
 		   (> len gnus-large-newsgroup))
 	      (let* ((cursor-in-echo-area nil)
-		     (initial (gnus-parameter-large-newsgroup-initial 
+		     (initial (gnus-parameter-large-newsgroup-initial
 			       gnus-newsgroup-name))
 		     (input
 		      (read-string
