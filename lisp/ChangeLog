@@ -1,3 +1,21 @@
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	Support "Importance:" header in Message.
+
+	* message.el (message-mode-map): Bind C-c C-p to
+	`message-insert-or-toggle-importance'
+	(message-mode-menu): Add message-insert-importance-{high,low}.
+	(message-insert-importance-high, message-insert-importance-low) 
+	(message-insert-or-toggle-importance): New functions.
+	(message-tool-bar-map): Add {un,}important.
+	(message-mode): Doc fix.
+
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-tool-bar-map): Fix attach toolbar tooltip.
+
+	* mml.el (mml-menu): Fix toolbar tooltip.
+
 2001-11-15 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-save-marks): gnus-prin1 takes one argument.

@@ -1509,6 +1509,7 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
+  (define-key message-mode-map "\C-c\C-p" 'message-insert-or-toggle-importance)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)
@@ -1551,6 +1552,12 @@ Point is left at the beginning of the narrowed-to region."
     ["Kill To Signature" message-kill-to-signature t]
     ["Newline and Reformat" message-newline-and-reformat t]
     ["Rename buffer" message-rename-buffer t]
+    ["Flag as important" message-insert-importance-high
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Mark this message as important"))]
+    ["Flag as unimportant" message-insert-importance-low
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Mark this message as unimportant"))]
     ["Spellcheck" ispell-message
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
@@ -1646,6 +1653,7 @@ C-c C-v  `message-delete-not-region' (remove the text outside the region).
 C-c C-z  `message-kill-to-signature' (kill the text up to the signature).
 C-c C-r  `message-caesar-buffer-body' (rot13 the message body).
 C-c C-a  `mml-attach-file' (attach a file as MIME).
+C-c C-p  `message-insert-or-toggle-importance'  (insert or cycle importance)
 M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)
@@ -2060,6 +2068,40 @@ Prefix arg means justify as well."
 	(insert signature))
       (goto-char (point-max))
       (or (bolp) (insert "\n")))))
+
+(defun message-insert-importance-high ()
+  "Insert header to mark message as important."
+  (interactive)
+  (message-remove-header "Importance")
+  (message-goto-eoh)
+  (insert "Importance: high\n"))
+
+(defun message-insert-importance-low ()
+  "Insert header to mark message as unimportant."
+  (interactive)
+  (message-remove-header "Importance")
+  (message-goto-eoh)
+  (insert "Importance: low\n"))
+
+(defun message-insert-or-toggle-importance ()
+  "Insert a \"Importance: high\" header, or cycle through the header values.
+The three allowed values according to RFC 1327 are `high', `normal'
+and `low'."
+  (interactive)
+  (save-excursion
+    (let ((valid '("high" "normal" "low"))
+	  (new "high")
+	  cur)
+      (when (setq cur (message-fetch-field "Importance"))
+	(message-remove-header "Importance")
+	(setq new (cond ((string= cur "high")
+			 "low")
+			((string= cur "low")
+			 "normal")
+			(t
+			 "high"))))
+      (message-goto-eoh)
+      (insert (format "Importance: %s\n" new)))))
 
 (defun message-elide-region (b e)
   "Elide the text in the region.
@@ -5064,9 +5106,15 @@ which specify the range to operate on."
 		   (tool-bar-add-item-from-menu
 		    'message-dont-send "cancel" message-mode-map)
 		   (tool-bar-add-item-from-menu
-		    'mml-attach-file "attach" message-mode-map)
+		    'mml-attach-file "attach" mml-mode-map)
 		   (tool-bar-add-item-from-menu
 		    'ispell-message "spell" message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'message-insert-importance-high "important"
+		    message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'message-insert-importance-low "unimportant"
+		    message-mode-map)
 		   tool-bar-map)))))
 
 ;;; Group name completion.

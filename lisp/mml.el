@@ -728,8 +728,10 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 
 (easy-menu-define
   mml-menu mml-mode-map ""
-  '("Attachments"
-    ["Attach File" mml-attach-file t]
+  `("Attachments"
+    ["Attach File" mml-attach-file
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Attach a file at point"))]
     ["Attach Buffer" mml-attach-buffer t]
     ["Attach External" mml-attach-external t]
     ["Insert Part" mml-insert-part t]
