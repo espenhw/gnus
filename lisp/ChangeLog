@@ -1,3 +1,36 @@
+2001-01-10 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el: Sync with EMACS_PRETEST_21_0_95.
+	* gnus.el (gnus-default-posting-charset): Bogus. Removed.
+
+2001-01-08  Dave Love  <fx@gnu.org>
+
+	* mm-encode.el (mm-qp-or-base64): Don't base64 for the sake of a
+	single character.
+
+	* mm-util.el (mm-mime-mule-charset-alist): Add Latin-{8,9}.
+
+	* message.el: Doc and message fixes.
+	(message-send-rename-function)
+	(message-make-forward-subject-function)
+	(message-send-mail-function, message-reply-to-function)
+	(message-wide-reply-to-function, message-followup-to-function)
+	(message-distribution-function, message-auto-save-directory): Fix
+	:type.
+
+	* gnus/mml.el (mml-parse-1): Frob mml-confirmation-set when
+	proceeding after warnings.  Amend multipart warning message.
+
+2001-01-04  Dave Love  <fx@gnu.org>
+
+	* gnus-util.el (nnmail-pathname-coding-system): Defvar when
+	compiling.
+	(gnus-make-directory): Require nnmail.
+
+	* mm-decode.el (mm-inline-media-tests): Add
+	image/x-portable-bitmap.
+	(mm-get-image): Grok pbm.
+
 2001-01-10  Paul Stevenson <p.stevenson@surrey.ac.uk>
 
 	* nnvirtual.el (nnvirtual-request-expire-articles): delq nil.

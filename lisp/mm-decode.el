@@ -127,6 +127,10 @@
      mm-inline-image
      (lambda (handle)
        (mm-valid-and-fit-image-p 'bmp handle)))
+    ("image/x-portable-bitmap"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'pbm handle)))
     ("text/plain" mm-inline-text identity)
     ("text/enriched" mm-inline-text identity)
     ("text/richtext" mm-inline-text identity)
@@ -296,7 +300,7 @@ to:
   "Keymap for input viewer with completion.")
 
 ;; Should we bind other key to minibuffer-complete-word?
-(define-key mm-viewer-completion-map " " 'self-insert-command) 
+(define-key mm-viewer-completion-map " " 'self-insert-command)
 
 ;;; The functions.
 
@@ -840,7 +844,7 @@ external if displayed external."
 		   (completing-read "Viewer: " methods))))
     (when (string= method "")
       (error "No method given"))
-    (if (string-match "^[^% \t]+$" method) 
+    (if (string-match "^[^% \t]+$" method)
 	(setq method (concat method " %s")))
     (mm-display-external handle method)))
 
@@ -891,6 +895,8 @@ external if displayed external."
 	    "xpm")
 	   ((equal type "x-xbitmap")
 	    "xbm")
+	   ((equal type "x-portable-bitmap")
+	    "pbm")
 	   (t type)))
     (or (mm-handle-cache handle)
 	(mm-with-unibyte-buffer

@@ -1596,15 +1596,6 @@ covered by that variable."
   :type 'symbol
   :group 'gnus-charset)
 
-(defcustom gnus-default-posting-charset nil
-  "Default charset assumed to be used when posting non-ASCII characters.
-This variable is overridden on a group-to-group basis by the
-gnus-group-posting-charset-alist variable and is only used on groups not
-covered by that variable.
-If nil, no default charset is assumed when posting."
-  :type 'symbol
-  :group 'gnus-charset)
-
 
 ;;; Internal variables
 
