@@ -1,3 +1,10 @@
+2002-05-21  Simon Josefsson  <jas@extundo.com>
+
+	* sieve-mode.el (sieve-manage): Fix autoloads.
+
+	* sieve-manage.el (sieve-manage-cram-md5-auth): Just send the SASL
+	name (makes it work with recent Cyrus timsieved).
+
 2002-05-20  Jason  <jbaker@cs.utah.edu>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Try

@@ -45,12 +45,12 @@
 ;;                        added keymap and menubar to hook into sieve-manage
 ;; 2001-10-31 version 1.2 committed to Oort Gnus
 ;;
-;; $Id: sieve-mode.el,v 6.2 2001/11/07 22:50:17 jas Exp $
+;; $Id: sieve-mode.el,v 6.3 2002/02/20 00:15:33 yamaoka Exp $
 
 ;;; Code:
 
-(autoload 'sieve-manage "sieve-manage")
-(autoload 'sieve-upload "sieve-manage")
+(autoload 'sieve-manage "sieve")
+(autoload 'sieve-upload "sieve")
 (require 'easymenu)
 (eval-when-compile
   (require 'font-lock))

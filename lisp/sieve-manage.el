@@ -65,7 +65,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve-manage.el,v 6.3 2001/11/28 16:52:53 zsh Exp $
+;; $Id: sieve-manage.el,v 6.4 2002/02/20 00:15:33 yamaoka Exp $
 
 ;;; Code:
 
@@ -341,7 +341,7 @@ Returns t if login was successful, nil otherwise."
   (let* ((done (sieve-manage-interactive-login
 		buffer
 		(lambda (user passwd)
-		  (sieve-manage-send "AUTHENTICATE \"CRAM-MD5\" \"\"")
+		  (sieve-manage-send "AUTHENTICATE \"CRAM-MD5\"")
 		  (sieve-manage-send
 		   (concat
 		    "\""
