@@ -1,3 +1,8 @@
+2003-04-27  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-registry.el (gnus-register-spool-action): Replaced literal
+	carriage-return character with its escape sequence.
+
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnrss.el (nnrss-node-text): Use only one
