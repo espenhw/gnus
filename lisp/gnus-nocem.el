@@ -190,9 +190,9 @@ matches an previously scanned and verified nocem message."
   (let ((date (mail-header-date header))
 	issuer b e type)
     (when (or (not date)
-	      (nnmail-time-less
-	       (nnmail-time-since (nnmail-date-to-time date))
-	       (nnmail-days-to-time gnus-nocem-expiry-wait)))
+	      (time-less
+	       (time-since (date-to-time date))
+	       (days-to-time gnus-nocem-expiry-wait)))
       (gnus-request-article-this-buffer (mail-header-number header) group)
       (goto-char (point-min))
       (when (re-search-forward "-----BEGIN PGP MESSAGE-----" nil t)
@@ -316,11 +316,11 @@ matches an previously scanned and verified nocem message."
   (let* ((alist gnus-nocem-alist)
 	 (pprev (cons nil alist))
 	 (prev pprev)
-	 (expiry (nnmail-days-to-time gnus-nocem-expiry-wait))
+	 (expiry (days-to-time gnus-nocem-expiry-wait))
 	 entry)
     (setq gnus-nocem-hashtb (gnus-make-hashtable (* (length alist) 51)))
     (while (setq entry (car alist))
-      (if (not (nnmail-time-less (nnmail-time-since (car entry)) expiry))
+      (if (not (subtract-time (time-since (car entry)) expiry))
 	  ;; This entry has expired, so we remove it.
 	  (setcdr prev (cdr alist))
 	(setq prev alist)

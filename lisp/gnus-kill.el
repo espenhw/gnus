@@ -524,7 +524,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		  ;; It's on the form (regexp . date).
 		  (if (zerop (gnus-execute field (car kill-list)
 					   command nil (not all)))
-		      (when (> (gnus-days-between date (cdr kill-list))
+		      (when (> (days-between date (cdr kill-list))
 			       gnus-kill-expiry-days)
 			(setq regexp nil))
 		    (setcdr kill-list date))
@@ -535,7 +535,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 			(setq kdate (cdr kill))
 			(if (zerop (gnus-execute
 				    field (car kill) command nil (not all)))
-			    (when (> (gnus-days-between date kdate)
+			    (when (> (days-between date kdate)
 				     gnus-kill-expiry-days)
 			      ;; Time limit has been exceeded, so we
 			      ;; remove the match.

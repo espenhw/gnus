@@ -728,7 +728,7 @@ If this variable is nil, which is the default, no timers are set.")
     (prog1
 	(nntp-send-command
 	 "^\\.\r?\n" "NEWGROUPS"
-	 (format-time-string "%y%m%d %H%M%S" (nnmail-date-to-time date)))
+	 (format-time-string "%y%m%d %H%M%S" (date-to-time date)))
       (nntp-decode-text))))
 
 (deffoo nntp-request-post (&optional server)

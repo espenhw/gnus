@@ -1,3 +1,46 @@
+Sat Sep  5 01:45:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.15 is released.
+
+1998-09-05 00:21:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* date.el: New file.
+
+	* gnus-util.el (gnus-encode-date): Removed.
+	(gnus-time-less): Ditto.
+
+	* nnmail.el (nnmail-date-to-time): Removed.
+	(nnmail-time-less): Ditto.
+	(nnmail-days-to-time): Ditto.
+	(nnmail-time-since): Ditto.
+
+	* drums.el: New file.
+
+1998-09-04 00:25:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-encode-message-body): Encode headers with
+	body encoding.
+
+	* rfc2047.el (rfc2047-default-charset): Renamed.
+	(rfc2047-encodable-p): Use it.
+
+	* base64.el (mm-util): Required.
+
+1998-09-03 16:28:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-post-method): Peel off real info from opened
+	servers.
+
+	* gnus-util.el (gnus-output-to-rmail): Removed.
+
+	* gnus-art.el (gnus-summary-save-in-rmail): Use
+	gnus-output-to-rmailrmail-output-to-rmail-file. 
+
+	* rfc2047.el (rfc2047-decode-region): Fold case.
+	(rfc2047-decode): Use decode-string.
+
+	* mm-util.el: Provide mm-char-int.
+
 Thu Sep  3 15:23:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.14 is released.

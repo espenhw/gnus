@@ -33,11 +33,10 @@
 (require 'custom)
 (eval-when-compile (require 'cl))
 (require 'nnheader)
-(require 'timezone)
 (require 'message)
+(require 'date)
 
 (eval-and-compile
-  (autoload 'nnmail-date-to-time "nnmail")
   (autoload 'rmail-insert-rmail-file-header "rmail")
   (autoload 'rmail-count-new-messages "rmail")
   (autoload 'rmail-show-message "rmail"))
@@ -218,43 +217,6 @@
 
 ;;; Time functions.
 
-(defun gnus-days-between (date1 date2)
-  ;; Return the number of days between date1 and date2.
-  (- (gnus-day-number date1) (gnus-day-number date2)))
-
-(defun gnus-day-number (date)
-  (let ((dat (mapcar (lambda (s) (and s (string-to-int s)) )
-		     (timezone-parse-date date))))
-    (timezone-absolute-from-gregorian
-     (nth 1 dat) (nth 2 dat) (car dat))))
-
-(defun gnus-time-to-day (time)
-  "Convert TIME to day number."
-  (let ((tim (decode-time time)))
-    (timezone-absolute-from-gregorian
-     (nth 4 tim) (nth 3 tim) (nth 5 tim))))
-
-(defun gnus-encode-date (date)
-  "Convert DATE to internal time."
-  (let* ((parse (timezone-parse-date date))
-	 (date (mapcar (lambda (d) (and d (string-to-int d))) parse))
-	 (time (mapcar 'string-to-int (timezone-parse-time (aref parse 3)))))
-    (encode-time (caddr time) (cadr time) (car time)
-		 (caddr date) (cadr date) (car date)
-		 (* 60 (timezone-zone-to-minute (nth 4 date))))))
-
-(defun gnus-time-minus (t1 t2)
-  "Subtract two internal times."
-  (let ((borrow (< (cadr t1) (cadr t2))))
-    (list (- (car t1) (car t2) (if borrow 1 0))
-	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
-
-(defun gnus-time-less (t1 t2)
-  "Say whether time T1 is less than time T2."
-  (or (< (car t1) (car t2))
-      (and (= (car t1) (car t2))
-	   (< (nth 1 t1) (nth 1 t2)))))
-
 (defun gnus-file-newer-than (file date)
   (let ((fdate (nth 5 (file-attributes file))))
     (or (> (car fdate) (car date))
@@ -353,7 +315,7 @@ Cache the result as a text property stored in DATE."
 	 '(0 0)
        (or (get-text-property 0 'gnus-time d)
 	   ;; or compute the value...
-	   (let ((time (nnmail-date-to-time d)))
+	   (let ((time (date-to-time d)))
 	     ;; and store it back in the string.
 	     (put-text-property 0 1 'gnus-time time d)
 	     time)))))
@@ -701,58 +663,6 @@ with potentially long computations."
 
 
 ;;; Functions for saving to babyl/mail files.
-
-(defvar rmail-default-rmail-file)
-(defun gnus-output-to-rmail (filename &optional ask)
-  "Append the current article to an Rmail file named FILENAME."
-  (require 'rmail)
-  ;; Most of these codes are borrowed from rmailout.el.
-  (setq filename (expand-file-name filename))
-  (setq rmail-default-rmail-file filename)
-  (let ((artbuf (current-buffer))
-	(tmpbuf (gnus-get-buffer-create " *Gnus-output*")))
-    (save-excursion
-      (or (get-file-buffer filename)
-	  (file-exists-p filename)
-	  (if (or (not ask)
-		  (gnus-yes-or-no-p
-		   (concat "\"" filename "\" does not exist, create it? ")))
-	      (let ((file-buffer (create-file-buffer filename)))
-		(save-excursion
-		  (set-buffer file-buffer)
-		  (rmail-insert-rmail-file-header)
-		  (let ((require-final-newline nil))
-		    (gnus-write-buffer filename)))
-		(kill-buffer file-buffer))
-	    (error "Output file does not exist")))
-      (set-buffer tmpbuf)
-      (erase-buffer)
-      (insert-buffer-substring artbuf)
-      (gnus-convert-article-to-rmail)
-      ;; Decide whether to append to a file or to an Emacs buffer.
-      (let ((outbuf (get-file-buffer filename)))
-	(if (not outbuf)
-	    (append-to-file (point-min) (point-max) filename)
-	  ;; File has been visited, in buffer OUTBUF.
-	  (set-buffer outbuf)
-	  (let ((buffer-read-only nil)
-		(msg (and (boundp 'rmail-current-message)
-			  (symbol-value 'rmail-current-message))))
-	    ;; If MSG is non-nil, buffer is in RMAIL mode.
-	    (when msg
-	      (widen)
-	      (narrow-to-region (point-max) (point-max)))
-	    (insert-buffer-substring tmpbuf)
-	    (when msg
-	      (goto-char (point-min))
-	      (widen)
-	      (search-backward "\^_")
-	      (narrow-to-region (point) (point-max))
-	      (goto-char (1+ (point-min)))
-	      (rmail-count-new-messages t)
-	      (rmail-show-message msg))
-	    (save-buffer)))))
-    (kill-buffer tmpbuf)))
 
 (defun gnus-output-to-mail (filename &optional ask)
   "Append the current article to a mail file named FILENAME."

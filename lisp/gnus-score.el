@@ -794,9 +794,9 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	       (type
 		(list match score
 		      (and date (if (numberp date) date
-				  (gnus-day-number date)))
+				  (date-to-day date)))
 		      type))
-	       (date (list match score (gnus-day-number date)))
+	       (date (list match score (date-to-day date)))
 	       (score (list match score))
 	       (t (list match))))
 	;; We see whether we can collapse some score entries.
@@ -1121,7 +1121,7 @@ SCORE is the score to add."
 		 (or (not decay)
 		     (gnus-decay-scores alist decay)))
 	(gnus-score-set 'touched '(t) alist)
-	(gnus-score-set 'decay (list (gnus-time-to-day (current-time))) alist))
+	(gnus-score-set 'decay (list (time-to-day (current-time))) alist))
       ;; We do not respect eval and files atoms from global score
       ;; files.
       (when (and files (not global))
@@ -1290,7 +1290,7 @@ SCORE is the score to add."
 	      (setcar scor
 		      (list (caar scor) (nth 2 (car scor))
 			    (and (nth 3 (car scor))
-				 (gnus-day-number (nth 3 (car scor))))
+				 (date-to-day (nth 3 (car scor))))
 			    (if (nth 1 (car scor)) 'r 's)))
 	      (setq scor (cdr scor))))
 	(push (if (not (listp (cdr entry)))
@@ -1385,7 +1385,7 @@ SCORE is the score to add."
       (when (and gnus-summary-default-score
 		 scores)
 	(let* ((entries gnus-header-index)
-	       (now (gnus-day-number (current-time-string)))
+	       (now (date-to-day (current-time-string)))
 	       (expire (and gnus-score-expiry-days
 			    (- now gnus-score-expiry-days)))
 	       (headers gnus-newsgroup-headers)
@@ -2211,7 +2211,7 @@ SCORE is the score to add."
 	       (memq 'word gnus-newsgroup-adaptive))
       (with-temp-buffer
 	(let* ((hashtb (gnus-make-hashtable 1000))
-	       (date (gnus-day-number (current-time-string)))
+	       (date (date-to-day (current-time-string)))
 	       (data gnus-newsgroup-data)
 	       (syntab (syntax-table))
 	       word d score val)
@@ -2837,7 +2837,7 @@ If ADAPT, return the home adaptive file instead."
 
 (defun gnus-decay-scores (alist day)
   "Decay non-permanent scores in ALIST."
-  (let ((times (- (gnus-time-to-day (current-time)) day))
+  (let ((times (- (time-to-day (current-time)) day))
 	kill entry updated score n)
     (unless (zerop times)		;Done decays today already?
       (while (setq entry (pop alist))

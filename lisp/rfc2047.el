@@ -30,8 +30,8 @@
 (require 'qp)
 (require 'mm-util)
 
-(defvar rfc2047-unencoded-charsets '(ascii latin-iso8859-1)
-  "List of MULE charsets not to encode.")
+(defvar rfc2047-default-charset 'iso-8859-1
+  "Default MIME charset -- does not need encoding.")
 
 (defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
@@ -130,8 +130,10 @@ Should be called narrowed to the head of the message."
 
 (defun rfc2047-encodable-p ()
   "Say whether the current (narrowed) buffer contains characters that need encoding."
-  (let ((charsets (find-charset-region (point-min) (point-max)))
-	(cs rfc2047-unencoded-charsets)
+  (let ((charsets (mapcar
+		   'mm-mule-charset-to-mime-charset
+		   (find-charset-region (point-min) (point-max))))
+	(cs (list 'us-ascii rfc2047-default-charset))
 	found)
     (while charsets
       (unless (memq (pop charsets) cs)
@@ -225,24 +227,30 @@ Should be called narrowed to the head of the message."
 (defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."
   (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      ;; Remove whitespace between encoded words.
-      (while (re-search-forward
-	      (concat "\\(" rfc2047-encoded-word-regexp "\\)"
-		      "\\(\n?[ \t]\\)+"
-		      "\\(" rfc2047-encoded-word-regexp "\\)")
-	      nil t)
-	(delete-region (goto-char (match-end 1)) (match-beginning 6)))
-      ;; Decode the encoded words.
-      (goto-char (point-min))
-      (while (re-search-forward rfc2047-encoded-word-regexp nil t)
-	(insert (rfc2047-parse-and-decode
-		 (prog1
-		     (match-string 0)
-		   (delete-region (match-beginning 0) (match-end 0)))))))))
+  (let ((case-fold-search t)
+	b e)
+    (save-excursion
+      (save-restriction
+	(narrow-to-region start end)
+	(goto-char (point-min))
+	;; Remove whitespace between encoded words.
+	(while (re-search-forward
+		(concat "\\(" rfc2047-encoded-word-regexp "\\)"
+			"\\(\n?[ \t]\\)+"
+			"\\(" rfc2047-encoded-word-regexp "\\)")
+		nil t)
+	  (delete-region (goto-char (match-end 1)) (match-beginning 6)))
+	;; Decode the encoded words.
+	(setq b (goto-char (point-min)))
+	(while (re-search-forward rfc2047-encoded-word-regexp nil t)
+	  (setq e (match-beginning 0))
+	  (insert (rfc2047-parse-and-decode
+		   (prog1
+		       (match-string 0)
+		     (delete-region (match-beginning 0) (match-end 0)))))
+	  (decode-coding-region b e rfc2047-default-charset)
+	  (setq b (point)))
+	(decode-coding-region b (point-max) rfc2047-default-charset)))))
 
 ;;;###autoload
 (defun rfc2047-decode-string (string)
@@ -277,7 +285,9 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
       (mm-decode-coding-string
        (cond
 	((equal "B" encoding)
-	 (base64-decode string))
+	 (if (fboundp 'base64-decode-string)
+	     (base64-decode-string string)
+	   (base64-decode string)))
 	((equal "Q" encoding)
 	 (quoted-printable-decode-string
 	  (mm-replace-chars-in-string string ?_ ? )))

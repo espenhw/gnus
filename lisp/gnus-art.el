@@ -273,7 +273,6 @@ be fed to `format-time-string'."
   :group 'gnus-article-washing)
 
 (eval-and-compile
-  (autoload 'timezone-make-date-arpa-standard "timezone")
   (autoload 'mail-extract-address-components "mail-extr"))
 
 (defcustom gnus-save-all-headers t
@@ -769,7 +768,7 @@ always hide."
 	     ((eq elem 'date)
 	      (let ((date (message-fetch-field "date")))
 		(when (and date
-			   (< (gnus-days-between (current-time-string) date)
+			   (< (days-between (current-time-string) date)
 			      4))
 		  (gnus-article-hide-header "date"))))
 	     ((eq elem 'long-to)
@@ -1343,58 +1342,35 @@ how much time has lapsed since DATE."
    ;; functions since they aren't particularly resistant to
    ;; buggy dates.
    ((eq type 'local)
-    (concat "Date: " (condition-case ()
-			 (timezone-make-date-arpa-standard date)
-		       (error date))))
+    (concat "Date: " (current-time-string (date-to-time date))))
    ;; Convert to Universal Time.
    ((eq type 'ut)
     (concat "Date: "
-	    (condition-case ()
-		(timezone-make-date-arpa-standard date nil "UT")
-	      (error date))))
+	    (current-time-string
+	     (let ((e (parse-time-string date)))
+	       (setcar (last e) 0)
+	       (encode-time e)))))
    ;; Get the original date from the article.
    ((eq type 'original)
     (concat "Date: " date))
    ;; Let the user define the format.
    ((eq type 'user)
     (if (gnus-functionp gnus-article-time-format)
-	(funcall
-	 gnus-article-time-format
-	 (ignore-errors
-	   (gnus-encode-date
-	    (timezone-make-date-arpa-standard
-	     date nil "UT"))))
+	(funcall gnus-article-time-format (date-to-time date))
       (concat
        "Date: "
-       (format-time-string gnus-article-time-format
-			   (ignore-errors
-			     (gnus-encode-date
-			      (timezone-make-date-arpa-standard
-			       date nil "UT")))))))
+       (format-time-string gnus-article-time-format (date-to-time date)))))
    ;; ISO 8601.
    ((eq type 'iso8601)
     (concat
      "Date: "
-     (format-time-string "%Y%M%DT%h%m%s"
-			 (ignore-errors
-			   (gnus-encode-date
-			    (timezone-make-date-arpa-standard
-			     date nil "UT"))))))
+     (format-time-string "%Y%M%DT%h%m%s" (date-to-time date))))
    ;; Do an X-Sent lapsed format.
    ((eq type 'lapsed)
     ;; If the date is seriously mangled, the timezone functions are
     ;; liable to bug out, so we ignore all errors.
     (let* ((now (current-time))
-	   (real-time
-	    (ignore-errors
-	      (gnus-time-minus
-	       (gnus-encode-date
-		(timezone-make-date-arpa-standard
-		 (current-time-string now)
-		 (current-time-zone now) "UT"))
-	       (gnus-encode-date
-		(timezone-make-date-arpa-standard
-		 date nil "UT")))))
+	   (real-time (subtract-time now (date-to-time date)))
 	   (real-sec (and real-time
 			  (+ (* (float (car real-time)) 65536)
 			     (cadr real-time))))
@@ -1664,7 +1640,7 @@ Directory to save to is default to `gnus-article-save-directory'."
     (save-excursion
       (save-restriction
 	(widen)
-	(gnus-output-to-rmail filename))))
+	(rmail-output-to-rmail-file filename))))
   filename)
 
 (defun gnus-summary-save-in-mail (&optional filename)
@@ -1681,7 +1657,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 	(widen)
 	(if (and (file-readable-p filename)
 		 (mail-file-babyl-p filename))
-	    (gnus-output-to-rmail filename t)
+	    (rmail-output-to-rmail-file filename t)
 	  (gnus-output-to-mail filename)))))
   filename)
 

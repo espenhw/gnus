@@ -25,7 +25,7 @@
 		     run-with-idle-timer mouse-minibuffer-check window-edges
 		     event-click-count track-mouse read-event mouse-movement-p
 		     event-end mouse-scroll-subr overlay-lists delete-overlay
-		     set-face-stipple mail-abbrevs-setup char-int
+		     set-face-stipple mail-abbrevs-setup 
 		     make-char-table set-char-table-range font-create-object
 		     x-color-values widget-make-intangible error-message-string
 		     w3-form-encode-xwfu gnus-mule-get-coding-system
@@ -34,7 +34,7 @@
 		     set-buffer-multibyte
 		     find-non-ascii-charset-region char-charset
 		     mule-write-region-no-coding-system
-		     find-charset-region))
+		     find-charset-region base64-decode-string))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
@@ -62,7 +62,7 @@
 		 gnus-mule-get-coding-system decode-coding-string
 		 mail-aliases-setup
 		 mm-copy-tree url-view-url w3-prepare-buffer
-		 char-int mule-write-region-no-coding-system)))
+		 mule-write-region-no-coding-system char-int)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

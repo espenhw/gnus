@@ -249,9 +249,8 @@ all.  This may very well take some time.")
 (deffoo nnml-request-list (&optional server)
   (save-excursion
     (let ((nnmail-file-coding-system nnmail-active-file-coding-system)
-	  (pathname-coding-system 'binary)) ; for XEmacs/mule
-      (nnmail-find-file nnml-active-file)
-      )
+	  (pathname-coding-system 'binary)) 
+      (nnmail-find-file nnml-active-file))
     (setq nnml-group-alist (nnmail-get-active))
     t))
 

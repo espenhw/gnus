@@ -83,6 +83,10 @@
       (fset 'mm-coding-system-list 'coding-system-list)
     (fset 'mm-coding-system-list 'ignore))
 
+  (if (fboundp 'char-int)
+      (fset 'mm-char-int 'char-int)
+    (fset 'mm-char-int 'identity))
+
   (if (fboundp 'coding-system-equal)
       (fset 'mm-coding-system-equal 'coding-system-equal)
     (fset 'mm-coding-system-equal 'equal))

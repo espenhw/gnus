@@ -495,7 +495,7 @@ If SILENT, don't prompt the user."
 		   (list gnus-post-method)))
 	       gnus-secondary-select-methods
 	       (mapcar 'cdr gnus-server-alist)
-	       gnus-opened-servers
+	       (mapcar 'car gnus-opened-servers)
 	       (list gnus-select-method)
 	       (list group-method)))
 	     method-alist post-methods method)

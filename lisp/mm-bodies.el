@@ -53,8 +53,10 @@ If no encoding was done, nil is returned."
        (t
 	(let ((mime-charset (mm-mule-charset-to-mime-charset (car charsets)))
 	      start)
-	  (when (not (mm-coding-system-equal
-		      mime-charset buffer-file-coding-system))
+	  (when (or t
+		    ;; We always decode.
+		    (not (mm-coding-system-equal
+			  mime-charset buffer-file-coding-system)))
 	    (while (not (eobp))
 	      (if (eq (char-charset (following-char)) 'ascii)
 		  (when start
@@ -80,7 +82,7 @@ If no encoding was done, nil is returned."
 	   (goto-char (point-min))
 	   (while (and (not found)
 		       (not (eobp)))
-	     (when (> (char-int (following-char)) 127)
+	     (when (> (mm-char-int (following-char)) 127)
 	       (setq found t))
 	     (forward-char 1))
 	   (not found))))
@@ -94,6 +96,7 @@ If no encoding was done, nil is returned."
 (defun mm-decode-body (charset encoding)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
+  (setq charset (or charset rfc2047-default-charset))
   (save-excursion
     (when encoding
       (cond
@@ -105,6 +108,8 @@ The characters in CHARSET should then be decoded."
 	  (error nil)))
        ((memq encoding '(7bit 8bit binary))
 	)
+       ((null encoding)
+	)
        (t
 	(error "Can't decode encoding %s" encoding))))
     (when (featurep 'mule)
@@ -112,8 +117,9 @@ The characters in CHARSET should then be decoded."
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
 		   buffer-file-coding-system
-		   (not (mm-coding-system-equal
-			 buffer-file-coding-system mule-charset)))
+		   ;;(not (mm-coding-system-equal
+		   ;;	 buffer-file-coding-system mule-charset))
+		   )
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
 
 (provide 'mm-bodies)

@@ -100,8 +100,8 @@ If it is non-nil, it must be a toolbar.  The five legal values are
   "Create a rot table with offset N."
   (let ((i -1)
 	(table (make-string 256 0))
-	(a (char-int ?a))
-	(A (char-int ?A)))
+	(a (mm-char-int ?a))
+	(A (mm-char-int ?A)))
     (while (< (incf i) 256)
       (aset table i i))
     (concat

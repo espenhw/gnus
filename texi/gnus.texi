@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.14 Manual
+@settitle Pterodactyl Gnus 0.15 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.14 Manual
+@title Pterodactyl Gnus 0.15 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.14.
+This manual corresponds to Pterodactyl Gnus 0.15.
 
 @end ifinfo
 
@@ -6295,7 +6295,22 @@ Signature}.
 @vindex gnus-article-hide-pgp-hook
 Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}).  The
 @code{gnus-article-hide-pgp-hook} hook will be run after a @sc{pgp}
-signature has been hidden.
+signature has been hidden.  For example, to automatically verify
+articles that have signatures in them do:
+@lisp
+;;; Hide pgp cruft if any.
+
+(add-hook 'gnus-article-display-hook 'gnus-article-hide-pgp)
+
+;;; After hiding pgp, verify the message;
+;;; only happens if pgp signature is found.
+
+(add-hook 'gnus-article-hide-pgp-hook
+          (lambda ()
+            (save-excursion
+              (set-buffer gnus-original-article-buffer)
+              (mc-verify))))
+@end lisp
 
 @item W W P
 @kindex W W P (Summary)

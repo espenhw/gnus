@@ -181,8 +181,7 @@ article was posted to nndb")
 		   msg))
 	(if (nnmail-expired-article-p
 	     group
-	     (gnus-encode-date
-	      (substring msg (match-beginning 1) (match-end 1)))
+	     (date-to-time (substring msg (match-beginning 1) (match-end 1)))
 	     force)
 	    (progn
 	      (setq delete-list (concat delete-list " " (int-to-string art)))

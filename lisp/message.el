@@ -4050,7 +4050,8 @@ regexp varstr."
 	  (goto-char (point-max))
 	  (mm-insert-rfc822-headers
 	   (or charset (mm-mule-charset-to-mime-charset 'ascii))
-	   encoding))))))
+	   encoding)
+	  (mm-encode-body))))))
 
 (run-hooks 'message-load-hook)
 
