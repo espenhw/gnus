@@ -1,3 +1,20 @@
+2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-generate-headers): Let header formatters do
+	their work.
+
+2003-01-02  Raymond Scholz  <ray-2003@zonix.de>
+
+	* deuglify.el (gnus-article-outlook-deuglify-article):
+	Rehighlight, reapply treatments and call
+	`gnus-article-prepare-hook'.  Suggested by Niels Olof Bouvin.
+	(gnus-outlook-repair-attribution-block): Recognize cited
+	attributions.  Suggested by Niklas Morberg.
+
+2003-01-02  Pete Kazmier  <pete@kazmier.com>
+
+	* gnus-art.el (gnus-treat-predicate): Check condition first. 
+
 2003-01-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* lpath.el: Add url-http-file-exists-p.
@@ -45,8 +62,6 @@
 2003-01-02  Simon Josefsson  <jas@extundo.com>
 
 	* dig.el (query-dig): Doc fix.
-
-Test.
 
 2003-01-02  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
@@ -170,7 +185,7 @@ Test.
 	* gnus-sum.el (gnus-summary-display-while-building): New
 	variable.
 
-2002-01-01  Raymond Scholz  <ray-2003@zonix.de>
+2003-01-01  Raymond Scholz  <ray-2003@zonix.de>
 
 	* deuglify.el (gnus-outlook-rearrange-article): Kill overlays
 	before rearranging the article.

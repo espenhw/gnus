@@ -310,18 +310,26 @@ length of an unwrapped citation line."
 		  (replace-match "\\1\\2 \\3")
 		  (goto-char (match-beginning 0))))))))))
 
-(defun gnus-outlook-rearrange-article (from-where)
-  "Put the text from `from-where' to the end of buffer at the top of the article buffer."
+(defun gnus-outlook-rearrange-article (attr-start)
+  "Put the text from `attr-start' to the end of buffer at the top of the article buffer."
   (save-excursion
     (let ((inhibit-read-only t)
 	  (cite-marks gnus-outlook-deuglify-cite-marks))
       (gnus-with-article-buffer
 	(article-goto-body)
-	;; attribution out of place?
-	(unless (= (point) from-where)
+	;; article does not start with attribution
+	(unless (= (point) attr-start)
 	  (gnus-kill-all-overlays)
-	  (transpose-regions (point) (+ from-where 1)
-			     (+ from-where 1) (point-max)))))))
+	  (let ((cur (point))
+		;; before signature or end of buffer
+		(to (if (gnus-article-search-signature)
+			(point)
+		      (point-max))))
+	    ;; handle the case where the full quote is below the
+	    ;; signature
+	    (if (< to attr-start)
+		(setq to (point-max)))
+	    (transpose-regions cur attr-start attr-start to)))))))
 
 ;; John Doe <john.doe@some.domain> wrote in message
 ;; news:a87usw8$dklsssa$2@some.news.server...
@@ -361,15 +369,13 @@ length of an unwrapped citation line."
       (gnus-with-article-buffer
 	(article-goto-body)
 	(if (re-search-forward
-	     (concat "^----* ?[^-]+ ?----*\n"
-		     "[^\n]+: \\([^\n]+\\)\n"
-		     "[^\n]+: [^\n]+\n"
-		     "[^\n]+: [^\n]+\n"
-		     "[^\n]+: [^\n]+$")
+	     (concat "^[" cite-marks " \t]*----* ?[^-]+ [^-]+ ?----*\n"
+		     "[^\n:]+:[ \t]*\\([^\n]+\\)\n"
+		     "\\([^\n:]+:[ \t]*[^\n]+\n\\)+")
 	     nil t)
 	    (progn
 	      (gnus-kill-all-overlays)
-	      (replace-match "\\1 wrote:")
+	      (replace-match "\\1 wrote:\n")
 	      (match-beginning 0)))))))
 
 ;; On Wed, 16 Jan 2002 23:23:30 +0100, John Doe <john.doe@some.domain> wrote:
@@ -426,7 +432,13 @@ length of an unwrapped citation line."
   (interactive)
   (gnus-outlook-deuglify-article)
   (with-current-buffer (or gnus-article-buffer (current-buffer))
-    (gnus-article-highlight t)))
+    ;; "Emulate" `gnus-article-prepare-display' without calling
+    ;; it. Calling `gnus-article-prepare-display' on an already
+    ;; prepared article removes all MIME parts.  I'm unsure whether
+    ;; this is a bug or not.
+    (gnus-article-highlight t)
+    (gnus-treat-article nil)
+    (gnus-run-hooks 'gnus-article-prepare-hook)))
 
 (provide 'deuglify)
 
