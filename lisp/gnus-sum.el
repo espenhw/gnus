@@ -736,8 +736,10 @@ When threading is turned off, the variable
 			 (function-item gnus-thread-sort-by-subject)
 			 (function-item gnus-thread-sort-by-date)
 			 (function-item gnus-thread-sort-by-score)
-			 (function-item gnus-thread-sort-by-total-score)
+                         (function-item gnus-thread-sort-by-most-recent-number)
+                         (function-item gnus-thread-sort-by-most-recent-date)
 			 (function-item gnus-thread-sort-by-random)
+			 (function-item gnus-thread-sort-by-total-score)
 			 (function :tag "other"))))
 
 (defcustom gnus-thread-score-function '+
