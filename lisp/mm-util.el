@@ -241,7 +241,7 @@ If the charset is `composition', return the actual one."
 
 (defun mm-mime-charset (charset)
   "Return the MIME charset corresponding to the MULE CHARSET."
-  (if (fboundp 'coding-system-get)
+  (if (and (fboundp 'coding-system-get) (fboundp 'get-charset-property))
       ;; This exists in Emacs 20.
       (or
        (and (mm-preferred-coding-system charset)

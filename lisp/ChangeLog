@@ -1,3 +1,9 @@
+2000-02-17  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* mm-util.el (mm-mime-charset): Check for presence of
+	`coding-system-get' and `get-charset-property' (recent XEmacs has
+	the former, but not the latter).
+
 2000-01-28  Dave Love  <fx@gnu.org>
 
 	* message.el (message-check-news-header-syntax): Fix typo
