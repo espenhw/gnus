@@ -1404,6 +1404,13 @@ might set this variable to @code{'("-f" "you@@some.where")}.
 Non-@code{nil} means don't add @samp{-f username} to the sendmail
 command line.  Doing so would be even more evil than leaving it out.
 
+@item message-sendmail-envelope-from
+@vindex message-sendmail-envelope-from
+When @code{message-sendmail-f-is-evil} is @code{nil}, this specifies
+the address to use in the SMTP envelope.  If it is @code{nil}, use
+@code{user-mail-address}.  If it is the symbol @code{header}, use the
+@samp{From} header of the message.
+
 @item message-mailer-swallows-blank-line
 @vindex message-mailer-swallows-blank-line
 Set this to non-@code{nil} if the system's mailer runs the header and
