@@ -674,7 +674,7 @@ all.  This may very well take some time.")
 
 ;;;###autoload
 (defun nnml-generate-nov-databases ()
-  "Generate nov databases in all nnml directories."
+  "Generate NOV databases in all nnml directories."
   (interactive)
   ;; Read the active file to make sure we don't re-use articles
   ;; numbers in empty groups.
@@ -687,6 +687,8 @@ all.  This may very well take some time.")
   (nnmail-save-active nnml-group-alist nnml-active-file))
 
 (defun nnml-generate-nov-databases-1 (dir &optional seen)
+  "Regenerate the NOV database in DIR."
+  (interactive "DRegenerate NOV in: ")
   (setq dir (file-name-as-directory dir))
   ;; Only scan this sub-tree if we haven't been here yet.
   (unless (member (file-truename dir) seen)

@@ -407,7 +407,7 @@ header line with the old Message-ID."
 		(message-mail (or to-address to-list))
 		;; Arrange for mail groups that have no `to-address' to
 		;; get that when the user sends off the mail.
-		(push (list 'gnus-inews-add-to-address group)
+		(push (list 'gnus-inews-add-to-address pgroup)
 		      message-send-actions))
 	    (set-buffer gnus-article-copy)
 	    (message-wide-reply to-address)))
@@ -471,16 +471,6 @@ If SILENT, don't prompt the user."
      ;; Use the normal select method.
      (t gnus-select-method))))
 
-(defun gnus-inews-narrow-to-headers ()
-  (widen)
-  (narrow-to-region
-   (goto-char (point-min))
-   (or (and (re-search-forward
-	     (concat "^" (regexp-quote mail-header-separator) "$") nil t)
-	    (match-beginning 0))
-       (point-max)))
-  (goto-char (point-min)))
-
 ;;;
 ;;; Check whether the message has been sent already.
 ;;;
@@ -490,7 +480,7 @@ If SILENT, don't prompt the user."
 (defun gnus-inews-reject-message ()
   "Check whether this message has already been sent."
   (when gnus-sent-message-ids-file
-    (let ((message-id (save-restriction (gnus-inews-narrow-to-headers)
+    (let ((message-id (save-restriction (message-narrow-to-headers)
 					(mail-fetch-field "message-id")))
 	  end)
       (when message-id
@@ -530,11 +520,17 @@ If SILENT, don't prompt the user."
      (concat "Emacs " (substring emacs-version
 				 (match-beginning 1)
 				 (match-end 1))))
-    ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)" emacs-version)
+    ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
+		   emacs-version)
      (concat (substring emacs-version
 			(match-beginning 1)
 			(match-end 1))
-	     (format " %d.%d" emacs-major-version emacs-minor-version)))
+	     (format " %d.%d" emacs-major-version emacs-minor-version)
+	     (if (match-beginning 3)
+		 (substring emacs-version
+			    (match-beginning 3)
+			    (match-end 3))
+	       "")))
     (t emacs-version))))
 
 ;; Written by "Mr. Per Persson" <pp@gnu.ai.mit.edu>.
@@ -748,7 +744,7 @@ The current group name will be inserted at \"%s\".")
     (save-excursion
       (save-restriction
 	(widen)
-	(gnus-inews-narrow-to-headers)
+	(message-narrow-to-headers)
 	(let (gnus-deletable-headers)
 	  (if (message-news-p)
 	      (message-generate-headers message-required-news-headers)
@@ -949,7 +945,7 @@ this is a reply."
   "Insert Gcc headers based on `gnus-outgoing-message-group'."
   (save-excursion
     (save-restriction
-      (gnus-inews-narrow-to-headers)
+      (message-narrow-to-headers)
       (let* ((group gnus-outgoing-message-group)
 	     (gcc (cond
 		   ((gnus-functionp group)
@@ -1008,7 +1004,7 @@ this is a reply."
 	(setq groups (list groups)))
       (save-excursion
 	(save-restriction
-	  (gnus-inews-narrow-to-headers)
+	  (message-narrow-to-headers)
 	  (goto-char (point-max))
 	  (insert "Gcc: ")
 	  (if (and gnus-newsgroup-name

@@ -403,7 +403,7 @@ might set this variable to '(\"-f\" \"you@some.where\")."
 	(t '(nnspool "")))
   "Method used to post news."
   :group 'message-news
-  :group 'mesage-sending
+  :group 'message-sending
   ;; This should be the `gnus-select-method' widget, but that might
   ;; create a dependence to `gnus.el'.
   :type 'sexp)
@@ -2905,8 +2905,9 @@ Headers already prepared in the buffer are not modified."
     (unless (file-exists-p message-autosave-directory)
       (make-directory message-autosave-directory t))
     (let ((name (make-temp-name
-		 (concat (file-name-as-directory message-autosave-directory)
-			 "msg."))))
+		 (expand-file-name
+		  (concat (file-name-as-directory message-autosave-directory)
+			  "msg.")))))
       (setq buffer-auto-save-file-name
 	    (save-excursion
 	      (prog1

@@ -207,7 +207,10 @@ several files - eg. \".spool[0-9]*\"."
   :group 'nnmail-files
   :type 'function)
 
-(defcustom nnmail-crosspost-link-function 'add-name-to-file
+(defcustom nnmail-crosspost-link-function
+  (if (string-match "windows-nt\\|emx" (format "%s" system-type))
+      'copy-file
+    'add-name-to-file)
   "Function called to create a copy of a file.
 This is `add-name-to-file' by default, which means that crossposts
 will use hard links.  If your file system doesn't allow hard

@@ -353,7 +353,8 @@ time saver for large mailboxes.")
 	 (nnfolder-delete-mail))
        (when last
 	 (nnfolder-save-buffer)
-	 (nnfolder-adjust-min-active group))))
+	 (nnfolder-adjust-min-active group)
+	 (nnmail-save-active nnfolder-group-alist nnfolder-active-file))))
     result))
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
@@ -449,14 +450,16 @@ time saver for large mailboxes.")
 	 (marker (concat "\n" nnfolder-article-marker))
 	 (number "[0-9]+")
 	 (activemin (cdr active)))
-    (goto-char (point-min))
-    (while (and (search-forward marker nil t)
-		(re-search-forward number nil t))
-      (setq activemin (min activemin
-			   (string-to-number (buffer-substring
-					      (match-beginning 0)
-					      (match-end 0))))))
-    (setcar active activemin)))
+    (save-excursion
+      (set-buffer nnfolder-current-buffer)
+      (goto-char (point-min))
+      (while (and (search-forward marker nil t)
+		  (re-search-forward number nil t))
+	(setq activemin (min activemin
+			     (string-to-number (buffer-substring
+						(match-beginning 0)
+						(match-end 0))))))
+      (setcar active activemin))))
 
 (defun nnfolder-article-string (article)
   (if (numberp article)
@@ -484,6 +487,9 @@ time saver for large mailboxes.")
   (when (and server
 	     (not (nnfolder-server-opened server)))
     (nnfolder-open-server server))
+  (unless (gnus-buffer-live-p nnfolder-current-buffer)
+    (setq nnfolder-current-buffer nil
+	  nnfolder-current-group nil))
   ;; Change group.
   (when (and group
 	     (not (equal group nnfolder-current-group)))
@@ -495,7 +501,8 @@ time saver for large mailboxes.")
       (push (list group (cons 1 0)) nnfolder-group-alist)
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
 
-    (unless dont-check
+    (if dont-check
+	(setq nnfolder-current-group group)
       (let (inf file)
 	;; If we have to change groups, see if we don't already have the
 	;; folder in memory.  If we do, verify the modtime and destroy

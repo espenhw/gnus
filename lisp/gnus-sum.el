@@ -126,7 +126,8 @@ non-nil and non-`some', fill in all gaps that Gnus manages to guess."
 		 (const more)
 		 (sexp :menu-tag "all" t)))
 
-(defcustom gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
+(defcustom gnus-summary-thread-gathering-function
+  'gnus-gather-threads-by-subject
   "Function used for gathering loose threads.
 There are two pre-defined functions: `gnus-gather-threads-by-subject',
 which only takes Subjects into consideration; and
@@ -3819,12 +3820,28 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	type list newmarked symbol)
     (when info
       ;; Add all marks lists that are non-nil to the list of marks lists.
-      (while types
-	(setq type (pop types))
+      (while (setq type (pop types))
 	(when (setq list (symbol-value
 			  (setq symbol
 				(intern (format "gnus-newsgroup-%s"
 						(car type))))))
+
+	  ;; Get rid of the entries of the articles that have the
+	  ;; default score.
+	  (when (and (eq (cdr type) 'score)
+		     gnus-save-score
+		     articles)
+	    (let* ((arts articles)
+		   (prev (cons nil articles))
+		   (all prev))
+	      (while arts
+		(if (or (not (consp (car arts)))
+			(= (cdar arts) gnus-summary-default-score))
+		    (setcdr prev (cdr arts))
+		  (setq prev arts))
+		(setq arts (cdr arts)))
+	      (setq articles (cdr all))))
+
 	  (push (cons (cdr type)
 		      (if (memq (cdr type) uncompressed) list
 			(gnus-compress-sequence
@@ -3972,7 +3989,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 xref-hashtb)))))
 
 (defun gnus-group-make-articles-read (group articles)
-  "Update the info of GROUP to say that only ARTICLES are unread."
+  "Update the info of GROUP to say that ARTICLES are read."
   (let* ((num 0)
 	 (entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
@@ -4104,8 +4121,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; Message-ID.
 	    (progn
 	      (goto-char p)
-	      (setq id (if (search-forward "\nmessage-id: " nil t)
-			   (nnheader-header-value)
+	      (setq id (if (search-forward "\nmessage-id:" nil t)
+			   (buffer-substring
+			    (1- (or (search-forward "<" nil t) (point)))
+			    (or (search-forward ">" nil t) (point)))
 			 ;; If there was no message-id, we just fake one
 			 ;; to make subsequent routines simpler.
 			 (nnheader-generate-fake-message-id))))
@@ -8344,16 +8363,11 @@ save those articles instead."
     (gnus-article-setup-buffer)
     (set-buffer gnus-article-buffer)
     (setq buffer-read-only nil)
-    (let ((command (if automatic command (read-string "Command: " command)))
-	  ;; Just binding this here doesn't help, because there might
-	  ;; be output from the process after exiting the scope of
-	  ;; this `let'.
-	  ;; (buffer-read-only nil)
-	  )
+    (let ((command (if automatic command (read-string "Command: " command))))
       (erase-buffer)
       (insert "$ " command "\n\n")
       (if gnus-view-pseudo-asynchronously
-	  (start-process "gnus-execute" nil shell-file-name
+	  (start-process "gnus-execute" (current-buffer) shell-file-name
 			 shell-command-switch command)
 	(call-process shell-file-name nil t nil
 		      shell-command-switch command)))))

@@ -108,6 +108,6 @@ distclean:
 
 install:
 	cp gnus gnus-[0-9] gnus-[0-9][0-9] $(INFODIR)
-	cp message message-[0-9] $(INFODIR)
-	cp widget widget-[0-9] $(INFODIR)
-	cp custom custom-[0-9] $(INFODIR)
+	cp message $(INFODIR)
+	cp widget $(INFODIR)
+	cp custom $(INFODIR)

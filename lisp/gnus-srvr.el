@@ -211,7 +211,9 @@ The following commands are available:
 	(push (cdar alist) done)
 	(cdr (setq server (pop alist)))
 	(when (and server (car server) (cdr server))
-	  (gnus-server-insert-server-line (car server) (cdr server)))))
+	  (gnus-server-insert-server-line (car server) (cdr server))))
+      (when (member (cdar alist) done)
+	(pop alist)))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened

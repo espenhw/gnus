@@ -1560,10 +1560,12 @@ Return the name of the group is selection was successful."
   ;; Transform the select method into a unique server.
   (let ((saddr (intern (format "%s-address" (car method)))))
     (setq method (gnus-copy-sequence method))
-    (unless (assq saddr method)
-      (nconc method `((,saddr ,(cadr method)))))
-    (setf (cadr method) (format "%s-%d" (cadr method)
-				(incf gnus-ephemeral-group-server))))
+    (require (car method))
+    (when (boundp saddr)
+      (unless (assq saddr method)
+	(nconc method `((,saddr ,(cadr method)))))
+      (setf (cadr method) (format "%s-%d" (cadr method)
+				  (incf gnus-ephemeral-group-server)))))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash

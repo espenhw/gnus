@@ -99,15 +99,18 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (prepare-body-function . nndoc-unquote-dashes)
      (subtype digest guess))
     (lanl-gov-announce
-      (article-begin . "^\\\\\\\\\n")
-      (head-begin . "^Paper.*:")
-      (head-end   . "\\(^\\\\\\\\.*\n\\|-----------------\\)")
-      (body-begin . "")
-      (body-end   . "-------------------------------------------------")
-      (file-end   . "^Title: Recent Seminal")
-      (generate-head-function . nndoc-generate-lanl-gov-head)
-      (article-transform-function . nndoc-transform-lanl-gov-announce)
-      (subtype preprints guess))
+     (article-begin . "^\\\\\\\\\n")
+     (head-begin . "^Paper.*:")
+     (head-end   . "\\(^\\\\\\\\.*\n\\|-----------------\\)")
+     (body-begin . "")
+     (body-end   . "-------------------------------------------------")
+     (file-end   . "^Title: Recent Seminal")
+     (generate-head-function . nndoc-generate-lanl-gov-head)
+     (article-transform-function . nndoc-transform-lanl-gov-announce)
+     (subtype preprints guess))
+    (x400-forward
+     (article-begin . "^\n")
+     (body-end-function . nndoc-x400-forward-body-end-function))
     (guess
      (guess . t)
      (subtype nil))
@@ -116,8 +119,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (subtype nil))
     (preprints
      (guess . t)
-     (subtype nil))
-    ))
+     (subtype nil))))
 
 
 
@@ -417,6 +419,15 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	     (not (re-search-backward "^From:" nil t 2))
 	     (not (re-search-forward "^From:" nil t 2)))
     t))
+
+(defun nndoc-x400-forward-type-p ()
+  (save-restriction
+    (message-narrow-to-head)
+    (when (re-search-forward "^Content-Type: *message/rfc822" nil t)
+      t)))
+
+(defun nndoc-x400-forward-body-end-function ()
+  (goto-char (point-max)))
 
 (defun nndoc-clari-briefs-type-p ()
   (when (let ((case-fold-search nil))

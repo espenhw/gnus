@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4 Manual
+@settitle Gnus 5.4.27 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4 Manual
+@title Gnus 5.4.27 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.
+This manual corresponds to Gnus 5.4.27
 
 @end ifinfo
 
@@ -1897,6 +1897,10 @@ If the group parameter list has an element that looks like
 doing a @kbd{a} in any group.  It is totally ignored when doing a
 followup---except that if it is present in a news group, you'll get mail
 group semantics when doing @kbd{f}.
+
+If you do an @kbd{a} command in a mail group and you don't have a
+@code{to-list} group parameter, one will be added automatically upon
+sending the message.
 
 @item broken-reply-to
 @cindex broken-reply-to
@@ -8831,7 +8835,7 @@ default.
 @c default for reasons of security.
 
 @c Since Red Gnus is an alpha release, it is to be expected to lose mail.
-(No Gnus release since (ding) Gnus 0.10 (or something like that) have
+(No Gnus release since (ding) Gnus 5.4.27 (or something like that) have
 lost mail, I think, but that's not the point.  (Except certain versions
 of Red Gnus.))  By not deleting the Incoming* files, one can be sure to
 not lose mail -- if Gnus totally whacks out, one can always recover what
@@ -9131,7 +9135,9 @@ doesn't really mix very well.
 
 @vindex nnmail-expiry-wait
 The @code{nnmail-expiry-wait} variable supplies the default time an
-expirable article has to live.  The default is seven days.  
+expirable article has to live.  Gnus starts counting days from when the
+message @emph{arrived}, not from when it was sent.  The default is seven
+days.
 
 Gnus also supplies a function that lets you fine-tune how long articles
 are to live, based on what group they are in.  Let's say you want to
@@ -13540,15 +13546,15 @@ spunky name, we decided that the name was @emph{too} spunky, so we
 renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 ``@sc{gnus}''.  New vs. old.
 
-The first ``proper'' release of Gnus 5 was done in November 1995 when it
+The first ``proper'' release of Gnus 5.4.27 was done in November 1995 when it
 was included in the Emacs 19.30 distribution (132 (ding) Gnus releases
-plus 15 Gnus 5.0 releases).
+plus 15 Gnus 5.4.27 releases).
 
 In May 1996 the next Gnus generation (aka. ``September Gnus'' (after 99
-releases)) was released under the name ``Gnus 5.2'' (40 releases).
+releases)) was released under the name ``Gnus 5.4.27'' (40 releases).
 
 On July 28th 1996 work on Red Gnus was begun, and it was released on
-January 25th 1997 (after 84 releases) as ``Gnus 5.4''.
+January 25th 1997 (after 84 releases) as ``Gnus 5.4.27''.
 
 If you happen upon a version of Gnus that has a name that is prefixed --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -13843,6 +13849,7 @@ Also thanks to the following for patches and stuff:
 
 Adrian Aichner,
 Peter Arius, 
+Matt Armstrong,
 Marc Auslander,
 Chris Bone,
 Mark Borges,
@@ -13894,6 +13901,7 @@ Tonny Madsen,
 Shlomo Mahlab,
 Nat Makarevitch,
 David Martin,
+Gordon Matzigkeit,
 Timo Metzemakers,
 Richard Mlynarik,
 Lantz Moore,
@@ -13916,6 +13924,7 @@ Jason Rumney,
 Loren Schall,
 Dan Schmidt,
 Ralph Schleicher,
+Philippe Schnoebelen,
 Randal L. Schwartz,
 Danny Siu, 
 Paul D. Smith,
@@ -13952,9 +13961,9 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 @cindex new features
 
 @menu
-* ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
-* September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
-* Red Gnus::           Third time best---Gnus 5.4/5.5.
+* ding Gnus::          New things in Gnus 5.4.27/5.1, the first new Gnus.
+* September Gnus::     The Thing Formally Known As Gnus 5.4.27/5.3.
+* Red Gnus::           Third time best---Gnus 5.4.27/5.5.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -13965,7 +13974,7 @@ Yes, we have feeping creaturism in full effect.
 @node ding Gnus
 @subsubsection (ding) Gnus
 
-New features in Gnus 5.0/5.1:
+New features in Gnus 5.4.27/5.1:
 
 @itemize @bullet
 
@@ -14082,7 +14091,7 @@ You can click on buttons instead of using the keyboard
 @node September Gnus
 @subsubsection September Gnus
 
-New features in Gnus 5.2/5.3:
+New features in Gnus 5.4.27/5.3:
 
 @itemize @bullet
 
@@ -14316,7 +14325,7 @@ Further syntax checking of outgoing articles have been added.
 @node Red Gnus
 @subsubsection Red Gnus
 
-New features in Gnus 5.4/5.5:
+New features in Gnus 5.4.27/5.5:
 
 @itemize @bullet
 

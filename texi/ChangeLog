@@ -1,3 +1,12 @@
+Mon Mar 17 16:15:54 1997  Philippe Schnoebelen  <Philippe.Schnoebelen@lsv.ens-cachan.fr>
+
+	* Makefile (install): Install properly.
+
+Fri Mar 14 21:00:33 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Parameters): Addition.
+	(Expiring Mail): Addition.
+
 Wed Mar 12 06:57:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Various Various): Addition.

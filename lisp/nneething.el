@@ -24,10 +24,6 @@
 
 ;;; Commentary:
 
-;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
-;; For an overview of what the interface functions do, please see the
-;; Gnus sources.
-
 ;;; Code:
 
 (require 'nnheader)
@@ -39,13 +35,13 @@
 (nnoo-declare nneething)
 
 (defvoo nneething-map-file-directory "~/.nneething/"
-  "*Where nneething stores the map files.")
+  "Where nneething stores the map files.")
 
 (defvoo nneething-map-file ".nneething"
-  "*Name of the map files.")
+  "Name of the map files.")
 
 (defvoo nneething-exclude-files nil
-  "*Regexp saying what files to exclude from the group.
+  "Regexp saying what files to exclude from the group.
 If this variable is nil, no files will be excluded.")
 
 
@@ -64,7 +60,6 @@ If this variable is nil, no files will be excluded.")
 (defvoo nneething-message-id-number 0)
 (defvoo nneething-work-buffer " *nneething work*")
 
-(defvoo nneething-directory nil)
 (defvoo nneething-group nil)
 (defvoo nneething-map nil)
 (defvoo nneething-read-only nil)
@@ -130,8 +125,8 @@ If this variable is nil, no files will be excluded.")
 	     (insert "\n"))
 	   t))))
 
-(deffoo nneething-request-group (group &optional dir dont-check)
-  (nneething-possibly-change-directory group dir)
+(deffoo nneething-request-group (group &optional server dont-check)
+  (nneething-possibly-change-directory group server)
   (unless dont-check
     (nneething-create-mapping)
     (if (> (car nneething-active) (cdr nneething-active))

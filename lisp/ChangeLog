@@ -1,3 +1,68 @@
+Mon Mar 17 17:35:35 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.27 is released.
+
+Mon Mar 17 15:59:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndoc.el (nndoc-x400-forward-type-p): New function.
+	(nndoc-x400-forward-body-end-function): Ditto.
+
+	* nnfolder.el (nnfolder-adjust-min-active): Be in the right
+	buffer. 
+
+Sat Mar 15 16:09:44 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* message.el (message-post-method): Fix typo.
+
+	* gnus-load.el (message-sending): Fix typo.
+
+Mon Mar 17 15:47:59 1997  Gordon Matzigkeit  <gord@m-tech.ab.ca>
+
+	* message.el (message-set-auto-save-file-name): Expand before
+	temping. 
+
+Mon Mar 17 15:05:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-update-marks): Get rid of article entries of
+	articles with the default score.
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Be more careful
+	when uniquifying methods.
+
+	* gnus-sum.el (gnus-execute-command): Insert asynch into buffer.
+
+	* nnfolder.el (nnfolder-possibly-change-group): Didn't set the
+	current group.
+
+Mon Mar 17 15:03:02 1997  Paul Stodghill  <stodghil@cs.cornell.edu>
+
+	* gnus-srvr.el (gnus-server-prepare): Would infloop.
+
+Mon Mar 17 06:37:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-crosspost-link-function): Change default on
+	NT. 
+
+Fri Mar 14 12:07:12 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-msg.el (gnus-extended-version): Add XEmacs beta # to
+	default X-Mailer/X-Newsreader.
+
+Fri Mar 14 20:57:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Check folder
+	buffer. 
+
+	* nnheader.el (nnheader-parse-head): Understand Message-ID with
+	spaces. 
+	* gnus-sum.el (gnus-get-newsgroup-headers): Ditto.
+	(gnus-group-make-articles-read): Doc fix.
+
+	* nnml.el (nnml-generate-nov-databases-1): Made interactive.
+
+	* gnus-msg.el (gnus-inews-narrow-to-headers): Removed.
+	(gnus-post-news): Add `to-list' to the right group.
+
 Fri Mar 14 20:11:01 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.26 is released.

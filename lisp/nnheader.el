@@ -178,7 +178,7 @@ on your system, you could say something like:
 	  ;; a case (which basically was the old function) is actually
 	  ;; about twice as fast, even though it looks messier.	 You
 	  ;; can't have everything, I guess.  Speed and elegance
-	  ;; doesn't always go hand in hand.
+	  ;; don't always go hand in hand.
 	  (vector
 	   ;; Number.
 	   (if naked
@@ -211,8 +211,10 @@ on your system, you could say something like:
 	   ;; Message-ID.
 	   (progn
 	     (goto-char p)
-	     (if (search-forward "\nmessage-id: " nil t)
-		 (nnheader-header-value)
+	     (if (search-forward "\nmessage-id:" nil t)
+		 (buffer-substring
+		  (1- (or (search-forward "<" nil t) (point)))
+		  (or (search-forward ">" nil t) (point)))
 	       ;; If there was no message-id, we just fake one to make
 	       ;; subsequent routines simpler.
 	       (nnheader-generate-fake-message-id)))
