@@ -6507,6 +6507,10 @@ File names like @file{~/News/Alt.andrea-dworkin}.
 @item gnus-plain-save-name
 @findex gnus-plain-save-name
 File names like @file{~/News/alt.andrea-dworkin}.
+
+@item gnus-sender-save-name
+@findex gnus-sender-save-name
+File names like @file{~/News/larsi}.
 @end table
 
 @vindex gnus-split-methods
