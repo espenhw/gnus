@@ -1,3 +1,7 @@
+2004-11-22  Marek Martin  <marek.martin@mum.pri.ee>  (tiny change)
+
+	* nnfolder.el (nnfolder-request-create-group): Save current buffer.
+
 2004-11-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dns.el (query-dns): Use sit-for to time instead of
