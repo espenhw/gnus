@@ -574,6 +574,13 @@ by anything."
   :group 'nnmail
   :type 'boolean)
 
+(defcustom nnmail-split-lowercase-expanded t
+  "Whether to lowercase expanded entries (i.e. \\N) when splitting mails.
+This avoids the creation of multiple groups when users send to an address
+using different case (i.e. mailing-list@domain vs Mailing-List@Domain)."
+  :group 'nnmail
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar nnmail-article-buffer " *nnmail incoming*"
@@ -1464,7 +1471,10 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 	      (setq N 0)
 	    (setq N (- c ?0)))
 	  (when (match-beginning N)
-	    (push (buffer-substring (match-beginning N) (match-end N))
+	    (push (if nnmail-split-lowercase-expanded
+		      (downcase (buffer-substring (match-beginning N)
+						  (match-end N)))
+		    (buffer-substring (match-beginning N) (match-end N)))
 		  expanded))))
       (setq pos (1+ pos)))
     (if did-expand

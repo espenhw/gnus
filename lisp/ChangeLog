@@ -1,4 +1,11 @@
 2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From David Hedbor <dhedbor@real.com>.
+
+	* nnmail.el (nnmail-split-lowercase-expanded): New user option.
+	(nnmail-expand-newtext): Lowercase expanded entries if
+	nnmail-split-lowercase-expanded is non-nil.
+
+2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Treat backslash-quoted
 	characters as non-special.
