@@ -1180,7 +1180,7 @@ If ALL is a number, fetch this number of articles.
 
 If performed over a topic line, toggle folding the topic."
   (interactive "P")
-  (when (and (eobp) (not gnus-group-group-name))
+  (when (and (eobp) (not (gnus-group-group-name)))
     (forward-line -1))
   (if (gnus-group-topic-p)
       (let ((gnus-group-list-mode
