@@ -1,5 +1,8 @@
 1999-11-16 10:01:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treat-emphasize): Change default.
+	(gnus-treat-buttonize): Ditto.
+
 	* gnus-sum.el (gnus-build-old-threads): Bind mail-parse-charset.
 	(gnus-build-sparse-threads): Ditto.
 	(gnus-build-all-threads): Ditto.
