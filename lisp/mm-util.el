@@ -298,7 +298,8 @@ mail with multiple parts is preferred to sending a Unicode one.")
 
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to the given Mule CHARSET."
-  (if (fboundp 'find-coding-systems-for-charsets)
+  (if (and (fboundp 'find-coding-systems-for-charsets)
+	   (fboundp 'sort-coding-systems))
       (let (mime)
 	(dolist (cs (sort-coding-systems
 		     (copy-sequence
