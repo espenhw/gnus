@@ -803,14 +803,17 @@ with potentially long computations."
 ;;; Functions for saving to babyl/mail files.
 
 (eval-when-compile
-  (when (featurep 'xemacs)
-    ;; The XEmacs version of rmail requires tm, however tm was taken
-    ;; over to SEMI and FLIM long ago.  So, there may be those who
-    ;; have not installed tm.
-    (require 'alist)
-    (provide 'tm-view))
-  (require 'rmail)
-  (autoload 'rmail-update-summary "rmailsum")
+  (condition-case nil
+      (progn
+	(require 'rmail)
+	(autoload 'rmail-update-summary "rmailsum"))
+    (error
+     (define-compiler-macro rmail-select-summary (&rest body)
+       ;; Rmail of the XEmacs version is supplied by the package, and
+       ;; requires tm and apel packages.  However, there may be those
+       ;; who haven't installed those packages.  This macro helps such
+       ;; people even if they install those packages later.
+       `(eval '(rmail-select-summary ,@body)))))
   (defvar rmail-default-rmail-file)
   (defvar mm-text-coding-system))
 

@@ -1,3 +1,8 @@
+2003-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el: Revert 2003-12-03 change, instead, provide the
+	compiler macro for rmail-select-summary if rmail is not available.
+
 2003-12-08  Simon Josefsson  <jas@extundo.com>
 
 	* flow-fill.el (fill-flowed-encode-tests, fill-flowed-test): Add.
