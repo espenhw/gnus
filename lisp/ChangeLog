@@ -1,3 +1,8 @@
+2002-12-12  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* nntp.el (nntp-with-open-group-first-pass): Do not wrap in
+	eval-when-compile.  Suggested by Kevin Greiner.
+
 2002-12-13  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-max-fetch-size): New, defcustom.
