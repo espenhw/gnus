@@ -1,3 +1,8 @@
+2004-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-setup-message): Put article numbers into the
+	X-Draft-From header even if those articles aren't quoted.
+
 2004-09-21  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-int.el (gnus-servers-that-use-local-marks): New variable.

@@ -406,7 +406,7 @@ Thank you for your help in stamping out bugs.
 		  (not (string= ,group "")))
 	 (push (cons
 		(intern gnus-draft-meta-information-header)
-		(gnus-inews-make-draft ,yanked))
+		(gnus-inews-make-draft (or ,yanked ,article)))
 	       message-required-headers))
        (unwind-protect
 	   (progn
