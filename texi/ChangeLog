@@ -1,6 +1,7 @@
 2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Keymap): Addition.
+	(Summary Mail Commands): Fix.
 
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

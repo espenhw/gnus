@@ -4968,8 +4968,8 @@ Mail a wide reply to the author of the current article
 goes out to all people listed in the @code{To}, @code{From} (or
 @code{Reply-to}) and @code{Cc} headers.
 
-@item S W
-@kindex S W (Summary)
+@item S V
+@kindex S V (Summary)
 @findex gnus-summary-wide-reply-with-original
 Mail a wide reply to the current article and include the original
 message (@code{gnus-summary-wide-reply-with-original}).  This command uses
