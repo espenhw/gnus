@@ -1,7 +1,9 @@
-2001-02-19 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+2001-02-20 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnweb.el (nnweb-type-definition): dejanews bought by google.com.
-	Beta is beta.
+	* nnweb.el (nnweb-request-group): Set nnweb-group anyway.
+	(nnweb-request-article): Call reference if exists.
+	(nnweb-type-definition): Dejanews is bought by google.com.
+	Beta!
 
 2001-02-19 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

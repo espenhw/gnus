@@ -65,6 +65,7 @@ and `altavista'.")
     (dejanews ;; bought by google.com
      (article . nnweb-google-wash-article)
      (id . "http://groups.google.com/groups?as_umsgid=%s")
+     (reference . nnweb-google-reference)
      (map . nnweb-google-create-mapping)
      (search . nnweb-google-search)
      (address . "http://groups.google.com/groups")
@@ -142,9 +143,9 @@ and `altavista'.")
   (when (and group
 	     (not (equal group nnweb-group))
 	     (not nnweb-ephemeral-p))
+    (setq nnweb-group group)
     (let ((info (assoc group nnweb-group-alist)))
       (when info
-	(setq nnweb-group group)
 	(setq nnweb-type (nth 2 info))
 	(setq nnweb-search (nth 3 info))
 	(unless dont-check
@@ -183,14 +184,17 @@ and `altavista'.")
 		(and (stringp article)
 		     (nnweb-definition 'id t)
 		     (let ((fetch (nnweb-definition 'id))
-			   art)
+			   art active)
 		       (when (string-match "^<\\(.*\\)>$" article)
 			 (setq art (match-string 1 article)))
-		       (and fetch
-			    art
-			    (mm-with-unibyte-current-buffer
-			      (nnweb-fetch-url
-			       (format fetch article)))))))
+		       (when (and fetch art)
+			 (setq url (format fetch article))
+			 (mm-with-unibyte-current-buffer
+			   (nnweb-fetch-url url))
+			 (if (nnweb-definition 'reference t)
+			     (setq article
+				   (funcall (nnweb-definition 
+					     'reference) article)))))))
 	(unless nnheader-callback-function
 	  (funcall (nnweb-definition 'article))
 	  (nnweb-decode-entities))
@@ -695,7 +699,7 @@ and `altavista'.")
 ;;;
 
 (defun nnweb-google-wash-article ()
- (let ((case-fold-search t))
+  (let ((case-fold-search t) url)
     (goto-char (point-min))
     (re-search-forward "^<pre>" nil t)
     (narrow-to-region (point-min) (point))
@@ -707,7 +711,7 @@ and `altavista'.")
     (while (search-forward "<br>" nil t)
       (replace-match "\n"))
     (nnweb-remove-markup)
-    (nnweb-decode-entities)
+    (goto-char (point-min))
     (while (re-search-forward "^[ \t]*\n" nil t)
       (replace-match ""))
     (goto-char (point-max))
@@ -717,8 +721,72 @@ and `altavista'.")
     (search-forward "</pre>" nil t)
     (delete-region (point) (point-max))
     (nnweb-remove-markup)
-    (nnweb-decode-entities)
     (widen)))
+
+(defun nnweb-google-parse-1 (&optional Message-ID)
+  (let ((i 0)
+	(case-fold-search t)
+	(active (cadr (assoc nnweb-group nnweb-group-alist)))
+	Subject Score Date Newsgroups From
+	map url)
+    (unless active
+      (push (list nnweb-group (setq active (cons 1 0)))
+	    nnweb-group-alist))
+    ;; Go through all the article hits on this page.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "a href=/groups\\(\\?[^ \">]*seld=[0-9]+[^ \">]*\\)" nil t)
+      (setq url
+	    (concat (nnweb-definition 'address)
+		    (match-string 1)))
+      (narrow-to-region (search-forward ">" nil t)
+			(search-forward "</a>" nil t))
+      (nnweb-remove-markup)
+      (nnweb-decode-entities)
+      (setq Subject (buffer-string))
+      (goto-char (point-max))
+      (widen)
+      (forward-line 2)
+      (when (looking-at "<br><font[^>]+>")
+	(goto-char (match-end 0)))
+      (if (not (looking-at "<a[^>]+>"))
+	  (skip-chars-forward " \t")
+	(narrow-to-region (point)
+			  (search-forward "</a>" nil t))
+	(nnweb-remove-markup)
+	(nnweb-decode-entities)
+	(setq Newsgroups (buffer-string))
+	(goto-char (point-max))
+	(widen)
+	(skip-chars-forward "- \t"))
+      (when (looking-at 
+	     "\\([0-9]+/[A-Za-z]+/[0-9]+\\)[ \t]*by[ \t]*\\([^<]*\\) - <a")
+	(setq From (match-string 2)
+	      Date (match-string 1)))
+      (forward-line 1)
+      (incf i)
+      (unless (nnweb-get-hashtb url)
+	(push
+	 (list
+	  (incf (cdr active))
+	  (make-full-mail-header
+	   (cdr active) (if Newsgroups
+			    (concat  "(" Newsgroups ") " Subject) 
+			  Subject)
+	   From Date Message-ID
+	   nil 0 0 url))
+	 map)
+	(nnweb-set-hashtb (cadar map) (car map))))
+    map))
+
+(defun nnweb-google-reference (id)
+  (let ((map (nnweb-google-parse-1 id)) header)
+    (setq nnweb-articles 
+	  (nconc nnweb-articles map))
+    (when (setq header (cadar map))
+      (mm-with-unibyte-current-buffer
+	(nnweb-fetch-url (mail-header-xref header)))
+      (caar map))))
 
 (defun nnweb-google-create-mapping ()
   "Perform the search and create an number-to-url alist."
@@ -726,64 +794,15 @@ and `altavista'.")
     (set-buffer nnweb-buffer)
     (erase-buffer)
     (when (funcall (nnweb-definition 'search) nnweb-search)
-      (let ((i 0)
-	    (more t)
-	    (case-fold-search t)
-	    (active (or (cadr (assoc nnweb-group nnweb-group-alist))
-			(cons 1 0)))
-	    Subject Score Date Newsgroups From Message-ID
-	    map url)
-	(while more
-	  ;; Go through all the article hits on this page.
-	  (goto-char (point-min))
-	  (while (re-search-forward
-		  "a href=/groups\\(\\?[^ \">]*seld=[0-9]+[^ \">]*\\)" nil t)
-	    (setq url
-		  (concat (nnweb-definition 'address)
-			  (match-string 1)))
-	    (narrow-to-region (search-forward ">" nil t)
-			      (search-forward "</a>" nil t))
-	    (nnweb-remove-markup)
-	    (nnweb-decode-entities)
-	    (setq Subject (buffer-string))
-	    (goto-char (point-max))
-	    (widen)
-	    (forward-line 2)
-	    (when (looking-at "<br><font[^>]+>")
-	      (goto-char (match-end 0)))
-	    (if (not (looking-at "<a[^>]+>"))
-		(skip-chars-forward " \t")
-	      (narrow-to-region (point)
-				(search-forward "</a>" nil t))
-	      (nnweb-remove-markup)
-	      (nnweb-decode-entities)
-	      (setq Newsgroups (buffer-string))
-	      (goto-char (point-max))
-	      (widen)
-	      (skip-chars-forward "- \t"))
-	    (when (looking-at 
-		   "\\([0-9]+/[A-Za-z]+/[0-9]+\\)[ \t]*by[ \t]*\\([^<]*\\) - <a")
-	      (setq From (match-string 2)
-		    Date (match-string 1)))
-	    (forward-line 1)
-	    (incf i)
-	    (unless (nnweb-get-hashtb url)
-	      (push
-	       (list
-		(incf (cdr active))
-		(make-full-mail-header
-		 (cdr active) (if Newsgroups
-				  (concat  "(" Newsgroups ") " Subject) 
-				Subject)
-		 From Date Message-ID
-		 nil 0 0 url))
-	       map)
-	      (nnweb-set-hashtb (cadar map) (car map))))
-	  ;; FIXME: There is more.
-	  (setq more nil))
-	;; Return the articles in the right order.
-	(setq nnweb-articles
-	      (sort (nconc nnweb-articles map) 'car-less-than-car))))))
+	(let ((more t))
+	  (while more
+	    (setq nnweb-articles
+		  (nconc nnweb-articles (nnweb-google-parse-1)))
+	    ;; FIXME: There is more.
+	    (setq more nil))
+	  ;; Return the articles in the right order.
+	  (setq nnweb-articles
+		(sort nnweb-articles 'car-less-than-car))))))
 
 (defun nnweb-google-search (search)
   (nnweb-insert
