@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -605,27 +606,26 @@ marked as read or ticked are ignored."
   (save-excursion
     (let ((killed-no 0)
 	  function article header)
-      (if (or (null field) (string-equal field ""))
-	  (setq function nil)
+      (if (or (null field) 
+	      (string-equal field "")
+	      (not (fboundp
+		    (setq function 
+			  (intern-soft 
+			   (concat "mail-header-" (downcase field)))))))
+	  (error "Unknown header field: \"%s\"" field)
 	;; Get access function of header filed.
-	(setq function (intern-soft (concat "gnus-header-" (downcase field))))
-	(if (and function (fboundp function))
-	    (setq function (symbol-function function))
-	  (error "Unknown header field: \"%s\"" field))
-	;; Make FORM funcallable.
-	(if (and (listp form) (not (eq (car form) 'lambda)))
-	    (setq form (list 'lambda nil form))))
-      ;; Starting from the current article.
-      (while (or (and (not article)
-		      (setq article (gnus-summary-article-number))
-		      t)
-		 (setq article 
-		       (gnus-summary-search-forward 
-			(not ignore-marked) nil backward)))
-	(and (or (null gnus-newsgroup-kill-headers)
-		 (memq article gnus-newsgroup-kill-headers))
- 	     (vectorp (setq header (gnus-summary-article-header article)))
- 	     (gnus-execute-1 function regexp form header)
-	     (setq killed-no (1+ killed-no))))
-      killed-no)))
+	(setq function `(lambda (h) (,function h)))
+	;; Starting from the current article.
+	(while (or (and (not article)
+			(setq article (gnus-summary-article-number))
+			t)
+		   (setq article 
+			 (gnus-summary-search-forward 
+			  (not ignore-marked) nil backward)))
+	  (and (or (null gnus-newsgroup-kill-headers)
+		   (memq article gnus-newsgroup-kill-headers))
+	       (vectorp (setq header (gnus-summary-article-header article)))
+	       (gnus-execute-1 function regexp form header)
+	       (setq killed-no (1+ killed-no))))
+	killed-no))))
 

@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -339,7 +340,7 @@ The SOUP packet file name will be inserted at the %s.")
       (when (not mod-time)
 	(setcdr (cdr total-infolist) (delq info (cddr total-infolist)))))
     (if (cddr total-infolist)
-	(setcar active (car (car (cdr (car (cdr (cdr total-infolist)))))))
+	(setcar active (car (car (car (cdr (cdr total-infolist))))))
       (setcar active (1+ (cdr active))))
     (nnsoup-write-active-file)
     ;; Return the articles that weren't expired.
@@ -717,6 +718,30 @@ The SOUP packet file name will be inserted at the %s.")
       (setcdr (car active) (nreverse (cdr (car active))))
       (setq active (cdr active)))
     (nnsoup-write-active-file)))
+
+(defun nnsoup-delete-unreferenced-message-files ()
+  "Delete any *.MSG and *.IDX files that aren't known by nnsoup."
+  (interactive)
+  (let* ((known (apply 'nconc (mapcar 
+			       (lambda (ga)
+				 (mapcar
+				  (lambda (area)
+				    (gnus-soup-area-prefix (cadr area)))
+				  (cddr ga)))
+			       nnsoup-group-alist)))
+	 (regexp "\\.MSG$\\|\\.IDX$")
+	 (files (directory-files nnsoup-directory nil regexp))
+	 non-files file)
+    ;; Find all files that aren't known by nnsoup.
+    (while (setq file (pop files))
+      (string-match regexp file)
+      (unless (member (substring file 0 (match-beginning 0)) known)
+	(push file non-files)))
+    ;; Sort and delete the files.
+    (setq non-files (sort non-files 'string<))
+    (map-y-or-n-p "Delete file %s? "
+		  (lambda (file) (delete-file (concat nnsoup-directory file)))
+		  non-files)))
 
 (provide 'nnsoup)
 

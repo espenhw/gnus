@@ -1,3 +1,21 @@
+Fri Feb  2 20:41:56 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Reading Mail): Addition.
+
+Wed Jan 31 20:20:43 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Mail): Addition.
+
+Sat Jan 27 21:13:34 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Topic Variables): Deletia.
+
+Fri Jan 26 13:50:23 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Customizing Threading): Addition. 
+	(Topic Commands): Addition.
+	(Topic Variables): Addition.
+
 Thu Jan 25 18:35:12 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Summary Maneuvering): Addition.

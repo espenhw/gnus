@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -1008,27 +1009,24 @@ It will prompt for a password."
 (defun nntp-send-region-to-server (begin end)
   "Send the current buffer region (from BEGIN to END) to the server."
   (save-excursion
-    ;; If we're not the the nntp server buffer, we copy the region
-    ;; over to that buffer.  
-    (if (eq (get-buffer nntp-server-buffer) (current-buffer))
-	(let ((orig (current-buffer)))
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
-	  (insert-buffer-substring orig begin end))
-      ;; We are in the nntp buffer, so we just narrow it.
-      (narrow-to-region begin end))
-    ;; `process-send-region' does not work if the text to be sent is very
-    ;; large, so we send it piecemeal.
-    (let ((last (point-min))
-	  (size 100))			;Size of text sent at once.
-      (while (/= last (point-max))
-	(process-send-region 
-	 nntp-server-process last (setq last (min (+ last size) (point-max))))
-	;; Read any output from the server.  May be unnecessary.
-	(accept-process-output)))
-    ;; Delete the area we sent.
-    (delete-region (point-min) (point-max))
-    (widen)))
+    (let ((cur (current-buffer)))
+      ;; Copy the buffer over to the send buffer.
+      (nnheader-set-temp-buffer " *nntp send*")
+      (insert-buffer-substring cur begin end)
+      (save-excursion
+	(set-buffer cur)
+	(erase-buffer))
+      ;; `process-send-region' does not work if the text to be sent is very
+      ;; large, so we send it piecemeal.
+      (let ((last (point-min))
+	    (size 100))			;Size of text sent at once.
+	(while (/= last (point-max))
+	  (process-send-region 
+	   nntp-server-process
+	   last (setq last (min (+ last size) (point-max))))
+	  ;; Read any output from the server.  May be unnecessary.
+	  (accept-process-output)))
+      (kill-buffer (current-buffer)))))
 
 (defun nntp-open-server-semi-internal (server &optional service)
   "Open SERVER.

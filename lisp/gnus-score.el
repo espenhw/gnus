@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -132,6 +133,56 @@ If this variable is nil, exact matching will always be used.")
 (defvar gnus-score-uncacheable-files "ADAPT$"
   "*All score files that match this regexp will not be cached.")
 
+(defvar gnus-score-default-header nil
+  "Default header when entering new scores.
+
+Should be one of the following symbols.
+
+ a: from
+ s: subject
+ b: body
+ h: head
+ i: message-id
+ t: references
+ x: xref
+ l: lines
+ d: date
+ f: followup
+
+If nil, the user will be asked for a header.")
+
+(defvar gnus-score-default-type nil
+  "Default match type when entering new scores.
+
+Should be one of the following symbols.
+
+ s: substring
+ e: exact string
+ f: fuzzy string
+ r: regexp string
+ b: before date
+ a: at date
+ n: this date
+ <: less than number
+ >: greater than number
+ =: equal to number
+
+If nil, the user will be asked for a match type.")
+
+(defvar gnus-score-default-fold nil
+  "Use case folding for new score file entries iff not nil.")
+
+(defvar gnus-score-default-duration nil
+  "Default duration of effect when entering new scores.
+
+Should be one of the following symbols.
+
+ t: temporary
+ p: permanent
+ i: immediate
+
+If nil, the user will be asked for a duration.")
+
 
 
 ;; Internal variables.
@@ -173,7 +224,6 @@ of the last successful match.")
 
 (gnus-define-keys
  (gnus-summary-score-map "V" gnus-summary-mode-map)
- "V" gnus-summary-score-map
  "s" gnus-summary-set-score
  "a" gnus-summary-score-entry
  "S" gnus-summary-current-score
@@ -253,9 +303,12 @@ used as score."
 	  (list (list ?t (current-time-string) "temporary") 
 		'(?p perm "permanent") '(?i now "immediate")))
 	 (mimic gnus-score-mimic-keymap)
-	 (hchar gnus-score-default-header)
-	 (tchar gnus-score-default-type)
-	 (pchar gnus-score-default-duration)
+	 (hchar (and gnus-score-default-header 
+		     (aref (symbol-name gnus-score-default-header) 0)))
+	 (tchar (and gnus-score-default-type
+		     (aref (symbol-name gnus-score-default-type) 0)))
+	 (pchar (and gnus-score-default-duration
+		     (aref (symbol-name gnus-score-default-duration) 0)))
 	 entry temporary end type match)
 
     ;; First we read the header to score.
@@ -351,7 +404,7 @@ used as score."
      (if (eq 's score) nil score)	; Score
      (if (eq 'perm temporary)		; Temp
 	 nil
-       (nth 1 temporary))
+        temporary)
      (not (nth 3 entry)))		; Prompt
     ))
   
@@ -617,7 +670,7 @@ SCORE is the score to add."
 	(when id
 	  (gnus-summary-score-entry
 	   "references" (concat id "[ \t]*$") 'r
-	   score (current-time-string)))))))
+	   score (current-time-string) nil t))))))
 
 (defun gnus-score-followup-thread (&optional score)
   "Add SCORE to all later articles in the thread the current buffer is part of."
@@ -2123,6 +2176,14 @@ The list is determined from the variable gnus-score-file-alist."
 	(setq out (cons (car files) out)))
       (setq files (cdr files)))
     (setq gnus-internal-global-score-files out)))
+
+(defun gnus-score-default-fold-toggle ()
+  "Toggle folding for new score file entries."
+  (interactive)
+  (setq gnus-score-default-fold (not gnus-score-default-fold))
+  (if gnus-score-default-fold
+      (message "New score file entries will be case insensitive.")
+    (message "New score file entries will be case sensitive.")))
 
 (provide 'gnus-score)
 

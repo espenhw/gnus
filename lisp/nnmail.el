@@ -17,8 +17,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -288,7 +289,7 @@ parameter.  It should return nil, `warn' or `delete'.")
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
        (concat dir (nnheader-replace-chars-in-string group ?. ?/) "/")))
-   (if file file "")))
+   (or file "")))
   
 (defun nnmail-date-to-time (date)
   "Convert DATE into time."
@@ -489,7 +490,7 @@ nn*-request-list should have been called before calling this function."
       ;; Look for a Content-Length header.
       (if (not (save-excursion
 		 (and (re-search-backward 
-		       "^Content-Length: \\([0-9]+\\)" start t)
+		       "^Content-Length:[ \t]*\\([0-9]+\\)" start t)
 		      (setq content-length (string-to-int
 					    (buffer-substring 
 					     (match-beginning 1)
@@ -560,7 +561,7 @@ nn*-request-list should have been called before calling this function."
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
 	;; Look for a Content-Length header.
 	(goto-char (point-min))
-	(if (not (re-search-forward "^Content-Length: \\([0-9]+\\)" nil t))
+	(if (not (re-search-forward "^Content-Length:[ \t]*\\([0-9]+\\)" nil t))
 	    (setq content-length nil)
 	  (setq content-length (string-to-int (match-string 1)))
 	  ;; We destroy the header, since none of the backends ever 
@@ -1002,9 +1003,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   ;; If this is a duplicate message, then we do not save it.
   (let* ((duplication (nnmail-cache-id-exists-p message-id))
 	 (action (when duplication
-		   (if (nnheader-functionp nnmail-treat-duplicates)
-		       (funcall nnmail-treat-duplicates message-id)
-		     nnmail-treat-duplicates))))
+		   (cond
+		    ((memq nnmail-treat-duplicates '(warn delete))
+		     nnmail-treat-duplicates)
+		    ((nnheader-functionp nnmail-treat-duplicates)
+		     (funcall nnmail-treat-duplicates message-id))
+		    (t
+		     nnmail-treat-duplicates)))))
     (cond
      ((not duplication)
       (nnmail-cache-insert message-id)

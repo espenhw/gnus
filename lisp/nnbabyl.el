@@ -210,8 +210,6 @@
        (dont-check
 	(nnheader-report 'nnbabyl "Selected group %s" group)
 	t)
-       ((> (car active) (cdr active))
-	(nnheader-report 'nnbabyl "Empty group %s" group))
        (t
 	(nnheader-report 'nnbabyl "Selected group %s" group)
 	(nnheader-insert "211 %d %d %d %s\n" 

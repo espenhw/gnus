@@ -14,26 +14,72 @@
 
 @iftex
 @iflatex
-\documentstyle[a4,pagestyle]{book}
-\input{epsf}
-%\addtolength{\oddsidemargin}{2cm}
-%\addtolength{\evensidemargin}{2cm}
+\documentclass[twoside,a4paper,openright]{book}
+\usepackage[latin1]{inputenc}
+% \usepackage{fontenc}
+% \usepackage{babel}
+\usepackage{pagestyle}
+\usepackage{epsfig}
+\fontfamily{bembo}\selectfont
+
 \makeindex
 \begin{document}
 
-\newcommand{\gnuscode}[1]{{\tt #1}}
-\newcommand{\gnussamp}[1]{{\tt #1}}
-\newcommand{\gnuslisp}[1]{{\tt #1}}
-\newcommand{\gnuskbd}[1]{{`\tt #1'}}
-\newcommand{\gnusfile}[1]{{`\tt #1'}}
-\newcommand{\gnusdfn}[1]{{\em #1}}
-\newcommand{\gnusstrong}[1]{{\bf #1}}
-\newcommand{\gnusemph}[1]{{\em #1}}
-\newcommand{\gnusvar}[1]{{\sl #1}}
-\newcommand{\gnussc}[1]{{\sc #1}}
-\newcommand{\gnustitle}[1]{{\huge #1}}
-\newcommand{\gnusauthor}[1]{{\huge #1}}
-\newcommand{\gnusbullet}{{.}}
+\newcommand{\gnuschaptername}{}
+\newcommand{\gnussectionname}{}
+
+\newcommand{\gnusbackslash}{/}
+
+\newcommand{\gnusxref}[1]{See ``#1'' on page \pageref{#1}}
+\newcommand{\gnuspxref}[1]{see ``#1'' on page \pageref{#1}}
+
+\newcommand{\gnuskindex}[1]{\index{#1}}
+\newcommand{\gnusindex}[1]{\index{#1}}
+
+\newcommand{\gnustt}[1]{{\textbf{\textsf{#1}}}}
+\newcommand{\gnuscode}[1]{\gnustt{#1}}
+\newcommand{\gnussamp}[1]{`\gnustt{#1}'}
+\newcommand{\gnuslisp}[1]{\gnustt{#1}}
+\newcommand{\gnuskbd}[1]{`\gnustt{#1}'}
+\newcommand{\gnusfile}[1]{`\gnustt{#1}'}
+\newcommand{\gnusdfn}[1]{\textit{#1}}
+\newcommand{\gnusi}[1]{\textit{#1}}
+\newcommand{\gnusstrong}[1]{\textbf{#1}}
+\newcommand{\gnusemph}[1]{\textit{#1}}
+\newcommand{\gnusvar}[1]{\textsl{\textsf{#1}}}
+\newcommand{\gnussc}[1]{\textsc{#1}}
+\newcommand{\gnustitle}[1]{{\huge\textbf{#1}}}
+\newcommand{\gnusauthor}[1]{{\large\textbf{#1}}}
+
+\newcommand{\gnusbullet}{{${\bullet}$}}
+\newcommand{\gnusdollar}{\$}
+\newcommand{\gnusampersand}{\&}
+\newcommand{\gnuspercent}{\%}
+\newcommand{\gnushash}{\#}
+\newcommand{\gnushat}{\%}
+\newcommand{\gnustilde}{\%}
+\newcommand{\gnusless}{{$<$}}
+\newcommand{\gnusgreater}{{$>$}}
+
+\newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=gnus-head.eps,height=1cm}}}
+\newcommand{\gnusinteresting}{
+\marginpar[\hspace{2.5cm}\gnushead]{\gnushead}
+}
+
+\newcommand{\gnuschapter}[1]{
+\chapter{#1}
+\renewcommand{\gnuschaptername}{#1}
+\thispagestyle{empty}
+% \epsfig{figure=gnus-herd-\arabic{chapter}.eps,height=15cm}
+\clearpage
+}
+
+\newcommand{\gnusitemx}[1]{{\itemsep=0pt\item#1}}
+
+\newcommand{\gnussection}[1]{
+\renewcommand{\gnussectionname}{#1}
+\section{#1}
+}
 
 \newenvironment{codelist}%
 {\begin{list}{}{
@@ -42,6 +88,7 @@
 
 \newenvironment{kbdlist}%
 {\begin{list}{}{
+\labelwidth=0cm
 }
 }{\end{list}}
 
@@ -70,19 +117,99 @@
 }
 }{\end{list}}
 
+\newlength{\headrulewidth}
+\setlength{\headrulewidth}{\headtextwidth}
+\addtolength{\headrulewidth}{-2.6ex}
+\newlength{\headwrule}
+\setlength{\headwrule}{\headrulewidth}
+\addtolength{\headwrule}{-0ex}
+
 \newpagestyle{gnus}%
 {
-{\underline{\makebox{\hfill}}}
+{
+\ifodd\count0
+{
+\hspace*{-2ex}
+\underline{
+\makebox[\headtextwidth]{
+\hspace*{-2.1ex}
+%\ifnum chapter=0\else
+\textbf{\arabic{chapter}.\arabic{section}}
+%\fi
+\textbf{\gnussectionname\hfill\arabic{page}}
+}}
+%\hspace*{-\headrulewidth}
+%\raisebox{-3pt}{\rule{\headwrule}{0.5pt}}
+}
+\else
+{
+\hspace*{-2.1cm}
+\underline{
+\hspace*{-2ex}
+\makebox[\headtextwidth]{
+\textbf{\arabic{page}\hfill\gnuschaptername}
+%\hspace*{-\headrulewidth}
+%\raisebox{-3pt}{\rule{\headwrule}{0.5pt}}
+}}
+}
+\fi
+}
 }
 {
 \ifodd\count0
-% \epsfbox{foot-gnus.ps} hei \hfill \arabic{page}
+\mbox{} \hfill 
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
 \else
-\arabic{page} \hfill hei % \epsfbox{foot-gnus}
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\hfill \mbox{}
 \fi
 }
 \pagestyle{gnus}
 
+@end iflatex
+@end iftex
+
+@iftex
+@iflatex
+\begin{titlepage}
+{
+
+%\addtolength{\oddsidemargin}{-5cm}
+%\addtolength{\evensidemargin}{-5cm}
+\parindent=0cm
+\addtolength{\textheight}{2cm}
+
+\gnustitle{\gnustitlename}\\
+\rule{15cm}{1mm}\\
+\vfill
+\hspace*{-1cm}\epsfig{figure=gnus-big-logo.eps,height=15cm}
+\vfill
+\rule{15cm}{1mm}\\
+\gnusauthor{by Lars Magne Ingebrigtsen}
+\newpage
+}
+
+\mbox{}
+\vfill
+
+\thispagestyle{empty}
+
+Copyright \copyright{} 1995 Free Software Foundation, Inc. 
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+\newpage
+\end{titlepage}
 @end iflatex
 @end iftex
 
@@ -112,7 +239,7 @@ Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions.
 @end ifinfo
 
-@iftex
+@tex
 
 @titlepage
 @title September Gnus Manual
@@ -138,7 +265,7 @@ into another language, under the above conditions for modified versions.
 @end titlepage
 @page
 
-@end iftex
+@end tex
 
 
 @node Top
@@ -449,6 +576,8 @@ Of course, GNUS was written by Masanobu UMEDA.
 Many excellent functions, especially dealing with scoring and
 highlighting (as well as the @sc{soup} support) was written
 by Per Abrahamsen.
+@item
+Design and graphics were done by Luis Fernandes.
 @item
 Innumerable bug fixes were written by Sudish Joseph.
 @item 
@@ -768,7 +897,8 @@ variables.
 @section Finding the News
 
 @vindex gnus-select-method
-The @code{gnus-select-method} variable controls how Gnus finds news.
+@c @head
+The @code{gnus-select-method} variable controls how Gnus finds news. 
 This variable should be a list where the first element says @dfn{how}
 and the second element says @dfn{where}.  This method is your native
 method.  All groups that are not fetched with this method are foreign
@@ -821,6 +951,7 @@ want to.  This also makes @file{.newsrc} maintenance much tidier.
 @xref{Foreign Groups}.
 
 @vindex gnus-secondary-select-methods
+@c @head
 A slightly different approach to foreign groups is to set the
 @code{gnus-secondary-select-methods} variable.  The select methods
 listed in this variable are in many ways just as native as the
@@ -881,6 +1012,7 @@ find it difficult to actually do anything in the group buffer.  But,
 hey, that's your problem.  Blllrph!
 
 @findex gnus-no-server
+@c @head
 If you know that the server is definitely down, or you just want to read
 your mail without bothering with the server at all, you can use the
 @code{gnus-no-server} command to start Gnus.  That might come in handy
@@ -1154,6 +1286,7 @@ ignore hierarchies you aren't ever interested in.
 @c if you set it to anything else.
 
 @vindex gnus-read-active-file
+@c @head
 The active file can be rather Huge, so if you have a slow network, you
 can set @code{gnus-read-active-file} to @code{nil} to prevent Gnus from
 reading the active file.  This variable is @code{t} by default.
@@ -1330,10 +1463,10 @@ Group name.
 Newsgroup description.
 
 @item o
-Moderated.
+@samp{m} if moderated.
 
 @item O
-Moderated.
+@samp{(m)} if moderated.
 
 @item s
 Select method.
@@ -2532,8 +2665,8 @@ and @code{news}.
 
 
 @node SOUP
-@subsection @sc{soup}
-@cindex @sc{SOUP}
+@subsection SOUP
+@cindex SOUP
 @cindex offline
 
 In the PC world people often talk about ``offline'' newsreaders.  These
@@ -2599,7 +2732,7 @@ reading and Gnus for packing/sending these @sc{soup} packets.
 
 
 @node SOUP Commands
-@subsubsection @sc{soup} Commands
+@subsubsection SOUP Commands
 
 @table @kbd
 @item G s b
@@ -2746,7 +2879,7 @@ Regular expression matching incoming @sc{soup} packets.  The default is
 
 
 @node SOUP Replies
-@subsubsection @sc{SOUP} Replies
+@subsubsection SOUP Replies
 
 Just using @code{nnsoup} won't mean that your postings and mailings end
 up in @sc{soup} reply packets automagically.  You have to work a bit
@@ -2895,6 +3028,28 @@ the @code{Message-ID} as a parameter.  The function must return either
 
 You can turn this feature off completely by setting the variable to
 @code{nil}.
+
+If you want all the duplicate mails to be put into a special
+@dfn{duplicates} group, you could do that using the normal mail split
+methods:
+
+@lisp
+(setq nnmail-split-fancy
+      '(| ;; Messages duplicates go to a separate group.
+          ("gnus-warning" "duplication of message" "duplicate")
+          ;; Message from deamons, postmaster, and the like to another.
+	  (any mail "mail.misc")
+	  ;; Other rules.
+	  [ ... ] ))
+@end lisp
+
+Or something like:
+@lisp
+(setq nnmail-split-methods 
+      '(("duplicates" "^Gnus-Warning:")
+        ;; Other rules.
+        [...]))
+@end lisp
 
 Here's a neat feature: If you know that the recipient reads her mail
 with Gnus, and that she has @code{nnmail-treat-duplicates} set to
@@ -3919,14 +4074,6 @@ the hook for the group mode:
 @cindex topic variables
 
 
-@vindex gnus-group-topic-topics-only
-Whoo, this is complicated.  If @code{gnus-group-topic-topics-only} is
-@code{nil}, all groups and topics will be listed, as you would expect.
-If this variable is non-@code{nil}, only the topics will be listed, and
-the groups will not be listed.  This makes the group buffer much shorter,
-I'm sure you'll agree.  This is all modified on a topic-by-topic basis
-by the @var{show} parameter.   It makes perfect sense, really.
-
 @vindex gnus-topic-unique
 If @code{gnus-topic-unique} is non-@code{nil}, each group will be member
 of (tops) one topic each.  If this is @code{nil}, each group might end
@@ -3956,6 +4103,11 @@ Number of unread articles in the topic.
 @item A 
 Number of unread articles in the topic and all its subtopics. 
 @end table
+
+@vindex gnus-topic-indent-level
+Each sub-topic (and the groups in the sub-topics) will be indented with
+@code{gnus-topic-indent-level} times the topic level number of spaces.
+The default is @samp{2}.
 
 
 @node Topic Commands
@@ -4010,6 +4162,13 @@ usual.  When done on a topic line, the topic will be folded (if it was
 visible) or unfolded (if it was folded already).  So it's basically a
 toggling command on topics.  In addition, if you give a numerical
 prefix, group on that level (and lower) will be displayed.
+
+@item TAB
+@kindex TAB (Group)
+@findex gnus-topic-indent
+``Indent'' the current topic so that it becomes a sub-topic of the
+previous topic (@code{gnus-topic-indent}).  If given a prefix,
+``un-indent'' the topic instead.
 
 @item C-k
 @kindex C-k (Group)
@@ -4888,6 +5047,18 @@ I found that useful, so you can now also press @kbd{C-c C-p} to
 @dfn{put} the article in the current mail group, or, if there is no such
 thing, you will be prompted for a mail group, and then the article will
 be put there.  This means that the article is @dfn{not} mailed.  
+
+@findex gnus-kill-message-buffer
+@cindex kill mail buffer
+@kindex C-x k (Mail)
+@kindex C-x k (Post)
+If enter a mail (or post) buffer and then decide not to compose a
+message after all, you'd normally just kill the buffer with @kbd{C-x k}.
+However, since the mail and post buffers are associated with articles in
+the draft group, this will leave lots of rubbish articles in the draft
+group.  To avoid that problem, kill mail and post buffer with @kbd{C-c
+C-k} (@code{gnus-kill-message-buffer}) instead.  This will make sure
+that everything is properly cleaned up before the buffer is killed.
 
 There are three ``methods'' for handling all mail.  The default is
 @code{sendmail}.  Some people like what @code{mh} does better, and some
@@ -6334,6 +6505,9 @@ as 10, you might consider setting this variable to something sensible:
                              "\\|")
                   "\\)?\\]?:?[ \t]*"))
 @end lisp
+
+All words that match this regexp will be removed before comparing two
+subjects. 
 
 @item gnus-summary-gather-exclude-subject
 @vindex gnus-summary-gather-exclude-subject

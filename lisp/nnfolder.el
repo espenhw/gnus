@@ -19,8 +19,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -118,7 +119,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     (erase-buffer)
     (let ((delim-string (concat "^" rmail-unix-mail-delimiter))
 	  article art-string start stop)
-      (nnfolder-possibly-change-group newsgroup)
+      (nnfolder-possibly-change-group newsgroup server)
       (set-buffer nnfolder-current-buffer)
       (goto-char (point-min))
       (if (stringp (car sequence))
@@ -187,7 +188,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   nnfolder-status-string)
 
 (defun nnfolder-request-article (article &optional newsgroup server buffer)
-  (nnfolder-possibly-change-group newsgroup)
+  (nnfolder-possibly-change-group newsgroup server)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
@@ -222,29 +223,26 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-group (group &optional server dont-check)
   (save-excursion
     (nnmail-activate 'nnfolder)
-    (when (assoc group nnfolder-group-alist)
-      (nnfolder-possibly-change-group group)
-      (cond 
-       (dont-check
-	(nnheader-report 'nnfolder "Selected group %s" group)
-	t)
-       (t
+    (if (not (assoc group nnfolder-group-alist))
+	(nnheader-report 'nnfolder "No such group: %s" group)
+      (nnfolder-possibly-change-group group server)
+      (if dont-check
+	  (progn 
+	    (nnheader-report 'nnfolder "Selected group %s" group)
+	    t)
 	(let* ((active (assoc group nnfolder-group-alist))
 	       (group (car active))
 	       (range (car (cdr active)))
 	       (minactive (car range))
 	       (maxactive (cdr range)))
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer)
 	  (cond 
 	   ((null active)
 	    (nnheader-report 'nnfolder "No such group: %s" group))
 	   (t
 	    (nnheader-report 'nnfolder "Selected group %s" group)
-	    (insert (format "211 %d %d %d %s\n" 
-			    (1+ (- maxactive minactive))
-			    minactive maxactive group))
-	    t))))))))
+	    (nnheader-insert "211 %d %d %d %s\n" 
+			     (1+ (- maxactive minactive))
+			     minactive maxactive group))))))))
 
 (defun nnfolder-request-scan (&optional group server)
   (nnmail-get-new-mail
@@ -272,7 +270,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (if (or (assoc group nnfolder-buffer-alist)
 	  (equal group nnfolder-current-group))
       (progn
-	(nnfolder-possibly-change-group group)
+	(nnfolder-possibly-change-group group server)
 	(save-excursion
 	  (set-buffer nnfolder-current-buffer)
 	  ;; If the buffer was modified, write the file out now.
@@ -293,12 +291,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-create-group (group &optional server) 
   (nnmail-activate 'nnfolder)
-  (or (assoc group nnfolder-group-alist)
-      (let (active)
-	(setq nnfolder-group-alist 
-	      (cons (list group (setq active (cons 1 0)))
-		    nnfolder-group-alist))
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
+  (unless (assoc group nnfolder-group-alist)
+    (push (list group (cons 1 0)) nnfolder-group-alist)
+    (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
   t)
 
 (defun nnfolder-request-list (&optional server)
@@ -318,7 +313,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-expire-articles 
   (articles newsgroup &optional server force)
-  (nnfolder-possibly-change-group newsgroup)
+  (nnfolder-possibly-change-group newsgroup server)
   (let* ((is-old t)
 	 rest)
     (nnmail-activate 'nnfolder)
@@ -359,7 +354,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-move-article
   (article group server accept-form &optional last)
-  (nnfolder-possibly-change-group group)
+  (nnfolder-possibly-change-group group server)
   (let ((buf (get-buffer-create " *nnfolder move*"))
 	result)
     (and 
@@ -379,7 +374,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
        (kill-buffer buf)
        result)
      (save-excursion
-       (nnfolder-possibly-change-group group)
+       (nnfolder-possibly-change-group group server)
        (set-buffer nnfolder-current-buffer)
        (goto-char (point-min))
        (if (search-forward (nnfolder-article-string article) nil t)
@@ -444,7 +439,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   t)
 
 (defun nnfolder-request-rename-group (group new-name &optional server)
-  (nnfolder-possibly-change-group group)
+  (nnfolder-possibly-change-group group server)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     (and (file-writable-p buffer-file-name)
@@ -493,9 +488,12 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	     (point-max))))
       (delete-region (point-min) (point-max)))))
 
-(defun nnfolder-possibly-change-group (group)
-  (or (file-exists-p nnfolder-directory)
-      (make-directory (directory-file-name nnfolder-directory) t))
+(defun nnfolder-possibly-change-group (group &optional server)
+  (when (and server
+	     (not (nnfolder-server-opened server)))
+    (nnfolder-open-server server))
+  (unless (file-exists-p nnfolder-directory)
+    (make-directory (directory-file-name nnfolder-directory) t))
   (nnfolder-possibly-activate-groups nil)
   (or (assoc group nnfolder-group-alist)
       (not (file-exists-p (concat (file-name-as-directory nnfolder-directory)

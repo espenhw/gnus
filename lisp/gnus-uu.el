@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -900,9 +901,8 @@ The headers will be included in the sequence they are matched.")
        (setcar files (nconc (list (if (string= action "gnus-uu-archive")
 				      (cons 'action "file")
 				    (cons 'action action))
-				  (cons 'execute (if (string-match "%" action)
-						     (format action name)
-						   (concat action " " name))))
+				  (cons 'execute (gnus-uu-command
+						  action name)))
 			    (car files))))
       (setq files (cdr files)))
     ofiles))
@@ -1220,7 +1220,8 @@ The headers will be included in the sequence they are matched.")
 	(setq state 'middle)))
 
     ;; When there are no result-files, then something must be wrong.
-    (unless result-files
+    (if result-files
+	(message "")
       (cond
        ((not has-been-begin)
 	(message "Wrong type file"))
@@ -1300,7 +1301,7 @@ The headers will be included in the sequence they are matched.")
 		(or (looking-at gnus-uu-body-line)
 		    (gnus-delete-line))
  
-					; Replace any slashes and spaces in file names before decoding
+		;; Replace any slashes and spaces in file names before decoding
 		(goto-char name-beg)
 		(while (re-search-forward "/" name-end t)
 		  (replace-match ","))

@@ -1,6 +1,246 @@
+Sun Feb  4 16:22:20 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-edit-article): Make sure we're in the
+	summary buffer.
+
+Sun Feb  4 14:05:20 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nndoc.el (nndoc-guess-digest-type): Too strict body-begin for
+	MIME digests.
+
+	* gnus-msg.el (gnus-removable-headers): Don't remove Bcc header.
+	(gnus-mail-send): Accept a parameter.
+	(gnus-inews-send-mail-copy): Use it.
+
+	* gnus-salt.el (gnus-tree-close): Don't kill the tree buffer.
+
+	* gnus.el (gnus-summary-select-article): Changed return value.
+	(gnus-summary-scroll-up): Use it.
+
+Sat Feb  3 20:39:59 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-dummy-line-format): Included tabs.
+	(gnus-summary-prepare-threads): Insert dummy lines properly.
+	(gnus-summary-hide-thread): Hide dummies better.
+
+	* gnus-uu.el (gnus-uu-get-actions): Escape special characters.
+
+	* gnus-soup.el (gnus-soup-group-brew): Add articles in right
+	order; don't generate display.
+
+	* gnus.el (gnus-summary-sort): Allow sorting in reverse order.
+	(gnus-summary-pop-limit): Don't pop if there isn't anything to
+	pop. 
+	(gnus-sort-articles): Would destroy the newsgroup data.
+
+	* gnus-soup.el (gnus-soup-unpack-packet): Return the process value.
+
+	* gnus.el (gnus-summary-exit): Don't bury buffers that don't exist.
+	(gnus-summary-exit-no-update): Ditto.
+
+Sat Feb  3 14:37:31 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus-soup.el (gnus-soup-add-article): Would bug out on
+	non-existent articles. 
+
+	* gnus.el (gnus-configure-windows): Delete windows on all frames.
+
+Sat Feb  3 15:07:38 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-read-group): Wouldn't score anything.
+
+	* gnus.el: 0.34 is released.
+
+Sat Feb  3 13:08:48 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-summary-resend-bounced-mail): Strip more
+	gruft. 
+
+	* gnus.el: 0.33 is released.
+
+Fri Feb  2 20:19:07 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-exit): Bury the article buffer.
+
+	* gnus-score.el (gnus-score-followup-article): Don't do
+	`score-effect'. 
+
+Fri Feb  2 20:07:31 1996  Jason L. Tibbitts, III  <tibbs@uh.edu>
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Allow many spaces
+	after ":".
+
+Fri Feb  2 20:05:02 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-select-article): Return t on success.
+
+Thu Feb  1 00:50:54 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnfolder.el (nnfolder-request-group): Give a better error
+	message. 
+
+	* nnfolder.el: Really use virtual servers.
+
+	* gnus.el (gnus-select-newsgroup): Moved score file processing to
+	an earlier point.
+
+	* gnus-msg.el (gnus-post-method): Use `gnus-post-method' from the
+	group buffer.
+
+	* nnsoup.el (nnsoup-request-expire-articles): Bombed.
+	(nnsoup-delete-unreferenced-message-files): New command.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Update cache
+	mark. 
+	(gnus-cache-possibly-remove-article): Ditto.
+
+	* gnus-srvr.el (gnus-server-prepare): Weed out nil servers.
+
+	* gnus-msg.el (gnus-mail-reply): Respect
+	`rmail-dont-reply-to-names'. 
+
+Wed Jan 31 19:25:50 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-msg.el (gnus-inews-insert-mime-headers): `(widen)' before
+	searching for 8-bit characters.
+
+	* gnus-vis.el (gnus-article-highlight-headers): Make it ignore
+	the `intangible' text property.
+
+Thu Feb  1 00:33:37 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-limit-to-unread): Remove sparse articles. 
+
+Wed Jan 31 15:54:38 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-summary-score-map): Recursive map.
+
+	* gnus-msg.el (gnus-dissociate-buffer-from-draft): Didn't run hook
+	properly.
+
+	* gnus-kill.el (gnus-execute): Don't use `gnus-header-*'.
+
+	* gnus-msg.el (gnus-kill-message-buffer): New command and
+	keystroke. 
+	(gnus-mail-setup): Use the gnus-mail-*-method variables.
+
+	* gnus-topic.el (gnus-topic-rename): Default to current topic.
+	(gnus-topic-create-topic): Ditto.
+
+	* gnus-vis.el (gnus-group-highlight-line): Offer ticked number.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Remove the message.
+
+	* gnus-vis.el (gnus-group-highlight): New default for dark
+	backgrounds. 
+
+	* gnus-topic.el (gnus-group-prepare-topics): Don't do anything
+	about dead groups.
+
+	* gnus.el (gnus-summary-mode-map): Clobbered "D".
+
+Mon Jan 29 19:06:00 1996  Kim-Minh Kaplan  <kkaplan@cdfhp3.in2p3.fr>
+
+	* gnus.el (gnus-simplify-subject-fuzzy): Fold case.
+
+Mon Jan 29 17:48:12 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-limit): Hide any threads, possibly.
+
+	* gnus-msg.el (gnus-forward-insert-buffer): Really delete unwanted
+	headers.
+
+	* gnus-vis.el (gnus-insert-prev-page-button): Allow clicking.
+	(gnus-insert-next-page-button): Ditto.
+
+	* nntp.el (nntp-send-region-to-server): Copy text to a temp buffer
+	before sending.
+
+Sun Jan 28 10:28:39 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus-cite.el (gnus-dissect-cited-text): Don't push a nil on the
+	list. 
+
+Sat Jan 27 20:32:29 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-group-topic-topics-only): Removed variable. 
+
+	* nnbabyl.el (nnbabyl-request-group): Don't report failures on
+	empty groups.
+	* nnmbox.el (nnmbox-request-group): Ditto.
+
+	* gnus.el (gnus-simplify-buffer-fuzzy): Simplify [x/x].
+
+	* gnus-score.el (gnus-score-default-header): Duplicate defvars.
+	(gnus-summary-increase-score): Default variables should be
+	symbols, not chars.
+
+	* gnus.el (gnus-summary-mode-map): Wrong name for `t' keystroke. 
+
+Sat Jan 27 20:29:45 1996  Marc Auslander  <marc@watson.ibm.com>
+
+	* gnus-score.el (gnus-summary-increase-score): Didn't work for
+	non-temporary score entries.
+
+Fri Jan 26 17:24:00 1996  David K}gedal  <davidk@lysator.liu.se>
+
+	* nnmail.el (nnmail-check-duplication): Don't tread 'delete as a
+ 	function
+
+Sat Jan 27 19:51:08 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-prepare-topic): Number of groups would
+	be 0.
+	(gnus-topic-update-topic-line): Ditto.
+
+Fri Jan 26 15:10:09 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-vis.el (gnus-article-add-buttons): Need to reset point to top
+	of article before trying the next regexp in the gnus-button-alist.
+
+Sat Jan 27 19:22:24 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-button-alist): Allow space after "<URL: ". 
+
+Fri Jan 26 20:20:25 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-indent-level): New variable.
+	(gnus-topic-yank-group): Use it.
+	(gnus-topic-insert-topic-line): Ditto.
+	(gnus-topic-prepare-topic): Ditto.
+
+Fri Jan 26 17:18:25 1996  ISO-2022-JP  <yamaoka@ga.sony.co.jp>
+
+	* gnus-vis.el (gnus-article-highlight-headers): Would infloop. 
+
+Fri Jan 26 14:10:19 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-dribble-read-file): Set file modes on the dribble
+	file. 
+	(gnus-article-check-hidden-text): Only checked signature.
+	(gnus-article-check-hidden-text): Do things in the article
+	buffer. 
+	(gnus-group-line-format-alist): Let N have its old definition.
+	(gnus-group-catchup-group-hook): New variable.
+	(gnus-group-catchup): Use it.
+	(gnus-group-remove-mark): Give a useful return value.
+	(gnus-group-kill-group): Would bug out when killing lots of dead
+	groups.  
+
+Thu Jan 25 09:32:19 1996  Jack Vinson  <jvinson@cheux.ecs.umass.edu>
+
+	* gnus.el (gnus-group-insert-group-line) : Changed "header" to
+	"gnus-tmp-header" for parameter that gets passed to user
+	functions.  Set to the group name, but may not necessarily want
+	this.
+	(gnus-group-set-mode-line) : ditto, gnus-tmp-header set to nil.
+	(gnus-set-mode-line) : ditto, gnus-tmp-header set to nil.
+
 Fri Jan 26 07:47:59 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 
 	* gnus.el (gnus): Goto the first unread group.
+
+	* gnus.el: 0.32 is released.
 
 Thu Jan 25 18:27:03 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 

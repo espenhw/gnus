@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -326,7 +327,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (setcdr entry
 	      (list
 	       (cons 'head-end "^ ?$")
-	       (cons 'body-begin "^ \n")
+	       (cons 'body-begin "^ ?\n")
 	       (cons 'article-begin b-delimiter)
 	       (cons 'body-end-function 'nndoc-digest-body-end)
 ;	       (cons 'body-end 
@@ -447,7 +448,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (and (re-search-backward nndoc-article-begin nil t)
 	       (setq end (point))
 	       (search-forward "\n\n" beg t)
-	       (re-search-backward "^Content-Length: \\([0-9]+\\) *$" end t)
+	       (re-search-backward "^Content-Length:[ \t]*\\([0-9]+\\) *$" end t)
 	       (setq len (string-to-int (match-string 1)))
 	       (search-forward "\n\n" beg t)
 	       (or (= (setq len (+ (point) len)) (point-max))

@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -133,16 +134,16 @@ move those articles instead."
       (while articles
 	;; Find the header of the article.
 	(set-buffer gnus-summary-buffer)
-	(setq headers (gnus-summary-article-header (car articles)))
-	;; Put the article in a buffer.
-	(set-buffer tmp-buf)
-	(when (gnus-request-article-this-buffer 
-	       (car articles) gnus-newsgroup-name)
-	  (gnus-soup-store gnus-soup-directory prefix headers
-			   gnus-soup-encoding-type 
-			   gnus-soup-index-type)
-	  (gnus-soup-area-set-number 
-	   area (1+ (or (gnus-soup-area-number area) 0))))
+	(when (setq headers (gnus-summary-article-header (car articles)))
+	  ;; Put the article in a buffer.
+	  (set-buffer tmp-buf)
+	  (when (gnus-request-article-this-buffer 
+		 (car articles) gnus-newsgroup-name)
+	    (gnus-soup-store gnus-soup-directory prefix headers
+			     gnus-soup-encoding-type 
+			     gnus-soup-index-type)
+	    (gnus-soup-area-set-number 
+	     area (1+ (or (gnus-soup-area-number area) 0)))))
 	;; Mark article as read. 
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-remove-process-mark (car articles))
@@ -256,14 +257,16 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
       msg-buf)))
 
 (defun gnus-soup-group-brew (group)
+  "Enter GROUP and add all articles to a SOUP package."
   (let ((gnus-expert-user t)
 	(gnus-large-newsgroup nil))
-    (and (gnus-summary-read-group group)
-	 (let ((gnus-newsgroup-processable 
-		(gnus-sorted-complement 
-		 gnus-newsgroup-unreads
-		 (append gnus-newsgroup-dormant gnus-newsgroup-marked))))
-	   (gnus-soup-add-article nil)))
+    (when (gnus-summary-read-group group nil nil nil t)
+      (let ((gnus-newsgroup-processable 
+	     (nreverse
+	      (gnus-sorted-complement 
+	       gnus-newsgroup-unreads
+	       (append gnus-newsgroup-dormant gnus-newsgroup-marked)))))
+	(gnus-soup-add-article nil)))
     (gnus-summary-exit)))
 
 (defun gnus-soup-insert-idx (offset header)
@@ -487,12 +490,16 @@ file. The vector contain three strings, [prefix name encoding]."
     (int-to-string (cdr entry))))
 
 (defun gnus-soup-unpack-packet (dir unpacker packet)
+  "Unpack PACKET into DIR using UNPACKER.
+Return whether the unpacking was successful."
   (gnus-make-directory dir)
   (message "Unpacking: %s" (format unpacker packet))
-  (call-process
-   "sh" nil nil nil "-c"
-   (format "cd %s ; %s" (expand-file-name dir) (format unpacker packet)))
-  (message "Unpacking...done"))
+  (prog1
+      (zerop (call-process
+	      "sh" nil nil nil "-c"
+	      (format "cd %s ; %s" (expand-file-name dir) 
+		      (format unpacker packet))))
+    (message "Unpacking...done")))
 
 (defun gnus-soup-send-packet (packet)
   (gnus-soup-unpack-packet 

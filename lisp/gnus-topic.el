@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -47,11 +48,11 @@ with some simple extensions.
 %A  Number of unread articles in the groups in the topic and its subtopics.
 ")
 
-(defvar gnus-group-topic-topics-only nil
-  "*If non-nil, only the topics will be shown when typing `l' or `L'.")
-
 (defvar gnus-topic-unique t
   "*If non-nil, each group will only belong to one topic.")
+
+(defvar gnus-topic-indent-level 2
+  "*How much each subtopic should be indented.")
 
 ;; Internal variables.
 
@@ -110,6 +111,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (erase-buffer))
     
     ;; List dead groups?
+    (when nil
     (when (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie))
       (gnus-group-prepare-flat-list-dead 
        (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 
@@ -120,7 +122,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
       (gnus-group-prepare-flat-list-dead 
        (setq gnus-killed-list (sort gnus-killed-list 'string<))
        gnus-level-killed ?K
-       regexp))
+       regexp)))
     
     ;; Use topics.
     (when (< lowest gnus-level-zombie)
@@ -140,9 +142,11 @@ articles in the topic and its subtopics."
   (let* ((type (pop topic))
 	 (entries (gnus-topic-find-groups (car type) list-level all))
 	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
-	 (gnus-group-indentation (make-string (* 2 level) ? ))
+	 (gnus-group-indentation 
+	  (make-string (* gnus-topic-indent-level level) ? ))
 	 (beg (progn (beginning-of-line) (point)))
 	 (topic (reverse topic))
+	 (all-entries entries)
 	 (unread 0)
 	 info entry end)
     ;; Insert any sub-topics.
@@ -169,7 +173,7 @@ articles in the topic and its subtopics."
       (gnus-topic-insert-topic-line 
        (car type) visiblep
        (not (eq (nth 2 type) 'hidden))
-       level entries unread))
+       level all-entries unread))
     (goto-char end)
     unread))
 
@@ -254,7 +258,7 @@ articles in the topic and its subtopics."
 (defun gnus-topic-insert-topic-line (name visiblep shownp level entries 
 					  &optional unread)
   (let* ((visible (if visiblep "" "..."))
-	 (indentation (make-string (* 2 level) ? ))
+	 (indentation (make-string (* gnus-topic-indent-level level) ? ))
 	 (total-number-of-articles unread)
 	 (number-of-groups (length entries))
 	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist)))
@@ -406,6 +410,7 @@ articles in the topic and its subtopics."
 		   (car type) (car gnus-group-list-mode)
 		   (cdr gnus-group-list-mode)))
 	 (visiblep (eq (nth 1 type) 'visible))
+	 (all-entries entries)
 	 (unread 0)
 	 info entry end)
     ;; Tally any sub-topics.
@@ -420,7 +425,7 @@ articles in the topic and its subtopics."
       (gnus-topic-insert-topic-line 
        (car type) visiblep
        (not (eq (nth 2 type) 'hidden))
-       level entries unread)
+       level all-entries unread)
       (gnus-delete-line))
     unread))
 
@@ -563,6 +568,7 @@ articles in the topic and its subtopics."
 	(push (cons 'gnus-topic-mode gnus-topic-mode-map)
 	      minor-mode-map-alist))
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
+      (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
       (make-local-variable 'gnus-group-prepare-function)
       (setq gnus-group-prepare-function 'gnus-group-prepare-topics)
       (make-local-variable 'gnus-group-goto-next-group-function)
@@ -617,7 +623,8 @@ group."
   (interactive 
    (list
     (read-string "Create topic: ")
-    (completing-read "Parent topic: " gnus-topic-alist nil t)))
+    (completing-read "Parent topic: " gnus-topic-alist nil t
+		     (cons (gnus-group-parent-topic) 0))))
   ;; Check whether this topic already exists.
   (when (gnus-topic-find-topology topic)
     (error "Topic aleady exists"))
@@ -730,9 +737,10 @@ group."
 	   (gnus-topic-inhibit-change-level t)
 	   (gnus-group-indentation
 	    (make-string 
-	     (* 2 (or (save-excursion
-			(gnus-topic-goto-topic (gnus-group-parent-topic))
-			(gnus-group-topic-level)) 0)) ? ))
+	     (* gnus-topic-indent-level
+		(or (save-excursion
+		      (gnus-topic-goto-topic (gnus-group-parent-topic))
+		      (gnus-group-topic-level)) 0)) ? ))
 	   yanked group alist)
       ;; We first yank the groups the normal way...
       (setq yanked (gnus-group-yank-group arg))
@@ -824,7 +832,8 @@ group."
   (interactive
    (let (topic)
      (list
-      (setq topic (completing-read "Rename topic: " gnus-topic-alist nil t))
+      (setq topic (completing-read "Rename topic: " gnus-topic-alist nil t
+				   (cons (gnus-group-parent-topic) 0)))
       (read-string (format "Rename %s to: " topic)))))
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))

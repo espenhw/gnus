@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -321,6 +322,10 @@ all. This may very well take some time.")
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
+    (nnml-possibly-change-directory group)
+    (unless nnml-article-file-alist
+      (setq nnml-article-file-alist
+	    (nnheader-article-to-file-alist nnml-current-directory)))
     (and 
      (nnml-deletable-article-p group article)
      (nnml-request-article article group server)

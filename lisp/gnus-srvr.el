@@ -17,8 +17,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -192,7 +193,7 @@ The following commands are available:
     ;; First we do the real list of servers.
     (while alist
       (push (cdr (setq server (pop alist))) done)
-      (when server
+      (when (and server (car server))
 	(gnus-server-insert-server-line (car server) (cdr server))))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.

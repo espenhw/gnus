@@ -17,8 +17,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -173,7 +174,8 @@ variable to \"^nnml\".")
 	      ;; Update the active info.
 	      (set-buffer gnus-summary-buffer)
 	      (gnus-cache-update-active group number)
-	      (push number gnus-newsgroup-cached))
+	      (push number gnus-newsgroup-cached)
+	      (gnus-summary-update-secondary-mark article))
 	    t))))))
 
 (defun gnus-cache-enter-remove-article (article)
@@ -372,6 +374,7 @@ Returns the list of articles removed."
 			   (progn (forward-line 1) (point)))))
       (setq gnus-newsgroup-cached
 	    (delq article gnus-newsgroup-cached))
+      (gnus-summary-update-secondary-mark article)
       t)))
 
 (defun gnus-cache-articles-in-group (group)

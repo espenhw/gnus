@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -213,7 +214,7 @@
   `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
+    ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
     (,gnus-button-url-regexp 0 t gnus-button-url 0)
@@ -262,10 +263,13 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
     '((mailp . bold)
       ((= unread 0) . italic)))
    ((eq gnus-background-mode 'dark)
-    `(((not mailp) .
-       ,(custom-face-lookup "ForestGreen" nil nil t nil nil))
-      ((zerop unread) .
-       ,(custom-face-lookup "Blue" nil nil t nil nil))))
+    `(((> unread 200) . ,(custom-face-lookup "Red" nil nil t nil nil))
+      ((and (< level 3) (zerop unread)) . 
+       ,(custom-face-lookup "SeaGreen" nil nil t nil nil))
+      ((< level 3) . ,(custom-face-lookup "SpringGreen" nil nil t nil nil))
+      ((zerop unread) . ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
+      (t . ,(custom-face-lookup "SkyBlue" nil nil t nil nil))
+      ))
    (t
     `(((not mailp) .
        ,(custom-face-lookup "ForestGreen" nil nil t nil nil))
@@ -283,6 +287,7 @@ method: The select method.
 mailp: Whether the select method is a mail method.
 level: The level of the group.
 score: The score of the group.
+ticked: The number of ticked articles in the group.
 ")
 
 
@@ -578,10 +583,10 @@ score: The score of the group.
 	:selected (null gnus-score-default-header)]
        ["From" (gnus-score-set-default 'gnus-score-default-header 'a)
 	:style radio 
-	:selected (eq gnus-score-default-header 'a )]
+	:selected (eq gnus-score-default-header 'a)]
        ["Subject" (gnus-score-set-default 'gnus-score-default-header 's)
 	:style radio 
-	:selected (eq gnus-score-default-header 's )]
+	:selected (eq gnus-score-default-header 's)]
        ["Article body"
 	(gnus-score-set-default 'gnus-score-default-header 'b)
 	:style radio 
@@ -807,65 +812,6 @@ score: The score of the group.
   ;; It is the message that forces the active status to be updated.
   (message ""))
 
-(defvar gnus-score-default-header nil
-  "Default header when entering new scores.
-
-Should be one of the following symbols.
-
- a: from
- s: subject
- b: body
- h: head
- i: message-id
- t: references
- x: xref
- l: lines
- d: date
- f: followup
-
-If nil, the user will be asked for a header.")
-
-(defvar gnus-score-default-type nil
-  "Default match type when entering new scores.
-
-Should be one of the following symbols.
-
- s: substring
- e: exact string
- f: fuzzy string
- r: regexp string
- b: before date
- a: at date
- n: this date
- <: less than number
- >: greater than number
- =: equal to number
-
-If nil, the user will be asked for a match type.")
-
-(defvar gnus-score-default-fold nil
-  "Use case folding for new score file entries iff not nil.")
-
-
-(defun gnus-score-default-fold-toggle ()
-  "Toggle folding for new score file entries."
-  (interactive)
-  (setq gnus-score-default-fold (not gnus-score-default-fold))
-  (if gnus-score-default-fold
-      (message "New score file entries will be case insensitive.")
-    (message "New score file entries will be case sensitive.")))
-
-(defvar gnus-score-default-duration nil
-  "Default duration of effect when entering new scores.
-
-Should be one of the following symbols.
-
- t: temporary
- p: permanent
- i: immediate
-
-If nil, the user will be asked for a duration.")
-
 (defun gnus-visual-score-map (type)
   (if t
       nil
@@ -1044,11 +990,13 @@ If nil, the user will be asked for a duration.")
 	 (unread (if (numberp (car entry)) (car entry) 0))
 	 (info (nth 2 entry))
 	 (method (gnus-server-get-method group (gnus-info-method info)))
+	 (marked (gnus-info-marks info))
 	 (mailp (memq 'mail (assoc (symbol-name
 				    (car (or method gnus-select-method)))
 				   gnus-valid-select-methods)))
 	 (level (gnus-info-level info))
 	 (score (gnus-info-score info))
+	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
 	 (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.
     (while (and list
@@ -1324,17 +1272,21 @@ do the highlighting.  See the documentation for those functions."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (save-restriction
-      (goto-char (point-min))
-      (when (search-forward "\n\n" nil t)
-	(narrow-to-region (1- (point)) (point-min))
-	(let ((alist gnus-header-face-alist)
-	      (buffer-read-only nil)
-	      (case-fold-search t)
-	      (inhibit-point-motion-hooks t)
-	      entry regexp header-face field-face from hpoints fpoints)
+      (let ((alist gnus-header-face-alist)
+	    (buffer-read-only nil)
+	    (case-fold-search t)
+	    (inhibit-point-motion-hooks t)
+	    entry regexp header-face field-face from hpoints fpoints)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (narrow-to-region (1- (point)) (point-min))
 	  (while (setq entry (pop alist))
 	    (goto-char (point-min))
-	    (setq regexp (concat "^\\(" (nth 0 entry) "\\)")
+	    (setq regexp (concat "^\\("
+				 (if (string-equal "" (nth 0 entry))
+				     "[^\t ]"
+				   (nth 0 entry))
+				 "\\)")
 		  header-face (nth 1 entry)
 		  field-face (nth 2 entry))
 	    (while (and (re-search-forward regexp nil t)
@@ -1350,7 +1302,7 @@ do the highlighting.  See the documentation for those functions."
 			 (not (memq (setq from (point)) fpoints)))
 		(push from fpoints)
 		(if (re-search-forward "^[^ \t]" nil t)
-		    (forward-char -1)
+		    (forward-char -2)
 		  (goto-char (point-max)))
 		(put-text-property from (point) 'face field-face)))))))))
 
@@ -1397,6 +1349,7 @@ specified by `gnus-button-alist'."
       (setq beg (point))
       (while (setq entry (pop alist))
 	(setq regexp (car entry))
+	(goto-char beg)
 	(while (re-search-forward regexp nil t)
 	  (let* ((start (and entry (match-beginning (nth 1 entry))))
 		 (end (and entry (match-end (nth 1 entry))))
@@ -1592,8 +1545,10 @@ specified by `gnus-button-alist'."
 
 (defun gnus-insert-prev-page-button ()
   (let ((buffer-read-only nil))
-    (gnus-eval-format gnus-prev-page-line-format nil
-		      `(gnus-prev t local-map ,gnus-prev-page-map))))
+    (gnus-eval-format 
+     gnus-prev-page-line-format nil
+     `(gnus-prev t local-map ,gnus-prev-page-map
+		 gnus-callback gnus-article-prev-page))))
 
 (defvar gnus-next-page-map nil)
 (unless gnus-next-page-map
@@ -1605,7 +1560,8 @@ specified by `gnus-button-alist'."
 (defun gnus-insert-next-page-button ()
   (let ((buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
-		      `(gnus-next t local-map ,gnus-next-page-map))))
+		      `(gnus-next t local-map ,gnus-next-page-map
+				  gnus-callback gnus-article-prev-page))))
 
 ;;; Compatibility Functions:
 
