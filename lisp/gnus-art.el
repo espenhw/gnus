@@ -2758,7 +2758,9 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (expand-file-name
        (if (gnus-use-long-file-name 'not-save)
 	   newsgroup
-	 (expand-file-name "news" (gnus-newsgroup-directory-form newsgroup)))
+	 (file-relative-name
+	  (expand-file-name "news" (gnus-newsgroup-directory-form newsgroup))
+	  default-directory))
        gnus-article-save-directory)))
 
 (defun gnus-sender-save-name (newsgroup headers &optional last-file)

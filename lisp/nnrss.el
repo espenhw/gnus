@@ -193,7 +193,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 		    "\t" ;; subject
 		    (if (nth 4 e)
 			(nnrss-format-string (nth 4 e))
-			"(nobody)")
+		      "(nobody)")
 		    "\t" ;;from
 		    (or (nth 5 e) "")
 		    "\t" ;; date
@@ -564,8 +564,9 @@ It is useful when `(setq nnrss-use-local t)'."
   (nnweb-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
 
 (defun nnrss-node-text (node)
-  (if (stringp node) node
-    (mapconcat 'nnrss-node-text (cddr node) "")))
+  (if (and node (listp node))
+      (mapconcat 'nnrss-node-text (cddr node) "")
+    node))
 
 (provide 'nnrss)
 

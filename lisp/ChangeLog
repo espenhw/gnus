@@ -1,3 +1,10 @@
+2001-06-12 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-plain-save-name): Use file-relative-name. 
+	From Marc Lefranc <Marc.Lefranc@univ-lille1.fr>.
+	
+	* nnrss.el (nnrss-node-text): Node might be nil.
+
 2001-06-11 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-uu.el (gnus-uu-save-article): Use mml tag instead of
