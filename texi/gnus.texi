@@ -5092,6 +5092,11 @@ answered) will be marked with an @samp{A} in the second column
 All articles that you have forwarded will be marked with an @samp{O} in
 the second column (@code{gnus-forwarded-mark}).
 
+@vindex gnus-recent-mark
+Articles that are ``recently'' arrived in the group will be marked
+with an @samp{N} in the second column (@code{gnus-recent-mark}).  Most
+backend doesn't support the mark, in which case it's not shown.
+
 @item
 @vindex gnus-cached-mark
 Articles stored in the article cache will be marked with an @samp{*} in
@@ -21694,8 +21699,8 @@ marks not mentioned) mark and removing (preserving the marks not
 mentioned) marks.  MARK is a list of marks; where each mark is a symbol.
 Currently used marks are @code{read}, @code{tick}, @code{reply},
 @code{expire}, @code{killed}, @code{dormant}, @code{save},
-@code{download} and @code{unsend}, but your backend should, if possible,
-not limit itself to these.
+@code{download}, @code{unsend}, @code{forward} and @code{recent}, 
+but your backend should, if possible, not limit itself to these.
 
 Given contradictory actions, the last action in the list should be the
 effective one.  That is, if your action contains a request to add the
