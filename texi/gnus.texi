@@ -15923,11 +15923,11 @@ that has full connection to the net.  Go ahead.  I'll still be waiting
 here.
 
 @item
-Then, put the following magical incantation at the end of your
-@file{.gnus.el} file:
+Then, put the following magical incantation in your @file{.gnus.el}
+file:
 
 @lisp
-(gnus-agentize)
+(setq gnus-agent t)
 @end lisp
 @end itemize
 
@@ -16157,10 +16157,10 @@ with the predicate then defined as:
 
 or you could append your predicate to the predefined
 @code{gnus-category-predicate-alist} in your @file{~/.gnus.el} or
-wherever.  (Note: this would have to be at a point *after*
-@code{gnus-agent} has been loaded via @code{(gnus-agentize)})
+wherever. 
 
 @lisp
+(require 'gnus-agent)
 (setq  gnus-category-predicate-alist
   (append gnus-category-predicate-alist
 	 '((old . my-article-old-p))))
@@ -16716,7 +16716,8 @@ setup, you may be able to use something like the following as your
 (setq gnus-secondary-select-methods '((nnml "")))
 
 ;;; Make Gnus into an offline newsreader.
-(gnus-agentize)
+;;; (gnus-agentize) ; The obsolete setting.
+(setq gnus-agent t)
 @end lisp
 
 That should be it, basically.  Put that in your @file{~/.gnus.el} file,

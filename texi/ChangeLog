@@ -1,3 +1,9 @@
+2002-02-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Gnus Unplugged): Use (setq gnus-agent t).
+	(Example Setup): Ditto.
+	(Category Syntax): Require gnus-agent.
+
 2002-02-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Posting Styles): Addition.
