@@ -1,3 +1,9 @@
+2000-10-18  Simon Josefsson  <simon@josefsson.org>
+
+	* nnheader.el (nnheader-parse-head): Try both "from:" and "from: ".
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Ditto.
+
 2000-10-17  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-sum.el (gnus-get-newsgroup-headers): Search for "from:"
