@@ -10783,7 +10783,7 @@ variable, will be displayed in random order after all the headers listed in this
 You can hide further boring headers by setting
 @code{gnus-treat-hide-boring-headers} to @code{head}.  What this function
 does depends on the @code{gnus-boring-article-headers} variable.  It's a
-list, but this list doesn't actually contain header names.  Instead is
+list, but this list doesn't actually contain header names.  Instead it
 lists various @dfn{boring conditions} that Gnus can check and remove
 from sight.
 
@@ -10795,9 +10795,9 @@ Remove all empty headers.
 Remove the @code{Followup-To} header if it is identical to the
 @code{Newsgroups} header.
 @item reply-to
-Remove the @code{Reply-To} header if it lists the same address as the
-@code{From} header, or if the @code{broken-reply-to} group parameter is
-set.
+Remove the @code{Reply-To} header if it lists the same addresses as
+the @code{From} header, or if the @code{broken-reply-to} group
+parameter is set.
 @item newsgroups
 Remove the @code{Newsgroups} header if it only contains the current group
 name.

@@ -1695,12 +1695,19 @@ always hide."
 		  (gnus-article-hide-header "reply-to")
 		(let ((from (message-fetch-field "from"))
 		      (reply-to (message-fetch-field "reply-to")))
-		  (when (and
-			 from reply-to
-			 (ignore-errors
-			   (gnus-string-equal
-			    (nth 1 (mail-extract-address-components from))
-			    (nth 1 (mail-extract-address-components reply-to)))))
+		  (when
+		      (and
+		       from reply-to
+		       (ignore-errors
+			 (equal
+			  (sort (mapcar
+				 (lambda (x) (downcase (cadr x)))
+				 (mail-extract-address-components from t))
+				'string<)
+			  (sort (mapcar
+				 (lambda (x) (downcase (cadr x)))
+				 (mail-extract-address-components reply-to t))
+				'string<))))
 		    (gnus-article-hide-header "reply-to")))))
 	     ((eq elem 'date)
 	      (let ((date (message-fetch-field "date")))

@@ -1,3 +1,8 @@
+2003-11-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (article-hide-boring-headers): Don't hide Reply-To
+	unless its list of addresses is identical to From.
+
 2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el (mapc): Add the compiler macro for Emacs 20.

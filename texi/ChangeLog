@@ -1,3 +1,7 @@
+2003-11-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Hiding Headers): Update.
+
 2003-11-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Debugging IMAP): minor corrections
