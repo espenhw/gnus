@@ -156,7 +156,7 @@
   (let ((gnus-verbose-backends nil)
 	(buf (current-buffer))
 	 article file)
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (insert-buffer buf)
       (setq article (nndraft-request-accept-article
 		     group (nnoo-current-server 'nndraft) t 'noinsert))

@@ -2209,7 +2209,7 @@ SCORE is the score to add."
     ;; Perform adaptive word scoring.
     (when (and (listp gnus-newsgroup-adaptive)
 	       (memq 'word gnus-newsgroup-adaptive))
-      (nnheader-temp-write nil
+      (with-temp-buffer
 	(let* ((hashtb (gnus-make-hashtable 1000))
 	       (date (gnus-day-number (current-time-string)))
 	       (data gnus-newsgroup-data)
@@ -2625,7 +2625,7 @@ Destroys the current buffer."
 
 (defun gnus-sort-score-files (files)
   "Sort FILES so that the most general files come first."
-  (nnheader-temp-write nil
+  (with-temp-buffer
     (let ((alist
 	   (mapcar
 	    (lambda (file)

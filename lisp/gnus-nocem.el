@@ -146,7 +146,7 @@ matches an previously scanned and verified nocem message."
 	  (save-excursion
 	    (let ((dependencies (make-vector 10 nil))
 		  headers header)
-	      (nnheader-temp-write nil
+	      (with-temp-buffer
 		(setq headers
 		      (if (eq 'nov
 			      (gnus-retrieve-headers
@@ -302,13 +302,13 @@ matches an previously scanned and verified nocem message."
   "Save the NoCeM cache."
   (when (and gnus-nocem-alist
 	     gnus-nocem-touched-alist)
-    (nnheader-temp-write (gnus-nocem-cache-file)
+    (with-temp-file (gnus-nocem-cache-file)
       (gnus-prin1 `(setq gnus-nocem-alist ',gnus-nocem-alist)))
     (setq gnus-nocem-touched-alist nil)))
 
 (defun gnus-nocem-save-active ()
   "Save the NoCeM active file."
-  (nnheader-temp-write (gnus-nocem-active-file)
+  (with-temp-file (gnus-nocem-active-file)
     (gnus-prin1 `(setq gnus-nocem-active ',gnus-nocem-active))))
 
 (defun gnus-nocem-alist-to-hashtb ()

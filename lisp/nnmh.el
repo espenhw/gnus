@@ -229,8 +229,8 @@
 				(expand-file-name nnmh-toplev))))
 	       dir)
 	      (nnheader-replace-chars-in-string
-	       (gnus-decode-coding-string (substring dir (match-end 0))
-					  nnmail-pathname-coding-system)
+	       (decode-coding-string (substring dir (match-end 0))
+				     nnmail-pathname-coding-system)
 	       ?/ ?.))
 	    (apply 'max files)
 	    (apply 'min files)))))))
@@ -533,7 +533,7 @@
     (setq articles (sort articles (lambda (art1 art2)
 				    (> (car art1) (car art2)))))
     ;; Finally write this list back to the .nnmh-articles file.
-    (nnheader-temp-write nnmh-file
+    (with-temp-file nnmh-file
       (insert ";; Gnus article active file for " group "\n\n")
       (insert "(setq nnmh-newsgroup-articles '")
       (gnus-prin1 articles)

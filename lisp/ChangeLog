@@ -1,3 +1,37 @@
+Sat Aug 29 22:20:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v0.4 is released.
+
+1998-08-29 20:53:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-decode-mime-words): New command and
+	keystroke. 
+
+	* qp.el (quoted-printable-decode-region): Don't use hexl.
+
+	* gnus-xmas.el (gnus-xmas-logo-color-style): Changed to dino.
+
+	* gnus-sum.el (gnus-parse-headers-hook): Default to nil.
+	(gnus-structured-field-decoder): Removed.
+	(gnus-unstructured-field-decoder): Ditto.
+
+	* mm-decode.el: New file.
+
+	* qp.el: New file.
+
+	* gnus-art.el (article-mime-decode-quoted-printable): Removed.
+
+	* gnus-ems.el (fboundp): Removed gnus-split-string.
+
+	* gnus.el (gnus-splash-face): Doc fix.
+
+	* gnus-ems.el (fboundp): Don't bind mail-file-babyl-p.
+
+	* gnus-art.el (article-mime-decode-quoted-printable): Don't use
+	hexl. 
+
+	* nnheader.el (nnheader-temp-write): Removed.
+
 Sat Aug 29 20:34:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v0.3 is released.

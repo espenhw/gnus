@@ -272,7 +272,6 @@ be fed to `format-time-string'."
   :group 'gnus-article-washing)
 
 (eval-and-compile
-  (autoload 'hexl-hex-string-to-integer "hexl")
   (autoload 'timezone-make-date-arpa-standard "timezone")
   (autoload 'mail-extract-address-components "mail-extr"))
 
@@ -958,72 +957,41 @@ characters to translate to."
     (while (search-forward "=10" nil t)
       (replace-match " " t t))))
 
+(defun gnus-article-decode-mime-words ()
+  "Decode all MIME-encoded words in the article."
+  (interactive)
+  (save-excursion
+    (let (buffer-read-only)
+      (mm-decode-words-region (point-min) (point-max)))))
+
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
 (defun article-decode-rfc1522 ()
-  "Hack to remove QP encoding from headers."
-  (let ((case-fold-search t)
-	(inhibit-point-motion-hooks t)
-	(buffer-read-only nil)
-	string)
+  "Remove QP encoding from headers."
+  (let ((inhibit-point-motion-hooks t)
+	(buffer-read-only nil))
     (save-restriction
-      (narrow-to-region
-       (goto-char (point-min))
-       (or (search-forward "\n\n" nil t) (point-max)))
-      (goto-char (point-min))
-      (while (re-search-forward
-	      "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
-	(setq string (match-string 1))
-	(save-restriction
-	  (narrow-to-region (match-beginning 0) (match-end 0))
-	  (delete-region (point-min) (point-max))
-	  (insert string)
-	  (article-mime-decode-quoted-printable
-	   (goto-char (point-min)) (point-max))
-	  (subst-char-in-region (point-min) (point-max) ?_ ? )
-	  (goto-char (point-max)))
-	(goto-char (point-min))))))
+      (message-narrow-to-head)
+      (mm-decode-words-region (point-min) (point-max)))))
 
 (defun article-de-quoted-unreadable (&optional force)
-  "Do a naive translation of a quoted-printable-encoded article.
-This is in no way, shape or form meant as a replacement for real MIME
-processing, but is simply a stop-gap measure until MIME support is
-written.
+  "Translation a quoted-printable-encoded article.
 If FORCE, decode the article whether it is marked as quoted-printable
 or not."
   (interactive (list 'force))
   (save-excursion
-    (let ((case-fold-search t)
-	  (buffer-read-only nil)
+    (let ((buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
       (gnus-article-decode-rfc1522)
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)
-	(article-mime-decode-quoted-printable (point) (point-max))))))
+	(quoted-printable-decode-region (point) (point-max))))))
 
 (defun article-mime-decode-quoted-printable-buffer ()
   "Decode Quoted-Printable in the current buffer."
-  (article-mime-decode-quoted-printable (point-min) (point-max)))
-
-(defun article-mime-decode-quoted-printable (from to)
-  "Decode Quoted-Printable in the region between FROM and TO."
-  (interactive "r")
-  (goto-char from)
-  (while (search-forward "=" to t)
-    (cond ((eq (following-char) ?\n)
-	   (delete-char -1)
-	   (delete-char 1))
-	  ((looking-at "[0-9A-F][0-9A-F]")
-	   (subst-char-in-region
-	    (1- (point)) (point) ?=
-	    (hexl-hex-string-to-integer
-	     (buffer-substring (point) (+ 2 (point)))))
-	   (delete-char 2))
-	  ((looking-at "=")
-	   (delete-char 1))
-	  ((gnus-message 3 "Malformed MIME quoted-printable message")))))
+  (quoted-printable-decode-region (point-min) (point-max)))
 
 (defun article-hide-pgp (&optional arg)
   "Toggle hiding of any PGP headers and signatures in the current article.
@@ -1231,7 +1199,7 @@ Put point at the beginning of the signature separator."
 	   (setq b (point))
 	 (point-max))
        (setq e (point-max)))
-      (nnheader-temp-write nil
+      (with-temp-buffer
 	(insert-buffer-substring gnus-article-buffer b e)
 	(require 'url)
 	(save-window-excursion
@@ -2189,7 +2157,7 @@ Provided for backwards compatibility."
 (defun gnus-output-to-file (file-name)
   "Append the current article to a file named FILE-NAME."
   (let ((artbuf (current-buffer)))
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (insert-buffer-substring artbuf)
       ;; Append newline at end of the buffer as separator, and then
       ;; save it to file.
@@ -3135,7 +3103,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-url-parse-query-string (query &optional downcase)
   (let (retval pairs cur key val)
-    (setq pairs (gnus-split-string query "&"))
+    (setq pairs (split-string query "&"))
     (while pairs
       (setq cur (car pairs)
             pairs (cdr pairs))

@@ -469,7 +469,7 @@ all.  This may very well take some time.")
      ((not (file-exists-p file))
       (nnheader-report 'nnml "File %s does not exist" file))
      (t
-      (nnheader-temp-write file
+      (with-temp-file file
 	(nnheader-insert-file-contents file)
 	(nnmail-replace-status name value))
       t))))

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.3"
+(defconst gnus-version-number "0.4"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -637,13 +637,13 @@ be set in `.emacs' instead."
 (defface gnus-splash-face
   '((((class color)
       (background dark))
-     (:foreground "ForestGreen"))
+     (:foreground "Brown"))
     (((class color)
       (background light))
-     (:foreground "ForestGreen"))
+     (:foreground "Brown"))
     (t
      ()))
-  "Level 1 newsgroup face.")
+  "Face of the splash screen.")
 
 (defun gnus-splash ()
   (save-excursion
@@ -1569,8 +1569,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 	  (cdr package)))))
    '(("metamail" metamail-buffer)
      ("info" Info-goto-node)
-     ("hexl" hexl-hex-string-to-integer)
      ("pp" pp pp-to-string pp-eval-expression)
+     ("qp" quoted-printable-decode-region quoted-printable-decode-string)
+     ("mm-decode" mm-decode-words-region mm-decode-words-string)
      ("ps-print" ps-print-preprint)
      ("mail-extr" mail-extract-address-components)
      ("browse-url" browse-url)

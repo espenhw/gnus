@@ -35,8 +35,7 @@
 
 (eval-and-compile
   (autoload 'gnus-error "gnus-util")
-  (autoload 'gnus-buffer-live-p "gnus-util")
-  (autoload 'gnus-encode-coding-string "gnus-ems"))
+  (autoload 'gnus-buffer-live-p "gnus-util"))
 
 (defgroup nnmail nil
   "Reading mail with Gnus."
@@ -514,7 +513,7 @@ parameter.  It should return nil, `warn' or `delete'."
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
        (concat dir
-	       (gnus-encode-coding-string
+	       (encode-coding-string
 		(nnheader-replace-chars-in-string group ?. ?/)
 		nnmail-pathname-coding-system)
 	       "/")))
@@ -705,7 +704,7 @@ nn*-request-list should have been called before calling this function."
   "Save GROUP-ASSOC in ACTIVE-FILE."
   (let ((coding-system-for-write nnmail-active-file-coding-system))
     (when file-name
-      (nnheader-temp-write file-name
+      (with-temp-file file-name
 	(nnmail-generate-active group-assoc)))))
 
 (defun nnmail-generate-active (alist)
@@ -1202,7 +1201,7 @@ Return the number of characters in the body."
       (insert (format "Xref: %s" (system-name)))
       (while group-alist
 	(insert (format " %s:%d"
-			(gnus-encode-coding-string (caar group-alist)
+			(encode-coding-string (caar group-alist)
 					      nnmail-pathname-coding-system)
 			(cdar group-alist)))
 	(setq group-alist (cdr group-alist)))

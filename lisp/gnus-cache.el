@@ -595,7 +595,7 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
   (when (or force
 	    (and gnus-cache-active-hashtb
 		 gnus-cache-active-altered))
-    (nnheader-temp-write gnus-cache-active-file
+    (with-temp-file gnus-cache-active-file
       (mapatoms
        (lambda (sym)
 	 (when (and sym (boundp sym))

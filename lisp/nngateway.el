@@ -54,7 +54,7 @@ parameter -- the gateway address.")
 	    (nngateway-open-server server))
     ;; Rewrite the header.
     (let ((buf (current-buffer)))
-      (nnheader-temp-write nil
+      (with-temp-buffer
 	(insert-buffer-substring buf)
 	(message-narrow-to-head)
 	(funcall nngateway-header-transformation nngateway-address)

@@ -127,7 +127,7 @@ If nil, only read articles will be expired."
 
 (defun gnus-agent-read-file (file)
   "Load FILE and do a `read' there."
-  (nnheader-temp-write nil
+  (with-temp-buffer
     (ignore-errors
       (nnheader-insert-file-contents file)
       (goto-char (point-min))
@@ -427,7 +427,7 @@ be a select method."
 
 (defun gnus-agent-write-servers ()
   "Write the alist of covered servers."
-  (nnheader-temp-write (nnheader-concat gnus-agent-directory "lib/servers")
+  (with-temp-file (nnheader-concat gnus-agent-directory "lib/servers")
     (prin1 gnus-agent-covered-methods (current-buffer))))
 
 ;;;
@@ -537,7 +537,7 @@ the actual number of articles toggled is returned."
 		     (gnus-agent-lib-file "active")
 		   (gnus-agent-lib-file "groups"))))
       (gnus-make-directory (file-name-directory file))
-      (nnheader-temp-write file
+      (with-temp-file file
 	(when (file-exists-p file)
 	  (nnheader-insert-file-contents file))
 	(goto-char (point-min))
@@ -662,7 +662,7 @@ the actual number of articles toggled is returned."
 	;; Fetch the articles from the backend.
 	(if (gnus-check-backend-function 'retrieve-articles group)
 	    (setq pos (gnus-retrieve-articles articles group))
-	  (nnheader-temp-write nil
+	  (with-temp-file nil
 	    (let (article)
 	      (while (setq article (pop articles))
 		(when (gnus-request-article article group)
@@ -745,7 +745,7 @@ the actual number of articles toggled is returned."
 		     nil 'silent)
       (pop gnus-agent-buffer-alist))
     (while gnus-agent-group-alist
-      (nnheader-temp-write (caar gnus-agent-group-alist)
+      (with-temp-file (caar gnus-agent-group-alist)
 	(princ (cdar gnus-agent-group-alist))
 	(insert "\n"))
       (pop gnus-agent-group-alist))))
@@ -837,9 +837,9 @@ the actual number of articles toggled is returned."
 
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."
-  (nnheader-temp-write (if dir
-			   (concat dir ".agentview")
-			 (gnus-agent-article-name ".agentview" group))
+  (with-temp-file (if dir
+		      (concat dir ".agentview")
+		    (gnus-agent-article-name ".agentview" group))
     (princ (setq gnus-agent-article-alist
 		 (nconc gnus-agent-article-alist
 			(mapcar (lambda (article) (cons article state))
@@ -1084,7 +1084,7 @@ The following commands are available:
   "Write the category alist."
   (setq gnus-category-predicate-cache nil
 	gnus-category-group-cache nil)
-  (nnheader-temp-write (nnheader-concat gnus-agent-directory "lib/categories")
+  (with-temp-file (nnheader-concat gnus-agent-directory "lib/categories")
     (prin1 gnus-category-alist (current-buffer))))
 
 (defun gnus-category-edit-predicate (category)

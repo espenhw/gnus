@@ -2155,7 +2155,7 @@ score file entries for articles to include in the group."
 	(push (cons header regexps) scores))
       scores)))
   (gnus-group-make-group group "nnkiboze" address)
-  (nnheader-temp-write (gnus-score-file-name (concat "nnkiboze:" group))
+  (with-temp-file (gnus-score-file-name (concat "nnkiboze:" group))
     (let (emacs-lisp-mode-hook)
       (pp scores (current-buffer)))))
 

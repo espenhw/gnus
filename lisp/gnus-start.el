@@ -2531,7 +2531,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			  (fboundp 'gnus-mule-get-coding-system)
 			  (gnus-mule-get-coding-system (symbol-name group)))))
 		(if coding
-		    (setq str (gnus-decode-coding-string str (car coding))))
+		    (setq str (decode-coding-string str (car coding))))
 		(set group str)))
 	    (forward-line 1))))
       (gnus-message 5 "Reading descriptions file...done")

@@ -1011,7 +1011,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   (when (and (file-exists-p file)
 	     (file-readable-p file)
 	     (file-regular-p file))
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (nnheader-insert-file-contents file)
       (goto-char (point-min))
       (looking-at message-unix-mail-delimiter))))
@@ -1111,7 +1111,8 @@ Return the number of headers removed."
   (goto-char (point-min)))
 
 (defun message-narrow-to-head ()
-  "Narrow the buffer to the head of the message."
+  "Narrow the buffer to the head of the message.
+Point is left at the beginning of the narrowed-to region."
   (widen)
   (narrow-to-region
    (goto-char (point-min))
@@ -3055,7 +3056,7 @@ Headers already prepared in the buffer are not modified."
   (let ((max 988)
 	(cut 4)
 	refs)
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (insert references)
       (goto-char (point-min))
       (while (re-search-forward "<[^>]+>" nil t)
@@ -3583,7 +3584,7 @@ header line with the old Message-ID."
 
 (defun message-wash-subject (subject)
   "Remove junk like \"Re:\", \"(fwd)\", etc. that was added to the subject by previous forwarders, replyers, etc."
-  (nnheader-temp-write nil
+  (with-temp-buffer
     (insert-string subject)
     (goto-char (point-min))
     ;; strip Re/Fwd stuff off the beginning

@@ -663,18 +663,7 @@ is not run if `gnus-visual' is nil."
   :group 'gnus-summary-visual
   :type 'hook)
 
-(defcustom gnus-structured-field-decoder 'identity
-  "Function to decode non-ASCII characters in structured field for summary."
-  :group 'gnus-various
-  :type 'function)
-
-(defcustom gnus-unstructured-field-decoder 'identity
-  "Function to decode non-ASCII characters in unstructured field for summary."
-  :group 'gnus-various
-  :type 'function)
-
-(defcustom gnus-parse-headers-hook
-  (list 'gnus-hack-decode-rfc1522 'gnus-decode-rfc1522)
+(defcustom gnus-parse-headers-hook nil
   "*A hook called before parsing the headers."
   :group 'gnus-various
   :type 'hook)
@@ -1395,6 +1384,9 @@ increase the score of each group you read."
     "c" gnus-article-highlight-citation
     "s" gnus-article-highlight-signature)
 
+  (gnus-define-keys (gnus-summary-wash-mime-map "M" gnus-summary-wash-map)
+    "w" gnus-article-decode-mime-words)
+
   (gnus-define-keys (gnus-summary-wash-time-map "T" gnus-summary-wash-map)
     "z" gnus-article-date-ut
     "u" gnus-article-date-ut
@@ -1494,6 +1486,9 @@ increase the score of each group you read."
               ["Headers" gnus-article-highlight-headers t]
               ["Signature" gnus-article-highlight-signature t]
               ["Citation" gnus-article-highlight-citation t])
+	     ("MIME"
+	      ["Words" gnus-article-decode-mime-words t]
+	      ["QP" gnus-article-de-quoted-unreadable t])
              ("Date"
               ["Local" gnus-article-date-local t]
               ["ISO8601" gnus-article-date-iso8601 t]
@@ -3062,10 +3057,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (setq header
 		(make-full-mail-header
 		 number			; number
-		 (funcall
-		  gnus-unstructured-field-decoder (gnus-nov-field)) ; subject
-		 (funcall
-		  gnus-structured-field-decoder (gnus-nov-field)) ; from
+		 (mm-decode-words-string (gnus-nov-field)) ; subject
+		 (mm-decode-words-string (gnus-nov-field)) ; from
 		 (gnus-nov-field)	; date
 		 (or (gnus-nov-field)
 		     (nnheader-generate-fake-message-id)) ; id
@@ -4407,15 +4400,13 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nsubject: " nil t)
-		  (funcall
-		   gnus-unstructured-field-decoder (nnheader-header-value))
+		  (mm-decode-words-string (nnheader-header-value))
 		"(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom: " nil t)
-		  (funcall
-		   gnus-structured-field-decoder (nnheader-header-value))
+		  (mm-decode-words-string (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
 	    (progn
@@ -4535,9 +4526,10 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 				     number dependencies force-new))))
 		   (push header headers))
 	      (forward-line 1))
-	  (error
-	   (gnus-error 4 "Strange nov line (%d)"
-		       (count-lines (point-min) (point)))))
+	  ;(error
+	  ; (gnus-error 4 "Strange nov line (%d)"
+	;	       (count-lines (point-min) (point))))
+	  )
 	(forward-line 1))
       ;; A common bug in inn is that if you have posted an article and
       ;; then retrieves the active file, it will answer correctly --
@@ -6513,7 +6505,7 @@ Obeys the standard process/prefix convention."
       (gnus-summary-remove-process-mark article)
       (when (gnus-summary-display-article article)
 	(save-excursion
-	  (nnheader-temp-write nil
+	  (with-temp-buffer
 	    (insert-buffer-substring gnus-original-article-buffer)
 	    ;; Remove some headers that may lead nndoc to make
 	    ;; the wrong guess.
@@ -7318,7 +7310,7 @@ groups."
   (interactive)
   ;; Replace the article.
   (let ((buf (current-buffer)))
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (insert-buffer buf)
       (if (and (not read-only)
 	       (not (gnus-request-replace-article
@@ -7336,7 +7328,7 @@ groups."
 		(message-narrow-to-head)
 		(let ((head (buffer-string))
 		      header)
-		  (nnheader-temp-write nil
+		  (with-temp-buffer
 		    (insert (format "211 %d Article retrieved.\n"
 				    (cdr gnus-article-current)))
 		    (insert head)
@@ -8150,7 +8142,7 @@ is non-nil or the Subject: of both articles are the same."
 	  (gnus-summary-select-article t t nil current-article))
 	(set-buffer gnus-original-article-buffer)
 	(let ((buf (format "%s" (buffer-string))))
-	  (nnheader-temp-write nil
+	  (with-temp-buffer
 	    (insert buf)
 	    (goto-char (point-min))
 	    (if (re-search-forward "^References: " nil t)

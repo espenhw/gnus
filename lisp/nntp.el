@@ -796,7 +796,7 @@ If SEND-IF-FORCE, only send authinfo to the server if the
 The authinfo login name is taken from the user's login name and the
 password contained in '~/.nntp-authinfo'."
   (when (file-exists-p "~/.nntp-authinfo")
-    (nnheader-temp-write nil
+    (with-temp-buffer
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
       (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))

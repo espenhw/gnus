@@ -376,7 +376,7 @@ backend for the messages.")
 	     (or force
 		 nnsoup-group-alist-touched))
     (setq nnsoup-group-alist-touched nil)
-    (nnheader-temp-write nnsoup-active-file
+    (with-temp-file nnsoup-active-file
       (gnus-prin1 `(setq nnsoup-group-alist ',nnsoup-group-alist))
       (insert "\n")
       (gnus-prin1 `(setq nnsoup-current-prefix ,nnsoup-current-prefix))

@@ -98,7 +98,7 @@ seen in the same session."
   "Save the duplicate suppression list."
   (when (and gnus-save-duplicate-list
 	     gnus-dup-list-dirty)
-    (nnheader-temp-write gnus-duplicate-file
+    (with-temp-file gnus-duplicate-file
       (gnus-prin1 `(setq gnus-dup-list ',gnus-dup-list))))
   (setq gnus-dup-list-dirty nil))
 

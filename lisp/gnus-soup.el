@@ -422,7 +422,7 @@ file.  The vector contain three strings, [prefix name encoding]."
   "Write the AREAS file."
   (interactive)
   (when gnus-soup-areas
-    (nnheader-temp-write (concat gnus-soup-directory "AREAS")
+    (with-temp-file (concat gnus-soup-directory "AREAS")
       (let ((areas gnus-soup-areas)
 	    area)
 	(while (setq area (pop areas))
@@ -443,7 +443,7 @@ file.  The vector contain three strings, [prefix name encoding]."
 
 (defun gnus-soup-write-replies (dir areas)
   "Write a REPLIES file in DIR containing AREAS."
-  (nnheader-temp-write (concat dir "REPLIES")
+  (with-temp-file (concat dir "REPLIES")
     (let (area)
       (while (setq area (pop areas))
 	(insert (format "%s\t%s\t%s\n"

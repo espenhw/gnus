@@ -52,11 +52,12 @@ automatically."
     (grape "#b264cc" "#cf7df")
     (labia "#cc64c2" "#fd7dff")
     (berry "#cc6485" "#ff7db5")
+    (dino "#cc6485" "#ff7db5")
     (neutral "#b4b4b4" "#878787")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
 
-(defcustom gnus-xmas-logo-color-style 'moss
+(defcustom gnus-xmas-logo-color-style 'dino
   "*Color styles used for the Gnus logo."
   :type '(choice (const flame) (const pine) (const moss)
 		 (const irish) (const sky) (const tin)

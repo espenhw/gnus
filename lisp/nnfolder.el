@@ -797,7 +797,7 @@ deleted.  Point is left where the deleted region was."
 
 (defun nnfolder-group-pathname (group)
   "Make pathname for GROUP."
-  (setq group (gnus-encode-coding-string group nnmail-pathname-coding-system))
+  (setq group (encode-coding-string group nnmail-pathname-coding-system))
   (let ((dir (file-name-as-directory (expand-file-name nnfolder-directory))))
     ;; If this file exists, we use it directly.
     (if (or nnmail-use-long-file-names

@@ -106,25 +106,33 @@
      (when (gnus-buffer-exists-p buf)
        (kill-buffer buf))))
 
-(if (fboundp 'point-at-bol)
-    (fset 'gnus-point-at-bol 'point-at-bol)
+(cond
+ ((fboundp 'point-at-bol)
+  (fset 'gnus-point-at-bol 'point-at-bol))
+ ((fboundp 'line-beginning-position)
+  (fset 'gnus-point-at-bol 'line-beginning-position))
+ (t
   (defun gnus-point-at-bol ()
     "Return point at the beginning of the line."
     (let ((p (point)))
       (beginning-of-line)
       (prog1
 	  (point)
-	(goto-char p)))))
+	(goto-char p))))))
 
-(if (fboundp 'point-at-eol)
-    (fset 'gnus-point-at-eol 'point-at-eol)
+(cond
+ ((fboundp 'point-at-eol)
+  (fset 'gnus-point-at-eol 'point-at-eol))
+ ((fboundp 'line-end-position)
+  (fset 'gnus-point-at-eol 'line-end-position))
+ (t
   (defun gnus-point-at-eol ()
     "Return point at the end of the line."
     (let ((p (point)))
       (end-of-line)
       (prog1
 	  (point)
-	(goto-char p)))))
+	(goto-char p))))))
 
 (defun gnus-delete-first (elt list)
   "Delete by side effect the first occurrence of ELT as a member of LIST."
