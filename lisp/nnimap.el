@@ -1267,7 +1267,9 @@ function is generally only called when Gnus is shutting down."
 	  (when (setq rule (nnimap-split-find-rule server inbox))
 	    ;; iterate over articles
 	    (dolist (article (imap-search nnimap-split-predicate))
-	      (when (if nnimap-split-download-body
+	      (when (if (if (eq nnimap-split-download-body 'default)
+			    nnimap-split-download-body-default
+			  nnimap-split-download-body)
 			(and (nnimap-request-article article)
 			     (mail-narrow-to-head))
 		      (nnimap-request-head article))
@@ -1285,16 +1287,18 @@ function is generally only called when Gnus is shutting down."
 			 (setq removeorig t)
 			 (when nnmail-cache-accepted-message-ids
 			   (with-current-buffer nntp-server-buffer
-                             (let (msgid)
-                               (and (setq msgid
+			     (let (msgid)
+			       (and (setq msgid
 					  (nnmail-fetch-field "message-id"))
-                                    (nnmail-cache-insert msgid to-group)))))
+				    (nnmail-cache-insert msgid to-group)))))
 			 ;; Add the group-art list to the history list.
 			 (push (list (cons to-group 0)) nnmail-split-history))
 			(t
 			 (message "IMAP split failed to move %s:%s:%d to %s"
 				  server inbox article to-group))))
-		(if nnimap-split-download-body
+		(if (if (eq nnimap-split-download-body 'default)
+			nnimap-split-download-body-default
+		      nnimap-split-download-body)
 		    (widen))
 		;; remove article if it was successfully copied somewhere
 		(and removeorig

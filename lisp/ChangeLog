@@ -1,5 +1,8 @@
 2003-04-20  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-split-articles): Don't download body unless
+	required.
+
 	* imap.el (imap-gssapi-open, imap-ssl-open): Erase buffer before
 	starting process, like imap-kerberos4-open does.
 
