@@ -87,10 +87,11 @@
       (unless (funcall mml2015-verify-function)
 	(error "Verify error.")))))
 
-(defvar mml2015-mailcrypt-prefix 0)
+(autoload 'mc-sign-generic "mc-toplev")
 
 (defun mml2015-mailcrypt-sign (cont)
-  (mailcrypt-sign mml2015-mailcrypt-prefix)
+  (mc-sign-generic (message-options-get 'message-sender)
+		   nil nil nil nil)
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(scheme-alist (funcall (or mc-default-scheme 

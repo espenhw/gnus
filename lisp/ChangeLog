@@ -1,3 +1,7 @@
+2000-10-29 10:35:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-sign): Use mc-sign-generic.
+
 2000-10-29 09:42:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Show level mark.
