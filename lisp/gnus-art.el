@@ -1544,6 +1544,8 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
     (let ((inhibit-point-motion-hooks t)
 	  (case-fold-search t)
 	  from last)
+      (if (gnus-buffer-live-p gnus-original-article-buffer)
+	  (set-buffer gnus-original-article-buffer))
       (save-restriction
 	(article-narrow-to-head)
 	(goto-char (point-min))

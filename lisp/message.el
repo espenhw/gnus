@@ -1191,7 +1191,10 @@ is used by default."
       (save-restriction
 	(message-narrow-to-headers)
 	(unless (re-search-forward (concat "^" (regexp-quote hclean) ":") nil t)
-	  (insert (car headers) ?\n))))
+	  (goto-char (point-max))
+	  (if (string-match "\n$" (car headers))
+	      (insert (car headers))
+	    (insert (car headers) ?\n)))))
     (setq headers (cdr headers))))
 
 
