@@ -1,3 +1,7 @@
+2000-09-03  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus-sum.el (gnus-summary-delete-article): Check server.
+
 2000-09-01  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-parse-flag-list): Rewrite.

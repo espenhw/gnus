@@ -7740,6 +7740,8 @@ delete these instead."
   (unless (gnus-check-backend-function 'request-expire-articles
 				       gnus-newsgroup-name)
     (error "The current newsgroup does not support article deletion"))
+  (unless (gnus-check-server (gnus-find-method-for-group gnus-newsgroup-name))
+    (error "Couldn't open server"))
   ;; Compute the list of articles to delete.
   (let ((articles (sort (copy-sequence (gnus-summary-work-articles n)) '<))
 	not-deleted)
