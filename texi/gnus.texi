@@ -13062,6 +13062,16 @@ If non-@code{nil}, put the @code{Message-ID}s of articles imported into
 the back end (via @code{Gcc}, for instance) into the mail duplication
 discovery cache.  The default is @code{nil}.
 
+@item nnmail-cache-ignore-groups
+@vindex nnmail-cache-ignore-groups
+This can be a regular expression or a list of regular expressions.
+Group names that match any of the regular expressions will never be
+recorded in the @code{Message-ID} cache.
+
+This can be useful, for example, when using Fancy Splitting
+(@pxref{Fancy Mail Splitting}) together with the function
+@code{nnmail-split-fancy-with-parent}.
+
 @end table
 
 
@@ -13247,6 +13257,13 @@ number than the default so that the message ids are still in the cache.
 When @code{nnmail-cache-accepted-message-ids} is non-@code{nil}, Gnus
 also records the message ids of moved articles, so that the followup
 messages goes into the new group.
+
+Also see the variable @code{nnmail-cache-ignore-groups} if you don't
+want certain groups to be recorded in the cache.  For example, if all
+outgoing messages are written to an `outgoing' group, you could set
+@code{nnmail-cache-ignore-groups} to match that group name.
+Otherwise, answers to all your messages would end up in the
+`outgoing' group.
 
 
 @node Group Mail Splitting
