@@ -8804,7 +8804,7 @@ silently to help keep the sizes of the score files down.
 * Score Variables::          Customize your scoring.  (My, what terminology).
 * Score File Format::        What a score file may contain.
 * Score File Editing::       You can edit score files by hand as well.
-* Adaptive Scoring::         Big Sister Gnus *knows* what you read.
+* Adaptive Scoring::         Big Sister Gnus @emph{knows} what you read.
 * Followups To Yourself::    Having Gnus notice when people answer you.
 * Scoring Tips::             How to score effectively.
 * Reverse Scoring::          That problem child of old is not problem.
@@ -10311,7 +10311,7 @@ may contain any number of @code{vertical} and @code{horizontal} splits.
 @cindex window height
 @cindex window width
 Finding the right sizes can be a bit complicated.  No window may be less
-than @code{gnus-window-min-height} (default 2) characters high, and all
+than @code{gnus-window-min-height} (default 1) characters high, and all
 windows must be at least @code{gnus-window-min-width} (default 1)
 characters wide.  Gnus will try to enforce this before applying the
 splits.  If you want to use the normal Emacs window width/height limit,
@@ -11233,10 +11233,10 @@ There are no known breaches of this standard.
 @cindex RFC 1036
 There are no known breaches of this standard, either.
 
-@item Usenet Seal of Approval
-@cindex Usenet Seal of Approval
-Gnus hasn't been formally through the Seal process, but I have read
-through the Seal text and I think Gnus would pass.
+@item Good Net-Keeping Seal of Approval
+@cindex Good Net-Keeping Seal of Approval
+Gnus has been through the Seal process and failed.  I think it'll pass
+the next inspection.
 
 @item Son-of-RFC 1036
 @cindex Son-of-RFC 1036

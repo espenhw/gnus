@@ -31,7 +31,6 @@
 (require 'mail-utils)
 (require 'timezone)
 (require 'nnheader)
-(require 'message)
 (require 'nnmail)
 (require 'backquote)
 (require 'nnoo)
@@ -878,7 +877,6 @@ beginning of a line.")
        '(vertical 1.0
 		 (summary 0.25 point)
 		 (if gnus-carpal '(summary-carpal 4))
-		 (if gnus-use-trees '(tree 0.25))
 		 (article 1.0)))))
     (server
      (vertical 1.0
@@ -1752,7 +1750,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.27"
+(defconst gnus-version-number "5.2.28"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -4781,7 +4779,8 @@ If REGEXP, only list groups matching REGEXP."
 (defun gnus-archive-server-wanted-p ()
   "Say whether the user wants to use the archive server."
   (cond 
-   ((not gnus-message-archive-method)
+   ((or (not gnus-message-archive-method)
+	(not gnus-message-archive-group))
     nil)
    ((and gnus-message-archive-method gnus-message-archive-group)
     t)
@@ -6444,7 +6443,7 @@ is returned."
     (let* ((prev gnus-newsrc-alist)
 	   (alist (cdr prev)))
       (while alist
-	(if (= (gnus-info-level level) level)
+	(if (= (gnus-info-level (car alist)) level)
 	    (setcdr prev (cdr alist))
 	  (setq prev alist))
 	(setq alist (cdr alist)))
@@ -14956,6 +14955,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	(set-buffer gnus-dribble-buffer)
 	(insert string "\n")
 	(set-window-point (get-buffer-window (current-buffer)) (point-max))
+	(bury-buffer)
 	(set-buffer obuf))))
 
 (defun gnus-dribble-read-file ()

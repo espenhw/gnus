@@ -1,3 +1,29 @@
+Thu Jun 27 23:33:18 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* nnmail.el (nnmail-get-spool-files): Wouldn't get much mail. 
+
+Thu Jun 27 19:26:42 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nnheader.el (nnheader-find-etc-directory): New function.
+
+	* gnus.el (gnus-dribble-enter): Bury the buffer.
+	(gnus-buffer-configuration): Redundant entry.
+	(message): Don't require.
+	(gnus-archive-server-wanted-p): Be even more strict in when touse
+	the archive server.
+
+Thu Jun 27 19:16:56 1996  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnheader.el (nnheader-file-size): New function.
+
+Wed Jun 26 22:14:45 1996  Alastair Burt  <burt@dfki.uni-kl.de>
+
+	* gnus.el (gnus-group-kill-level): Applied `car' to an integer. 
+
+Wed Jun 26 21:53:34 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.27 is released.
+
 Wed Jun 26 20:40:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.el (gnus-summary-edit-article-done): Don't beep after a

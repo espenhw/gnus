@@ -538,7 +538,7 @@
 	   (buffer-name nnbabyl-mbox-buffer)
 	   (save-excursion
 	     (set-buffer nnbabyl-mbox-buffer)
-	     (= (buffer-size) (nth 7 (file-attributes nnbabyl-mbox-file)))))
+	     (= (buffer-size) (nnheader-file-size nnbabyl-mbox-file))))
       () ; This buffer hasn't changed since we read it last.  Possibly.
     (save-excursion
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
