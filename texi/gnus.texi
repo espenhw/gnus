@@ -11116,7 +11116,7 @@ So here's a new example:
         (window-system         ;; A value symbol
          ("X-Window-System" (format "%s" window-system)))
         ;; If I'm replying to Larsi, set the Organization header.
-        ((header "to" "larsi.*org")
+        ((header "from" "larsi.*org")
          (Organization "Somewhere, Inc."))
         ((posting-from-work-p) ;; A user defined function
          (signature-file "~/.work-signature")
