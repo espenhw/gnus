@@ -14048,31 +14048,31 @@ Otherwise, answers to all your messages would end up in the
 @findex gnus-group-split
 If you subscribe to dozens of mailing lists but you don't want to
 maintain mail splitting rules manually, group mail splitting is for you.
-You just have to set @var{to-list} and/or @var{to-address} in group
+You just have to set @code{to-list} and/or @code{to-address} in group
 parameters or group customization and set @code{nnmail-split-methods} to
 @code{gnus-group-split}.  This splitting function will scan all groups
 for those parameters and split mail accordingly, i.e., messages posted
-from or to the addresses specified in the parameters @var{to-list} or
-@var{to-address} of a mail group will be stored in that group.
+from or to the addresses specified in the parameters @code{to-list} or
+@code{to-address} of a mail group will be stored in that group.
 
 Sometimes, mailing lists have multiple addresses, and you may want mail
-splitting to recognize them all: just set the @var{extra-aliases} group
+splitting to recognize them all: just set the @code{extra-aliases} group
 parameter to the list of additional addresses and it's done.  If you'd
-rather use a regular expression, set @var{split-regexp}.
+rather use a regular expression, set @code{split-regexp}.
 
 All these parameters in a group will be used to create an
 @code{nnmail-split-fancy} split, in which the @var{field} is @samp{any},
 the @var{value} is a single regular expression that matches
-@var{to-list}, @var{to-address}, all of @var{extra-aliases} and all
-matches of @var{split-regexp}, and the @var{split} is the name of the
+@code{to-list}, @code{to-address}, all of @code{extra-aliases} and all
+matches of @code{split-regexp}, and the @var{split} is the name of the
 group.  @var{restrict}s are also supported: just set the
-@var{split-exclude} parameter to a list of regular expressions.
+@code{split-exclude} parameter to a list of regular expressions.
 
 If you can't get the right split to be generated using all these
 parameters, or you just need something fancier, you can set the
-parameter @var{split-spec} to an @code{nnmail-split-fancy} split.  In
+parameter @code{split-spec} to an @code{nnmail-split-fancy} split.  In
 this case, all other aforementioned parameters will be ignored by
-@code{gnus-group-split}.  In particular, @var{split-spec} may be set to
+@code{gnus-group-split}.  In particular, @code{split-spec} may be set to
 @code{nil}, in which case the group will be ignored by
 @code{gnus-group-split}.
 
@@ -14081,7 +14081,7 @@ this case, all other aforementioned parameters will be ignored by
 by defining a single @code{&} fancy split containing one split for each
 group.  If a message doesn't match any split, it will be stored in the
 group named in @code{gnus-group-split-default-catch-all-group}, unless
-some group has @var{split-spec} set to @code{catch-all}, in which case
+some group has @code{split-spec} set to @code{catch-all}, in which case
 that group is used as the catch-all group.  Even though this variable is
 often used just to name a group, it may also be set to an arbitrarily
 complex fancy split (after all, a group name is a fancy split), and this
@@ -14131,9 +14131,9 @@ parameters will be scanned to generate the output split.
 @var{no-crosspost} can be used to disable cross-posting; in this case, a
 single @code{|} split will be output.  @var{catch-all} is the fall back
 fancy split, used like @code{gnus-group-split-default-catch-all-group}.
-If @var{catch-all} is @code{nil}, or if @var{split-regexp} matches the
+If @var{catch-all} is @code{nil}, or if @code{split-regexp} matches the
 empty string in any selected group, no catch-all split will be issued.
-Otherwise, if some group has @var{split-spec} set to @code{catch-all},
+Otherwise, if some group has @code{split-spec} set to @code{catch-all},
 this group will override the value of the @var{catch-all} argument.
 
 @findex gnus-group-split-setup
@@ -22392,13 +22392,13 @@ group.  If you have seen a message, had it marked as spam, then
 unmarked it, it won't be marked as spam when you enter the group
 thereafter.  You can disable that behavior, so all unread messages
 will get the @samp{$} mark, if you set the
-@code{spam-mark-only-unseen-as-spam} parameter to nil.  You should
-remove the @samp{$} mark when you are in the group summary buffer for
-every message that is not spam after all.  To remove the @samp{$}
-mark, you can use @kbd{M-u} to ``unread'' the article, or @kbd{d} for
-declaring it read the non-spam way.  When you leave a group, all
-spam-marked (@samp{$}) articles are sent to a spam processor which
-will study them as spam samples.
+@code{spam-mark-only-unseen-as-spam} parameter to @code{nil}.  You
+should remove the @samp{$} mark when you are in the group summary
+buffer for every message that is not spam after all.  To remove the
+@samp{$} mark, you can use @kbd{M-u} to ``unread'' the article, or
+@kbd{d} for declaring it read the non-spam way.  When you leave a
+group, all spam-marked (@samp{$}) articles are sent to a spam
+processor which will study them as spam samples.
 
 Messages may also be deleted in various other ways, and unless
 @code{ham-marks} group parameter gets overridden below, marks @samp{R}
@@ -22449,16 +22449,16 @@ a ham processor, which will study these as non-spam samples.
 
 @vindex spam-process-ham-in-spam-groups
 By default the variable @code{spam-process-ham-in-spam-groups} is
-nil.  Set it to t if you want ham found in spam groups to be
-processed.  Normally this is not done, you are expected instead to
-send your ham to a ham group and process it there.
+@code{nil}.  Set it to @code{t} if you want ham found in spam groups
+to be processed.  Normally this is not done, you are expected instead
+to send your ham to a ham group and process it there.
 
 @vindex spam-process-ham-in-nonham-groups
 By default the variable @code{spam-process-ham-in-nonham-groups} is
-nil.  Set it to t if you want ham found in non-ham (spam or
-unclassified) groups to be processed.  Normally this is not done, you
-are expected instead to send your ham to a ham group and process it
-there.
+@code{nil}.  Set it to @code{t} if you want ham found in non-ham (spam
+or unclassified) groups to be processed.  Normally this is not done,
+you are expected instead to send your ham to a ham group and process
+it there.
 
 @vindex gnus-spam-process-destinations
 When you leave a @emph{ham} or @emph{unclassified} group, all

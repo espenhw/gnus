@@ -1,5 +1,8 @@
 2003-10-18  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.texi (Group Mail Splitting)
+	(Filtering Spam Using The Spam ELisp Package): Markup fixes.
+
 	* message.texi (Security): @url -> @uref.
 
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
