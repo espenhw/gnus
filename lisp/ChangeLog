@@ -1,3 +1,8 @@
+2001-01-04 11:06:14  Gregory Chernov  <greg@visiontech-dml.com>
+
+	* nnslashdot.el (nnslashdot-request-list): Always get the right
+	sid. 
+
 2001-01-05 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-minibuffer-local-map): New keymap.
