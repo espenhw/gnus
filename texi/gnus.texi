@@ -10130,7 +10130,7 @@ performed.  The characters and their meaning:
 @table @samp
 
 @item c
-Displayed when cited text is hidden in the article buffer.
+Displayed when cited text may be hidden in the article buffer.
 
 @item h
 Displayed when headers are hidden in the article buffer.
