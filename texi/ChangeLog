@@ -1,3 +1,7 @@
+2003-02-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* emacs-mime.texi (Files and Directories): New node.
+
 2003-02-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Mailing List): Fix.

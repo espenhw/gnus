@@ -117,6 +117,7 @@ returned as a result of this analysis.
 * Handles::                Handle manipulations.
 * Display::                Displaying handles.
 * Display Customization::  Variables that affect display.
+* Files and Directories::  Saving and naming attachments.
 * New Viewers::            How to write your own viewers.
 @end menu
 
@@ -400,6 +401,59 @@ The program used to start an external terminal.
 
 @end table
 
+@node Files and Directories
+@section Files and Directories
+
+@table @code
+
+@item mm-default-directory
+@vindex mm-default-directory
+The default directory for saving attachments.  If @code{nil} use
+@code{default-directory}.
+
+@item mm-tmp-directory
+@vindex mm-tmp-directory
+Directory for storing temporary files.
+
+@item mm-file-name-rewrite-functions
+@vindex mm-file-name-rewrite-functions
+A list of functions used for rewriting file names of @sc{mime}
+parts.  Each function is applied successively to the file name.
+Ready-made functions include
+
+@table @code
+@item mm-file-name-delete-whitespace
+@findex mm-file-name-delete-whitespace
+Remove all whitespace.
+
+@item mm-file-name-trim-whitespace
+@findex mm-file-name-trim-whitespace
+Remove leading and trailing whitespace.
+
+@item mm-file-name-collapse-whitespace
+@findex mm-file-name-collapse-whitespace
+Collapse multiple whitespace characters.
+
+@item mm-file-name-replace-whitespace
+@findex mm-file-name-replace-whitespace
+@vindex mm-file-name-replace-whitespace
+Replace whitespace with underscores.  Set the variable
+@code{mm-file-name-replace-whitespace} to any other string if you do
+not like underscores.
+
+@end table
+
+The standard Emacs functions @code{capitalize}, @code{downcase},
+@code{upcase} and @code{upcase-initials} might also prove useful.
+
+@item mm-path-name-rewrite-functions
+@vindex mm-path-name-rewrite-functions
+List of functions used for rewriting the full file names of @sc{mime}
+parts.  This is used when viewing parts externally, and is meant for
+transforming the absolute name so that non-compliant programs can find
+the file where it's saved.
+
+@end table
 
 @node New Viewers
 @section New Viewers
@@ -427,7 +481,7 @@ The two important helper functions here are @code{mm-insert-part} and
 handle in the current buffer.  It handles charset and/or content
 transfer decoding.  The second function just inserts whatever text you
 tell it to insert, but it also sets things up so that the text can be
-``undisplayed' in a convenient manner.
+``undisplayed'' in a convenient manner.
 
 
 @node Composing
