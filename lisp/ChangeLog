@@ -1,3 +1,17 @@
+2003-01-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-group-spam-contents-p, spam-group-ham-contents-p)
+	(spam-group-processor-p, spam-group-processor-bogofilter-p) 
+	(spam-group-processor-ifile-p, spam-group-processor-blacklist-p) 
+	(spam-group-processor-whitelist-p, spam-group-processor-BBDB-p) 
+	(spam-mark-spam-as-expired-and-move-routine) 
+	(spam-generic-register-routine, spam-BBDB-register-routine) 
+	(spam-ifile-register-routine, spam-blacklist-register-routine) 
+	(spam-whitelist-register-routine): new functions
+	(spam-summary-prepare-exit): added summary exit processing (expire
+	or move) of spam-marked articles for spam groups; added slots for
+	all the spam-*-register-routine functions
+
 2003-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-setup-message): Get the evaliation order

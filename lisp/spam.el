@@ -233,7 +233,27 @@ articles before they get registered by Bogofilter."
   (if (stringp group)
       (memq 'gnus-group-spam-classification-ham (gnus-parameter-spam-contents group))
     nil))
-  
+
+(defun spam-group-processor-p (group processor)
+  (if (and (stringp group)
+	   (symbolp processor))
+      (member processor (car (gnus-parameter-spam-process group)))
+    nil))
+
+(defun spam-group-processor-bogofilter-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-bogofilter))
+
+(defun spam-group-processor-ifile-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-ifile))
+
+(defun spam-group-processor-blacklist-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-blacklist))
+
+(defun spam-group-processor-whitelist-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-whitelist))
+
+(defun spam-group-processor-BBDB-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-BBDB))
 
 ;;; Hooks dispatching.  A bit raw for now.
 
@@ -241,16 +261,31 @@ articles before they get registered by Bogofilter."
   (spam-mark-junk-as-spam-routine))
 
 (defun spam-summary-prepare-exit ()
-  (spam-bogofilter-register-routine)
+  ;; The spam processors are invoked for any group, spam or ham or neither
+  (when (or (and spam-use-bogofilter spam-bogofilter-path)
+	    (spam-group-processor-bogofilter-p gnus-newsgroup-name))
+    (spam-bogofilter-register-routine))
+  
+  (when (or spam-use-ifile
+	    (spam-group-processor-ifile-p gnus-newsgroup-name))
+    (spam-ifile-register-routine))
+  
+  (when (or spam-use-blacklist
+	    (spam-group-processor-bogofilter-p gnus-newsgroup-name))
+    (spam-blacklist-register-routine))
+
+  ;; Only for spam groups, we expire and maybe move articles
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
-    (				      
-     ;; TODO: the spam processors here
-     ;; TODO: the spam-processed articles will be moved here
-     ))
+    (spam-mark-spam-as-expired-and-move-routine (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
+
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
-    (
-     ;; TODO: the ham processors here
-     )))
+    ;; TODO: the ham processors here
+    (when (or spam-use-whitelist
+	      (spam-group-processor-whitelist-p gnus-newsgroup-name))
+      (spam-whitelist-register-routine))
+    (when (or spam-use-BBDB
+	      (spam-group-processor-BBDB-p gnus-newsgroup-name))
+      (spam-BBDB-register-routine))))
 
 (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
 (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
@@ -264,6 +299,41 @@ articles before they get registered by Bogofilter."
 	(setq article (pop articles))
 	(when (eq (gnus-summary-article-mark article) gnus-unread-mark)
 	  (gnus-summary-mark-article article gnus-spam-mark))))))
+
+(defun spam-mark-spam-as-expired-and-move-routine (&optional group)
+  (let ((articles gnus-newsgroup-articles)
+	article)
+    (while articles
+      (setq article (pop articles))
+      (when (eq (gnus-summary-article-mark article) gnus-spam-mark)
+	(gnus-summary-mark-article article gnus-expirable-mark)
+	(when (stringp group)
+	  (let ((gnus-current-article article))
+	    (gnus-summary-move-article nil group)))))))
+ 
+(defun spam-generic-register-routine (spam-func ham-func)
+  (let ((articles gnus-newsgroup-articles)
+	article mark ham-articles spam-articles spam-mark-values ham-mark-values)
+
+    ;; marks are stored as symbolic values, so we have to dereference them for memq to work
+    ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
+    (dolist (mark spam-ham-marks)
+      (push (symbol-value mark) ham-mark-values))
+
+    (dolist (mark spam-spam-marks)
+      (push (symbol-value mark) spam-mark-values))
+
+    (while articles
+      (setq article (pop articles)
+	    mark (gnus-summary-article-mark article))
+      (cond ((memq mark spam-mark-values) (push article spam-articles))
+	    ((memq article gnus-newsgroup-saved))
+	    ((memq mark ham-mark-values) (push article ham-articles))))
+    (when (and ham-articles ham-func)
+      (funcall ham-func ham-articles))
+    (when (and spam-articles spam-func)
+      (funcall spam-func spam-articles))))
+
 
 ;;;; Spam determination.
 
@@ -389,11 +459,19 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		    (delete (assoc 'spam-use-bbdb spam-list-of-checks)
 			    spam-list-of-checks))))
 
+;; TODO: add BBDB registration
+(defun spam-BBDB-register-routine
+  (spam-generic-register-routine nil nil))
+
 ;;; check the ifile backend; return nil if the mail was NOT classified as spam
 ;;; TODO: we can't (require) ifile, because it will insinuate itself automatically
 (defun spam-check-ifile ()
   (let ((ifile-primary-spam-group spam-split-group))
     (ifile-spam-filter nil)))
+
+;; TODO: add ifile registration
+(defun spam-ifile-register-routine
+  (spam-generic-register-routine nil nil))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?
@@ -429,6 +507,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(setq found t
 	      cache nil)))
     found))
+
+;; TODO: add blacklist and whitelist registrations
+(defun spam-blacklist-register-routine
+  (spam-generic-register-routine nil nil))
+(defun spam-whitelist-register-routine
+  (spam-generic-register-routine nil nil))
 
 
 ;;;; Training via Bogofilter.   Last updated 2002-09-02.
@@ -549,28 +633,27 @@ spamicity coefficient of each, and the overall article spamicity."
 	  (display-buffer (current-buffer)))))))
 
 (defun spam-bogofilter-register-routine ()
-  (when (and spam-use-bogofilter spam-bogofilter-path)
-    (let ((articles gnus-newsgroup-articles)
-	  article mark ham-articles spam-articles spam-mark-values ham-mark-values)
+  (let ((articles gnus-newsgroup-articles)
+	article mark ham-articles spam-articles spam-mark-values ham-mark-values)
 
-      ;; marks are stored as symbolic values, so we have to dereference them for memq to work
-      ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
-      (dolist (mark spam-ham-marks)
-	(push (symbol-value mark) ham-mark-values))
+    ;; marks are stored as symbolic values, so we have to dereference them for memq to work
+    ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
+    (dolist (mark spam-ham-marks)
+      (push (symbol-value mark) ham-mark-values))
 
-      (dolist (mark spam-spam-marks)
-	(push (symbol-value mark) spam-mark-values))
+    (dolist (mark spam-spam-marks)
+      (push (symbol-value mark) spam-mark-values))
 
-      (while articles
-	(setq article (pop articles)
-	      mark (gnus-summary-article-mark article))
-	(cond ((memq mark spam-mark-values) (push article spam-articles))
-	      ((memq article gnus-newsgroup-saved))
-	      ((memq mark ham-mark-values) (push article ham-articles))))
-      (when ham-articles
-	(spam-bogofilter-articles "ham" "-n" ham-articles))
-      (when spam-articles
-	(spam-bogofilter-articles "SPAM" "-s" spam-articles)))))
+    (while articles
+      (setq article (pop articles)
+	    mark (gnus-summary-article-mark article))
+      (cond ((memq mark spam-mark-values) (push article spam-articles))
+	    ((memq article gnus-newsgroup-saved))
+	    ((memq mark ham-mark-values) (push article ham-articles))))
+    (when ham-articles
+      (spam-bogofilter-articles "ham" "-n" ham-articles))
+    (when spam-articles
+      (spam-bogofilter-articles "SPAM" "-s" spam-articles))))
 
 (defun spam-bogofilter-articles (type option articles)
   (let ((output-buffer (get-buffer-create spam-bogofilter-output-buffer-name))
