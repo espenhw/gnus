@@ -11562,7 +11562,7 @@ read---all articles in the group are permanently unread.
 If the group doesn't exist, it will be created and you'll be subscribed
 to it.  The only way to make it disappear from the Group buffer is to
 unsubscribe it.  The special properties of the draft group comes from
-a group property (@pxref{Group Property}), and if lost the group
+a group property (@pxref{Group Parameters}), and if lost the group
 behaves like any other group.  This means the commands below will not
 be available.  To restore the special properties of the group, the
 simplest way is to kill the group, using @kbd{C-k}, and restart
