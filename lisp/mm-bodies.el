@@ -276,8 +276,11 @@ use the supplied charset unconditionally."
 	      (mm-decode-coding-region (point-min) (point-max)
 					      coding-system)
 	    (mm-decode-coding-region-safely (point-min) (point-max)
-					    coding-system))))
-      (setq buffer-file-coding-system last-coding-system-used))))
+					    coding-system)))
+	(setq buffer-file-coding-system
+	      (if (boundp last-coding-system-used)
+		  last-coding-system-used
+		coding-system))))))
 
 (defun mm-decode-coding-region-safely (start end coding-system)
   "Decode region between START and END with CODING-SYSTEM.
