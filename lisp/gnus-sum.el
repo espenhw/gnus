@@ -1118,7 +1118,7 @@ the normal Gnus MIME machinery."
   "Function called to sort the articles within a thread after it has been gathered together.")
 
 (defvar gnus-summary-save-parts-type-history nil)
-(defvar gnus-summary-save-parts-last-directory nil)
+(defvar gnus-summary-save-parts-last-directory mm-default-directory)
 
 ;; Avoid highlighting in kill files.
 (defvar gnus-summary-inhibit-highlight nil)
@@ -10991,13 +10991,15 @@ If REVERSE, save parts that do not match TYPE."
 	      (not (string-match type (mm-handle-media-type handle)))
 	    (string-match type (mm-handle-media-type handle)))
       (let ((file (expand-file-name
-		   (file-name-nondirectory
-		    (or
-		     (mail-content-type-get
-		      (mm-handle-disposition handle) 'filename)
-		     (concat gnus-newsgroup-name
-			     "." (number-to-string
-				  (cdr gnus-article-current)))))
+		   (gnus-map-function
+		    mm-file-name-rewrite-functions
+		    (file-name-nondirectory
+		     (or
+		      (mail-content-type-get
+		       (mm-handle-disposition handle) 'filename)
+		      (concat gnus-newsgroup-name
+			      "." (number-to-string
+				   (cdr gnus-article-current))))))
 		   dir)))
 	(unless (file-exists-p file)
 	  (mm-save-part-to-file handle file))))))
