@@ -259,7 +259,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.74"
+(defconst gnus-version-number "0.75"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -865,11 +865,10 @@ used to 899, you would say something along these lines:
 		 (kill-buffer (current-buffer))))))))
 
 (defcustom gnus-select-method
-  (condition-case nil
+  (ignore-errors
     (nconc
-     (list 'nntp (or (condition-case nil
-			 (gnus-getenv-nntpserver)
-		       (error nil))
+     (list 'nntp (or (ignore-errors
+		       (gnus-getenv-nntpserver))
 		     (when (and gnus-default-nntp-server
 				(not (string= gnus-default-nntp-server "")))
 		       gnus-default-nntp-server)
@@ -877,8 +876,7 @@ used to 899, you would say something along these lines:
      (if (or (null gnus-nntp-service)
 	     (equal gnus-nntp-service "nntp"))
 	 nil
-       (list gnus-nntp-service)))
-    (error nil))
+       (list gnus-nntp-service))))
   "*Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.74 Manual
+@settitle Pterodactyl Gnus 0.75 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.74 Manual
+@title Pterodactyl Gnus 0.75 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.74.
+This manual corresponds to Pterodactyl Gnus 0.75.
 
 @end ifinfo
 
@@ -6460,6 +6460,19 @@ articles that have signatures in them do:
 Hide @sc{pem} (privacy enhanced messages) cruft
 (@code{gnus-article-hide-pem}).
 
+@item W W B
+@kindex W W B (Summary)
+@findex gnus-article-strip-banner
+Strip the banner specified by the @code{banner} group parameter
+(@code{gnus-article-strip-banner}).  This is mainly used to hide those
+annoying banners and/or signatures that some mailing lists and moderated
+groups adds to all the messages.  The way to use this function is to add
+the @code{banner} group parameter (@pxref{Group Parameters}) to the
+group you want banners stripped from.  The parameter either be a string,
+which will be interpreted as a regulax expression matching text to be
+removed, or the symbol @code{signature}, meaning that the (last)
+signature should be removed.
+
 @item W W c
 @kindex W W c (Summary)
 @findex gnus-article-hide-citation
@@ -6611,6 +6624,12 @@ when filling.
 @kindex W q (Summary)
 @findex gnus-article-fill-long-lines
 Fill long lines (@code{gnus-article-fill-long-lines}).
+
+@item W C
+@kindex W C (Summary)
+@findex gnus-article-capitalize-sentencse
+Capitalize the first word in each sentence
+(@code{gnus-article-capitalize-sentences}).
 
 @item W c
 @kindex W c (Summary)
@@ -9972,7 +9991,44 @@ name.
 @item :password
 The password to give to the POP server.  If not specified, the user is
 prompted.
+
+@item :program
+The program to use to fetch mail from the POP server.
+
+@item :args
+The arguments to give to the program.  If this is a string, it is used
+as such.  If this is a list, it is @code{eval}ed first, and the result
+is used.
+
+@item :function
+The function to use to fetch mail from the POP server.  The function is
+called with one parameter---the name of the file where the mail should
+be moved to.
 @end table
+
+If the @code{:program} and @code{:function} keywords aren't specified,
+@code{pop3-movemail} will be used.
+
+Here are some examples.  Fetch from the default POP server, using the
+default user name, and default fetcher:
+
+@lisp
+(pop)
+@end lisp
+
+Fetch from a named server with a named user and password:
+
+@lisp
+(pop :server "my.pop.server"
+     :user "user-name" :password "secret")
+@end lisp
+
+Use @samp{movemail} to move the mail:
+
+@lisp
+(pop :program "movemail"
+     :args (format "po:%s %s %s" user mail-source-crash-box password))
+@end lisp
 
 @end table
 
@@ -10482,6 +10538,13 @@ For instance, if you want to remove the @samp{(idm)} and the
 @item nnmail-remove-tabs
 @findex nnmail-remove-tabs
 Translate all @samp{TAB} characters into @samp{SPACE} characters.
+
+@item nnmail-fix-eudora-headers
+@findex nnmail-fix-eudora-headers
+@cindex Eudora
+Eudora produces broken @code{References} headers, but OK
+@code{In-Reply-To} headers.  This function will get rid of the
+@code{References} headers.
 
 @end table
 
@@ -16287,11 +16350,12 @@ We do have some breaches to this one.
 @table @emph
 
 @item X-Newsreader
-This is considered to be a ``vanity header'', while I consider it to be
-consumer information.  After seeing so many badly formatted articles
-coming from @code{tin} and @code{Netscape} I know not to use either of
-those for posting articles.  I would not have known that if it wasn't
-for the @code{X-Newsreader} header.
+@itemx User-Agent
+These are considered to be ``vanity headers'', while I consider them
+to be consumer information.  After seeing so many badly formatted
+articles coming from @code{tin} and @code{Netscape} I know not to use
+either of those for posting articles.  I would not have known that if
+it wasn't for the @code{X-Newsreader} header.
 @end table
 
 @item USEFOR

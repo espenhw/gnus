@@ -142,9 +142,7 @@ all.  This may very well take some time.")
 (deffoo nnml-open-server (server &optional defs)
   (nnoo-change-server 'nnml server defs)
   (when (not (file-exists-p nnml-directory))
-    (condition-case ()
-	(make-directory nnml-directory t)
-      (error)))
+    (ignore-errors (make-directory nnml-directory t)))
   (cond
    ((not (file-exists-p nnml-directory))
     (nnml-close-server)
@@ -368,16 +366,14 @@ all.  This may very well take some time.")
     (let ((chars (nnmail-insert-lines))
 	  (art (concat (int-to-string article) "\t"))
 	  headers)
-      (when (condition-case ()
-		(progn
-		  (nnmail-write-region
-		   (point-min) (point-max)
-		   (or (nnml-article-to-file article)
-		       (concat nnml-current-directory
-			       (int-to-string article)))
-		   nil (if (nnheader-be-verbose 5) nil 'nomesg))
-		  t)
-	      (error nil))
+      (when (ignore-errors
+	      (nnmail-write-region
+	       (point-min) (point-max)
+	       (or (nnml-article-to-file article)
+		   (concat nnml-current-directory
+			   (int-to-string article)))
+	       nil (if (nnheader-be-verbose 5) nil 'nomesg))
+	      t)
 	(setq headers (nnml-parse-head chars article))
 	;; Replace the NOV line in the NOV file.
 	(save-excursion
@@ -418,9 +414,7 @@ all.  This may very well take some time.")
 	  (nnheader-message 5 "Deleting article %s in %s..." article group)
 	  (funcall nnmail-delete-file-function article))))
     ;; Try to delete the directory itself.
-    (condition-case ()
-	(delete-directory nnml-current-directory)
-      (error nil)))
+    (ignore-errors (delete-directory nnml-current-directory)))
   ;; Remove the group from all structures.
   (setq nnml-group-alist
 	(delq (assoc group nnml-group-alist) nnml-group-alist)
@@ -434,11 +428,9 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (let ((new-dir (nnmail-group-pathname new-name nnml-directory))
 	(old-dir (nnmail-group-pathname group nnml-directory)))
-    (when (condition-case ()
-	      (progn
-		(make-directory new-dir t)
-		t)
-	    (error nil))
+    (when (ignore-errors
+	    (make-directory new-dir t)
+	    t)
       ;; We move the articles file by file instead of renaming
       ;; the directory -- there may be subgroups in this group.
       ;; One might be more clever, I guess.
@@ -453,9 +445,7 @@ all.  This may very well take some time.")
 	(when (file-exists-p overview)
 	  (rename-file overview (concat new-dir nnml-nov-file-name))))
       (when (<= (length (directory-files old-dir)) 2)
-	(condition-case ()
-	    (delete-directory old-dir)
-	  (error nil)))
+	(ignore-errors (delete-directory old-dir)))
       ;; That went ok, so we change the internal structures.
       (let ((entry (assoc group nnml-group-alist)))
 	(when entry
@@ -541,9 +531,7 @@ all.  This may very well take some time.")
 	  (setq found t)
 	  ;; We return the article number.
 	  (setq number
-		(condition-case ()
-		    (read (current-buffer))
-		  (error nil)))))
+		(ignore-errors (read (current-buffer))))))
       number)))
 
 (defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)

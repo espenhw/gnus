@@ -1445,6 +1445,7 @@ increase the score of each group you read."
     "e" gnus-article-emphasize
     "w" gnus-article-fill-cited-article
     "Q" gnus-article-fill-long-lines
+    "C" gnus-article-capitalize-sentences
     "c" gnus-article-remove-cr
     "q" gnus-article-de-quoted-unreadable
     "f" gnus-article-display-x-face
@@ -1463,6 +1464,7 @@ increase the score of each group you read."
     "c" gnus-article-hide-citation
     "C" gnus-article-hide-citation-in-followups
     "p" gnus-article-hide-pgp
+    "B" gnus-article-strip-banner
     "P" gnus-article-hide-pem
     "\C-c" gnus-article-hide-citation-maybe)
 
@@ -1582,6 +1584,7 @@ increase the score of each group you read."
               ["Signature" gnus-article-hide-signature t]
               ["Citation" gnus-article-hide-citation t]
               ["PGP" gnus-article-hide-pgp t]
+	      ["Banner" gnus-article-strip-banner t]
               ["Boring headers" gnus-article-hide-boring-headers t])
              ("Highlight"
               ["All" gnus-article-highlight t]
@@ -1614,6 +1617,7 @@ increase the score of each group you read."
               ["Emphasis" gnus-article-emphasize t]
               ["Word wrap" gnus-article-fill-cited-article t]
 	      ["Fill long lines" gnus-article-fill-long-lines t]
+	      ["Capitalize sentences" gnus-article-capitalize-sentences t]
               ["CR" gnus-article-remove-cr t]
               ["Show X-Face" gnus-article-display-x-face t]
               ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
@@ -1992,9 +1996,8 @@ The following commands are available:
 
 (defun gnus-summary-make-local-variables ()
   "Make all the local summary buffer variables."
-  (let ((locals gnus-summary-local-variables)
-	global local)
-    (while (setq local (pop locals))
+  (let (global)
+    (dolist (local gnus-summary-local-variables)
       (if (consp local)
 	  (progn
 	    (if (eq (cdr local) 'global)
@@ -2002,11 +2005,9 @@ The following commands are available:
 		(setq global (symbol-value (car local)))
 	      ;; Use the value from the list.
 	      (setq global (eval (cdr local))))
-	    (make-local-variable (car local))
-	    (set (car local) global))
+	    (set (make-local-variable (car local)) global))
 	;; Simple nil-valued local variable.
-	(make-local-variable local)
-	(set local nil)))))
+	(set (make-local-variable local) nil)))))
 
 (defun gnus-summary-clear-local-variables ()
   (let ((locals gnus-summary-local-variables))
@@ -6946,7 +6947,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 If N is negative, print the N previous articles.  If N is nil and articles
 have been marked with the process mark, print these instead.
 
-If the optional second argument FILENAME is nil, send the image to the
+If the optional first argument FILENAME is nil, send the image to the
 printer.  If FILENAME is a string, save the PostScript image in a file with
 that name.  If FILENAME is a number, prompt the user for the name of the file
 to save in."
@@ -8643,10 +8644,9 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	 (save-buffer (save-excursion
 			(nnheader-set-temp-buffer " *Gnus Save*")))
 	 (num (length articles))
-	 header article file)
-    (while articles
-      (setq header (gnus-summary-article-header
-		    (setq article (pop articles))))
+	 header file)
+    (dolist (article articles)
+      (setq header (gnus-summary-article-header article))
       (if (not (vectorp header))
 	  ;; This is a pseudo-article.
 	  (if (assq 'name header)

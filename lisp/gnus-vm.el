@@ -36,6 +36,7 @@
 (require 'gnus-msg)
 
 (eval-when-compile
+  (require 'cl)
   (autoload 'vm-mode "vm")
   (autoload 'vm-save-message "vm")
   (autoload 'vm-forward-message "vm")
@@ -46,11 +47,10 @@
   "Inhibit loading `win-vm' if using a window-system.
 Has to be set before gnus-vm is loaded.")
 
-(or gnus-vm-inhibit-window-system
-    (condition-case nil
-	(when window-system
-	  (require 'win-vm))
-      (error nil)))
+(unless gnus-vm-inhibit-window-system
+  (ignore-errors
+    (when window-system
+      (require 'win-vm))))
 
 (when (not (featurep 'vm))
   (load "vm"))

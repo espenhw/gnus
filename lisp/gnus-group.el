@@ -2461,7 +2461,7 @@ up is returned."
 		   (car groups)
 		 (format "these %d groups" (length groups)))))))
 	n
-      (while (setq groups (pop groups))
+      (while (setq group (pop groups))
 	;; Virtual groups have to be given special treatment.
 	(let ((method (gnus-find-method-for-group group)))
 	  (when (eq 'nnvirtual (car method))

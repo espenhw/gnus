@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.4 $
+;; $Revision: 5.5 $
 ;; Keywords: uudecode
 
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -104,10 +104,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 		(insert-file-contents-literally tempfile)))
 	  (message "Can not uudecode")))
       (and work-buffer (kill-buffer work-buffer))
-      (condition-case ()
-	  (or file-name (delete-file tempfile))
-	(error))
-      )))
+      (ignore-errors (or file-name (delete-file tempfile))))))
 
 (if (string-match "XEmacs" emacs-version)
     (defalias 'uudecode-insert-char 'insert-char)

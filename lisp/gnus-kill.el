@@ -702,9 +702,8 @@ Usage: emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score"
 		 (and (car entry)
 		      (or (eq (car entry) t)
 			  (not (zerop (car entry))))))
-	(condition-case ()
-	    (gnus-summary-read-group group nil t nil t)
-	  (error nil))
+	(ignore-errors
+	  (gnus-summary-read-group group nil t nil t))
 	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))
 	  (gnus-summary-exit))))
     ;; Exit Emacs.

@@ -1000,6 +1000,15 @@ Return the number of characters in the body."
   "Translate TAB characters into SPACE characters."
   (subst-char-in-region (point-min) (point-max) ?\t ?  t))
 
+(defun nnmail-fix-eudora-headers ()
+  "Eudora has a broken References line, but an OK In-Reply-To."
+  (goto-char (point-min))
+  (when (re-search-forward "^X-Mailer:.*Eudora" nil t)
+    (goto-char (point-min))
+    (when (re-search-forward "^References:" nil t)
+      (beginning-of-line)
+      (insert "X-Gnus-Broken-Eudora-"))))
+
 ;;; Utility functions
 
 (defun nnmail-split-fancy ()
@@ -1359,9 +1368,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    ((numberp days)
 	     (setq days (days-to-time days))
 	     ;; Compare the time with the current time.
-	     (condition-case ()
-		 (time-less-p days (time-since time))
-	       (error nil)))))))
+	     (ignore-errors (time-less-p days (time-since time))))))))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."

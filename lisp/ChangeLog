@@ -1,3 +1,80 @@
+Mon Feb  1 21:18:00 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.75 is released.
+
+1999-02-01 21:54:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-display-x-face): Don't narrow to head.
+
+1999-02-01 21:48:39  Michael Cook  <cook@sightpath.com>
+
+	* gnus-cite.el (gnus-cited-lines-visible): Accept a cons.
+
+1999-02-01 20:59:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-directory): Ignore
+	directories.
+
+	* gnus-cus.el (gnus-group-parameters): Addition.
+
+	* gnus-art.el (article-strip-banner): Do symbolic banners.
+	(article-strip-banner): New keystroke.
+
+1999-02-01 20:54:32  Michael Cook  <cook@sightpath.com>
+
+	* gnus-art.el (article-strip-banner): New command.
+
+1999-02-01 20:53:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-strip-banners): New variable.
+
+1999-01-28 05:34:56  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mail-source.el (mail-source-read-passwd): Use `read-passwd' if it
+	has been exist.
+
+Thu Jan 28 01:38:34 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-draft-coding-system): Check coding-system.
+	* mm-util.el (mm-text-coding-system): Ditto.
+
+1999-01-28 12:11:31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mail-source.el (mail-source-fetch-pop): Save excursion.
+
+1999-01-28 08:14:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-movemail-args): Not constant.
+	(mail-source-movemail-args): Removed.
+	(mail-source-fetch-with-program): New function.
+	(mail-source-fetch-pop): Use program and function.
+	(mail-source-movemail-program): Removed.
+
+	* gnus-art.el (gnus-treat-date-iso8601): New variable.
+	(gnus-treat-date-user-defined): New variable.
+
+1999-01-28 08:07:12  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-fix-eudora-headers): New function.
+
+1999-01-28 08:05:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-encode-body): Use mail-parse-charset.
+
+1999-01-27 08:06:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* smiley.el (smiley-deformed-regexp-alist): Removed =>.
+	(smiley-nosey-regexp-alist): Ditto.
+
+	* gnus-art.el (gnus-treatment-function-alist): Do
+	gnus-article-add-buttons-to-head later.
+	(gnus-treat-capitalize-sentences): New variable.
+	(article-capitalize-sentences): New command and keystroke.
+
+	* gnus-group.el (gnus-group-catchup-current): Do group.
+
+	* message.el (message-default-charset): Add group.
+
 Wed Jan 27 05:24:53 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.74 is released.

@@ -143,8 +143,7 @@
 	(when (or no-strict-mime
 		  (mail-fetch-field "mime-version"))
 	  (setq ct (mail-fetch-field "content-type")
-		ctl (condition-case () (mail-header-parse-content-type ct)
-		      (error nil))
+		ctl (ignore-errors (mail-header-parse-content-type ct))
 		cte (mail-fetch-field "content-transfer-encoding")
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
@@ -153,9 +152,7 @@
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
 	   '("text/plain") nil no-strict-mime
-	   (and cd (condition-case ()
-		       (mail-header-parse-content-disposition cd)
-		     (error nil)))
+	   (and cd (ignore-errors (mail-header-parse-content-disposition cd)))
 	   description)
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
@@ -172,9 +169,7 @@
 					(mail-header-remove-comments
 					 cte)))))
 	    no-strict-mime
-	    (and cd (condition-case ()
-			(mail-header-parse-content-disposition cd)
-		      (error nil)))
+	    (and cd (ignore-errors (mail-header-parse-content-disposition cd)))
 	    description id))))
 	(when id
 	  (when (string-match " *<\\(.*\\)> *" id)
@@ -368,30 +363,23 @@ external if displayed external."
   "Remove the displayed MIME part represented by HANDLE."
   (when (listp handle)
     (let ((object (mm-handle-undisplayer handle)))
-      (condition-case ()
-	  (cond
-	   ;; Internally displayed part.
-	   ((mm-annotationp object)
-	    (delete-annotation object))
-	   ((or (functionp object)
-		(and (listp object)
-		     (eq (car object) 'lambda)))
-	    (funcall object))
-	   ;; Externally displayed part.
-	   ((consp object)
-	    (condition-case ()
-		(delete-file (car object))
-	      (error nil))
-	    (condition-case ()
-		(delete-directory (file-name-directory (car object)))
-	      (error nil))
-	    (condition-case ()
-		(kill-buffer (cdr object))
-	      (error nil)))
-	   ((bufferp object)
-	    (when (buffer-live-p object)
-	      (kill-buffer object))))
-	(error nil))
+      (ignore-errors
+	(cond
+	 ;; Internally displayed part.
+	 ((mm-annotationp object)
+	  (delete-annotation object))
+	 ((or (functionp object)
+	      (and (listp object)
+		   (eq (car object) 'lambda)))
+	  (funcall object))
+	 ;; Externally displayed part.
+	 ((consp object)
+	  (ignore-errors (delete-file (car object)))
+	  (ignore-errors (delete-directory (file-name-directory (car object))))
+	  (ignore-errors (kill-buffer (cdr object))))
+	 ((bufferp object)
+	  (when (buffer-live-p object)
+	    (kill-buffer object)))))
       (mm-handle-set-undisplayer handle nil))))
 
 (defun mm-display-inline (handle)

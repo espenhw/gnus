@@ -39,7 +39,7 @@
   (cond
    ((not (fboundp 'coding-system-p)) nil)
    (mm-running-xemacs  ;; XEmacs
-    (and (coding-system-p 'no-conversion) 'no-conversion))
+    'no-conversion)
    (mm-running-ntemacs ;; NTEmacs
     (and (coding-system-p 'raw-text-dos) 'raw-text-dos))
    ((coding-system-p 'raw-text) 'raw-text) ;; Emacs

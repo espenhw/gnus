@@ -58,10 +58,13 @@ article has citations."
   :type 'string)
 
 (defcustom gnus-cited-lines-visible nil
-  "The number of lines of hidden cited text to remain visible."
+  "The number of lines of hidden cited text to remain visible.
+Or a pair (cons) of numbers which are the number of lines at the top
+and bottom of the text, respectively, to remain visible."
   :group 'gnus-cite
   :type '(choice (const :tag "none" nil)
-		 integer))
+		 integer
+		 (cons :tag "Top and Bottom" integer integer)))
 
 (defcustom gnus-cite-parse-max-size 25000
   "Maximum article size (in bytes) where parsing citations is allowed.
@@ -486,10 +489,18 @@ always hide."
 	  ;; Skip past lines we want to leave visible.
 	  (when (and beg end gnus-cited-lines-visible)
 	    (goto-char beg)
-	    (forward-line gnus-cited-lines-visible)
+	    (forward-line (if (consp gnus-cited-lines-visible)
+			      (car gnus-cited-lines-visible)
+			    gnus-cited-lines-visible))
 	    (if (>= (point) end)
 		(setq beg nil)
-	      (setq beg (point-marker))))
+	      (setq beg (point-marker))
+	      (when (consp gnus-cited-lines-visible)
+		(goto-char end)
+		(forward-line (- (cdr gnus-cited-lines-visible)))
+		(if (<= (point) beg)
+		    (setq beg nil)
+		  (setq end (point-marker))))))
 	  (when (and beg end)
 	    ;; We use markers for the end-points to facilitate later
 	    ;; wrapping and mangling of text.

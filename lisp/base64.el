@@ -94,9 +94,8 @@ base64-encoder-program.")
 		     (setq errstring (buffer-string))
 		     (kill-buffer nil)
 		     (cons status errstring)))))
-      (condition-case ()
-	  (delete-file tempfile)
-	(error nil)))))
+      (ignore-errors
+	(delete-file tempfile)))))
 
 (if (string-match "XEmacs" emacs-version)
     (defalias 'base64-insert-char 'insert-char)

@@ -104,6 +104,11 @@ is present and a string, this string will be inserted literally as a
 `gcc' header (this symbol takes precedence over any default `Gcc'
 rules as described later).")
 
+    (banner (choice :tag "Banner"
+		    (const signature)
+		    string ) "\
+Banner to be removed from articles.")
+a
     (auto-expire (const :tag "Automatic Expire" t) "\
 All articles that are read will be marked as expirable.")
 

@@ -75,14 +75,8 @@
     )
    ((null encoding)
     )
-   ;;((eq encoding 'x-uuencode)
-   ;; (condition-case ()
-   ;;	(uudecode-encode-region (point-min) (point-max))
-   ;;   (error nil)))
    ((functionp encoding)
-    (condition-case ()
-	(funcall encoding (point-min) (point-max))
-      (error nil)))
+    (ignore-errors (funcall encoding (point-min) (point-max))))
    (t
     (message "Unknown encoding %s; defaulting to 8bit" encoding))))
 

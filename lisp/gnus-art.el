@@ -674,6 +674,12 @@ on parts -- for instance, adding Vcard info to a database."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-strip-banner t
+  "Strip banners from articles.
+The banner to be stripped is specified in the `banner' group parameter."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-highlight-headers 'head
   "Highlight the headers."
   :group 'gnus-article-treat
@@ -701,6 +707,17 @@ on parts -- for instance, adding Vcard info to a database."
 
 (defcustom gnus-treat-date-original nil
   "Display the date in the original timezone."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
+(defcustom gnus-treat-date-iso8601 nil
+  "Display the date in the ISO8601 format."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
+(defcustom gnus-treat-date-user-defined nil
+  "Display the date in a user-defined format.
+The format is defined by the `gnus-article-time-format' variable."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
@@ -747,16 +764,27 @@ on parts -- for instance, adding Vcard info to a database."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-capitalize-sentences nil
+  "Capitalize sentence-starting words."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
+(defcustom gnus-treat-fill-long-lines nil
+  "Fill long lines."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 ;;; Internal variables
 
 (defvar article-goto-body-goes-to-point-min-p nil)
 
 (defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist
-  '((gnus-treat-highlight-signature gnus-article-highlight-signature)
+  '((gnus-treat-strip-banner gnus-article-strip-banner)
+    (gnus-treat-highlight-signature gnus-article-highlight-signature)
     (gnus-treat-buttonize gnus-article-add-buttons)
-    (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-fill-article gnus-article-fill-cited-article)
+    (gnus-treat-fill-long-lines gnus-article-fill-long-lines)
     (gnus-treat-strip-cr gnus-article-remove-cr)
     (gnus-treat-hide-headers gnus-article-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
@@ -772,6 +800,8 @@ on parts -- for instance, adding Vcard info to a database."
     (gnus-treat-date-local gnus-article-date-local)
     (gnus-treat-date-lapsed gnus-article-date-lapsed)
     (gnus-treat-date-original gnus-article-date-original)
+    (gnus-treat-date-user-defined gnus-article-date-user)
+    (gnus-treat-date-iso8601 gnus-article-date-iso8601)
     (gnus-treat-strip-trailing-blank-lines
      gnus-article-remove-trailing-blank-lines)
     (gnus-treat-strip-leading-blank-lines
@@ -780,6 +810,7 @@ on parts -- for instance, adding Vcard info to a database."
      gnus-article-strip-multiple-blank-lines)
     (gnus-treat-strip-blank-lines gnus-article-strip-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
+    (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-display-picons gnus-article-display-picons)))
@@ -1181,6 +1212,17 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	      (widen))
 	    (forward-line 1)))))))
 
+(defun article-capitalize-sentences ()
+  "Capitalize the first word in each sentence."
+  (interactive)
+  (save-excursion
+    (let ((buffer-read-only nil)
+	  (paragraph-start "^[\n\^L]"))
+      (article-goto-body)
+      (while (not (eobp))
+	(capitalize-word 1)
+	(forward-sentence)))))
+
 (defun article-remove-cr ()
   "Translate CRLF pairs into LF, and then CR into LF.."
   (interactive)
@@ -1221,7 +1263,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	  (case-fold-search t)
 	  from last)
       (save-restriction
-	(nnheader-narrow-to-headers)
+	(goto-char (point-min))
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
 	(while (and gnus-article-x-face-command
@@ -1281,9 +1323,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	     (case-fold-search t)
 	     (ct (message-fetch-field "Content-Type" t))
 	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
-	     (ctl (and ct (condition-case ()
-			      (mail-header-parse-content-type ct)
-			    (error nil))))
+	     (ctl (and ct (ignore-errors
+			    (mail-header-parse-content-type ct))))
 	     (charset (cond
 		       (prompt
 			(mm-read-coding-system "Charset to decode: "))
@@ -1396,6 +1437,27 @@ always hide."
 	     (gnus-article-hide-text-type
 	      (match-beginning 0) (match-end 0) 'pem))))))
 
+(defun article-strip-banner ()
+  "Strip the banner specified by the `banner' group parameter."
+  (interactive)
+  (save-excursion
+    (save-restriction
+    (let ((inhibit-point-motion-hooks t)
+	  (banner (gnus-group-get-parameter gnus-newsgroup-name 'banner))
+	  (gnus-signature-limit nil)
+	  buffer-read-only beg end)
+      (when banner
+	(article-goto-body)
+	(cond
+	 ((eq banner 'signature)
+	  (when (gnus-article-narrow-to-signature)
+	    (widen)
+	    (forward-line -1)
+	    (delete-region (point) (point-max))))
+	 ((stringp banner)
+	  (while (re-search-forward banner nil t)
+	    (delete-region (match-beginning 0) (match-end 0))))))))))
+
 (defun article-hide-signature (&optional arg)
   "Hide the signature in the current article.
 If given a negative prefix, always show; if given a positive prefix,
@@ -1424,6 +1486,8 @@ always hide."
   "Place point at the start of the body."
   (goto-char (point-min))
   (cond
+   ;; This variable is only bound when dealing with separate
+   ;; MIME body parts.
    (article-goto-body-goes-to-point-min-p
     t)
    ((search-forward "\n\n" nil t)
@@ -2167,11 +2231,13 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-hide-boring-headers
      article-treat-overstrike
      article-fill-long-lines
+     article-capitalize-sentences
      article-remove-cr
      article-display-x-face
      article-de-quoted-unreadable
      article-mime-decode-quoted-printable
      article-hide-pgp
+     article-strip-banner
      article-hide-pem
      article-hide-signature
      article-remove-trailing-blank-lines

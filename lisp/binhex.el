@@ -3,7 +3,7 @@
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 5.4 $
+;; $Revision: 5.5 $
 ;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
 ;; Keywords: binhex
 
@@ -299,10 +299,8 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 		(insert-file-contents-literally file-name)))
 	  (error "Can not binhex")))
       (and work-buffer (kill-buffer work-buffer))
-      (condition-case ()
-	  (if file-name (delete-file file-name))
-	(error))
-      )))
+      (ignore-errors
+	(if file-name (delete-file file-name))))))
 
 (provide 'binhex)
 

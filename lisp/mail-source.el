@@ -33,24 +33,6 @@
   "The mail-fetching library."
   :group 'gnus)
 
-(defcustom mail-source-movemail-program "movemail"
-  "*A command to be executed to move mail from the inbox.
-The default is \"movemail\".
-
-This can also be a function.  In that case, the function will be
-called with two parameters -- the name of the INBOX file, and the file
-to be moved to."
-  :group 'mail-source
-  :type '(choice string
-		 function))
-
-(defcustom mail-source-movemail-args nil
-  "*Extra arguments to give to `mail-source-movemail-program'  to move mail from the inbox.
-The default is nil."
-  :group 'mail-source
-  :type '(choice string
-		 (constant nil)))
-
 (defcustom mail-source-crash-box "~/.emacs-mail-crash-box"
   "File where mail will be stored while processing it."
   :group 'mail-source
@@ -88,6 +70,9 @@ The default is nil."
        (:server (getenv "MAILHOST"))
        (:port "pop3")
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
+       (:program)
+       (:args)
+       (:function)
        (:password))
       (maildir
        (:path)))
@@ -168,16 +153,17 @@ of the `let' form."
 CALLBACK will be called with the name of the file where (some of)
 the mail from SOURCE is put.
 Return the number of files that were found."
-  (let ((function (cadr (assq (car source) mail-source-fetcher-alist)))
-	(found 0))
-    (unless function
-      (error "%S is an invalid mail source specification" source))
-    ;; If there's anything in the crash box, we do it first.
-    (when (file-exists-p mail-source-crash-box)
-      (message "Processing mail from %s..." mail-source-crash-box)
-      (setq found (mail-source-callback
-		   callback mail-source-crash-box)))
-    (+ found (funcall function source callback))))
+  (save-excursion
+    (let ((function (cadr (assq (car source) mail-source-fetcher-alist)))
+	  (found 0))
+      (unless function
+	(error "%S is an invalid mail source specification" source))
+      ;; If there's anything in the crash box, we do it first.
+      (when (file-exists-p mail-source-crash-box)
+	(message "Processing mail from %s..." mail-source-crash-box)
+	(setq found (mail-source-callback
+		     callback mail-source-crash-box)))
+      (+ found (funcall function source callback)))))
 
 (defun mail-source-make-complex-temp-name (prefix)
   (let ((newname (make-temp-name prefix))
@@ -197,16 +183,17 @@ Pass INFO on to CALLBACK."
 	  (delete-file mail-source-crash-box))
 	0)
     (funcall callback mail-source-crash-box info)
-    (if mail-source-delete-incoming
-	(when (file-exists-p mail-source-crash-box)
-	  (delete-file mail-source-crash-box))
-      (let ((incoming
-	     (mail-source-make-complex-temp-name
-	      (expand-file-name
-	       "Incoming" mail-source-directory))))
-	(unless (file-exists-p (file-name-directory incoming))
-	  (make-directory (file-name-directory incoming) t))
-	(rename-file mail-source-crash-box incoming t)))
+    (when (file-exists-p mail-source-crash-box)
+      ;; Delete or move the incoming mail out of the way.
+      (if mail-source-delete-incoming
+	  (delete-file mail-source-crash-box)
+	(let ((incoming
+	       (mail-source-make-complex-temp-name
+		(expand-file-name
+		 "Incoming" mail-source-directory))))
+	  (unless (file-exists-p (file-name-directory incoming))
+	    (make-directory (file-name-directory incoming) t))
+	  (rename-file mail-source-crash-box incoming t))))
     1))
 
 (defun mail-source-movemail (from to)
@@ -236,28 +223,14 @@ Pass INFO on to CALLBACK."
 	(unwind-protect
 	    (save-excursion
 	      (setq errors (generate-new-buffer " *mail source loss*"))
-	      (buffer-disable-undo errors)
-	      (if (functionp mail-source-movemail-program)
-		  (condition-case err
-		      (progn
-			(funcall mail-source-movemail-program from to)
-			(setq result 0))
-		    (error
-		     (save-excursion
-		       (set-buffer errors)
-		       (insert (prin1-to-string err))
-		       (setq result 255))))
-		(let ((default-directory "/"))
-		  (setq result
-			(apply
-			 'call-process
-			 (append
-			  (list
-			   (expand-file-name
-			    mail-source-movemail-program exec-directory)
-			   nil errors nil from to)
-			  (when mail-source-movemail-args
-			    mail-source-movemail-args))))))
+	      (let ((default-directory "/"))
+		(setq result
+		      (apply
+		       'call-process
+		       (append
+			(list
+			 (expand-file-name "movemail" exec-directory)
+			 nil errors nil from to)))))
 	      (when (file-exists-p to)
 		(set-file-modes to mail-source-default-file-modes))
 	      (if (and (not (buffer-modified-p errors))
@@ -298,12 +271,20 @@ If ARGS, PROMPT is used as an argument to `format'."
 	     (apply 'format prompt args)
 	   prompt)))
     (unless mail-source-read-passwd
-      (if (load "passwd" t)
+      (if (or (fboundp 'read-passwd) (load "passwd" t))
 	  (setq mail-source-read-passwd 'read-passwd)
 	(unless (fboundp 'ange-ftp-read-passwd)
 	  (autoload 'ange-ftp-read-passwd "ange-ftp"))
 	(setq mail-source-read-passwd 'ange-ftp-read-passwd)))
     (funcall mail-source-read-passwd prompt)))
+
+(defun mail-source-fetch-with-program (program args to)
+  (zerop (apply 'call-process program nil nil nil
+		(append (split-string args) (list to)))))
+
+;;;
+;;; Different fetchers
+;;;
 
 (defun mail-source-fetch-file (source callback)
   "Fetcher for single-file sources."
@@ -316,14 +297,12 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-directory (source callback)
   "Fetcher for directory sources."
   (mail-source-bind (directory source)
-    (let ((files (directory-files
-		  path t
-		  (concat (regexp-quote suffix) "$")))
-	  (found 0)
-	  (mail-source-string (format "directory:%s" path))
-	  file)
-      (while (setq file (pop files))
-	(when (mail-source-movemail file mail-source-crash-box)
+    (let ((found 0)
+	  (mail-source-string (format "directory:%s" path)))
+      (dolist (file (directory-files
+		     path t (concat (regexp-quote suffix) "$")))
+	(when (and (file-regular-p file)
+		   (mail-source-movemail file mail-source-crash-box))
 	  (incf found (mail-source-callback callback file))))
       found)))
 
@@ -339,17 +318,29 @@ If ARGS, PROMPT is used as an argument to `format'."
 		 (format "Password for %s at %s: " user server))))
       (unless (assoc from mail-source-password-cache)
 	(push (cons from password) mail-source-password-cache))
-      (let ((pop3-password password)
-	    (pop3-maildrop user)
-	    (pop3-mailhost server))
-	(if (pop3-movemail mail-source-crash-box)
-	    (mail-source-callback callback server)
-	  ;; We nix out the password in case the error
-	  ;; was because of a wrong password being given.
-	  (setq mail-source-password-cache
-		(delq (assoc from mail-source-password-cache)
-		      mail-source-password-cache))
-	  0)))))
+      (when server
+	(setenv "MAILHOST" server))
+      (if (cond
+	   (program
+	    (when (listp args)
+	      (setq args (eval args)))
+	    (mail-source-fetch-with-program
+	     program args mail-source-crash-box))
+	   (function
+	      (funcall function mail-source-crash-box))
+	   ;; The default is to use pop3.el.
+	   (t
+	    (let ((pop3-password password)
+		  (pop3-maildrop user)
+		  (pop3-mailhost server))
+	      (save-excursion (pop3-movemail mail-source-crash-box)))))
+	  (mail-source-callback callback server)
+	;; We nix out the password in case the error
+	;; was because of a wrong password being given.
+	(setq mail-source-password-cache
+	      (delq (assoc from mail-source-password-cache)
+		    mail-source-password-cache))
+	0))))
 
 (provide 'mail-source)
 
