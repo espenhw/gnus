@@ -4482,11 +4482,11 @@ N is the numerical prefix."
     (setq b (point))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
-     `(,@(gnus-local-map-property gnus-mime-button-map)
-	 gnus-callback gnus-mm-display-part
-	 gnus-part ,gnus-tmp-id
-	 article-type annotation
-	 gnus-data ,handle))
+     `(keymap ,gnus-mime-button-map
+	      gnus-callback gnus-mm-display-part
+	      gnus-part ,gnus-tmp-id
+	      article-type annotation
+	      gnus-data ,handle))
     (setq e (if (bolp)
 		;; Exclude a newline.
 		(1- (point))
@@ -4764,7 +4764,7 @@ If displaying \"text/html\" is discouraged \(see
 		       ',gnus-article-mime-handle-alist))
 	       (gnus-mime-display-alternative
 		',ihandles ',not-pref ',begend ,id))
-	     ,@(gnus-local-map-property gnus-mime-button-map)
+	     keymap ,gnus-mime-button-map
 	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	     face ,gnus-article-button-face
 	     gnus-part ,id
@@ -4788,7 +4788,7 @@ If displaying \"text/html\" is discouraged \(see
 			 ',gnus-article-mime-handle-alist))
 		 (gnus-mime-display-alternative
 		  ',ihandles ',handle ',begend ,id))
-	       ,@(gnus-local-map-property gnus-mime-button-map)
+	       keymap ,gnus-mime-button-map
 	       ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	       face ,gnus-article-button-face
 	       gnus-part ,id
@@ -6678,7 +6678,7 @@ specified by `gnus-button-alist'."
 	(buffer-read-only nil))
     (gnus-eval-format
      gnus-prev-page-line-format nil
-     `(,@(gnus-local-map-property gnus-prev-page-map)
+     `(keymap ,gnus-prev-page-map
 	 gnus-prev t
 	 gnus-callback gnus-article-button-prev-page
 	 article-type annotation))
@@ -6728,7 +6728,7 @@ specified by `gnus-button-alist'."
   (let ((b (point))
 	(buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
-		      `(,@(gnus-local-map-property gnus-next-page-map)
+		      `(keymap ,gnus-next-page-map
 			  gnus-next t
 			  gnus-callback gnus-article-button-next-page
 			  article-type annotation))
@@ -7072,7 +7072,7 @@ For example:
     (gnus-eval-format
      gnus-mime-security-button-line-format
      gnus-mime-security-button-line-format-alist
-     `(,@(gnus-local-map-property gnus-mime-security-button-map)
+     `(keymap ,gnus-mime-security-button-map
 	 gnus-callback gnus-mime-security-press-button
 	 gnus-line-format ,gnus-mime-security-button-line-format
 	 gnus-mime-details ,gnus-mime-security-button-pressed

@@ -1,5 +1,12 @@
 2004-01-06  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-art.el (gnus-mime-display-alternative)
+	(gnus-insert-mime-button, gnus-insert-mime-security-button)
+	(gnus-insert-prev-page-button, gnus-insert-next-page-button):
+	Don't use gnus-local-map-property.
+
+	* gnus-util.el (gnus-local-map-property): Remove.
+
 	* mm-view.el (mm-view-pkcs7-decrypt): Replace
 	gnus-completing-read-maybe-default with completing-read.
 
