@@ -1,5 +1,8 @@
 2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nndoc.el (nndoc-dissect-mime-parts-sub): Fix MIME-Version header
+	for mime-parts.
+
 	* gnus-art.el (gnus-article-edit-done): Widen the buffer.
 
 	* gnus-group.el (gnus-group-name-decode): Don't test

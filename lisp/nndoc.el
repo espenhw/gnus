@@ -852,6 +852,10 @@ PARENT is the message-ID of the parent summary line, or nil for none."
     (unless article-insert
       (setq article-insert (buffer-substring (point-min) (point-max))
 	    head-end head-begin))
+    ;; Fix MIME-Version
+    (unless (string-match "MIME-Version:" article-insert)
+      (setq article-insert
+	    (concat article-insert "MIME-Version: 1.0\n")))
     (setq summary-insert article-insert)
     ;; - summary Subject.
     (setq summary-insert
