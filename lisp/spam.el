@@ -726,32 +726,42 @@ splitters that need to have the full message body available.")
 ;;;TODO: modify to invoke self with each specific check if invoked without specific checks
 (defun spam-split (&rest specific-checks)
   "Split this message into the `spam' group if it is spam.
-This function can be used as an entry in `nnmail-split-fancy', for
-example like this: (: spam-split).  It can take checks as parameters.
+This function can be used as an entry in `nnmail-split-fancy',
+for example like this: (: spam-split).  It can take checks as
+parameters.  A string as a parameter will set the
+spam-split-group to that string.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
-  (save-excursion
-    (save-restriction
-      (dolist (check spam-list-of-statistical-checks)
-	(when (symbol-value check)
-	  (widen)
-	  (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
-			(symbol-name check))
-	  (return)))
-      ;;   (progn (widen) (debug (buffer-string)))
-      (let ((list-of-checks spam-list-of-checks)
-	    decision)
-	(while (and list-of-checks (not decision))
-	  (let ((pair (pop list-of-checks)))
-	    (when (and (symbol-value (car pair))
-		       (or (null specific-checks)
-			   (memq (car pair) specific-checks)))
-	      (gnus-message 5 "spam-split: calling the %s function" (symbol-name (cdr pair)))
-	      (setq decision (funcall (cdr pair))))))
-	(if (eq decision t)
-	    nil
-	  decision)))))
+  (let ((spam-split-group-choice spam-split-group))
+    (dolist (check specific-checks)
+      (when (stringp check)
+	(setq spam-split-group-choice check)
+	(setq specific-checks (delq check specific-checks))))
+
+    (let ((spam-split-group spam-split-group-choice))
+      (save-excursion
+	(save-restriction
+	  (dolist (check spam-list-of-statistical-checks)
+	    (when (and (symbolp check) (symbol-value check))
+	      (widen)
+	      (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
+			    (symbol-name check))
+	      (return)))
+	  ;;   (progn (widen) (debug (buffer-string)))
+	  (let ((list-of-checks spam-list-of-checks)
+		decision)
+	    (while (and list-of-checks (not decision))
+	      (let ((pair (pop list-of-checks)))
+		(when (and (symbol-value (car pair))
+			   (or (null specific-checks)
+			       (memq (car pair) specific-checks)))
+		  (gnus-message 5 "spam-split: calling the %s function" 
+				(symbol-name (cdr pair)))
+		  (setq decision (funcall (cdr pair))))))
+	    (if (eq decision t)
+		nil
+	      decision)))))))
   
 (defun spam-setup-widening ()
   (dolist (check spam-list-of-statistical-checks)

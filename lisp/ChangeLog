@@ -3,6 +3,9 @@
 	* spam.el (spam-mark-spam-as-expired-and-move-routine)
 	(spam-ham-copy-or-move-routine): don't ask when deleting copied
 	articles, and use move instead of copy when possible
+	(spam-split): added the option of specifying a string as a
+	spam-split parameter; such a string will override
+	spam-split-group temporarily.
 
 	* nnmail.el (nnmail-cache-insert): protect from nil message IDs,
 	but should we do something else?
