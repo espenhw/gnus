@@ -1012,7 +1012,7 @@ The following commands are available:
     (when gnus-carpal
       (gnus-carpal-setup-buffer 'group))))
 
-(defsubst gnus-group-name-charset (method group)
+(defun gnus-group-name-charset (method group)
   (if (null method)
       (setq method (gnus-find-method-for-group group)))
   (let ((item (assoc method gnus-group-name-charset-method-alist))
@@ -1026,7 +1026,7 @@ The following commands are available:
 		  result (cdr item))))
       result)))
 
-(defsubst gnus-group-name-decode (string charset)
+(defun gnus-group-name-decode (string charset)
   (if (and string charset (featurep 'mule))
       (mm-decode-coding-string string charset)
     string))

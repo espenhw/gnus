@@ -81,7 +81,6 @@ on your system, you could say something like:
   (autoload 'mail-position-on-field "sendmail")
   (autoload 'message-remove-header "message")
   (autoload 'gnus-point-at-eol "gnus-util")
-  (autoload 'gnus-delete-line "gnus-util" nil nil 'macro)
   (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
@@ -451,7 +450,8 @@ the line could be found."
 	(setq prev (point))
 	(while (and (not (numberp (setq num (read cur))))
 		    (not (eobp)))
-	  (gnus-delete-line))
+	  (delete-region (progn (beginning-of-line) (point))
+			 (progn (forward-line 1) (point))))
 	(cond ((> num article)
 	       (setq max (point)))
 	      ((< num article)

@@ -1,3 +1,13 @@
+2001-11-28 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-find-nov-line): Don't use macro
+	gnus-delete-line.
+
+	* gnus-group.el (gnus-group-name-decode): Defun instead of defsubst.
+	(gnus-group-name-charset): Ditto.
+
+	* gnus-util.el (gnus-buffer-live-p): Ditto.
+
 2001-11-28 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* sieve-manage.el (sieve-manage-stream-alist): Backslash before

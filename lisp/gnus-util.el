@@ -471,7 +471,7 @@ If N, return the Nth ancestor instead."
 	(setq ids (cdr ids)))
       (car ids))))
 
-(defsubst gnus-buffer-live-p (buffer)
+(defun gnus-buffer-live-p (buffer)
   "Say whether BUFFER is alive or not."
   (and buffer
        (get-buffer buffer)
