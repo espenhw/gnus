@@ -2538,6 +2538,9 @@ the dot is the key, while the thing after the dot is the value.  All the
 parameters have this form @emph{except} local variable specs, which are
 not dotted pairs, but proper lists.
 
+Some parameters have correspondant customizable variables, each of which
+is an alist of regexps and values.
+
 The following group parameters can be used:
 
 @table @code
@@ -2562,6 +2565,8 @@ the articles from a mail-to-news gateway.  Posting directly to this
 group is therefore impossible---you have to send mail to the mailing
 list address instead.
 
+See also @code{gnus-parameter-to-address-alist}.
+
 @item to-list
 @cindex to-list
 Address used when doing @kbd{a} in that group.
@@ -2583,6 +2588,8 @@ sending the message if @code{gnus-add-to-list} is set to @code{t}.
 If you do an @kbd{a} command in a mail group and you don't have a
 @code{to-list} group parameter, one will be added automatically upon
 sending the message.
+
+See also @code{gnus-parameter-to-list-alist}.
 
 @item visible
 @cindex visible
@@ -2626,6 +2633,8 @@ If the group parameter has an element that looks like @code{(auto-expire
 . t)}, all articles read will be marked as expirable.  For an
 alternative approach, @pxref{Expiring Mail}.
 
+See also @code{gnus-auto-expirable-newsgroups}.
+
 @item total-expire
 @cindex total-expire
 If the group parameter has an element that looks like
@@ -2633,6 +2642,8 @@ If the group parameter has an element that looks like
 expiry process, even if they are not marked as expirable.  Use with
 caution.  Unread, ticked and dormant articles are not eligible for
 expiry.
+
+See also @code{gnus-total-expirable-newsgroups}.
 
 @item expiry-wait
 @cindex expiry-wait
@@ -2685,19 +2696,14 @@ Elements that look like @code{(charset . iso-8859-1)} will make
 @code{iso-8859-1} the default charset; that is, the charset that will be
 used for all articles that do not specify a charset.
 
-@item (@var{variable} @var{form})
-You can use the group parameters to set variables local to the group you
-are entering.  If you want to turn threading off in @samp{news.answers},
-you could put @code{(gnus-show-threads nil)} in the group parameters of
-that group.  @code{gnus-show-threads} will be made into a local variable
-in the summary buffer you enter, and the form @code{nil} will be
-@code{eval}ed there.
+See also @code{gnus-group-charset-alist}.
 
-This can also be used as a group-specific hook function, if you'd like.
-If you want to hear a beep when you enter a group, you could put
-something like @code{(dummy-variable (ding))} in the parameters of that
-group.  @code{dummy-variable} will be set to the result of the
-@code{(ding)} form, but who cares?
+@item ignored-charsets
+Elements that look like @code{(ignored-charsets x-known iso-8859-1)}
+will make @code{iso-8859-1} and @code{x-unknown} ignored; that is, the
+default charset will be used for decoding articles.
+
+See also @code{gnus-group-ignored-charsets-alist}.
 
 @item posting-style
 You can store additional posting style information for this group only
@@ -2722,6 +2728,20 @@ that matches the regular expression "regex" to be stripped. Instead of
 "regex", you can also use the symbol @code{signature} which strips the
 last signature or any of the elements of the alist
 @code{gnus-article-banner-alist}.
+
+@item (@var{variable} @var{form})
+You can use the group parameters to set variables local to the group you
+are entering.  If you want to turn threading off in @samp{news.answers},
+you could put @code{(gnus-show-threads nil)} in the group parameters of
+that group.  @code{gnus-show-threads} will be made into a local variable
+in the summary buffer you enter, and the form @code{nil} will be
+@code{eval}ed there.
+
+This can also be used as a group-specific hook function, if you'd like.
+If you want to hear a beep when you enter a group, you could put
+something like @code{(dummy-variable (ding))} in the parameters of that
+group.  @code{dummy-variable} will be set to the result of the
+@code{(ding)} form, but who cares?
 
 @end table
 
@@ -7994,7 +8014,7 @@ hierarchy uses @code{iso-2022-jp-2}.
 
 @vindex gnus-group-charset-alist
 This knowledge is encoded in the @code{gnus-group-charset-alist}
-variable, which is an alist of regexps (to match group names) and
+variable, which is an alist of regexps (to match full group names) and
 default charsets to be used when reading these groups.
 
 In addition, some people do use soi-disant @sc{mime}-aware agents that

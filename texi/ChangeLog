@@ -1,3 +1,7 @@
+2001-02-14 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Group Parameters): Add.
+
 2001-02-11 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Choosing Commands): Move `G j' here.
