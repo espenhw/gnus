@@ -3,7 +3,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: help
-;; Version: 0.4
+;; Version: 0.5
 
 ;;; Commentary:
 ;;
@@ -41,6 +41,7 @@
 ;; - Implement remaining types.
 ;; - XEmacs port.
 ;; - Allow `URL', `info', and internal hypertext buttons.
+;; - Support meta-variables and goal directed customization.
 
 ;;; Code:
 
@@ -123,16 +124,43 @@ STRING should be given if the last search was by `string-match' on STRING."
 	   (and (symbolp x) (assq x global-face-data)))
        t)))
       
+(if (facep 'underline)
+    ()
+  ;; No underline face in XEmacs 19.12.
+  (funcall (intern "make-face") 'underline)
+  ;; Must avoid calling set-face-underline-p directly, because it
+  ;; is a defsubst in emacs19, and will make the .elc files non
+  ;; portable!
+  (or (face-differs-from-default-p 'underline)
+      (funcall 'set-face-underline-p 'underline t)))
+
+(or (fboundp 'set-text-properties)
+    ;; Missing in XEmacs 19.12.
+    (defun set-text-properties (start end props &optional buffer)
+      (if (or (null buffer) (bufferp buffer))
+	  (if props
+	      (while props
+		(put-text-property 
+		 start end (car props) (nth 1 props) buffer)
+		(setq props (nthcdr 2 props)))
+	    (remove-text-properties start end ())))))
+
+(or (fboundp 'event-closest-point)
+    ;; Missing in Emacs 19.29.
+    (defun event-point (event)
+      "Return the character position of the given mouse-motion, button-press,
+or button-release event.  If the event did not occur over a window, or did
+not occur over text, then this returns nil.  Otherwise, it returns an index
+into the buffer visible in the event's window."
+      (posn-point (event-start event))))
+
 (eval-when-compile
   (defvar x-colors nil)
   (defvar custom-button-face nil)
-  (defvar custom-modified-list nil)
   (defvar custom-field-uninitialized-face nil)
   (defvar custom-field-invalid-face nil)
   (defvar custom-field-modified-face nil)
   (defvar custom-field-face nil)
-  (defvar custom-button-properties nil)
-  (defvar custom-documentation-properties nil)
   (defvar custom-mouse-face nil)
   (defvar custom-field-active-face nil))
 
@@ -190,17 +218,29 @@ If called interactively, prompts for a face and face attributes."
   (set-face-underline-p face underline-p)
   (and (interactive-p) (redraw-display))))
 
-
 ;; We can't easily check for a working intangible.
-(defvar intangible nil
+(defconst intangible (if (and (boundp 'emacs-minor-version)
+			      (or (> emacs-major-version 19)
+				  (and (> emacs-major-version 18)
+				       (> emacs-minor-version 28))))
+			 (setq intangible 'intangible)
+		       (setq intangible 'intangible-if-it-had-been-working))
   "The symbol making text intangible")
 
-(if (and (boundp 'emacs-minor-version)
-	 (or (> emacs-major-version 19)
-	     (and (> emacs-major-version 18)
-		  (> emacs-minor-version 28))))
-    (setq intangible 'intangible)
-  (setq intangible 'intangible-if-it-had-been-working))
+(defconst rear-nonsticky (if (string-match "XEmacs" emacs-version)
+			     'end-open
+			   'rear-nonsticky)
+  "The symbol making text proeprties non-sticky in the rear end.")
+
+(defconst front-sticky (if (string-match "XEmacs" emacs-version)
+			   'front-closed
+			 'front-sticky)
+  "The symbol making text properties sticky in the front.")
+
+(defconst mouse-face (if (string-match "XEmacs" emacs-version)
+			 'highlight
+		       'mouse-face)
+  "Symbol used for highlighting text under mouse.")
 
 ;; Put it in the Help menu, if possible.
 (condition-case nil
@@ -208,6 +248,48 @@ If called interactively, prompts for a face and face attributes."
     (global-set-key [ menu-bar help-menu customize ]
 		    '("Customize..." . customize))
   (error nil))
+
+;;; Categories:
+;;
+;; XEmacs use inheritable extents for the same purpose as Emacs uses
+;; the category text property.
+
+(if (string-match "XEmacs" emacs-version)
+    (progn 
+      ;; XEmacs categories.
+      (defun custom-category-create (name)
+	(set name (make-extent nil nil))
+	"Create a text property category named NAME.")
+
+      (defun custom-category-put (name property value)
+	"In CATEGORY set PROPERTY to VALUE."
+	(set-extent-property (symbol-value name) property value))
+      
+      (defun custom-category-get (name property)
+	"In CATEGORY get PROPERTY."
+	(extent-property (symbol-value name) property))
+      
+      (defun custom-category-set (from to category)
+	"Make text between FROM and TWO have category CATEGORY."
+	(let ((extent (make-extent from to)))
+	  (set-extent-parent extent (symbol-value category)))))
+      
+  ;; Emacs categories.
+  (defun custom-category-create (name)
+    "Create a text property category named NAME."
+    (set name name))
+
+  (defun custom-category-put (name property value)
+    "In CATEGORY set PROPERTY to VALUE."
+    (put name property value))
+
+  (defun custom-category-get (name property)
+    "In CATEGORY get PROPERTY."
+    (get name property))
+
+  (defun custom-category-set (from to category)
+    "Make text between FROM and TWO have category CATEGORY."
+    (put-text-property from to 'category category)))
 
 ;;; External Data:
 ;; 
@@ -251,6 +333,9 @@ If called interactively, prompts for a face and face attributes."
     (custom-field-parse field)
     (funcall (custom-property custom 'export) custom
 	     (car (custom-field-extract custom field)))))
+
+(defvar custom-save 'custom-save
+  "Function that will save current customization buffer.")
 
 ;;; Custom Functions:
 ;;
@@ -705,6 +790,14 @@ position of the error, and the cdr is a text describing the error."
 ;;
 ;; Each FIELD can be seen as an instanciation of a CUSTOM.
 
+(defvar custom-field-last nil)
+;; Last field containing point.
+(make-variable-buffer-local 'custom-field-last)
+
+(defvar custom-modified-list nil)
+;; List of modified fields.
+(make-variable-buffer-local 'custom-modified-list)
+
 (defun custom-field-create (custom value)
   "Create a field structure of type CUSTOM containing VALUE.
 
@@ -840,7 +933,6 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
   (let* ((field (custom-field-create custom nil))
 	 (add-tag (custom-property custom 'add-tag))
-	 (del-tag (custom-property custom 'del-tag))
 	 (start (make-marker))
 	 (data (vector field nil start nil)))
     (custom-text-insert "\n")
@@ -1137,8 +1229,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 (defun custom-choice-insert (custom level)
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
   (let* ((field (custom-field-create custom nil))
-	 (from (point))
-	 (tag (custom-tag custom)))
+	 (from (point)))
     (custom-text-insert "lars er en nisse")
     (custom-field-move field from (point))
     (custom-documentation-insert custom)
@@ -1167,9 +1258,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     (setq from (point))
     (insert-before-markers " ")
     (backward-char 1)
-    (set-text-properties (point) (1+ (point)) 
-			 (list 'invisible t 
-			       intangible t))
+    (custom-category-set (point) (1+ (point)) 'custom-hidden-properties)
     (custom-tag-insert (custom-tag custom) field)
     (custom-text-insert ": ")
     (let ((data (custom-data custom))
@@ -1184,7 +1273,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	(setq begin (point)
 	      found (custom-insert (custom-property custom 'none) nil))
 	(add-text-properties begin (point)
-			     (list 'rear-nonsticky t
+			     (list rear-nonsticky t
 				   'face custom-field-uninitialized-face)))
       (or original
 	  (custom-field-original-set found (custom-field-original field)))
@@ -1294,7 +1383,8 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 
 (defun custom-face-hack (field value)
   "Face that should be used for highlighting FIELD containing VALUE."
-  (eval (funcall (custom-property (custom-field-custom field) 'export) custom value)))
+  (let ((custom (custom-field-custom field)))
+    (eval (funcall (custom-property custom 'export) custom value))))
 
 (defun custom-const-insert (custom level)
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
@@ -1304,7 +1394,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
     (custom-text-insert (custom-tag custom))
     (add-text-properties from (point) 
 			 (list 'face face
-			       'rear-nonsticky t))
+			       rear-nonsticky t))
     (custom-documentation-insert custom)
     (custom-field-move field from (point))
     field))
@@ -1600,9 +1690,8 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   "Insert TAG for FIELD in current buffer."
   (let ((from (point)))
     (insert tag)
-    (set-text-properties from (point) 
-			 (list 'category custom-button-properties
-			       'custom-tag field))
+    (custom-category-set from (point) 'custom-button-properties)
+    (put-text-property from (point) 'custom-tag field)
     (if data
 	(add-text-properties from (point) (list 'custom-data data)))))
 
@@ -1617,18 +1706,17 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   "Insert ARGS as documentation text."
   (let ((from (point)))
     (apply 'insert args)
-    (set-text-properties from (point) 
-			 (list 'category custom-documentation-properties))))
+    (custom-category-set from (point) 'custom-documentation-properties)))
 
 (defun custom-help-button (command)
   "Describe how to execute COMMAND."
   (let ((from (point)))
     (insert "`" (key-description (where-is-internal command nil t)) "'")
     (set-text-properties from (point)
-			 (list 'category custom-documentation-properties
-			       'face custom-button-face
-			       'mouse-face custom-mouse-face
-			       'custom-tag command)))
+			 (list 'face custom-button-face
+			       mouse-face custom-mouse-face
+			       'custom-tag command))
+    (custom-category-set from (point) 'custom-documentation-properties))
   (custom-help-insert ": " (custom-first-line (documentation command)) "\n"))
 
 ;;; Mode:
@@ -1717,10 +1805,11 @@ With optional ARG, move across that many fields."
 If the optional argument is non-nil, show text iff the argument is positive."
   (interactive "P")
   (let ((hide (or (and (null arg) 
-		       (null (get custom-documentation-properties 'invisible)))
+		       (null (custom-category-get 
+			      'custom-documentation-properties 'invisible)))
 		  (<= (prefix-numeric-value arg) 0))))
-    (put custom-documentation-properties 'invisible hide)
-    (put custom-documentation-properties intangible hide))
+    (custom-category-put 'custom-documentation-properties 'invisible hide)
+    (custom-category-put 'custom-documentation-properties intangible hide))
   (redraw-display))
 
 (defun custom-enter-value (field data)
@@ -1750,9 +1839,8 @@ If the optional argument is non-nil, show text iff the argument is positive."
 
 (defun custom-push-button (event)
   "Activate button below mouse pointer."
-  (interactive "e")
-  (set-buffer (window-buffer (posn-window (event-start event))))
-  (let* ((pos (posn-point (event-start event)))
+  (interactive "@e")
+  (let* ((pos (event-point event))
          (field (get-text-property pos 'custom-field))
          (tag (get-text-property pos 'custom-tag))
 	 (data (get-text-property pos 'custom-data)))
@@ -1773,10 +1861,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
 		    (not (y-or-n-p "Discard all changes? "))
 		    (error "Reset aborted")))
   (let ((all custom-name-fields)
-	current name field)
+	current field)
     (while all
       (setq current (car all)
-	    name (car current)
 	    field (cdr current)
 	    all (cdr all))
       (custom-field-reset field))))
@@ -1825,7 +1912,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 		 (error "No changes to apply.")))
   (custom-field-parse custom-field-last)
   (let ((all custom-name-fields)
-	name field)
+	field)
     (while all
       (setq field (cdr (car all))
 	    all (cdr all))
@@ -1835,7 +1922,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	  (goto-char (car error))
 	  (error (cdr error))))))
   (let ((all custom-name-fields)
-	current name field)
+	field)
     (while all
       (setq field (cdr (car all))
 	    all (cdr all))
@@ -1857,9 +1944,6 @@ If the optional argument is non-nil, show text iff the argument is positive."
   "Hide or show entry."
   (interactive)
   (error "This button is not yet implemented"))
-
-(defvar custom-save 'custom-save
-  "Function that will save current customization buffer.")
 
 (defun custom-save-and-exit ()
   "Save and exit customization buffer."
@@ -1930,10 +2014,6 @@ If the optional argument is non-nil, show text iff the argument is positive."
 ;; Various internal functions for implementing the direct editing of
 ;; fields in the customization buffer.
 
-(defvar custom-modified-list nil)
-;; List of modified fields.
-(make-variable-buffer-local 'custom-modified-list)
-
 (defun custom-field-untouch (field)
   ;; Remove FIELD and its children from `custom-modified-list'.
   (setq custom-modified-list (delq field custom-modified-list))
@@ -1959,8 +2039,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
      from (point)
      (list 'custom-field field
 	   'custom-tag field
-	   'face (custom-field-face field)
-	   'front-sticky t))))
+	   'face (let ((face (custom-field-face field)))
+		   (if (facep face) face nil))
+	   front-sticky t))))
 
 (defun custom-field-read (field)
   ;; Read the screen content of FIELD.
@@ -2003,8 +2084,11 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	 (size (- end begin)))
     (cond ((< size width)
 	   (goto-char end)
-	   (insert-before-markers-and-inherit
-	    (make-string (- width size) padding))
+	   (condition-case nil
+	       (insert-before-markers-and-inherit
+		(make-string (- width size) padding))
+	     (error (insert-before-markers
+		     (make-string (- width size) padding))))
 	   (goto-char pos))
 	  ((> size width)
 	   (let ((start (if (and (< (+ begin width) pos) (<= pos end))
@@ -2026,10 +2110,6 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	(setq custom-field-changed (delq field custom-field-changed))
 	(custom-field-value-set field (custom-field-read field))
 	(custom-field-update field))))
-
-(defvar custom-field-last nil)
-;; Last field containing point.
-(make-variable-buffer-local 'custom-field-last)
 
 (defun custom-post-command ()
   ;; Keep track of their active field.
@@ -2172,8 +2252,8 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	   (doc . "Face used for tags in customization buffers.")
 	   (name . custom-button-face)
 	   (synchronize . (lambda (f)
-			    (put custom-button-properties 
-				 'face custom-button-face)))
+			    (custom-category-put 'custom-button-properties 
+						 'face custom-button-face)))
 	   (type . face))
 	  ((tag . "Mouse Face")
 	   (default . highlight)
@@ -2181,8 +2261,9 @@ If the optional argument is non-nil, show text iff the argument is positive."
 Face used when mouse is above a button in customization buffers.")
 	   (name . custom-mouse-face)
 	   (synchronize . (lambda (f)
-			    (put custom-button-properties 
-				 'mouse-face custom-mouse-face)))
+			    (custom-category-put 'custom-button-properties 
+						 mouse-face 
+						 custom-mouse-face)))
 	   (type . face))
 	  ((tag . "Field Face")
 	   (default . italic)
@@ -2212,18 +2293,23 @@ Face used for customization fields while they are being edited.")
 	   (name . custom-field-active-face)
 	   (type . face)))))
 
+;; custom.el uses two categories.
+
+(custom-category-create 'custom-documentation-properties)
+(custom-category-put 'custom-documentation-properties rear-nonsticky t)
+
+(custom-category-create 'custom-button-properties)
+(custom-category-put 'custom-button-properties 'face custom-button-face)
+(custom-category-put 'custom-button-properties mouse-face custom-mouse-face)
+(custom-category-put 'custom-button-properties rear-nonsticky t)
+
+(custom-category-create 'custom-hidden-properties)
+(custom-category-put 'custom-hidden-properties 'invisible
+		     (not (string-match "XEmacs" emacs-version)))
+(custom-category-put 'custom-hidden-properties intangible t)
+
 (if (file-readable-p custom-file)
     (load-file custom-file))
-
-(defvar custom-documentation-properties 'custom-documentation-properties
-  "The properties of this symbol will be in effect for all documentation.")
-(put custom-documentation-properties 'rear-nonsticky t)
-
-(defvar custom-button-properties 'custom-button-properties 
-  "The properties of this symbol will be in effect for all buttons.")
-(put custom-button-properties 'face custom-button-face)
-(put custom-button-properties 'mouse-face custom-mouse-face)
-(put custom-button-properties 'rear-nonsticky t)
 
 (provide 'custom)
 

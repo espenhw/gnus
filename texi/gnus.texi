@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus.info
-@settitle (ding) Gnus 0.99.18 Manual
+@settitle Gnus 5.0 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -45,7 +45,7 @@ into another language, under the above conditions for modified versions.
 @iftex
 
 @titlepage
-@title (ding) Gnus Manual
+@title Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -119,9 +119,17 @@ a total and utter lie, but who cares? (Besides, the "Gnus" in this
 abbreviation should probably be pronounced "news" as UMEDA intended,
 which makes it a more appropriate name, don't you think?)
 
+In any case, after spending all that energy with coming up with a new
+and spiffy name, we decided that the name was @emph{too} spiffy, so we
+renamamed it back again to "Gnus".  But in mixed case.  "Gnus" vs.
+@sc{gnus}.  New vs. old.
+
+Incidentally, the next Gnus generation will be called "September Gnus",
+and won't be released until February.  Confused?  You will be.
+
 @menu
 * Why?::                What's the point of Gnus?
-* Compatibility::       Just how compatible is (ding) Gnus with @sc{gnus}?
+* Compatibility::       Just how compatible is Gnus with @sc{gnus}?
 * Contributors::        Oodles of people.  
 * New Features::        A short description of all the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
@@ -141,15 +149,14 @@ volume continues to rise with the current rate of increase, all current
 newsreaders will be pretty much useless.  How do you deal with
 newsgroups that have hundreds (or thousands) of new articles each day? 
 
-(ding) Gnus offer no real solutions to these questions, but I would very
-much like to see Gnus being used as a testing ground for new methods of
-reading and fetching news.  Expanding on Umeda-san's wise decision to
-separate the newsreader from the backends, (ding) Gnus now offers a
-simple interface for anybody who wants to write new backends for
-fetching mail and news from different sources.  I have added hooks for
-customizations everywhere I can imagine useful.  By doing so, I'm
-inviting every one of you to explore and invent new ways of reading
-news. 
+Gnus offer no real solutions to these questions, but I would very much
+like to see Gnus being used as a testing ground for new methods of
+reading and fetching news. Expanding on Umeda-san's wise decision to
+separate the newsreader from the backends, Gnus now offers a simple
+interface for anybody who wants to write new backends for fetching mail
+and news from different sources. I have added hooks for customizations
+everywhere I can imagine useful. By doing so, I'm inviting every one of
+you to explore and invent new ways of reading news.
 
 May Gnus never be complete. @kbd{C-u 100 M-x hail-emacs}. 
 
@@ -157,10 +164,9 @@ May Gnus never be complete. @kbd{C-u 100 M-x hail-emacs}.
 @section Compatibility
 
 @cindex compatibility
-(ding) Gnus was designed to be fully compatible with @sc{gnus}.  Almost
-all key bindings have been kept.  More key bindings have been added, of
-course, but only in one or two obscure cases have old bindings been
-changed.
+Gnus was designed to be fully compatible with @sc{gnus}.  Almost all key
+bindings have been kept.  More key bindings have been added, of course,
+but only in one or two obscure cases have old bindings been changed.
 
 Our motto is:
 @quotation
@@ -202,16 +208,15 @@ Uncleanliness!  Away!
 
 Packages like @code{expire-kill} will no longer work.  As a matter of
 fact, you should probably remove all old @sc{gnus} packages (and other
-code) when you start using (ding) Gnus.  More likely than not, (ding)
-Gnus already does what you have written code to make @sc{gnus} do.
-(Snicker.)
+code) when you start using Gnus.  More likely than not, Gnus already
+does what you have written code to make @sc{gnus} do.  (Snicker.)
 
 Even though old methods of doing things are still supported, only the
 new methods are documented in this manual.  If you detect a new method of
 doing something while reading this manual, that does not mean you have
 to stop doing it the old way.
 
-(ding) Gnus understands all @sc{gnus} startup files.
+Gnus understands all @sc{gnus} startup files.
 
 @kindex M-x gnus-bug
 Overall, a casual user who hasn't written much code that depends on
@@ -311,7 +316,7 @@ next millennium.
 @item
 Native @sc{mime} support is something that should be done.  I was hoping
 I could steal code from @code{Mew}, the @sc{mime} mail reader for Emacs,
-but I'm not quite sure what the status of that project is.  (ding) might
+but I'm not quite sure what the status of that project is.  Gnus might
 support @sc{mime} quite soon, and it might not.
 @item
 When the user references the parent of an article, some sort of
@@ -643,10 +648,10 @@ the @file{.newsrc} file.  (Actually, it duplicated everything in the
 that were the most recently saved, which enabled people to swap between
 @sc{gnus} and other newsreaders.
 
-That was kinda silly, so (ding) Gnus went one better: In addition to the
-@file{.newsrc} and @file{.newsrc.el} files, (ding) Gnus also has a file
-called @file{.newsrc.eld}.  It will read whichever of these files that
-are most recent, but it will never write a @file{.newsrc.el} file.
+That was kinda silly, so Gnus went one better: In addition to the
+@file{.newsrc} and @file{.newsrc.el} files, Gnus also has a file called
+@file{.newsrc.eld}.  It will read whichever of these files that are most
+recent, but it will never write a @file{.newsrc.el} file.
 
 @vindex gnus-save-newsrc-file
 You can also turn off writing the @file{.newsrc} file by setting
@@ -1262,15 +1267,17 @@ Make a directory group.  You will be prompted for a directory name
 @item G h 
 @kindex G h (Group)
 @findex gnus-group-make-help-group
-Make the (ding) Gnus help group (@code{gnus-group-make-help-group}).
+Make the Gnus help group (@code{gnus-group-make-help-group}).
 
 @item G a
 @kindex G a (Group)
 @findex gnus-group-make-archive-group
 @vindex gnus-group-archive-directory
-Make the (ding) Gnus archive group
-(@code{gnus-group-make-archive-group}).  The archive group will be
-fetched from @code{gnus-group-archive-directory}.
+@vindex gnus-group-recent-archive-directory
+Make a Gnus archive group (@code{gnus-group-make-archive-group}).  By
+default a group pointing to the most recent articles will be created
+(@code{gnus-group-recent-archibe-directory}), but given a prefix, a full
+group will be created from from @code{gnus-group-archive-directory}.
 
 @item G k
 @kindex G k (Group)
@@ -5065,9 +5072,9 @@ not really necessary.
 @section Score Files
 @cindex score files
 
-Other people use @dfn{kill files}, but we here at (ding) Gnus Towers
-like scoring better than killing, so we'd rather switch than fight.  They
-do something completely different as well, so sit up straight and pay
+Other people use @dfn{kill files}, but we here at Gnus Towers like
+scoring better than killing, so we'd rather switch than fight.  They do
+something completely different as well, so sit up straight and pay
 attention!
 
 @vindex gnus-summary-mark-below
@@ -5712,9 +5719,9 @@ holding our breath yet?
 @subsection Kill Files
 @cindex kill files
 
-(ding) Gnus still supports those pesky old kill files.  In fact, the
-kill file entries can now be expiring, which is something I wrote before
-Per thought of doing score files, so I've left the code in there.
+Gnus still supports those pesky old kill files.  In fact, the kill file
+entries can now be expiring, which is something I wrote before Per
+thought of doing score files, so I've left the code in there.
 
 In short, kill processing is a lot slower (and I do mean @emph{a lot})
 than score processing, so it might be a good idea to rewrite your kill
@@ -6671,8 +6678,8 @@ processing a bit faster.
 @chapter Troubleshooting
 @cindex troubleshooting
 
-(ding) Gnus works @emph{so} well straight out of the box - I can't
-imagine any problems, really.
+Gnus works @emph{so} well straight out of the box - I can't imagine any
+problems, really.
 
 Ahem.
 
@@ -6685,10 +6692,9 @@ been running @sc{gnus}, you need to exit Emacs and start it up again before
 Gnus will work.
 @item
 Try doing an @kbd{M-x gnus-version}.  If you get something that looks
-like @samp{(ding) Gnus v0.46; nntp 4.0} you have the right files loaded.
-If, on the other hand, you get something like @samp{NNTP 3.x} or
-@samp{nntp flee}, you have some old @file{.el} files lying around.
-Delete these.
+like @samp{Gnus v5.46; nntp 4.0} you have the right files loaded.  If,
+on the other hand, you get something like @samp{NNTP 3.x} or @samp{nntp
+flee}, you have some old @file{.el} files lying around.  Delete these.
 @item
 Read the help group (@kbd{M h} in the group buffer) for a FAQ and a
 how-to. 
@@ -6701,10 +6707,10 @@ If all else fails, report the problem as a bug,
 
 @kindex M-x gnus-bug
 @findex gnus-bug
-If you find a bug in (ding) Gnus, you can report it with the @kbd{M-x
-gnus-bug} command. @kbd{M-x set-variable RET debug-on-error RET t RET},
-and send me the backtrace. I will fix bugs, but I can only fix them if
-you send me a precise description as to how to reproduce the bug.
+If you find a bug in Gnus, you can report it with the @kbd{M-x gnus-bug}
+command. @kbd{M-x set-variable RET debug-on-error RET t RET}, and send
+me the backtrace. I will fix bugs, but I can only fix them if you send
+me a precise description as to how to reproduce the bug.
 
 @c If you just need help, you are better off asking on
 @c @samp{gnu.emacs.gnus}.  

@@ -561,7 +561,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 ;; This method has a problem if you've accidentally let the active list get
 ;; out of sync with the files.  This could happen, say, if you've
-;; accidentally gotten new mail with something other than (ding) (but why
+;; accidentally gotten new mail with something other than Gnus (but why
 ;; would _that_ ever happen? :-).  In that case, we will be in the middle of
 ;; processing the file, ready to add new X-Gnus article number markers, and
 ;; we'll run accross a message with no ID yet - the active list _may_not_ be

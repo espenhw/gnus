@@ -26,167 +26,174 @@
 ;;; Code:
 
 (require 'gnus)
+(require 'gnus-ems)
 (require gnus-easymenu)
 (require 'custom)
-(require 'gnus-ems)
   
 ;;; Summary highlights.
 
-(defvar gnus-summary-highlight-properties
-  '((unread "ForestGreen" "green")
-    (ticked "Firebrick" "pink")
-    (read "black" "white")
-    (low italic italic)
-    (high bold bold)
-    (canceled "yellow/black" "black/yellow")))
+;(defvar gnus-summary-highlight-properties
+;  '((unread "ForestGreen" "green")
+;    (ticked "Firebrick" "pink")
+;    (read "black" "white")
+;    (low italic italic)
+;    (high bold bold)
+;    (canceled "yellow/black" "black/yellow")))
 
-(defvar gnus-summary-highlight-translation
-  '(((unread (= mark gnus-unread-mark))
-     (ticked (or (= mark gnus-ticked-mark) (= mark gnus-dormant-mark)))
-     (read (not (or (= mark gnus-unread-mark) (= mark gnus-dormant-mark)
-		    (= mark gnus-ticked-mark) (= mark gnus-canceled-mark))))
-     (canceled (= mark gnus-canceled-mark)))
-    ((low (< score gnus-summary-default-score))
-     (high (> score gnus-summary-default-score)))))
+;(defvar gnus-summary-highlight-translation
+;  '(((unread (= mark gnus-unread-mark))
+;     (ticked (or (= mark gnus-ticked-mark) (= mark gnus-dormant-mark)))
+;     (read (not (or (= mark gnus-unread-mark) (= mark gnus-dormant-mark)
+;		    (= mark gnus-ticked-mark) (= mark gnus-canceled-mark))))
+;     (canceled (= mark gnus-canceled-mark)))
+;    ((low (< score gnus-summary-default-score))
+;     (high (> score gnus-summary-default-score)))))
 
-(defun gnus-visual-map-face-translation ()
-  (let ((props gnus-summary-highlight-properties)
-	(trans gnus-summary-highlight-translation)
-	map)
-    (while props)))
+;(defun gnus-visual-map-face-translation ()
+;  (let ((props gnus-summary-highlight-properties)
+;	(trans gnus-summary-highlight-translation)
+;	map)
+;    (while props)))
       
-(defvar gnus-summary-selected-face 'underline
-  "*Face used for highlighting the current article in the summary buffer.")
+;see gnus-cus.el
+;(defvar gnus-summary-selected-face 'underline
+;  "*Face used for highlighting the current article in the summary buffer.")
  
-(defvar gnus-summary-highlight
-  (cond ((not (eq gnus-display-type 'color))
-	 '(((> score default) . bold)
-	   ((< score default) . italic)))
-	((eq gnus-background-mode 'dark)
-	 (list (cons '(= mark gnus-canceled-mark)
-		     (custom-face-lookup "yellow" "black" nil nil nil nil))
-	       (cons '(and (> score default) 
-			   (or (= mark gnus-dormant-mark)
-			       (= mark gnus-ticked-mark)))
-		     (custom-face-lookup "pink" nil nil t nil nil))
-	       (cons '(and (< score default) 
-			   (or (= mark gnus-dormant-mark)
-			       (= mark gnus-ticked-mark)))
-		     (custom-face-lookup "pink" nil nil nil t nil))
-	       (cons '(or (= mark gnus-dormant-mark)
-			  (= mark gnus-ticked-mark))
-		     (custom-face-lookup "pink" nil nil nil nil nil))
+;see gnus-cus.el
+;(defvar gnus-summary-highlight
+;  (cond ((not (eq gnus-display-type 'color))
+;	 '(((> score default) . bold)
+;	   ((< score default) . italic)))
+;	((eq gnus-background-mode 'dark)
+;	 (list (cons '(= mark gnus-canceled-mark)
+;		     (custom-face-lookup "yellow" "black" nil nil nil nil))
+;	       (cons '(and (> score default) 
+;			   (or (= mark gnus-dormant-mark)
+;			       (= mark gnus-ticked-mark)))
+;		     (custom-face-lookup "pink" nil nil t nil nil))
+;	       (cons '(and (< score default) 
+;			   (or (= mark gnus-dormant-mark)
+;			       (= mark gnus-ticked-mark)))
+;		     (custom-face-lookup "pink" nil nil nil t nil))
+;	       (cons '(or (= mark gnus-dormant-mark)
+;			  (= mark gnus-ticked-mark))
+;		     (custom-face-lookup "pink" nil nil nil nil nil))
 
-	       (cons '(and (> score default) (= mark gnus-ancient-mark))
-		     (custom-face-lookup "SkyBlue" nil nil t nil nil))
-	       (cons '(and (< score default) (= mark gnus-ancient-mark))
-		     (custom-face-lookup "SkyBlue" nil nil nil t nil))
-	       (cons '(= mark gnus-ancient-mark)
-		     (custom-face-lookup "SkyBlue" nil nil nil nil nil))
+;	       (cons '(and (> score default) (= mark gnus-ancient-mark))
+;		     (custom-face-lookup "SkyBlue" nil nil t nil nil))
+;	       (cons '(and (< score default) (= mark gnus-ancient-mark))
+;		     (custom-face-lookup "SkyBlue" nil nil nil t nil))
+;	       (cons '(= mark gnus-ancient-mark)
+;		     (custom-face-lookup "SkyBlue" nil nil nil nil nil))
 
-	       (cons '(and (> score default) (= mark gnus-unread-mark))
-		     (custom-face-lookup "white" nil nil t nil nil))
-	       (cons '(and (< score default) (= mark gnus-unread-mark))
-		     (custom-face-lookup "white" nil nil nil t nil))
-	       (cons '(= mark gnus-unread-mark)
-		     (custom-face-lookup "white" nil nil nil nil nil))
+;	       (cons '(and (> score default) (= mark gnus-unread-mark))
+;		     (custom-face-lookup "white" nil nil t nil nil))
+;	       (cons '(and (< score default) (= mark gnus-unread-mark))
+;		     (custom-face-lookup "white" nil nil nil t nil))
+;	       (cons '(= mark gnus-unread-mark)
+;		     (custom-face-lookup "white" nil nil nil nil nil))
 
-	       (cons '(> score default) 'bold)
-	       (cons '(< score default) 'italic)))
-	(t
-	 (list (cons '(= mark gnus-canceled-mark)
-		     (custom-face-lookup "yellow" "black" nil nil nil nil))
-	       (cons '(and (> score default) 
-			   (or (= mark gnus-dormant-mark)
-			       (= mark gnus-ticked-mark)))
-		     (custom-face-lookup "firebrick" nil nil t nil nil))
-	       (cons '(and (< score default) 
-			   (or (= mark gnus-dormant-mark)
-			       (= mark gnus-ticked-mark)))
-		     (custom-face-lookup "firebrick" nil nil nil t nil))
-	       (cons '(or (= mark gnus-dormant-mark)
-			  (= mark gnus-ticked-mark))
-		     (custom-face-lookup "firebrick" nil nil nil nil nil))
+;	       (cons '(> score default) 'bold)
+;	       (cons '(< score default) 'italic)))
+;	(t
+;	 (list (cons '(= mark gnus-canceled-mark)
+;		     (custom-face-lookup "yellow" "black" nil nil nil nil))
+;	       (cons '(and (> score default) 
+;			   (or (= mark gnus-dormant-mark)
+;			       (= mark gnus-ticked-mark)))
+;		     (custom-face-lookup "firebrick" nil nil t nil nil))
+;	       (cons '(and (< score default) 
+;			   (or (= mark gnus-dormant-mark)
+;			       (= mark gnus-ticked-mark)))
+;		     (custom-face-lookup "firebrick" nil nil nil t nil))
+;	       (cons '(or (= mark gnus-dormant-mark)
+;			  (= mark gnus-ticked-mark))
+;		     (custom-face-lookup "firebrick" nil nil nil nil nil))
 
-	       (cons '(and (> score default) (= mark gnus-ancient-mark))
-		     (custom-face-lookup "RoyalBlue" nil nil t nil nil))
-	       (cons '(and (< score default) (= mark gnus-ancient-mark))
-		     (custom-face-lookup "RoyalBlue" nil nil nil t nil))
-	       (cons '(= mark gnus-ancient-mark)
-		     (custom-face-lookup "RoyalBlue" nil nil nil nil nil))
+;	       (cons '(and (> score default) (= mark gnus-ancient-mark))
+;		     (custom-face-lookup "RoyalBlue" nil nil t nil nil))
+;	       (cons '(and (< score default) (= mark gnus-ancient-mark))
+;		     (custom-face-lookup "RoyalBlue" nil nil nil t nil))
+;	       (cons '(= mark gnus-ancient-mark)
+;		     (custom-face-lookup "RoyalBlue" nil nil nil nil nil))
 
-	       (cons '(and (> score default) (/= mark gnus-unread-mark))
-		     (custom-face-lookup "DarkGreen" nil nil t nil nil))
-	       (cons '(and (< score default) (/= mark gnus-unread-mark))
-		     (custom-face-lookup "DarkGreen" nil nil nil t nil))
-	       (cons '(/= mark gnus-unread-mark)
-		     (custom-face-lookup "DarkGreen" nil nil nil nil nil))
+;	       (cons '(and (> score default) (/= mark gnus-unread-mark))
+;		     (custom-face-lookup "DarkGreen" nil nil t nil nil))
+;	       (cons '(and (< score default) (/= mark gnus-unread-mark))
+;		     (custom-face-lookup "DarkGreen" nil nil nil t nil))
+;	       (cons '(/= mark gnus-unread-mark)
+;		     (custom-face-lookup "DarkGreen" nil nil nil nil nil))
 
-	       (cons '(> score default) 'bold)
-	       (cons '(< score default) 'italic))))
-  "*Alist of `(FORM . FACE)'.
-Summary lines are highlighted with the FACE for the first FORM which
-evaluate to a non-nil value.  
+;	       (cons '(> score default) 'bold)
+;	       (cons '(< score default) 'italic))))
+;  "*Alist of `(FORM . FACE)'.
+;Summary lines are highlighted with the FACE for the first FORM which
+;evaluate to a non-nil value.  
 
-Point will be at the beginning of the line when FORM is evaluated.
-The following can be used for convenience:
+;Point will be at the beginning of the line when FORM is evaluated.
+;The following can be used for convenience:
 
-score:   (gnus-summary-article-score)
-default: gnus-summary-default-score
-below:   gnus-summary-mark-below
-mark:    (gnus-summary-article-mark)
+;score:   (gnus-summary-article-score)
+;default: gnus-summary-default-score
+;below:   gnus-summary-mark-below
+;mark:    (gnus-summary-article-mark)
 
-The latter can be used like this:
-   ((= mark gnus-replied-mark) . underline)")
+;The latter can be used like this:
+;   ((= mark gnus-replied-mark) . underline)")
 
 ;;; article highlights
 
-(defvar gnus-header-face-alist 
-  (cond ((not (eq gnus-display-type 'color))
-	 '(("" bold italic)))
-	((eq gnus-background-mode 'dark)
-	 (list (list "From" nil 
-		     (custom-face-lookup "SkyBlue" nil nil t t nil))
-	       (list "Subject" nil 
-		     (custom-face-lookup "pink" nil nil t t nil))
-	       (list "Newsgroups:.*," nil
-		     (custom-face-lookup "yellow" nil nil t t nil))
-	       (list "" 
-		     (custom-face-lookup "cyan" nil nil t nil nil)
-		     (custom-face-lookup "green" nil nil nil t nil))))
-	(t
-	 (list (list "From" nil 
-		     (custom-face-lookup "RoyalBlue" nil nil t t nil))
-	       (list "Subject" nil 
-		     (custom-face-lookup "firebrick" nil nil t t nil))
-	       (list "Newsgroups:.*," nil
-		     (custom-face-lookup "red" nil nil t t nil))
-	       (list ""
-		     (custom-face-lookup "DarkGreen" nil nil t nil nil)
-		     (custom-face-lookup "DarkGreen" nil nil nil t nil)))))
-  "Alist of headers and faces used for highlighting them.
-The entries in the list has the form `(REGEXP NAME CONTENT)', where
-REGEXP is a regular expression matching the beginning of the header,
-NAME is the face used for highlighting the header name and CONTENT is
-the face used for highlighting the header content. 
+;see gnus-cus.el
+;(defvar gnus-header-face-alist 
+;  (cond ((not (eq gnus-display-type 'color))
+;	 '(("" bold italic)))
+;	((eq gnus-background-mode 'dark)
+;	 (list (list "From" nil 
+;		     (custom-face-lookup "SkyBlue" nil nil t t nil))
+;	       (list "Subject" nil 
+;		     (custom-face-lookup "pink" nil nil t t nil))
+;	       (list "Newsgroups:.*," nil
+;		     (custom-face-lookup "yellow" nil nil t t nil))
+;	       (list "" 
+;		     (custom-face-lookup "cyan" nil nil t nil nil)
+;		     (custom-face-lookup "green" nil nil nil t nil))))
+;	(t
+;	 (list (list "From" nil 
+;		     (custom-face-lookup "RoyalBlue" nil nil t t nil))
+;	       (list "Subject" nil 
+;		     (custom-face-lookup "firebrick" nil nil t t nil))
+;	       (list "Newsgroups:.*," nil
+;		     (custom-face-lookup "red" nil nil t t nil))
+;	       (list ""
+;		     (custom-face-lookup "DarkGreen" nil nil t nil nil)
+;		     (custom-face-lookup "DarkGreen" nil nil nil t nil)))))
+;  "Alist of headers and faces used for highlighting them.
+;The entries in the list has the form `(REGEXP NAME CONTENT)', where
+;REGEXP is a regular expression matching the beginning of the header,
+;NAME is the face used for highlighting the header name and CONTENT is
+;the face used for highlighting the header content. 
 
-The first non-nil NAME or CONTENT with a matching REGEXP in the list
-will be used.")
+;The first non-nil NAME or CONTENT with a matching REGEXP in the list
+;will be used.")
 
 
-(defvar gnus-make-foreground t
-  "Non nil means foreground color to highlight citations.")
+;see gnus-cus.el
+;(defvar gnus-make-foreground t
+;  "Non nil means foreground color to highlight citations.")
 
-(defvar gnus-article-button-face 'bold
-  "Face used for text buttons.")
+;see gnus-cus.el
+;(defvar gnus-article-button-face 'bold
+;  "Face used for text buttons.")
 
-(defvar gnus-article-mouse-face (if (boundp 'gnus-mouse-face)
-				    gnus-mouse-face
-				  'highlight)
-  "Face used when the mouse is over the button.")
+;see gnus-cus.el
+;(defvar gnus-article-mouse-face (if (boundp 'gnus-mouse-face)
+;				    gnus-mouse-face
+;				  'highlight)
+;  "Face used when the mouse is over the button.")
 
-(defvar gnus-signature-face 'italic
-  "Face used for signature.")
+;see gnus-cus.el
+;(defvar gnus-signature-face 'italic
+;  "Face used for signature.")
 
 (defvar gnus-button-alist 
   '(("in\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
@@ -211,23 +218,25 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
 
-(eval-when-compile
-  (defvar browse-url-browser-function))
+;see gnus-cus.el
+;(eval-when-compile
+;  (defvar browse-url-browser-function))
 
-(defvar gnus-button-url
-  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
-	((fboundp 'w3-fetch) 'w3-fetch)
-	((eq window-system 'x) 'gnus-netscape-open-url))
-  "*Function to fetch URL.
-The function will be called with one argument, the URL to fetch.
-Useful values of this function are:
+;see gnus-cus.el
+;(defvar gnus-button-url
+;  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
+;	((fboundp 'w3-fetch) 'w3-fetch)
+;	((eq window-system 'x) 'gnus-netscape-open-url))
+;  "*Function to fetch URL.
+;The function will be called with one argument, the URL to fetch.
+;Useful values of this function are:
 
-w3-fetch: 
-   defined in the w3 emacs package by William M. Perry.
-gnus-netscape-open-url:
-   open url in existing netscape, start netscape if none found.
-gnus-netscape-start-url:
-   start new netscape with url.")
+;w3-fetch: 
+;   defined in the w3 emacs package by William M. Perry.
+;gnus-netscape-open-url:
+;   open url in existing netscape, start netscape if none found.
+;gnus-netscape-start-url:
+;   start new netscape with url.")
 
 
 
@@ -317,7 +326,7 @@ gnus-netscape-start-url:
 	["Send a bug report" gnus-bug t]
 	["Send a mail" gnus-group-mail t]
 	["Post an article" gnus-group-post-news t]
-	["Customize score file" gnus-score-customize t]
+	["Customize score file" gnus-score-customize (not (string-match "XEmacs" emacs-version)) ]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Delete bogus groups" gnus-group-check-bogus-groups t]
 	["Find new newsgroups" gnus-find-new-newsgroups t]
@@ -472,8 +481,10 @@ gnus-netscape-start-url:
 	  ["Edit score file" gnus-score-edit-file t]
 	  ["Trace score" gnus-score-find-trace t]
 	  ["Increase score" gnus-summary-increase-score t]
-	  ["Lower score" gnus-summary-lower-score t]
-	  ("Default header"
+	  ["Lower score" gnus-summary-lower-score t]))))
+
+     (and nil
+	  '(("Default header"
 	   ["Ask" (gnus-score-set-default 'gnus-score-default-header nil)
 	    :style radio 
 	    :selected (null gnus-score-default-header)]
@@ -580,7 +591,7 @@ gnus-netscape-start-url:
 	    (gnus-score-set-default 'gnus-score-default-duration 'i)
 	    :style radio
 	    :selected (eq gnus-score-default-duration 'i)])
-	  ))))
+	  ))
 
      (easy-menu-define
       gnus-summary-article-menu
@@ -588,18 +599,45 @@ gnus-netscape-start-url:
       ""
       '("Article"
 	("Hide"
-	 ("Date"
-	  ["Local" gnus-article-date-local t]
-	  ["UT" gnus-article-date-local t]
-	  ["Lapsed" gnus-article-date-local t])
+	 ["All" gnus-article-hide t]
 	 ["Headers" gnus-article-hide-headers t]
 	 ["Signature" gnus-article-hide-signature t]
-	 ["Citation" gnus-article-hide-citation t]
+	 ["Citation" gnus-article-hide-citation t])
+	("Highlight"
+	 ["All" gnus-article-highlight t]
+	 ["Headers" gnus-article-highlight-headers t]
+	 ["Signature" gnus-article-highlight-signature t]
+	 ["Citation" gnus-article-highlight-citation t])
+	("Date"
+	 ["Local" gnus-article-date-local t]
+	 ["UT" gnus-article-date-local t]
+	 ["Lapsed" gnus-article-date-local t])
+	("Filter"
 	 ["Overstrike" gnus-article-treat-overstrike t]
 	 ["Word wrap" gnus-article-word-wrap t]
 	 ["CR" gnus-article-remove-cr t]
 	 ["Show X-Face" gnus-article-display-x-face t]
-	 ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
+	 ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
+	 ["Rot 13" gnus-summary-caesar-message t]
+	 ["Add buttons" gnus-article-add-buttons t]
+	 ["Stop page breaking" gnus-summary-stop-page-breaking t]
+	 ["Toggle MIME" gnus-summary-toggle-mime t]
+	 ["Toggle header" gnus-summary-toggle-header t])
+	("Output"
+	 ["Save in default format" gnus-summary-save-article t]
+	 ["Save in file" gnus-summary-save-article-file t]
+	 ["Save in Unix mail format" gnus-summary-save-article-mail t]
+	 ["Save in MH folder" gnus-summary-save-article-folder t]
+	 ["Save in VM folder" gnus-summary-save-article-vm t]
+	 ["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
+	 ["Pipe through a filter" gnus-summary-pipe-output t])
+	("Backend"
+	 ["Respool article" gnus-summary-respool-article t]
+	 ["Move article" gnus-summary-move-article t]
+	 ["Copy article" gnus-summary-copy-article t]
+	 ["Import file" gnus-summary-import-article t]
+	 ["Edit article" gnus-summary-edit-article t]
+	 ["Delete article" gnus-summary-delete-article t])
 	("Extract"
 	 ["Uudecode" gnus-uu-decode-uu t]
 	 ["Uudecode and save" gnus-uu-decode-uu-and-save t]
@@ -614,23 +652,9 @@ gnus-netscape-start-url:
 	["End of the article" gnus-summary-end-of-article t]
 	["Fetch parent of article" gnus-summary-refer-parent-article t]
 	["Fetch article with id..." gnus-summary-refer-article t]
-	["Stop page breaking" gnus-summary-stop-page-breaking t]
-	["Rot 13" gnus-summary-caesar-message t]
-	["Redisplay" gnus-summary-show-article t]
-	["Toggle header" gnus-summary-toggle-header t]
-	["Toggle MIME" gnus-summary-toggle-mime t]
-	["Save" gnus-summary-save-article t]
-	["Save in mail format" gnus-summary-save-article-mail t]
-	["Pipe through a filter" gnus-summary-pipe-output t]
-	("Mail articles"
-	 ["Respool article" gnus-summary-respool-article t]
-	 ["Move article" gnus-summary-move-article t]
-	 ["Copy article" gnus-summary-copy-article t]
-	 ["Import file" gnus-summary-import-article t]
-	 ["Edit article" gnus-summary-edit-article t]
-	 ["Delete article" gnus-summary-delete-article t])
-	))
+	["Redisplay" gnus-summary-show-article t]))
 
+	 
      (easy-menu-define
       gnus-summary-thread-menu
       gnus-summary-mode-map
@@ -869,7 +893,7 @@ If nil, the user will be asked for a duration.")
 	  ;; If no mouse-face prop on line (e.g. xemacs) we 
 	  ;; will have to = from = end, so we highlight the
 	  ;; entire line instead.
-	  (if (= to from)
+	  (if (= (+ to 2) from)
 	      (progn
 		(setq from beg)
 		(setq to end)))
@@ -1305,11 +1329,12 @@ External references are things like message-ids and URLs, as specified by
 	  (remove-text-properties end (point-max) gnus-hidden-properties)
 	(add-text-properties end (point-max) gnus-hidden-properties)))))
 
-(defun gnus-make-face (color)
-  ;; Create entry for face with COLOR.
-  (if gnus-make-foreground
-      (custom-face-lookup color nil nil nil nil nil)
-    (custom-face-lookup nil color nil nil nil nil)))
+;see gnus-cus.el
+;(defun gnus-make-face (color)
+;  ;; Create entry for face with COLOR.
+;  (if gnus-make-foreground
+;      (custom-face-lookup color nil nil nil nil nil)
+;    (custom-face-lookup nil color nil nil nil nil)))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

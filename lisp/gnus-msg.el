@@ -460,10 +460,15 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  (setq gnus-article-reply sumart)
 	  ;; Handle `gnus-auto-mail-to-author'.
 	  ;; Suggested by Daniel Quinlan <quinlan@best.com>.
-	  (let ((to (and (not post)
-			 (if (eq gnus-auto-mail-to-author 'ask)
-			     (and (y-or-n-p "Also send mail to author? ") from)
-			   (and gnus-auto-mail-to-author from)))))
+	  ;; Revised to respect Reply-To by Ulrik Dickow <dickow@nbi.dk>.
+          (let ((to (and (not post)
+			 (if (or (and (eq gnus-auto-mail-to-author 'ask)
+				      (y-or-n-p "Also send mail to author? "))
+				 gnus-auto-mail-to-author)
+			     (or (save-excursion
+				   (set-buffer gnus-article-copy)
+				   (gnus-fetch-field "reply-to"))
+				 from)))))
 	    (if to
 		(progn
 		  (if (mail-fetch-field "To")

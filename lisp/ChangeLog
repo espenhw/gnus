@@ -1,4 +1,65 @@
+Fri Aug 25 02:57:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nndir.el (nndir-status-message): Wrong number of arguments.
+
+	* gnus.el (gnus-summary-next-article): Woundn't go to the next
+	group. 
+	(gnus-group-recent-archive-directory): New variable.
+	(gnus-group-make-archive-group): Now makes both the recent and the
+	full groups. 
+
+	* gnus-vis.el (gnus-easymenu): Require gnus-ems first.
+
+Fri Aug 25 01:13:52 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-vis.el (gnus-highlight-selected-summary): Would underline
+	wrong part of line without mouse-face.
+
+	* gnus.el (gnus-summary-refer-article): Would mess up window
+	config when not useing full windows.
+
+Fri Aug 25 00:22:14 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Disable
+	`gnus-score-customize' in XEmacs.
+	
+	* gnus-cus.el: Removed variables declared in `gnus-cus.el'.
+	* gnus.el: Ditto.
+	* gnus-cite.el: Ditto.
+
+Fri Aug 25 00:06:35 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* custom.el: New version.
+
+	* gnus.el (gnus-summary-fetch-faq): Would bug out.
+
+Thu Aug 24 23:54:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-apply-kill-hook): Doc fix.
+
+Thu Aug 24 16:25:17 1995  Ulrik Dickow  <dickow@nbi.dk>
+
+	* gnus-msg.el (gnus-post-news): Respect Reply-To when handling
+	`gnus-auto-mail-to-author'.
+
 Thu Aug 24 01:41:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-summary-end-of-article): Recenter at -3.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Commented out score
+	thingies. 
+
+	* gnus.el (gnus-summary-best-unread-article): Would not find the
+	best unread.
+	(gnus-article-display-x-face): Did not work if x-face-too-ugly was
+	nil.
+
+	* gnus-vis.el (gnus-article-highlight-headers): Would infloop with
+	19.28. 
+
+Thu Aug 24 01:41:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.19 is released.
 
 	* gnus.el (gnus-group-faq-directory): Changed the default to point
 	to aol.

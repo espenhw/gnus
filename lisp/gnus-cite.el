@@ -54,19 +54,20 @@ The first regexp group should match the SuperCite attribution.")
 (defvar gnus-cite-minimum-match-count 2
   "Minimal number of identical prefix'es before we believe it is a citation.")
 
-(defvar gnus-cite-face-list 
-  (if (eq gnus-display-type 'color)
-      (if (eq gnus-background-mode 'dark) 'light 'dark)
-    '(italic))
-  "Faces used for displaying different citations.
-It is either a list of face names, or one of the following special
-values:
+;see gnus-cus.el
+;(defvar gnus-cite-face-list 
+;  (if (eq gnus-display-type 'color)
+;      (if (eq gnus-background-mode 'dark) 'light 'dark)
+;    '(italic))
+;  "Faces used for displaying different citations.
+;It is either a list of face names, or one of the following special
+;values:
 
-dark: Create faces from `gnus-face-dark-name-list'.
-light: Create faces from `gnus-face-light-name-list'.
+;dark: Create faces from `gnus-face-dark-name-list'.
+;light: Create faces from `gnus-face-light-name-list'.
 
-The variable `gnus-make-foreground' determines whether the created
-faces change the foreground or the background colors.")
+;The variable `gnus-make-foreground' determines whether the created
+;faces change the foreground or the background colors.")
 
 (defvar gnus-cite-attribution-prefix "in article\\|in <"
   "Regexp matching the beginning of an attribution line.")
@@ -76,32 +77,38 @@ faces change the foreground or the background colors.")
   "Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button.")
 
-(defvar gnus-cite-attribution-face 'underline
-  "Face used for attribution lines.
-It is merged with the face for the cited text belonging to the attribution.")
+;see gnus-cus.el
+;(defvar gnus-cite-attribution-face 'underline
+;  "Face used for attribution lines.
+;It is merged with the face for the cited text belonging to the attribution.")
 
-(defvar gnus-cite-hide-percentage 50
-  "Only hide cited text if it is larger than this percent of the body.")
+;see gnus-cus.el
+;(defvar gnus-cite-hide-percentage 50
+;  "Only hide cited text if it is larger than this percent of the body.")
 
-(defvar gnus-cite-hide-absolute 10
-  "Only hide cited text if there is at least this number of cited lines.")
+;see gnus-cus.el
+;(defvar gnus-cite-hide-absolute 10
+;  "Only hide cited text if there is at least this number of cited lines.")
 
-(defvar gnus-face-light-name-list
-  '("light blue" "light cyan" "light yellow" "light pink"
-    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
-    "turquoise")
-  "Names of light colors.")
+;see gnus-cus.el
+;(defvar gnus-face-light-name-list
+;  '("light blue" "light cyan" "light yellow" "light pink"
+;    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
+;    "turquoise")
+;  "Names of light colors.")
 
-(defvar gnus-face-dark-name-list
-  '("dark salmon" "firebrick"
-    "dark green" "dark orange" "dark khaki" "dark violet"
-    "dark turquoise")
-  "Names of dark colors.")
+;see gnus-cus.el
+;(defvar gnus-face-dark-name-list
+;  '("dark salmon" "firebrick"
+;    "dark green" "dark orange" "dark khaki" "dark violet"
+;    "dark turquoise")
+;  "Names of dark colors.")
 
 ;;; Internal Variables:
 
 (defvar gnus-article-length nil)
 ;; Length of article last time we parsed it.
+;; BUG! KLUDGE! UGLY! FIX ME!
 
 (defvar gnus-cite-prefix-alist nil)
 ;; Alist of citation prefixes.  

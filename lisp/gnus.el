@@ -23,9 +23,9 @@
 
 ;;; Commentary:
 
-;; Although (ding) Gnus looks suspiciously like GNUS, it isn't quite
-;; the same beast. Most internal structures have been changed. If you
-;; have written packages that depend on any of the hash tables,
+;; Although Gnus looks suspiciously like GNUS, it isn't quite the same
+;; beast. Most internal structures have been changed. If you have
+;; written packages that depend on any of the hash tables,
 ;; `gnus-newsrc-alist', `gnus-killed-assoc', marked lists, the .newsrc
 ;; buffer, or internal knowledge of the `nntp-header-' macros, or
 ;; dependence on the buffers having a certain format, your code will
@@ -36,7 +36,6 @@
 (require 'mail-utils)
 (require 'timezone)
 (require 'nnheader)
-(require 'gnus-cus)
 
 ;; Site dependent variables. These variables should be defined in
 ;; paths.el.
@@ -170,6 +169,10 @@ instead.")
 This will most commonly be on a remote machine, and the file will be
 fetched by ange-ftp.
 
+Note that Gnus uses an aol machine as the default directory.  If this
+feels fundamentally unclean, just think of it as a way to finally get
+something of value back from them.
+
 If the default site is too slow, try one of these:
 
    North America: ftp.uu.net                     /usenet/news.answers
@@ -186,6 +189,10 @@ If the default site is too slow, try one of these:
 (defvar gnus-group-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/" 
   "*The address of the (ding) archives.")
+
+(defvar gnus-group-recent-archive-directory
+  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
+  "*The address of the most recent (ding) articles.")
 
 (defvar gnus-default-subscribed-newsgroups nil
   "*This variable lists what newsgroups should be subscribed the first time Gnus is used.
@@ -356,11 +363,12 @@ headers to connect otherwise loose threads will be displayed.
 
 The server has to support XOVER for any of this to work.")
 
-(defvar gnus-visual t
-  "*If non-nil, will do various highlighting.
-If nil, no mouse highlights (or any other highlights) will be
-performed.  This might speed up Gnus some when generating large group
-and summary buffers.")
+;see gnus-cus.el
+;(defvar gnus-visual t
+;  "*If non-nil, will do various highlighting.
+;If nil, no mouse highlights (or any other highlights) will be
+;performed.  This might speed up Gnus some when generating large group
+;and summary buffers.")
 
 (defvar gnus-novice-user t
   "*Non-nil means that you are a usenet novice.
@@ -957,13 +965,13 @@ with some simple extensions.
 
 %S  The subject")
 
-(defvar gnus-summary-mode-line-format "(ding) %G/%A %Z"
+(defvar gnus-summary-mode-line-format "Gnus  %G/%A %Z"
   "*The format specification for the summary mode line.")
 
-(defvar gnus-article-mode-line-format "(ding) %G/%A %S"
+(defvar gnus-article-mode-line-format "Gnus  %G/%A %S"
   "*The format specification for the article mode line.")
 
-(defvar gnus-group-mode-line-format "(ding) List of groups   {%M:%S}  "
+(defvar gnus-group-mode-line-format "Gnus  List of groups   {%M:%S}  "
   "*The format specification for the group mode line.")
 
 (defvar gnus-valid-select-methods
@@ -1002,9 +1010,10 @@ If this variable is nil, screen refresh may be quicker.")
 If this is nil, Gnus will take space as is needed, leaving the rest
 of the modeline intact.")
 
-(defvar gnus-mouse-face 'highlight
-  "*Face used for mouse highlighting in Gnus.
-No mouse highlights will be done if `gnus-visual' is nil.")
+;see gnus-cus.el
+;(defvar gnus-mouse-face 'highlight
+;  "*Face used for mouse highlighting in Gnus.
+;No mouse highlights will be done if `gnus-visual' is nil.")
 
 (defvar gnus-summary-mark-below nil
   "*Mark all articles with a score below this variable as read.
@@ -1102,17 +1111,17 @@ If you want to modify the summary buffer, you can use this hook.")
   "*A hook called after an article has been prepared in the article buffer.
 If you want to run a special decoding program like nkf, use this hook.")
 
-(defvar gnus-article-display-hook nil
-  "*A hook called after the article is displayed in the article buffer.
-The hook is designed to change the contents of the article
-buffer. Typical functions that this hook may contain are
-`gnus-article-hide-headers' (hide selected headers),
-`gnus-article-maybe-highlight' (perform fancy article highlighting), 
-`gnus-article-hide-signature' (hide signature) and
-`gnus-article-treat-overstrike' (turn \"^H_\" into bold characters).")
-(add-hook 'gnus-article-display-hook 'gnus-article-hide-headers-if-wanted)
-(add-hook 'gnus-article-display-hook 'gnus-article-treat-overstrike)
-(add-hook 'gnus-article-display-hook 'gnus-article-maybe-highlight)
+;(defvar gnus-article-display-hook nil
+;  "*A hook called after the article is displayed in the article buffer.
+;The hook is designed to change the contents of the article
+;buffer. Typical functions that this hook may contain are
+;`gnus-article-hide-headers' (hide selected headers),
+;`gnus-article-maybe-highlight' (perform fancy article highlighting), 
+;`gnus-article-hide-signature' (hide signature) and
+;`gnus-article-treat-overstrike' (turn \"^H_\" into bold characters).")
+;(add-hook 'gnus-article-display-hook 'gnus-article-hide-headers-if-wanted)
+;(add-hook 'gnus-article-display-hook 'gnus-article-treat-overstrike)
+;(add-hook 'gnus-article-display-hook 'gnus-article-maybe-highlight)
 
 (defvar gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
@@ -1157,7 +1166,7 @@ example, if you'd like to apply a kill file to articles which contains
 a string `rmgroup' in subject in newsgroup `control', you can use the
 following hook:
 
-\(setq gnus-apply-kill-hook
+ (setq gnus-apply-kill-hook
       (list
 	(lambda ()
 	  (cond ((string-match \"control\" gnus-newsgroup-name)
@@ -1330,7 +1339,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.19"
+(defconst gnus-version "(ding) Gnus v0.99.20"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1340,7 +1349,7 @@ variable (string, integer, character, etc).")
   "Assoc list of major modes and related Info nodes.")
 
 (defvar gnus-documentation-group-file "~/dgnus/lisp/doc.txt"
-  "The location of the (ding) Gnus documentation group.")
+  "The location of the Gnus documentation group.")
 
 (defvar gnus-group-buffer "*Group*")
 (defvar gnus-summary-buffer "*Summary*")
@@ -1810,6 +1819,7 @@ Thank you for your help in stamping out bugs.
 
 ;;; Load the compatability functions. 
 
+(require 'gnus-cus)
 (require 'gnus-ems)
 
 
@@ -2067,8 +2077,8 @@ Otherwise, it is like ~/News/news/group/num."
 
 (defun gnus-numeric-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
-If variable `gnus-use-long-file-name' is nil, it is ~/News/news.group/num.
-Otherwise, it is like ~/News/news/group/num."
+If variable `gnus-use-long-file-name' is non-nil, it is
+~/News/news.group/num.  Otherwise, it is like ~/News/news/group/num."
   (let ((default
 	  (expand-file-name
 	   (concat (if (gnus-use-long-file-name 'not-save)
@@ -2085,8 +2095,8 @@ Otherwise, it is like ~/News/news/group/num."
 
 (defun gnus-Plain-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
-If variable `gnus-use-long-file-name' is nil, it is ~/News/News.group.
-Otherwise, it is like ~/News/news/group/news."
+If variable `gnus-use-long-file-name' is non-nil, it is
+~/News/News.group.  Otherwise, it is like ~/News/news/group/news."
   (or last-file
       (expand-file-name
        (if (gnus-use-long-file-name 'not-save)
@@ -2096,8 +2106,8 @@ Otherwise, it is like ~/News/news/group/news."
 
 (defun gnus-plain-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
-If variable `gnus-use-long-file-name' is nil, it is ~/News/news.group.
-Otherwise, it is like ~/News/news/group/news."
+If variable `gnus-use-long-file-name' is non-nil, it is
+~/News/news.group.  Otherwise, it is like ~/News/news/group/news."
   (or last-file
       (expand-file-name
        (if (gnus-use-long-file-name 'not-save)
@@ -3203,8 +3213,6 @@ As opposed to `gnus', this command will not connect to the local server."
   (setq gnus-group-use-permanent-levels t)
   (gnus (or arg (1- gnus-level-default-subscribed)) t))
 
-(defalias '\(ding\) 'gnus)
-
 ;;;###autoload
 (defun gnus (&optional arg dont-connect)
   "Read network news.
@@ -4176,7 +4184,7 @@ ADDRESS."
     (gnus-group-position-cursor)))
 
 (defun gnus-group-make-help-group ()
-  "Create the (ding) Gnus documentation group."
+  "Create the Gnus documentation group."
   (interactive)
   (let ((path load-path)
 	name)
@@ -4220,13 +4228,19 @@ ADDRESS."
 	   (list 'nndoc-address file)
 	   (list 'nndoc-article-type type)))))
 
-(defun gnus-group-make-archive-group ()
-  "Create the (ding) Gnus archive group."
+(defun gnus-group-make-archive-group (&optional all)
+  "Create the (ding) Gnus archive group of the most recent articles.
+Given a prefix, create a full group."
   (interactive)
-  (and (gnus-gethash (gnus-group-prefixed-name "ding.archives" '(nndir ""))
-		     gnus-newsrc-hashtb)
-       (error "Archive group already exists"))
-  (gnus-group-make-group "ding.archives" "nndir" gnus-group-archive-directory)
+  (let ((group (gnus-group-prefixed-name 
+		(if all "ding.archives" "ding.recent") '(nndir ""))))
+    (and (gnus-gethash group gnus-newsrc-hashtb)
+	 (error "Archive group already exists"))
+    (gnus-group-make-group
+     (gnus-group-real-name group)
+     "nndir" 
+     (if all gnus-group-archive-directory 
+       gnus-group-recent-archive-directory)))
   (gnus-group-position-cursor))
 
 (defun gnus-group-make-directory-group (dir)
@@ -5034,7 +5048,7 @@ and the second element is the address."
     (gnus-browse-mode)
     (setq mode-line-buffer-identification
 	  (format
-	   "(ding) Browse Server {%s:%s}" (car method) (car (cdr method))))
+	   "Gnus  Browse Server {%s:%s}" (car method) (car (cdr method))))
     (save-excursion
       (set-buffer nntp-server-buffer)
       (let ((cur (current-buffer)))
@@ -7768,8 +7782,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 (defun gnus-summary-fetch-faq (group)
   "Fetch the FAQ for the current group."
   (interactive (list gnus-newsgroup-name))
-  (and (gnus-group-fetch-faq group)
-       (gnus-configure-windows 'summary-faq)))
+  (let (gnus-faq-buffer)
+    (and (setq gnus-faq-buffer (gnus-group-fetch-faq group))
+	 (gnus-configure-windows 'summary-faq))))
 
 ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defun gnus-summary-describe-group (&optional force)
@@ -8121,7 +8136,7 @@ If BACKWARD, the previous article is selected instead of the next."
 			 (single-key-description cmd)
 			 gnus-newsgroup-name)))
 	      ;; Confirm auto selection.
-	      (let* ((event (read-event)))
+	      (let* ((event (read-char)))
 		(setq key (if (listp event) (car event) event))
 		(if (memq key keystrokes)
 		    (let ((obuf (current-buffer)))
@@ -8295,9 +8310,11 @@ Return nil if there are no unread articles."
       ;; score. 
       (goto-char (point-min))
       (while (and (or (not (= (gnus-summary-article-mark) gnus-unread-mark))
-		      (not (eq (cdr (assq (gnus-summary-article-number)
-					  gnus-newsgroup-scored))
-			       gnus-summary-default-score)))
+		      (and (assq (gnus-summary-article-number)
+				 gnus-newsgroup-scored)
+			   (< (cdr (assq (gnus-summary-article-number)
+					 gnus-newsgroup-scored))
+			      gnus-summary-default-score)))
 		  (zerop (forward-line 1))
 		  (not (eobp))))
       (if (= (gnus-summary-article-mark) gnus-unread-mark)
@@ -8410,6 +8427,10 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		    (setq number (header-number gnus-current-headers))
 		    (gnus-rebuild-thread message-id)
 		    (gnus-summary-goto-subject number)
+		    (if (null gnus-use-full-window)
+			(progn
+			  (delete-windows-on tmp-buf)
+			  (gnus-configure-windows 'article 'force)))
 		    (gnus-summary-recenter)
 		    (gnus-article-set-window-start 
 		     (cdr (assq number gnus-newsgroup-bookmarks)))
@@ -8580,6 +8601,7 @@ article. If BACKWARD (the prefix) is non-nil, search backward instead."
    gnus-article-buffer
    (widen)
    (goto-char (point-max))
+   (recenter -3)
    (and gnus-break-pages (gnus-narrow-to-page))))
 
 (defun gnus-summary-show-article ()
@@ -11023,6 +11045,7 @@ Provided for backwards compatability."
 	(goto-char (point-min))
 	(if (not (and gnus-article-x-face-command
 		      (or force
+			  (not gnus-article-x-face-too-ugly)
 			  (and gnus-article-x-face-too-ugly
 			       (not (string-match gnus-article-x-face-too-ugly
 						  (mail-fetch-field "from")))))
@@ -13374,7 +13397,7 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-gnus-to-quick-newsrc-format ()
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
-  (insert ";; (ding) Gnus startup file.\n")
+  (insert ";; Gnus startup file.\n")
   (insert ";; Never delete this file - touch .newsrc instead to force Gnus\n")
   (insert ";; to read .newsrc.\n")
   (insert "(setq gnus-newsrc-file-version "
@@ -13521,7 +13544,7 @@ If FORCE is non-nil, the .newsrc file is read."
 It works along the same lines as a normal formatting string,
 with some simple extensions.")
 
-(defvar gnus-server-mode-line-format "(ding) List of servers"
+(defvar gnus-server-mode-line-format "Gnus  List of servers"
   "The format specification for the server mode line.")
 
 (defconst gnus-server-line-format-alist

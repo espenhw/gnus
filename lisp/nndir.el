@@ -68,7 +68,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nndir-status-message ()
+(defun nndir-status-message (&optional server)
   "Return server status response as string."
   nndir-status-string)
 
