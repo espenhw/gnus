@@ -55,16 +55,17 @@ Value is what BODY returns."
 (require 'base64)
 (autoload 'mm-body-7-or-8 "mm-bodies")
 
-;; Avoid gnus-util for mm- code.
-(defalias 'rfc2047-point-at-bol
-  (if (fboundp 'point-at-bol)
-      'point-at-bol
-    'line-beginning-position))
+(eval-and-compile
+  ;; Avoid gnus-util for mm- code.
+  (defalias 'rfc2047-point-at-bol
+    (if (fboundp 'point-at-bol)
+	'point-at-bol
+      'line-beginning-position))
 
-(defalias 'rfc2047-point-at-eol
-  (if (fboundp 'point-at-eol)
-      'point-at-eol
-    'line-end-position))
+  (defalias 'rfc2047-point-at-eol
+    (if (fboundp 'point-at-eol)
+	'point-at-eol
+      'line-end-position)))
 
 (defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
@@ -263,12 +264,18 @@ The buffer may be narrowed."
 ;; skip to the end of regions appropriately.  Nb. ietf-drums does
 ;; things differently.
 (defconst rfc2047-syntax-table
-  ;; This is what we should do, but XEmacs doesn't support the optional
-  ;; arg of `make-syntax-table':
-;;   (let ((table (make-char-table 'syntax-table '(2))))
+  ;; (make-char-table 'syntax-table '(2)) only works in Emacs.
   (let ((table (make-syntax-table)))
-    ;; N.b. this currently doesn't work in Emacs 22.
-    (map-char-table (lambda (k v) (modify-syntax-entry k "w" table)) table)
+    ;; The following is done to work for setting all elements of the table
+    ;; in Emacs 21 and 22 and XEmacs; it appears to be the cleanest way.
+    ;; Play safe and don't assume the form of the word syntax entry --
+    ;; copy it from ?a.
+    (if (fboundp 'set-char-table-range)	; Emacs
+	(set-char-table-range table t (aref (standard-syntax-table) ?a))
+      (if (fboundp 'put-char-table)
+	  (if (fboundp 'get-char-table)	; warning avoidance
+	      (put-char-table t (get-char-table ?a (standard-syntax-table))
+			      table))))
     (modify-syntax-entry ?\\ "\\" table)
     (modify-syntax-entry ?\" "\"" table)
     (modify-syntax-entry ?\( "." table)
@@ -305,7 +312,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	      ;; token, either immediately or separated by space.
 	      last-encoded)
 	  (goto-char (point-min))
-	  (condition-case nil	      ; in case of unbalanced quotes
+	  (condition-case nil		; in case of unbalanced quotes
 	      ;; Look for rfc2822-style: sequences of atoms, quoted
 	      ;; strings, specials, whitespace.  (Specials mustn't be
 	      ;; encoded.)
@@ -516,8 +523,7 @@ By default, the region is treated as containing addresses (see
     (let ((bol (save-restriction
 		 (widen)
 		 (rfc2047-point-at-bol)))
-	  (eol (rfc2047-point-at-eol))
-	  leading)
+	  (eol (rfc2047-point-at-eol)))
       (forward-line 1)
       (while (not (eobp))
 	(if (and (looking-at "[ \t]")
