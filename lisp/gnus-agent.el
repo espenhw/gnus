@@ -834,7 +834,9 @@ This can be added to `gnus-select-article-hook' or
 	     (list gnus-current-article))
 	(setq gnus-newsgroup-undownloaded
 	      (delq gnus-current-article gnus-newsgroup-undownloaded))
-	(gnus-summary-update-line gnus-current-article)))))
+	(gnus-summary-update-article-line
+	 gnus-current-article
+	 (gnus-summary-article-header gnus-current-article))))))
 
 ;;;
 ;;; Internal functions
