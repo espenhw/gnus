@@ -16436,30 +16436,34 @@ tool and should be used only if you are sure what the effects are.
 @cindex IMAP debugging
 @cindex protocol dump (IMAP)
 
-@acronym{IMAP} is a complex protocol, at least compared to
-@acronym{NNTP} or @acronym{POP3}.  Perhaps for that reason,
-implementation bugs are not unlikely.  If you encounter an odd
-behaviour, chances are that either the server or Gnus is buggy.  If
-you are familiar with network protocols in general, you will probably
-be able to extract some clues from reading the protocol dump of the
+@acronym{IMAP} is a complex protocol, more so than @acronym{NNTP} or
+@acronym{POP3}.  Implementation bugs are not unlikely, and we do our
+best to fix them right away.  If you encounter odd behaviour, chances
+are that either the server or Gnus is buggy.
+
+If you are familiar with network protocols in general, you will
+probably be able to extract some clues from the protocol dump of the
 exchanges between Gnus and the server.  Even if you are not familiar
-with network protocols, including the protocol exchange in
-@acronym{IMAP}-related bug reports may be critical for solving the
-problem.
+with network protocols, when you include the protocol dump in
+@acronym{IMAP}-related bug reports you are helping us with data
+critical to solving the problem.  Therefore, we strongly encourage you
+to include the protocol dump when reporting IMAP bugs in Gnus.
+
 
 @vindex imap-log
-Because this protocol dump generates potentially large buffers, it is
-not enabled by default.  You can enable it by toggling @code{imap-log}
-as follows:
+Because the protocol dump, when enabled, generates lots of data, it is
+disabled by default.  You can enable it by setting @code{imap-log} as
+follows: 
 
 @lisp
 (setq imap-log t)
 @end lisp
 
-This instructs the @code{imap.el} package to dump everything sent to
-the server, and everything received from the server.  The output is
-stored in the buffer @samp{*imap-log*}.  Look for error messages,
-which sometimes are tagged with the keyword @code{BAD}.
+This instructs the @code{imap.el} package to log any exchanges with
+the server.  The log is stored in the buffer @samp{*imap-log*}.  Look
+for error messages, which sometimes are tagged with the keyword
+@code{BAD} - but when submitting a bug, make sure to include all the
+data.
 
 @node Other Sources
 @section Other Sources
