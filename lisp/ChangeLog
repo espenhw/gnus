@@ -453,8 +453,12 @@
 	* gnus-group.el (gnus-group-make-kiboze-group)
 	(gnus-group-browse-foreign-server): do.
 
-2004-04-22  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+2004-04-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	From Dan Christensen <jdc@uwo.ca>, asjo@koldfront.dk (Adam
+	Sj,Ax(Bgren), Wes Hardaker <wes@hardakers.net>, and Michael Shields
+	<shields@msrl.com>:
+	
 	* spam.el (spam-necessary-extra-headers): get the extra headers we
 	may need for spam sorting and scoring
 	(spam-user-format-function-S): a user format function suitable for
