@@ -528,7 +528,7 @@ gives an overview of which functions are available.
 (seconds-to-time 905595714.0)
 @result{} (13818 19266 0)
 
-(time-to-day '(13818 19266))
+(time-to-days '(13818 19266))
 @result{} 729644
 
 (days-to-time 729644)
@@ -553,6 +553,10 @@ gives an overview of which functions are available.
 (time-to-day-in-year '(13818 19266))
 @result{} 255
 
+(time-to-number-of-days
+ (time-since
+  (date-to-time "Mon, 01 Jan 2001 02:22:26 GMT")))
+@result{} 4.146122685185185
 @end example
 
 And finally, we have @code{safe-date-to-time}, which does the same as
