@@ -186,7 +186,7 @@ test "$LATEX" = t && LATEX=
 test "$LATEX" || AC_PATH_PROGS(LATEX, latex, no)
 AC_MSG_CHECKING(for commercial fonts)
 AC_ARG_WITH(fonts,[  --with-fonts            Use commercial fonts],[USE_FONTS="$withval"])
-if test -z "${WITH_FONTS}"; then
+if test -z "${USE_FONTS}"; then
   if test "${LATEX}" = no; then
     WITH_FONTS_bembo='%'
     WITHOUT_FONTS_bembo=
@@ -197,7 +197,7 @@ if test -z "${WITH_FONTS}"; then
   else
     OUTPUT=./conftest-$$
     echo '\nonstopmode\documentclass{article}\usepackage{bembo}\begin{document}\end{document}' > ${OUTPUT}
-    if ${LATEX} ${OUTPUT}>& AC_FD_CC 2>&1  ; then  
+    if ${LATEX} ${OUTPUT} </dev/null >& AC_FD_CC 2>&1  ; then  
       if test -z "${USE_FONTS}"; then
 	USE_FONTS="Adobe Bembo"
       else
@@ -210,7 +210,7 @@ if test -z "${WITH_FONTS}"; then
       WITHOUT_FONTS_bembo=
     fi
     echo '\nonstopmode\documentclass{article}\begin{document}{\fontfamily{pfu}\fontsize{10pt}{10}\selectfont test}\end{document}' > ${OUTPUT}
-    if ${LATEX} ${OUTPUT} 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
+    if ${LATEX} ${OUTPUT} </dev/null 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
       WITH_FONTS_pfu='%'
       WITHOUT_FONTS_pfu=
     else
@@ -223,7 +223,7 @@ if test -z "${WITH_FONTS}"; then
       WITHOUT_FONTS_pfu='%'
     fi
     echo '\nonstopmode\documentclass{article}\begin{document}{\fontfamily{bcr}\fontsize{10pt}{10}\selectfont test}\end{document}' > ${OUTPUT}
-    if ${LATEX} ${OUTPUT} 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
+    if ${LATEX} ${OUTPUT} </dev/null 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
       WITH_FONTS_bcr='%'
       WITHOUT_FONTS_bcr=
     else
