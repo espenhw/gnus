@@ -13045,6 +13045,7 @@ Especially @pxref{Choosing a Mail Back End} and @pxref{Expiring Mail}.
 @subsection Splitting Mail
 @cindex splitting mail
 @cindex mail splitting
+@cindex mail filtering (splitting)
 
 @vindex nnmail-split-methods
 The @code{nnmail-split-methods} variable says how the incoming mail is
@@ -25713,6 +25714,13 @@ An article that responds to a different article---its parent.
 A collection of messages in one file.  The most common digest format is
 specified by RFC 1153.
 
+@item splitting
+@cindex splitting, terminolgy
+@cindex mail sorting
+@cindex mail filtering (splitting)
+The action of sorting your emails according to certain rules. Sometimes
+incorrectly called mail filtering.
+ 
 @end table
 
 
