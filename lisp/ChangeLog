@@ -1,3 +1,14 @@
+2004-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Pass the
+	already-computed method to gnus-activate-group.
+
+	* gnus-start.el (gnus-make-hashtable-from-newsrc-alist): Make the
+	same select-methods identical Lisp objects.
+
+	* gnus-srvr.el (gnus-server-set-info): Don't make a new Lisp
+	object when modifying the info.
+
 2004-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-srvr.el (gnus-server-set-info): Remove the server from

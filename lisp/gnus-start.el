@@ -1778,7 +1778,7 @@ If SCAN, request a scan of that group as well."
 (defun gnus-make-hashtable-from-newsrc-alist ()
   (let ((alist gnus-newsrc-alist)
 	(ohashtb gnus-newsrc-hashtb)
-	prev)
+	prev info method rest methods)
     (setq gnus-newsrc-hashtb (gnus-make-hashtable (length alist)))
     (setq alist
 	  (setq prev (setq gnus-newsrc-alist
@@ -1787,14 +1787,26 @@ If SCAN, request a scan of that group as well."
 			       gnus-newsrc-alist
 			     (cons (list "dummy.group" 0 nil) alist)))))
     (while alist
+      (setq info (car alist))
+      ;; Make the same select-methods identical Lisp objects.
+      (when (setq method (gnus-info-method info))
+	(if (setq rest (member method methods))
+	    (gnus-info-set-method info (car rest))
+	  (push method methods)))
       (gnus-sethash
-       (caar alist)
+       (car info)
        ;; Preserve number of unread articles in groups.
-       (cons (and ohashtb (car (gnus-gethash (caar alist) ohashtb)))
+       (cons (and ohashtb (car (gnus-gethash (car info) ohashtb)))
 	     prev)
        gnus-newsrc-hashtb)
       (setq prev alist
-	    alist (cdr alist)))))
+	    alist (cdr alist)))
+    ;; Make the same select-methods in `gnus-server-alist' identical
+    ;; as well.
+    (while methods
+      (setq method (pop methods))
+      (when (setq rest (rassoc method gnus-server-alist))
+	(setcdr rest method)))))
 
 (defun gnus-make-hashtable-from-killed ()
   "Create a hash table from the killed and zombie lists."

@@ -396,7 +396,9 @@ The following commands are available:
 	    ;; Remove the server from `gnus-opened-servers' since
 	    ;; it has never been opened with the new `info' yet.
 	    (gnus-opened-servers-remove (cdr entry))
-	    (setcdr entry info))
+	    ;; Don't make a new Lisp object.
+	    (setcar (cdr entry) (car info))
+	    (setcdr (cdr entry) (cdr info)))
 	(setq gnus-server-alist
 	      (nconc gnus-server-alist (list (cons server info))))))))
 
