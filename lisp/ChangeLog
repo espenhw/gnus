@@ -1,3 +1,7 @@
+2004-12-26  Tsuyoshi AKIHO  <akiho@kawachi.zaq.ne.jp>
+
+	* gnus-sum.el (gnus-summary-walk-group-buffer): Decode group name.
+
 2004-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el: Require rfc2047 and mml.
