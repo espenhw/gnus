@@ -731,6 +731,8 @@ prompt the user for the name of an NNTP server to use."
 	    (add-hook 'gnus-summary-mode-hook 'gnus-grouplens-mode))
 
 	  ;; Do the actual startup.
+	  (if gnus-agent
+	      (gnus-request-create-group "queue" '(nndraft "")))
 	  (gnus-setup-news nil level dont-connect)
 	  (gnus-run-hooks 'gnus-setup-news-hook)
 	  (gnus-start-draft-setup)

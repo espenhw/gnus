@@ -5361,7 +5361,7 @@ guessing."
 					   gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-variable (url)
-  "Call apropos when pushing the corresponing URL button."
+  "Call apropos when pushing the corresponding URL button."
   (apropos-variable (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defcustom gnus-button-man-level 5

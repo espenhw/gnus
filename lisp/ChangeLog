@@ -1,3 +1,7 @@
+2002-09-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-1): Create nndraft:queue.
+
 2002-09-24  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (top-level): Require mm-util for mm-make-temp-file.
