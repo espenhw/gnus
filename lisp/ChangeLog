@@ -1,3 +1,8 @@
+1999-11-24 00:11:27  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-save-part-to-file): Inhibit jka-compr for any
+ 	type.
+
 1999-11-23 17:21:05  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Support www.netaddress.com, i.e. usa.net.

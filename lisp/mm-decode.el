@@ -604,10 +604,7 @@ external if displayed external."
 	  ;; ange-ftp, which is reasonable to use here.
 	  (inhibit-file-name-operation 'write-region)
 	  (inhibit-file-name-handlers
-	   (if (equal (mm-handle-media-type handle)
-		      "application/octet-stream")
-	       (cons 'jka-compr-handler inhibit-file-name-handlers)
-	     inhibit-file-name-handlers)))
+	   (cons 'jka-compr-handler inhibit-file-name-handlers)))
       (write-region (point-min) (point-max) file))))
 
 (defun mm-pipe-part (handle)
