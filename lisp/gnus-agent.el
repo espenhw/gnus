@@ -2113,6 +2113,269 @@ return only unread articles."
   (or (gnus-gethash group gnus-category-group-cache)
       (assq 'default gnus-category-alist)))
 
+(defun gnus-agent-expire-2 (expiring-group active articles overview day force)
+  (gnus-agent-load-alist expiring-group)
+  (gnus-message 5 "Expiring articles in %s" expiring-group)
+  (let* ((info (gnus-get-info expiring-group))
+	 (alist gnus-agent-article-alist)
+	 (specials (if alist
+		       (list (caar (last alist)))))
+	 (unreads ;; Articles that are excluded from the expiration process
+	  (cond (gnus-agent-expire-all
+		 ;; All articles are marked read by global decree
+		 nil)
+		((eq articles t)
+		 ;; All articles are marked read by function parameter
+		 nil)
+		((not articles)
+		 ;; Unread articles are marked protected from
+		 ;; expiration Don't call gnus-list-of-unread-articles
+		 ;; as it returns articles that have not been fetched
+		 ;; into the agent.
+		 (ignore-errors (gnus-agent-unread-articles expiring-group)))
+		(t
+		 ;; All articles EXCEPT those named by the caller are
+		 ;; protected from expiration
+		 (gnus-sorted-difference
+		  (gnus-uncompress-range
+		   (cons (caar alist) (caar (last alist))))
+		  (sort articles '<)))))
+	 (marked ;; More articles that are exluded from the expiration process
+	  (cond (gnus-agent-expire-all
+		 ;; All articles are unmarked by global decree
+		 nil)
+		((eq articles t)
+		 ;; All articles are unmarked by function parameter
+		 nil)
+		(articles
+		 ;; All articles may as well be unmarked as the
+		 ;; unreads list already names the articles we are
+		 ;; going to keep
+		 nil)
+		(t
+		 ;; Ticked and/or dormant articles are excluded from expiration
+		 (nconc
+		  (gnus-uncompress-range
+		   (cdr (assq 'tick (gnus-info-marks info))))
+		  (gnus-uncompress-range
+		   (cdr (assq 'dormant
+			      (gnus-info-marks info))))))))
+	 (nov-file (concat dir ".overview"))
+	 (cnt 0)
+	 (completed -1)
+	 dlist
+	 type)
+
+    ;; The normal article alist contains
+    ;; elements that look like (article# .
+    ;; fetch_date) I need to combine other
+    ;; information with this list.  For
+    ;; example, a flag indicating that a
+    ;; particular article MUST BE KEPT.  To
+    ;; do this, I'm going to transform the
+    ;; elements to look like (article#
+    ;; fetch_date keep_flag
+    ;; NOV_entry_marker) Later, I'll reverse
+    ;; the process to generate the expired
+    ;; article alist.
+
+    ;; Convert the alist elements to
+    ;; (article# fetch_date nil nil).
+    (setq dlist (mapcar (lambda (e) (list (car e) (cdr e) nil nil)) alist))
+
+    ;; Convert the keep lists to elements
+    ;; that look like (article# nil
+    ;; keep_flag nil) then append it to the
+    ;; expanded dlist These statements are
+    ;; sorted by ascending precidence of the
+    ;; keep_flag.
+    (setq dlist (nconc dlist (mapcar (lambda (e)
+				       (list e nil 'unread  nil)) unreads)))
+    (setq dlist (nconc dlist (mapcar (lambda (e)
+				       (list e nil 'marked  nil)) marked)))
+    (setq dlist (nconc dlist (mapcar (lambda (e)
+				       (list e nil 'special nil)) specials)))
+
+    (set-buffer overview)
+    (erase-buffer)
+    (when (file-exists-p nov-file)
+      (gnus-message 7 "gnus-agent-expire: Loading overview...")
+      (nnheader-insert-file-contents nov-file)
+      (goto-char (point-min))
+
+      (let (p)
+	(while (< (setq p (point)) (point-max))
+	  (condition-case nil
+	      ;; If I successfully read an
+	      ;; integer (the plus zero
+	      ;; ensures a numeric type),
+	      ;; prepend a marker entry to
+	      ;; the list
+	      (push (list (+ 0 (read (current-buffer))) nil nil
+			  (set-marker (make-marker) p)) dlist)
+	    (error
+	     (gnus-message 1 (concat "gnus-agent-expire: read error occurred "
+				     "when reading expression at %s in %s.  "
+				     "Skipping to next line.")
+			   (point) nov-file)))
+	  ;; Whether I succeeded, or failed,
+	  ;; it doesn't matter.  Move to the
+	  ;; next line then try again.
+	  (forward-line 1)))
+      (gnus-message 7 "gnus-agent-expire: Loading overview... Done"))
+    (set-buffer-modified-p nil)
+
+    ;; At this point, all of the information
+    ;; is in dlist.  The only problem is
+    ;; that much of it is spread across
+    ;; multiple entries.  Sort then MERGE!!
+    (gnus-message 7 "gnus-agent-expire: Sorting entries... ")
+    ;; If two entries have the same
+    ;; article-number then sort by ascending
+    ;; keep_flag.
+    (let ((special 0)
+	  (marked 1)
+	  (unread 2))
+      (setq dlist
+	    (sort dlist
+		  (lambda (a b)
+		    (cond ((< (nth 0 a) (nth 0 b))
+			   t)
+			  ((> (nth 0 a) (nth 0 b))
+			   nil)
+			  (t
+			   (let ((a (or (symbol-value (nth 2 a)) 3))
+				 (b (or (symbol-value (nth 2 b)) 3)))
+			     (<= a b))))))))
+    (gnus-message 7 "gnus-agent-expire: Sorting entries... Done")
+    (gnus-message 7 "gnus-agent-expire: Merging entries... ")
+    (let ((dlist dlist))
+      (while (cdr dlist) ; I'm not at the end-of-list
+	(if (eq (caar dlist) (caadr dlist))
+	    (let ((first (cdr (car dlist)))
+		  (secnd (cdr (cadr dlist))))
+	      (setcar first (or (car first) (car secnd))) ; fetch_date
+	      (setq first (cdr first)
+		    secnd (cdr secnd))
+	      (setcar first (or (car first) (car secnd))) ; Keep_flag
+	      (setq first (cdr first)
+		    secnd (cdr secnd))
+	      (setcar first (or (car first) (car secnd))) ; NOV_entry_marker
+
+	      (setcdr dlist (cddr dlist)))
+	  (setq dlist (cdr dlist)))))
+    (gnus-message 7 "gnus-agent-expire: Merging entries... Done")
+
+    (let* ((len (float (length dlist)))
+	   (alist (list nil))
+	   (tail-alist alist))
+      (while dlist
+	(let ((new-completed (truncate (* 100.0 (/ (setq cnt (1+ cnt)) len)))))
+	  (when (> new-completed completed)
+	    (setq completed new-completed)
+	    (gnus-message 9 "%3d%% completed..."  completed)))
+	(let* ((entry          (car dlist))
+	       (article-number (nth 0 entry))
+	       (fetch-date     (nth 1 entry))
+	       (keep           (nth 2 entry))
+	       (marker         (nth 3 entry)))
+
+	  (cond
+	   ;; Kept articles are unread, marked, or special.
+	   (keep
+	    (when fetch-date
+	      (unless (file-exists-p (concat dir (number-to-string
+						  article-number)))
+		(setf (nth 1 entry) nil)
+		(gnus-message 3 (concat "gnus-agent-expire cleared download "
+					"flag on article %d as the cached "
+					"article file is missing.")
+					(caar dlist)))
+	      (unless marker
+		(gnus-message 1 (concat "gnus-agent-expire detected a "
+					"missing NOV entry.  Run "
+					"gnus-agent-regenerate-group to "
+					"restore it."))))
+	    (gnus-agent-append-to-list tail-alist (cons article-number fetch-date)))
+
+	   ;; The following articles are READ, UNMARKED, and ORDINARY.
+	   ;; See if they can be EXPIRED!!!
+	   ((setq type
+		  (cond
+		   ((not (integerp fetch-date))
+		    'read) ;; never fetched article (may expire right now)
+		   ((not (file-exists-p (concat dir (number-to-string
+						     article-number))))
+		    (setf (nth 1 entry) nil)
+		    'externally-expired) ;; Can't find the cached
+					 ;; article.  Handle case as
+					 ;; though this article was
+					 ;; never fetched.
+
+		   ;; We now have the arrival day, so we see
+		   ;; whether it's old enough to be expired.
+		   ((< fetch-date day)
+		    'expired)
+		   (force
+		    'forced)))
+
+	    ;; I found some reason to expire this entry.
+
+	    (let ((actions nil))
+	      (when (memq type '(forced expired))
+		(ignore-errors ; Just being paranoid.
+		  (delete-file (concat dir (number-to-string article-number)))
+		  (push "expired cached article" actions))
+		(setf (nth 1 entry) nil))
+
+	      (when marker
+		(push "NOV entry removed" actions)
+		(goto-char marker)
+		(gnus-delete-line))
+
+	      ;; If considering all articles is set, I can only expire
+	      ;; article IDs that are no longer in the active range.
+	      (if (and gnus-agent-consider-all-articles
+		       (>= article-number (car active)))
+		  ;; I have to keep this ID in the alist
+		  (gnus-agent-append-to-list tail-alist
+					     (cons article-number fetch-date))
+		(push (format "Removed %s article number from article alist"
+			      type) actions))
+
+	      (gnus-message 7 "gnus-agent-expire: Article %d: %s"
+			    article-number (mapconcat 'identity
+						      actions ", "))))
+	   (t
+	    (gnus-agent-append-to-list tail-alist (cons article-number fetch-date)))
+	   )
+
+	  ;; Clean up markers as I want to recycle this buffer over
+	  ;; several groups.
+	  (when marker
+	    (set-marker marker nil))
+
+	  (setq dlist (cdr dlist))))
+
+      (setq alist (cdr alist))
+
+      (let ((inhibit-quit t))
+	(unless (equal alist gnus-agent-article-alist)
+	  (setq gnus-agent-article-alist alist)
+	  (gnus-agent-save-alist expiring-group))
+
+	(when (buffer-modified-p)
+	  (let ((coding-system-for-write
+		 gnus-agent-file-coding-system))
+	    (gnus-make-directory dir)
+	    (write-region (point-min) (point-max) nov-file nil 'silent)
+	    ;; clear the modified flag as that I'm not confused by its
+	    ;; status on the next pass through this routine.
+	    (set-buffer-modified-p nil)))
+
+	(when (eq articles t)
+	  (gnus-summary-update-info))))))
+
 (defun gnus-agent-expire-1 (&optional articles group force)
   "Expire all old agent cached articles unconditionally.
 See `gnus-agent-expire'."
@@ -2153,8 +2416,12 @@ See `gnus-agent-expire'."
 					(days gnus-agent-expire-days))
 				    (catch 'found
 				      (while (and (not found) days)
-					(when (eq 0 (string-match (caar days) expiring-group))
-					  (throw 'found (- (time-to-days (current-time)) (cadar days))))
+					(when (eq 0 (string-match
+						     (caar days)
+						     expiring-group))
+					  (throw 'found (- (time-to-days
+							    (current-time))
+							   (cadar days))))
 					(pop days))
 				      ;; No regexp matched so set
 				      ;; a limit that will block
@@ -2162,238 +2429,8 @@ See `gnus-agent-expire'."
 				      0)))))
 
 		      (when active
-			(gnus-agent-load-alist expiring-group)
-			(gnus-message 5 "Expiring articles in %s" expiring-group)
-			(let* ((info (gnus-get-info expiring-group))
-			       (alist gnus-agent-article-alist)
-			       (specials (if alist
-					     (list (caar (last alist)))))
-			       (unreads ;; Articles that are excluded from the expiration process
-				(cond (gnus-agent-expire-all
-				       ;; All articles are marked read by global decree
-				       nil)
-				      ((eq articles t)
-				       ;; All articles are marked read by function parameter
-				       nil)
-				      ((not articles)
-				       ;; Unread articles are marked protected from expiration
-				       ;; Don't call gnus-list-of-unread-articles as it returns articles that have not been fetched into the agent.
-				       (ignore-errors (gnus-agent-unread-articles expiring-group)))
-				      (t
-				       ;; All articles EXCEPT those named by the caller are protected from expiration
-				       (gnus-sorted-difference (gnus-uncompress-range (cons (caar alist) (caar (last alist)))) (sort articles '<)))))
-			       (marked ;; More articles that are exluded from the expiration process
-				(cond (gnus-agent-expire-all
-				       ;; All articles are unmarked by global decree
-				       nil)
-				      ((eq articles t)
-				       ;; All articles are unmarked by function parameter
-				       nil)
-				      (articles
-				       ;; All articles may as well be unmarked as the unreads list already names the articles we are going to keep
-				       nil)
-				      (t
-				       ;; Ticked and/or dormant articles are excluded from expiration
-				       (nconc
-					(gnus-uncompress-range
-					 (cdr (assq 'tick (gnus-info-marks info))))
-					(gnus-uncompress-range
-					 (cdr (assq 'dormant
-						    (gnus-info-marks info))))))))
-			       (nov-file (concat dir ".overview"))
-			       (cnt 0)
-			       (completed -1)
-			       dlist
-			       type)
-
-			  ;; The normal article alist contains
-			  ;; elements that look like (article# .
-			  ;; fetch_date) I need to combine other
-			  ;; information with this list.  For
-			  ;; example, a flag indicating that a
-			  ;; particular article MUST BE KEPT.  To
-			  ;; do this, I'm going to transform the
-			  ;; elements to look like (article#
-			  ;; fetch_date keep_flag
-			  ;; NOV_entry_marker) Later, I'll reverse
-			  ;; the process to generate the expired
-			  ;; article alist.
-
-			  ;; Convert the alist elements to
-			  ;; (article# fetch_date nil nil).
-			  (setq dlist (mapcar (lambda (e) (list (car e) (cdr e) nil nil)) alist))
-
-			  ;; Convert the keep lists to elements
-			  ;; that look like (article# nil
-			  ;; keep_flag nil) then append it to the
-			  ;; expanded dlist These statements are
-			  ;; sorted by ascending precidence of the
-			  ;; keep_flag.
-			  (setq dlist (nconc dlist
-					     (mapcar (lambda (e) (list e nil 'unread  nil)) unreads)))
-			  (setq dlist (nconc dlist
-					     (mapcar (lambda (e) (list e nil 'marked  nil)) marked)))
-			  (setq dlist (nconc dlist
-					     (mapcar (lambda (e) (list e nil 'special nil)) specials)))
-
-			  (set-buffer overview)
-			  (erase-buffer)
-			  (when (file-exists-p nov-file)
-			    (gnus-message 7 "gnus-agent-expire: Loading overview...")
-			    (nnheader-insert-file-contents nov-file)
-			    (goto-char (point-min))
-
-			    (let (p)
-			      (while (< (setq p (point)) (point-max))
-				(condition-case nil
-				    ;; If I successfully read an
-				    ;; integer (the plus zero
-				    ;; ensures a numeric type),
-				    ;; prepend a marker entry to
-				    ;; the list
-				    (push (list (+ 0 (read (current-buffer))) nil nil (set-marker (make-marker) p)) dlist)
-				  (error
-				   (gnus-message 1 "gnus-agent-expire: read error occurred when reading expression at %s in %s.  Skipping to next line." (point) nov-file)))
-				;; Whether I succeeded, or failed,
-				;; it doesn't matter.  Move to the
-				;; next line then try again.
-				(forward-line 1)))
-			    (gnus-message 7 "gnus-agent-expire: Loading overview... Done"))
-			  (set-buffer-modified-p nil)
-
-			  ;; At this point, all of the information
-			  ;; is in dlist.  The only problem is
-			  ;; that much of it is spread across
-			  ;; multiple entries.  Sort then MERGE!!
-			  (gnus-message 7 "gnus-agent-expire: Sorting entries... ")
-			  ;; If two entries have the same
-			  ;; article-number then sort by ascending
-			  ;; keep_flag.
-			  (let ((special 0)
-				(marked 1)
-				(unread 2))
-			    (setq dlist
-				  (sort dlist
-					(lambda (a b)
-					  (cond ((< (nth 0 a) (nth 0 b))
-						 t)
-						((> (nth 0 a) (nth 0 b))
-						 nil)
-						(t
-						 (let ((a (or (symbol-value (nth 2 a)) 3))
-						       (b (or (symbol-value (nth 2 b)) 3)))
-						   (<= a b))))))))
-			  (gnus-message 7 "gnus-agent-expire: Sorting entries... Done")
-			  (gnus-message 7 "gnus-agent-expire: Merging entries... ")
-			  (let ((dlist dlist))
-			    (while (cdr dlist) ; I'm not at the end-of-list
-			      (if (eq (caar dlist) (caadr dlist))
-				  (let ((first (cdr (car dlist)))
-					(secnd (cdr (cadr dlist))))
-				    (setcar first (or (car first) (car secnd))) ; fetch_date
-				    (setq first (cdr first)
-					  secnd (cdr secnd))
-				    (setcar first (or (car first) (car secnd))) ; Keep_flag
-				    (setq first (cdr first)
-					  secnd (cdr secnd))
-				    (setcar first (or (car first) (car secnd))) ; NOV_entry_marker
-
-				    (setcdr dlist (cddr dlist)))
-				(setq dlist (cdr dlist)))))
-			  (gnus-message 7 "gnus-agent-expire: Merging entries... Done")
-
-			  (let* ((len (float (length dlist)))
-				 (alist (list nil))
-				 (tail-alist alist))
-			    (while dlist
-			      (let ((new-completed (truncate (* 100.0 (/ (setq cnt (1+ cnt)) len)))))
-				(when (> new-completed completed)
-				  (setq completed new-completed)
-				  (gnus-message 9 "%3d%% completed..."  completed)))
-			      (let* ((entry          (car dlist))
-				     (article-number (nth 0 entry))
-				     (fetch-date     (nth 1 entry))
-				     (keep           (nth 2 entry))
-				     (marker         (nth 3 entry)))
-
-				(cond
-				 ;; Kept articles are unread, marked, or special.
-				 (keep
-				  (when fetch-date
-				    (unless (file-exists-p (concat dir (number-to-string article-number)))
-				      (setf (nth 1 entry) nil)
-				      (gnus-message 3 "gnus-agent-expire cleared download flag on article %d as the cached article file is missing." (caar dlist)))
-				    (unless marker
-				      (gnus-message 1 "gnus-agent-expire detected a missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
-				  (gnus-agent-append-to-list tail-alist (cons article-number fetch-date)))
-
-				 ;; The following articles are READ, UNMARKED, and ORDINARY.
-				 ;; See if they can be EXPIRED!!!
-				 ((setq type
-					(cond
-					 ((not (integerp fetch-date))
-					  'read) ;; never fetched article (may expire right now)
-					 ((not (file-exists-p (concat dir (number-to-string article-number))))
-					  (setf (nth 1 entry) nil)
-					  'externally-expired) ;; Can't find the cached article.  Handle case as though this article was never fetched.
-
-					 ;; We now have the arrival day, so we see
-					 ;; whether it's old enough to be expired.
-					 ((< fetch-date day)
-					  'expired)
-					 (force
-					  'forced)))
-
-				  ;; I found some reason to expire this entry.
-
-				  (let ((actions nil))
-				    (when (memq type '(forced expired))
-				      (ignore-errors ; Just being paranoid.
-					(delete-file (concat dir (number-to-string article-number)))
-					(push "expired cached article" actions))
-				      (setf (nth 1 entry) nil)
-				      )
-
-				    (when marker
-				      (push "NOV entry removed" actions)
-				      (goto-char marker)
-				      (gnus-delete-line))
-
-				    ;; If considering all articles is set, I can only expire article IDs that are no longer in the active range.
-				    (if (and gnus-agent-consider-all-articles
-					     (>= article-number (car active)))
-					;; I have to keep this ID in the alist
-					(gnus-agent-append-to-list tail-alist (cons article-number fetch-date))
-				      (push (format "Removed %s article number from article alist" type) actions))
-
-				    (gnus-message 7 "gnus-agent-expire: Article %d: %s" article-number (mapconcat 'identity actions ", "))))
-				 (t
-				  (gnus-agent-append-to-list tail-alist (cons article-number fetch-date)))
-				 )
-
-				;; Clean up markers as I want to recycle this buffer over several groups.
-				(when marker
-				  (set-marker marker nil))
-
-				(setq dlist (cdr dlist))))
-
-			    (setq alist (cdr alist))
-
-			    (let ((inhibit-quit t))
-			      (unless (equal alist gnus-agent-article-alist)
-				(setq gnus-agent-article-alist alist)
-				(gnus-agent-save-alist expiring-group))
-
-			      (when (buffer-modified-p)
-				(let ((coding-system-for-write
-				       gnus-agent-file-coding-system))
-				  (gnus-make-directory dir)
-				  (write-region (point-min) (point-max) nov-file nil 'silent)
-				  ;; clear the modified flag as that I'm not confused by its status on the next pass through this routine.
-				  (set-buffer-modified-p nil)))
-
-			      (when (eq articles t)
-				(gnus-summary-update-info)))))))))))
+			(gnus-agent-expire-2 expiring-group active
+					     articles overview day force)))))))
 	(kill-buffer overview)))))
 
 (defun gnus-agent-expire (&optional articles group force)

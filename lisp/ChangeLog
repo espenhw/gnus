@@ -4,6 +4,8 @@
 	(gnus-agent-expire): Don't expire if g-a-e-d is nil.
 	(gnus-agent-expire): Move most code into gnus-agent-expire-1.
 	(gnus-agent-expire-1): New.
+	(gnus-agent-expire-1): Move code into gnus-agent-expire-2.
+	(gnus-agent-expire-2): New.
 
 2003-02-05  Jesper Harder  <harder@ifa.au.dk>
 
