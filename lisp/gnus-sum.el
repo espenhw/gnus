@@ -6724,7 +6724,7 @@ of what's specified by the `gnus-refer-thread-limit' variable."
 
 (defun gnus-summary-refer-article (message-id)
   "Fetch an article specified by MESSAGE-ID."
-  (interactive "sMessage-ID: \nP")
+  (interactive "sMessage-ID: ")
   (when (and (stringp message-id)
 	     (not (zerop (length message-id))))
     ;; Construct the correct Message-ID if necessary.

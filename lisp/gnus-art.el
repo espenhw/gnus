@@ -3961,7 +3961,7 @@ groups."
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^>]*\\)>" 0 t gnus-button-embedded-url 1)
     ;; Raw URLs.
-    (,gnus-button-url-regexp 0 t gnus-button-url 0))
+    (,gnus-button-url-regexp 0 t browse-url 0))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -3989,9 +3989,9 @@ variable it the real callback function."
     ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+"
      0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
-    ("^Subject:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
-    ("^[^:]+:" ,gnus-button-url-regexp 0 t gnus-button-url 0)
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t browse-url 0)
+    ("^Subject:" ,gnus-button-url-regexp 0 t browse-url 0)
+    ("^[^:]+:" ,gnus-button-url-regexp 0 t browse-url 0)
     ("^[^:]+:" "\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
      gnus-button-message-id 3))
   "*Alist of headers and regexps to match buttons in article heads.
@@ -4387,13 +4387,6 @@ forbidden in URL encoding."
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.
   (message-reply address))
-
-(defun gnus-button-url (address)
-  "Browse ADDRESS."
-  ;; In Emacs 20, `browse-url-browser-function' may be an alist.
-  (if (listp browse-url-browser-function)
-      (browse-url address)
-    (funcall browse-url-browser-function address)))
 
 (defun gnus-button-embedded-url (address)
   "Browse ADDRESS."

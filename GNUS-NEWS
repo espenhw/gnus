@@ -28,3 +28,6 @@ subtly different manner.
 *** New web-based backends have been added: nnslashdot, nnwarchive
 and nnultimate.  nnweb has been revamped, again, to keep up with
 ever-changing layouts.
+
+*** Gnus can now read IMAP mail via nnimap.
+

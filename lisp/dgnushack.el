@@ -90,7 +90,7 @@ Modify to suit your needs."))
  	(require 'w3-forms)
       (error
        (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
-		       "nnslashdot.el" "nnwarchive.el"))
+		       "nnslashdot.el" "nnwarchive.el" "webmail.el"))
 	 (setq files (delete file files)))))
     (while (setq file (pop files))
       (setq file (expand-file-name file srcdir))

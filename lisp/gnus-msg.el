@@ -1173,7 +1173,7 @@ this is a reply."
 	      (setq element 'signature
 		    filep t))
 	    ;; Get the contents of file elems.
-	    (when filep
+	    (when (and filep v)
 	      (setq v (with-temp-buffer
 			(insert-file-contents v)
 			(buffer-string))))

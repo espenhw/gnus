@@ -1,4 +1,20 @@
+Wed Dec  1 16:31:31 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.99 is released.
+
 1999-12-01 14:28:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dgnushack.el (dgnushack-compile): No webmail under Emacs.
+
+	* gnus-sum.el (gnus-summary-refer-article): Wrong interactive
+	spec. 
+
+	* gnus-msg.el (gnus-configure-posting-styles): Eval `eval'.
+	(gnus-configure-posting-styles): No, don't.
+	(gnus-configure-posting-styles): Allow overriding files.
+
+	* gnus-art.el (gnus-header-button-alist): Use browse-url
+	directly. 
 
 	* mm-decode.el (mm-inline-media-tests): Check feature vcard.
 
