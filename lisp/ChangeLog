@@ -1,3 +1,7 @@
+2003-01-29  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-article-mode): Use summary tool bar.
+
 2003-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-blackholes) 
