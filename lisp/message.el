@@ -457,6 +457,7 @@ The provided functions are:
   :group 'message-forwarding
   :type '(radio (function-item message-forward-subject-author-subject)
 		(function-item message-forward-subject-fwd)
+		(function-item message-forward-subject-name-subject)
 		(repeat :tag "List of functions" function)))
 
 (defcustom message-forward-as-mime t

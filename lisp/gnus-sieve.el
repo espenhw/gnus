@@ -66,7 +66,7 @@ For example: \"nnimap:mailbox\""
 
 (defcustom gnus-sieve-crosspost t
   "Whether the generated Sieve script should do crossposting."
-  :type 'bool
+  :type 'boolean
   :group 'gnus-sieve)
 
 (defcustom gnus-sieve-update-shell-command "echo put %f | sieveshell %s"
