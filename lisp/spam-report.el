@@ -67,18 +67,18 @@ instead."
 		 spam-report-url-ping-mm-url))
   :group 'spam-report)
 
-(defun spam-report-gmane (article)
+(defun spam-report-gmane (&rest articles)
   "Report an article as spam through Gmane"
-  (interactive "nEnter the article number: ")
-  (when (and gnus-newsgroup-name
-	     (or (null spam-report-gmane-regex)
-		 (string-match spam-report-gmane-regex gnus-newsgroup-name)))
-    (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
+  (dolist (article articles)
+    (when (and gnus-newsgroup-name
+	       (or (null spam-report-gmane-regex)
+		   (string-match spam-report-gmane-regex gnus-newsgroup-name)))
+      (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
       (if spam-report-gmane-use-article-number
 	  (spam-report-url-ping "spam.gmane.org" 
-		    (format "/%s:%d"
-			    (gnus-group-real-name gnus-newsgroup-name)
-			    article))
+				(format "/%s:%d"
+					(gnus-group-real-name gnus-newsgroup-name)
+					article))
 	(with-current-buffer nntp-server-buffer
 	  (gnus-request-head article gnus-newsgroup-name)
 	  (goto-char (point-min))
@@ -89,7 +89,7 @@ instead."
 		(gnus-message 10 "Reporting spam through URL %s..." url)
 		(spam-report-url-ping host report))
 	    (gnus-message 10 "Could not find X-Report-Spam in article %d..."
-			  article))))))
+			  article)))))))
 
 (defun spam-report-url-ping (host report)
   "Ping a host through HTTP, addressing a specific GET resource using
