@@ -2,6 +2,7 @@
 
 	* message.el: Added custom-manual links to all variables that have
 	an index entry in the message manual.
+	(message-generate-headers-first): Fixed doc-string.
 
 2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 

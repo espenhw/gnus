@@ -761,11 +761,10 @@ variable isn't used."
 ;; will *not* have a `References:' header if `message-generate-headers-first'
 ;; is nil.  See: http://article.gmane.org/gmane.emacs.gnus.general/51138
 (defcustom message-generate-headers-first '(references)
-  "*If non-nil, generate all required headers before composing.
-The variables `message-required-news-headers' and
+  "Which headers should be generated before starting to compose a message.
+If `t', generate all required headers.  This can also be a list of headers to
+generate.  The variables `message-required-news-headers' and
 `message-required-mail-headers' specify which headers to generate.
-This can also be a list of headers that should be generated before
-composing.
 
 Note that the variable `message-deletable-headers' specifies headers which
 are to be deleted and then re-generated before sending, so this variable
