@@ -1,3 +1,18 @@
+2000-07-15  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap): 
+	(imap-kerberos4-program): 
+	(imap-gssapi-program): 
+	(imap-ssl-program): Customization.
+	(imap-shell-program): 
+	(imap-shell-host): New variables.
+	(imap-streams): 
+	(imap-stream-alist): Add shell.
+	(imap-shell-p): 
+	(imap-shell-open): New functions.
+	(imap-open): Don't call authenticator if preauth.
+	(imap-authenticate): Return t if already authenticated.
+
 2000-07-14  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.el (gnus-invalid-group-regexp): New variable.
