@@ -430,7 +430,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 				       (+ (match-beginning 0) 3))))))
 		  (cond
 		   ((eq (car cont) 'mml)
-		    (let ((mml-boundary (mml-compute-boundary cont)))
+		    (let ((mml-boundary (mml-compute-boundary cont))
 			  (mml-generate-default-type "text/plain"))
 		      (mml-to-mime))
 		    (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))

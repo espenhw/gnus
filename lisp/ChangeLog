@@ -1,5 +1,7 @@
 2003-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mml.el (mml-generate-mime-1): Remove extra ).
+
 	* gnus-group.el (gnus-group-set-current-level): Signal errors on
 	topic lines.
 	(gnus-group-set-current-level): Fix fix.
