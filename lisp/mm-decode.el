@@ -799,7 +799,7 @@ external if displayed external."
     (catch 'found
       (while (setq ty (pop types))
 	(when (and (string-match ty type)
-		   (mm-inlinable-p ty))
+		   (mm-inlinable-p handle))
 	  (throw 'found t))))))
 
 (defun mm-inline-override-p (handle)

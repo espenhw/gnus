@@ -1,3 +1,7 @@
+2001-07-09 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-attachment-override-p): Fix typo.
+
 2001-03-19 05:28:00  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* gnus-kill.el (gnus-execute): Work with the extra headers.
