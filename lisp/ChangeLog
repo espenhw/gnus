@@ -1,3 +1,7 @@
+2000-10-29 22:31:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-open-nov): Use group.
+
 2000-10-29 17:23:15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el: Add NOV. Set version to 2.0.

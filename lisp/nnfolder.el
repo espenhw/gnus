@@ -996,7 +996,7 @@ This command does not work if you use short group names."
 	(save-excursion
 	  (set-buffer buffer)
 	  (set (make-local-variable 'nnfolder-nov-buffer-file-name)
-	       (nnfolder-group-nov-pathname nnfolder-current-group))
+	       (nnfolder-group-nov-pathname group))
 	  (erase-buffer)
 	  (when (file-exists-p nnfolder-nov-buffer-file-name)
 	    (nnheader-insert-file-contents nnfolder-nov-buffer-file-name)))
