@@ -184,6 +184,43 @@ LIST1 and LIST2 have to be sorted over <."
     (nreverse out)))
 
 ;;;###autoload
+(defun gnus-sorted-range-intersection (range1 range2)
+  "Return intersection of RANGE1 and RANGE2.
+RANGE1 and RANGE2 have to be sorted over <."
+  (let* (out
+         (min1 (car range1))
+         (max1 (if (numberp min1) min1 (prog1 (cdr min1) (setq min1 (car min1)))))
+         (min2 (car range2))
+         (max2 (if (numberp min2) min2 (prog1 (cdr min2) (setq min2 (car min2))))))
+    (setq range1 (cdr range1)
+          range2 (cdr range2))
+    (while (and min1 min2)
+      (cond ((< max1 min2)              ; range1 preceeds range2
+             (setq range1 (cdr range1)
+                   min1 nil))
+            ((< max2 min1)              ; range2 preceeds range1
+             (setq range2 (cdr range2)
+                   min2 nil))
+            (t                     ; some sort of overlap is occurring
+             (let ((min (max min1 min2))
+                   (max (min max1 max2)))
+               (setq out (if (= min max)
+                             (cons min out)
+                           (cons (cons min max) out))))
+             (if (< max1 max2)          ; range1 ends before range2
+                 (setq min1 nil)        ; incr range1
+               (setq min2 nil))))       ; incr range2
+      (unless min1
+        (setq min1 (car range1)
+              max1 (if (numberp min1) min1 (prog1 (cdr min1) (setq min1 (car min1))))
+              range1 (cdr range1)))
+      (unless min2
+        (setq min2 (car range2)
+              max2 (if (numberp min2) min2 (prog1 (cdr min2) (setq min2 (car min2))))
+              range2 (cdr range2))))
+    (nreverse out)))
+
+;;;###autoload
 (defalias 'gnus-set-sorted-intersection 'gnus-sorted-nintersection)
 
 ;;;###autoload
@@ -588,6 +625,18 @@ LIST is a sorted list."
     (unless (eq (car list) num)
       (setcdr prev (cons num list)))
     (cdr top)))
+
+(defun gnus-range-map (func range)
+  "Apply FUNC to each value contained by RANGE."
+  (while range
+    (let ((span (pop range)))
+      (if (numberp span)
+          (funcall func span)
+        (let ((first (car span))
+              (last (cdr span)))
+          (while (<= first last)
+            (funcall func first)
+            (setq first (1+ first))))))))
 
 (provide 'gnus-range)
 
