@@ -22432,6 +22432,8 @@ Here's an example:
 (gnus-declare-backend "nnchoke" 'mail 'respool 'address)
 @end lisp
 
+The above line would then go in the @file{nnchoke.el} file.
+
 The abilities can be:
 
 @table @code
