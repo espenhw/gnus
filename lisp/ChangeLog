@@ -1,3 +1,9 @@
+2002-12-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-mode-menu): Add ellipses to menu items
+	expecting user interaction.
+	(message-mode-field-menu): do.
+
 2002-12-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-highlight-line): Don't bind `list' --

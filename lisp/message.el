@@ -2035,7 +2035,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Insert Region Marked" message-mark-inserted-region 
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark region with enclosing tags"))]
-    ["Insert File Marked" message-mark-insert-file 
+    ["Insert File Marked..." message-mark-insert-file 
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Insert file at point marked with enclosing tags"))]
     "----"
@@ -2045,7 +2045,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Postpone Message" message-dont-send
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "File this draft message and exit"))]
-    ["Send at Specific Time" gnus-delay-article
+    ["Send at Specific Time..." gnus-delay-article
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Ask, then arrange to send message at that time"))]
     ["Kill Message" message-kill-buffer
@@ -2061,7 +2061,7 @@ Point is left at the beginning of the narrowed-to region."
     ["To" message-goto-to t]
     ["From" message-goto-from t]
     ["Subject" message-goto-subject t]
-    ["Change subject" message-change-subject t]
+    ["Change subject..." message-change-subject t]
     ["Cc" message-goto-cc t]
     ["Bcc" message-goto-bcc t]
     ["Fcc" message-goto-fcc t]
@@ -2073,7 +2073,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Newsgroups" message-goto-newsgroups t]
     ["Followup-To" message-goto-followup-to t]
     ;; ["Followup-To (with note in body)" message-xpost-fup2 t]
-    ["Crosspost / Followup-To" message-xpost-fup2 t]
+    ["Crosspost / Followup-To..." message-xpost-fup2 t]
     ["Distribution" message-goto-distribution t]
     ["X-No-Archive:" message-add-archive-header t ]
     "----"
