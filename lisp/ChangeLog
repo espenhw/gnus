@@ -1,3 +1,8 @@
+2000-04-26  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* mm-bodies.el (mm-encode-body): Remove reference to
+	mm-default-charset in comment.
+
 2000-04-24 00:56:00  Björn Torkelsson  <torkel@hpc2n.umu.se>
 
 	* rfc2047.el (rfc2047-encode-message-header): Fixing typo.
