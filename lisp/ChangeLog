@@ -1,3 +1,12 @@
+2001-06-14 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-google-parse-1): Fix Google content regexp.
+	(nnweb-google-wash-article): Ditto.
+
+2001-06-14 Ferenc Wagner <wferi@bolyai1.elte.hu>
+
+	* nnweb.el (nnweb-google-parse-1): Fix Google url regexp.
+
 2001-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-define-group-parameter): Don't quote the defcustom
