@@ -1042,7 +1042,8 @@ If SILENT, don't prompt the user."
   "Stringified Gnus version and Emacs version.
 See the variable `gnus-user-agent'."
   (interactive)
-  (let* ((gnus-v
+  (let* ((float-output-format nil)
+	 (gnus-v
 	  (concat "Gnus/"
 		  (prin1-to-string (gnus-continuum-version gnus-version) t)
 		  " (" gnus-version ")"))

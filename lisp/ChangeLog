@@ -1,3 +1,8 @@
+2003-12-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-extended-version): Bind float-output-format to
+	nil.
+
 2003-12-08  Simon Josefsson  <jas@extundo.com>
 
 	* mml-smime.el (mml-smime-sign): Replace CRLF with LF in OpenSSL
