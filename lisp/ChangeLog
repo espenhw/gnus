@@ -1,3 +1,13 @@
+2004-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nndoc.el (nndoc-type-alist): Improve regexp for article-begin,
+	add generate-head-function and generate-article-function to the
+	rfc822-forward entry.
+	(nndoc-rfc822-forward-generate-article): New function.
+	(nndoc-rfc822-forward-generate-head): New function.
+
+	* mm-decode.el (mm-dissect-buffer): Simplify cleaning of CTE.
+
 2004-07-06  Dan Christensen  <jdc@uwo.ca>
 
 	* gnus-sum.el (gnus-summary-read-group-1): When summary

@@ -522,15 +522,11 @@ Postpone undisplaying of viewers for types in
 	  ;; solution, avoids most of them.
 	  (if from
 	      (setq from (cadr (mail-extract-address-components from))))))
-      (when cte
-	(setq cte (mail-header-strip cte)))
       (if (or (not ctl)
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
 	   (list mm-dissect-default-type)
-	   (and cte (intern (downcase (mail-header-remove-whitespace
-				       (mail-header-remove-comments
-					cte)))))
+	   (and cte (intern (downcase (mail-header-strip cte))))
 	   no-strict-mime
 	   (and cd (ignore-errors (mail-header-parse-content-disposition cd)))
 	   description)
@@ -563,9 +559,7 @@ Postpone undisplaying of viewers for types in
 	   (mm-possibly-verify-or-decrypt
 	    (mm-dissect-singlepart
 	     ctl
-	     (and cte (intern (downcase (mail-header-remove-whitespace
-					 (mail-header-remove-comments
-					  cte)))))
+	     (and cte (intern (downcase (mail-header-strip cte))))
 	     no-strict-mime
 	     (and cd (ignore-errors
 		       (mail-header-parse-content-disposition cd)))
