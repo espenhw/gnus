@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus
-@settitle (ding) Gnus 0.80 Manual
+@settitle (ding) Gnus 0.84 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -90,9 +90,6 @@ luck.
 * Key Index::               Key Index.
 @end menu
 
-This manual hasn't been prperly proff-read yet, so typos abound, and
-misleading information is sure to exist.  
-
 @node History
 @chapter History
 
@@ -100,7 +97,7 @@ misleading information is sure to exist.
 @sc{gnus} was written by Masanobu UMEDA.  When autumn crept up in '94,
 Lars Magne Ingebrigtsen grew bored and decided to rewrite Gnus.
 
-The recommended pronounciation of the name this program is "ding
+The recommended pronunciation of the name this program is "ding
 guh-noose", with "ding" being half-sung in a loud, high-pitched voice,
 and "guh-noose" being grumbled and a disaffected fashion.  Any
 irritation and/or damage this name may cause you is not the
@@ -129,7 +126,7 @@ which makes it a more appropriate name, don't you think?)
 @node Compatibility
 @section Compatibility
 
-@cindex compatability
+@cindex compatibility
 (ding) Gnus was designed to be fully compatible with @sc{gnus}.  Almost
 all key bindings have been kept.  More key bindings have been added, of
 course, but only in one or two obscure cases have old bindings been
@@ -234,11 +231,13 @@ suggested and added by Hallvard B Furuseth.
 @item 
 Brian Edmonds has written @code{gnus-bbdb}, as well as other bits and
 pieces. 
+@item 
+Ricardo Nassif did the proof-reading.
 @item
 Kevin Davidson came up with the name @dfn{ding}, so blame him.
 @item 
-Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis and Andrew
-Eskilsson have all contributed code and suggestions.
+Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D. Cringle 
+ and Andrew Eskilsson have all contributed code and suggestions.
 @end itemize
 
 
@@ -256,23 +255,11 @@ summary buffer, leading to errors.  Such errors may be detected by
 looking for any hilit-specific functions in the @code{*Backtrace*}
 buffer.  If such a reference exists, you should be using the code below.
 
-On the other hand, @code{gnus-visual} makes no attempt to highlight the
-article buffer, while hilit does a very good job of this.  There is a
-compatibility problem here though, since hilit uses
-@code{gnus-article-prepare-hook} to do its magic.  This hook is executed
-@emph{before} headers are hidden, via
-@code{gnus-article-hide-headers-if-wanted} which is run from
-@code{gnus-article-display-hook}.  The act of hiding the headers undoes
-all of the hilighting already done.  A similar effect occurred in vanilla
-@sc{gnus 4.1} if @code{gnus-show-mime} was set to @code{t}, since
-@sc{mime} processing, too, is done after this hook is executed.
+You can also get @code{gnus-visual} to highlight the article buffer, so
+you should get rid of all hilit-specific Gnus calls.
 
-The solution here is to use @code{gnus-article-display-hook} for
-highlighting (and for all purposes where you used
-@code{gnus-article-prepare-hook} earlier).  This hook is run after
-@sc{mime} processing, and is the last thing done before actually
-displaying the article.  Add the code below to your @file{.gnus} file to
-get the right functions onto the right hooks.
+Add the code below to your @file{.gnus} file to remove all the hilit
+crud:
 
 @lisp
 (add-hook 'gnus-startup-hook
@@ -283,6 +270,7 @@ get the right functions onto the right hooks.
              (remove-hook 'gnus-summary-prepare-hook
                           'hilit-rehighlight-buffer-quietly)
              (remove-hook 'gnus-summary-prepare-hook 'hilit-install-line-hooks)
+             (setq gnus-mark-article-hook '(gnus-summary-mark-unread-as-read))
              ;; this is too early for the purpose of highlighting
              (remove-hook 'gnus-article-prepare-hook
                           'hilit-rehighlight-buffer-quietly)
@@ -475,7 +463,7 @@ If @code{gnus-nntp-server} is set, this variable will override
 @vindex gnus-secondary-servers
 You can also make Gnus prompt you interactively for the name of an
 @sc{nntp} server.  If you give a non-numerical prefix to @code{gnus}
-(ie. @kbd{C-u M-x gnus}), Gnus will let you choose between the servers
+(i.e., @kbd{C-u M-x gnus}), Gnus will let you choose between the servers
 in the @code{gnus-secondary-servers} list (if any).  You can also just
 type in the name of any server you feel like visiting.
 
@@ -517,7 +505,7 @@ killed.  Your system administrator should have set this variable to
 something useful.
 
 Since she hasn't, Gnus will just subscribe you to a few randomly picked
-groups (ie. @samp{*.newusers}).  (@dfn{Random} is here defined as
+groups (i.e., @samp{*.newusers}).  (@dfn{Random} is here defined as
 "whatever Lars thinks you should read".)
 
 You'll also be subscribed to the Gnus documentation group, which should
@@ -537,7 +525,7 @@ the news groups, you may want to start Gnus anyway.
 
 Gnus, being the trusting sort of program, will ask whether to proceed
 without a native select method if that server can't be contacted.  This
-will happen whether the server doesn't actually exist (ie. you have
+will happen whether the server doesn't actually exist (i.e., you have
 given the wrong address) or the server has just momentarily taken ill
 for some reason or other.  
 
@@ -991,7 +979,7 @@ the @var{N} newest articles, if @var{N} is negative, fetch the
 @kindex RET (Group)
 @findex gnus-group-select-group
 Select the current group and switch to the summary buffer
-(@code{gnus-group-select-group}).  Takes the same aguments as
+(@code{gnus-group-select-group}).  Takes the same arguments as
 @code{gnus-group-read-group} - the only difference is that this command
 does not display the first unread article automatically upon group
 entry. 
@@ -1580,7 +1568,7 @@ sequence of articles.  Sorting on date might be an option here
 (@pxref{Selecting a Group}.
 
 One limitation, however - all groups that are included in a virtual
-group has to be alive (ie. subscribed or unsubscribed).  Killed or
+group has to be alive (i.e., subscribed or unsubscribed).  Killed or
 zombie groups can't be component groups for nnvirtual groups.
 
 @node nnkiboze
@@ -1667,7 +1655,7 @@ directory and assign article numbers to each file. When you enter such a
 group, @code{nneething} must create "headers" that Gnus can use. After
 all, Gnus is a newsreader, in case you're forgetting. @code{nneething}
 does this in a two-step process. First, it snoops each file in question.
-If the file looks like an article (ie. the first few lines look like
+If the file looks like an article (i.e., the first few lines look like
 headers), it will use this as the head. If this is just some random file
 without a head (eg. a C source file), @code{nneething} will cobble up a
 header out of thin air. It will use file ownership, name and date and do
@@ -1684,7 +1672,7 @@ traverse the entire disk this way, if you feel like, but remember that
 Gnus is not dired, really, and does not intend to be, either.
 
 There are two overall modes to this action - ephemeral or solid. When
-doing the ephemeral thing (ie. @kbd{G D} from the group buffer), Gnus
+doing the ephemeral thing (i.e., @kbd{G D} from the group buffer), Gnus
 will not store information on what files you have read, and what files
 are new, and so on. If you create a solid @code{nneething} group the
 normal way with @kbd{G m}, Gnus will store a mapping table between
@@ -1786,7 +1774,7 @@ the new incoming mail, and can be used for, well, anything, really.
 @vindex nnmail-tmp-directory
 @code{nnmail-tmp-directory} says where to move the incoming mail to
 while processing it.  This is usually done in the same directory that
-the mail backend habitates (ie. @file{~/Mail/}), but if this variable is
+the mail backend inhabits (i.e., @file{~/Mail/}), but if this variable is
 non-@code{nil}, it will be used instead.
 
 @vindex nnmail-delete-incoming
@@ -1824,7 +1812,7 @@ how the incoming mail is to be split into groups.
 @lisp
 (setq nnmail-split-methods
   '(("mail.junk" "^From:.*Lars Ingebrigtsen")
-    ("mail.crazzy" "^Subject:.*die\\|^Organization:.*flabby")
+    ("mail.crazy" "^Subject:.*die\\|^Organization:.*flabby")
     ("mail.other" "")))
 @end lisp
 
@@ -1870,7 +1858,7 @@ play with the @code{nnmail-split-fancy} variable.
 Let's look at an example value of this variable first:
 
 @lisp
-;; Messages from the mailer deamon are not crossposted to any of
+;; Messages from the mailer daemon are not crossposted to any of
 ;; the ordinary groups.  Warnings are put in a separate group
 ;; from real errors.
 (| ("from" mail (| ("subject" "warn.*" "mail.warning")
@@ -1966,6 +1954,11 @@ in @code{nnmail-procmail-directory}.  To arrive at the file name to put
 the incoming mail in, append @code{nnmail-procmail-suffix} to the group
 name.  The mail backends will read the mail from these files.
 
+@vindex nnail-resplit-incoming
+When Gnus reads a file called @file{mail.misc.spool}, this mail will be
+put in the @code{mail.misc}, as one would expect.  However, if you want
+Gnus to split the mail the normal way, you could set
+@code{nnail-resplit-incoming} to @code{t}.
 
 @node Expiring Old Mail Articles
 @subsubsection Expiring Old Mail Articles
@@ -2220,7 +2213,7 @@ If non-@code{nil}, @code{nnmh} will read incoming mail.
 
 @item nnmh-be-safe
 @vindex nnmh-be-safe
-If non-@code{nil}, @code{nnmh} will go to ridiculous lenghts to make
+If non-@code{nil}, @code{nnmh} will go to ridiculous lengths to make
 sure that the articles in the folder is actually what Gnus think they
 are.  It will check date stamps, and stat everything in sight, so
 setting this to @code{t} will mean a serious slow-down.  If you never
@@ -2340,7 +2333,7 @@ These commands all list various slices of the groups that are available.
 List all groups that have unread articles
 (@code{gnus-group-list-groups}).  If the numeric prefix is used, this
 command will list only groups of level ARG and lower.  By default, it
-only lists groups of level five or lower (ie. just subscribed groups).
+only lists groups of level five or lower (i.e., just subscribed groups).
 @item L
 @itemx A u
 @kindex A u (Group)
@@ -2349,7 +2342,7 @@ only lists groups of level five or lower (ie. just subscribed groups).
 List all groups, whether they have unread articles or not
 (@code{gnus-group-list-all-groups}).  If the numeric prefix is used,
 this command will list only groups of level ARG and lower.  By default,
-it lists groups of level seven or lower (ie. just subscribed and
+it lists groups of level seven or lower (i.e., just subscribed and
 unsubscribed groups).
 @item A k
 @kindex A k (Group)
@@ -2627,7 +2620,7 @@ move around, read articles, post articles and reply to articles.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Cancelling and Superseding::  "Whoops, I shouldn't have called him that."
+* Canceling and Superseding::   "Whoops, I shouldn't have called him that."
 * Ticking and Marking::         Marking articles as read, expirable, etc.
 * Threading::                   How threads are made.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
@@ -2735,7 +2728,7 @@ default level.  If the difference between
 @item r
 @code{References}.
 @item t
-Number of articles in the current subthread.  Using this spec will slow
+Number of articles in the current sub-thread.  Using this spec will slow
 down summary buffer generation somewhat.
 @item u
 User defined specifier.  The next character in the format string should
@@ -3095,7 +3088,7 @@ Variables for customizing outgoing mail:
 @item gnus-reply-to-function
 @vindex gnus-reply-to-function
 Gnus uses the normal methods to determine where replies are to go, but
-you can change the behaviour to suit your needs by fiddling with this
+you can change the behavior to suit your needs by fiddling with this
 variable.
 
 If you want the replies to go to the @samp{Sender} instead of the
@@ -3150,7 +3143,7 @@ Three variables for customizing what to use when:
 
 @vindex gnus-mail-reply-method
 @item gnus-mail-reply-method
-This function is used to compose replys.  The three functions avaibale
+This function is used to compose replies.  The three functions avaibale
 are:
 
 @findex gnus-mail-reply-using-vm
@@ -3301,7 +3294,7 @@ value.
 @vindex gnus-followup-to-function
 This variable is most useful in mail groups, where "following up" really
 means sending a mail to a list address.  Gnus uses the normal methods to
-determine where follow-ups are to go, but you can change the behaviour
+determine where follow-ups are to go, but you can change the behavior
 to suit your needs by fiddling with this variable.
 
 If you want the followups to go to the @samp{Sender} instead of the
@@ -3392,7 +3385,7 @@ checking/generation.
 @item gnus-inews-article-hook
 @vindex gnus-inews-article-hook
 This hook is called right before the article is posted.  By default it
-handles FCC processing (ie. saving the article to a file.)
+handles FCC processing (i.e., saving the article to a file.)
 
 @item gnus-inews-article-header-hook
 @vindex gnus-inews-article-header-hook
@@ -3412,9 +3405,9 @@ list.  Legal elemetents are:
 @item subject-cmsg 
 Check the subject for commands.
 @item multiple-headers 
-Check for the existance of multiple equal headers.
+Check for the existence of multiple equal headers.
 @item sendsys 
-Check for the existance of version and sendsys commands.
+Check for the existence of version and sendsys commands.
 @item message-id
 Check whether the @code{Message-ID} looks ok.
 @item from
@@ -3515,7 +3508,7 @@ Gnus variables if it is non-@code{nil}.
 Here are two example values of this variable: @samp{"larsi@@ifi.uio.no
 (Lars Magne Ingebrigtsen)"} and @samp{"Lars Magne Ingebrigtsen
 <larsi@@ifi.uio.no>"}. The latter version is recommended, but the name
-has to be quoted if it contains non-alphanumerical characters -
+has to be quoted if it contains non-alpha-numerical characters -
 @samp{"\"Lars M. Ingebrigtsen\" <larsi@@ifi.uio.no>"}.
 
 @item mail-default-headers
@@ -3553,9 +3546,9 @@ spell-checking via the @code{ispell} package:
 (add-hook 'mail-send-hook 'ispell-message)	;for mail posts via sendmail
 @end lisp
 
-@node Cancelling and Superseding
-@section Cancelling Articles
-@cindex cancelling articles
+@node Canceling and Superseding
+@section Canceling Articles
+@cindex canceling articles
 @cindex superseding articles
 
 Have you ever written something, and then decided that you really,
@@ -3568,7 +3561,7 @@ Well, you can't cancel mail, but you can cancel posts.
 Find the article you wish to cancel (you can only cancel your own
 articles, so don't try any funny stuff).  Then press @kbd{C} or @kbd{S
 c} (@code{gnus-summary-cancel-article}).  Your article will be
-cancelled - machines all over the world will be deleting your article. 
+canceled - machines all over the world will be deleting your article. 
 
 Be aware, however, that not all sites honor cancels, so your article may
 live on here and there, while most sites will delete the article in
@@ -3585,7 +3578,14 @@ Go to the original article and press @kbd{S s}
 where you can edit the article all you want before sending it off the
 usual way.
 
-The same goes for superseding as for cancelling, only more so: Some
+@vindex gnus-delete-supersedes-headers
+You probably want to delete some of the old headers before sending the
+superseding article - @code{Path} and @code{Date} are probably
+incorrect.  Set @code{gnus-delete-supersedes-headers} to a regexp to
+match the lines you want removed.  The default is
+@samp{"^Path:\\|^Date"}. 
+
+The same goes for superseding as for canceling, only more so: Some
 sites do not honor superseding.  On those sites, it will appear that you
 have posted almost the same article twice.
 
@@ -3597,7 +3597,7 @@ find the article you just posted, with all the headers intact.  Change
 the @samp{Message-ID} header to a @samp{Cancel} or @samp{Supersedes}
 header by substituting one of those words for @samp{Message-ID}.  Then
 just press @kbd{C-c C-c} to send the article as you would do normally.
-The previous article will be cancelled/superseded.
+The previous article will be canceled/superseded.
 
 Just remember, kids: There is no 'c' in 'supersede'.
 
@@ -3680,7 +3680,7 @@ Marked as read by having a too low score (@code{gnus-low-score-mark}).
 @item C
 Marked as read by a catchup (@code{gnus-catchup-mark}).
 @item G
-Cancelled article (@code{gnus-cancelled-mark})
+Canceled article (@code{gnus-cancelled-mark})
 @end table
 
 All these marks just mean that the article is marked as read, really.
@@ -3935,6 +3935,8 @@ fashion.
 @node Customizing Threading
 @subsection Customizing Threading
 @cindex customizing threading
+@cindex <
+@cindex >
 
 @table @code
 @item gnus-show-threads
@@ -3980,12 +3982,14 @@ When there is no real root of a thread, Gnus will have to fudge
 something.  This variable says what fudging method Gnus should use.
 There are four possible values:
 
+@cindex adopting articles
+
 @table @code
 @item adopt
 Gnus will make the first of the orphaned articles the parent.  This
 parent will adopt all the other articles.  The adopted articles will be
-marked as such by pointy brackets instead of the standard square
-brackets.  This is the default method.
+marked as such by pointy brackets (@samp{<>}) instead of the standard
+square brackets (@samp{[]]).  This is the default method.
 @item dummy
 Gnus will create a dummy summary line that will pretend to be the
 parent.  This dummy line does not correspond to any real article, so
@@ -4019,7 +4023,7 @@ is @code{nil}, which is the default, a change in the subject will result
 in a new thread.
 @item gnus-thread-indent-level
 @vindex gnus-thread-indent-level
-This is a number that says how much each subthread should be indented.
+This is a number that says how much each sub-thread should be indented.
 The default is @samp{4}.
 @end table
 
@@ -4033,7 +4037,7 @@ The default is @samp{4}.
 @kindex T k (Summary)
 @kindex M-C-k (Summary)
 @findex gnus-summary-kill-thread
-Mark all articles in the current subthread as read
+Mark all articles in the current sub-thread as read
 (@code{gnus-summary-kill-thread}).  If the prefix argument is positive,
 remove all marks instead.  If the prefix argument is negative, tick
 articles instead.
@@ -4200,7 +4204,7 @@ So where does the massive article-fetching and storing come into the
 picture?  The @code{gnus-jog-cache} command will go through all
 subscribed newsgroups, request all unread articles, and store them in
 the cache.  You should only ever, ever ever ever, use this command if 1)
-your connetion to the @sc{nntp} server is really, really, really slow
+your connection to the @sc{nntp} server is really, really, really slow
 and 2) you have a really, really, really huge disk.  Seriously.
 
 
@@ -4343,7 +4347,7 @@ are avoided.
 @cindex saving articles
 
 Gnus can save articles in a number of ways.  Below is the documentation
-for saving articles in a fairly straight-forward fashion (ie. little
+for saving articles in a fairly straight-forward fashion (i.e., little
 processing of the article is done before it is saved).  For a different
 approach (uudecoding, unsharing) you should use @code{gnus-uu}
 (@pxref{Decoding Articles}).
@@ -4470,7 +4474,7 @@ encoded in some way or other.  Gnus can decode them for you.
 @menu 
 * Uuencoded Articles::    Uudecode articles.
 * Shared Articles::       Unshar articles.
-* PostScript Files::      Split PoscScript.
+* PostScript Files::      Split PostScript.
 @end menu
 
 All these functions use the process/prefix convention
@@ -4649,7 +4653,7 @@ Files with name matching this regular expression won't be viewed.
 Files with a @sc{mime} type matching this variable won't be viewed.
 Note that Gnus tries to guess what type the file is based on the name.
 @code{gnus-uu} is not a @sc{mime} package (yet), so this is slightly
-kludgy.
+kludgey.
 
 @item gnus-uu-tmp-dir
 @vindex gnus-uu-tmp-dir
@@ -5068,7 +5072,7 @@ Score on the author name.
 @item s
 Score on the subject line.
 @item x
-Score on the Xref line - ie. the cross-posting line.
+Score on the Xref line - i.e., the cross-posting line.
 @item t
 Score on thread - the References line.
 @item d
@@ -5095,8 +5099,8 @@ Regexp matching
 @end table
 
 @item 
-The fourth and final key says whether this is a temporary (ie. expiring)
-score entry, or a permanent (ie. non-expiring) score entry, or whether
+The fourth and final key says whether this is a temporary (i.e., expiring)
+score entry, or a permanent (i.e., non-expiring) score entry, or whether
 it is to be done immediately, without adding to the score file.
 @table @kbd
 @item t
@@ -5418,7 +5422,7 @@ variable name or a "real" mark - a character).  Following this key is a
 random number of header/score pairs.  
 
 To take @code{gnus-del-mark} as an example - this alist says that all
-articles that have that mark (ie. are marked with @samp{D}) will have a
+articles that have that mark (i.e., are marked with @samp{D}) will have a
 score entry added to lower based on the @code{From} header by -4, and
 lowered by @code{Subject} by -1.  Change this to fit your prejudices. 
 
@@ -6371,7 +6375,7 @@ By default, Gnus displays information on the current article in the mode
 lines of the summary and article buffers.  The information Gnus wishes
 to display (eg. the subject of the article) is often longer than the
 mode lines, and therefore have to be cut off at some point.  This
-variable says how long the other elements on the line is (ie. the
+variable says how long the other elements on the line is (i.e., the
 non-info part).  If you put additional elements on the mode line (eg. a
 clock), you should modify this variable:
 @c Hook written by Keinonen Kari <kk85613@cs.tut.fi>.
@@ -6384,12 +6388,12 @@ clock), you should modify this variable:
 
 @item gnus-visual
 @vindex gnus-visual
-If @code{nil}, Gnus won't attempt to create menus or use fancy colours
+If @code{nil}, Gnus won't attempt to create menus or use fancy colors
 or fonts.  This will also inhibit loading the @file{gnus-visual.el}
 file.
 @item gnus-mouse-face
 @vindex gnus-mouse-face
-This is the face (ie. font) used for mouse highlighting in Gnus.  No
+This is the face (i.e., font) used for mouse highlighting in Gnus.  No
 mouse highlights will be done if @code{gnus-visual} is @code{nil}.
 @end table
 
@@ -6583,3 +6587,5 @@ but at the common table.@*
 @c Local Variables:
 @c outline-regexp: "@chap\\|@\\(sub\\)*section\\|@appendix \\|@appendix\\(sub\\)*sec\\|\^L"
 @c End:
+
+

@@ -338,7 +338,7 @@ Returns the number of articles marked as read."
     ;; from the `gnus-newsgroup-headers' list that the score functions
     ;; will see. This is probably pretty wasteful when it comes to
     ;; conses, but is, I think, faster than having to assq in every
-    ;; single score funtion.
+    ;; single score function.
     (let ((files kill-files))
       (while files
 	(if (file-exists-p (car files))

@@ -196,7 +196,7 @@
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
-	(setq dir nnmh-directory)))
+	(setq dir (file-name-as-directory nnmh-directory))))
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
@@ -222,7 +222,8 @@
 	     (format 
 	      "%s %d %d y\n" 
 	      (progn
-		(string-match (expand-file-name nnmh-directory) dir)
+		(string-match (file-name-as-directory 
+			       (expand-file-name nnmh-directory)) dir)
 		(nnmail-replace-chars-in-string
 		 (substring dir (match-end 0)) ?/ ?.))
 	      (apply (function max) files) 
@@ -392,6 +393,7 @@
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
 	 (all-spools spools)
+	 (group-in group)
 	 incoming incomings)
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
 	()
@@ -411,7 +413,7 @@
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmh-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
-	   (setq group (nnmail-get-split-group (car spools) group))
+	   (setq group (nnmail-get-split-group (car spools) group-in))
 	   (nnmail-split-incoming incoming 'nnmh-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 

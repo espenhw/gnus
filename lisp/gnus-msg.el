@@ -159,6 +159,11 @@ you want Gnus not to insert some header, remove it from this list.")
 If this variable is t, Gnus will check everything it can.  If it is a
 list, then those elements in that list will be checked.")
 
+(defvar gnus-delete-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:"
+  "*Header lines matching this regexp will be deleted before posting.
+It's best to delete old Path and Date headers before psoting to avoid
+any confusion.")
+
 (defvar gnus-auto-mail-to-author nil
   "*If non-nil, mail the authors of articles a copy of your follow-ups.
 If this variable is `ask', the user will be prompted for whether to
@@ -332,13 +337,13 @@ This is done simply by taking the old article and adding a Supersedes
 header line with the old Message-ID."
   (interactive)
   (gnus-set-global-variables)
-  (if (not
+  (gnus-summary-select-article t)
+  (if (or
        (string-equal
 	(downcase (mail-strip-quoted-names 
 		   (header-from gnus-current-headers)))
 	(downcase (mail-strip-quoted-names (gnus-inews-user-name)))))
       (error "This article is not yours."))
-  (gnus-summary-select-article t)
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((buffer-read-only nil))
@@ -357,7 +362,14 @@ header line with the old Message-ID."
 	  (replace-match "Supersedes: " t t))
 	(search-forward "\n\n")
 	(forward-line -1)
-	(insert mail-header-separator))))
+	(insert mail-header-separator)
+
+	(forward-line -1)
+	(narrow-to-region (point-min) (point))
+	(goto-char (point-min))
+	(and gnus-delete-supersedes-headers
+	     (delete-matching-lines gnus-delete-supersedes-headers))
+	(widen))))
 
 
 ;;;###autoload
@@ -969,7 +981,7 @@ Headers in `gnus-required-headers' will be generated."
 	(goto-char (point-min))
 	(and (re-search-forward 
 	      (concat "^" (symbol-name (car headers)) ": *") nil t)
-	     (get-text-property (match-end 0) 'gnus-delete)
+	     (get-text-property (1+ (match-end 0)) 'gnus-deletable)
 	     (gnus-delete-line))
 	(setq headers (cdr headers))))
     ;; Insert new Sender if the From is strange. 
@@ -1261,6 +1273,9 @@ organization."
 	      "~/.organization")))
     (and (stringp organization)
 	 (> (length organization) 0)
+	 (or (file-exists-p organization)
+	     (string-match " " organization)
+	     (not (string-match "^/usr/lib/" organization)))
 	 (save-excursion
 	   (gnus-set-work-buffer)
 	   (if (file-exists-p organization)

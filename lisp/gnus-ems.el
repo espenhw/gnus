@@ -98,7 +98,10 @@
 
    ((and (not (string-match "28.9" emacs-version)) 
 	 (not (string-match "29" emacs-version)))
-    (setq gnus-hidden-properties '(invisible t)))
+    (setq gnus-hidden-properties '(invisible t))
+    (or (fboundp 'buffer-substring-no-properties)
+	(defun buffer-substring-no-properties (beg end)
+	  (format "%s" (buffer-substring beg end)))))
    
    ((boundp 'MULE)
     (provide 'gnusutil))

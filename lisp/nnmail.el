@@ -70,7 +70,7 @@ new mail into folder numbers that Gnus has marked as expired.")
   "*Articles that are older than `nnmail-expiry-wait' days will be expired.")
 
 (defvar nnmail-expiry-wait-function nil
-  "*Variable that holds funtion to specify how old articles should be before they are expired.
+  "*Variable that holds function to specify how old articles should be before they are expired.
   The function will be called with the name of the group that the
 expiry is to be performed in, and it should return an integer that
 says how many days an article can be stored before it is considered
@@ -101,6 +101,9 @@ The Gnus mail backends will read the mail from this directory.")
 
 (defvar nnmail-procmail-suffix ".spool"
   "*Suffix of files created by procmail (and the like).")
+
+(defvar nnmail-resplit-incoming nil
+  "*If non-nil, re-split incoming procmail sorted mail.")
 
 (defvar nnmail-read-incoming-hook nil
   "*Hook that will be run after the incoming mail has been transferred.
@@ -181,7 +184,7 @@ Example:
 (defvar nnmail-split-abbrev-alist
   '((any . "from\\|to\\|cc\\|sender\\|apparently-to")
     (mail . "mailer-daemon\\|postmaster"))
-  "*Alist of abbrevations allowed in `nnmail-split-fancy'.")
+  "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
 (defvar nnmail-delete-incoming nil
   "*If non-nil, the mail backends will delete incoming files after splitting.
@@ -377,8 +380,7 @@ This is nil by default for reasons of security.")
 		     ;; No output => movemail won
 		     nil
 		   (set-buffer errors)
-		   (subst-char-in-region (point-min) (point-max)
-					 ?\n ?\  )
+		   (subst-char-in-region (point-min) (point-max) ?\n ?\  )
 		   (goto-char (point-max))
 		   (skip-chars-backward " \t")
 		   (delete-region (point) (point-max))
@@ -461,7 +463,9 @@ FUNC will be called with the buffer narrowed to each mail."
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	;; If this is a group-specific split, we bind the split
 	;; methods to just this group.
-	(nnmail-split-methods (if (and group (eq nnmail-spool-file 'procmail))
+	(nnmail-split-methods (if (and group
+				       (eq nnmail-spool-file 'procmail)
+				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
 				nnmail-split-methods))
 	start end content-length do-search)

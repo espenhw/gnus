@@ -1,3 +1,58 @@
+Fri Jun  9 00:07:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nneething.el (nneething-retrieve-headers): Check for empty
+	files. 
+
+	* gnus-msg.el (gnus-inews-insert-headers): Did not delete the
+	required headers. 
+	(gnus-inews-organization): Be a bit more clever about missing
+	files. 
+
+	* gnus-score.el (gnus-score-body): Didn't work at all. 
+
+	* gnus-msg.el (gnus-summary-supersede-article): Did not select
+	article before superseding. 
+	(gnus-summary-supersede-article): Delete certain headers before
+	superseding. 
+	(gnus-delete-supersedes-headers): New variable. 
+
+Thu Jun  8 20:15:24 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmh.el (nnmh-request-list): Would add a "." to the group name
+	if nnmh-directory didn't end with /.
+
+	* nnmail.el (nnmail-resplit-incoming): New variable. 
+
+	* nnml.el (nnml-get-new-mail): Wrong group name. 
+
+	* gnus.el (gnus-simplify-subject-fuzzy): Inline
+	simplify-buffer-fuzzy. 
+	(gnus-simplify-buffer-fuzzy): New Re: match. 
+
+	* gnus-uu.el (gnus-uu-initialize): Make a more unique temp name. 
+	(gnus-uu-decode-unshar-and-save): Start working. 
+
+	* gnus.el (gnus-score-find-single): Find both SCORE and ADAPT
+	file. 
+	(gnus-score-find-hierarchical): Ditto.
+
+Thu Jun  8 15:38:58 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-newsrc-to-gnus-format): Don't enter native groups
+	from the .eld files of they do not exist in the .newsrc file. 
+
+	* gnus.el: Doc string typo corrections galore courtesy of Frank D.
+	Cringle. 
+
+	* gnus-ems.el: Bind buffer-substring-no-properties if not bound. 
+
+	* gnus.el (gnus-select-newsgroup): Did the wrong thing to remove 
+	(gnus-matches-options-n): Reversed match, sort of. 
+	(gnus-extract-address-components): Didn't treat chopped-off lines
+	well. 
+	(gnus-read-all-descriptions-files): Returned nil. 
+	(gnus-gmt-to-local): Wouldn't strip props before calling timzone. 
+
 Wed Jun  7 15:04:20 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
 
 	* gnus.el (gnus-select-newsgroup): Don't add an extra 1 if there
@@ -13,6 +68,8 @@ Wed Jun  7 15:04:20 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
 	file-readable because of os/2 bug. 
 	(gnus-select-newsgroup): Didn't remove the first fetched article
 	when not using nov. 
+
+	* gnus.el: 0.83 is released. 
 
 Wed Jun  7 12:59:46 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 

@@ -55,7 +55,7 @@ it.")
 (defvar nnfolder-always-close nil
   "If non-nil, nnfolder attempts to only ever have one mbox open at a time.  
 This is a straight space/performance trade off, as the mboxes will have to 
-be scaned every time they are read in.  If nil (default), nnfolder will
+be scanned every time they are read in.  If nil (default), nnfolder will
 attempt to keep the buffers around (saving the nnfolder's buffer upon group 
 close, but not killing it), speeding some things up tremendously, especially
 such things as moving mail.  All buffers always get killed upon server close.")
@@ -619,6 +619,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
 	 (all-spools spools)
+	 (group-in group)
 	 incomings incoming)
     (if (or (not nnfolder-get-new-mail) (not nnmail-spool-file))
 	()
@@ -637,7 +638,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnfolder-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
-	   (setq group (nnmail-get-split-group (car spools) group))
+	   (setq group (nnmail-get-split-group (car spools) group-in))
 	   (nnmail-split-incoming incoming 'nnfolder-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 

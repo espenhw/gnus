@@ -266,7 +266,7 @@ Newsgroup must be selected before calling this function."
   t)
 
 (defun nnspool-request-list (&optional server)
-  "List active newsgoups."
+  "List active newsgroups."
   (save-excursion
     (nnspool-find-file nnspool-active-file)))
 

@@ -359,6 +359,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 			   (string-to-int (gnus-soup-unique-prefix dir))
 			   files)))
 	 (dir (expand-file-name dir)))
+    (setq gnus-soup-areas nil)
     (message "Packing %s..." packer)
     (if (zerop (call-process "sh" nil nil nil "-c" 
 			     (concat "cd " dir " ; " packer)))
@@ -500,7 +501,7 @@ file. The vector contain three strings, [prefix name encoding]."
       (and (file-exists-p (concat dir gnus-soup-prefix-file))
 	   (condition-case nil
 	       (load-file (concat dir gnus-soup-prefix-file))
-	     (setq error nil)))
+	     (error nil)))
       (setq gnus-soup-last-prefix 
 	    (cons (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
 		  gnus-soup-last-prefix)))

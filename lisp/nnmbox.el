@@ -451,6 +451,7 @@
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
 	 (all-spools spools)
+	 (group-in group)
 	 incoming incomings)
     (nnmbox-read-mbox)
     (if (or (not nnmbox-get-new-mail) (not nnmail-spool-file))
@@ -468,7 +469,7 @@
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
 	   (save-excursion
-	     (setq group (nnmail-get-split-group (car spools) group))
+	     (setq group (nnmail-get-split-group (car spools) group-in))
 	     (let ((in-buf (nnmail-split-incoming 
 			    incoming 'nnmbox-save-mail t group)))
 	       (set-buffer nnmbox-mbox-buffer)

@@ -481,6 +481,7 @@ all. This may very well take some time.")
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
 	 (all-spools spools)
+	 (group-in group)
 	 incoming incomings)
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
 	()
@@ -501,7 +502,7 @@ all. This may very well take some time.")
 	   (setq incoming 
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnml-directory "Incoming")))
-	   (setq group (nnmail-get-split-group (car spools) group))
+	   (setq group (nnmail-get-split-group (car spools) group-in))
 	   (nnmail-split-incoming incoming 'nnml-save-mail nil group)
 	   (setq incomings (cons incoming incomings))))
 	(setq spools (cdr spools)))

@@ -497,6 +497,7 @@
   "Read new incoming mail."
   (let* ((spools (nnmail-get-spool-files group))
 	 (all-spools spools)
+	 (group-in group)
 	 incoming incomings)
     (nnbabyl-read-mbox)
     (if (or (not nnbabyl-get-new-mail) (not nnmail-spool-file))
@@ -515,7 +516,7 @@
 		  (car spools) (concat nnbabyl-mbox-file "-Incoming")))
 	   (setq incomings (cons incoming incomings))
 	   (save-excursion
-	     (setq group (nnmail-get-split-group (car spools) group))
+	     (setq group (nnmail-get-split-group (car spools) group-in))
 	     (let* ((nnmail-prepare-incoming-hook
 		     (cons 'nnbabyl-remove-incoming-delims
 			   nnmail-prepare-incoming-hook))

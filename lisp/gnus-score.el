@@ -80,7 +80,7 @@ String entries have the form (HEADER (MATCH TYPE SCORE DATE) ...)
 where HEADER is the header being scored, MATCH is the string we are
 looking for, TYPE is a flag indicating whether it should use regexp or
 substring matching, SCORE is the score to add and DATE is the date
-of the last succesful match.")
+of the last successful match.")
 
 (defvar gnus-score-cache nil)
 (defvar gnus-scores-articles nil)
@@ -250,12 +250,14 @@ of the last succesful match.")
 	  (if mimic 
 	      (message "%c %c %c %c" prefix hchar tchar pchar)
 	    (message "")))))
+
     ;; We have all the data, so we enter this score.
     (if end
 	()
       (gnus-summary-score-entry
        (nth 1 entry)			; Header
-       (gnus-summary-header (or (nth 2 entry) (nth 1 entry))) ; Match
+       (if (string= (nth 2 entry) "") ""
+	 (gnus-summary-header (or (nth 2 entry) (nth 1 entry)))) ; Match
        type				; Type
        (if (eq 's score) nil score)     ; Score
        (if (eq 'perm temporary)         ; Temp
@@ -981,15 +983,14 @@ SCORE is the score to add."
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
-	     (last (header-number 
-		    (gnus-last-element (car gnus-scores-articles))))
+	     (last (header-number (car (car gnus-scores-articles))))
 	     (all-scores scores)
 	     (request-func (cond ((string= "head" (downcase header))
 				  'gnus-request-head)
 				 ((string= "body" (downcase header))
 				  'gnus-request-body)
 				 (t 'gnus-request-article)))
-	     alike last this art entries alist ofunc article)
+	     alike this art entries alist ofunc article)
 	;; Not all backends support partial fetching.  In that case,
 	;; we just fetch the entire article.
 	(or (gnus-check-backend-function request-func gnus-newsgroup-name)

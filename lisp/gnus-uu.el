@@ -73,7 +73,7 @@ There are several user variables to tailor the behaviour of gnus-uu to
 your needs. First we have `gnus-uu-user-view-rules', which is the
 variable gnus-uu first consults when trying to decide how to view a
 file. If this variable contains no matches, gnus-uu examines the
-default rule vaiable provided in this package. If gnus-uu finds no
+default rule variable provided in this package. If gnus-uu finds no
 match here, it uses `gnus-uu-user-view-rules-end' to try to make a
 match.")
 
@@ -185,7 +185,7 @@ Default is nil.")
 
 (defvar gnus-uu-view-and-save nil 
   "*Non-nil means that the user will always be asked to save a file after viewing it.
-If the variable is nil, the suer will only be asked to save if the
+If the variable is nil, the user will only be asked to save if the
 viewing is unsuccessful. Default is nil.")
 
 (defvar gnus-uu-ignore-default-view-rules nil
@@ -211,7 +211,7 @@ it nil.")
 Default is nil.")
 
 (defvar gnus-uu-correct-stripped-uucode nil
-  "*Non-nil means that gnus-uu will *try* to fix uuencoded files that have had traling spaces deleted. 
+  "*Non-nil means that gnus-uu will *try* to fix uuencoded files that have had trailing spaces deleted. 
 Default is nil.")
 
 (defvar gnus-uu-save-in-digest nil
@@ -331,7 +331,7 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-decode-unshar (n)
   "Unshars the current article."
   (interactive "P")
-  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n))
+  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n nil nil 'scan))
 
 (defun gnus-uu-decode-unshar-and-save (n dir)
   "Unshars and saves the current article."
@@ -340,7 +340,7 @@ The headers will be included in the sequence they are matched.")
 	 (read-file-name "Unshar and save in dir: "
 			 gnus-uu-default-dir
 			 gnus-uu-default-dir t)))
-  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir))
+  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir nil 'scan))
 
 (defun gnus-uu-decode-save (n file)
   "Saves the current article."
@@ -576,17 +576,34 @@ The headers will be included in the sequence they are matched.")
 
 ;; Internal functions.
 
-(defun gnus-uu-decode-with-method (method n &optional save not-insert)
+(defun gnus-uu-decode-with-method (method n &optional save not-insert scan)
   (gnus-uu-initialize)
   (if save (setq gnus-uu-default-dir save))
   (let ((articles (gnus-uu-get-list-of-articles n))
 	files)
     (setq files (gnus-uu-grab-articles articles method t))
+    (let ((gnus-current-article (car articles)))
+      (and scan (setq files (gnus-uu-scan-directory gnus-uu-work-dir))))
     (and save (gnus-uu-save-files files save))
     (setq files (gnus-uu-unpack-files files))
     (gnus-uu-add-file (mapcar (lambda (file) (cdr (assq 'name file))) files))
     (setq files (nreverse (gnus-uu-get-actions files)))
     (or not-insert (gnus-summary-insert-pseudos files))))
+
+;; Return a list of files in dir.
+(defun gnus-uu-scan-directory (dir)
+  (let ((files (directory-files dir t))
+	dirs out)
+    (while files
+      (cond ((string-match "/\\.\\.?$" (car files)))
+	    ((file-directory-p (car files))
+	     (setq dirs (cons (car files) dirs)))
+	    (t (setq out (cons (list (cons 'name (car files))
+				     (cons 'article gnus-current-article))
+			       out))))
+      (setq files (cdr files)))
+    (apply 'nconc out (mapcar (lambda (d) (gnus-uu-scan-directory d))
+			      dirs))))
 
 (defun gnus-uu-save-files (files dir)
   (let ((len (length files))
@@ -599,7 +616,8 @@ The headers will be included in the sequence they are matched.")
 			       (concat dir (file-name-nondirectory file))
 			     dir))
 	     (and (or (not (file-exists-p to-file))
-		      (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
+		      (gnus-y-or-n-p (format "%s exists; overwrite? "
+					     to-file)))
 		  (copy-file file to-file 1 t))))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
@@ -1441,20 +1459,21 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-initialize ()
   (setq gnus-uu-highest-article-number 1)
   (gnus-uu-check-for-generated-files)
-  (setq gnus-uu-tmp-dir (expand-file-name gnus-uu-tmp-dir))
-  (if (string-match "[^/]$" gnus-uu-tmp-dir) 
-      (setq gnus-uu-tmp-dir (concat gnus-uu-tmp-dir "/")))
+  (setq gnus-uu-tmp-dir (file-name-as-directory 
+			 (expand-file-name gnus-uu-tmp-dir)))
+
   (if (not (file-directory-p gnus-uu-tmp-dir))
       (error "Temp directory %s doesn't exist" gnus-uu-tmp-dir)
     (if (not (file-writable-p gnus-uu-tmp-dir))
 	(error "Temp directory %s can't be written to" gnus-uu-tmp-dir)))
+
   (setq gnus-uu-work-dir 
-	(concat gnus-uu-tmp-dir (make-temp-name "gnus")))
+	(make-temp-name (concat gnus-uu-tmp-dir "gnus")))
   (gnus-uu-add-file gnus-uu-work-dir)
   (if (not (file-directory-p gnus-uu-work-dir)) 
       (make-directory gnus-uu-work-dir))
   (set-file-modes gnus-uu-work-dir 448)
-  (setq gnus-uu-work-dir (concat gnus-uu-work-dir "/")))
+  (setq gnus-uu-work-dir (file-name-as-directory gnus-uu-work-dir)))
 
 ;; Kills the temporary uu buffers, kills any processes, etc.
 (defun gnus-uu-clean-up ()

@@ -417,7 +417,7 @@ START and END are markers to the start and end of the field."
 
 (defun custom-field-accept (field value &optional original)
   "Accept FIELD VALUE.  
-If optional ORIGINAL is non-nil, concider VALUE for the original value."
+If optional ORIGINAL is non-nil, consider VALUE for the original value."
   (funcall (custom-property (custom-field-custom field) 'accept) 
 	   field value original))
 
@@ -944,7 +944,7 @@ If the optional argument GET is non-nil, use that to get external data."
 ;; The Customization major mode and interactive commands. 
 
 (defvar custom-mode-map nil
-  "Keymap for Custum Mode.")
+  "Keymap for Custom Mode.")
 (if custom-mode-map
     nil
   (setq custom-mode-map (make-sparse-keymap))

@@ -89,7 +89,8 @@
 	  (setq article (car sequence))
 	  (setq file (nneething-file-name article))
 
-	  (if (file-exists-p file)
+	  (if (and (file-exists-p file)
+		   (> (nth 7 (file-attributes file)) 0))
 	      (progn
 		(insert (format "221 %d Article retrieved.\n" article))
 		(nneething-insert-head file)
@@ -296,19 +297,26 @@
     (setq case-fold-search nil)
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
-    (if (not (file-exists-p file))
-	()
-      (if (or (not (file-regular-p file))
-	      (progn
-		(nnheader-insert-head file)
-		(if (nnheader-article-p)
-		    (progn
-		      (delete-region (point) (point-max))
-		      nil))))
-	  (progn
-	    (erase-buffer)
-	    (nneething-make-head file)))
-      t)))
+    (cond 
+     ((not (file-exists-p file))
+      ;; The file do not exist. 
+      nil)
+     ((not (file-regular-p file))
+      ;; It's a dir, so we fudge a head.
+      (nneething-make-head file) t)
+     (t 
+      ;; We examine the file.
+      (nnheader-insert-head file)
+      (if (nnheader-article-p)
+	  (delete-region 
+	   (progn
+	     (goto-char (point-min))
+	     (or (and (search-forward "\n\n" nil t)
+		      (1- (point)))
+		 (point-max)))
+	   (point-max))
+	(erase-buffer)
+	(nneething-make-head file) t)))))
 
 (defun nneething-number-to-file (number)
   (car (rassq number nneething-map)))

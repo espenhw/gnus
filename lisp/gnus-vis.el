@@ -68,7 +68,7 @@ To check for marks, e.g. to underline replied articles, use
 (defvar gnus-header-face-alist '(("" bold italic))
   "Alist of headers and faces used for highlighting them.
 The entries in the list has the form `(REGEXP NAME CONTENT)', where
-REGEXP is a regeular expression matching the beginning of the header,
+REGEXP is a regular expression matching the beginning of the header,
 NAME is the face used for highlighting the header name and CONTENT is
 the face used for highlighting the header content. 
 
@@ -473,7 +473,7 @@ highlight-headers-follow-url-netscape:
      ["Hide citation" gnus-article-hide-citation t]
      ["Treat overstrike" gnus-article-treat-overstrike t]
      ["Remove carriage return" gnus-article-remove-cr t]
-     ["Remove quoted-unreadble" gnus-article-de-quoted-unreadable t]
+     ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
      ))
  )
 
@@ -560,7 +560,7 @@ highlight-headers-follow-url-netscape:
     ("matching" . gnus-group-list-matching)
     ("post" . gnus-group-post-news)
     ("mail" . gnus-group-mail)
-    ("new news" . gnus-group-get-new-news)
+    ("rescan" . gnus-group-get-new-news)
     ("browse foreign" . gnus-group-browse-foreign)
     ("exit" . gnus-group-exit)))
 

@@ -56,7 +56,7 @@ hook, use the variable `nntp-address'.")
 
 (defvar nntp-server-opened-hook nil
   "*Hook used for sending commands to the server at startup.  
-The default value is `nntp-send-mode-reader', whick makes an innd
+The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
 hook might be `nntp-send-authinfo', which will prompt for a password
 to allow posting from the server.  Note that this is only necessary to
@@ -200,7 +200,7 @@ instead call function `nntp-status-message' to get status message.")
    '(nntp-current-group "")))
 
 
-;;; Interface funtions.
+;;; Interface functions.
 
 (defun nntp-retrieve-headers (sequence &optional newsgroup server)
   "Retrieve the headers to the articles in SEQUENCE."

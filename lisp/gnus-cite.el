@@ -129,11 +129,11 @@ The faces are taken from `gnus-cite-face-list'.
 Attribution lines are highlighted with the sameface as the
 corresponding citation merged with `gnus-cite-attribution-face'.
 
-Text is concidered cited if at least `gnus-cite-minimum-match-count'
+Text is considered cited if at least `gnus-cite-minimum-match-count'
 lines matches `gnus-cite-prefix-regexp' with the same prefix.  
 
 Lines matching `gnus-cite-attribution-postfix' and perhaps
-`gnus-cite-attribution-prefix' are concidered attribution lines."
+`gnus-cite-attribution-prefix' are considered attribution lines."
   (interactive)
   ;; Create dark or light faces if necessary.
   (cond ((eq gnus-cite-face-list 'light)
