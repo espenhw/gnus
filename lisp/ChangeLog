@@ -1,3 +1,29 @@
+Mon Mar 27 18:31:05 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-catchup-to-here): Would mark everything as
+	read. 
+
+	* nnml.el (nnml-request-expire-articles): Max without apply.
+
+Mon Mar 27 12:16:37 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* gnus.el (gnus-no-groups-message): New variable.
+	(gnus-group-best-unread-group): Don't just to the current group.
+
+Mon Mar 27 11:18:40 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-kill.el (gnus-kill): Would remove all kill entries from
+	kill files. 
+
+	* gnus.el (gnus-post-news): Did not work from the group buffer. 
+	(gnus-score-load-file): Would unconditionally overwrite expunge
+	and mark levels.
+
+Mon Mar 27 11:13:43 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.41-0.44 released in quick succession. Fixed new range
+	operators.
+
 Sat Mar 25 05:05:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-compress-newsrc-assoc,
