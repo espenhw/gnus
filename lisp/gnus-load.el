@@ -264,8 +264,14 @@ to nil while on all other systems it defaults to t.")
 (defvar gnus-save-score nil
   "*If non-nil, save group scoring info.")
 
+(defvar gnus-use-undo t
+  "*If non-nil, allow undoing in Gnus group mode buffers.")
+
 (defvar gnus-use-adaptive-scoring nil
-  "*If non-nil, use some adaptive scoring scheme.")
+  "*If non-nil, use some adaptive scoring scheme.
+If a list, then the values `word' and `line' are meaningful.  The
+former will perform adaption on individual words in the subject
+header while `line' will perform adaption on several headers.")
 
 (defvar gnus-use-cache 'passive
   "*If nil, Gnus will ignore the article cache.
@@ -681,7 +687,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
       gnus-decode-rfc1522 gnus-article-show-all-headers
-      gnus-article-edit-mode)
+      gnus-article-edit-mode gnus-article-edit-article
+      gnus-article-edit-done)
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
       gnus-dribble-enter)
@@ -692,6 +699,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-move" :interactive t
       gnus-group-move-group-to-server gnus-change-server)
      ("gnus-logic" gnus-score-advanced)
+     ("gnus-undo" gnus-undo-mode gnus-undo-register)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm

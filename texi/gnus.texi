@@ -9708,14 +9708,15 @@ be used depends on what header you wish to perform the match on.
 @table @dfn
 
 @item From, Subject, References, Xref, Message-ID
-For most header types, there are the @code{r} and @code{R} (regexp) as
-well as @code{s} and @code{S} (substring) types and @code{e} and
-@code{E} (exact match) types.  If this element is not present, Gnus will
-assume that substring matching should be used.  @code{R} and @code{S}
-differ from the other two in that the matches will be done in a
-case-sensitive manner.  All these one-letter types are really just
-abbreviations for the @code{regexp}, @code{string} and @code{exact}
-types, which you can use instead, if you feel like.
+For most header types, there are the @code{r} and @code{R} (regexp), as
+well as @code{s} and @code{S} (substring) types, and @code{e} and
+@code{E} (exact match), and @code{w} (word match) types.  If this
+element is not present, Gnus will assume that substring matching should
+be used.  @code{R}, @code{S}, and @code{E} differ from the others in
+that the matches will be done in a case-sensitive manner.  All these
+one-letter types are really just abbreviations for the @code{regexp},
+@code{string}, @code{exact}, and @code{word} types, which you can use
+instead, if you feel like.
 
 @item Lines, Chars
 These two headers use different match types: @code{<}, @code{>},
@@ -9892,7 +9893,10 @@ When you read an article, or mark an article as read, or kill an
 article, you leave marks behind.  On exit from the group, Gnus can sniff
 these marks and add score elements depending on what marks it finds.
 You turn on this ability by setting @code{gnus-use-adaptive-scoring} to
-@code{t}. 
+@code{t} or @code{(line)}.  If you want score adaptively on separate
+words appearing in the subjects, you should set this variable to
+@code{(word)}.  If you want to use both adaptive methods, set this
+variable to @code{(word line)}.
 
 @vindex gnus-default-adaptive-score-alist
 To give you complete control over the scoring process, you can customize
@@ -9975,11 +9979,33 @@ the length of the match is less than
 this variable is @code{nil}, exact matching will always be used to avoid
 this problem.
 
+As mentioned above, you can adapt either on individual words or entire
+headers.  If you adapt on words, the
+@code{gnus-default-adaptive-word-score-alist} says what score each
+instance of a word should add given a mark.
+
+@lisp
+(setq gnus-default-adaptive-word-score-alist  
+      `((,gnus-read-mark . 30)
+        (,gnus-catchup-mark . -10)
+        (,gnus-killed-mark . -20)
+        (,gnus-del-mark . -15)))
+@end lisp
+
+This is the default value.  If you have adaption on words enabled, every
+word that appears in subjects of articles that are marked with
+@code{gnus-read-mark} will result in a score rule that increase the
+score with 30 points.
+
+After using this scheme for a while, it might be nice to write a
+@code{gnus-psychoanalyze-user} command to go through the rules and see
+what words you like and what words you don't like.  Or perhaps not.
+
 
 @node Home Score File
 @section Home Score File
 
-The score file where new score file entries will go is calle the
+The score file where new score file entries will go is called the
 @dfn{home score file}.  This is normally (and by default) the score file
 for the group itself.  For instance, the home score file for
 @samp{gnu.emacs.gnus} is @file{gnu.emacs.gnus.SCORE}.

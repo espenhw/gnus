@@ -315,6 +315,9 @@ server there that you can connect to.")
   (nntp-possibly-change-group nil server)
   (when (nntp-send-command "^[23].*\r?\n" "POST")
     (nntp-send-buffer "^[23].*\n")))
+
+(deffoo nntp-request-type (group article)
+  'news)
   
 ;;; Hooky functions.
 

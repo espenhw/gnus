@@ -1,3 +1,8 @@
+Sun Aug  4 07:15:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Score File Format): Addition.
+	(Adaptive Scoring): Addition.
+
 Sat Aug  3 17:35:36 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Group Parameters): Addition.

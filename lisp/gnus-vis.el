@@ -494,6 +494,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 ["Edit current score file" gnus-score-edit-current-scores t]
 	 ["Edit score file" gnus-score-edit-file t]
 	 ["Trace score" gnus-score-find-trace t]
+	 ["Find words" gnus-score-find-favuorite-words t]
 	 ["Rescore buffer" gnus-summary-rescore t]
 	 ["Increase score..." gnus-summary-increase-score t]
 	 ["Lower score..." gnus-summary-lower-score t]))))

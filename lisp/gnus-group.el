@@ -422,6 +422,8 @@ The following commands are available:
   (gnus-update-group-mark-positions)
   (gnus-make-local-hook 'post-command-hook)
   (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
+  (when gnus-use-undo
+    (gnus-undo-mode 1))
   (run-hooks 'gnus-group-mode-hook))
 
 (defun gnus-update-group-mark-positions ()
@@ -1097,13 +1099,13 @@ Returns whether the fetching was successful or not."
 					(cons (current-buffer) 'summary))))))
      gnus-newsrc-hashtb)
     (set-buffer gnus-group-buffer)
-    (or (gnus-check-server method)
-	(error "Unable to contact server: %s" (gnus-status-message method)))
+    (unless (gnus-check-server method)
+      (error "Unable to contact server: %s" (gnus-status-message method)))
     (if activate (or (gnus-request-group group)
 		     (error "Couldn't request group")))
     (condition-case ()
 	(gnus-group-read-group t t group)
-      (error nil)
+      ;(error nil)
       (quit nil))))
 
 (defun gnus-group-jump-to-group (group)

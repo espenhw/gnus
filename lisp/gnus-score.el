@@ -144,10 +144,34 @@ This variable allows the same syntax as `gnus-home-score-file'.")
 (defvar gnus-default-adaptive-score-alist  
   '((gnus-kill-file-mark)
     (gnus-unread-mark)
-    (gnus-read-mark (from  3) (subject  30))
+    (gnus-read-mark (from 3) (subject 30))
     (gnus-catchup-mark (subject -10))
     (gnus-killed-mark (from -1) (subject -20))
     (gnus-del-mark (from -2) (subject -15)))
+"*Alist of marks and scores.")
+
+(defvar gnus-ignored-adaptive-words
+  '("a" "i" "the" "to" "of" "and" "in" "is" "it" "for" "that" "if" "you"
+    "this" "be" "on" "with" "not" "have" "are" "or" "as" "from" "can"
+    "but" "by" "at" "an" "will" "no" "all" "was" "do" "there" "my" "one"
+    "so" "we" "they" "what" "would" "any" "which" "about" "get" "your"
+    "use" "some" "me" "then" "name" "like" "out" "when" "up" "time"
+    "other" "more" "only" "just" "end" "also" "know" "how" "new" "should"
+    "been" "than" "them" "he" "who" "make" "may" "people" "these" "now"
+    "their" "here" "into" "first" "could" "way" "had" "see" "work" "well"
+    "were" "two" "very" "where" "while" "us" "because" "good" "same"
+    "even" "much" "most" "many" "such" "long" "his" "over" "last" "since"
+    "right" "before" "our" "without" "too" "those" "why" "must" "part"
+    "being" "current" "back" "still" "go" "point" "value" "each" "did"
+    "both" "true" "off" "say" "another" "state" "might" "under" "start"
+    "try")
+  "List of words to be ignored when doing adaptive word scoring.")
+  
+(defvar gnus-default-adaptive-word-score-alist  
+  `((,gnus-read-mark . 30)
+    (,gnus-catchup-mark . -10)
+    (,gnus-killed-mark . -20)
+    (,gnus-del-mark . -15))
 "*Alist of marks and scores.")
 
 (defvar gnus-score-mimic-keymap nil
@@ -288,6 +312,7 @@ of the last successful match.")
   "f" gnus-score-edit-file
   "F" gnus-score-flush-cache
   "t" gnus-score-find-trace
+  "w" gnus-score-find-favourite-words
   "C" gnus-score-customize)
 
 ;; Summary score file commands
@@ -1138,15 +1163,11 @@ SCORE is the score to add."
 	       (string-match gnus-score-uncacheable-files file)
 	       (gnus-score-remove-from-cache file))))
       (kill-buffer (current-buffer)))))
-  
-(defun gnus-score-headers (score-files &optional trace)
-  ;; Score `gnus-newsgroup-headers'.
-  (let (scores news)
-    ;; PLM: probably this is not the best place to clear orphan-score
-    (setq gnus-orphan-score nil)
-    (setq gnus-scores-articles nil)
-    (setq gnus-scores-exclude-files nil)
-    ;; Load the score files.
+
+(defun gnus-score-load-files (score-files)
+  "Load all score files in SCORE-FILES."
+  ;; Load the score files.
+  (let (scores)
     (while score-files
       (if (stringp (car score-files))
 	  ;; It is a string, which means that it's a score file name,
@@ -1159,12 +1180,22 @@ SCORE is the score to add."
     ;; Prune the score files that are to be excluded, if any.
     (when gnus-scores-exclude-files
       (let ((s scores)
-	    c type)
+	    c)
 	(while s
 	  (and (setq c (rassq (car s) gnus-score-cache))
 	       (member (car c) gnus-scores-exclude-files)
 	       (setq scores (delq (car s) scores)))
 	  (setq s (cdr s)))))
+    scores))
+
+(defun gnus-score-headers (score-files &optional trace)
+  ;; Score `gnus-newsgroup-headers'.
+  (let (scores news)
+    ;; PLM: probably this is not the best place to clear orphan-score
+    (setq gnus-orphan-score nil
+	  gnus-scores-articles nil
+	  gnus-scores-exclude-files nil
+	  scores (gnus-score-load-files score-files))
     (setq news scores)
     ;; Do the scoring.
     (while news
@@ -1644,7 +1675,8 @@ SCORE is the score to add."
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	;; gnus-score-index is used as a free variable.
-	alike last this art entries alist articles scores fuzzy)
+	alike last this art entries alist articles scores 
+	fuzzies arts words kill)
 
     ;; Sorting the articles costs os O(N*log N) but will allow us to
     ;; only match with each unique header.  Thus the actual matching
@@ -1656,182 +1688,227 @@ SCORE is the score to add."
 	  articles gnus-scores-articles)
 
     (erase-buffer)
-    (while articles
-      (setq art (car articles)
-	    this (aref (car art) gnus-score-index)
-	    articles (cdr articles))
+    (while (setq art (pop articles))
+      (setq this (aref (car art) gnus-score-index))
       (if (equal last this)
 	  ;; O(N*H) cons-cells used here, where H is the number of
 	  ;; headers.
 	  (setq alike (cons art alike))
-	(if last
-	    (progn
-	      ;; Insert the line, with a text property on the
-	      ;; terminating newline referring to the articles with
-	      ;; this line.
-	      (insert last ?\n)
-	      (put-text-property (1- (point)) (point) 'articles alike)))
+	(when last
+	  ;; Insert the line, with a text property on the
+	  ;; terminating newline referring to the articles with
+	  ;; this line.
+	  (insert last ?\n)
+	  (put-text-property (1- (point)) (point) 'articles alike))
 	(setq alike (list art)
 	      last this)))
-    (and last				; Bwadr, duplicate code.
-	 (progn
-	   (insert last ?\n)			
-	   (put-text-property (1- (point)) (point) 'articles alike)))
+    (when last				; Bwadr, duplicate code.
+      (insert last ?\n)			
+      (put-text-property (1- (point)) (point) 'articles alike))
 
-    ;; Find ordinary matches.
-    (setq scores score-list) 
-    (while scores
-      (setq alist (car scores)
-	    scores (cdr scores)
+    ;; Go through all the score alists and pick out the entries
+    ;; for this header.
+    (while score-list
+      (setq alist (pop score-list)
+	    ;; There's only one instance of this header for
+	    ;; each score alist.
 	    entries (assoc header alist))
       (while (cdr entries)		;First entry is the header index.
-	(let* ((rest (cdr entries))		
-	       (kill (car rest))
+	(let* ((kill (cadr entries))
 	       (match (nth 0 kill))
 	       (type (or (nth 3 kill) 's))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
 	       (date (nth 2 kill))
 	       (found nil)
 	       (mt (aref (symbol-name type) 0))
-	       (case-fold-search 
-		(not (or (= mt ?R) (= mt ?S) (= mt ?E) (= mt ?F))))
+	       (case-fold-search (not (memq mt '(?R ?S ?E ?F))))
 	       (dmt (downcase mt))
 	       (search-func 
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
-		      (t (error "Illegal match type: %s" type))))
-	       arts art)
-	  (if (= dmt ?f)
-	      (setq fuzzy t)
-	    ;; Do non-fuzzy matching.
+		      (t (error "Illegal match type: %s" type)))))
+	  (cond
+	   ;; Fuzzy matches.  We save these for later.
+	   ((= dmt ?f)
+	    (push entries fuzzies))
+	   ;; Word matches.  Save these for even later.
+	   ((= dmt ?w)
+	    (push entries words))
+	   ;; Exact matches.
+	   ((= dmt ?e)
+	    ;; Do exact matching.
 	    (goto-char (point-min))
-	    (if (= dmt ?e)
-		;; Do exact matching.
-		(while (and (not (eobp)) 
-			    (funcall search-func match nil t))
-		  (and (= (progn (beginning-of-line) (point))
-			  (match-beginning 0))
-		       (= (progn (end-of-line) (point))
-			  (match-end 0))
-		       (progn
-			 (setq found (setq arts (get-text-property 
-						 (point) 'articles)))
-			 ;; Found a match, update scores.
-			 (if trace
-			     (while arts
-			       (setq art (car arts)
-				     arts (cdr arts))
-			       (setcdr art (+ score (cdr art)))
-			       (setq gnus-score-trace
-				     (cons
-				      (cons
-				       (car-safe
-					(rassq alist gnus-score-cache))
-				       kill)
-				      gnus-score-trace)))
-			   (while arts
-			     (setq art (car arts)
-				   arts (cdr arts))
-			     (setcdr art (+ score (cdr art)))))))
-		  (forward-line 1))
-	      ;; Do regexp and substring matching.
-	      (and (string= match "") (setq match "\n"))
-	      (while (and (not (eobp))
-			  (funcall search-func match nil t))
-		(goto-char (match-beginning 0))
-		(end-of-line)
-		(setq found (setq arts (get-text-property (point) 'articles)))
-		;; Found a match, update scores.
-		(if trace
-		    (while arts
-		      (setq art (pop arts))
-		      (setcdr art (+ score (cdr art)))
-		      (push (cons
-			      (car-safe (rassq alist gnus-score-cache))
-			      kill)
-			    gnus-score-trace))
-		  (while arts
-		    (setq art (pop arts))
-		    (setcdr art (+ score (cdr art)))))
-		(forward-line 1)))
-	    ;; Update expire date
+	    (while (and (not (eobp)) 
+			(funcall search-func match nil t))
+	      ;; Is it really exact?
+	      (and (eolp)
+		   (= (gnus-point-at-bol) (match-beginning 0))
+		   ;; Yup.
+		   (progn
+		     (setq found (setq arts (get-text-property 
+					     (point) 'articles)))
+		     ;; Found a match, update scores.
+		     (if trace
+			 (while (setq art (pop arts))
+			   (setcdr art (+ score (cdr art)))
+			   (setq gnus-score-trace
+				 (cons
+				  (cons
+				   (car-safe
+				    (rassq alist gnus-score-cache))
+				   kill)
+				  gnus-score-trace)))
+		       (while (setq art (pop arts))
+			 (setcdr art (+ score (cdr art)))))))
+	      (forward-line 1)))
+	   ;; Regexp and substring matching.
+	   (t
+	    (goto-char (point-min))
+	    (when (string= match "")
+	      (setq match "\n"))
+	    (while (and (not (eobp))
+			(funcall search-func match nil t))
+	      (goto-char (match-beginning 0))
+	      (end-of-line)
+	      (setq found (setq arts (get-text-property (point) 'articles)))
+	      ;; Found a match, update scores.
+	      (if trace
+		  (while (setq art (pop arts))
+		    (setcdr art (+ score (cdr art)))
+		    (push (cons (car-safe (rassq alist gnus-score-cache)) kill)
+			  gnus-score-trace))
+		(while (setq art (pop arts))
+		  (setcdr art (+ score (cdr art)))))
+	      (forward-line 1))))
+	  ;; Update expiry date
+	  (if trace
+	      (setq entries (cdr entries))
 	    (cond 
-	     ((null date))		;Permanent entry.
-	     ((and found gnus-update-score-entry-dates) ;Match, update date.
+	     ;; Permanent entry.
+	     ((null date)
+	      (setq entries (cdr entries)))
+	     ;; We have a match, so we update the date.
+	     ((and found gnus-update-score-entry-dates)
 	      (gnus-score-set 'touched '(t) alist)
-	      (setcar (nthcdr 2 kill) now))
-	     ((and expire (< date expire)) ;Old entry, remove.
+	      (setcar (nthcdr 2 kill) now)
+	      (setq entries (cdr entries)))
+	     ;; This entry has expired, so we remove it.
+	     ((and expire (< date expire))
 	      (gnus-score-set 'touched '(t) alist)
-	      (setcdr entries (cdr rest))
-	      (setq rest entries))))
-	  (setq entries rest))))
+	      (setcdr entries (cddr entries)))
+	     ;; No match; go to next entry.
+	     (t
+	      (setq entries (cdr entries))))))))
 
     ;; Find fuzzy matches.
-    (when fuzzy
-      (setq scores score-list)
+    (when fuzzies
+      ;; Simplify the entire buffer for easy matching.
       (gnus-simplify-buffer-fuzzy)
-      (while scores
-	(setq alist (car scores)
-	      scores (cdr scores)
-	      entries (assoc header alist))
-	(while (cdr entries)		;First entry is the header index.
-	  (let* ((rest (cdr entries))		
-		 (kill (car rest))
-		 (match (nth 0 kill))
-		 (type (or (nth 3 kill) 's))
-		 (score (or (nth 1 kill) gnus-score-interactive-default-score))
+      (while (setq kill (cadr fuzzies))
+	(let* ((match (nth 0 kill))
+	       (type (nth 3 kill))
+	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
+	       (date (nth 2 kill))
+	       (mt (aref (symbol-name type) 0))
+	       (case-fold-search (not (= mt ?F)))
+	       found)
+	  (goto-char (point-min))
+	  (while (and (not (eobp)) 
+		      (search-forward match nil t))
+	    (when (and (= (gnus-point-at-bol) (match-beginning 0))
+		       (eolp))
+	      (setq found (setq arts (get-text-property (point) 'articles)))
+	      (if trace
+		  (while (setq art (pop arts))
+		    (setcdr art (+ score (cdr art)))
+		    (push (cons
+			   (car-safe (rassq alist gnus-score-cache)) kill)
+			  gnus-score-trace))
+		;; Found a match, update scores.
+		(while (setq art (pop arts))
+		  (setcdr art (+ score (cdr art))))))
+	    (forward-line 1))
+	  ;; Update expiry date
+	  (if trace
+	      (setq entries (cdr entries))
+	    (cond
+	     ;; Permanent.
+	     ((null date)
+	      (setq fuzzies (cdr fuzzies)))
+	     ;; Match, update date.
+	     ((and found gnus-update-score-entry-dates)
+	      (gnus-score-set 'touched '(t) alist)
+	      (setcar (nthcdr 2 kill) now)
+	      (setq fuzzies (cdr fuzzies)))
+	     ;; Old entry, remove.
+	     ((and expire (< date expire)) 
+	      (gnus-score-set 'touched '(t) alist)
+	      (setcdr fuzzies (cddr fuzzies)))
+	     (t
+	      (setq fuzzies (cdr fuzzies))))))))
+
+    (when words
+      ;; Enter all words into the hashtb.
+      (let ((hashtb (gnus-make-hashtable
+		     (* 10 (count-lines (point-min) (point-max))))))
+	(gnus-enter-score-words-into-hashtb hashtb)
+	(while (setq kill (cadr words))
+	  (let* ((score (or (nth 1 kill) gnus-score-interactive-default-score))
 		 (date (nth 2 kill))
-		 (found nil)
-		 (mt (aref (symbol-name type) 0))
-		 (case-fold-search (not (= mt ?F)))
-		 (dmt (downcase mt))
-		 arts art)
-	    (when (= dmt ?f)
-	      (goto-char (point-min))
-	      (while (and (not (eobp)) 
-			  (search-forward match nil t))
-		(when (and (= (progn (beginning-of-line) (point))
-			      (match-beginning 0))
-			   (= (progn (end-of-line) (point))
-			      (match-end 0)))
-		  (setq found (setq arts (get-text-property 
-					  (point) 'articles)))
-		  ;; Found a match, update scores.
-		  (if trace
-		      (while arts
-			(setq art (pop arts))
-			(setcdr art (+ score (cdr art)))
-			(push (cons
-			       (car-safe (rassq alist gnus-score-cache))
-			       kill)
-			      gnus-score-trace))
-		    (while arts
-		      (setq art (pop arts))
-		      (setcdr art (+ score (cdr art))))))
-		(forward-line 1))
-	      ;; Update expire date
-	      (unless trace
-		(cond 
-		 ((null date))		;Permanent entry.
-		 ((and found gnus-update-score-entry-dates) ;Match, update date.
-		  (gnus-score-set 'touched '(t) alist)
-		  (setcar (nthcdr 2 kill) now))
-		 ((and expire (< date expire)) ;Old entry, remove.
-		  (gnus-score-set 'touched '(t) alist)
-		  (setcdr entries (cdr rest))
-		  (setq rest entries)))))
-	    (setq entries rest))))))
-  nil)
+		 found)
+	    (when (setq arts (intern-soft (nth 0 kill) hashtb))
+	      (setq found t)
+	      (if trace
+		  (while (setq art (pop arts))
+		    (setcdr art (+ score (cdr art)))
+		    (push (cons
+			   (car-safe (rassq alist gnus-score-cache)) kill)
+			  gnus-score-trace))
+		;; Found a match, update scores.
+		(while (setq art (pop arts))
+		  (setcdr art (+ score (cdr art))))))
+	    ;; Update expiry date
+	    (if trace
+		(setq entries (cdr entries))
+	      (cond
+	       ;; Permanent.
+	       ((null date)
+		(setq words (cdr words)))
+	       ;; Match, update date.
+	       ((and found gnus-update-score-entry-dates)
+		(gnus-score-set 'touched '(t) alist)
+		(setcar (nthcdr 2 kill) now)
+		(setq words (cdr words)))
+	       ;; Old entry, remove.
+	       ((and expire (< date expire)) 
+		(gnus-score-set 'touched '(t) alist)
+		(setcdr words (cddr words)))
+	       (t
+		(setq words (cdr words)))))))))
+    nil))
+
+(defun gnus-enter-score-words-into-hashtb (hashtb)
+  ;; Find all the words in the buffer and enter them into
+  ;; the hashtable.
+  (let (word)
+    (goto-char (point-min))
+    (while (re-search-forward "\\b\\w+\\b" nil t)
+      (gnus-sethash
+       (setq word (downcase (buffer-substring
+			     (match-beginning 0) (match-end 0))))
+       (append (get-text-property (gnus-point-at-eol) 'articles)
+	       (gnus-gethash word hashtb))
+       hashtb))
+    ;; Make all the ignorable words ignored.
+    (let ((ignored gnus-ignored-adaptive-words))
+      (while ignored
+	(gnus-sethash (pop ignored) nil hashtb)))))
 
 (defun gnus-score-string< (a1 a2)
   ;; Compare headers in articles A2 and A2.
   ;; The header index used is the free variable `gnus-score-index'.
   (string-lessp (aref (car a1) gnus-score-index)
 		(aref (car a2) gnus-score-index)))
-
-(defun gnus-score-build-cons (article)
-  ;; Build a `gnus-newsgroup-scored' type cons from ARTICLE.
-  (cons (mail-header-number (car article)) (cdr article)))
 
 (defun gnus-current-score-file-nondirectory (&optional score-file)
   (let ((score-file (or score-file gnus-current-score-file)))
@@ -1840,69 +1917,112 @@ SCORE is the score to add."
       "none")))
 
 (defun gnus-score-adaptive ()
-  (save-excursion
-    (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
-	   (alist malist)
-	   (date (current-time-string)) 
-	   (data gnus-newsgroup-data)
-	   elem headers match)
-      ;; First we transform the adaptive rule alist into something
-      ;; that's faster to process.
-      (while malist
-	(setq elem (car malist))
-	(if (symbolp (car elem))
-	    (setcar elem (symbol-value (car elem))))
-	(setq elem (cdr elem))
-	(while elem
-	  (setcdr (car elem) 
-		  (cons (if (eq (caar elem) 'followup)
-			    "references"
-			  (symbol-name (caar elem)))
-			(cdar elem)))
-	  (setcar (car elem) 
-		  `(lambda (h)
-		     (,(intern 
-			(concat "mail-header-" 
-				(if (eq (caar elem) 'followup)
-				    "message-id"
-				  (downcase (symbol-name (caar elem))))))
-		      h)))
-	  (setq elem (cdr elem)))
-	(setq malist (cdr malist)))
-      ;; We change the score file to the adaptive score file.
+  "Create adaptive score rules for this newsgroup."
+  (when gnus-use-adaptive-scoring
+    ;; We change the score file to the adaptive score file.
+    (save-excursion
+      (set-buffer gnus-summary-buffer)
+      (gnus-score-load-file 
+       (or gnus-newsgroup-adaptive-score-file
+	   (gnus-score-file-name 
+	    gnus-newsgroup-name gnus-adaptive-file-suffix))))
+    (cond
+     ;; Perform ordinary line scoring.
+     ((or (not (listp gnus-use-adaptive-scoring))
+	  (memq 'line gnus-use-adaptive-scoring))
       (save-excursion
-	(set-buffer gnus-summary-buffer)
-	(gnus-score-load-file 
-	 (or gnus-newsgroup-adaptive-score-file
-	     (gnus-score-file-name 
-	      gnus-newsgroup-name gnus-adaptive-file-suffix))))
-      ;; The we score away.
-      (while data
-	(setq elem (cdr (assq (gnus-data-mark (car data)) alist)))
-	(if (or (not elem)
-		(gnus-data-pseudo-p (car data)))
-	    ()
-	  (when (setq headers (gnus-data-header (car data)))
-	    (while elem 
-	      (setq match (funcall (caar elem) headers))
-	      (gnus-summary-score-entry 
-	       (nth 1 (car elem)) match
-	       (cond
-		((numberp match)
-		 '=)
-		((equal (nth 1 (car elem)) "date")
-		 'a)
-		(t
-		 ;; Whether we use substring or exact matches are controlled
-		 ;; here.  
-		 (if (or (not gnus-score-exact-adapt-limit)
-			 (< (length match) gnus-score-exact-adapt-limit))
-		     'e 
-		   (if (equal (nth 1 (car elem)) "subject")
-		       'f 's))))
-	       (nth 2 (car elem)) date nil t)
-	      (setq elem (cdr elem)))))
-	(setq data (cdr data))))))
+	(let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
+	       (alist malist)
+	       (date (current-time-string)) 
+	       (data gnus-newsgroup-data)
+	       elem headers match)
+	  ;; First we transform the adaptive rule alist into something
+	  ;; that's faster to process.
+	  (while malist
+	    (setq elem (car malist))
+	    (if (symbolp (car elem))
+		(setcar elem (symbol-value (car elem))))
+	    (setq elem (cdr elem))
+	    (while elem
+	      (setcdr (car elem) 
+		      (cons (if (eq (caar elem) 'followup)
+				"references"
+			      (symbol-name (caar elem)))
+			    (cdar elem)))
+	      (setcar (car elem) 
+		      `(lambda (h)
+			 (,(intern 
+			    (concat "mail-header-" 
+				    (if (eq (caar elem) 'followup)
+					"message-id"
+				      (downcase (symbol-name (caar elem))))))
+			  h)))
+	      (setq elem (cdr elem)))
+	    (setq malist (cdr malist)))
+	  ;; Then we score away.
+	  (while data
+	    (setq elem (cdr (assq (gnus-data-mark (car data)) alist)))
+	    (if (or (not elem)
+		    (gnus-data-pseudo-p (car data)))
+		()
+	      (when (setq headers (gnus-data-header (car data)))
+		(while elem 
+		  (setq match (funcall (caar elem) headers))
+		  (gnus-summary-score-entry 
+		   (nth 1 (car elem)) match
+		   (cond
+		    ((numberp match)
+		     '=)
+		    ((equal (nth 1 (car elem)) "date")
+		     'a)
+		    (t
+		     ;; Whether we use substring or exact matches is
+		     ;; controlled here.  
+		     (if (or (not gnus-score-exact-adapt-limit)
+			     (< (length match) gnus-score-exact-adapt-limit))
+			 'e 
+		       (if (equal (nth 1 (car elem)) "subject")
+			   'f 's))))
+		   (nth 2 (car elem)) date nil t)
+		  (setq elem (cdr elem)))))
+	    (setq data (cdr data))))))
+
+     ;; Perform adaptive word scoring.
+     ((memq 'word gnus-use-adaptive-scoring)
+      (nnheader-temp-write nil
+	(let* ((hashtb (gnus-make-hashtable 1000))
+	       (date (current-time-string))
+	       (data gnus-newsgroup-data)
+	       word d score)
+	  ;; Go through all articles.
+	  (while (setq d (pop data))
+	    (when (setq score (cdr (assq 
+				    (gnus-data-mark d)
+				    gnus-default-adaptive-word-score-alist)))
+	      ;; This article has a mark that should lead to
+	      ;; adaptive word rules, so we insert the subject
+	      ;; and find all words in that string.
+	      (insert (mail-header-subject (gnus-data-header d)))
+	      (downcase-region (point-min) (point-max))
+	      (goto-char (point-min))
+	      (while (re-search-forward "\\b\\w+\\b" nil t)
+		;; Put the word and score into the hashtb.
+		(gnus-sethash (setq word (match-string 0))
+			      (+ (or (gnus-gethash word hashtb) 0) score)
+			      hashtb))
+	      (erase-buffer)))
+	  ;; Make all the ignorable words ignored.
+	  (let ((ignored gnus-ignored-adaptive-words))
+	    (while ignored
+	      (gnus-sethash (pop ignored) nil hashtb)))
+	  ;; Now we have all the words and scores, so we
+	  ;; add these rules to the ADAPT file.
+	  (mapatoms
+	   (lambda (word)
+	     (gnus-summary-score-entry
+	      "subject" (symbol-name word) 'w (symbol-value word)
+	      date))
+	   hashtb)))))))
 
 (defun gnus-score-edit-done ()
   (let ((bufnam (buffer-file-name (current-buffer)))
@@ -1917,25 +2037,56 @@ SCORE is the score to add."
   (let ((gnus-newsgroup-headers
 	 (list (gnus-summary-article-header)))
 	(gnus-newsgroup-scored nil)
-	(buf (current-buffer))
 	trace)
-    (when (get-buffer "*Gnus Scores*")
-      (save-excursion
-	(set-buffer "*Gnus Scores*")
-	(erase-buffer)))
+    (save-excursion
+      (nnheader-set-temp-buffer "*Score Trace*"))
     (setq gnus-score-trace nil)
     (gnus-possibly-score-headers 'trace)
     (if (not (setq trace gnus-score-trace))
 	(gnus-error 1 "No score rules apply to the current article.")
-      (pop-to-buffer "*Gnus Scores*")
+      (set-buffer "*Score Trace*")
       (gnus-add-current-to-buffer-list)
-      (erase-buffer)
       (while trace
 	(insert (format "%S  ->  %s\n" (cdar trace)
 			(file-name-nondirectory (caar trace))))
 	(setq trace (cdr trace)))
       (goto-char (point-min))
-      (pop-to-buffer buf))))
+      (gnus-configure-windows 'score-trace))))
+
+(defun gnus-score-find-favourite-words ()
+  "List words used in scoring."
+  (interactive)
+  (let ((alists (gnus-score-load-files (gnus-all-score-files)))
+	alist rule rules)
+    ;; Go through all the score alists for this group
+    ;; and find all `w' rules.
+    (while (setq alist (pop alists))
+      (when (and (stringp (setq rule (pop alist)))
+		 (equal "subject" (downcase (pop rule))))
+	(while rule
+	  (when (memq (nth 3 (car rule)) '(w W word Word))
+	    (push (cons (or (nth 1 rule) gnus-score-interactive-default-score)
+			(car rule))
+		  rules))
+	  (pop rule))))
+    (setq rules (sort rules (lambda (r1 r2)
+			      (string-lessp (cdr r1) (cdr r2)))))
+    ;; Add up words that have appeared several times.
+    (let ((r rules))
+      (while (cdr r)
+	(if (equal (cdar r) (cdadr r))
+	    (progn
+	      (setcar (car r) (+ (caar r) (caadr r)))
+	      (setcdr r (cddr r)))
+	  (pop r))))
+    ;; Insert the words.
+    (nnheader-set-temp-buffer "*Score Words*")
+    (setq rules (sort rules (lambda (r1 r2) (> (car r1) (car r2)))))
+    (while rules
+      (insert (format "%-5d: %s\n" (caar rules) (cdar rules)))
+      (pop rules))
+    (gnus-add-current-to-buffer-list)
+    (gnus-configure-windows 'score-words)))
 
 (defun gnus-summary-rescore ()
   "Redo the entire scoring process in the current summary."
@@ -2220,7 +2371,8 @@ The list is determined from the variable gnus-score-file-alist."
 	    (cons (cons group score-files) gnus-score-file-alist-cache))
       score-files)))
 
-(defun gnus-possibly-score-headers (&optional trace)
+(defun gnus-all-score-files ()
+  "Return a list of all score files for the current group."
   (let ((funcs gnus-score-find-score-files-function)
 	(group gnus-newsgroup-name)
 	score-files)
@@ -2251,12 +2403,17 @@ The list is determined from the variable gnus-score-file-alist."
     ;; Add any home score files.
     (let ((home (gnus-home-score-file group)))
       (when home
-	(setq score-files (nconc score-files (list home)))))
+	(push home score-files)))
     ;; Check whether there is a `score-file' group parameter.
     (let ((param-file (gnus-group-get-parameter group 'score-file)))
       (when param-file
-	(setq score-files (nconc score-files (list param-file)))))
+	(push param-file score-files)))
     ;; Do the scoring if there are any score files for this group.
+    score-files))
+    
+(defun gnus-possibly-score-headers (&optional trace)
+  "Do scoring if scoring is required."
+  (let ((score-files (gnus-all-score-files)))
     (when score-files
       (gnus-score-headers score-files trace))))
 
@@ -2335,17 +2492,22 @@ If ADAPT, return the home adaptive file instead."
 (defun gnus-hierarchial-home-score-file (group)
   "Return the score file of the top-level hierarchy of GROUP."
   (if (string-match "^[^.]+\\." group)
-      (concat (match-string 0 group) "all." gnus-score-file-suffix)
+      (concat (match-string 0 group) gnus-score-file-suffix)
     ;; Group name without any dots.
-    (concat group ".all." gnus-score-file-suffix)))
+    (concat group "." gnus-score-file-suffix)))
       
 (defun gnus-hierarchial-home-adapt-file (group)
   "Return the adapt file of the top-level hierarchy of GROUP."
   (if (string-match "^[^.]+\\." group)
-      (concat (match-string 0 group) "all." gnus-adaptive-file-suffix)
+      (concat (match-string 0 group) gnus-adaptive-file-suffix)
     ;; Group name without any dots.
-    (concat group ".all." gnus-adaptive-file-suffix)))
-      
+    (concat group "." gnus-adaptive-file-suffix)))
+
+;;;
+;;; Adaptive word scoring
+;;;
+
+
 (provide 'gnus-score)
 
 ;;; gnus-score.el ends here

@@ -495,8 +495,8 @@ Timezone package is used."
 (defmacro gnus-group-real-name (group)
   "Find the real name of a foreign newsgroup."
   `(let ((gname ,group))
-     (if (string-match ":[^:]+$" gname)
-	 (substring gname (1+ (match-beginning 0)))
+     (if (string-match "^[^:]+:" gname)
+	 (substring gname (match-end 0))
        gname)))
 
 (defun gnus-make-sort-function (funs)

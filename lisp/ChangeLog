@@ -1,3 +1,47 @@
+Mon Aug  5 01:12:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-request-type): Defined again.
+
+Mon Aug  5 01:01:15 1996  Ralph Schleicher  <rs@purple.ul.bawue.de>
+
+	* gnus-score.el (gnus-ignored-adaptive-words): New value.
+
+Mon Aug  5 00:12:54 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-group-real-name): Tweaked definition.
+
+	* gnus-eform.el (gnus-edit-form-done): Didn't call the right
+	function. 
+
+Sun Aug  4 23:30:52 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-load-files): Returned nil.
+
+Sun Aug  4 06:11:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-load.el (gnus-use-undo): New variable.
+
+	* gnus-undo.el: New file.
+
+	* gnus-score.el (gnus-default-adaptive-word-score-alist): New
+	variable. 
+	(gnus-score-adaptive): Adaptivity on words.
+	(gnus-ignored-adaptive-words): New variable.
+	(gnus-all-score-files): Made into own function.
+	(gnus-score-load-files): Ditto.
+	(gnus-score-find-favourite-words): New command and keystroke.
+
+	* gnus-load.el (gnus-use-adaptive-scoring): Doc fix.
+
+	* gnus-score.el (gnus-enter-score-words-into-hashtb): New
+	function. 
+	(gnus-score-build-cons): Removed.
+	(gnus-score-string): Score words.
+
+Sun Aug  4 01:33:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.5 is released.
+
 Sun Aug  4 00:17:51 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nntp.el (nntp-wait-for): Goto point-max before inserting.

@@ -4771,21 +4771,19 @@ If ALL, mark even excluded ticked and dormants as read."
 	 (gnus-summary-hide-all-threads))
     ;; Try to return to the article you were at, or one in the
     ;; neighborhood.
-    (if data
-	;; We try to find some article after the current one.
-	(while data
-	  (and (gnus-summary-goto-subject
-		(gnus-data-number (car data)) nil t)
-	       (setq data nil
-		     found t))
-	  (setq data (cdr data))))
-    (or found
-	;; If there is no data, that means that we were after the last
-	;; article.  The same goes when we can't find any articles
-	;; after the current one.
-	(progn
-	  (goto-char (point-max))
-	  (gnus-summary-find-prev)))
+    (when data
+      ;; We try to find some article after the current one.
+      (while data
+	(when (gnus-summary-goto-subject (gnus-data-number (car data)) nil t)
+	  (setq data nil
+		found t))
+	(setq data (cdr data))))
+    (unless found
+      ;; If there is no data, that means that we were after the last
+      ;; article.  The same goes when we can't find any articles
+      ;; after the current one.
+      (goto-char (point-max))
+      (gnus-summary-find-prev))
     ;; We return how many articles were removed from the summary
     ;; buffer as a result of the new limit.
     (- total (length gnus-newsgroup-data))))
@@ -6361,36 +6359,36 @@ The number of articles marked as read is returned."
   (interactive "P")
   (gnus-set-global-variables)
   (prog1
-      (if (or quietly
-	      (not gnus-interactive-catchup) ;Without confirmation?
-	      gnus-expert-user
-	      (gnus-y-or-n-p
-	       (if all
-		   "Mark absolutely all articles as read? "
-		 "Mark all unread articles as read? ")))
-	  (if (and not-mark
-		   (not gnus-newsgroup-adaptive)
-		   (not gnus-newsgroup-auto-expire))
-	      (progn
-		(when all
-		  (setq gnus-newsgroup-marked nil
-			gnus-newsgroup-dormant nil))
-		(setq gnus-newsgroup-unreads nil))
-	    ;; We actually mark all articles as canceled, which we
-	    ;; have to do when using auto-expiry or adaptive scoring.
-	    (gnus-summary-show-all-threads)
-	    (if (gnus-summary-first-subject (not all))
-		(while (and
-			(if to-here (< (point) to-here) t)
-			(gnus-summary-mark-article-as-read gnus-catchup-mark)
-			(gnus-summary-find-next (not all)))))
-	    (unless to-here
+      (when (or quietly
+		(not gnus-interactive-catchup) ;Without confirmation?
+		gnus-expert-user
+		(gnus-y-or-n-p
+		 (if all
+		     "Mark absolutely all articles as read? "
+		   "Mark all unread articles as read? ")))
+	(if (and not-mark
+		 (not gnus-newsgroup-adaptive)
+		 (not gnus-newsgroup-auto-expire))
+	    (progn
+	      (when all
+		(setq gnus-newsgroup-marked nil
+		      gnus-newsgroup-dormant nil))
 	      (setq gnus-newsgroup-unreads nil))
-	    (gnus-set-mode-line 'summary)))
+	  ;; We actually mark all articles as canceled, which we
+	  ;; have to do when using auto-expiry or adaptive scoring.
+	  (gnus-summary-show-all-threads)
+	  (when (gnus-summary-first-subject (not all))
+	    (while (and
+		    (if to-here (< (point) to-here) t)
+		    (gnus-summary-mark-article-as-read gnus-catchup-mark)
+		    (gnus-summary-find-next (not all)))))
+	  (unless to-here
+	    (setq gnus-newsgroup-unreads nil))
+	  (gnus-set-mode-line 'summary)))
     (let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
-      (if (and (not to-here) (eq 'nnvirtual (car method)))
-	  (nnvirtual-catchup-group
-	   (gnus-group-real-name gnus-newsgroup-name) (nth 1 method) all)))
+      (when (and (not to-here) (eq 'nnvirtual (car method)))
+	(nnvirtual-catchup-group
+	 (gnus-group-real-name gnus-newsgroup-name) (nth 1 method) all)))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-catchup-to-here (&optional all)

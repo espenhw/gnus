@@ -131,6 +131,14 @@
      (vertical 1.0
 	       ("*Gnus Help Bug*" 0.5)
 	       ("*Gnus Bug*" 1.0 point)))
+    (score-trace
+     (vertical 1.0
+	       (summary 0.5 point)
+	       ("*Score Trace*" 1.0)))
+    (score-trace
+     (vertical 1.0
+	       (summary 0.5 point)
+	       ("*Score Words*" 1.0)))
     (compose-bounce
      (vertical 1.0
 	       (article 0.5)

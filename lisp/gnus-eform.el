@@ -82,8 +82,7 @@ It is a slightly enhanced emacs-lisp-mode.
 Call EXIT-FUNC on exit.  Display DOCUMENTATION in the beginning
 of the buffer."
   (let ((winconf (current-window-configuration)))
-    (set-buffer (setq gnus-edit-form-buffer 
-		      (get-buffer-create gnus-edit-form-buffer)))
+    (set-buffer (get-buffer-create gnus-edit-form-buffer))
     (gnus-configure-windows 'edit-form)
     (gnus-add-current-to-buffer-list)
     (gnus-edit-form-mode)
@@ -108,9 +107,10 @@ of the buffer."
   "Update changes and kill the current buffer."
   (interactive)
   (goto-char (point-min))
-  (let ((form (read (current-buffer))))
+  (let ((form (read (current-buffer)))
+	(func gnus-edit-form-done-function))
     (gnus-edit-form-exit)
-    (funcall gnus-edit-form-done-function form)))
+    (funcall func form)))
   
 (defun gnus-edit-form-exit ()
   "Kill the current buffer."

@@ -592,10 +592,10 @@ buffer.
   "Enter the group at the current line."
   (interactive)
   (let ((group (gnus-browse-group-name)))
-    (or (gnus-group-read-ephemeral-group
-	 group gnus-browse-current-method nil
-	 (cons (current-buffer) 'browse))
-	(error "Couldn't enter %s" group))))
+    (unless (gnus-group-read-ephemeral-group
+	     group gnus-browse-current-method nil
+	     (cons (current-buffer) 'browse))
+      (error "Couldn't enter %s" group))))
 
 (defun gnus-browse-select-group ()
   "Select the current group."
