@@ -1,3 +1,7 @@
+2001-01-27 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-msg-mail): Support switch-action.
+
 2001-01-26 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-summary-save-in-pipe): Prompt for saving

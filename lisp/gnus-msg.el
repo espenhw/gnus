@@ -257,13 +257,21 @@ Thank you for your help in stamping out bugs.
 	      (if article (number-to-string article) "\"\"") ")\n"))))
 
 ;;;###autoload
-(defun gnus-msg-mail (&rest args)
+(defun gnus-msg-mail (&optional to subject other-headers continue
+				switch-action yank-action send-actions)
   "Start editing a mail message to be sent.
 Like `message-mail', but with Gnus paraphernalia, particularly the
 Gcc: header for archiving purposes."
   (interactive)
-  (gnus-setup-message 'message
-    (apply 'message-mail args))
+  (let ((buf (current-buffer))
+	mail-buf)
+    (gnus-setup-message 'message
+      (message-mail to subject other-headers continue
+		    nil yank-action send-actions))
+    (when switch-action
+      (setq mail-buf (current-buffer))
+      (switch-to-buffer buf)
+      (apply switch-action mail-buf nil)))
   ;; COMPOSEFUNC should return t if succeed.  Undocumented ???
   t)
 
