@@ -453,7 +453,7 @@ This also obsoletes `gnus-article-hide-pgp-hook'.
 This change was made to avoid conflict with the standard binding of
 `back-to-indentation', which is also useful in message mode.
 
-** The default for message-forward-show-mml change to nil.
+** The default for message-forward-show-mml changed to nil.
 
 The reason is that decoding MIME, showing MML, and later re-encode the
 MIME does not work properly for, e.g., PGP/MIME signed messages.
