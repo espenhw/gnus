@@ -1,3 +1,7 @@
+2000-05-08  Dave Love  <fx@gnu.org>
+
+	* pop3.el (pop3-open-server): Fix creating name of trace buffer.
+
 2000-05-08 01:07:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-interactively-view-part): Append %s if the
