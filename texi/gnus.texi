@@ -13940,7 +13940,7 @@ body of the messages:
       (widen)
       (goto-char (point-min))
       (when (re-search-forward "Some.*string" nil t)
-        "string.group")))
+        "string.group"))))
 @end lisp
 
 The buffer is narrowed to the message in question when @var{function}
@@ -22292,8 +22292,8 @@ call the external tools during splitting.  Example fancy split method:
     (save-restriction
       (widen)
       (if (eq 1 (call-process-region (point-min) (point-max)
-				     "spamc" nil nil nil "-c"))
-	  "spam")))
+                                     "spamc" nil nil nil "-c"))
+          "spam"))))
 @end lisp
 
 Note that with the nnimap backend, message bodies will not be
