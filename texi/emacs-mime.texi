@@ -132,8 +132,8 @@ descend the message, following the structure, and return a tree of
 @section Non-MIME
 
 Gnus also understands some non-@sc{mime} attachments, such as
-postscript, uuencode, binhex, shar, forward, gnatsweb, pgp.  Each of
-these features can be disabled by add an item into
+postscript, uuencode, binhex, yenc, shar, forward, gnatsweb, pgp.
+Each of these features can be disabled by add an item into
 @code{mm-uu-configure-list}.  For example,
 
 @lisp
@@ -153,6 +153,10 @@ Uuencoded file.
 @item binhex
 @findex binhex
 Binhex encoded file.
+
+@item yenc
+@findex yenc
+Yenc encoded file.
 
 @item shar
 @findex shar
@@ -1041,6 +1045,7 @@ on.  High-level functionality is dealt with in the next chapter
 * base64::       Base64 en/decoding.
 * binhex::       Binhex decoding.
 * uudecode::     Uuencode decoding.
+* yenc::         Yenc decoding.
 * rfc1843::      Decoding HZ-encoded text.
 * mailcap::      How parts are displayed is specified by the @file{.mailcap} file
 @end menu
@@ -1479,6 +1484,21 @@ The following function is supplied by this package:
 @item uudecode-decode-region
 @findex uudecode-decode-region
 Decode the text in the region.
+@end table
+
+
+@node yenc
+@section yenc
+@cindex yenc
+
+@code{yenc} is used for encoding binaries on Usenet.  The following
+function is supplied by this package:
+
+@table @code
+@item yenc-decode-region
+@findex yenc-decode-region
+Decode the encoded text in the region.
+
 @end table
 
 
