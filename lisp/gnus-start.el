@@ -2219,7 +2219,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		  (gnus-continuum-version gnus-newsrc-file-version))))
     (when fcv
       ;; A .newsrc.eld file was loaded.
-      (let ((converters
+      (let (prompt-displayed
+            (converters
              (sort
               (mapcar (lambda (date-func)
                         (cons (gnus-continuum-version (car date-func))
@@ -2233,47 +2234,68 @@ If FORCE is non-nil, the .newsrc file is read."
                       ;; doesn't change with each release) and the
                       ;; function that must be applied to convert the
                       ;; previous version into the current version.
-                      '(("September Gnus v0.1" nil gnus-convert-old-ticks)))
+                      '(("September Gnus v0.1" nil 
+                         gnus-convert-old-ticks)
+                        ("Oort Gnus v0.08"     "legacy-gnus-agent"
+                         gnus-agent-convert-to-compressed-agentview)
+                        ("No Gnus v0.2"        "legacy-gnus-agent"
+                         gnus-agent-unlist-expire-days)
+                        ("No Gnus v0.2"        "legacy-gnus-agent" 
+                         gnus-agent-unhook-expire-days)))
               #'car-less-than-car)))
         ;; Skip converters older than the file version
         (while (and converters (>= fcv (caar converters)))
           (pop converters))
 
         ;; Perform converters to bring older version up to date.
-        (when (and converters 
-                   (< fcv (caar converters)))
-          (while (let (c
-                       (cursor-in-echo-area t)
-                       (echo-keystrokes 0))
-                   (message "Convert newsrc from version '%s' to '%s'? (n/y/?)"
-                            gnus-newsrc-file-version gnus-version)
-                   (setq c (read-char-exclusive))
-
-                   (cond ((or (eq c ?n) (eq c ?N))
-                          (error "Can not start gnus using old (unconverted) newsrc"))
-                         ((or (eq c ?y) (eq c ?Y))
-                          nil)
-                         ((eq c ?\?)
-                          (message "This conversion is irreversible. \
- You should backup your files before proceeding.")
-                          (sit-for 5)
-                          t)
-                         (t
-                          (gnus-message 3 "Ignoring unexpected input")
-                          (sit-for 3)
-                          t))))
-          (while (and converters (< fcv (caar converters)))
-            (let* ((converter  (pop converters))
-                   (convert-to (nth 1 converter))
-                   (load-from  (nth 2 converter))
-                   (func       (nth 3 converter)))
+        (while (and converters (< fcv (caar converters)))
+            (let* ((converter-spec  (pop converters))
+                   (convert-to      (nth 1 converter-spec))
+                   (load-from       (nth 2 converter-spec))
+                   (func            (nth 3 converter-spec)))
               (when (and load-from
                          (not (fboundp func)))
                 (load load-from t))
+              
+              (or prompt-displayed
+                  (not (gnus-convert-converter-needs-prompt func))
+                  (while (let (c
+                               (cursor-in-echo-area t)
+                               (echo-keystrokes 0))
+                           (message "Convert newsrc from version '%s' to '%s'? (n/y/?)"
+                                    gnus-newsrc-file-version gnus-version)
+                           (setq c (read-char-exclusive))
+
+                           (cond ((or (eq c ?n) (eq c ?N))
+                                  (error "Can not start gnus using old (unconverted) newsrc"))
+                                 ((or (eq c ?y) (eq c ?Y))
+                                  (setq prompt-displayed t)
+                                  nil)
+                                 ((eq c ?\?)
+                                  (message "This conversion is irreversible. \
+ You should backup your files before proceeding.")
+                                  (sit-for 5)
+                                  t)
+                                 (t
+                                  (gnus-message 3 "Ignoring unexpected input")
+                                  (sit-for 3)
+                                  t)))))
+
               (funcall func convert-to)))
           (gnus-dribble-enter 
            (format ";Converted newsrc from version '%s' to '%s'? (n/y/?)"
-                   gnus-newsrc-file-version gnus-version)))))))
+                   gnus-newsrc-file-version gnus-version))))))
+
+(defun gnus-convert-mark-converter-prompt (converter no-prompt)
+  (setplist converter
+            (let* ((symbol 'gnus-convert-no-prompt)
+                   (value (delq symbol (symbol-plist converter))))
+            (if no-prompt
+                (cons symbol value)
+              value))))
+
+(defun gnus-convert-converter-needs-prompt (converter)
+  (not (memq 'gnus-convert-no-prompt (symbol-plist converter))))
 
 (defun gnus-convert-old-ticks (converting-to)
   (let ((newsrc (cdr gnus-newsrc-alist))
