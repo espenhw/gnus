@@ -1,5 +1,10 @@
 2004-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-jump-to-group-prompt): Allow an alist.
+	(gnus-group-jump-to-group): Added prefix argument using
+	`gnus-group-jump-to-group-prompt'.  Query before jumping to
+	non-active group.
+
 	* compface.el (uncompface): Be verbose when changing
 	`uncompface-use-external'.
 

@@ -440,12 +440,19 @@ For example:
 
 (defcustom gnus-group-jump-to-group-prompt nil
   "Default prompt for `gnus-group-jump-to-group'.
-If non-nil, the value should be a string, e.g. \"nnml:\",
-in which case `gnus-group-jump-to-group' offers \"Group: nnml:\"
-in the minibuffer prompt."
+
+If non-nil, the value should be a string or an alist.  If it is a string,
+e.g. \"nnml:\", in which case `gnus-group-jump-to-group' offers \"Group:
+nnml:\" in the minibuffer prompt.
+
+If it is an alist, it must consist of \(NUMBER .  PROMPT\) pairs, for example:
+\((1 .  \"\") (2 .  \"nnfolder+archive:\")).  The element with number 0 is
+used when no prefix argument is given to `gnus-group-jump-to-group'."
   :group 'gnus-group-various
   :type '(choice (string :tag "Prompt string")
-		 (const :tag "Empty" nil)))
+		 (const :tag "Empty" nil)
+		 (repeat (cons (integer :tag "Argument")
+			       (string :tag "Prompt string")))))
 
 (defvar gnus-group-listing-limit 1000
   "*A limit of the number of groups when listing.
@@ -2054,14 +2061,22 @@ Return the name of the group if selection was successful."
 	 (message "Quit reading the ephemeral group")
 	 nil)))))
 
-(defun gnus-group-jump-to-group (group)
-  "Jump to newsgroup GROUP."
+(defun gnus-group-jump-to-group (group &optional prompt)
+  "Jump to newsgroup GROUP.
+
+If PROMPT (the prefix) is a number, use the prompt specified in
+`gnus-group-jump-to-group-prompt'."
   (interactive
    (list (mm-string-make-unibyte
 	  (completing-read
 	   "Group: " gnus-active-hashtb nil
 	   (gnus-read-active-file-p)
-	   gnus-group-jump-to-group-prompt
+	   (if current-prefix-arg
+	       (cdr (assq current-prefix-arg gnus-group-jump-to-group-prompt))
+	     (or (and (stringp gnus-group-jump-to-group-prompt)
+		      gnus-group-jump-to-group-prompt)
+		 (let ((p (cdr (assq 0 gnus-group-jump-to-group-prompt))))
+		   (and (stringp p) p))))
 	   'gnus-group-history))))
 
   (when (equal group "")
@@ -2071,7 +2086,11 @@ Return the name of the group if selection was successful."
     ;; Either go to the line in the group buffer...
     (unless (gnus-group-goto-group group)
       ;; ... or insert the line.
-      (gnus-group-update-group group)
+      (if (or (gnus-active group)
+	      (gnus-y-or-n-p
+	       (format "Group %s is not active.  Continue? " group)))
+	  (gnus-group-update-group group)
+	(error "No such group: %s." group))
       (gnus-group-goto-group group)))
   ;; Adjust cursor point.
   (gnus-group-position-point))
