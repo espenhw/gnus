@@ -1,5 +1,8 @@
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
+        * rfc2104.el (rfc2104-hexstring-to-bitstring): New function.
+        (rfc2104-hash): Use it.
+
 	* imap.el (imap-starttls-p): Check for starttls binary.
 	(imap-starttls-open): More verbose.
 	(imap-gssapi-auth): Ditto.
