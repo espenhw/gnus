@@ -1,3 +1,8 @@
+2002-02-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnusref.tex (subsection*{Notes}): Addition.
+	Suggested by Felix Natter <fnatter@gmx.net>
+
 2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Splitting Mail): Addition.
