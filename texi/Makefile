@@ -1,17 +1,21 @@
 TEXI2DVI=texi2dvi
 EMACS=emacs
-MAKEINFO=$(EMACS) -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+MAKEINFO=$(EMACS) -batch -q -no-site-file
+INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 # MAKEINFO=makeinfo -o gnus.info gnus.texi
 LATEX=latex
 DVIPS=dvips
 PERL=perl
 
-all: gnus.info refcard.dvi
+all: gnus.info message.info refcard.dvi 
 
 most: texi2latexi.elc latex latexps
 
 gnus.info: gnus.texi
-	$(MAKEINFO)
+	$(MAKEINFO) gnus.texi $(INFOSWI)
+
+message.info: message.texi
+	$(MAKEINFO) message.texi $(INFOSWI)
 
 dvi: gnus.texi
 	$(PERL) -n -e 'if (/\@iflatex/) { $$latex=1; } if (!$$latex) { print; } if (/\@end iflatex/) { $$latex=0; }' gnus.texi > gnus.tmptexi

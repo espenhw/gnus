@@ -71,8 +71,7 @@ gatewayed to a newsgroup, and you want to followup to an article in
 the group.")
 
 (defvar gnus-sent-message-ids-file 
-  (concat (file-name-as-directory gnus-article-save-directory)
-	  "Sent-Message-IDs")
+  (nnheader-concat gnus-directory "Sent-Message-IDs")
   "File where Gnus saves a cache of sent message ids.")
 
 (defvar gnus-sent-message-ids-length 1000
@@ -165,29 +164,17 @@ the group.")
   (gnus-setup-message 'message
     (message-mail)))
 
-(defun gnus-group-post-news (&optional arg)
-  "Post an article.
-The newsgroup under the cursor is used as the group to post to.
-
-If you wish to get an empty post buffer, use a prefix ARG.  You can
-also do this by calling this function from the bottom of the Group
-buffer."
-  (interactive "P")
-  (gnus-setup-message 'message
-    (let ((gnus-newsgroup-name nil)
-	  (group (unless arg (gnus-group-group-name))))
-      ;; We might want to prompt here.
-      (when (and gnus-interactive-post
-		 (not gnus-expert-user))
-	(setq gnus-newsgroup-name
-	      (setq group 
-		    (gnus-completing-read group "Group:"
-					  gnus-active-hashtb nil nil nil
-					  'gnus-group-history))))
-      (gnus-post-news 'post group))))
+(defun gnus-group-post-news ()
+  "Start composing a news message.
+The newsgroup under the cursor is used as the group to post to."
+  (interactive)
+  ;; Bind this variable here to make message mode hooks
+  ;; work ok.
+  (let ((gnus-newsgroup-name (gnus-group-group-name)))
+    (gnus-post-news 'post (gnus-group-group-name))))
 
 (defun gnus-summary-post-news ()
-  "Post an article."
+  "Start composing a news message."
   (interactive)
   (gnus-set-global-variables)
   (gnus-post-news 'post gnus-newsgroup-name))
@@ -277,7 +264,8 @@ header line with the old Message-ID."
   (buffer-disable-undo gnus-article-copy)
   (or (memq gnus-article-copy gnus-buffer-list)
       (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
-  (let ((article-buffer (or article-buffer gnus-article-buffer)))
+  (let ((article-buffer (or article-buffer gnus-article-buffer))
+	end)
     (when (and (get-buffer article-buffer)
 	       (buffer-name (get-buffer article-buffer)))
       (save-excursion
@@ -285,9 +273,15 @@ header line with the old Message-ID."
 	(save-restriction
 	  (widen)
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
-	  (gnus-set-text-properties (point-min) (point-max) 
-				    nil gnus-article-copy))))
-    gnus-article-copy))
+	  (set-buffer gnus-original-article-buffer)
+	  (goto-char (point-min))
+	  (setq end (or (search-forward "\n\n" nil t) (point)))
+	  (set-buffer gnus-article-copy)
+	  (gnus-set-text-properties (point-min) (point-max) nil)
+	  (delete-region (goto-char (point-min))
+			 (or (search-forward "\n\n" nil t) (point)))
+	  (insert-buffer-substring gnus-original-article-buffer 1 end)))
+      gnus-article-copy)))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject
 			    force-news)
@@ -687,8 +681,7 @@ If YANK is non-nil, include the original article."
 
 (defun gnus-bug-kill-buffer ()
   (and (get-buffer "*Gnus Help Bug*")
-       (kill-buffer "*Gnus Help Bug*"))
-  (kill-buffer nil))
+       (kill-buffer "*Gnus Help Bug*")))
 
 (defun gnus-debug ()
   "Attemps to go through the Gnus source file and report what variables have been changed.
@@ -783,7 +776,7 @@ this is a reply."
 (defun gnus-inews-do-gcc (&optional gcc)
   (save-excursion
     (save-restriction
-      (nnheader-narrow-to-headers)
+      (message-narrow-to-headers)
       (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
 	    (cur (current-buffer))
 	    groups group method)
@@ -803,10 +796,14 @@ this is a reply."
 			  ;; If the group doesn't exist, we assume
 			  ;; it's an archive group...
 			  gnus-message-archive-method)
+			 ;; Use the method.
+			 ((gnus-info-method (gnus-get-info group))
+			  (gnus-info-method (gnus-get-info group)))
+			 ;; Find the method.
 			 (t (gnus-group-method group)))))
+	    (gnus-check-server method)
 	    (unless (gnus-request-group group t method)
 	      (gnus-request-create-group group method))
-	    (gnus-check-server method)
 	    (save-excursion
 	      (nnheader-set-temp-buffer " *acc*")
 	      (insert-buffer-substring cur)

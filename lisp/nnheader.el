@@ -540,8 +540,12 @@ without formatting."
   (or (and (symbolp form) (fboundp form))
       (and (listp form) (eq (car form) 'lambda))))
 
+(defun nnheader-concat (dir file)
+  "Concat DIR as directory to FILE."
+  (concat (file-name-as-directory dir) file))
+
 (fset 'nnheader-find-file-noselect 'find-file-noselect)
-(fset 'nnheader-insert-raw-file-contents 'insert-file-contents)
+(fset 'nnheader-insert-raw-file-contents 'insert-file-contents-literally)
 
 (provide 'nnheader)
 

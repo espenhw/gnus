@@ -746,7 +746,8 @@ FUNC will be called with the group name to determine the article number."
 		  (mapcar
 		   (lambda (group) (cons group (funcall func group)))
 		   (condition-case nil
-		       (funcall nnmail-split-methods)
+		       (or (funcall nnmail-split-methods)
+			   '("bogus"))
 		     (error
 		      (message 
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
@@ -791,6 +792,7 @@ Return the number of characters in the body."
 	(save-excursion
 	  (when (re-search-backward "^Lines: " nil t)
 	    (delete-region (point) (progn (forward-line 1) (point)))))
+	(beginning-of-line)
 	(insert (format "Lines: %d\n" (max lines 0)))
 	chars))))
 

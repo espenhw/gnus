@@ -84,7 +84,9 @@
        ["Switch pick mode off" gnus-pick-mode gnus-pick-mode]))))
 
 (defun gnus-pick-mode (&optional arg)
-  "Minor mode for providing a pick-and-read interface in Gnus summary buffers."
+  "Minor mode for providing a pick-and-read interface in Gnus summary buffers.
+
+\\{gnus-pick-mode-map}"
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
     (make-local-variable 'gnus-pick-mode)
@@ -115,7 +117,8 @@ If given a prefix, mark all unpicked articles as read."
   (gnus-summary-limit-to-articles nil)
   (when catch-up
     (gnus-summary-limit-mark-excluded-as-read))
-  (gnus-configure-windows (if gnus-pick-display-summary 'summary 'pick) t))
+  (gnus-summary-first-unread-article)
+  (gnus-configure-windows (if gnus-pick-display-summary 'article 'pick) t))
 
 
 ;;;

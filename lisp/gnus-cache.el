@@ -29,7 +29,7 @@
 (eval-when-compile (require 'cl))
 
 (defvar gnus-cache-directory
-  (concat (file-name-as-directory gnus-article-save-directory) "cache/")
+  (nnheader-concat gnus-directory "cache/")
   "*The directory where cached articles will be stored.")
 
 (defvar gnus-cache-active-file 

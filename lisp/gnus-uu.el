@@ -1129,6 +1129,7 @@ The headers will be included in the sequence they are matched.")
   (let ((state 'first) 
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
+	gnus-article-display-hook gnus-article-prepare-hook
 	article-series files)
  
     (while (and articles 

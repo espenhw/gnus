@@ -81,43 +81,6 @@ Optional argument FOLDER specifies folder name."
 	 (kill-buffer errbuf))))
     (setq gnus-newsgroup-last-folder folder)))
 
-(defun gnus-mh-mail-setup (to subject in-reply-to cc replybuffer actions)
-  (let ((config (current-window-configuration))) 
-    (mh-find-path)
-    (mh-send-sub (or to "") (or cc "") (or subject "") config)
-    (when in-reply-to 
-      (save-excursion
-	(goto-char (point-min))
-	(insert "In-Reply-To: " in-reply-to "\n")))
-    (setq mh-sent-from-folder gnus-original-article-buffer)
-    (setq mh-sent-from-msg 1)
-    (setq gnus-message-buffer (buffer-name (current-buffer)))
-    (setq mail-reply-buffer replybuffer)
-    (save-excursion
-      (set-buffer mh-sent-from-folder)
-      (setq mh-show-buffer replybuffer))
-    (use-local-map (copy-keymap (current-local-map)))
-    (local-set-key "\C-c\C-c" 'gnus-mh-mail-send-and-exit)
-    (setq mh-show-buffer gnus-article-copy)
-    (setq mh-previous-window-config config)))
-
-(defun gnus-mh-mail-send-and-exit (&optional dont-send)
-  "Send the current mail and return to Gnus."
-  (interactive)
-  (let ((reply gnus-article-reply)
-	(winconf gnus-prev-winconf))
-    (or dont-send (mh-send-letter))
-    (bury-buffer)
-    (if (get-buffer gnus-group-buffer)
-	(progn
-	  (if (gnus-buffer-exists-p (car-safe reply))
-	      (progn
-		(set-buffer (car reply))
-		(and (cdr reply)
-		     (gnus-summary-mark-article-as-replied 
-		      (cdr reply)))))
-	  (and winconf (set-window-configuration winconf))))))
-
 (defun gnus-Folder-save-name (newsgroup headers &optional last-folder)
   "Generate folder name from NEWSGROUP, HEADERS, and optional LAST-FOLDER.
 If variable `gnus-use-long-file-name' is nil, it is +News.group.
@@ -137,5 +100,7 @@ Otherwise, it is like +news/group."
 	      (if gnus-use-long-file-name
 		  newsgroup
 		(gnus-newsgroup-directory-form newsgroup)))))
+
+(provide 'gnus-mh)
 
 ;;; gnus-mh.el ends here

@@ -35,6 +35,9 @@
 
 (eval-when-compile (require 'cl))
 
+(defvar gnus-directory (or (getenv "SAVEDIR") "~/News/")
+  "*Directory variable from which all other Gnus file variables are derived.")
+
 ;; Site dependent variables.  These variables should be defined in
 ;; paths.el.
 
@@ -130,10 +133,12 @@ There is a lot more to know about select methods and virtual servers -
 see the manual for details.")
 
 (defvar gnus-message-archive-method 
-  '(nnfolder "archive" (nnfolder-directory "~/Mail/archive/")
-	     (nnfolder-active-file "~/Mail/archive/active")
-	     (nnfolder-get-new-mail nil)
-	     (nnfolder-inhibit-expiry t))
+  '(nnfolder
+    "archive"
+    (nnfolder-directory (nnheader-concat message-directory "archive"))
+    (nnfolder-active-file (nnheader-concat message-directory "archive/active"))
+    (nnfolder-get-new-mail nil)
+    (nnfolder-inhibit-expiry t))
   "*Method used for archiving messages you've sent.
 This should be a mail method.")
 
@@ -272,13 +277,11 @@ contains the element `not-save', long file names will not be used for
 saving; and if it contains the element `not-kill', long file names
 will not be used for kill files.")
 
-(defvar gnus-article-save-directory (or (getenv "SAVEDIR") "~/News/")
-  "*Name of the directory articles will be saved in (default \"~/News\").
-Initialized from the SAVEDIR environment variable.")
+(defvar gnus-article-save-directory gnus-directory
+  "*Name of the directory articles will be saved in (default \"~/News\").")
 
-(defvar gnus-kill-files-directory (or (getenv "SAVEDIR") "~/News/")
-  "*Name of the directory where kill files will be stored (default \"~/News\").
-Initialized from the SAVEDIR environment variable.")
+(defvar gnus-kill-files-directory gnus-directory
+  "*Name of the directory where kill files will be stored (default \"~/News\").")
 
 (defvar gnus-default-article-saver 'gnus-summary-save-in-rmail
   "*A function to save articles in your favorite format.
@@ -599,9 +602,6 @@ nil if you set this variable to nil.")
 
 (defvar gnus-interactive-catchup t
   "*If non-nil, require your confirmation when catching up a group.")
-
-(defvar gnus-interactive-post t
-  "*If non-nil, group name will be asked for when posting.")
 
 (defvar gnus-interactive-exit t
   "*If non-nil, require your confirmation when exiting Gnus.")
@@ -1208,13 +1208,14 @@ with some simple extensions:
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description.")
 
-(defvar gnus-group-mode-line-format "Gnus: %%b {%M:%S}"
+(defvar gnus-group-mode-line-format "Gnus: %%b {%M%:%S}"
   "*The format specification for the group mode line.
 It works along the same lines as a normal formatting string,
 with some simple extensions:
 
 %S   The native news server.
-%M   The native select method.")
+%M   The native select method.
+%:   \":\" if %S isn't \"\".")
 
 (defvar gnus-valid-select-methods
   '(("nntp" post address prompt-address)
@@ -1711,7 +1712,8 @@ variable (string, integer, character, etc).")
 (defvar gnus-group-mode-line-format-alist
   `((?S gnus-tmp-news-server ?s)
     (?M gnus-tmp-news-method ?s)
-    (?u gnus-tmp-user-defined ?s)))
+    (?u gnus-tmp-user-defined ?s)
+    (?: gnus-tmp-colon ?s)))
 
 (defvar gnus-have-read-active-file nil)
 
@@ -1719,7 +1721,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.89"
+(defconst gnus-version "September Gnus v0.90"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2455,7 +2457,7 @@ Thank you for your help in stamping out bugs.
       (let ((case-fold-search t)
 	    (inhibit-point-motion-hooks t))
 	(nnheader-narrow-to-headers)
-	(mail-fetch-field field)))))
+	(message-fetch-field field)))))
 
 (defun gnus-goto-colon ()
   (beginning-of-line)
@@ -2823,7 +2825,7 @@ Otherwise, it is like ~/News/news/group/num."
 		       (gnus-capitalize-newsgroup newsgroup)
 		     (gnus-newsgroup-directory-form newsgroup))
 		   "/" (int-to-string (mail-header-number headers)))
-	   (or gnus-article-save-directory "~/News"))))
+	   gnus-article-save-directory)))
     (if (and last-file
 	     (string-equal (file-name-directory default)
 			   (file-name-directory last-file))
@@ -2841,7 +2843,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		       newsgroup
 		     (gnus-newsgroup-directory-form newsgroup))
 		   "/" (int-to-string (mail-header-number headers)))
-	   (or gnus-article-save-directory "~/News"))))
+	   gnus-article-save-directory)))
     (if (and last-file
 	     (string-equal (file-name-directory default)
 			   (file-name-directory last-file))
@@ -2858,7 +2860,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        (if (gnus-use-long-file-name 'not-save)
 	   (gnus-capitalize-newsgroup newsgroup)
 	 (concat (gnus-newsgroup-directory-form newsgroup) "/news"))
-       (or gnus-article-save-directory "~/News"))))
+       gnus-article-save-directory)))
 
 (defun gnus-plain-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
@@ -2869,7 +2871,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        (if (gnus-use-long-file-name 'not-save)
 	   newsgroup
 	 (concat (gnus-newsgroup-directory-form newsgroup) "/news"))
-       (or gnus-article-save-directory "~/News"))))
+       gnus-article-save-directory)))
 
 ;; For subscribing new newsgroup
 
@@ -3693,17 +3695,30 @@ simple-first is t, first argument is already simplified."
 ;; it yet. -erik selberg@cs.washington.edu
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string"
-  (let ((datevec (timezone-parse-date messy-date)))
-    (format "%2s-%s"
-	    (condition-case ()
-		;; Make sure leading zeroes are stripped.
-		(number-to-string (string-to-number (aref datevec 2)))
-	      (error "??"))
-	    (capitalize
-	     (or (car
-		  (nth (1- (string-to-number (aref datevec 1)))
-		       timezone-months-assoc))
-		 "???")))))
+  (let ((datevec (condition-case () (timezone-parse-date messy-date) 
+		   (error nil))))
+    (if (not datevec)
+	"??-???"
+      (format "%2s-%s"
+	      (condition-case ()
+		  ;; Make sure leading zeroes are stripped.
+		  (number-to-string (string-to-number (aref datevec 2)))
+		(error "??"))
+	      (capitalize
+	       (or (car
+		    (nth (1- (string-to-number (aref datevec 1)))
+			 timezone-months-assoc))
+		   "???"))))))
+
+(defun gnus-mode-string-quote (string)
+  "Quote all \"%\" in STRING."
+  (save-excursion
+    (gnus-set-work-buffer)
+    (insert string)
+    (goto-char (point-min))
+    (while (search-forward "%" nil t)
+      (insert "%"))
+    (buffer-string)))
 
 ;; Make a hash table (default and minimum size is 255).
 ;; Optional argument HASHSIZE specifies the table size.
@@ -3777,6 +3792,19 @@ simple-first is t, first argument is already simplified."
 	     (or (memq type gnus-visual)
 		 (memq class gnus-visual))
 	   t))))
+
+(defun gnus-parent-headers (headers &optional generation)
+  "Return the headers of the GENERATIONeth parent of HEADERS."
+  (unless generation 
+    (setq generation 1))
+  (let (references parent)
+    (while (and headers (not (zerop generation)))
+      (setq references (mail-header-references headers))
+      (when (and references
+		 (setq parent (gnus-parent-id references))
+		 (setq headers (car (gnus-id-to-thread parent))))
+	(decf generation)))
+    headers))
 
 (defun gnus-parent-id (references)
   "Return the last Message-ID in REFERENCES."
@@ -4273,10 +4301,10 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
-  (make-local-variable 'gnus-group-use-permanent-levels)
-  (setq gnus-group-use-permanent-levels
-	(or arg (1- gnus-level-default-subscribed)))
-  (gnus gnus-group-use-permanent-levels t slave))
+  (let ((val (or arg (1- gnus-level-default-subscribed))))
+    (gnus val t slave)
+    (make-local-variable 'gnus-group-use-permanent-levels)
+    (setq gnus-group-use-permanent-levels val)))
 
 ;;;###autoload
 (defun gnus-slave (&optional arg)
@@ -4627,6 +4655,8 @@ If REGEXP, only list groups matching REGEXP."
 (defun gnus-server-to-method (server)
   "Map virtual server names to select methods."
   (or 
+   ;; Is this a method, perhaps?
+   (and server (listp server) server)
    ;; Perhaps this is the native server?
    (and (equal server "native") gnus-select-method)
    ;; It should be in the server alist.
@@ -4851,12 +4881,14 @@ increase the score of each group you read."
   "Update the current line in the group buffer."
   (let* ((buffer-read-only nil)
 	 (group (gnus-group-group-name))
-	 (entry (and group (gnus-gethash group gnus-newsrc-hashtb))))
+	 (entry (and group (gnus-gethash group gnus-newsrc-hashtb)))
+	 gnus-group-indentation)
     (and entry
 	 (not (gnus-ephemeral-group-p group))
 	 (gnus-dribble-enter
 	  (concat "(gnus-group-set-info '"
 		  (prin1-to-string (nth 2 entry)) ")")))
+    (setq gnus-group-indentation (gnus-group-group-indentation))
     (gnus-delete-line)
     (gnus-group-insert-group-line-info group)
     (forward-line -1)
@@ -5003,7 +5035,9 @@ already."
 	(gnus-group-set-mode-line)))))
 
 (defun gnus-group-set-mode-line ()
+  "Update the mode line in the group buffer."
   (when (memq 'group gnus-updated-mode-lines)
+    ;; Yes, we want to keep this mode line updated.
     (save-excursion
       (set-buffer gnus-group-buffer)
       (let* ((gformat (or gnus-group-mode-line-format-spec
@@ -5013,6 +5047,7 @@ already."
 				 gnus-group-mode-line-format-alist))))
 	     (gnus-tmp-news-server (cadr gnus-select-method))
 	     (gnus-tmp-news-method (car gnus-select-method))
+	     (gnus-tmp-colon (if (equal gnus-tmp-news-server "") "" ":"))
 	     (max-len 60)
 	     gnus-tmp-header		;Dummy binding for user-defined formats
 	     ;; Get the resulting string.
@@ -5025,12 +5060,13 @@ already."
 		       (save-excursion
 			 (set-buffer gnus-dribble-buffer)
 			 (not (zerop (buffer-size)))))
-		  "-* " "-- "))
+		  "---*- " "----- "))
 	;; If the line is too long, we chop it off.
 	(when (> (length mode-string) max-len)
 	  (setq mode-string (substring mode-string 0 (- max-len 4))))
 	(prog1
-	    (setq mode-line-buffer-identification (list mode-string))
+	    (setq mode-line-buffer-identification 
+		  (list mode-string))
 	  (set-buffer-modified-p t))))))
 
 (defun gnus-group-group-name ()
@@ -5118,8 +5154,8 @@ If FIRST-TOO, the current line is also eligible as a target."
 	      (setq gnus-group-marked (delete group gnus-group-marked)))
 	  (insert "#")
 	  (setq gnus-group-marked
-		(cons group (delete group gnus-group-marked))))
-	(or no-advance (zerop (gnus-group-next-group 1))))
+		(cons group (delete group gnus-group-marked)))))
+      (or no-advance (gnus-group-next-group 1))
       (decf n))
     (gnus-summary-position-point)
     n))
@@ -6357,7 +6393,8 @@ entail asking the server for the groups."
 	  (let (list)
 	    (mapatoms
 	     (lambda (sym)
-	       (and (symbol-value sym)
+	       (and (boundp sym)
+		    (symbol-value sym)
 		    (setq list (cons (symbol-name sym) list))))
 	     gnus-active-hashtb)
 	    list)
@@ -8048,7 +8085,7 @@ If NO-DISPLAY, don't generate a summary buffer."
      ((null level) nil)
      ((zerop level) t)
      ((null refs) t)
-     ((null(gnus-parent-id refs)) t)
+     ((null (gnus-parent-id refs)) t)
      ((and (= 1 level)
 	   (null (setq particle (gnus-id-to-article
 				 (gnus-parent-id refs))))
@@ -8568,12 +8605,18 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	(error "Couldn't open server"))
 
     (or (and entry (not (eq (car entry) t))) ; Either it's active...
-	(gnus-activate-group group) ; Or we can activate it...
-	(progn ; Or we bug out.
+	(gnus-activate-group group)	; Or we can activate it...
+	(progn				; Or we bug out.
 	  (when (equal major-mode 'gnus-summary-mode)
 	    (kill-buffer (current-buffer)))
 	  (error "Couldn't request group %s: %s"
 		 group (gnus-status-message group))))
+
+    (unless (gnus-request-group group t)
+      (when (equal major-mode 'gnus-summary-mode)
+	(kill-buffer (current-buffer)))
+      (error "Couldn't request group %s: %s"
+	     group (gnus-status-message group)))      
 
     (setq gnus-newsgroup-name group)
     (setq gnus-newsgroup-unselected nil)
@@ -8889,7 +8932,8 @@ If WHERE is `summary', the summary mode line format will be used."
 	       (gnus-tmp-subject
 		(if (and gnus-current-headers
 			 (vectorp gnus-current-headers))
-		    (mail-header-subject gnus-current-headers) ""))
+		    (gnus-mode-string-quote
+		     (mail-header-subject gnus-current-headers)) ""))
 	       max-len
 	       gnus-tmp-header);; passed as argument to any user-format-funcs
 	  (setq mode-string (eval mformat))
@@ -10874,7 +10918,7 @@ The difference between N and the number of articles fetched is returned."
 		     (set-buffer gnus-original-article-buffer)
 		     (nnheader-narrow-to-headers)
 		     (prog1
-			 (mail-fetch-field "references")
+			 (message-fetch-field "references")
 		       (widen)))
 		 ;; It's not the current article, so we take a bet on
 		 ;; the value we got from the server.
@@ -11020,47 +11064,45 @@ If BACKWARD, search backward instead."
 (defun gnus-summary-search-article (regexp &optional backward)
   "Search for an article containing REGEXP.
 Optional argument BACKWARD means do search for backward.
-gnus-select-article-hook is not called during the search."
+`gnus-select-article-hook' is not called during the search."
   (let ((gnus-select-article-hook nil)	;Disable hook.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(re-search
 	 (if backward
-	     (function re-search-backward) (function re-search-forward)))
-	(found nil)
-	(last nil))
-    ;; Hidden thread subtrees must be searched for ,too.
+	     're-search-backward 're-search-forward))
+	(sum (current-buffer))
+	(found nil))
+    ;; Hidden thread subtrees must be searched, too.
     (gnus-summary-show-all-threads)
-    ;; First of all, search current article.
-    ;; We don't want to read article again from NNTP server nor reset
-    ;; current point.
     (gnus-summary-select-article)
-    (gnus-message 9 "Searching article: %d..." gnus-current-article)
-    (setq last gnus-current-article)
-    (gnus-eval-in-buffer-window
-     gnus-article-buffer
-     (save-restriction
-       (widen)
-       ;; Begin search from current point.
-       (setq found (funcall re-search regexp nil t))))
-    ;; Then search next articles.
-    (while (and (not found)
-		(gnus-summary-display-article
-		 (if backward (gnus-summary-find-prev)
-		   (gnus-summary-find-next))))
-      (gnus-message 9 "Searching article: %d..." gnus-current-article)
-      (gnus-eval-in-buffer-window
-       gnus-article-buffer
-       (save-restriction
-	 (widen)
-	 (goto-char (if backward (point-max) (point-min)))
-	 (setq found (funcall re-search regexp nil t)))))
-    (message "")
-    ;; Adjust article pointer.
-    (or (eq last gnus-current-article)
-	(setq gnus-last-article last))
-    ;; Return T if found such article.
-    found))
+    (set-buffer gnus-article-buffer)
+    (while (not found)
+      (gnus-message 7 "Searching article: %d..." gnus-current-article)
+      (if (if backward
+	      (re-search-backward regexp nil t)
+	    (re-search-forward regexp nil t))
+	  ;; We found the regexp.
+	  (progn
+	    (setq found 'found)
+	    (beginning-of-line)
+	    (set-window-start
+	     (get-buffer-window (current-buffer))
+	     (point)))
+	;; We didn't find it, so we go to the next article.
+	(set-buffer sum)
+	(if (not (if backward (gnus-summary-find-prev)
+		   (gnus-summary-find-next)))
+	    ;; No more articles.
+	    (setq found t)
+	  ;; Select the next article and adjust point.
+	  (gnus-summary-select-article)
+	  (set-buffer gnus-article-buffer)
+	  (widen)
+	  (goto-char (if backward (point-max) (point-min))))))
+    (set-buffer sum)
+    ;; Return whether we found the regexp.
+    (eq found 'found)))
 
 (defun gnus-summary-find-matching (header regexp &optional backward unread
 					  not-case-fold)
@@ -12773,14 +12815,11 @@ Argument REVERSE means reverse order."
 (defun gnus-sortable-date (date)
   "Make sortable string by string-lessp from DATE.
 Timezone package is used."
-  (let* ((date (timezone-fix-time date nil nil)) ;[Y M D H M S]
-	 (year (aref date 0))
-	 (month (aref date 1))
-	 (day (aref date 2)))
-    (timezone-make-sortable-date
-     year month day
-     (timezone-make-time-string
-      (aref date 3) (aref date 4) (aref date 5)))))
+  (setq date (timezone-fix-time date nil nil))
+  (timezone-make-sortable-date
+   (aref date 0) (aref date 2) (aref date 2)
+   (timezone-make-time-string
+    (aref date 3) (aref date 4) (aref date 5))))
 
 ;; Summary saving commands.
 
@@ -13018,8 +13057,7 @@ save those articles instead."
 (defun gnus-summary-save-in-rmail (&optional filename)
   "Append this article to Rmail file.
 Optional argument FILENAME specifies file name.
-Directory to save to is default to `gnus-article-save-directory' which
-is initialized from the SAVEDIR environment variable."
+Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
   (let ((default-name
@@ -13044,8 +13082,7 @@ is initialized from the SAVEDIR environment variable."
 (defun gnus-summary-save-in-mail (&optional filename)
   "Append this article to Unix mail file.
 Optional argument FILENAME specifies file name.
-Directory to save to is default to `gnus-article-save-directory' which
-is initialized from the SAVEDIR environment variable."
+Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
   (let ((default-name
@@ -13077,8 +13114,7 @@ is initialized from the SAVEDIR environment variable."
 (defun gnus-summary-save-in-file (&optional filename)
   "Append this article to file.
 Optional argument FILENAME specifies file name.
-Directory to save to is default to `gnus-article-save-directory' which
-is initialized from the SAVEDIR environment variable."
+Directory to save to is default to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
   (let ((default-name
@@ -13103,8 +13139,7 @@ is initialized from the SAVEDIR environment variable."
 (defun gnus-summary-save-body-in-file (&optional filename)
   "Append this article body to a file.
 Optional argument FILENAME specifies file name.
-The directory to save in defaults to `gnus-article-save-directory' which
-is initialized from the SAVEDIR environment variable."
+The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
   (gnus-set-global-variables)
   (let ((default-name
@@ -13834,16 +13869,16 @@ always hide."
 		 'boring-headers)))
 	     ;; Hide boring Newsgroups header.
 	     ((eq elem 'newsgroups)
-	      (when (equal (mail-fetch-field "newsgroups")
+	      (when (equal (message-fetch-field "newsgroups")
 			   (gnus-group-real-name gnus-newsgroup-name))
 		(gnus-article-hide-header "newsgroups")))
 	     ((eq elem 'followup-to)
-	      (when (equal (mail-fetch-field "followup-to")
-			   (mail-fetch-field "newsgroups"))
+	      (when (equal (message-fetch-field "followup-to")
+			   (message-fetch-field "newsgroups"))
 		(gnus-article-hide-header "followup-to")))
 	     ((eq elem 'reply-to)
-	      (let ((from (mail-fetch-field "from"))
-		    (reply-to (mail-fetch-field "reply-to")))
+	      (let ((from (message-fetch-field "from"))
+		    (reply-to (message-fetch-field "reply-to")))
 		(when (and
 		       from reply-to
 		       (equal 
@@ -13852,7 +13887,7 @@ always hide."
 					reply-to))))
 		  (gnus-article-hide-header "reply-to"))))
 	     ((eq elem 'date)
-	      (let ((date (mail-fetch-field "date")))
+	      (let ((date (message-fetch-field "date")))
 		(when (and date
 			   (< (gnus-days-between date (current-time-string))
 			      4))
@@ -13950,7 +13985,7 @@ always hide."
 	  from)
       (save-restriction
 	(nnheader-narrow-to-headers)
-	(setq from (mail-fetch-field "from"))
+	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
 	(when (and gnus-article-x-face-command
 		   (or force
@@ -14213,7 +14248,7 @@ how much time has lapsed since DATE."
 (defun gnus-make-date-line (date type)
   "Return a DATE line of TYPE."
   (cond
-   ;; Convert to the local timezone.	 We have to slap a
+   ;; Convert to the local timezone.  We have to slap a
    ;; `condition-case' round the calls to the timezone
    ;; functions since they aren't particularly resistant to
    ;; buggy dates.
@@ -14649,17 +14684,17 @@ If NEWSGROUP is nil, return the global kill file name instead."
    ((or (null newsgroup)
 	(string-equal newsgroup ""))
     (expand-file-name gnus-kill-file-name
-		      (or gnus-kill-files-directory "~/News")))
+		      gnus-kill-files-directory))
    ;; Append ".KILL" to newsgroup name.
    ((gnus-use-long-file-name 'not-kill)
     (expand-file-name (concat (gnus-newsgroup-savable-name newsgroup)
 			      "." gnus-kill-file-name)
-		      (or gnus-kill-files-directory "~/News")))
+		      gnus-kill-files-directory))
    ;; Place "KILL" under the hierarchical directory.
    (t
     (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
 			      "/" gnus-kill-file-name)
-		      (or gnus-kill-files-directory "~/News")))))
+		      gnus-kill-files-directory))))
 
 
 ;;;
@@ -14704,7 +14739,8 @@ If NEWSGROUP is nil, return the global kill file name instead."
       (bury-buffer (current-buffer))
       (set-buffer-modified-p nil)
       (let ((auto (make-auto-save-file-name))
-	    (gnus-dribble-ignore t))
+	    (gnus-dribble-ignore t)
+	    modes)
 	(when (or (file-exists-p auto) (file-exists-p dribble-file))
 	  ;; Load whichever file is newest -- the auto save file
 	  ;; or the "real" file.
@@ -14715,9 +14751,9 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	    (set-buffer-modified-p t))
 	  ;; Set the file modes to reflect the .newsrc file modes.
 	  (save-buffer)
-	  (when (file-exists-p gnus-current-startup-file)
-	    (set-file-modes dribble-file
-			    (file-modes gnus-current-startup-file)))
+	  (when (and (file-exists-p gnus-current-startup-file)
+		     (setq modes (file-modes gnus-current-startup-file)))
+	    (set-file-modes dribble-file modes))
 	  ;; Possibly eval the file later.
 	  (when (gnus-y-or-n-p
 		 "Auto-save file exists.  Do you want to read it? ")

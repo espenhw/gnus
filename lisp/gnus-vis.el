@@ -1546,8 +1546,8 @@ specified by `gnus-button-alist'."
 (defvar gnus-prev-page-map nil)
 (unless gnus-prev-page-map
   (setq gnus-prev-page-map (make-sparse-keymap))
-  (define-key gnus-prev-page-map gnus-mouse-2 'gnus-article-prev-page)
-  (define-key gnus-prev-page-map "\r" 'gnus-article-prev-page))
+  (define-key gnus-prev-page-map gnus-mouse-2 'gnus-button-prev-page)
+  (define-key gnus-prev-page-map "\r" 'gnus-button-prev-page))
 
 (defun gnus-insert-prev-page-button ()
   (let ((buffer-read-only nil))
@@ -1560,8 +1560,24 @@ specified by `gnus-button-alist'."
 (unless gnus-next-page-map
   (setq gnus-next-page-map (make-keymap))
   (suppress-keymap gnus-prev-page-map)
-  (define-key gnus-next-page-map gnus-mouse-2 'gnus-article-next-page)
-  (define-key gnus-next-page-map "\r" 'gnus-article-next-page))
+  (define-key gnus-next-page-map gnus-mouse-2 'gnus-button-next-page)
+  (define-key gnus-next-page-map "\r" 'gnus-button-next-page))
+
+(defun gnus-button-next-page ()
+  "Go to the next page."
+  (interactive)
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-next-page)
+    (select-window win)))
+
+(defun gnus-button-prev-page ()
+  "Go to the prev page."
+  (interactive)
+  (let ((win (selected-window)))
+    (select-window (get-buffer-window gnus-article-buffer t))
+    (gnus-article-prev-page)
+    (select-window win)))
 
 (defun gnus-insert-next-page-button ()
   (let ((buffer-read-only nil))

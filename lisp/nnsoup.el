@@ -261,6 +261,8 @@ The SOUP packet file name will be inserted at the %s.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
+    (unless nnsoup-group-alist
+      (nnsoup-read-active-file))
     (let ((alist nnsoup-group-alist)
 	  (standard-output (current-buffer))
 	  entry)
@@ -342,7 +344,7 @@ The SOUP packet file name will be inserted at the %s.")
     t))
 
 (defun nnsoup-read-active-file ()
-  (setq nnsoup-group-alist)
+  (setq nnsoup-group-alist nil)
   (when (file-exists-p nnsoup-active-file)
     (condition-case ()
 	(load nnsoup-active-file t t t)

@@ -1,10 +1,10 @@
 ;;; gnus-setup.el --- Initialization & Setup for Gnus 5
-;; Copyright (C) 1995 Miranova Systems, Inc.
+;; Copyright (C) 1995, 96 Free Software Foundation, Inc.
 
 ;; Author: Steven L. Baur <steve@miranova.com>
 ;; Keywords: news
 
-;; This file is not yet a part of GNU Emacs.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
   "Directory where Emacs site lisp is located.")
 
 (defvar gnus-gnus-lisp-directory (concat gnus-emacs-lisp-directory
-					 "gnus-5.0.12/lisp/")
+					 "gnus-5.0.15/lisp/")
   "Directory where Gnus Emacs lisp is found.")
 
 (defvar gnus-sgnus-lisp-directory (concat gnus-emacs-lisp-directory

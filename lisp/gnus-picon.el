@@ -120,7 +120,7 @@ Some people may want to add \"unknown\" to this list."
       (if (annotationp listitem)
           (delete-annotation listitem))
       (setq plist (cdr plist))))
-)
+  )
 
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
@@ -133,7 +133,7 @@ Some people may want to add \"unknown\" to this list."
 	gnus-x-face-annotations nil)
   (if (bufferp gnus-picons-buffer)
       (kill-buffer gnus-picons-buffer))
-)
+  )
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
@@ -160,13 +160,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   (interactive)
   ;; convert the x-face header to a .xbm file
   (let ((process-connection-type nil)
-      (process nil))
+	(process nil))
     (process-kill-without-query
      (setq process (start-process
-      "gnus-x-face" nil "sh" "-c" gnus-picons-convert-x-face)))
+		    "gnus-x-face" nil "sh" "-c" gnus-picons-convert-x-face)))
     (process-send-region "gnus-x-face" beg end)
     (process-send-eof "gnus-x-face")
-  ;; wait for it.
+    ;; wait for it.
     (while (not (equal (process-status process) 'exit))
       (sleep-for .1)))
   ;; display it
@@ -177,40 +177,41 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     (beginning-of-buffer)
     (let ((iconpoint (point)))
       (if (not (looking-at "^$"))
-        (if buffer-read-only
-            (progn 
-              (toggle-read-only)
-              (open-line 1)
-              (toggle-read-only)
-              )
-          (open-line 1)))
+	  (if buffer-read-only
+	      (progn 
+		(toggle-read-only)
+		(open-line 1)
+		(toggle-read-only)
+		)
+	    (open-line 1)))
       (end-of-line)
       ;; append the annotation to gnus-article-annotations for deletion.
       (setq gnus-x-face-annotations 
-          (append
-           (gnus-picons-try-to-find-face
-	    gnus-picons-x-face-file-name iconpoint)
-           gnus-x-face-annotations)))
+	    (append
+	     (gnus-picons-try-to-find-face
+	      gnus-picons-x-face-file-name iconpoint)
+	     gnus-x-face-annotations)))
     ;; delete the tmp file
     (delete-file gnus-picons-x-face-file-name)))
 
 (defun gnus-article-display-picons ()
-"Display faces for an author and his/her domain in gnus-picons-display-where."
+  "Display faces for an author and his/her domain in gnus-picons-display-where."
   (interactive)
   (if (and (featurep 'xpm) 
-           (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
+           (or (not (fboundp 'device-type)) (equal (device-type) 'x))
+	   (mail-fetch-field "from"))
       (save-excursion
         (let* ((iconpoint (point)) (from (mail-fetch-field "from"))
-          (username 
-           (progn
-             (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
-             (match-string 1 from)))
-           (hostpath
-            (concat (gnus-picons-reverse-domain-path
-                     (replace-in-string
-                      (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" 
-                                         "\\1") 
-                      "\\." "/")) "/")))
+	       (username 
+		(progn
+		  (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
+		  (match-string 1 from)))
+	       (hostpath
+		(concat (gnus-picons-reverse-domain-path
+			 (replace-in-string
+			  (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" 
+					     "\\1") 
+			  "\\." "/")) "/")))
           (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
           (gnus-add-current-to-buffer-list)
           (beginning-of-buffer)
@@ -228,30 +229,30 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
           (gnus-picons-remove gnus-article-annotations)
           (setq gnus-article-annotations 'nil)
           (if (equal username from)
-                (setq username (progn
-                                 (string-match "<\\([_a-zA-Z0-9-.]+\\)>" from)
-                                 (match-string 1 from))))
+	      (setq username (progn
+			       (string-match "<\\([_a-zA-Z0-9-.]+\\)>" from)
+			       (match-string 1 from))))
           (mapcar '(lambda (pathpart) 
                      (setq gnus-article-annotations
                            (append
-                                   (gnus-picons-insert-face-if-exists 
-                                    (concat 
-                                     (file-name-as-directory 
-                                      gnus-picons-database) pathpart)
-                                    (concat hostpath username) 
-                                    iconpoint)
-                                    gnus-article-annotations))) 
+			    (gnus-picons-insert-face-if-exists 
+			     (concat 
+			      (file-name-as-directory 
+			       gnus-picons-database) pathpart)
+			     (concat hostpath username) 
+			     iconpoint)
+			    gnus-article-annotations))) 
                   gnus-picons-user-directories)
           (mapcar '(lambda (pathpart) 
                      (setq gnus-article-annotations 
                            (append
-                                   (gnus-picons-insert-face-if-exists 
-                                    (concat (file-name-as-directory 
-                                             gnus-picons-database) pathpart)
-                                    (concat hostpath "unknown") 
-                                    iconpoint)
-                                    gnus-article-annotations))) 
-                           gnus-picons-domain-directories)
+			    (gnus-picons-insert-face-if-exists 
+			     (concat (file-name-as-directory 
+				      gnus-picons-database) pathpart)
+			     (concat hostpath "unknown") 
+			     iconpoint)
+			    gnus-article-annotations))) 
+		  gnus-picons-domain-directories)
           (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)
           ))))
 
@@ -261,32 +262,32 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   (if (and (featurep 'xpm) 
            (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
       (save-excursion
-      (let
-          ((iconpoint (point)))
-        (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
-        (gnus-add-current-to-buffer-list)
-        (beginning-of-buffer)
-        (cond 
-         ((listp gnus-group-annotations)
-          (mapcar 'delete-annotation gnus-group-annotations)
-          (setq gnus-group-annotations nil))
-         ((annotationp gnus-group-annotations)
-          (delete-annotation gnus-group-annotations)
-          (setq gnus-group-annotations nil))
-         )
-        (setq iconpoint (point))
-        (if (not (looking-at "^$"))
-            (open-line 1))
-        (gnus-picons-remove gnus-group-annotations)
-        (setq gnus-group-annotations nil)
-        (setq gnus-group-annotations
-              (gnus-picons-insert-face-if-exists 
-               (concat (file-name-as-directory gnus-picons-database)  
-                       gnus-picons-news-directory)
-               (concat (replace-in-string gnus-newsgroup-name "\\." "/") 
-                       "/unknown")
-               iconpoint t))
-        (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)))))
+	(let
+	    ((iconpoint (point)))
+	  (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+	  (gnus-add-current-to-buffer-list)
+	  (beginning-of-buffer)
+	  (cond 
+	   ((listp gnus-group-annotations)
+	    (mapcar 'delete-annotation gnus-group-annotations)
+	    (setq gnus-group-annotations nil))
+	   ((annotationp gnus-group-annotations)
+	    (delete-annotation gnus-group-annotations)
+	    (setq gnus-group-annotations nil))
+	   )
+	  (setq iconpoint (point))
+	  (if (not (looking-at "^$"))
+	      (open-line 1))
+	  (gnus-picons-remove gnus-group-annotations)
+	  (setq gnus-group-annotations nil)
+	  (setq gnus-group-annotations
+		(gnus-picons-insert-face-if-exists 
+		 (concat (file-name-as-directory gnus-picons-database)  
+			 gnus-picons-news-directory)
+		 (concat (replace-in-string gnus-newsgroup-name "\\." "/") 
+			 "/unknown")
+		 iconpoint t))
+	  (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)))))
 
 
 (defun gnus-picons-insert-face-if-exists (path filename ipoint &optional rev)
@@ -297,22 +298,22 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
                             "[_a-zA-Z0-9-]+/\\([_A-Za-z0-9-]+\\)$" "\\1"))
         (annotations nil))
     (if (and rev
-         (not (equal filename newfilename)))
+	     (not (equal filename newfilename)))
         (setq annotations (append
-              (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
-               annotations)))
+			   (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
+			   annotations)))
     (if (eq (length annotations) (length (setq annotations (append
-          (gnus-picons-try-to-find-face (concat pathfile ".xpm") ipoint)
-           annotations))))
+							    (gnus-picons-try-to-find-face (concat pathfile ".xpm") ipoint)
+							    annotations))))
         (setq annotations (append
-                             (gnus-picons-try-to-find-face 
-                              (concat pathfile ".xbm") ipoint)
-                              annotations)))
+			   (gnus-picons-try-to-find-face 
+			    (concat pathfile ".xbm") ipoint)
+			   annotations)))
     (if (and (not rev)
-         (not (equal filename newfilename)))
+	     (not (equal filename newfilename)))
         (setq annotations (append
-              (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
-               annotations)))
+			   (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
+			   annotations)))
     annotations
     )
   )

@@ -40,11 +40,11 @@
 
 (nnoo-declare nnfolder)
 
-(defvoo nnfolder-directory (expand-file-name "~/Mail/")
+(defvoo nnfolder-directory (expand-file-name message-directory)
   "The name of the nnfolder directory.")
 
 (defvoo nnfolder-active-file 
-  (concat (file-name-as-directory nnfolder-directory) "active")
+  (nnheader-concat nnfolder-directory "active")
   "The name of the active file.")
 
 ;; I renamed this variable to something more in keeping with the general GNU
@@ -560,6 +560,9 @@ it.")
 	    (obuf (current-buffer)))
 	(set-buffer nnfolder-current-buffer)
 	(goto-char (point-max))
+	(unless (eolp)
+	  (insert "\n"))
+	(insert "\n")
 	(insert-buffer-substring obuf beg end)
 	(set-buffer obuf)))
 

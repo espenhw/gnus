@@ -529,7 +529,8 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	((eq type 'f)
 	 (setq match (gnus-simplify-subject-fuzzy match))))
   (let ((score (gnus-score-default score))
-	(header (downcase header)))
+	(header (downcase header))
+	new)
     (and prompt (setq match (read-string 
 			     (format "Match %s on %s, %s: " 
 				     (cond ((eq date 'now)
@@ -543,12 +544,6 @@ If optional argument `SILENT' is nil, show effect of score entry."
 				 (int-to-string match)
 			       match))))
 
-    ;; Score the current buffer.
-    (and (>= (nth 1 (assoc header gnus-header-index)) 0)
-	 (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-string)
-	 (not silent)
-	 (gnus-summary-score-effect header match type score))
-
     ;; If this is an integer comparison, we transform from string to int. 
     (and (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
 	 (setq match (string-to-int match)))
@@ -557,17 +552,14 @@ If optional argument `SILENT' is nil, show effect of score entry."
       ;; Add the score entry to the score file.
       (when (= score gnus-score-interactive-default-score)
 	   (setq score nil))
-      (let ((new (cond 
-		  (type
-		   (list match score (and date (gnus-day-number date)) type))
-		  (date
-		   (list match score (gnus-day-number date)))
-		  (score
-		   (list match score))
-		  (t
-		   (list match))))
-	    (old (gnus-score-get header))
+      (let ((old (gnus-score-get header))
 	    elem)
+	(setq new
+	      (cond 
+	       (type (list match score (and date (gnus-day-number date)) type))
+	       (date (list match score (gnus-day-number date)))
+	       (score (list match score))
+	       (t (list match))))
 	;; We see whether we can collapse some score entries.
 	;; This isn't quite correct, because there may be more elements
 	;; later on with the same key that have matching elems... Hm.
@@ -583,8 +575,18 @@ If optional argument `SILENT' is nil, show effect of score entry."
 				      gnus-score-interactive-default-score)))
 	  ;; Nope, we have to add a new elem.
 	  (gnus-score-set header (if old (cons new old) (list new))))
-	(gnus-score-set 'touched '(t))
-	new))))
+	(gnus-score-set 'touched '(t))))
+
+    ;; Score the current buffer.
+    (unless silent
+      (if (and (>= (nth 1 (assoc header gnus-header-index)) 0)
+	       (eq (nth 2 (assoc header gnus-header-index))
+		   'gnus-score-string))
+	  (gnus-summary-score-effect header match type score)
+	(gnus-summary-rescore)))
+
+    ;; Return the new scoring rule.
+    new))
 
 (defun gnus-summary-score-effect (header match type score)
   "Simulate the effect of a score file entry.
@@ -783,7 +785,6 @@ SCORE is the score to add."
   
 (defun gnus-score-load-file (file)
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
-  (setq gnus-kill-files-directory (or gnus-kill-files-directory "~/News/"))
   (let* ((file (expand-file-name 
 		(or (and (string-match
 			  (concat "^" (expand-file-name
@@ -1027,7 +1028,7 @@ SCORE is the score to add."
 		  ;; This is an adaptive score file, so we do not run
 		  ;; it through `pp'.  These files can get huge, and
 		  ;; are not meant to be edited by human hands.
-		  (insert (format "%S" score))
+		  (prin1 score (current-buffer))
 		;; This is a normal score file, so we print it very
 		;; prettily. 
 		(pp score (current-buffer))))
@@ -1837,7 +1838,7 @@ SCORE is the score to add."
 (defun gnus-summary-rescore ()
   "Redo the entire scoring process in the current summary."
   (interactive)
-  (setq gnus-newsgroup-scored nil)
+  (gnus-score-save)
   (setq gnus-score-cache nil)
   (setq gnus-newsgroup-scored nil)
   (gnus-possibly-score-headers)
@@ -1929,8 +1930,7 @@ SCORE is the score to add."
 	   (gnus-score-search-global-directories gnus-global-score-files)))
   ;; Fix the kill-file dir variable.
   (setq gnus-kill-files-directory 
-	(file-name-as-directory
-	 (or gnus-kill-files-directory "~/News/")))
+	(file-name-as-directory gnus-kill-files-directory))
   ;; If we can't read it, there are no score files.
   (if (not (file-exists-p (expand-file-name gnus-kill-files-directory)))
       (setq gnus-score-file-list nil)
@@ -2146,17 +2146,17 @@ The list is determined from the variable gnus-score-file-alist."
 	   (string-equal newsgroup ""))
        ;; The global score file is placed at top of the directory.
        (expand-file-name 
-	suffix (or gnus-kill-files-directory "~/News")))
+	suffix gnus-kill-files-directory))
       ((gnus-use-long-file-name 'not-score)
        ;; Append ".SCORE" to newsgroup name.
        (expand-file-name (concat (gnus-newsgroup-savable-name newsgroup)
 				 "." suffix)
-			 (or gnus-kill-files-directory "~/News")))
+			 gnus-kill-files-directory))
       (t
        ;; Place "SCORE" under the hierarchical directory.
        (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
 				 "/" suffix)
-			 (or gnus-kill-files-directory "~/News")))))))
+			 gnus-kill-files-directory))))))
 
 (defun gnus-score-search-global-directories (files)
   "Scan all global score directories for score files."

@@ -48,9 +48,6 @@ with some simple extensions.
 %A  Number of unread articles in the groups in the topic and its subtopics.
 ")
 
-(defvar gnus-topic-unique t
-  "*If non-nil, each group will only belong to one topic.")
-
 (defvar gnus-topic-indent-level 2
   "*How much each subtopic should be indented.")
 
@@ -58,6 +55,9 @@ with some simple extensions.
 
 (defvar gnus-topic-active-topology nil)
 (defvar gnus-topic-active-alist nil)
+
+(defvar gnus-topology-checked-p nil
+  "Whether the topology has been checked in this session.")
 
 (defvar gnus-topic-killed-topics nil)
 (defvar gnus-topic-inhibit-change-level nil)
@@ -89,6 +89,13 @@ with some simple extensions.
   "The number of unread articles in topic on the current line."
   (get-text-property (gnus-point-at-bol) 'gnus-topic-unread))
 
+(defun gnus-topic-unread (topic)
+  "Return the number of unread articles in TOPIC."
+  (or (save-excursion
+	(and (gnus-topic-goto-topic topic)
+	     (gnus-group-topic-unread)))
+      0))
+
 (defun gnus-topic-init-alist ()
   "Initialize the topic structures."
   (setq gnus-topic-topology
@@ -114,7 +121,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 
     (setq gnus-topic-tallied-groups nil)
 
-    (unless gnus-topic-alist
+    (when (or (not gnus-topic-alist)
+	      (not gnus-topology-checked-p))
       (gnus-topic-check-topology))
 
     (unless list-topic 
@@ -367,7 +375,8 @@ articles in the topic and its subtopics."
   (setq gnus-topic-active-topology nil
 	gnus-topic-active-alist nil
 	gnus-topic-killed-topics nil
-	gnus-topic-tallied-groups nil))
+	gnus-topic-tallied-groups nil
+	gnus-topology-checked-p nil))
 
 (defun gnus-topic-check-topology ()  
   ;; The first time we set the topology to whatever we have
@@ -375,6 +384,7 @@ articles in the topic and its subtopics."
   (unless gnus-topic-alist
     (gnus-topic-init-alist))
 
+  (setq gnus-topology-checked-p t)
   (let ((topics (gnus-topic-list))
 	(alist gnus-topic-alist)
 	changed)
@@ -416,13 +426,6 @@ articles in the topic and its subtopics."
 	(incf total number)))
     total))
 
-(defun gnus-group-parent-topic ()
-  "Return the topic the current group belongs in."
-  (let ((group (gnus-group-group-name)))
-    (if group
-	(gnus-group-topic group)
-      (gnus-group-topic-name))))
-
 (defun gnus-group-topic (group)
   "Return the topic GROUP is a member of."
   (let ((alist gnus-topic-alist)
@@ -435,9 +438,22 @@ articles in the topic and its subtopics."
     out))
 
 (defun gnus-topic-goto-topic (topic)
+  "Go to TOPIC."
   (when topic
     (gnus-goto-char (text-property-any (point-min) (point-max)
 				       'gnus-topic (intern topic)))))
+
+(defun gnus-group-parent-topic ()
+  "Return the name of the current topic."
+  (let ((result
+	 (or (get-text-property (point) 'gnus-topic)
+	     (save-excursion
+	       (and (gnus-goto-char (previous-single-property-change
+				     (point) 'gnus-topic))
+		    (get-text-property (max (1- (point)) (point-min))
+				       'gnus-topic))))))
+    (when result
+      (symbol-name result))))
   
 (defun gnus-topic-update-topic ()
   "Update all parent topics to the current group."
@@ -472,7 +488,9 @@ articles in the topic and its subtopics."
 	(forward-line 1)))))
 
 (defun gnus-topic-update-topic-line (topic-name &optional reads)
-  (let* ((type (cadr (gnus-topic-find-topology topic-name)))
+  (let* ((top (gnus-topic-find-topology topic-name))
+	 (type (cadr top))
+	 (children (cddr top))
 	 (entries (gnus-topic-find-groups 
 		   (car type) (car gnus-group-list-mode)
 		   (cdr gnus-group-list-mode)))
@@ -484,6 +502,8 @@ articles in the topic and its subtopics."
       ;; Tally all the groups that belong in this topic.
       (if reads
 	  (setq unread (- (gnus-group-topic-unread) reads))
+	(while children
+	  (incf unread (gnus-topic-unread (caar (pop children)))))
 	(while (setq entry (pop entries))
 	  (when (numberp (car entry))
 	    (incf unread (car entry)))))
@@ -649,8 +669,10 @@ articles in the topic and its subtopics."
       (make-local-variable 'gnus-group-indentation-function)
       (setq gnus-group-indentation-function
 	    'gnus-topic-group-indentation)
+      (setq gnus-topology-checked-p nil)
       ;; We check the topology.
-      (gnus-topic-check-topology)
+      (when gnus-newsrc-alist
+	(gnus-topic-check-topology))
       (run-hooks 'gnus-topic-mode-hook))
     ;; Remove topic infestation.
     (unless gnus-topic-mode
@@ -721,7 +743,8 @@ group."
   (gnus-topic-goto-topic topic))
 
 (defun gnus-topic-move-group (n topic &optional copyp)
-  "Move the current group to a topic."
+  "Move the next N groups to TOPIC.
+If COPYP, copy the groups instead."
   (interactive
    (list current-prefix-arg
 	 (completing-read "Move to topic: " gnus-topic-alist nil t)))
@@ -731,11 +754,11 @@ group."
     (mapcar (lambda (g) 
 	      (gnus-group-remove-mark g)
 	      (when (and
-		     (setq entry (assoc (gnus-group-topic g) gnus-topic-alist))
+		     (setq entry (assoc (gnus-group-parent-topic)
+					gnus-topic-alist))
 		     (not copyp))
 		(setcdr entry (delete g (cdr entry))))
-	      (when topicl
-		(nconc topicl (list g))))
+	      (nconc topicl (list g)))
 	    groups)
     (gnus-group-position-point))
   (gnus-topic-enter-dribble)
@@ -775,7 +798,7 @@ group."
     (when (and (< oldlevel gnus-level-zombie)
 	       (>= level gnus-level-zombie))
       (let (alist)
-	(when (setq alist (assoc (gnus-group-topic group) gnus-topic-alist))
+	(when (setq alist (assoc (gnus-group-parent-topic) gnus-topic-alist))
 	  (setcdr alist (delete group (cdr alist))))))
     ;; If the group is subscribed. then we enter it into the topics.
     (when (and (< level gnus-level-zombie)
@@ -821,7 +844,7 @@ group."
     (if (gnus-group-goto-group group)
 	t
       ;; The group is no longer visible.
-      (let* ((list (assoc (gnus-group-topic group) gnus-topic-alist))
+      (let* ((list (assoc (gnus-group-parent-topic) gnus-topic-alist))
 	     (after (cdr (member group (cdr list)))))
 	;; First try to put point on a group after the current one.
 	(while (and after

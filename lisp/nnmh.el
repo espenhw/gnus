@@ -38,7 +38,7 @@
 
 (nnoo-declare nnmh)
 
-(defvoo nnmh-directory "~/Mail/"
+(defvoo nnmh-directory message-directory
   "*Mail spool directory.")
 
 (defvoo nnmh-get-new-mail t

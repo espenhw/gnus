@@ -545,7 +545,7 @@ Return whether the unpacking was successful."
 		(gnus-message 5 "Sending mail to %s..."
 			 (mail-fetch-field "to"))
 		(sit-for 1)
-		(funcall message-send-mail-function))
+		(message-send-mail))
 	       (t
 		(error "Unknown reply kind")))
 	      (set-buffer msg-buf)

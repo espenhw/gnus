@@ -1,4 +1,138 @@
+Tue May 21 20:08:33 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el (gnus-dribble-read-file): Don't do modes unless they are
+	available. 
+
+	* gnus-score.el (gnus-summary-score-entry): Wouldn't show
+	immediate scorign of followups.
+	(gnus-score-save): Use prin1 instead of format.
+
+	* gnus-msg.el (gnus-bug-kill-buffer): Bogus.
+
+Tue May 21 18:32:29 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-vis.el (gnus-button-next-page): New command.
+	(gnus-button-prev-page): Ditto.
+
+	* gnus-topic.el (gnus-topic-unique): Removed variable.
+	(gnus-current-topic): New function.
+	(gnus-topic-move-group): Use it.
+	(gnus-topic-goto-next-group): Use it.
+
+Tue May 21 11:08:42 1996  Steven L Baur  <steve@miranova.com>
+
+	* gnus-setup.el: Copyright assigned to FSF.
+
+Tue May 21 17:09:27 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* message.el (message-fetch-field): New function.
+
+	* gnus.el (gnus-directory): New variable.
+
+	* message.el (message-directory): New variable.
+
+	* nnmail.el (nnmail-insert-lines): Make sure point is at the
+	beginning of the line.
+	(nnmail-directory): New variable.
+
+	* gnus.el (gnus-mode-string-quote): New function.
+	(gnus-set-mode-line): Use it.
+
+Tue May 21 10:34:26 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Use message narrow to headers.
+	(gnus-inews-do-gcc): Find the right archive method.
+
+	* gnus.el (gnus-select-newsgroup): Check whether the group can be
+	requested first.
+	(gnus-no-server): Nonsensical.
+	(gnus-group-mark-group): Go past topic lines.
+	(gnus-server-to-method): Would return nil on select methods.
+
+	* gnus-topic.el (gnus-topic-mode): Don't check topology unless we
+	have the newsrc alist.
+	(gnus-topic-check-topology): Wouldn't check topology properly.
+
+	* nnsoup.el (nnsoup-request-list): Make sure the active file is
+	read first.
+
+	* gnus.el (gnus-sortable-date): Simplified.
+	(gnus-group-set-mode-line): Remove the ":" if the server is "".
+
+Tue May 21 10:13:28 1996  Jack Vinson  <jvinson@cheux.ecs.umass.edu>
+
+	* message.el (message-rename-buffer): New command and keystroke.
+
+Mon May 20 10:15:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-search-article): New implementation; set
+	point in the article buffer to the match.
+	(gnus-parent-headers): New function.
+	(gnus-dd-mmm): Protect against broken dates.
+
+	* gnus-topic.el (gnus-topic-unread): New function.
+	(gnus-topic-update-topic-line): Use it.
+
+	* gnus.el (gnus-group-list-active): Protect against unbound
+	symbols. 
+
+Mon May 20 00:31:36 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-article-group): Do not split into empty list
+	of groups. 
+
+Mon May 20 09:42:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-picon.el: Ran `indent-sexp' over file.
+	(gnus-article-display-picons): Make sure there is a From before
+	doing anything.
+
+	* nnfolder.el (nnfolder-save-mail): Insert a blank line before the
+	From line.
+
+	* message.el (message-mode-map): Changed key.
+	(message-sort-headers): `start-open' text props.
+	(message-sort-headers): Would sort oddly on continuation lines.
+
+Sun May 19 20:26:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-set-mode-line): Longer "modified".
+
+	* gnus-uu.el (gnus-uu-grab-articles): Don't do any display hooks. 
+
+Sun May 19 19:42:55 1996  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* message.el (message-y-or-n-p, message-talkative-question,
+	message-flatten-list, message-flatten-list-1): New functions.
+
+Sun May 19 17:28:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-mode-map): Define \t.
+	(message-newgroups-header-regexp): New variable.
+	(message-tab): New command.
+	(message-expand-group): New function.
+
+	* gnus-msg.el (gnus-group-post-news): Don't prompt.
+
+	* gnus.el (gnus-group-update-group-line): Preserve indentation.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Copy the head from the
+	original article buffer.
+
+	* gnus-vm.el: Decimated.
+
+	* gnus-mh.el (gnus-mh-mail-send-and-exit): Removed.
+	(gnus-mh-mail-setup): Removed.
+
+	* message.el (message-send-mail-with-sendmail): Renamed.
+	(message-send-mail-with-mh): New function.
+
+	* gnus-salt.el (gnus-pick-start-reading): Select the first
+	article. 
+
 Sun May 19 09:58:30 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.89 is released.
 
 	* gnus.el (gnus-group-set-mode-line): Make sure we're in the group
 	buffer.

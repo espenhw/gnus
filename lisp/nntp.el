@@ -1184,16 +1184,15 @@ If SERVICE, this this as the port number."
 
 (defun nntp-open-rlogin (server)
   (let ((proc (if nntp-rlogin-user-name
-		  (start-process "nntpd" nntp-server-buffer "rsh"
-				 "-l"
-				 nntp-rlogin-user-name
-				 server
-				 (mapconcat 'identity
-					    nntp-rlogin-parameters " "))
-		(start-process "nntpd" nntp-server-buffer "rsh"
-			       server
-			       (mapconcat 'identity
-					  nntp-rlogin-parameters " ")))))
+		  (start-process
+		   "nntpd" nntp-server-buffer "rsh"
+		   "-l" nntp-rlogin-user-name server
+		   (mapconcat 'identity
+			      nntp-rlogin-parameters " "))
+		(start-process
+		 "nntpd" nntp-server-buffer "rsh" server
+		 (mapconcat 'identity
+			    nntp-rlogin-parameters " ")))))
     proc))
 
 (defun nntp-telnet-to-machine ()

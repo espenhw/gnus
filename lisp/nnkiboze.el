@@ -37,9 +37,7 @@
 (eval-when-compile (require 'cl))
 
 (nnoo-declare nnkiboze)
-
-(defvoo nnkiboze-directory 
-  (expand-file-name (or gnus-article-save-directory "~/News/"))
+(defvoo nnkiboze-directory gnus-directory
   "nnkiboze will put its files in this directory.")
 
 (defvoo nnkiboze-level 9

@@ -37,7 +37,7 @@
 
 (nnoo-declare nnml)
 
-(defvoo nnml-directory "~/Mail/"
+(defvoo nnml-directory message-directory
   "Mail spool directory.")
 
 (defvoo nnml-active-file 
@@ -195,6 +195,8 @@ all. This may very well take some time.")
   (cond 
    ((not (nnml-possibly-change-directory group server))
     (nnheader-report 'nnml "Invalid group (no such directory)"))
+   ((not (file-directory-p nnml-current-directory))
+    (nnheader-report 'nnml "%s is not a directory" nnml-current-directory))
    (dont-check 
     (nnheader-report 'nnml "Group %s selected" group)
     t)
