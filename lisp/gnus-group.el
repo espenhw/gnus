@@ -159,6 +159,7 @@ with some simple extensions.
 %G    Group name (string)
 %g    Qualified group name (string)
 %c    Short (collapsed) group name.  See `gnus-group-uncollapsed-levels'.
+%C    Group comment (string)
 %D    Group description (string)
 %s    Select method (string)
 %o    Moderated group (char, \"m\")
@@ -191,7 +192,7 @@ of these specs, you must probably re-start Gnus to see them go into
 effect.
 
 General format specifiers can also be used.
-See (gnus)Formatting Variables."
+See `(gnus)Formatting Variables'."
   :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-group-visual
   :type 'string)
@@ -474,6 +475,7 @@ simple manner.")
     (?g gnus-tmp-group ?s)
     (?G gnus-tmp-qualified-group ?s)
     (?c (gnus-short-group-name gnus-tmp-group) ?s)
+    (?C gnus-tmp-comment ?s)
     (?D gnus-tmp-newsgroup-description ?s)
     (?o gnus-tmp-moderated ?c)
     (?O gnus-tmp-moderated-string ?s)
@@ -1318,6 +1320,9 @@ if it is a string, only list groups matching REGEXP."
 	 (gnus-tmp-qualified-group
 	  (gnus-group-name-decode (gnus-group-real-name gnus-tmp-group)
 				  group-name-charset))
+	 (gnus-tmp-comment 
+	  (or (gnus-group-get-parameter gnus-tmp-group 'comment t)
+	      gnus-tmp-group))
 	 (gnus-tmp-newsgroup-description
 	  (if gnus-description-hashtb
 	      (or (gnus-group-name-decode

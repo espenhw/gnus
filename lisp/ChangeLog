@@ -1,3 +1,12 @@
+2002-04-22  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
+
+	* gnus-srvr.el (gnus-server-browse-in-group-buffer): it is a
+	boolean not a string
+	* gnus-group.el (gnus-group-line-format): add description of %C
+	* gnus-group.el (gnus-group-line-format-alist): add gnus-tmp-comment
+	  as %C
+	* gnus-group.el (gnus-group-insert-group-line): add gnus-tmp-comment
+
 2002-04-22  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-scan): typo: set

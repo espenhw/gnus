@@ -72,7 +72,7 @@ See (gnus)Formatting Variables."
   "Whether server browsing should take place in the group buffer.
 If nil, a faster, but more primitive, buffer is used instead."
   :group 'gnus-server-visual
-  :type 'string)
+  :type 'boolean)
 
 ;;; Internal variables.
 
