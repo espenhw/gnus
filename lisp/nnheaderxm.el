@@ -32,9 +32,9 @@
       (,function ,@args))
    time repeat))
 
-(fset 'nnheader-run-at-time 'nnheader-xmas-run-at-time)
-(fset 'nnheader-cancel-timer 'delete-itimer)
-(fset 'nnheader-cancel-function-timers 'ignore)
+(defalias 'nnheader-run-at-time 'nnheader-xmas-run-at-time)
+(defalias 'nnheader-cancel-timer 'delete-itimer)
+(defalias 'nnheader-cancel-function-timers 'ignore)
 
 (provide 'nnheaderxm)
 

@@ -35,7 +35,7 @@
 (eval-when-compile
   (require 'cl)
   ;; This is just to shut up the byte-compiler.
-  (fset 'nndraft-request-group 'ignore))
+  (defalias 'nndraft-request-group 'ignore))
 
 (nnoo-declare nndraft
   nnmh)

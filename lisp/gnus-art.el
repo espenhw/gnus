@@ -3269,8 +3269,8 @@ In no internal viewer is available, use an external viewer."
 	;; window, overlay, position.
 	(if (mm-handle-displayed-p
 	     (if overlay
-		 (with-current-buffer (overlay-buffer overlay)
-		   (widget-get (widget-at (overlay-start overlay))
+		 (with-current-buffer (gnus-overlay-buffer overlay)
+		   (widget-get (widget-at (gnus-overlay-start overlay))
 			       :mime-handle))
 	       (widget-get widget/window :mime-handle)))
 	    "hide" "show")

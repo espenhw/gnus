@@ -1,3 +1,13 @@
+2000-10-06 13:46:47  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* base64.el, dgnushack.el, gnus-spec.el, messagexmas.el
+	* gnus-xmas.el, nnheaderxm.el, nndraft.el: Use defalias.
+
+	* gnus-xmas.el (gnus-xmas-define): Defalias gnus-overlay-buffer,
+	gnus-overlay-start.
+	* gnus.el: Ditto.
+	* gnus-art.el (gnus-insert-mime-button): Use them.
+
 2000-10-06 10:01:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-with-unibyte-current-buffer): Don't set unibyte

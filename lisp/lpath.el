@@ -5,7 +5,7 @@
 (defun maybe-fbind (args)
   (while args
     (or (fboundp (car args))
-	(fset (car args) 'ignore))
+	(defalias (car args) 'ignore))
     (setq args (cdr args))))
 
 (defun maybe-bind (args)

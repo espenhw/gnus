@@ -27,7 +27,7 @@
 
 ;;; Code:
 
-(fset 'facep 'ignore)
+(defalias 'facep 'ignore)
 
 (require 'cl)
 
@@ -96,10 +96,10 @@
 
 (eval-and-compile
   (unless (featurep 'xemacs)
-    (fset 'get-popup-menu-response 'ignore)
-    (fset 'event-object 'ignore)
-    (fset 'x-defined-colors 'ignore)
-    (fset 'read-color 'ignore)))
+    (defalias 'get-popup-menu-response 'ignore)
+    (defalias 'event-object 'ignore)
+    (defalias 'x-defined-colors 'ignore)
+    (defalias 'read-color 'ignore)))
 
 (defun dgnushack-compile (&optional warn)
   ;;(setq byte-compile-dynamic t)

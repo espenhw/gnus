@@ -29,7 +29,7 @@
 
 ;; For non-MULE
 (if (not (fboundp 'char-int))
-    (fset 'char-int 'identity))
+    (defalias 'char-int 'identity))
 
 (defvar base64-alphabet
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
@@ -272,7 +272,7 @@ base64-encoder-program.")
 	(buffer-string)
       (kill-buffer (current-buffer)))))
 
-(fset 'base64-decode-string 'base64-decode)
-(fset 'base64-encode-string 'base64-encode)
+(defalias 'base64-decode-string 'base64-decode)
+(defalias 'base64-encode-string 'base64-encode)
 
 (provide 'base64)
