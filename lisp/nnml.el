@@ -32,23 +32,26 @@
 
 (require 'nnheader)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnml-directory "~/Mail/"
+(nnoo-declare nnml)
+
+(defvoo nnml-directory "~/Mail/"
   "Mail spool directory.")
 
-(defvar nnml-active-file 
+(defvoo nnml-active-file 
   (concat (file-name-as-directory nnml-directory) "active")
   "Mail active file.")
 
-(defvar nnml-newsgroups-file 
+(defvoo nnml-newsgroups-file 
   (concat (file-name-as-directory nnml-directory) "newsgroups")
   "Mail newsgroups description file.")
 
-(defvar nnml-get-new-mail t
+(defvoo nnml-get-new-mail t
   "If non-nil, nnml will check the incoming mail file and split the mail.")
 
-(defvar nnml-nov-is-evil nil
+(defvoo nnml-nov-is-evil nil
   "If non-nil, Gnus will never generate and use nov databases for mail groups.
 Using nov databases will speed up header fetching considerably.
 This variable shouldn't be flipped much. If you have, for some reason,
@@ -57,10 +60,10 @@ the `nnml-generate-nov-databases' command. The function will go
 through all nnml directories and generate nov databases for them
 all. This may very well take some time.")
 
-(defvar nnml-prepare-save-mail-hook nil
+(defvoo nnml-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
-(defvar nnml-inhibit-expiry nil
+(defvoo nnml-inhibit-expiry nil
   "If non-nil, inhibit expiry.")
 
 
@@ -69,47 +72,25 @@ all. This may very well take some time.")
 (defconst nnml-version "nnml 1.0"
   "nnml version.")
 
-(defvar nnml-nov-file-name ".overview")
+(defvoo nnml-nov-file-name ".overview")
 
-(defvar nnml-current-directory nil)
-(defvar nnml-current-group nil)
-(defvar nnml-status-string "")
-(defvar nnml-nov-buffer-alist nil)
-(defvar nnml-group-alist nil)
-(defvar nnml-active-timestamp nil)
-(defvar nnml-article-file-alist nil)
+(defvoo nnml-current-directory nil)
+(defvoo nnml-current-group nil)
+(defvoo nnml-status-string "")
+(defvoo nnml-nov-buffer-alist nil)
+(defvoo nnml-group-alist nil)
+(defvoo nnml-active-timestamp nil)
+(defvoo nnml-article-file-alist nil)
 
-(defvar nnml-generate-active-function 'nnml-generate-active-info)
-
-
-
-;; Server variables.
-
-(defvar nnml-current-server nil)
-(defvar nnml-server-alist nil)
-(defvar nnml-server-variables 
-  `((nnml-directory ,nnml-directory)
-    (nnml-active-file ,nnml-active-file)
-    (nnml-newsgroups-file ,nnml-newsgroups-file)
-    (nnml-get-new-mail ,nnml-get-new-mail)
-    (nnml-nov-is-evil ,nnml-nov-is-evil)
-    (nnml-nov-file-name ,nnml-nov-file-name)
-    (nnml-current-directory nil)
-    (nnml-generate-active-function ,nnml-generate-active-function)
-    (nnml-article-file-alist nil)
-    (nnml-prepare-save-mail-hook ,nnml-prepare-save-mail-hook)
-    (nnml-current-group nil)
-    (nnml-inhibit-expiry ,nnml-inhibit-expiry)
-    (nnml-status-string "")
-    (nnml-nov-buffer-alist nil)
-    (nnml-group-alist nil)
-    (nnml-active-timestamp nil)))
+(defvoo nnml-generate-active-function 'nnml-generate-active-info)
 
 
 
 ;;; Interface functions.
 
-(defun nnml-retrieve-headers (sequence &optional newsgroup server fetch-old)
+(nnoo-define-basics nnml)
+
+(deffoo nnml-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -159,8 +140,8 @@ all. This may very well take some time.")
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
-(defun nnml-open-server (server &optional defs)
-  (nnheader-change-server 'nnml server defs)
+(deffoo nnml-open-server (server &optional defs)
+  (nnoo-change-server 'nnml server defs)
   (when (not (file-exists-p nnml-directory))
     (condition-case ()
 	(make-directory nnml-directory t)
@@ -177,20 +158,7 @@ all. This may very well take some time.")
 		     server nnml-directory)
     t)))
 
-(defun nnml-close-server (&optional server)
-  (setq nnml-current-server nil
-	nnml-group-alist nil)
-  t)
-
-(defun nnml-server-opened (&optional server)
-  (and (equal server nnml-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nnml-status-message (&optional server)
-  nnml-status-string)
-
-(defun nnml-request-article (id &optional newsgroup server buffer)
+(deffoo nnml-request-article (id &optional newsgroup server buffer)
   (nnml-possibly-change-directory newsgroup server)
   (let* ((nntp-server-buffer (or buffer nntp-server-buffer))
 	 file path gpath group-num)
@@ -223,7 +191,7 @@ all. This may very well take some time.")
       ;; We return the article number.
       (cons newsgroup (string-to-int (file-name-nondirectory path)))))))
 
-(defun nnml-request-group (group &optional server dont-check)
+(deffoo nnml-request-group (group &optional server dont-check)
   (cond 
    ((not (nnml-possibly-change-directory group server))
     (nnheader-report 'nnml "Invalid group (no such directory)"))
@@ -240,21 +208,15 @@ all. This may very well take some time.")
 			 (max (1+ (- (cdr active) (car active))) 0)
 			 (car active) (cdr active) group))))))
 
-(defun nnml-request-scan (&optional group server)
+(deffoo nnml-request-scan (&optional group server)
   (setq nnml-article-file-alist nil)
   (nnmail-get-new-mail 'nnml 'nnml-save-nov nnml-directory group))
 
-(defun nnml-close-group (group &optional server)
+(deffoo nnml-close-group (group &optional server)
   (setq nnml-article-file-alist nil)
   t)
 
-(defun nnml-request-close ()
-  (setq nnml-current-server nil
-	nnml-article-file-alist nil
-	nnml-server-alist nil)
-  t)
-
-(defun nnml-request-create-group (group &optional server) 
+(deffoo nnml-request-create-group (group &optional server) 
   (nnmail-activate 'nnml)
   (or (assoc group nnml-group-alist)
       (let (active)
@@ -271,19 +233,19 @@ all. This may very well take some time.")
 	(nnmail-save-active nnml-group-alist nnml-active-file)))
   t)
 
-(defun nnml-request-list (&optional server)
+(deffoo nnml-request-list (&optional server)
   (save-excursion
     (nnmail-find-file nnml-active-file)
     (setq nnml-group-alist (nnmail-get-active))))
 
-(defun nnml-request-newgroups (date &optional server)
+(deffoo nnml-request-newgroups (date &optional server)
   (nnml-request-list server))
 
-(defun nnml-request-list-newsgroups (&optional server)
+(deffoo nnml-request-list-newsgroups (&optional server)
   (save-excursion
     (nnmail-find-file nnml-newsgroups-file)))
 
-(defun nnml-request-expire-articles (articles newsgroup &optional server force)
+(deffoo nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup server)
   (let* ((active-articles 
 	  (nnheader-directory-articles nnml-current-directory))
@@ -324,7 +286,7 @@ all. This may very well take some time.")
     (message "")
     (nconc rest articles)))
 
-(defun nnml-request-move-article 
+(deffoo nnml-request-move-article 
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
@@ -351,7 +313,7 @@ all. This may very well take some time.")
        (and last (nnml-save-nov))))
     result))
 
-(defun nnml-request-accept-article (group &optional server last)
+(deffoo nnml-request-accept-article (group &optional server last)
   (nnml-possibly-change-directory group server)
   (let (result)
     (if (stringp group)
@@ -372,7 +334,7 @@ all. This may very well take some time.")
 	 (and last (nnml-save-nov)))))
     result))
 
-(defun nnml-request-replace-article (article group buffer)
+(deffoo nnml-request-replace-article (article group buffer)
   (nnml-possibly-change-directory group)
   (save-excursion
     (set-buffer buffer)
@@ -413,7 +375,7 @@ all. This may very well take some time.")
 	  (nnml-save-nov)
 	  t)))))
 
-(defun nnml-request-delete-group (group &optional force server)
+(deffoo nnml-request-delete-group (group &optional force server)
   (nnml-possibly-change-directory group server)
   (when force
     ;; Delete all articles in GROUP.
@@ -441,7 +403,7 @@ all. This may very well take some time.")
   (nnmail-save-active nnml-group-alist nnml-active-file)
   t)
 
-(defun nnml-request-rename-group (group new-name &optional server)
+(deffoo nnml-request-rename-group (group new-name &optional server)
   (nnml-possibly-change-directory group server)
   ;; Rename directory.
   (and (file-writable-p nnml-current-directory)
@@ -725,7 +687,7 @@ all. This may very well take some time.")
   ;; Read the active file to make sure we don't re-use articles 
   ;; numbers in empty groups.
   (nnmail-activate 'nnml)
-  (nnml-open-server (or nnml-current-server ""))
+  (nnml-open-server (or (nnoo-current-server 'nnml) ""))
   (setq nnml-directory (expand-file-name nnml-directory))
   ;; Recurse down the directories.
   (nnml-generate-nov-databases-1 nnml-directory)
@@ -753,6 +715,7 @@ all. This may very well take some time.")
       ;; Generate the nov file.
       (nnml-generate-nov-file dir files))))
 
+(defvar files)
 (defun nnml-generate-active-info (dir)
   ;; Update the active info for this group.
   (let ((group (nnheader-file-to-group 

@@ -1,4 +1,84 @@
+Sun Apr 14 08:54:37 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mode): Mail-hist isn't defined in XEmacs
+	19.13. 
+
+	* nnoo.el (defvoo): Didn't work under XEmacs.
+
+Sun Apr 14 06:27:19 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.71 is released.
+
+	* nnvirtual.el (nnvirtual-open-server): Would return nil.
+
+Sat Apr 13 05:37:10 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.70 is released.
+
+	* nnvirtual.el (nnvirtual-component-regexp): New variable.
+
+Fri Apr 12 18:59:45 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnoo.el: New file.  All backends now use it.
+
+Wed Apr 10 11:39:15 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Entry for "Eddit
+	  current score file" used nonexistant function.
+
+Fri Apr 12 04:57:03 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-get-new-news-this-group): Would jump around
+	too much.
+
+	* message.el (message-make-fqdm): Better `user-mail-address'.
+
+Thu Apr 11 00:32:33 1996  Steven L Baur  <steve@miranova.com>
+
+	* gnus-setup.el (gnus-use-mailcrypt): Attach mailcrypt
+	initialization to message-mode-hook.
+
+Fri Apr 12 03:30:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-insert-to): Insert ", " if needed.
+	(message-bounce): Insert an undo boundary.
+
+	* gnus.el (gnus-summary-local-variables): Make
+	gnus-thread-expunge-below a local variable. 
+
+	* message.el (message-setup): Insert default headers before
+	generating. 
+
+	* gnus-vis.el (gnus-button-url-regexp): Allow all word-constituent
+	characters.
+
+Thu Apr 11 04:27:19 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-body): Would bug out when there were
+	no articles.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Wrong function
+	called. 
+
+Wed Apr 10 12:48:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-make-organization): Remove all newlines from
+	Organization files.
+	(message-setup): Use mailabbrev.
+	(message-send): Use mail-hist.
+
+Tue Apr  9 14:52:55 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el ((fboundp 'event-point)): Was `event-closest-point'. 
+
+Wed Apr 10 12:28:41 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-mode-map): Moved Followup-to and Fcc.
+	(message-resend): Would bug out.
+
 Wed Apr 10 00:25:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.69 is released.
 
 	* nnvirtual.el (nnvirtual-close-group): Nix out variables.
 

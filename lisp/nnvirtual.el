@@ -33,26 +33,30 @@
 (require 'nntp)
 (require 'nnheader)
 (require 'gnus)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnvirtual-always-rescan nil
+(nnoo-declare nnvirtual)
+
+(defvoo nnvirtual-always-rescan nil
   "*If non-nil, always scan groups for unread articles when entering a group.
 If this variable is nil (which is the default) and you read articles
 in a component group after the virtual group has been activated, the
 read articles from the component group will show up when you enter the
 virtual group.")
 
+(defvoo nnvirtual-component-regexp nil
+  "*Regexp to match component groups.")
+
 
 
-(defconst nnvirtual-version "nnvirtual 1.0"
-  "Version number of this version of nnvirtual.")
+(defconst nnvirtual-version "nnvirtual 1.0")
 
-(defvar nnvirtual-group-alist nil)
-(defvar nnvirtual-current-group nil)
-(defvar nnvirtual-component-groups nil)
-(defvar nnvirtual-mapping nil)
+(defvoo nnvirtual-current-group nil)
+(defvoo nnvirtual-component-groups nil)
+(defvoo nnvirtual-mapping nil)
 
-(defvar nnvirtual-status-string "")
+(defvoo nnvirtual-status-string "")
 
 (eval-and-compile
   (autoload 'gnus-cache-articles-in-group "gnus-cache"))
@@ -61,9 +65,14 @@ virtual group.")
 
 ;;; Interface functions.
 
-(defun nnvirtual-retrieve-headers (articles &optional newsgroup server fetch-old)
-  (when (nnvirtual-possibly-change-group newsgroup server)
+(nnoo-define-basics nnvirtual)
+
+(deffoo nnvirtual-retrieve-headers (articles &optional newsgroup
+					     server fetch-old)
+  (when (nnvirtual-possibly-change-server server)
     (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
       (if (stringp (car articles))
 	  'headers
 	(let ((vbuf (nnheader-set-temp-buffer 
@@ -152,28 +161,8 @@ virtual group.")
 		'nov)
 	    (kill-buffer vbuf)))))))
 
-(defun nnvirtual-open-server (server &optional something)
-  (nnheader-init-server-buffer))
-
-(defun nnvirtual-close-server (&rest dum)
-  t)
-
-(defun nnvirtual-request-close ()
-  (setq nnvirtual-current-group nil
-	nnvirtual-component-groups nil
-	nnvirtual-mapping nil
-	nnvirtual-group-alist nil)
-  t)
-
-(defun nnvirtual-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
-
-(defun nnvirtual-status-message (&optional server)
-  nnvirtual-status-string)
-
-(defun nnvirtual-request-article (article &optional group server buffer)
-  (when (and (nnvirtual-possibly-change-group group server)
+(deffoo nnvirtual-request-article (article &optional group server buffer)
+  (when (and (nnvirtual-possibly-change-server server)
 	     (numberp article))
     (let* ((amap (assq article nnvirtual-mapping))
 	   (cgroup (cadr amap)))
@@ -192,59 +181,77 @@ virtual group.")
 	      (gnus-request-article-this-buffer (caddr amap) cgroup))
 	  (gnus-request-article (caddr amap) cgroup)))))))
 
-(defun nnvirtual-request-group (group &optional server dont-check)
+(deffoo nnvirtual-open-server (server &optional defs)
+  (unless (assq 'nnvirtual-component-regexp defs)
+    (push `(nnvirtual-component-regexp ,server)
+	  defs))
+  (nnoo-change-server 'nnvirtual server defs)
+  (if nnvirtual-component-groups
+      t
+    (setq nnvirtual-mapping nil)
+    ;; Go through the newsrc alist and find all component groups.
+    (let ((newsrc (cdr gnus-newsrc-alist))
+	  group)
+      (while (setq group (car (pop newsrc)))
+	(and (string-match nnvirtual-component-regexp group) ; Match
+	     ;; Add this group to the list of component groups.
+	     (setq nnvirtual-component-groups
+		   (cons group 
+			 (delete group nnvirtual-component-groups))))))
+    (if (not nnvirtual-component-groups)
+	(nnheader-report 'nnvirtual "No component groups: %s" server)
+      t)))
+
+(deffoo nnvirtual-request-group (group &optional server dont-check)
+  (nnvirtual-possibly-change-server server)
   (cond
-   ((null (nnvirtual-possibly-change-group
-	   group server 
-	   (if nnvirtual-always-rescan nil (not dont-check))))
+   ((null nnvirtual-component-groups)
     (setq nnvirtual-current-group nil)
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
+    (unless dont-check
+      (nnvirtual-create-mapping))
+    (setq nnvirtual-current-group group)
     (let ((len (length nnvirtual-mapping)))
       (nnheader-insert "211 %d 1 %d %s\n" len len group)))))
 
-(defun nnvirtual-request-type (group &optional article)
-  (when (nnvirtual-possibly-change-group group nil)
-    (if (not article)
-	'unknown
-      (let ((mart (assq article nnvirtual-mapping)))
-	(when mart
-	  (gnus-request-type (cadr mart) (car mart)))))))
+(deffoo nnvirtual-request-type (group &optional article)
+  (if (not article)
+      'unknown
+    (let ((mart (assq article nnvirtual-mapping)))
+      (when mart
+	(gnus-request-type (cadr mart) (car mart))))))
 
-(defun nnvirtual-request-update-mark (group article mark)
-  (when (nnvirtual-possibly-change-group group nil)
-    (let* ((nart (assq article nnvirtual-mapping))
-	   (cgroup (cadr nart))
-	   ;; The component group might be a virtual group.
-	   (nmark (gnus-request-update-mark cgroup (caddr nart) mark)))
-      (when (and (= mark nmark)
-		 (gnus-group-auto-expirable-p cgroup))
-	(setq mark gnus-expirable-mark))))
+(deffoo nnvirtual-request-update-mark (group article mark)
+  (let* ((nart (assq article nnvirtual-mapping))
+	 (cgroup (cadr nart))
+	 ;; The component group might be a virtual group.
+	 (nmark (gnus-request-update-mark cgroup (caddr nart) mark)))
+    (when (and (= mark nmark)
+	       (gnus-group-auto-expirable-p cgroup))
+      (setq mark gnus-expirable-mark)))
   mark)
     
-(defun nnvirtual-close-group (group &optional server)
-  (when (nnvirtual-possibly-change-group group server)
+(deffoo nnvirtual-close-group (group &optional server)
+  (when (nnvirtual-possibly-change-server server)
     ;; Copy (un)read articles.
     (nnvirtual-update-reads)
-    (setq nnvirtual-mapping nil
-	  nnvirtual-current-group nil
-	  nnvirtual-component-groups nil)
     ;; We copy the marks from this group to the component
     ;; groups here.
     (nnvirtual-update-marked))
   t)
     
-(defun nnvirtual-request-list (&optional server) 
+(deffoo nnvirtual-request-list (&optional server) 
   (nnheader-report 'nnvirtual "LIST is not implemented."))
 
-(defun nnvirtual-request-newgroups (date &optional server)
+(deffoo nnvirtual-request-newgroups (date &optional server)
   (nnheader-report 'nnvirtual "NEWGROUPS is not supported."))
 
-(defun nnvirtual-request-list-newsgroups (&optional server)
+(deffoo nnvirtual-request-list-newsgroups (&optional server)
   (nnheader-report 'nnvirtual "LIST NEWSGROUPS is not implemented."))
 
-(defun nnvirtual-request-update-info (group info &optional server)
-  (when (nnvirtual-possibly-change-group group server)
+(deffoo nnvirtual-request-update-info (group info &optional server)
+  (when (nnvirtual-possibly-change-server server)
     (let ((map nnvirtual-mapping)
 	  (marks (mapcar (lambda (m) (list (cdr m))) gnus-article-mark-lists))
 	  reads mr m op)
@@ -279,8 +286,8 @@ virtual group.")
 	  (setcdr (nthcdr 2 info) (list marks))))
       t)))
 
-(defun nnvirtual-catchup-group (group &optional server all)
-  (nnvirtual-possibly-change-group group server)
+(deffoo nnvirtual-catchup-group (group &optional server all)
+  (nnvirtual-possibly-change-server server)
   (let ((gnus-group-marked nnvirtual-component-groups)
 	(gnus-expert-user t))
     ;; Make sure all groups are activated.
@@ -293,9 +300,8 @@ virtual group.")
       (set-buffer gnus-group-buffer)
       (gnus-group-catchup-current nil all))))
 
-(defun nnvirtual-find-group-art (group article)
+(deffoo nnvirtual-find-group-art (group article)
   "Return the real group and article for virtual GROUP and ARTICLE."
-  (nnvirtual-possibly-change-group group nil)
   (let ((mart (assq article nnvirtual-mapping)))
     (when mart
       (cons (cadr mart) (caddr mart)))))
@@ -324,61 +330,15 @@ virtual group.")
 		    (concat "Xref: " (mail-header-xref header) "\t")
 		  "") "\n")))))
 
-(defun nnvirtual-possibly-change-group (group regexp &optional check)
-  (let ((inf t))
-    (when (or (not (equal group nnvirtual-current-group))
-	      check)
-      (setq inf (assoc group nnvirtual-group-alist))
-      (when nnvirtual-current-group
-	;; Push the old group variables onto the alist.
-	(setq nnvirtual-group-alist
-	      (cons (list nnvirtual-current-group
-			  nnvirtual-component-groups
-			  nnvirtual-mapping)
-		    (delq inf nnvirtual-group-alist))))
-      (if check
-	  ;; We nix out the variables.
-	  (setq nnvirtual-current-group nil
-		nnvirtual-component-groups nil
-		nnvirtual-mapping nil
-		nnvirtual-group-alist
-		(delq (assoc group nnvirtual-group-alist)
-		      nnvirtual-group-alist))
-	(setq nnvirtual-current-group nil
-	      nnvirtual-component-groups nil
-	      nnvirtual-mapping nil)
-	;; Try to find the variables in the assoc.
-	(when (and inf (equal (nth 3 inf) regexp))
-	  (setq nnvirtual-current-group (car inf)
-		nnvirtual-component-groups (nth 1 inf)
-		nnvirtual-mapping (nth 2 inf))))
-      
-      (unless nnvirtual-component-groups
-	(setq nnvirtual-mapping nil)
-	(setq nnvirtual-current-group group)
-	;; Go through the newsrc alist and find all component groups.
-	(let ((newsrc (cdr gnus-newsrc-alist))
-	      (virt-group (gnus-group-prefixed-name 
-			   nnvirtual-current-group '(nnvirtual ""))))
-	  (while (setq group (car (pop newsrc)))
-	    (and (string-match regexp group) ; Match
-		 ;; Virtual groups shouldn't include itself.
-		 (not (string= group virt-group))
-		 ;; Add this group to the list of component groups.
-		 (setq nnvirtual-component-groups
-		       (cons group 
-			     (delete group nnvirtual-component-groups))))))
-	(if (not nnvirtual-component-groups)
-	    (nnheader-report 'nnvirtual "No component groups: %s" group)
-	  (nnvirtual-create-mapping)))))
-  nnvirtual-component-groups)
+(defun nnvirtual-possibly-change-server (server)
+  (or (not server)
+      (nnoo-current-server-p 'nnvirtual server)
+      (nnvirtual-open-server server)))
 
 (defun nnvirtual-update-marked ()
   "Copy marks from the virtual group to the component groups."
   (let ((mark-lists gnus-article-mark-lists)
-	(marks (gnus-info-marks (gnus-get-info 
-				 (concat "nnvirtual:"
-					 nnvirtual-current-group))))
+	(marks (gnus-info-marks (gnus-get-info (nnvirtual-current-group))))
 	type list mart cgroups)
     (while (setq type (cdr (pop mark-lists)))
       (setq list (gnus-uncompress-range (cdr (assq type marks))))
@@ -397,13 +357,17 @@ virtual group.")
   "Copy (un)reads from the current group to the component groups."
   (let ((groups (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
 	(articles (gnus-list-of-unread-articles
-		   (concat "nnvirtual:" nnvirtual-current-group)))
+		   (nnvirtual-current-group)))
 	m)
     (while articles
       (setq m (assq (pop articles) nnvirtual-mapping))
       (nconc (assoc (nth 1 m) groups) (list (nth 2 m))))
     (while groups
       (gnus-update-read-articles (caar groups) (cdr (pop groups))))))
+
+(defun nnvirtual-current-group ()
+  "Return the prefixed name of the current nnvirtual group."
+  (concat "nnvirtual:" nnvirtual-current-group))
 
 (defsubst nnvirtual-marks (article marks)
   "Return a list of mark types for ARTICLE."
@@ -439,7 +403,9 @@ virtual group.")
 				     g n (and (memq n unreads) t)
 				     (inline (nnvirtual-marks n marks))))
 			     (gnus-uncompress-range active))))
-		 nnvirtual-component-groups))
+		 (setq nnvirtual-component-groups
+		       (delete (nnvirtual-current-group)
+			       nnvirtual-component-groups))))
 	       (lambda (m1 m2)
 		 (< (car m1) (car m2)))))
     (i 0))

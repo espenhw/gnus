@@ -27,34 +27,29 @@
 
 (require 'nnheader)
 (require 'nnmh)
+(require 'nnoo)
 (eval-and-compile (require 'cl))
+
+(nnoo-declare nndraft)
 
 (eval-and-compile
   (autoload 'mail-send-and-exit "sendmail"))
 
-(defvar nndraft-directory nil
+(defvoo nndraft-directory nil
   "Where nndraft will store its directory.")
 
 
 
 (defconst nndraft-version "nndraft 1.0")
-(defvar nndraft-status-string "")
-
-
-
-(defvar nndraft-current-server nil)
-(defvar nndraft-server-alist nil)
-(defvar nndraft-server-variables 
-  `((nndraft-directory nil)
-    (nndraft-status-string "")
-    (nndraft-group-alist)))
+(defvoo nndraft-status-string "")
 
 
 
 ;;; Interface functions.
 
+(nnoo-define-basics nndraft)
 
-(defun nndraft-retrieve-headers (articles &optional group server fetch-old)
+(deffoo nndraft-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -84,8 +79,8 @@
 	(nnheader-fold-continuation-lines)
 	'headers))))
 
-(defun nndraft-open-server (server &optional defs)
-  (nnheader-change-server 'nndraft server defs)
+(deffoo nndraft-open-server (server &optional defs)
+  (nnoo-change-server 'nndraft server defs)
   (unless (assq 'nndraft-directory defs)
     (setq nndraft-directory server))
   (cond 
@@ -101,20 +96,7 @@
 		     server nndraft-directory)
     t)))
 
-(defun nndraft-close-server (&optional server)
-  (setq nndraft-current-server nil)
-  t)
-
-(defun nndraft-server-opened (&optional server)
-  (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)
-       nndraft-current-server
-       (equal nndraft-current-server server)))
-
-(defun nndraft-status-message (&optional server)
-  nndraft-status-string)
-
-(defun nndraft-request-article (id &optional group server buffer)
+(deffoo nndraft-request-article (id &optional group server buffer)
   (when (numberp id)
     ;; We get the newest file of the auto-saved file and the 
     ;; "real" file.
@@ -134,7 +116,7 @@
 	    (replace-match "" t t)))
 	t))))
 
-(defun nndraft-request-restore-buffer (article &optional group server)
+(deffoo nndraft-request-restore-buffer (article &optional group server)
   "Request a new buffer that is restored to the state of ARTICLE."
   (let ((file (nndraft-article-filename article ".state"))
 	nndraft-point nndraft-mode nndraft-buffer-name)
@@ -150,38 +132,38 @@
 	(goto-char nndraft-point))
       nndraft-buffer-name)))
 
-(defun nndraft-request-update-info (group info &optional server)
+(deffoo nndraft-request-update-info (group info &optional server)
   (setcar (cddr info) nil)
   (when (nth 3 info)
     (setcar (nthcdr 3 info) nil))
   t)
 
-(defun nndraft-request-associate-buffer (group)
+(deffoo nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."
   (let* ((gnus-verbose-backends nil)
 	 (article (cdr (nndraft-request-accept-article
-			group nndraft-current-server t 'noinsert)))
+			group (nnoo-current-server 'nndraft) t 'noinsert)))
 	 (file (nndraft-article-filename article)))
     (setq buffer-file-name file)
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
     (clear-visited-file-modtime)
     article))
 
-(defun nndraft-request-group (group &optional server dont-check)
+(deffoo nndraft-request-group (group &optional server dont-check)
   (prog1
       (nndraft-execute-nnmh-command
        `(nnmh-request-group group "" ,dont-check))
     (nnheader-report 'nndraft nnmh-status-string)))
 
-(defun nndraft-request-list (&optional server dir)
+(deffoo nndraft-request-list (&optional server dir)
   (nndraft-execute-nnmh-command
    `(nnmh-request-list nil ,dir)))
 
-(defun nndraft-request-newgroups (date &optional server)
+(deffoo nndraft-request-newgroups (date &optional server)
   (nndraft-execute-nnmh-command
    `(nnmh-request-newgroups ,date ,server)))
 
-(defun nndraft-request-expire-articles 
+(deffoo nndraft-request-expire-articles 
   (articles group &optional server force)
   (let ((res (nndraft-execute-nnmh-command
 	      `(nnmh-request-expire-articles
@@ -199,7 +181,7 @@
 	    (funcall nnmail-delete-file-function auto)))))
     res))
 
-(defun nndraft-request-accept-article (group &optional server last noinsert)
+(deffoo nndraft-request-accept-article (group &optional server last noinsert)
   (let* ((point (point))
 	 (mode major-mode)
 	 (name (buffer-name))
@@ -218,10 +200,10 @@
       (kill-buffer (current-buffer)))
     gart))
 
-(defun nndraft-close-group (group &optional server)
+(deffoo nndraft-close-group (group &optional server)
   t)
 
-(defun nndraft-request-create-group (group &optional server)
+(deffoo nndraft-request-create-group (group &optional server)
   (if (file-exists-p nndraft-directory)
       (if (file-directory-p nndraft-directory)
 	  t

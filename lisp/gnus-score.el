@@ -1309,89 +1309,90 @@ SCORE is the score to add."
 				  'gnus-request-body)
 				 (t 'gnus-request-article)))
 	     entries alist ofunc article last)
-	(while (cdr articles)
-	  (setq articles (cdr articles)))
-	(setq last (mail-header-number (caar articles)))
-	(setq articles gnus-scores-articles)
-	;; Not all backends support partial fetching.  In that case,
-	;; we just fetch the entire article.
-	(or (gnus-check-backend-function 
-	     (and (string-match "^gnus-" (symbol-name request-func))
-		  (intern (substring (symbol-name request-func)
-				     (match-end 0))))
-	     gnus-newsgroup-name)
-	    (progn
-	      (setq ofunc request-func)
-	      (setq request-func 'gnus-request-article)))
-	(while articles
-	  (setq article (mail-header-number (caar articles)))
-	  (gnus-message 7 "Scoring on article %s of %s..." article last)
-	  (when (funcall request-func article gnus-newsgroup-name)
-	    (widen)
-	    (goto-char (point-min))
-	    ;; If just parts of the article is to be searched, but the
-	    ;; backend didn't support partial fetching, we just narrow
-	    ;; to the relevant parts.
-	    (if ofunc
-		(if (eq ofunc 'gnus-request-head)
+	(when articles
+	  (while (cdr articles)
+	    (setq articles (cdr articles)))
+	  (setq last (mail-header-number (caar articles)))
+	  (setq articles gnus-scores-articles)
+	  ;; Not all backends support partial fetching.  In that case,
+	  ;; we just fetch the entire article.
+	  (or (gnus-check-backend-function 
+	       (and (string-match "^gnus-" (symbol-name request-func))
+		    (intern (substring (symbol-name request-func)
+				       (match-end 0))))
+	       gnus-newsgroup-name)
+	      (progn
+		(setq ofunc request-func)
+		(setq request-func 'gnus-request-article)))
+	  (while articles
+	    (setq article (mail-header-number (caar articles)))
+	    (gnus-message 7 "Scoring on article %s of %s..." article last)
+	    (when (funcall request-func article gnus-newsgroup-name)
+	      (widen)
+	      (goto-char (point-min))
+	      ;; If just parts of the article is to be searched, but the
+	      ;; backend didn't support partial fetching, we just narrow
+	      ;; to the relevant parts.
+	      (if ofunc
+		  (if (eq ofunc 'gnus-request-head)
+		      (narrow-to-region
+		       (point)
+		       (or (search-forward "\n\n" nil t) (point-max)))
 		    (narrow-to-region
-		     (point)
-		     (or (search-forward "\n\n" nil t) (point-max)))
-		  (narrow-to-region
-		   (or (search-forward "\n\n" nil t) (point))
-		   (point-max))))
-	    (setq scores all-scores)
-	    ;; Find matches.
-	    (while scores
-	      (setq alist (car scores)
-		    scores (cdr scores)
-		    entries (assoc header alist))
-	      (while (cdr entries)	;First entry is the header index.
-		(let* ((rest (cdr entries))		
-		       (kill (car rest))
-		       (match (nth 0 kill))
-		       (type (or (nth 3 kill) 's))
-		       (score (or (nth 1 kill) 
-				  gnus-score-interactive-default-score))
-		       (date (nth 2 kill))
-		       (found nil)
-		       (case-fold-search 
-			(not (or (eq type 'R) (eq type 'S)
-				 (eq type 'Regexp) (eq type 'String))))
-		       (search-func 
-			(cond ((or (eq type 'r) (eq type 'R)
-				   (eq type 'regexp) (eq type 'Regexp))
-			       're-search-forward)
-			      ((or (eq type 's) (eq type 'S)
-				   (eq type 'string) (eq type 'String))
-			       'search-forward)
-			      (t
-			       (error "Illegal match type: %s" type)))))
-		  (goto-char (point-min))
-		  (if (funcall search-func match nil t)
-		      ;; Found a match, update scores.
-		      (progn
-			(setcdr (car articles) (+ score (cdar articles)))
-			(setq found t)
-			(and trace (setq gnus-score-trace 
-					 (cons
-					  (cons
-					   (car-safe
-					    (rassq alist gnus-score-cache))
-					   kill)
-					  gnus-score-trace)))))
-		  ;; Update expire date
-		  (cond
-		   ((null date))	;Permanent entry.
-		   ((and found gnus-update-score-entry-dates) ;Match, update date.
-		    (gnus-score-set 'touched '(t) alist)
-		    (setcar (nthcdr 2 kill) now))
-		   ((and expire (< date expire)) ;Old entry, remove.
-		    (gnus-score-set 'touched '(t) alist)
-		    (setcdr entries (cdr rest))
-		    (setq rest entries)))
-		  (setq entries rest)))))
-	  (setq articles (cdr articles))))))
+		     (or (search-forward "\n\n" nil t) (point))
+		     (point-max))))
+	      (setq scores all-scores)
+	      ;; Find matches.
+	      (while scores
+		(setq alist (car scores)
+		      scores (cdr scores)
+		      entries (assoc header alist))
+		(while (cdr entries)	;First entry is the header index.
+		  (let* ((rest (cdr entries))		
+			 (kill (car rest))
+			 (match (nth 0 kill))
+			 (type (or (nth 3 kill) 's))
+			 (score (or (nth 1 kill) 
+				    gnus-score-interactive-default-score))
+			 (date (nth 2 kill))
+			 (found nil)
+			 (case-fold-search 
+			  (not (or (eq type 'R) (eq type 'S)
+				   (eq type 'Regexp) (eq type 'String))))
+			 (search-func 
+			  (cond ((or (eq type 'r) (eq type 'R)
+				     (eq type 'regexp) (eq type 'Regexp))
+				 're-search-forward)
+				((or (eq type 's) (eq type 'S)
+				     (eq type 'string) (eq type 'String))
+				 'search-forward)
+				(t
+				 (error "Illegal match type: %s" type)))))
+		    (goto-char (point-min))
+		    (if (funcall search-func match nil t)
+			;; Found a match, update scores.
+			(progn
+			  (setcdr (car articles) (+ score (cdar articles)))
+			  (setq found t)
+			  (and trace (setq gnus-score-trace 
+					   (cons
+					    (cons
+					     (car-safe
+					      (rassq alist gnus-score-cache))
+					     kill)
+					    gnus-score-trace)))))
+		    ;; Update expire date
+		    (cond
+		     ((null date))	;Permanent entry.
+		     ((and found gnus-update-score-entry-dates) ;Match, update date.
+		      (gnus-score-set 'touched '(t) alist)
+		      (setcar (nthcdr 2 kill) now))
+		     ((and expire (< date expire)) ;Old entry, remove.
+		      (gnus-score-set 'touched '(t) alist)
+		      (setcdr entries (cdr rest))
+		      (setq rest entries)))
+		    (setq entries rest)))))
+	    (setq articles (cdr articles)))))))
   nil)
 
 (defun gnus-score-followup (scores header now expire &optional trace thread)

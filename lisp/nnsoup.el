@@ -30,40 +30,43 @@
 (require 'nnmail)
 (require 'gnus-soup)
 (require 'gnus-msg)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnsoup-directory "~/SOUP/"
+(nnoo-declare nnsoup)
+
+(defvoo nnsoup-directory "~/SOUP/"
   "*SOUP packet directory.")
 
-(defvar nnsoup-tmp-directory "/tmp/"
+(defvoo nnsoup-tmp-directory "/tmp/"
   "*Where nnsoup will store temporary files.")
 
-(defvar nnsoup-replies-directory (concat nnsoup-directory "replies/")
+(defvoo nnsoup-replies-directory (concat nnsoup-directory "replies/")
   "*Directory where outgoing packets will be composed.")
 
-(defvar nnsoup-replies-format-type ?n
+(defvoo nnsoup-replies-format-type ?n
   "*Format of the replies packages.")
 
-(defvar nnsoup-replies-index-type ?n
+(defvoo nnsoup-replies-index-type ?n
   "*Index type of the replies packages.")
 
-(defvar nnsoup-active-file (concat nnsoup-directory "active")
+(defvoo nnsoup-active-file (concat nnsoup-directory "active")
   "Active file.")
 
-(defvar nnsoup-packer "tar cf - %s | gzip > $HOME/Soupin%d.tgz"
+(defvoo nnsoup-packer "tar cf - %s | gzip > $HOME/Soupin%d.tgz"
   "Format string command for packing a SOUP packet.
 The SOUP files will be inserted where the %s is in the string.
 This string MUST contain both %s and %d. The file number will be
 inserted where %d appears.")
 
-(defvar nnsoup-unpacker "gunzip -c %s | tar xvf -"
+(defvoo nnsoup-unpacker "gunzip -c %s | tar xvf -"
   "*Format string command for unpacking a SOUP packet.
 The SOUP packet file name will be inserted at the %s.")
 
-(defvar nnsoup-packet-directory "~/"
+(defvoo nnsoup-packet-directory "~/"
   "*Where nnsoup will look for incoming packets.")
 
-(defvar nnsoup-packet-regexp "Soupout"
+(defvoo nnsoup-packet-regexp "Soupout"
   "*Regular expression matching SOUP packets in `nnsoup-packet-directory'.")
 
 
@@ -71,44 +74,21 @@ The SOUP packet file name will be inserted at the %s.")
 (defconst nnsoup-version "nnsoup 0.0"
   "nnsoup version.")
 
-(defvar nnsoup-status-string "")
-(defvar nnsoup-group-alist nil)
-(defvar nnsoup-current-prefix 0)
-(defvar nnsoup-replies-list nil)
-(defvar nnsoup-buffers nil)
-(defvar nnsoup-current-group nil)
-(defvar nnsoup-group-alist-touched nil)
-
-
-
-;; Server variables.
-
-(defvar nnsoup-current-server nil)
-(defvar nnsoup-server-alist nil)
-(defvar nnsoup-server-variables 
-  `((nnsoup-directory ,nnsoup-directory)
-    (nnsoup-active-file ,nnsoup-active-file)
-    (nnsoup-status-string "")
-    (nnsoup-current-prefix 0)
-    (nnsoup-current-group nil)
-    (nnsoup-buffers nil)
-    (nnsoup-replies-list nil)
-    (nnsoup-packet-regexp ,nnsoup-packet-regexp)
-    (nnsoup-packet-directory ,nnsoup-packet-directory)
-    (nnsoup-unpacker ,nnsoup-unpacker)
-    (nnsoup-packer ,nnsoup-packer)
-    (nnsoup-group-alist-touched nil)
-    (nnsoup-replies-index-type ,nnsoup-replies-index-type)
-    (nnsoup-replies-format-type ,nnsoup-replies-format-type)
-    (nnsoup-replies-directory ,nnsoup-replies-directory)
-    (nnsoup-tmp-directory ,nnsoup-tmp-directory)
-    (nnsoup-group-alist nil)))
+(defvoo nnsoup-status-string "")
+(defvoo nnsoup-group-alist nil)
+(defvoo nnsoup-current-prefix 0)
+(defvoo nnsoup-replies-list nil)
+(defvoo nnsoup-buffers nil)
+(defvoo nnsoup-current-group nil)
+(defvoo nnsoup-group-alist-touched nil)
 
 
 
 ;;; Interface functions.
 
-(defun nnsoup-retrieve-headers (sequence &optional group server fetch-old)
+(nnoo-define-basics nnsoup)
+
+(deffoo nnsoup-retrieve-headers (sequence &optional group server fetch-old)
   (nnsoup-possibly-change-group group)
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -194,8 +174,8 @@ The SOUP packet file name will be inserted at the %s.")
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
-(defun nnsoup-open-server (server &optional defs)
-  (nnheader-change-server 'nnsoup server defs)
+(deffoo nnsoup-open-server (server &optional defs)
+  (nnoo-change-server 'nnsoup server defs)
   (when (not (file-exists-p nnsoup-directory))
     (condition-case ()
 	(make-directory nnsoup-directory t)
@@ -213,13 +193,7 @@ The SOUP packet file name will be inserted at the %s.")
 		     server nnsoup-directory)
     t)))
 
-(defun nnsoup-close-server (&optional server)
-  (setq nnsoup-current-server nil
-	nnsoup-group-alist-touched nil
-	nnsoup-group-alist nil)
-  t)
-
-(defun nnsoup-request-close ()
+(deffoo nnsoup-request-close ()
   (nnsoup-write-active-file)
   (nnsoup-write-replies)
   (gnus-soup-save-areas)
@@ -233,20 +207,11 @@ The SOUP packet file name will be inserted at the %s.")
   (setq nnsoup-group-alist nil
 	nnsoup-group-alist-touched nil
 	nnsoup-current-group nil
-	nnsoup-current-server nil
-	nnsoup-server-alist nil
 	nnsoup-replies-list nil)
+  (nnoo-close-server 'nnoo)
   t)
 
-(defun nnsoup-server-opened (&optional server)
-  (and (equal server nnsoup-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nnsoup-status-message (&optional server)
-  nnsoup-status-string)
-
-(defun nnsoup-request-article (id &optional newsgroup server buffer)
+(deffoo nnsoup-request-article (id &optional newsgroup server buffer)
   (nnsoup-possibly-change-group newsgroup)
   (let (buf)
     (save-excursion
@@ -257,7 +222,7 @@ The SOUP packet file name will be inserted at the %s.")
 	(insert-buffer-substring buf)
 	t))))
 
-(defun nnsoup-request-group (group &optional server dont-check)
+(deffoo nnsoup-request-group (group &optional server dont-check)
   (nnsoup-possibly-change-group group)
   (if dont-check 
       t
@@ -269,7 +234,7 @@ The SOUP packet file name will be inserted at the %s.")
 	 (max (1+ (- (cdr active) (car active))) 0) 
 	 (car active) (cdr active) group)))))
 
-(defun nnsoup-request-type (group &optional article)
+(deffoo nnsoup-request-type (group &optional article)
   (nnsoup-possibly-change-group group)
   (if (not article)
       'unknown
@@ -281,7 +246,7 @@ The SOUP packet file name will be inserted at the %s.")
 	    ((= kind ?n) 'news)
 	    (t 'unknown)))))
 
-(defun nnsoup-close-group (group &optional server)
+(deffoo nnsoup-close-group (group &optional server)
   ;; Kill all nnsoup buffers.
   (let ((buffers nnsoup-buffers)
 	elem)
@@ -292,7 +257,7 @@ The SOUP packet file name will be inserted at the %s.")
 	     (kill-buffer (cdr elem))))))
   t)
 
-(defun nnsoup-request-list (&optional server)
+(deffoo nnsoup-request-list (&optional server)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -307,24 +272,24 @@ The SOUP packet file name will be inserted at the %s.")
 	(insert " y\n"))
       t)))
 
-(defun nnsoup-request-scan (group &optional server)
+(deffoo nnsoup-request-scan (group &optional server)
   (nnsoup-unpack-packets))
 
-(defun nnsoup-request-newgroups (date &optional server)
+(deffoo nnsoup-request-newgroups (date &optional server)
   (nnsoup-request-list))
 
-(defun nnsoup-request-list-newsgroups (&optional server)
+(deffoo nnsoup-request-list-newsgroups (&optional server)
   nil)
 
-(defun nnsoup-request-post (&optional server)
+(deffoo nnsoup-request-post (&optional server)
   (nnsoup-store-reply "news")
   t)
 
-(defun nnsoup-request-mail (&optional server)
+(deffoo nnsoup-request-mail (&optional server)
   (nnsoup-store-reply "mail")
   t)
 
-(defun nnsoup-request-expire-articles (articles group &optional server force)
+(deffoo nnsoup-request-expire-articles (articles group &optional server force)
   (nnsoup-possibly-change-group group)
   (let* ((total-infolist (assoc group nnsoup-group-alist))
 	 (active (cadr total-infolist))

@@ -117,7 +117,7 @@ any confusion.")
 
 ;;;###autoload
 (defvar message-signature-separator "^-- *$"
-  "Regexp matching signature separator.")
+  "Regexp matching the signature separator.")
 
 ;;;###autoload
 (defvar message-interactive nil 
@@ -220,20 +220,6 @@ the value.")
 (defvar message-header-separator "--text follows this line--" 
   "*Line used to separate headers from text in messages being composed.")
 
-;;;###autoload
-(defvar message-alias-file nil
-  "*If non-nil, the name of a file to use instead of `/usr/lib/aliases'.
-This file defines aliases to be expanded by the mailer; this is a different
-feature from that of defining aliases in `.mailrc' to be expanded in Emacs.
-This variable has no effect unless your system uses sendmail as its mailer.")
-
-;;;###autoload
-(defvar message-personal-alias-file "~/.mailrc"
-  "*If non-nil, the name of the user's personal mail alias file.
-This file typically should be in same format as the `.mailrc' file used by
-the `Mail' or `mailx' program.
-This file need not actually exist.")
-
 (defvar message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
 The function `message-setup' runs this hook.")
@@ -244,17 +230,6 @@ The function `message-setup' runs this hook.")
 ;;;###autoload
 (defvar message-citation-line-function 'message-insert-citation-line
   "*Function called to insert the \"Whomever writes:\" line.")
-
-(defvar message-aliases t
-  "Alist of mail address aliases.
-If t, initialized from your mail aliases file.
-\(The file's name is normally `~/.mailrc', but your MAILRC environment
-variable can override that name.)
-The alias definitions in the file have this form:
-    alias ALIAS MEANING")
-
-(defvar message-alias-modtime nil
-  "The modification time of your mail alias file when it was last examined.")
 
 ;;;###autoload
 (defvar message-yank-prefix "> "
@@ -278,23 +253,16 @@ point and mark around the citation text as modified.")
 
 (defvar message-abbrevs-loaded nil)
 
-(autoload 'expand-mail-aliases "mailalias"
-  "Expand all mail aliases in suitable header fields found between BEG and END.
-Suitable header fields are `To', `Cc' and `Bcc' and their `Resent-' variants.
-Optional second arg EXCLUDE may be a regular expression defining text to be
-removed from alias expansions."
-  nil)
-
 ;;;###autoload
 (defvar message-signature t
-  "*String to be inserted at the and the the message buffer.
+  "*String to be inserted at the end of the message buffer.
 If t, the `message-signature-file' file will be inserted instead.
 If a function, the result from the function will be used instead.
 If a form, the result from the form will be used instead.")
 
 ;;;###autoload
 (defvar message-signature-file "~/.signature"
-  "*File containing the text inserted at end of mail buffer.")
+  "*File containing the text inserted at end of message. buffer.")
 
 (defvar message-distribution-function nil
   "*Function called to return a Distribution header.")
@@ -390,6 +358,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defvar message-sent-hook nil
   "Hook run after sending messages.")
+
+;;; Internal variables.
 
 (defvar message-header-format-alist 
   `((Newsgroups)
@@ -567,13 +537,13 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\C-c\C-f\C-t" 'message-goto-to)
   (define-key message-mode-map "\C-c\C-f\C-b" 'message-goto-bcc)
-  (define-key message-mode-map "\C-c\C-f\C-f" 'message-goto-fcc)
+  (define-key message-mode-map "\C-c\C-f\C-w" 'message-goto-fcc)
   (define-key message-mode-map "\C-c\C-f\C-c" 'message-goto-cc)
   (define-key message-mode-map "\C-c\C-f\C-s" 'message-goto-subject)
   (define-key message-mode-map "\C-c\C-f\C-r" 'message-goto-reply-to)
   (define-key message-mode-map "\C-c\C-f\C-n" 'message-goto-newsgroups)
   (define-key message-mode-map "\C-c\C-f\C-d" 'message-goto-distribution)
-  (define-key message-mode-map "\C-c\C-f\C-o" 'message-goto-followup-to)
+  (define-key message-mode-map "\C-c\C-f\C-f" 'message-goto-followup-to)
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
@@ -657,6 +627,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (setq message-sent-message-via nil)
   (make-local-variable 'message-checksum)
   (setq message-checksum nil)
+  (when (fboundp 'mail-hist-define-keys)
+    (mail-hist-define-keys))
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -740,14 +712,16 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 (defun message-insert-to ()
   "Insert a To header that points to the author of the article being replied to."
   (interactive)
-  (message-position-on-field "To")
+  (when (message-position-on-field "To")
+    (insert ", "))
   (insert (or (message-fetch-reply-field "reply-to")
 	      (message-fetch-reply-field "from") "")))
 
 (defun message-insert-newsgroups ()
   "Insert the Newsgroups header from the article being replied to."
   (interactive)
-  (message-position-on-field "Newsgroups")
+  (when (message-position-on-field "Newsgroups")
+    (insert ","))
   (insert (or (message-fetch-reply-field "newsgroups") "")))
 
 
@@ -1030,6 +1004,8 @@ the user from the mailer."
 			     "Already sent message via mail; resend? "))
 			(funcall message-send-mail-function arg))))
       (message-do-fcc)
+      (when (fboundp 'mail-hist-put-headers-into-history)
+	(mail-hist-put-headers-into-history))
       (run-hooks 'message-sent-hook)
       (message "Sending...done")
       ;; If buffer has no file, mark it as unmodified and delete autosave.
@@ -1108,8 +1084,6 @@ the user from the mailer."
 			   ;; Always specify who from,
 			   ;; since some systems have broken sendmails.
 			   (list "-f" (user-login-name))
-			   (and message-alias-file
-				(list (concat "-oA" message-alias-file)))
 			   ;; These mean "report errors by mail"
 			   ;; and "deliver in background".
 			   (if (null message-interactive) '("-oem" "-odb"))
@@ -1524,7 +1498,7 @@ the user from the mailer."
 		  (file-exists-p message-user-organization-file))
 	     (insert-file-contents message-user-organization-file)))
       (goto-char (point-min))
-      (when (re-search-forward "[ \t\n]*" nil t)
+      (while (re-search-forward "[\t\n]+" nil t)
 	(replace-match "" t t))
       (unless (zerop (buffer-size))
 	(buffer-string)))))
@@ -1662,7 +1636,7 @@ give as trustworthy answer as possible."
       ;; `system-name' returned the right result.
       system-name)
      ;; We try `user-mail-address' as a backup.
-     ((string-match "@\\([^\\s-]+\\)\\(\\'\\|\\W\\)" user-mail-address)
+     ((string-match "@\\(.*\\)\\'" (message-user-mail-address))
       (match-string 1 user-mail-address))
      ;; Try `mail-host-address'.
      ((and (boundp 'mail-host-address)
@@ -1843,12 +1817,6 @@ Headers already prepared in the buffer are not modified."
 	(replace-match " " t t))
       (goto-char (point-max)))))
 
-(defun sendmail-synch-aliases ()
-  (let ((modtime (nth 5 (file-attributes message-personal-alias-file))))
-    (or (equal message-alias-modtime modtime)
-	(setq message-alias-modtime modtime
-	      message-aliases t))))
-
 (defun message-position-point ()
   "Move point to where the user probably wants to find it."
   (message-narrow-to-headers)
@@ -1902,21 +1870,25 @@ Headers already prepared in the buffer are not modified."
     (insert message-default-headers))
   (insert mail-header-separator "\n")
   (forward-line -1)
-  (when (and (message-news-p)
-	     message-default-news-headers)
+  (when (message-news-p)
+    (when message-default-news-headers
+      (insert message-default-news-headers))
     (when message-generate-headers-first
-      (message-generate-headers message-required-news-headers))
-    (insert message-default-news-headers))
-  (when (and (message-mail-p)
-	     message-default-mail-headers)
+      (message-generate-headers message-required-news-headers)))
+  (when (message-mail-p)
+    (when message-default-mail-headers
+      (insert message-default-mail-headers))
     (when message-generate-headers-first
-      (message-generate-headers message-required-mail-headers))
-    (insert message-default-mail-headers))
+      (message-generate-headers message-required-mail-headers)))
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction
     (message-narrow-to-headers)
     (run-hooks 'message-header-setup-hook))
+  ;; Allow mail alias things.
+  (if (fboundp 'mail-abbrevs-setup)
+      (mail-abbrevs-setup)
+    (mail-aliases-setup))
   (set-buffer-modified-p nil)
   (run-hooks 'message-setup-hook)
   (message-position-point)
@@ -2273,12 +2245,13 @@ Optional NEWS will use news to forward instead of mail."
     (let ((cur (current-buffer))
 	  beg)
       ;; We first set up a normal mail buffer.
-      (message-set-work-buffer)
+      (set-buffer (get-buffer-create " *message resend*"))
+      (buffer-disable-undo (current-buffer))
+      (erase-buffer)
       (message-setup `((To . ,address)))
       ;; Insert our usual headers.
-      (message-narrow-to-headers)
       (message-generate-headers '(From Date To))
-      (goto-char (point-min))
+      (message-narrow-to-headers)
       ;; Rename them all to "Resent-*".
       (while (re-search-forward "^[A-Za-z]" nil t)
 	(forward-char -1)
@@ -2302,7 +2275,8 @@ Optional NEWS will use news to forward instead of mail."
 	(beginning-of-line)
 	(insert "Also-"))
       ;; Send it.
-      (funcall message-send-mail-function))))
+      (funcall message-send-mail-function)
+      (kill-buffer (current-buffer)))))
 
 ;;;###autoload
 (defun message-bounce ()
@@ -2314,6 +2288,7 @@ you."
   (let ((cur (current-buffer)))
     (message-pop-to-buffer "*mail message*")
     (insert-buffer-substring cur)
+    (undo-boundary)
     (goto-char (point-min))
     (or (and (re-search-forward mail-unsent-separator nil t)
 	     (forward-line 1))

@@ -29,15 +29,18 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nndoc-article-type 'guess
+(nnoo-declare nndoc)
+
+(defvoo nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 `mime-digest', `standard-digest', `slack-digest', `clari-briefs' or
 `guess'.")
 
-(defvar nndoc-post-type 'mail
+(defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
 
 (defvar nndoc-type-alist 
@@ -100,56 +103,27 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 
 
-(defvar nndoc-file-begin nil)
-(defvar nndoc-first-article nil)
-(defvar nndoc-article-end nil)
-(defvar nndoc-article-begin nil)
-(defvar nndoc-head-begin nil)
-(defvar nndoc-head-end nil)
-(defvar nndoc-file-end nil)
-(defvar nndoc-body-begin nil)
-(defvar nndoc-body-end-function nil)
-(defvar nndoc-body-begin-function nil)
-(defvar nndoc-body-end nil)
-(defvar nndoc-dissection-alist nil)
-(defvar nndoc-prepare-body nil)
-(defvar nndoc-generate-head nil)
-(defvar nndoc-article-transform nil)
+(defvoo nndoc-file-begin nil)
+(defvoo nndoc-first-article nil)
+(defvoo nndoc-article-end nil)
+(defvoo nndoc-article-begin nil)
+(defvoo nndoc-head-begin nil)
+(defvoo nndoc-head-end nil)
+(defvoo nndoc-file-end nil)
+(defvoo nndoc-body-begin nil)
+(defvoo nndoc-body-end-function nil)
+(defvoo nndoc-body-begin-function nil)
+(defvoo nndoc-body-end nil)
+(defvoo nndoc-dissection-alist nil)
+(defvoo nndoc-prepare-body nil)
+(defvoo nndoc-generate-head nil)
+(defvoo nndoc-article-transform nil)
 
-(defvar nndoc-status-string "")
-(defvar nndoc-group-alist nil)
-(defvar nndoc-current-buffer nil
+(defvoo nndoc-status-string "")
+(defvoo nndoc-group-alist nil)
+(defvoo nndoc-current-buffer nil
   "Current nndoc news buffer.")
-(defvar nndoc-address nil)
-
-
-
-(defvar nndoc-current-server nil)
-(defvar nndoc-server-alist nil)
-(defvar nndoc-server-variables
-  `((nndoc-article-type ,nndoc-article-type)
-    (nndoc-article-begin nil)
-    (nndoc-article-end nil)
-    (nndoc-head-begin nil)
-    (nndoc-head-end nil)
-    (nndoc-first-article nil)
-    (nndoc-current-buffer nil)
-    (nndoc-group-alist nil)
-    (nndoc-end-of-file nil)
-    (nndoc-body-begin nil)
-    (nndoc-dissection-alist nil)
-    (nndoc-generate-head nil)
-    (nndoc-article-transform nil)
-    (nndoc-body-end-function nil)
-    (nndoc-prepare-body nil)
-    (nndoc-body-begin-function nil)
-    (nndoc-status-string ,nndoc-status-string)
-    (nndoc-body-end ,nndoc-body-end)
-    (nndoc-file-end ,nndoc-file-end)
-    (nndoc-file-begin ,nndoc-file-begin)
-    (nndoc-type-alist ,nndoc-type-alist)
-    (nndoc-post-type ,nndoc-post-type)
-    (nndoc-address nil)))
+(defvoo nndoc-address nil)
 
 (defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
@@ -158,7 +132,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 ;;; Interface functions
 
-(defun nndoc-retrieve-headers (articles &optional newsgroup server fetch-old)
+(nnoo-define-basics nndoc)
+
+(deffoo nndoc-retrieve-headers (articles &optional newsgroup server fetch-old)
   (when (nndoc-possibly-change-buffer newsgroup server)
     (save-excursion
       (set-buffer nntp-server-buffer)
@@ -182,22 +158,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
-(defun nndoc-open-server (server &optional defs)
-  (nnheader-change-server 'nndoc server defs))
-
-(defun nndoc-close-server (&optional server)
-  (setq nndoc-current-server nil)
-  t)
-
-(defun nndoc-server-opened (&optional server)
-  (and (equal server nndoc-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nndoc-status-message (&optional server)
-  nndoc-status-string)
-
-(defun nndoc-request-article (article &optional newsgroup server buffer)
+(deffoo nndoc-request-article (article &optional newsgroup server buffer)
   (nndoc-possibly-change-buffer newsgroup server)
   (save-excursion
     (let ((buffer (or buffer nntp-server-buffer))
@@ -220,7 +181,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (funcall nndoc-article-transform article))
 	t))))
 
-(defun nndoc-request-group (group &optional server dont-check)
+(deffoo nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
   (let (number)
     (cond 
@@ -236,12 +197,12 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (t
       (nnheader-insert "211 %d %d %d %s\n" number 1 number group)))))
 
-(defun nndoc-request-type (group &optional article)
+(deffoo nndoc-request-type (group &optional article)
   (cond ((not article) 'unknown)
         (nndoc-post-type nndoc-post-type)
         (t 'unknown)))
 
-(defun nndoc-close-group (group &optional server)
+(deffoo nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
   (and nndoc-current-buffer
        (buffer-name nndoc-current-buffer)
@@ -249,20 +210,18 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
   (setq nndoc-group-alist (delq (assoc group nndoc-group-alist)
 				nndoc-group-alist))
   (setq nndoc-current-buffer nil)
-  (setq nndoc-current-server nil)
+  (nnoo-close-server 'nndoc server)
   (setq nndoc-dissection-alist nil)
   t)
 
-(defun nndoc-request-list (&optional server)
+(deffoo nndoc-request-list (&optional server)
   nil)
 
-(defun nndoc-request-newgroups (date &optional server)
+(deffoo nndoc-request-newgroups (date &optional server)
   nil)
 
-(defun nndoc-request-list-newsgroups (&optional server)
+(deffoo nndoc-request-list-newsgroups (&optional server)
   nil)
-
-(defalias 'nndoc-request-post 'nnmail-request-post)
 
 
 ;;; Internal functions.

@@ -1,3 +1,14 @@
+Sat Apr 13 13:53:34 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Writing New Backends): New node.
+	(Declaring Backends): New node.
+	(An Example Backend): New node.
+	(Optional Backend Functions): Fix return values.
+
+Wed Apr 10 08:36:20 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Message): New chapter.
+
 Tue Apr  9 23:41:15 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.texi (GroupLens): Moved.

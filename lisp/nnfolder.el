@@ -35,35 +35,38 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnfolder-directory (expand-file-name "~/Mail/")
+(nnoo-declare nnfolder)
+
+(defvoo nnfolder-directory (expand-file-name "~/Mail/")
   "The name of the nnfolder directory.")
 
-(defvar nnfolder-active-file 
+(defvoo nnfolder-active-file 
   (concat (file-name-as-directory nnfolder-directory) "active")
   "The name of the active file.")
 
 ;; I renamed this variable to something more in keeping with the general GNU
 ;; style. -SLB
 
-(defvar nnfolder-ignore-active-file nil
+(defvoo nnfolder-ignore-active-file nil
   "If non-nil, causes nnfolder to do some extra work in order to determine the true active ranges of an mbox file.  
 Note that the active file is still saved, but it's values are not
 used.  This costs some extra time when scanning an mbox when opening
 it.")
 
-(defvar nnfolder-newsgroups-file 
+(defvoo nnfolder-newsgroups-file 
   (concat (file-name-as-directory nnfolder-directory) "newsgroups")
   "Mail newsgroups description file.")
 
-(defvar nnfolder-get-new-mail t
+(defvoo nnfolder-get-new-mail t
   "If non-nil, nnfolder will check the incoming mail file and split the mail.")
 
-(defvar nnfolder-prepare-save-mail-hook nil
+(defvoo nnfolder-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
-(defvar nnfolder-inhibit-expiry nil
+(defvoo nnfolder-inhibit-expiry nil
   "If non-nil, inhibit expiry.")
 
 
@@ -74,37 +77,20 @@ it.")
 (defconst nnfolder-article-marker "X-Gnus-Article-Number: "
   "String used to demarcate what the article number for a message is.")
 
-(defvar nnfolder-current-group nil)
-(defvar nnfolder-current-buffer nil)
-(defvar nnfolder-status-string "")
-(defvar nnfolder-group-alist nil)
-(defvar nnfolder-buffer-alist nil)
-(defvar nnfolder-active-timestamp nil)
-
-
-
-(defvar nnfolder-current-server nil)
-(defvar nnfolder-server-alist nil)
-(defvar nnfolder-server-variables 
-  `((nnfolder-directory ,nnfolder-directory)
-    (nnfolder-active-file ,nnfolder-active-file)
-    (nnfolder-newsgroups-file ,nnfolder-newsgroups-file)
-    (nnfolder-get-new-mail ,nnfolder-get-new-mail)
-    (nnfolder-inhibit-expiry ,nnfolder-inhibit-expiry) 
-    (nnfolder-current-group nil)
-    (nnfolder-prepare-save-mail-hook nil)
-    (nnfolder-ignore-active-file ,nnfolder-ignore-active-file)
-    (nnfolder-current-buffer nil)
-    (nnfolder-status-string "")
-    (nnfolder-group-alist nil)
-    (nnfolder-buffer-alist nil)
-    (nnfolder-active-timestamp nil)))
+(defvoo nnfolder-current-group nil)
+(defvoo nnfolder-current-buffer nil)
+(defvoo nnfolder-status-string "")
+(defvoo nnfolder-group-alist nil)
+(defvoo nnfolder-buffer-alist nil)
+(defvoo nnfolder-active-timestamp nil)
 
 
 
 ;;; Interface functions
 
-(defun nnfolder-retrieve-headers (articles &optional group server fetch-old)
+(nnoo-define-basics nnfolder)
+
+(deffoo nnfolder-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -141,8 +127,8 @@ it.")
 	(nnheader-fold-continuation-lines)
 	'headers))))
 
-(defun nnfolder-open-server (server &optional defs)
-  (nnheader-change-server 'nnfolder server defs)
+(deffoo nnfolder-open-server (server &optional defs)
+  (nnoo-change-server 'nnfolder server defs)
   (when (not (file-exists-p nnfolder-directory))
     (condition-case ()
 	(make-directory nnfolder-directory t)
@@ -160,31 +146,16 @@ it.")
 		     server nnfolder-directory)
     t)))
 
-(defun nnfolder-close-server (&optional server)
-  (setq nnfolder-current-server nil
-	nnfolder-group-alist nil)
-  t)
-
-(defun nnfolder-server-opened (&optional server)
-  (and (equal server nnfolder-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nnfolder-request-close ()
+(deffoo nnfolder-request-close ()
   (let ((alist nnfolder-buffer-alist))
     (while alist
       (nnfolder-close-group (caar alist) nil t)
       (setq alist (cdr alist))))
+  (nnoo-close-server 'nnfolder)
   (setq nnfolder-buffer-alist nil
-	nnfolder-server-alist nil
-	nnfolder-current-server nil
 	nnfolder-group-alist nil))
 
-(defun nnfolder-status-message (&optional server)
-  (nnfolder-possibly-change-group nil server)
-  nnfolder-status-string)
-
-(defun nnfolder-request-article (article &optional group server buffer)
+(deffoo nnfolder-request-article (article &optional group server buffer)
   (nnfolder-possibly-change-group group server)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
@@ -217,7 +188,7 @@ it.")
 		     (buffer-substring 
 		      (point) (progn (end-of-line) (point)))))))))))
 
-(defun nnfolder-request-group (group &optional server dont-check)
+(deffoo nnfolder-request-group (group &optional server dont-check)
   (save-excursion
     (nnmail-activate 'nnfolder)
     (if (not (assoc group nnfolder-group-alist))
@@ -239,7 +210,7 @@ it.")
 			     (1+ (- (cdr range) (car range)))
 			     (car range) (cdr range) group))))))))
 
-(defun nnfolder-request-scan (&optional group server)
+(deffoo nnfolder-request-scan (&optional group server)
   (nnfolder-possibly-change-group group server)
   (nnmail-get-new-mail
    'nnfolder 
@@ -262,7 +233,7 @@ it.")
 ;; over the buffer again unless we add new mail to it or modify it in some
 ;; way.
 
-(defun nnfolder-close-group (group &optional server force)
+(deffoo nnfolder-close-group (group &optional server force)
   ;; Make sure we _had_ the group open.
   (when (or (assoc group nnfolder-buffer-alist)
 	    (equal group nnfolder-current-group))
@@ -282,7 +253,7 @@ it.")
 	nnfolder-current-buffer nil)
   t)
 
-(defun nnfolder-request-create-group (group &optional server) 
+(deffoo nnfolder-request-create-group (group &optional server) 
   (nnfolder-possibly-change-group nil server)
   (nnmail-activate 'nnfolder)
   (when group 
@@ -291,22 +262,22 @@ it.")
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
 
-(defun nnfolder-request-list (&optional server)
+(deffoo nnfolder-request-list (&optional server)
   (nnfolder-possibly-change-group nil server)
   (save-excursion
     (nnmail-find-file nnfolder-active-file)
     (setq nnfolder-group-alist (nnmail-get-active))))
 
-(defun nnfolder-request-newgroups (date &optional server)
+(deffoo nnfolder-request-newgroups (date &optional server)
   (nnfolder-possibly-change-group nil server)
   (nnfolder-request-list server))
 
-(defun nnfolder-request-list-newsgroups (&optional server)
+(deffoo nnfolder-request-list-newsgroups (&optional server)
   (nnfolder-possibly-change-group nil server)
   (save-excursion
     (nnmail-find-file nnfolder-newsgroups-file)))
 
-(defun nnfolder-request-expire-articles 
+(deffoo nnfolder-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup server)
   (let* ((is-old t)
@@ -347,7 +318,7 @@ it.")
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (nconc rest articles))))
 
-(defun nnfolder-request-move-article
+(deffoo nnfolder-request-move-article
   (article group server accept-form &optional last)
   (nnfolder-possibly-change-group group server)
   (let ((buf (get-buffer-create " *nnfolder move*"))
@@ -379,7 +350,7 @@ it.")
 	    (save-buffer))))
     result))
 
-(defun nnfolder-request-accept-article (group &optional server last)
+(deffoo nnfolder-request-accept-article (group &optional server last)
   (nnfolder-possibly-change-group group server)
   (and (stringp group) (nnfolder-possibly-change-group group))
   (let ((buf (current-buffer))
@@ -405,7 +376,7 @@ it.")
       (nnheader-report 'nnfolder "Couldn't store article"))
     result))
 
-(defun nnfolder-request-replace-article (article group buffer)
+(deffoo nnfolder-request-replace-article (article group buffer)
   (nnfolder-possibly-change-group group)
   (save-excursion
     (set-buffer nnfolder-current-buffer)
@@ -417,7 +388,7 @@ it.")
       (and (buffer-modified-p) (save-buffer))
       t)))
 
-(defun nnfolder-request-delete-group (group &optional force server)
+(deffoo nnfolder-request-delete-group (group &optional force server)
   (nnfolder-close-group group server t)
   ;; Delete all articles in GROUP.
   (if (not force)
@@ -435,7 +406,7 @@ it.")
   (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
   t)
 
-(defun nnfolder-request-rename-group (group new-name &optional server)
+(deffoo nnfolder-request-rename-group (group new-name &optional server)
   (nnfolder-possibly-change-group group server)
   (save-excursion
     (set-buffer nnfolder-current-buffer)

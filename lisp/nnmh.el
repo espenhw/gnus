@@ -34,18 +34,21 @@
 (require 'rmail)
 (require 'nnmail)
 (require 'gnus)
+(require 'nnoo)
 (eval-and-compile (require 'cl))
 
-(defvar nnmh-directory "~/Mail/"
+(nnoo-declare nnmh)
+
+(defvoo nnmh-directory "~/Mail/"
   "*Mail spool directory.")
 
-(defvar nnmh-get-new-mail t
+(defvoo nnmh-get-new-mail t
   "*If non-nil, nnmh will check the incoming mail file and split the mail.")
 
-(defvar nnmh-prepare-save-mail-hook nil
+(defvoo nnmh-prepare-save-mail-hook nil
   "*Hook run narrowed to an article before saving.")
 
-(defvar nnmh-be-safe nil
+(defvoo nnmh-be-safe nil
   "*If non-nil, nnmh will check all articles to make sure whether they are new or not.")
 
 
@@ -53,30 +56,19 @@
 (defconst nnmh-version "nnmh 1.0"
   "nnmh version.")
 
-(defvar nnmh-current-directory nil
+(defvoo nnmh-current-directory nil
   "Current news group directory.")
 
-(defvar nnmh-status-string "")
-(defvar nnmh-group-alist nil)
-
-
-
-(defvar nnmh-current-server nil)
-(defvar nnmh-server-alist nil)
-(defvar nnmh-server-variables 
-  `((nnmh-directory ,nnmh-directory)
-    (nnmh-get-new-mail ,nnmh-get-new-mail)
-    (nnmh-be-safe nil)
-    (nnmh-prepare-save-mail-hook nil)
-    (nnmh-current-directory nil)
-    (nnmh-status-string "")
-    (nnmh-group-alist)))
+(defvoo nnmh-status-string "")
+(defvoo nnmh-group-alist nil)
 
 
 
 ;;; Interface functions.
 
-(defun nnmh-retrieve-headers (articles &optional newsgroup server fetch-old)
+(nnoo-define-basics nnmh)
+
+(deffoo nnmh-retrieve-headers (articles &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -120,8 +112,8 @@
 	(nnheader-fold-continuation-lines)
 	'headers))))
 
-(defun nnmh-open-server (server &optional defs)
-  (nnheader-change-server 'nnmh server defs)
+(deffoo nnmh-open-server (server &optional defs)
+  (nnoo-change-server 'nnmh server defs)
   (when (not (file-exists-p nnmh-directory))
     (condition-case ()
 	(make-directory nnmh-directory t)
@@ -138,20 +130,7 @@
 		     server nnmh-directory)
     t)))
 
-(defun nnmh-close-server (&optional server)
-  (setq nnmh-current-server nil
-	nnmh-group-alist nil)
-  t)
-
-(defun nnmh-server-opened (&optional server)
-  (and (equal server nnmh-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nnmh-status-message (&optional server)
-  nnmh-status-string)
-
-(defun nnmh-request-article (id &optional newsgroup server buffer)
+(deffoo nnmh-request-article (id &optional newsgroup server buffer)
   (nnmh-possibly-change-directory newsgroup server)
   (let ((file (if (stringp id)
 		  nil
@@ -163,7 +142,7 @@
 	 (save-excursion (nnmail-find-file file))
 	 (string-to-int (file-name-nondirectory file)))))
 
-(defun nnmh-request-group (group &optional server dont-check)
+(deffoo nnmh-request-group (group &optional server dont-check)
   (let ((pathname (nnmail-group-pathname group nnmh-directory))
 	dir)
     (cond 
@@ -196,10 +175,10 @@
 	    (nnheader-report 'nnmh "Empty group %s" group)
 	    (nnheader-insert (format "211 0 1 0 %s\n" group))))))))))
 
-(defun nnmh-request-scan (&optional group server)
+(deffoo nnmh-request-scan (&optional group server)
   (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
 
-(defun nnmh-request-list (&optional server dir)
+(deffoo nnmh-request-list (&optional server dir)
   (unless dir
     (nnheader-insert "")
     (setq dir (file-truename (file-name-as-directory nnmh-directory))))
@@ -238,10 +217,10 @@
   (setq nnmh-group-alist (nnmail-get-active))
   t)
 
-(defun nnmh-request-newgroups (date &optional server)
+(deffoo nnmh-request-newgroups (date &optional server)
   (nnmh-request-list server))
 
-(defun nnmh-request-expire-articles (articles newsgroup &optional server force)
+(deffoo nnmh-request-expire-articles (articles newsgroup &optional server force)
   (nnmh-possibly-change-directory newsgroup server)
   (let* ((active-articles 
 	  (mapcar
@@ -272,10 +251,10 @@
     (message "")
     (nconc rest articles)))
 
-(defun nnmh-close-group (group &optional server)
+(deffoo nnmh-close-group (group &optional server)
   t)
 
-(defun nnmh-request-move-article 
+(deffoo nnmh-request-move-article 
   (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnmh move*"))
 	result)
@@ -294,7 +273,7 @@
        (file-error nil)))
     result))
 
-(defun nnmh-request-accept-article (group &optional server last noinsert)
+(deffoo nnmh-request-accept-article (group &optional server last noinsert)
   (nnmh-possibly-change-directory group server)
   (if (stringp group)
       (and 
@@ -307,7 +286,7 @@
      (nnmail-activate 'nnmh)
      (car (nnmh-save-mail noinsert)))))
 
-(defun nnmh-request-replace-article (article group buffer)
+(deffoo nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)
   (save-excursion
     (set-buffer buffer)
@@ -320,7 +299,7 @@
 	  t)
       (error nil))))
 
-(defun nnmh-request-create-group (group &optional server) 
+(deffoo nnmh-request-create-group (group &optional server) 
   (nnmail-activate 'nnmh)
   (or (assoc group nnmh-group-alist)
       (let (active)
@@ -339,7 +318,7 @@
 		 (setcdr active (apply 'max articles)))))))
   t)
 
-(defun nnmh-request-delete-group (group &optional force server)
+(deffoo nnmh-request-delete-group (group &optional force server)
   (nnmh-possibly-change-directory group server)
   ;; Delete all articles in GROUP.
   (if (not force)
@@ -362,7 +341,7 @@
 	nnmh-current-directory nil)
   t)
 
-(defun nnmh-request-rename-group (group new-name &optional server)
+(deffoo nnmh-request-rename-group (group new-name &optional server)
   (nnmh-possibly-change-directory group server)
   ;; Rename directory.
   (and (file-writable-p nnmh-current-directory)

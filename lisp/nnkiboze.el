@@ -33,16 +33,19 @@
 (require 'nnheader)
 (require 'gnus)
 (require 'gnus-score)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnkiboze-directory 
+(nnoo-declare nnkiboze)
+
+(defvoo nnkiboze-directory 
   (expand-file-name (or gnus-article-save-directory "~/News/"))
   "nnkiboze will put its files in this directory.")
 
-(defvar nnkiboze-level 9
+(defvoo nnkiboze-level 9
   "*The maximum level to be searched for articles.")
 
-(defvar nnkiboze-remove-read-articles t
+(defvoo nnkiboze-remove-read-articles t
   "*If non-nil, nnkiboze will remove read articles from the kiboze group.")
 
 
@@ -50,15 +53,17 @@
 (defconst nnkiboze-version "nnkiboze 1.0"
   "Version numbers of this version of nnkiboze.")
 
-(defvar nnkiboze-current-group nil)
-(defvar nnkiboze-current-score-group "")
-(defvar nnkiboze-status-string "")
+(defvoo nnkiboze-current-group nil)
+(defvoo nnkiboze-current-score-group "")
+(defvoo nnkiboze-status-string "")
 
 
 
 ;;; Interface functions.
 
-(defun nnkiboze-retrieve-headers (articles &optional group server fetch-old)
+(nnoo-define-basics nnkiboze)
+
+(deffoo nnkiboze-retrieve-headers (articles &optional group server fetch-old)
   (nnkiboze-possibly-change-newsgroups group)
   (if gnus-nov-is-evil
       nil
@@ -84,29 +89,15 @@
 	      (if (not (eobp)) (delete-region (point) (point-max)))
 	      'nov))))))
 
-(defun nnkiboze-open-server (newsgroups &optional something)
-  "Open a virtual newsgroup that contains NEWSGROUPS."
+(deffoo nnkiboze-open-server (newsgroups &optional something)
   (gnus-make-directory nnkiboze-directory)
   (nnheader-init-server-buffer))
 
-(defun nnkiboze-close-server (&rest dum)
-  "Close news server."
-  t)
-
-(defalias 'nnkiboze-request-quit (symbol-function 'nnkiboze-close-server))
-
-(defun nnkiboze-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
+(deffoo nnkiboze-server-opened (&optional server)
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnkiboze-status-message (&optional server)
-  "Return server status response as string."
-  nnkiboze-status-string)
-
-(defun nnkiboze-request-article (article &optional newsgroup server buffer)
-  "Select article by message number."
+(deffoo nnkiboze-request-article (article &optional newsgroup server buffer)
   (nnkiboze-possibly-change-newsgroups newsgroup)
   (if (not (numberp article))
       ;; This is a real kludge. It might not work at times, but it
@@ -125,7 +116,7 @@ If the stream is opened, return T, otherwise return NIL."
       (and (gnus-request-group igroup t)
 	   (gnus-request-article iarticle igroup buffer)))))
 
-(defun nnkiboze-request-group (group &optional server dont-check)
+(deffoo nnkiboze-request-group (group &optional server dont-check)
   "Make GROUP the current newsgroup."
   (nnkiboze-possibly-change-newsgroups group)
   (if dont-check
@@ -150,7 +141,7 @@ If the stream is opened, return T, otherwise return NIL."
 	    (insert (format "211 %d %d %d %s\n" total beg end group)))))))
   t)
 
-(defun nnkiboze-close-group (group &optional server)
+(deffoo nnkiboze-close-group (group &optional server)
   (nnkiboze-possibly-change-newsgroups group)
   ;; Remove NOV lines of articles that are marked as read.
   (when (and (file-exists-p (nnkiboze-nov-file-name))
@@ -177,17 +168,17 @@ If the stream is opened, return T, otherwise return NIL."
 	  (kill-buffer (current-buffer)))))
     (setq nnkiboze-current-group nil)))
 
-(defun nnkiboze-request-list (&optional server) 
+(deffoo nnkiboze-request-list (&optional server) 
   (nnheader-report 'nnkiboze "LIST is not implemented."))
 
-(defun nnkiboze-request-newgroups (date &optional server)
+(deffoo nnkiboze-request-newgroups (date &optional server)
   "List new groups."
   (nnheader-report 'nnkiboze "NEWGROUPS is not supported."))
 
-(defun nnkiboze-request-list-newsgroups (&optional server)
+(deffoo nnkiboze-request-list-newsgroups (&optional server)
   (nnheader-report 'nnkiboze "LIST NEWSGROUPS is not implemented."))
 
-(defun nnkiboze-request-delete-group (group &optional force server)
+(deffoo nnkiboze-request-delete-group (group &optional force server)
   (nnkiboze-possibly-change-newsgroups group)
   (when force
      (let ((files (list (nnkiboze-nov-file-name)

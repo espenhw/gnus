@@ -32,18 +32,21 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnmbox-mbox-file (expand-file-name "~/mbox")
+(nnoo-declare nnmbox)
+
+(defvoo nnmbox-mbox-file (expand-file-name "~/mbox")
   "The name of the mail box file in the user's home directory.")
 
-(defvar nnmbox-active-file (expand-file-name "~/.mbox-active")
+(defvoo nnmbox-active-file (expand-file-name "~/.mbox-active")
   "The name of the active file for the mail box.")
 
-(defvar nnmbox-get-new-mail t
+(defvoo nnmbox-get-new-mail t
   "If non-nil, nnmbox will check the incoming mail file and split the mail.")
 
-(defvar nnmbox-prepare-save-mail-hook nil
+(defvoo nnmbox-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
 
@@ -51,35 +54,23 @@
 (defconst nnmbox-version "nnmbox 1.0"
   "nnmbox version.")
 
-(defvar nnmbox-current-group nil
+(defvoo nnmbox-current-group nil
   "Current nnmbox news group directory.")
 
 (defconst nnmbox-mbox-buffer nil)
 
-(defvar nnmbox-status-string "")
+(defvoo nnmbox-status-string "")
 
-(defvar nnmbox-group-alist nil)
-(defvar nnmbox-active-timestamp nil)
-
-
-
-(defvar nnmbox-current-server nil)
-(defvar nnmbox-server-alist nil)
-(defvar nnmbox-server-variables 
-  `((nnmbox-mbox-file ,nnmbox-mbox-file)
-    (nnmbox-active-file ,nnmbox-active-file)
-    (nnmbox-get-new-mail ,nnmbox-get-new-mail)
-    (nnmbox-current-group nil)
-    (nnmbox-active-timestamp nil)
-    (nnmbox-prepare-save-mail-hook nil)
-    (nnmbox-status-string "")
-    (nnmbox-group-alist nil)))
+(defvoo nnmbox-group-alist nil)
+(defvoo nnmbox-active-timestamp nil)
 
 
 
 ;;; Interface functions
 
-(defun nnmbox-retrieve-headers (sequence &optional newsgroup server fetch-old)
+(nnoo-define-basics nnmbox)
+
+(deffoo nnmbox-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -123,8 +114,8 @@
       (nnheader-fold-continuation-lines)
       'headers)))
 
-(defun nnmbox-open-server (server &optional defs)
-  (nnheader-change-server 'nnmbox server defs)
+(deffoo nnmbox-open-server (server &optional defs)
+  (nnoo-change-server 'nnmbox server defs)
   (cond 
    ((not (file-exists-p nnmbox-mbox-file))
     (nnmbox-close-server)
@@ -137,24 +128,21 @@
 		     nnmbox-mbox-file)
     t)))
 
-(defun nnmbox-close-server (&optional server)
+(deffoo nnmbox-close-server (&optional server)
   (when (and nnmbox-mbox-buffer
 	     (buffer-name nnmbox-mbox-buffer))
     (kill-buffer nnmbox-mbox-buffer))
-  (setq nnmbox-current-server nil)
+  (nnoo-close-server 'nnmbox server)
   t)
 
-(defun nnmbox-server-opened (&optional server)
-  (and (equal server nnmbox-current-server)
+(deffoo nnmbox-server-opened (&optional server)
+  (and (nnoo-current-server-p 'nnmbox server)
        nnmbox-mbox-buffer
        (buffer-name nnmbox-mbox-buffer)
        nntp-server-buffer
        (buffer-name nntp-server-buffer)))
 
-(defun nnmbox-status-message (&optional server)
-  nnmbox-status-string)
-
-(defun nnmbox-request-article (article &optional newsgroup server buffer)
+(deffoo nnmbox-request-article (article &optional newsgroup server buffer)
   (nnmbox-possibly-change-newsgroup newsgroup server)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)
@@ -182,7 +170,7 @@
 		(cons nnmbox-current-group article)
 	      (nnmbox-article-group-number)))))))
 
-(defun nnmbox-request-group (group &optional server dont-check)
+(deffoo nnmbox-request-group (group &optional server dont-check)
   (let ((active (cadr (assoc group nnmbox-group-alist))))
     (cond 
      ((null active)
@@ -199,7 +187,7 @@
 		       (car active) (cdr active) group)
       t))))
 
-(defun nnmbox-request-scan (&optional group server)
+(deffoo nnmbox-request-scan (&optional group server)
   (nnmbox-read-mbox)
   (nnmail-get-new-mail 
    'nnmbox 
@@ -215,10 +203,10 @@
 	 (goto-char (point-max))
 	 (insert-buffer-substring in-buf))))))
 
-(defun nnmbox-close-group (group &optional server)
+(deffoo nnmbox-close-group (group &optional server)
   t)
 
-(defun nnmbox-request-list (&optional server)
+(deffoo nnmbox-request-list (&optional server)
   (save-excursion
     (or (nnmail-find-file nnmbox-active-file)
 	(progn
@@ -226,13 +214,13 @@
 	  (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
 	  (nnmail-find-file nnmbox-active-file)))))
 
-(defun nnmbox-request-newgroups (date &optional server)
+(deffoo nnmbox-request-newgroups (date &optional server)
   (nnmbox-request-list server))
 
-(defun nnmbox-request-list-newsgroups (&optional server)
+(deffoo nnmbox-request-list-newsgroups (&optional server)
   (nnheader-report 'nnmbox "LIST NEWSGROUPS is not implemented."))
 
-(defun nnmbox-request-expire-articles 
+(deffoo nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
@@ -267,7 +255,7 @@
       (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
       (nconc rest articles))))
 
-(defun nnmbox-request-move-article
+(deffoo nnmbox-request-move-article
   (article group server accept-form &optional last)
   (nnmbox-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnmbox move*"))
@@ -296,7 +284,7 @@
        (and last (save-buffer))))
     result))
 
-(defun nnmbox-request-accept-article (group &optional server last)
+(deffoo nnmbox-request-accept-article (group &optional server last)
   (nnmbox-possibly-change-newsgroup group server)
   (let ((buf (current-buffer))
 	result)
@@ -323,7 +311,7 @@
      (nnmail-save-active nnmbox-group-alist nnmbox-active-file))
     (car result)))
 
-(defun nnmbox-request-replace-article (article group buffer)
+(deffoo nnmbox-request-replace-article (article group buffer)
   (nnmbox-possibly-change-newsgroup group)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)
@@ -335,7 +323,7 @@
       (save-buffer)
       t)))
 
-(defun nnmbox-request-delete-group (group &optional force server)
+(deffoo nnmbox-request-delete-group (group &optional force server)
   (nnmbox-possibly-change-newsgroup group server)
   ;; Delete all articles in GROUP.
   (if (not force)
@@ -358,7 +346,7 @@
   (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
   t)
 
-(defun nnmbox-request-rename-group (group new-name &optional server)
+(deffoo nnmbox-request-rename-group (group new-name &optional server)
   (nnmbox-possibly-change-newsgroup group server)
   (save-excursion
     (set-buffer nnmbox-mbox-buffer)

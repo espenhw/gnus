@@ -29,46 +29,49 @@
 (require 'nnheader)
 (require 'nntp)
 (require 'timezone)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnspool-inews-program news-inews-program
+(nnoo-declare nnspool)
+
+(defvoo nnspool-inews-program news-inews-program
   "Program to post news.
 This is most commonly `inews' or `injnews'.")
 
-(defvar nnspool-inews-switches '("-h")
+(defvoo nnspool-inews-switches '("-h")
   "Switches for nnspool-request-post to pass to `inews' for posting news.
 If you are using Cnews, you probably should set this variable to nil.")
 
-(defvar nnspool-spool-directory (file-name-as-directory news-path)
+(defvoo nnspool-spool-directory (file-name-as-directory news-path)
   "Local news spool directory.")
 
-(defvar nnspool-nov-directory (concat nnspool-spool-directory "over.view/")
+(defvoo nnspool-nov-directory (concat nnspool-spool-directory "over.view/")
   "Local news nov directory.")
 
-(defvar nnspool-lib-dir "/usr/lib/news/"
+(defvoo nnspool-lib-dir "/usr/lib/news/"
   "Where the local news library files are stored.")
 
-(defvar nnspool-active-file (concat nnspool-lib-dir "active")
+(defvoo nnspool-active-file (concat nnspool-lib-dir "active")
   "Local news active file.")
 
-(defvar nnspool-newsgroups-file (concat nnspool-lib-dir "newsgroups")
+(defvoo nnspool-newsgroups-file (concat nnspool-lib-dir "newsgroups")
   "Local news newsgroups file.")
 
-(defvar nnspool-distributions-file (concat nnspool-lib-dir "distributions")
+(defvoo nnspool-distributions-file (concat nnspool-lib-dir "distributions")
   "Local news distributions file.")
 
-(defvar nnspool-history-file (concat nnspool-lib-dir "history")
+(defvoo nnspool-history-file (concat nnspool-lib-dir "history")
   "Local news history file.")
 
-(defvar nnspool-active-times-file (concat nnspool-lib-dir "active.times")
+(defvoo nnspool-active-times-file (concat nnspool-lib-dir "active.times")
   "Local news active date file.")
 
-(defvar nnspool-large-newsgroup 50
+(defvoo nnspool-large-newsgroup 50
   "The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
-(defvar nnspool-nov-is-evil nil
+(defvoo nnspool-nov-is-evil nil
   "Non-nil means that nnspool will never return NOV lines instead of headers.")
 
 (defconst nnspool-sift-nov-with-sed nil
@@ -76,7 +79,7 @@ messages will be shown to indicate the current status.")
 If nil, nnspool will load the entire file into a buffer and process it
 there.")
 
-(defvar nnspool-rejected-article-hook nil
+(defvoo nnspool-rejected-article-hook nil
   "*A hook that will be run when an article has been rejected by the server.")
 
 
@@ -84,39 +87,18 @@ there.")
 (defconst nnspool-version "nnspool 2.0"
   "Version numbers of this version of NNSPOOL.")
 
-(defvar nnspool-current-directory nil
+(defvoo nnspool-current-directory nil
   "Current news group directory.")
 
-(defvar nnspool-current-group nil)
-(defvar nnspool-status-string "")
-
-
-
-(defvar nnspool-current-server nil)
-(defvar nnspool-server-alist nil)
-(defvar nnspool-server-variables 
-  `((nnspool-inews-program ,nnspool-inews-program)
-    (nnspool-inews-switches ,nnspool-inews-switches)
-    (nnspool-spool-directory ,nnspool-spool-directory)
-    (nnspool-nov-directory ,nnspool-nov-directory)
-    (nnspool-lib-dir ,nnspool-lib-dir)
-    (nnspool-active-file ,nnspool-active-file)
-    (nnspool-newsgroups-file ,nnspool-newsgroups-file)
-    (nnspool-distributions-file ,nnspool-distributions-file)
-    (nnspool-rejected-article-hook nil)
-    (nnspool-history-file ,nnspool-history-file)
-    (nnspool-active-times-file ,nnspool-active-times-file)
-    (nnspool-large-newsgroup ,nnspool-large-newsgroup)
-    (nnspool-nov-is-evil ,nnspool-nov-is-evil)
-    (nnspool-sift-nov-with-sed ,nnspool-sift-nov-with-sed)
-    (nnspool-current-directory nil)
-    (nnspool-current-group nil)
-    (nnspool-status-string "")))
+(defvoo nnspool-current-group nil)
+(defvoo nnspool-status-string "")
 
 
 ;;; Interface functions.
 
-(defun nnspool-retrieve-headers (articles &optional group server fetch-old)
+(nnoo-define-basics nnspool)
+
+(deffoo nnspool-retrieve-headers (articles &optional group server fetch-old)
   "Retrieve the headers of ARTICLES."
   (save-excursion
     (set-buffer nntp-server-buffer)
@@ -168,8 +150,8 @@ there.")
 	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
-(defun nnspool-open-server (server &optional defs)
-  (nnheader-change-server 'nnspool server defs)
+(deffoo nnspool-open-server (server &optional defs)
+  (nnoo-change-server 'nnspool server defs)
   (cond 
    ((not (file-exists-p nnspool-spool-directory))
     (nnspool-close-server)
@@ -183,20 +165,7 @@ there.")
 		     server nnspool-spool-directory)
     t)))
 
-(defun nnspool-close-server (&optional server)
-  (setq nnspool-current-server nil)
-  t)
-
-(defun nnspool-server-opened (&optional server)
-  (and (equal server nnspool-current-server)
-       nntp-server-buffer
-       (buffer-name nntp-server-buffer)))
-
-(defun nnspool-status-message (&optional server)
-  "Return server status response as string."
-  nnspool-status-string)
-
-(defun nnspool-request-article (id &optional group server buffer)
+(deffoo nnspool-request-article (id &optional group server buffer)
   "Select article by message ID (or number)."
   (nnspool-possibly-change-directory group)
   (let ((nntp-server-buffer (or buffer nntp-server-buffer))
@@ -215,7 +184,7 @@ there.")
 	     (cons nnspool-current-group id)
 	   ag))))
 	    
-(defun nnspool-request-body (id &optional group server)
+(deffoo nnspool-request-body (id &optional group server)
   "Select article body by message ID (or number)."
   (nnspool-possibly-change-directory group)
   (let ((res (nnspool-request-article id)))
@@ -227,7 +196,7 @@ there.")
 	  (delete-region (point-min) (point)))
 	res))))
 
-(defun nnspool-request-head (id &optional group server)
+(deffoo nnspool-request-head (id &optional group server)
   "Select article head by message ID (or number)."
   (nnspool-possibly-change-directory group)
   (let ((res (nnspool-request-article id)))
@@ -239,7 +208,7 @@ there.")
 	  (delete-region (1- (point)) (point-max)))))
     res))
 
-(defun nnspool-request-group (group &optional server dont-check)
+(deffoo nnspool-request-group (group &optional server dont-check)
   "Select news GROUP."
   (let ((pathname (nnspool-article-pathname group))
 	dir)
@@ -265,29 +234,29 @@ there.")
 	  (nnheader-report 'nnspool "Empty group %s" group)
 	  (nnheader-insert "211 0 0 0 %s\n" group))))))
 
-(defun nnspool-request-type (group &optional article)
+(deffoo nnspool-request-type (group &optional article)
   'news)
 
-(defun nnspool-close-group (group &optional server)
+(deffoo nnspool-close-group (group &optional server)
   t)
 
-(defun nnspool-request-list (&optional server)
+(deffoo nnspool-request-list (&optional server)
   "List active newsgroups."
   (save-excursion
     (nnspool-find-file nnspool-active-file)))
 
-(defun nnspool-request-list-newsgroups (&optional server)
+(deffoo nnspool-request-list-newsgroups (&optional server)
   "List newsgroups (defined in NNTP2)."
   (save-excursion
     (nnspool-find-file nnspool-newsgroups-file)))
 
-(defun nnspool-request-list-distributions (&optional server)
+(deffoo nnspool-request-list-distributions (&optional server)
   "List distributions (defined in NNTP2)."
   (save-excursion
     (nnspool-find-file nnspool-distributions-file)))
 
 ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
-(defun nnspool-request-newgroups (date &optional server)
+(deffoo nnspool-request-newgroups (date &optional server)
   "List groups created after DATE."
   (if (nnspool-find-file nnspool-active-times-file)
       (save-excursion
@@ -321,7 +290,7 @@ there.")
 	t)
     nil))
 
-(defun nnspool-request-post (&optional server)
+(deffoo nnspool-request-post (&optional server)
   "Post a new news in current buffer."
   (save-excursion
     (let* ((process-connection-type nil) ; t bugs out on Solaris
@@ -345,6 +314,10 @@ there.")
 	  (error nil))
 	t))))
 
+
+
+;;; Internal functions.
+
 (defun nnspool-inews-sentinel (proc status)
   (save-excursion
     (set-buffer (process-buffer proc))
@@ -359,9 +332,6 @@ there.")
       (message "nnspool: %s" nnspool-status-string)
       (ding)
       (run-hooks 'nnspool-rejected-article-hook))))
-
-
-;;; Internal functions.
 
 (defun nnspool-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)

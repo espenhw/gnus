@@ -1695,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.69"
+(defconst gnus-version "September Gnus v0.73"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1901,7 +1901,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     gnus-last-article gnus-article-internal-prepare-hook
     gnus-newsgroup-dependencies gnus-newsgroup-selected-overlay
     gnus-newsgroup-scored gnus-newsgroup-kill-headers
-    gnus-newsgroup-async 
+    gnus-newsgroup-async gnus-thread-expunge-below
     gnus-score-alist gnus-current-score-file gnus-summary-expunge-below
     gnus-summary-mark-below gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
@@ -6353,19 +6353,20 @@ If N is negative, this group and the N-1 previous groups will be checked."
   (interactive "P")
   (let* ((groups (gnus-group-process-prefix n))
 	 (ret (if (numberp n) (- n (length groups)) 0))
+	 (beg (unless n (point)))
 	 group)
-    (while groups
-      (setq group (car groups)
-	    groups (cdr groups))
+    (while (setq group (pop groups))
       (gnus-group-remove-mark group)
-      (if (and group (gnus-activate-group group 'scan))
+      (if (gnus-activate-group group 'scan)
 	  (progn
 	    (gnus-get-unread-articles-in-group
 	     (gnus-get-info group) (gnus-active group) t)
-	    (gnus-close-group group)
+	    (unless (gnus-virtual-group-p group)
+	      (gnus-close-group group))
 	    (gnus-group-update-group group))
 	(ding)
 	(gnus-message 3 "%s error: %s" group (gnus-status-message group))))
+    (when beg (goto-char beg))
     (when gnus-goto-next-group-when-activating
       (gnus-group-next-unread-group 1 t))
     (gnus-summary-position-point)

@@ -103,9 +103,7 @@
  	  (setq load-path (cons gnus-mailcrypt-lisp-directory load-path)))
       (autoload 'mc-install-write-mode "mailcrypt" nil t)
       (autoload 'mc-install-read-mode "mailcrypt" nil t)
-      (add-hook 'mail-mode-hook 'mc-install-write-mode)
-      (add-hook 'news-mode-hook 'mc-install-write-mode)
-      (add-hook 'news-reply-mode-hook 'mc-install-write-mode)
+      (add-hook 'message-mode-hook 'mc-install-write-mode)
       (add-hook 'gnus-summary-mode-hook 'mc-install-read-mode)
       (if gnus-use-mhe
 	  (progn

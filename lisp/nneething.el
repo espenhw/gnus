@@ -32,15 +32,18 @@
 
 (require 'nnheader)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nneething-map-file-directory "~/.nneething/"
+(nnoo-declare nneething)
+
+(defvoo nneething-map-file-directory "~/.nneething/"
   "*Where nneething stores the map files.")
 
-(defvar nneething-map-file ".nneething"
+(defvoo nneething-map-file ".nneething"
   "*Name of the map files.")
 
-(defvar nneething-exclude-files nil
+(defvoo nneething-exclude-files nil
   "*Regexp saying what files to exclude from the group.
 If this variable is nil, no files will be excluded.")
 
@@ -51,45 +54,28 @@ If this variable is nil, no files will be excluded.")
 (defconst nneething-version "nneething 1.0"
   "nneething version.")
 
-(defvar nneething-current-directory nil
+(defvoo nneething-current-directory nil
   "Current news group directory.")
 
-(defvar nneething-status-string "")
-(defvar nneething-group-alist nil)
+(defvoo nneething-status-string "")
+(defvoo nneething-group-alist nil)
 
-(defvar nneething-message-id-number 0)
-(defvar nneething-work-buffer " *nneething work*")
+(defvoo nneething-message-id-number 0)
+(defvoo nneething-work-buffer " *nneething work*")
 
-(defvar nneething-directory nil)
-(defvar nneething-group nil)
-(defvar nneething-map nil)
-(defvar nneething-read-only nil)
-(defvar nneething-active nil)
-
-
-
-(defvar nneething-current-server nil)
-(defvar nneething-server-alist)
-(defvar nneething-server-variables 
-  `((nneething-directory ,nneething-directory)
-    (nneething-current-directory nil)
-    (nneething-status-string "")
-    (nneething-active nil)
-    (nneething-read-only nil)
-    (nneething-map nil)
-    (nneething-group nil)
-    (nneething-work-buffer ,nneething-work-buffer)
-    (nneething-message-id-number ,nneething-message-id-number)
-    (nneething-exclude-files nil)
-    (nneething-map-file ,nneething-map-file)
-    (nneething-map-file-directory ,nneething-map-file-directory)
-    (nneething-group-alist nil)))
+(defvoo nneething-directory nil)
+(defvoo nneething-group nil)
+(defvoo nneething-map nil)
+(defvoo nneething-read-only nil)
+(defvoo nneething-active nil)
 
 
 
 ;;; Interface functions.
 
-(defun nneething-retrieve-headers (articles &optional group server fetch-old)
+(nnoo-define-basics nneething)
+
+(deffoo nneething-retrieve-headers (articles &optional group server fetch-old)
   (nneething-possibly-change-directory group)
 
   (save-excursion
@@ -127,21 +113,7 @@ If this variable is nil, no files will be excluded.")
 	(nnheader-fold-continuation-lines)
 	'headers))))
 
-(defun nneething-open-server (server &optional defs)
-  (nnheader-report 'nneething "")
-  (nnheader-init-server-buffer))
-
-(defun nneething-close-server (&optional server)
-  (setq nneething-current-directory nil)
-  t)
-
-(defun nneething-server-opened (&optional server)
-  nneething-current-directory)
-
-(defun nneething-status-message (&optional server)
-  nneething-status-string)
-
-(defun nneething-request-article (id &optional group server buffer)
+(deffoo nneething-request-article (id &optional group server buffer)
   (nneething-possibly-change-directory group)
   (let ((file (unless (stringp id) (nneething-file-name id)))
 	(nntp-server-buffer (or buffer nntp-server-buffer)))
@@ -157,7 +129,7 @@ If this variable is nil, no files will be excluded.")
 		 (insert "\n")))
 	   t))))
 
-(defun nneething-request-group (group &optional dir dont-check)
+(deffoo nneething-request-group (group &optional dir dont-check)
   (nneething-possibly-change-directory group dir)
   (unless dont-check
     (nneething-create-mapping)
@@ -170,16 +142,16 @@ If this variable is nil, no files will be excluded.")
        group)))
   t)
 
-(defun nneething-request-list (&optional server dir)
+(deffoo nneething-request-list (&optional server dir)
   (nnheader-report 'nneething "LIST is not implemented."))
 
-(defun nneething-request-newgroups (date &optional server)
+(deffoo nneething-request-newgroups (date &optional server)
   (nnheader-report 'nneething "NEWSGROUPS is not implemented."))
 
-(defun nneething-request-type (group &optional article)
+(deffoo nneething-request-type (group &optional article)
   'unknown)
 
-(defun nneething-close-group (group &optional server)
+(deffoo nneething-close-group (group &optional server)
   (setq nneething-current-directory nil)
   t)
 

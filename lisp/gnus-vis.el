@@ -207,7 +207,7 @@
 ;(defvar gnus-signature-face 'italic
 ;  "Face used for signature.")
 
-(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]"
+(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[\\w-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[\\w-a-zA-Z0-9_=#$@~`%&*+|\\/]"
   "*Regular expression that matches URLs.")
 
 (defvar gnus-button-alist 
@@ -579,7 +579,7 @@ ticked: The number of ticked articles in the group.
 	 ["Switch current score file" gnus-score-change-score-file t]
 	 ["Set mark below" gnus-score-set-mark-below t]
 	 ["Set expunge below" gnus-score-set-expunge-below t]
-	 ["Edit current score file" gnus-score-edit-alist t]
+	 ["Edit current score file" gnus-score-edit-current-scores t]
 	 ["Edit score file" gnus-score-edit-file t]
 	 ["Trace score" gnus-score-find-trace t]
 	 ["Rescore buffer" gnus-summary-rescore t]

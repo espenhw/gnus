@@ -32,18 +32,21 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(require 'nnoo)
 (eval-when-compile (require 'cl))
 
-(defvar nnbabyl-mbox-file (expand-file-name "~/RMAIL")
+(nnoo-declare nnbabyl)
+
+(defvoo nnbabyl-mbox-file (expand-file-name "~/RMAIL")
   "The name of the rmail box file in the users home directory.")
 
-(defvar nnbabyl-active-file (expand-file-name "~/.rmail-active")
+(defvoo nnbabyl-active-file (expand-file-name "~/.rmail-active")
   "The name of the active file for the rmail box.")
 
-(defvar nnbabyl-get-new-mail t
+(defvoo nnbabyl-get-new-mail t
   "If non-nil, nnbabyl will check the incoming mail file and split the mail.")
 
-(defvar nnbabyl-prepare-save-mail-hook nil
+(defvoo nnbabyl-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
 
@@ -53,35 +56,24 @@
 (defconst nnbabyl-version "nnbabyl 1.0"
   "nnbabyl version.")
 
-(defvar nnbabyl-mbox-buffer nil)
-(defvar nnbabyl-current-group nil)
-(defvar nnbabyl-status-string "")
-(defvar nnbabyl-group-alist nil)
-(defvar nnbabyl-active-timestamp nil)
+(defvoo nnbabyl-mbox-buffer nil)
+(defvoo nnbabyl-current-group nil)
+(defvoo nnbabyl-status-string "")
+(defvoo nnbabyl-group-alist nil)
+(defvoo nnbabyl-active-timestamp nil)
 
-(defvar nnbabyl-previous-buffer-mode nil)
+(defvoo nnbabyl-previous-buffer-mode nil)
 
 (eval-and-compile
   (autoload 'gnus-set-text-properties "gnus-ems"))
 
 
 
-(defvar nnbabyl-current-server nil)
-(defvar nnbabyl-server-alist nil)
-(defvar nnbabyl-server-variables 
-  `((nnbabyl-mbox-file ,nnbabyl-mbox-file)
-    (nnbabyl-active-file ,nnbabyl-active-file)
-    (nnbabyl-get-new-mail ,nnbabyl-get-new-mail)
-    (nnbabyl-current-group nil)
-    (nnbabyl-status-string "")
-    (nnbabyl-previous-buffer-mode nil)
-    (nnbabyl-group-alist nil)))
-
-
-
 ;;; Interface functions
 
-(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server fetch-old)
+(nnoo-define-basics nnbabyl)
+
+(deffoo nnbabyl-retrieve-headers (sequence &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -123,8 +115,8 @@
       (nnheader-fold-continuation-lines)
       'headers)))
 
-(defun nnbabyl-open-server (server &optional defs)
-  (nnheader-change-server 'nnbabyl server defs)
+(deffoo nnbabyl-open-server (server &optional defs)
+  (nnoo-change-server 'nnbabyl server defs)
   (cond 
    ((not (file-exists-p nnbabyl-mbox-file))
     (nnbabyl-close-server)
@@ -137,7 +129,7 @@
 		     nnbabyl-mbox-file)
     t)))
 
-(defun nnbabyl-close-server (&optional server)
+(deffoo nnbabyl-close-server (&optional server)
   ;; Restore buffer mode.
   (when (and (nnbabyl-server-opened)
 	     nnbabyl-previous-buffer-mode)
@@ -147,21 +139,18 @@
        (caar nnbabyl-previous-buffer-mode)
        (cdar nnbabyl-previous-buffer-mode))
       (funcall (cdr nnbabyl-previous-buffer-mode))))
-  (setq nnbabyl-current-server nil
-	nnbabyl-mbox-buffer nil)
+  (nnoo-close-server 'nnbabyl server)
+  (setq nnbabyl-mbox-buffer nil)
   t)
 
-(defun nnbabyl-server-opened (&optional server)
-  (and (equal server nnbabyl-current-server)
+(deffoo nnbabyl-server-opened (&optional server)
+  (and (nnoo-current-server-p 'nnbabyl server)
        nnbabyl-mbox-buffer
        (buffer-name nnbabyl-mbox-buffer)
        nntp-server-buffer
        (buffer-name nntp-server-buffer)))
 
-(defun nnbabyl-status-message (&optional server)
-  nnbabyl-status-string)
-
-(defun nnbabyl-request-article (article &optional newsgroup server buffer)
+(deffoo nnbabyl-request-article (article &optional newsgroup server buffer)
   (nnbabyl-possibly-change-newsgroup newsgroup server)
   (save-excursion
     (set-buffer nnbabyl-mbox-buffer)
@@ -199,7 +188,7 @@
 		(cons nnbabyl-current-group article)
 	      (nnbabyl-article-group-number)))))))
 
-(defun nnbabyl-request-group (group &optional server dont-check)
+(deffoo nnbabyl-request-group (group &optional server dont-check)
   (let ((active (cadr (assoc group nnbabyl-group-alist))))
     (save-excursion
       (cond 
@@ -217,7 +206,7 @@
 			 (car active) (cdr active) group)
 	t)))))
 
-(defun nnbabyl-request-scan (&optional group server)
+(deffoo nnbabyl-request-scan (&optional group server)
   (nnbabyl-read-mbox)
   (nnmail-get-new-mail 
    'nnbabyl 
@@ -238,10 +227,10 @@
 	 (goto-char (match-end 0))
 	 (insert-buffer-substring in-buf))))))
 
-(defun nnbabyl-close-group (group &optional server)
+(deffoo nnbabyl-close-group (group &optional server)
   t)
 
-(defun nnbabyl-request-create-group (group &optional server) 
+(deffoo nnbabyl-request-create-group (group &optional server) 
   (nnmail-activate 'nnbabyl)
   (unless (assoc group nnbabyl-group-alist)
     (setq nnbabyl-group-alist (cons (list group (cons 1 0))
@@ -249,7 +238,7 @@
     (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
   t)
 
-(defun nnbabyl-request-list (&optional server)
+(deffoo nnbabyl-request-list (&optional server)
   (save-excursion
     (or (nnmail-find-file nnbabyl-active-file)
 	(progn
@@ -257,13 +246,13 @@
 	  (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
 	  (nnmail-find-file nnbabyl-active-file)))))
 
-(defun nnbabyl-request-newgroups (date &optional server)
+(deffoo nnbabyl-request-newgroups (date &optional server)
   (nnbabyl-request-list server))
 
-(defun nnbabyl-request-list-newsgroups (&optional server)
+(deffoo nnbabyl-request-list-newsgroups (&optional server)
   (nnheader-report 'nnbabyl "nnbabyl: LIST NEWSGROUPS is not implemented."))
 
-(defun nnbabyl-request-expire-articles
+(deffoo nnbabyl-request-expire-articles
   (articles newsgroup &optional server force)
   (nnbabyl-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
@@ -299,7 +288,7 @@
       (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
       (nconc rest articles))))
 
-(defun nnbabyl-request-move-article 
+(deffoo nnbabyl-request-move-article 
   (article group server accept-form &optional last)
   (nnbabyl-possibly-change-newsgroup group server)
   (let ((buf (get-buffer-create " *nnbabyl move*"))
@@ -326,7 +315,7 @@
        (and last (save-buffer))))
     result))
 
-(defun nnbabyl-request-accept-article (group &optional server last)
+(deffoo nnbabyl-request-accept-article (group &optional server last)
   (nnbabyl-possibly-change-newsgroup group server)
   (let ((buf (current-buffer))
 	result beg)
@@ -354,7 +343,7 @@
 		    nnbabyl-group-alist nnbabyl-active-file)))
        result))))
 
-(defun nnbabyl-request-replace-article (article group buffer)
+(deffoo nnbabyl-request-replace-article (article group buffer)
   (nnbabyl-possibly-change-newsgroup group)
   (save-excursion
     (set-buffer nnbabyl-mbox-buffer)
@@ -366,7 +355,7 @@
       (save-buffer)
       t)))
 
-(defun nnbabyl-request-delete-group (group &optional force server)
+(deffoo nnbabyl-request-delete-group (group &optional force server)
   (nnbabyl-possibly-change-newsgroup group server)
   ;; Delete all articles in GROUP.
   (if (not force)
@@ -389,7 +378,7 @@
   (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
   t)
 
-(defun nnbabyl-request-rename-group (group new-name &optional server)
+(deffoo nnbabyl-request-rename-group (group new-name &optional server)
   (nnbabyl-possibly-change-newsgroup group server)
   (save-excursion
     (set-buffer nnbabyl-mbox-buffer)

@@ -192,7 +192,7 @@ on your system, you could say something like:
     (set (caar state) (nth 1 (car state)))
     (setq state (cdr state))))
 
-(defun nnheader-change-server (backend server defs)
+(defun nnheader-change-server-old (backend server defs)
   (nnheader-init-server-buffer)
   (let ((current-server (intern (format "%s-current-server" backend)))
 	(alist (intern (format "%s-server-alist" backend)))
@@ -461,7 +461,7 @@ without formatting."
       (and (listp form) (eq (car form) 'lambda))))
 
 (fset 'nnheader-find-file-noselect 'find-file-noselect)
-  
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

@@ -300,6 +300,7 @@ the program.
 * The Group Buffer::      Selecting, subscribing and killing groups.
 * The Summary Buffer::    Reading, saving and posting articles.
 * The Article Buffer::    Displaying and handling articles.
+* Message::               Message sending interface.
 * Composing Messages::    Information on sending mail and news.
 * Select Methods::        Gnus reads all messages from various select methods.
 * Scoring::               Assigning values to articles.
@@ -6382,57 +6383,85 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @end table
 
 
-@node Composing Messages
-@chapter Composing Messages
+@node Message
+@chapter Message
 @cindex reply
 @cindex followup
 @cindex post
 
-@kindex C-c C-c (Post)
-All commands for posting and mailing will put you in a post or mail
-buffer where you can edit the article all you like, before you send the
-article by pressing @kbd{C-c C-c}.  If you are in a foreign news group,
-and you wish to post the article using the foreign server, you can give
-a prefix to @kbd{C-c C-c} to make Gnus try to post using the foreign
-server.
+All message composition (both mail and news) takes place in
+@code{message} mode buffers.  
 
-@menu 
-* Mail::                 Mailing and replying.
-* Post::                 Posting and following up.
-* Posting Server::       What server should you post via?
-* Mail and Post::        Mailing and posting at the same time.
-* Archived Messages::    Where Gnus stores the messages you've sent.
-* Posting Styles::       An easier way to configure some key elements.
-* Drafts::               Postponing messages and rejected messages.
-* Rejected Articles::    What happens if the server doesn't like your article?
+@menu
+* Message Interface::         Setting up message buffers.
+* Message Commands::          Commands you can execute in message mode buffers.
+* Message Variables::         Customizing the message buffers.
 @end menu
 
-Also see @pxref{Canceling and Superseding} for information on how to
-remove articles you shouldn't have posted.
+
+@node Message Interface
+@section Message Interface
+
+When a program (or a person) wants to respond to a message -- reply,
+follow up, forward, cancel -- the program (or person) should just put
+point in the buffer where the message is and call the required command.
+@code{Message} will then pop up a new @code{message} mode buffer with
+appropriate headers filled out, and the user can edit the message before
+sending it.
+
+@menu
+* New Mail Message::
+* New News Message::
+* Reply::
+* Wide Reply::
+* Followup::
+* Canceling News::
+* Superseding::
+* Forwarding::
+* Resending::
+* Bouncing::
+@end menu
 
 
-@node Mail
-@section Mail
+@node New Mail Message
+@subsection New Mail Message
 
-Variables for customizing outgoing mail:
+The @code{message-mail} command pops up a new message buffer.  
 
-@table @code
-@item gnus-reply-to-function
-@vindex gnus-reply-to-function
-Gnus uses the normal methods to determine where replies are to go, but
-you can change the behavior to suit your needs by fiddling with this
-variable.
+Two optional parameters are accepted: The first will be used as the
+@code{To} header and the second as the @code{Subject} header.  If these
+aren't present, those two headers will be empty.
+
+
+@node New News Message
+@subsection New News Message
+
+The @code{message-news} command pops up a new message buffer.  
+
+This function accepts two optional parameters.  The first will be used
+as the @code{Newsgroups} header and the second as the @code{Subject}
+header.  If these aren't present, those two headers will be empty.
+
+
+@node Reply
+@subsection Reply
+
+The @code{message-reply} function pops up a message buffer that's a
+reply to the message in the current buffer.
+
+Message uses the normal methods to determine where replies are to go,
+but you can change the behavior to suit your needs by fiddling with the
+@code{message-reply-to-function} variable.
 
 If you want the replies to go to the @code{Sender} instead of the
-@code{From} in the group @samp{mail.stupid-list}, you could do something
-like this:
+@code{From}, you could do something like this:
 
 @lisp
-(setq gnus-reply-to-function
-      (lambda (group)
-       (cond ((string= group "mail.stupid-list")
-               (mail-fetch-field "sender"))
-             (t
+(setq message-reply-to-function
+      (lambda ()
+       (cond ((equal (mail-fetch-field "from") "somebody")
+               (mail-fetch-field "sender"))     
+             (t 
               nil))))
 @end lisp
 
@@ -6450,167 +6479,406 @@ should be a cons, where the car should be the name of an header
 (eg. @samp{larsi@@ifi.uio.no}).  All these headers will be inserted into
 the head of the outgoing mail. 
 
-@item gnus-mail-send-method
-@vindex gnus-mail-send-method
-@vindex send-mail-function
-@findex sendmail-send-it
-This variable says how a mail should be mailed.  It uses the function in
-the @code{send-mail-function} variable as the default, which usually is
-@code{sendmail-send-it}.
 
-@item gnus-uu-digest-headers
-@vindex gnus-uu-digest-headers
-List of regexps to match headers included in digested messages.  The
-headers will be included in the sequence they are matched.
+@node Wide Reply
+@subsection Wide Reply
 
-@item gnus-mail-hook
-@vindex gnus-mail-hook
-Hook called as the last thing after setting up a mail buffer.
+The @code{message-wide-reply} pops up a message buffer that's a wide
+reply to the message in the current buffer.
 
-@item gnus-required-mail-headers
-@vindex gnus-required-mail-headers
-@cindex sendmail
-Gnus will generate headers in all outgoing mail instead of letting
-@code{sendmail} do it for us.  This makes it possible to do more neat
-stuff, like putting mail without sending it, do hairy @code{Fcc}
-handling, and much more.  This variable controls what headers Gnus will
-generate, and is of the exact same form as @code{gnus-required-headers},
-which does the same for news articles (@pxref{Post}). 
+Message uses the normal methods to determine where wide replies are to go,
+but you can change the behavior to suit your needs by fiddling with the
+@code{message-wide-reply-to-function}.  It is used in the same way as
+@code{message-reply-to-function} (@pxref{Reply}). 
 
-@cindex X-Mailer
-The @code{Newsgroups} header is illegal in this list, while @code{To} is
-required, and @code{X-Mailer} can be added if you so should want.
 
-@vindex gnus-forward-start-separator
-@item gnus-forward-start-separator
-Delimiter inserted before forwarded messages.
+@node Followup
+@subsection Followup
 
-@vindex gnus-forward-end-separator
-@item gnus-forward-end-separator
-Delimiter inserted after forwarded messages.
+The @code{message-followup} command pops up a message buffer that's a
+followup to the message in the current buffer.
 
-@vindex gnus-signature-before-forwarded-message
-@item gnus-signature-before-forwarded-message
+Message uses the normal methods to determine where followups are to go,
+but you can change the behavior to suit your needs by fiddling with the
+@code{message-followup-to-function}.  It is used in the same way as
+@code{message-reply-to-function} (@pxref{Reply}).
+
+The @code{message-use-followup-to} variable says what to do about
+@code{Followup-To} headers.  If it is @code{use}, always use the value.
+If it is @code{ask} (which is the default), ask whether to use the
+value.  If it is @code{t}, use the value unless it is @samp{poster}.  If
+it is @code{nil}, don't use the value.
+
+
+@node Canceling News
+@subsection Canceling News
+
+The @code{message-cancel-news} command cancels the article in the
+current buffer.
+
+
+@node Superseding
+@subsection Superseding
+
+The @code{message-supersede} command pops up a message buffer that will
+supersede the message in the current buffer.
+
+Headers matching the @code{message-ignored-supersedes-headers} are
+removed before popping up the new message buffer.  The default is
+@samp{^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|Return-Path:}.
+
+
+
+@node Forwarding
+@subsection Forwarding
+
+The @code{message-forward} command pops up a message buffer to forward
+the message in the current buffer.  If given a prefix, forward using
+news.
+
+@table @code
+@item message-forward-start-separator
+Delimiter inserted before forwarded messages.  The default is
+@samp{------- Start of forwarded message -------\n}. 
+
+@vindex message-forward-end-separator
+@item message-forward-end-separator
+Delimiter inserted after forwarded messages.  The default is
+@samp{------- End of forwarded message -------\n}. 
+
+@item message-signature-before-forwarded-message
 If this variable is @code{t}, which it is by default, your personal
 signature will be inserted before the forwarded message.  If not, the
 forwarded message will be inserted first in the new mail.
 
-@item gnus-forward-included-headers
-@vindex gnus-forward-included-headers
-Regexp matching header lines to be included in forwarded messages.  It
-uses the same regexp as @code{gnus-visible-headers} by default.
+@item message-forward-included-headers
+Regexp matching header lines to be included in forwarded messages.  
 
 @end table
 
-@kindex C-c M-C-c (Mail)
-@kindex C-c M-C-p (Mail)
-@findex gnus-put-message
-You normally send a mail message by pressing @kbd{C-c C-c}.  However,
-you may wish to just put the mail message you have just written in your
-own local mail group instead of sending it.  Sounds quite unlikely, but
-I found that useful, so you can now also press @kbd{C-c M-C-p} to
-@dfn{put} the article in the current mail group, or, if there is no such
-thing, you will be prompted for a mail group, and then the article will
-be put there.  This means that the article is @dfn{not} mailed.  
 
-@findex gnus-kill-message-buffer
-@cindex kill mail buffer
-@kindex C-x k (Mail)
-@kindex C-x k (Post)
-If enter a mail (or post) buffer and then decide not to compose a
-message after all, you'd normally just kill the buffer with @kbd{C-x k}.
-However, since the mail and post buffers are associated with articles in
-the draft group, this will leave lots of rubbish articles in the draft
-group.  To avoid that problem, kill mail and post buffer with @kbd{C-c
-C-k} (@code{gnus-kill-message-buffer}) instead.  This will make sure
-that everything is properly cleaned up before the buffer is killed.
+@node Resending
+@subsection Resending
 
-@vindex gnus-mail-method
-There are three ``methods'' for handling all mail.  The default is
-@code{sendmail}.  Some people like what @code{mh} does better, and some
-people prefer @code{vm}.  Set @code{gnus-mail-method} to the one you
-think is way koolest.
+The @code{message-resend} command will prompt the user for an address
+and resend the message in the current buffer to that address.
 
-Three variables for customizing what to use when:
+Headers the match the @code{message-ignored-resent-headers} regexp will
+be removed before sending the message.  The default is
+@samp{^Return-receipt}. 
+
+
+@node Bouncing
+@subsection Bouncing
+
+@findex message-bounce
+The @code{message-bounce} command will, if the current buffer contains a
+bounced mail message, pop up a message buffer stripped of the bounce
+information.
+
+@vindex message-ignored-bounced-headers
+Headers that match the @code{message-ignored-bounced-headers} regexp
+will be removed before popping up the buffer.  The default is
+@samp{^Received:}. 
+
+
+@node Message Commands
+@section Message Commands
+
+@menu
+* Message Header Commands::     Commands for moving to headers.
+* Message Movement::            Moving around in message buffers.
+* Message Insertion::           Inserting things into message buffers.
+* Various Message::             Various things.
+* Sending Messages::            Actually sending the message.
+@end menu
+
+
+@node Message Header Commands
+@subsection Message Header Commands
+
+All these commands move to the header in question.  If it doesn't exist,
+it will be inserted.
+
+@table @kbd
+
+@item C-c ?
+Describe the message mode.
+
+@item C-c C-f C-t
+Go to the @code{To} header (@code{message-goto-to}).
+
+@item C-c C-f C-b
+Go to the @code{Bcc} header (@code{message-goto-bcc}).
+
+@item C-c C-f C-f
+Go to the @code{Fcc} header (@code{message-goto-fcc}).
+
+@item C-c C-f C-c
+Go to the @code{Cc} header (@code{message-goto-cc}).
+
+@item C-c C-f C-s
+Go to the @code{Subject} header (@code{message-goto-subject}).
+
+@item C-c C-f C-r
+Go to the @code{Reply-To} header (@code{message-goto-reply-to}).
+
+@item C-c C-f C-n
+Go to the @code{Newsgroups} header (@code{message-goto-newsgroups}).
+
+@item C-c C-f C-d
+Go to the @code{Distribution} header (@code{message-goto-distribution}).
+
+@item C-c C-f C-o
+Go to the @code{Followup-To} header (@code{message-goto-followup-to}).
+
+@item C-c C-f C-k
+Go to the @code{Keywords} header (@code{message-goto-keywords}).
+
+@item C-c C-f C-u
+Go to the @code{Summary} header (@code{message-goto-summary}).
+
+@end table
+
+
+@node Message Movement
+@subsection Message Movement
+
+@table @kbd
+@item C-c C-b
+Move to the beginning of the body of the message
+(@code{message-goto-body}). 
+
+@item C-c C-i
+Move to the signature of the message (@code{message-goto-signature}).
+
+@end table
+
+
+@node Message Insertion
+@subsection Message Insertion
+
+@table @kbd
+
+@item C-c C-y
+Yank the message that's being replied to into the message buffer
+(@code{message-yank-original}). 
+
+@item C-c C-q
+Fill the yanked message (@code{message-fill-yanked-message}). 
+
+@item C-c C-w
+Insert a signature at the end of the buffer
+(@code{message-insert-signature}).  
+
+@end table
+
+@table @code
+@item message-ignored-cited-headers
+All headers that match this regexp will be removed from yanked
+messages.  The default is @samp{.}, which means that all headers will be
+removed.
+
+@item message-citation-line-function
+Function called to insert the citation line.  The default is
+@code{message-insert-citation-line}. 
+
+@item message-yank-prefix
+@cindex yanking
+@cindex quoting
+When you are replying to or following up an article, you normally want
+to quote the person you are answering.  Inserting quoted text is done by
+@dfn{yanking}, and each quoted line you yank will have
+@code{message-yank-prefix} prepended to it.  The default is @samp{> }.
+If it is @code{nil}, just indent the message.
+
+@item message-indentation-spaces
+Number of spaces to indent yanked messages.
+
+@item message-cite-function
+Function for citing an original message.  The default is
+@code{message-cite-original}. 
+
+@item message-indent-citation-function
+Function for modifying a citation just inserted in the mail buffer.
+This can also be a list of functions.  Each function can find the
+citation between @code{(point)} and @code{(mark t)}.  And each function
+should leave point and mark around the citation text as modified.
+
+@item message-signature
+String to be inserted at the end of the message buffer.  If @code{t}
+(which is the default), the @code{message-signature-file} file will be
+inserted instead.  If a function, the result from the function will be
+used instead.  If a form, the result from the form will be used instead.
+
+@item message-signature-file
+File containing the signature to be inserted at the end of the buffer.
+The default is @samp{~/.signature}.
+
+@end table
+
+Note that RFC1036 says that a signature should be preceded by the three
+characters @samp{-- } on a line by themselves.  This is to make it
+easier for the recipient to automatically recognize and process the
+signature.  So don't remove those characters, even though you might feel
+that they ruin you beautiful design, like, totally.
+
+Also note that no signature should be more than four lines long.
+Including ASCII graphics is an efficient way to get everybody to believe
+that you are silly and have nothing important to say.
+
+
+
+@node Various Message
+@subsection Various Message
+
+@table @kbd
+
+@item C-c C-r
+Caesar rotate (aka. rot13) the current message
+(@code{message-caesar-buffer-body}).  If narrowing is in effect, just
+rotate the visible portion of the buffer.  A numerical prefix says how
+many places to rotate the text.  The default is 13.
+
+@item C-c C-t
+Insert a @code{To} header that contains the @code{Reply-To} or
+@code{From} header of the message you're following up
+(@code{message-insert-to}). 
+
+@item C-c C-n
+Insert a @code{Newsgroups} header that reflects the @code{Followup-To}
+or @code{Newsgroups} header of the article you're replying to.
+
+@end table
+
+
+@node Sending Messages
+@subsection Sending Messages
+
+@table @kbd
+@item C-c C-c
+Send the message and bury the current buffer
+(@code{message-send-and-exit}). 
+
+@item C-c C-s
+Send the message (@code{message-send}). 
+
+@end table
+
+
+@node Message Variables
+@section Message Variables
+
+@menu
+* Message Headers::
+* Mail Headers::
+* Mail Variables::
+* News Headers::
+* News Variables::
+* Various Message Variables::
+* Sending Variables::
+@end menu
+
+
+@node Message Headers
+@subsection Message Headers
+
+Message is a quite aggressive on the message generation front.  It has
+to be -- it's a combined news and mail agent.  To be able to send
+combined messages, it has to generate all headers itself to ensure that
+mail and news copies of messages look sufficiently similar.
 
 @table @code
 
-@vindex gnus-mail-reply-method
-@item gnus-mail-reply-method
-This function is used to compose replies.  The three functions available
-are:
+@item message-generate-headers-first
+If non-@code{nil}, generate all headers before starting to compose the
+message.  
 
-@findex gnus-mail-reply-using-vm
-@findex gnus-mail-reply-using-mhe
-@findex gnus-mail-reply-using-mail
-@itemize @bullet
-@item 
-@code{gnus-mail-reply-using-mail} (sendmail)
-@item 
-@code{gnus-mail-reply-using-mhe} (mh)
-@item
-@code{gnus-mail-reply-using-vm} (vm)
-@end itemize
+@item message-from-style
+Specifies how @code{From} headers should look.  There are four legal
+values:
 
-@vindex gnus-mail-forward-method
-@item gnus-mail-forward-method
-This function is used to forward messages.  The three functions available
-are:
+@table @code
+@item nil
+Just the address -- @samp{king@@grassland.com}.
 
-@findex gnus-mail-forward-using-vm
-@findex gnus-mail-forward-using-mhe
-@findex gnus-mail-forward-using-mail
-@itemize @bullet
-@item 
-@code{gnus-mail-forward-using-mail} (sendmail)
-@item 
-@code{gnus-mail-forward-using-mhe} (mh)
-@item
-@code{gnus-mail-forward-using-vm} (vm)
-@end itemize
+@item parens
+@samp{king@@grassland.com (Elvis Parsley)}.
 
-@vindex gnus-mail-other-window-method
-@item gnus-mail-other-window-method
-This function is used to send mails.  The three functions available are:
+@item angles
+@samp{Elvis Parsley <king@@grassland.com>}.
 
-@findex gnus-mail-other-window-using-vm
-@findex gnus-mail-other-window-using-mhe
-@findex gnus-mail-other-window-using-mail
-@itemize @bullet
-@item 
-@code{gnus-mail-other-window-using-mail} (sendmail)
-@item 
-@code{gnus-mail-other-window-using-mhe} (mh)
-@item
-@code{gnus-mail-other-window-using-vm} (vm)
-@end itemize
+@item default
+Look like @code{angles} if that doesn't require quoting, and
+@code{parens} if it does.  If even @code{parens} requires quoting, use
+@code{angles} anyway.
+
+@end table
+
+@item message-deletable-headers
+Headers in this list that were previously generated by Gnus will be
+deleted before posting.  Let's say you post an article.  Then you decide
+to post it again to some other group, you naughty boy, so you jump back
+to the @code{*post-buf*} buffer, edit the @code{Newsgroups} line, and
+ship it off again.  By default, this variable makes sure that the old
+generated @code{Message-ID} is deleted, and a new one generated.  If
+this isn't done, the entire empire would probably crumble, anarchy would
+prevail, and cats would start walking on two legs and rule the world.
+Allegedly.  
+
+@item message-default-headers
+This string is inserted at the end of the headers in all message
+buffers.
 
 @end table
 
 
-@node Post
-@section Post
+@node Mail Headers
+@subsection Mail Headers
 
-Variables for composing news articles:
+@table @code
+@item message-required-mail-headers
+See @pxref{News Headers} for the syntax of this variable.  It is
+@code{(From Date Subject (optional . In-Reply-To) Message-ID Lines
+(optional . X-Mailer))} by default.
 
-@vindex gnus-required-headers
-@code{gnus-required-headers} a list of header symbols.  These headers
-will either be automatically generated, or, if that's impossible, they
-will be prompted for.  The following symbols are legal:
+@item message-ignored-mail-headers
+Regexp of headers to be removed before mailing.  The default is
+@samp{^Gcc:\\|^Fcc:}. 
+
+@item message-default-mail-headers
+This string is inserted at the end of the headers in all message
+buffers that are initialized as mail.
+
+@end table
+
+
+@node Mail Variables
+@subsection Mail Variables 
+
+@table @code
+@item message-send-mail-function
+Function used to send the current buffer as mail.  The default is
+@code{message-send-mail}. 
+
+@end table
+
+
+@node News Headers
+@subsection News Headers
+
+@code{message-required-news-headers} a list of header symbols.  These
+headers will either be automatically generated, or, if that's
+impossible, they will be prompted for.  The following symbols are legal:
 
 @table @code
 
 @item From
 @cindex From
-@findex gnus-inews-user-name
-@vindex gnus-user-from-line
-@vindex gnus-user-login-name
-@vindex gnus-local-domain
-@vindex user-mail-address
 This required header will be filled out with the result of the
-@code{gnus-inews-user-name} function, which depends on the
-@code{gnus-user-from-line}, @code{gnus-user-login-name},
-@code{gnus-local-domain} and @code{user-mail-address} variables.
+@code{message-make-from} function, which depends on the
+@code{message-from-style}, @code{user-full-name},
+@code{user-mail-address} variables.
 
 @item Subject
 @cindex Subject
@@ -6623,11 +6891,10 @@ to.  If it isn't present already, it will be prompted for.
 
 @item Organization
 @cindex organization
-@vindex gnus-local-organization
-@vindex gnus-organization-file
 This optional header will be filled out depending on the
-@code{gnus-local-organization} variable.  @code{gnus-organization-file}
-will be used if that variable is nil.
+@code{message-user-organization} variable.
+@code{message-user-organization-file} will be used if that variable is
+@code{t}.
 
 @item Lines
 @cindex Lines
@@ -6640,28 +6907,35 @@ created based on date, time, user name and system name.
 
 @item X-Newsreader
 @cindex X-Newsreader
-This optional header will be filled out with the Gnus version numbers. 
+This optional header will be filled out according to the
+@code{message-newsreader} local variable.
+
+@item X-Mailer
+This optional header will be filled out according to the
+@code{message-mailer} local variable, unless there already is an
+@code{X-Newsreader} header present.
+
+@item In-Reply-To
+This optional header is filled out using the @code{Date} and @code{From}
+header of the article being replied.
 
 @item Expires
-@vindex gnus-article-expires
 @cindex Expires
 This extremely optional header will be inserted according to the
-@code{gnus-article-expires} variable.  It is highly deprecated and
-shouldn't be used unless you know what you're doing.
+@code{message-expires} variable.  It is highly deprecated and shouldn't
+be used unless you know what you're doing.
 
 @item Distribution
 @cindex Distribution
-@findex gnus-distribution-function
 This optional header is filled out according to the
-@code{gnus-distribution-function} variable.  It is a deprecated and much
-misunderstood header.
+@code{message-distribution-function} variable.  It is a deprecated and
+much misunderstood header.
 
 @item Path
 @cindex path
-@vindex gnus-use-generic-path
 This extremely optional header should probably not ever be used.
 However, some @emph{very} old servers require that this header is
-present.  @code{gnus-use-generic-path} further controls how this
+present.  @code{message-user-path} further controls how this
 @code{Path} header is to look.  If is is @code{nil}, the the server name
 as the leaf node.  If is is a string, use the string.  If it is neither
 a string nor @code{nil}, use the user name only.  However, it is highly
@@ -6680,145 +6954,16 @@ into the list.  If you want to insert a funny quote, you could enter
 something like @code{(X-Yow . yow)} into the list.  The function
 @code{yow} will then be called without any arguments.
 
-The list contains a cons where the car of the cons is @code{optional},
-the cdr of this cons will only be inserted if it is non-@code{nil}.
+If the list contains a cons where the car of the cons is
+@code{optional}, the cdr of this cons will only be inserted if it is
+non-@code{nil}.
 
-Other variables for customizing outgoing articles:
+Other variables for customizing outgoing news articles:
 
 @table @code
-@item nntp-news-default-headers
-@vindex nntp-news-default-headers
-If non-@code{nil}, this variable will override
-@code{mail-default-headers} when posting.  This variable should then be
-a string.  This string will be inserted, as is, in the head of all
-outgoing articles.
 
-@item gnus-use-followup-to
-@vindex gnus-use-followup-to
-If @code{nil}, always ignore the Followup-To header.  If it is @code{t},
-use its value, but ignore the special value @samp{poster}, which will
-send the followup as a reply mail to the person you are responding to.
-If it is the symbol @code{ask}, query the user before posting.
-If it is the symbol @code{use}, always use the value.
-
-@item gnus-followup-to-function
-@vindex gnus-followup-to-function
-This variable is most useful in mail groups, where ``following up''
-really means sending a mail to a list address.  Gnus uses the normal
-methods to determine where follow-ups are to go, but you can change the
-behavior to suit your needs by fiddling with this variable.
-
-If you want the followups to go to the @code{Sender} instead of the
-@code{From} in the group @samp{mail.stupid-list}, you could do something
-like this:
-
-@lisp
-(setq gnus-followup-to-function
-      (lambda (group)
-       (cond ((string= group "mail.stupid-list")
-               (mail-fetch-field "sender"))
-             (t
-              nil))))
-@end lisp
-
-This function will be called narrowed to header of the article that is
-being followed up.
-
-@item gnus-removable-headers
-@vindex gnus-removable-headers
-@cindex NNTP-Posting-Host
-Some headers that are generated are toxic to the @sc{nntp} server.
-These include the @code{NNTP-Posting-Host}, @code{Bcc} and @code{Xref},
-so these headers are deleted if they are present in this list of
-symbols.
-
-@item gnus-deletable-headers
-@vindex gnus-deletable-headers
-Headers in this list that were previously generated by Gnus will be
-deleted before posting.  Let's say you post an article.  Then you decide
-to post it again to some other group, you naughty boy, so you jump back
-to the @code{*post-buf*} buffer, edit the @code{Newsgroups} line, and
-ship it off again.  By default, this variable makes sure that the old
-generated @code{Message-ID} is deleted, and a new one generated.  If
-this isn't done, the entire empire would probably crumble, anarchy would
-prevail, and cats would start walking on two legs and rule the world.
-Allegedly. 
-
-@item gnus-signature-function
-@vindex gnus-signature-function
-If non-@code{nil}, this variable should be a function that returns a
-signature file name.  The function will be called with the name of the
-group being posted to.  If the function returns a string that doesn't
-correspond to a file, the string itself is inserted.  If the function
-returns @code{nil}, the @code{gnus-signature-file} variable will be used
-instead.
-
-@item gnus-post-prepare-function
-@vindex gnus-post-prepare-function
-This function is called with the name of the current group after the
-post buffer has been initialized, and can be used for inserting a
-signature.  Nice if you use different signatures in different groups.
-
-@item gnus-post-prepare-hook
-@vindex gnus-post-prepare-hook
-@findex gnus-inews-insert-signature
-This hook is called after a post buffer has been prepared.  If you want
-to insert a signature at this point, you could put
-@code{gnus-inews-insert-signature} into this hook.
-
-@item news-reply-header-hook
-@vindex news-reply-header-hook
-A related variable when following up and replying is this variable,
-which inserts the @dfn{quote line}.  The default value is:
-
-@lisp
-(defvar news-reply-header-hook
-  (lambda ()
-    (insert "In article " news-reply-yank-message-id
-            " " news-reply-yank-from " writes:\n\n")))
-@end lisp
-
-This will create lines like:
-
-@example
-In article <zngay8jrql@@eyesore.no> Lars Mars <lars@@eyesore.no> writes:
-@end example
-
-Having the @code{Message-ID} in this line is probably overkill, so I
-would suggest this hook instead:
-
-@lisp
-(setq news-reply-header-hook
-  (lambda () (insert news-reply-yank-from " writes:\n\n")))
-@end lisp
-
-@item gnus-prepare-article-hook
-@vindex gnus-prepare-article-hook
-This hook is called before the headers have been prepared.  
-
-@item gnus-inews-article-function
-@vindex gnus-inews-article-function
-This function is used to do the actual article processing and header
-checking/generation.  
-
-@item gnus-inews-article-hook
-@vindex gnus-inews-article-hook
-This hook is called right before the article is posted.  By default it
-handles FCC processing (i.e., saving the article to a file.)  You can
-also have this hook add a score to all followups to the article you've
-written (@pxref{Followups To Yourself}). 
-
-@item gnus-inews-article-header-hook
-@vindex gnus-inews-article-header-hook
-@cindex *post-news*
-This hook is called after inserting the required headers in an article
-to be posted.  The hook is called from the @code{*post-news*} buffer,
-narrowed to the head, and is intended for people who would like to
-insert additional headers, or just change headers in some way or other.
-
-@item gnus-check-before-posting
-@vindex gnus-check-before-posting
-If non-@code{nil}, Gnus will attempt to check the legality of the
+@item message-syntax-checks
+If non-@code{nil}, message will attempt to check the legality of the
 headers, as well as some other stuff, before posting.  You can control
 the granularity of the check by adding or removing elements from this
 list.  Legal elements are:
@@ -6861,6 +7006,134 @@ Check whether any of the headers are empty.
 
 All these conditions are checked by default.
 
+@item message-ignored-news-headers
+Regexp of headers to be removed before posting.  The default is
+@samp{^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:}. 
+
+@item message-default-news-headers
+This string is inserted at the end of the headers in all message
+buffers that are initialized as news.
+
+@end table
+
+
+@node News Variables
+@subsection News Variables
+
+@table @code
+@item message-send-news-function
+Function used to send the current buffer as news.  The default is
+@code{message-send-news}. 
+
+@item message-post-method
+Method used for posting a prepared news message.
+
+@end table
+
+
+@node Various Message Variables
+@subsection Various Message Variables
+
+@table @code
+@item message-signature-separator
+Regexp matching the signature separator.  It is @samp{^-- *$} by
+default. 
+
+@item mail-header-separator
+String used to separate the headers from the body.  It is @samp{--text
+follows this line--} by default.
+
+@item message-autosave-directory
+Directory where message buffers will be autosaved to.
+
+@item message-setup-hook
+Hook run when the message buffer has been initialized.
+
+@item message-header-setup-hook
+Hook called narrowed to the headers after initializing the headers. 
+
+@item message-send-hook
+Hook run before sending messages.
+
+@item message-sent-hook
+Hook run after sending messages.
+
+@item message-mode-syntax-table
+Syntax table used in message mode buffers.
+
+@end table
+
+
+
+@node Sending Variables
+@subsection Sending Variables
+
+@table @code
+
+@item message-fcc-handler-function 
+A function called to save outgoing articles.  This function will be
+called with the name of the file to store the article in. The default
+function is @code{rmail-output} which saves in Unix mailbox format.
+
+@item message-courtesy-message
+When sending combined messages, this string is inserted at the start of
+the mailed copy.  If this variable is @code{nil}, no such courtesy
+message will be added.
+
+@end table
+
+
+
+
+
+@node Composing Messages
+@chapter Composing Messages
+@cindex reply
+@cindex followup
+@cindex post
+
+@kindex C-c C-c (Post)
+All commands for posting and mailing will put you in a message buffer
+where you can edit the article all you like, before you send the article
+by pressing @kbd{C-c C-c}.  If you are in a foreign news group, and you
+wish to post the article using the foreign server, you can give a prefix
+to @kbd{C-c C-c} to make Gnus try to post using the foreign server.
+
+@menu 
+* Mail::                 Mailing and replying.
+* Post::                 Posting and following up.
+* Posting Server::       What server should you post via?
+* Mail and Post::        Mailing and posting at the same time.
+* Archived Messages::    Where Gnus stores the messages you've sent.
+* Posting Styles::       An easier way to configure some key elements.
+* Drafts::               Postponing messages and rejected messages.
+* Rejected Articles::    What happens if the server doesn't like your article?
+@end menu
+
+Also see @pxref{Canceling and Superseding} for information on how to
+remove articles you shouldn't have posted.
+
+
+@node Mail
+@section Mail
+
+Variables for customizing outgoing mail:
+
+@table @code
+@item gnus-uu-digest-headers
+@vindex gnus-uu-digest-headers
+List of regexps to match headers included in digested messages.  The
+headers will be included in the sequence they are matched.
+
+@end table
+
+
+@node Post
+@section Post
+
+Variables for composing news articles:
+
+@table @code
 @item gnus-sent-message-ids-file
 @vindex gnus-sent-message-ids-file
 Gnus will keep a @code{Message-ID} history file of all the mails it has
@@ -6920,109 +7193,6 @@ Here's a list of variables that are relevant to both mailing and
 posting:
 
 @table @code
-@item gnus-signature-file
-@itemx mail-signature
-@vindex mail-signature
-@vindex gnus-signature-file
-@cindex double signature
-@cindex signature
-If @code{gnus-signature-file} is non-@code{nil}, it should be the name
-of a file containing a signature (@file{~/.signature} by default).  This
-signature will be appended to all outgoing post.  Most people find it
-more convenient to use @code{mail-signature}, which (sort of) does the
-same, but inserts the signature into the buffer before you start editing
-the post (or mail).  So---if you have both of these variables set, you
-will get two signatures.  Note that @code{mail-signature} does not work
-the same way as @code{gnus-signature-file}, which is a bit confusing.
-If @code{mail-signature} is @code{t}, it will insert
-@file{~/.signature}.  If it is a string, this string will be inserted. 
-
-Note that RFC1036 says that a signature should be preceded by the three
-characters @samp{-- } on a line by themselves.  This is to make it
-easier for the recipient to automatically recognize and process the
-signature.  So don't remove those characters, even though you might feel
-that they ruin you beautiful design, like, totally.
-
-Also note that no signature should be more than four lines long.
-Including ASCII graphics is an efficient way to get everybody to believe
-that you are silly and have nothing important to say.
-
-@item mail-yank-prefix
-@vindex mail-yank-prefix
-@cindex yanking
-@cindex quoting
-When you are replying to or following up an article, you normally want
-to quote the person you are answering.  Inserting quoted text is done by
-@dfn{yanking}, and each quoted line you yank will have
-@code{mail-yank-prefix} prepended to it.  This is @code{nil} by default,
-which isn't very pretty---the prefix will just be some spaces.  Most
-everybody prefers that lines are prepended with @samp{> }, so
-@code{(setq mail-yank-prefix "> ")} in your @file{.emacs} file.
-
-@item mail-yank-ignored-headers
-@vindex mail-yank-ignored-headers
-When you yank a message, you do not want to quote any headers, so
-@code{(setq mail-yank-ignored-headers "^")}.
-
-@item user-mail-address
-@vindex user-mail-address
-@vindex gnus-user-login-name
-@vindex gnus-use-generic-from
-@vindex gnus-local-domain
-If all of @code{gnus-user-login-name}, @code{gnus-use-generic-from} and
-@code{gnus-local-domain} are @code{nil}, Gnus will use
-@code{user-mail-address} as the address part of the @code{From} header.
-
-@item gnus-local-domain
-@vindex gnus-local-domain
-@cindex domain
-The local domain name excluding the host name.  If your host is called
-@samp{narfi.ifi.uio.no}, then this variable should be
-@samp{ifi.uio.no}. 
-
-@item gnus-local-domain
-@vindex gnus-local-domain
-@cindex domain
-The local domain name excluding the host name.  If your host is called
-@samp{narfi.ifi.uio.no}, then this variable should be
-@samp{ifi.uio.no}. 
-
-@item gnus-user-from-line
-@vindex gnus-user-from-line
-Your full, complete e-mail address with name.  This variable overrides
-the other Gnus variables if it is non-@code{nil}.
-
-Here are two example values of this variable: @samp{larsi@@ifi.uio.no
-(Lars Magne Ingebrigtsen)} and @samp{Lars Magne Ingebrigtsen
-<larsi@@ifi.uio.no>}.  The latter version is recommended in news (and is
-probably illegal in mail), but the name has to be quoted if it contains
-non-alpha-numerical characters---@samp{\"Lars M. Ingebrigtsen\"
-<larsi@@ifi.uio.no>}.
-
-@item mail-default-headers
-@vindex mail-default-headers
-This is a string that will be inserted into the header of all outgoing
-mail messages and news articles.  Convenient to use to insert standard
-headers.  If @code{nntp-news-default-headers} is non-@code{nil}, that
-variable will override this one when posting articles.
-
-@item gnus-auto-mail-to-author
-@vindex gnus-auto-mail-to-author
-If @code{ask}, you will be prompted for whether you want to send a mail
-copy to the author of the article you are following up.  If
-non-@code{nil} and not @code{ask}, Gnus will send a mail with a copy of
-all follow-ups to the authors of the articles you follow up.  It's nice
-in one way---you make sure that the person you are responding to gets
-your response.  Other people loathe this method and will hate you dearly
-for it, because it means that they will first get a mail, and then have
-to read the same article later when they read the news.  It is
-@code{nil} by default.
-
-@item gnus-mail-courtesy-message
-@vindex gnus-mail-courtesy-message
-This is a string that will be prepended to all mails that are the result
-of using the variable described above.  
-
 @item gnus-mailing-list-groups
 @findex gnus-mailing-list-groups
 @cindex mailing lists
@@ -7037,24 +7207,6 @@ really are mailing lists.  Then, at least, followups to the mailing
 lists will work most of the time.  Posting to these groups (@kbd{a}) is
 still a pain, though.
 
-@item mail-citation-hook
-@vindex mail-citation-hook
-This hook is run after yanking a message, both in mail and post
-buffers.  Point will be at the beginning of the yanked message and mark
-will be at the end.  If this hook is non-@code{nil} the yanked text
-won't be indented automatically---you have to do that explicitly. 
-
-For instance, if you want to remove signatures automatically, you could
-say something like:
-
-@lisp
-(add-hook 'mail-citation-hook 'gnus-inews-remove-signature)
-@end lisp
-
-This function indents the cited message and then removes the
-signature.  If you decide you want to include the signature after all,
-you can just press the @code{undo} key.
-
 @end table
 
 You may want to do spell-checking on messages that you send out.  Or, if
@@ -7065,14 +7217,8 @@ spell-checking via the @code{ispell} package:
 @cindex ispell
 @findex ispell-message
 @lisp
-(add-hook 'news-inews-hook 'ispell-message)        ;For news posts
-(add-hook 'mail-send-hook 'ispell-message)        ;for mail posts via sendmail
+(add-hook 'message-send-hook 'ispell-message) 
 @end lisp
-
-@findex gnus-inews-insert-mime-headers
-If you want to insert some @sc{mime} headers into the articles you post,
-without doing any actual encoding, you could add
-@code{gnus-inews-insert-mime-headers} to @code{gnus-inews-article-hook}.
 
 
 @node Archived Messages
@@ -7996,7 +8142,7 @@ course.
 @menu
 * Getting Started Reading Mail:: A simple cookbook example.
 * Splitting Mail::               How to create mail groups.
-* Mail Variables::               Variables for customizing mail handling.
+* Mail Backend Variables::       Variables for customizing mail handling.
 * Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
 * Mail and Procmail::            Reading mail groups that procmail create.
 * Incorporating Old Mail::       What about the old mail you have?
@@ -8115,8 +8261,8 @@ you really should be out collecting empty bottles to save up for next
 month's rent money.
 
 
-@node Mail Variables
-@subsection Mail Variables
+@node Mail Backend Variables
+@subsection Mail Backend Variables
 
 These variables are (for the most part) pertinent to all the various
 mail backends.
@@ -11929,8 +12075,8 @@ wrong show.
 The writer of the original @sc{gnus}.
 
 @item Per Abrahamsen
-Scoring, highlighting and @sc{soup} code (as well as numerous other
-things).
+Custom, scoring, highlighting and @sc{soup} code (as well as numerous
+other things).
 
 @item Luis Fernandes
 Design and graphics.
@@ -12562,6 +12708,7 @@ In the examples and definitions I will refer to the imaginary backend
 @menu
 * Required Backend Functions::        Functions that must be implemented.
 * Optional Backend Functions::        Functions that need not be implemented.
+* Writing New Backends::              Extending old backends.
 @end menu
 
 
@@ -12651,7 +12798,8 @@ non-@code{nil} value.  There should be no data returned.
 @item (nnchoke-close-server &optional SERVER)
 
 Close connection to @var{server} and free all resources connected
-to it. 
+to it.  Return @code{nil} if the server couldn't be closed for some
+reason.
 
 There should be no data returned.
 
@@ -12660,17 +12808,18 @@ There should be no data returned.
 
 Close connection to all servers and free all resources that the backend
 have reserved.  All buffers that have been created by that backend
-should be killed.  (Not the @code{nntp-server-buffer}, though.)
+should be killed.  (Not the @code{nntp-server-buffer}, though.)  This
+function is generally only called when Gnus is shutting down.
 
 There should be no data returned. 
 
 
 @item (nnchoke-server-opened &optional SERVER)
 
-This function should return whether @var{server} is opened, and that the
-connection to it is still alive.  This function should under no
-circumstances attempt to reconnect to a server that is has lost
-connection to. 
+If @var{server} is the current virtual server, and the connection to the
+physical server is alive, then this function should return a
+non-@code{nil} vlue.  This function should under no circumstances
+attempt to reconnect to a server that is has lost connection to.
 
 There should be no data returned.
 
@@ -12694,6 +12843,13 @@ in this buffer instead of the normal data buffer.  This is to make it
 possible to avoid copying large amounts of data from one buffer to
 another, and Gnus mainly request articles to be inserted directly into
 its article buffer.
+
+If it is at all possible, this function should return a cons cell where
+the car is the group name the article was fetched from, and the cdr is
+the article number.  This will enable Gnus to find out what the real
+group and article numbers are when fetching articles by
+@code{Message-ID}.  If this isn't possible, @code{t} should be returned
+on successful article retrievement.
 
 
 @item (nnchoke-open-group GROUP &optional SERVER)
@@ -12775,21 +12931,6 @@ function should set up some kind of sentinel to beep the user loud and
 clear if the posting could not be completed.
 
 There should be no result data from this function. 
-
-
-@item (nnchoke-request-post-buffer POST GROUP SUBJECT HEADER ARTICLE-BUFFER INFO FOLLOW-TO RESPECT-POSTER)
-
-This function should return a buffer suitable for composing an article
-to be posted by @code{nnchoke-request-post}.  If @var{post} is
-non-@code{nil}, this is not a followup, but a totally new article.
-@var{group} is the name of the group to be posted to.  @var{subject} is
-the subject of the message.  @var{article-buffer} is the buffer being
-followed up, if that is the case.  @var{info} is the group info.
-@var{follow-to} is the group that one is supposed to re-direct the
-article ot.  If @var{respect-poster} is non-@code{nil}, the special
-@samp{poster} value of a @code{Followup-To} header is to be respected.
-
-There should be no result data returned.
 
 @end table
 
@@ -12911,7 +13052,7 @@ created after @samp{date}, which is in normal human-readable date
 format.  The data should be in the active buffer format.
 
 
-@item (nnchoke-request-create-groups GROUP &optional SERVER)
+@item (nnchoke-request-create-group GROUP &optional SERVER)
 
 This function should create an empty group with name @var{group}.  
 
@@ -12950,14 +13091,20 @@ If @var{last} is @code{nil}, that means that there is a high likelihood
 that there will be more requests issued shortly, so that allows some
 optimizations. 
 
+The function should return a cons where the car is the group name and
+the cdr is the article number that the article was entered as.
+
 There should be no data returned. 
 
 
-@item (nnchoke-request-accept-article GROUP &optional LAST)
+@item (nnchoke-request-accept-article GROUP &optional SERVER LAST)
 
 This function takes the current buffer and inserts it into @var{group}.
 If @var{last} in @code{nil}, that means that there will be more calls to
 this function in short order.
+
+The function should return a cons where the car is the group name and
+the cdr is the article number that the article was entered as.
 
 There should be no data returned.
 
@@ -12987,6 +13134,193 @@ articles that are in @var{group} should move to @var{new-name}.
 There should be no data returned.
 
 @end table
+
+
+@node Writing New Backends
+@subsection Writing New Backends
+
+The various backends share many similarities.  @code{nnml} is just like
+@code{nnspool}, but it allows you to edit the articles on the server.
+@code{nnmh} is just like @code{nnml}, but it doesn't use an active file,
+and it doesn't maintain overview databases.  @code{nndir} is just like
+@code{nnml}, but it has no concept of ``groups'', and it doesn't allow
+editing articles.
+
+It would make sense if it were possible to ``inherit'' functions from
+backends when writing new backends.  And, indeed, you can do that if you
+want to.  (You don't have to if you don't want to, of course.)  
+
+All the backends declare their public variables and functions by using a
+package called @code{nnoo}.  
+
+@menu
+* Declaring Backends::     An overview of the @code{nnoo} mechanisms.
+* An Example Backend::     A complete backend.
+@end menu
+
+
+@node Declaring Backends
+@subsubsection Declaring Backends
+
+To inherit functions from other backends (and allow other backends to
+inherit functions from the current backend), you should use the
+following macros:
+following. 
+
+@table @code
+
+@item nnoo-declare
+This macro declares the first parameter to be a child of the subsequent
+parameters.  For instance:
+
+@lisp
+(nnoo-declare nndir
+  nnml nnmh)
+@end lisp
+
+@code{nndir} has here declared that it intends to inherit functions from
+both @code{nnml} and @code{nnmh}.
+
+@item defvoo
+This macro is equivalent to @code{defvar}, but registers the variable as
+a public server variable.  Most state-oriented variables should be
+declared with @code{defvoo} instead of @code{defvar}.  
+
+In addition to the normal @code{defvar} parameters, it takes a list of
+variables in the parent backends to map the variable to when executing
+a function in those backends.
+
+@lisp
+(defvoo nndir-directory nil
+  "Where nndir will look for groups."
+  nnml-current-directory nnmh-current-directory)
+@end lisp
+
+This means that @code{nnml-current-directory} will be set to
+@code{nndir-directory} when an @code{nnml} function is called on behalf
+of @code{nndir}.  (The same with @code{nnmh}.)  
+
+@item nnoo-define-basics
+This macro defines some common functions that almost all backends should
+have.
+
+@example
+(nnoo-define-basics nndir)
+@end example
+
+@item deffoo
+This macro is just like @code{defun} and takes the same parameters.  In
+addition to doing the normal @code{defun} things, it registers the
+function as being public so that other backends can inherit it.
+
+@item nnoo-map-functions
+This macro allows mapping of functions from the current backend to
+functions from the parent backends.
+
+@example
+(nnoo-map-functions nndir
+  (nnml-retrieve-headers 0 nndir-current-group 0 0)
+  (nnmh-request-article 0 nndir-current-group 0 0))
+@end example
+
+This means that when @code{nndir-retrieve-headers} is called, the first,
+third, and fourth parameters will be passed on to
+@code{nnml-retrieve-headers}, while the second parameter is set to the
+value of @code{nndir-current-group}.
+
+@item nnoo-import
+This macro allows importing functions from backends.  It should be the
+last thing in the source file, since it will only define functions that
+haven't already been defined.
+
+@example
+(nnoo-import nndir
+  (nnmh
+   nnmh-request-list
+   nnmh-request-newgroups)
+  (nnml))
+@end example
+
+This means that calls to @code{nndir-request-list} should just be passed
+on to @code{nnmh-request-list}, while all public functions from
+@code{nnml} that haven't been defined in @code{nndir} yet should be
+defined now.
+
+@end table
+
+
+@node An Example Backend
+@subsubsection An Example Backend
+
+Below is a slightly shortened version of the @code{nndir} backend.
+
+@lisp
+;;; nndir.el --- single directory newsgroup access for Gnus
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
+
+;;; Code:
+
+(require 'nnheader)
+(require 'nnmh)
+(require 'nnml)
+(require 'nnoo)
+(eval-when-compile (require 'cl))
+
+(nnoo-declare nndir
+  nnml nnmh)
+
+(defvoo nndir-directory nil
+  "Where nndir will look for groups."
+  nnml-current-directory nnmh-current-directory)
+
+(defvoo nndir-nov-is-evil nil
+  "*Non-nil means that nndir will never retrieve NOV headers."
+  nnml-nov-is-evil)
+
+
+
+(defvoo nndir-current-group "" nil nnml-current-group nnmh-current-group)
+(defvoo nndir-top-directory nil nil nnml-directory nnmh-directory)
+(defvoo nndir-get-new-mail nil nil nnml-get-new-mail nnmh-get-new-mail)
+
+(defvoo nndir-status-string "" nil nnmh-status-string)
+(defconst nndir-version "nndir 1.0")
+
+
+
+;;; Interface functions.
+
+(nnoo-define-basics nndir)
+
+(deffoo nndir-open-server (server &optional defs)
+  (setq nndir-directory
+	(or (cadr (assq 'nndir-directory defs))
+	    server))
+  (unless (assq 'nndir-directory defs)
+    (push `(nndir-directory ,server) defs))
+  (push `(nndir-current-group
+	  ,(file-name-nondirectory (directory-file-name nndir-directory)))
+	defs)
+  (push `(nndir-top-directory
+	  ,(file-name-directory (directory-file-name nndir-directory)))
+	defs)
+  (nnoo-change-server 'nndir server defs))
+
+(nnoo-map-functions nndir
+  (nnml-retrieve-headers 0 nndir-current-group 0 0)
+  (nnmh-request-article 0 nndir-current-group 0 0)
+  (nnmh-request-group nndir-current-group 0 0)
+  (nnmh-close-group nndir-current-group 0))
+
+(nnoo-import nndir
+  (nnmh
+   nnmh-status-message
+   nnmh-request-list
+   nnmh-request-newgroups))
+
+(provide 'nndir)
+@end lisp
+
 
 
 @node Score File Syntax
