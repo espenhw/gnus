@@ -11729,6 +11729,7 @@ interfaces to these sources.
 * Web Searches::          Creating groups from articles that match a string.
 * Slashdot::              Reading the Slashdot comments.
 * Ultimate::              The Ultimate Bulletin Board systems.
+* Web Archive::           Reading mailing list archived on web.
 @end menu
 
 The main caveat with all these web sources is that they probably won't
@@ -11947,6 +11948,39 @@ The directory where @code{nnultimate} stores its files.  The default is
 @samp{~/News/ultimate/}.
 @end table
 
+@node Web Archive
+@subsection Web Archive
+@cindex nnwarchive
+@cindex Web Archive
+
+Some mailing lists only have archives on Web servers, such as
+(@file{http://www.egroups.com/}). It has a quite regular and nice
+interface, and it's possible to get the information Gnus needs to keep
+groups updated.
+
+The easiest way to get started with @code{nnwarchive} is to say
+something like the following in the group buffer: @kbd{M-x
+gnus-group-make-nnwarchive-group RET an_egroup RET egroups RET
+www.egroups.com RET your@@email.address RET}.  (Substitute the
+@sc{an_egroup} with the mailing list you subscribed, the
+@sc{your@@email.address} with your email address.)
+
+The following @code{nnwarchive} variables can be altered:
+
+@table @code
+@item nnwarchive-directory
+@vindex nnwarchive-directory
+The directory where @code{nnwarchive} stores its files.  The default is
+@samp{~/News/warchive/}.
+
+@item nnwarchive-login
+@vindex nnwarchive-login
+The account name on the web server.
+
+@item nnwarchive-passwd
+@vindex nnwarchive-passwd
+The password for your account on the web server.
+@end table
 
 @node Other Sources
 @section Other Sources

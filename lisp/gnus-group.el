@@ -2103,7 +2103,7 @@ If SOLID (the prefix), create a solid group."
 (defvar nnwarchive-type-definition)
 (defvar gnus-group-warchive-type-history nil)
 (defvar gnus-group-warchive-login-history nil)
-(defvar gnus-group-warchive-address-history "")
+(defvar gnus-group-warchive-address-history nil)
 
 (defun gnus-group-make-warchive-group ()
   "Create a nnwarchive group."
@@ -2120,9 +2120,8 @@ If SOLID (the prefix), create a solid group."
 		    nnwarchive-type-definition)
 	    nil t nil 'gnus-group-warchive-type-history)
 	   default-type))
-	 (address (read-string
-		   (format "Warchive address: " )
-		   nil 'gnus-group-warchive-address-history))
+	 (address (read-string "Warchive address: "
+			       nil 'gnus-group-warchive-address-history))
 	 (default-login (or (car gnus-group-warchive-login-history)
 			    user-mail-address))
 	 (login

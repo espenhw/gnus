@@ -1,3 +1,7 @@
+1999-11-23 05:07:59  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Web Archive): Add nnwarchive.
+
 1999-11-23 03:05:32  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Mail Source Specifiers): Add webmail.
