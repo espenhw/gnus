@@ -254,7 +254,7 @@
       (gnus-close-server (pop methods)))))
 
 ;;;###autoload
-(defun gnus-ungplugged ()
+(defun gnus-unplugged ()
   "Start Gnus unplugged."
   (interactive)
   (setq gnus-plugged nil)
@@ -796,7 +796,7 @@ the actual number of articles toggled is returned."
     (save-excursion
       (while methods
 	(setq gnus-command-method (car methods)
-	      groups (nreverse (gnus-groups-from-server (pop methods))))
+	      groups (gnus-groups-from-server (pop methods)))
 	(gnus-agent-with-fetch
 	  (while (setq group (pop groups))
 	    (when (<= (gnus-group-level group) gnus-agent-handle-level)

@@ -204,7 +204,7 @@ included.  Organization, Lines and X-Mailer are optional."
   :group 'message-headers
   :type 'regexp)
 
-(defcustom message-ignored-mail-headers "^[GF]cc:\\|^Resent-Fcc:"
+(defcustom message-ignored-mail-headers "^[GF]cc:\\|^Resent-Fcc:\\|^Xref:"
   "*Regexp of headers to be removed unconditionally before mailing."
   :group 'message-mail
   :group 'message-headers
@@ -773,7 +773,7 @@ Defaults to `text-mode-abbrev-table'.")
        1 'message-separator-face)
       (,(concat "^[ \t]*"
 		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
-		"[>|}].*")
+		"[:>|}].*")
        (0 'message-cited-text-face))))
   "Additional expressions to highlight in Message mode.")
 
@@ -1839,15 +1839,9 @@ Otherwise any failure is reported in a message back to
 the user from the mailer."
   (interactive "P")
   ;; Disabled test.
-  (when (if (and buffer-file-name
-		 nil)
-	    (y-or-n-p (format "Send buffer contents as %s message? "
-			      (if (message-mail-p)
-				  (if (message-news-p) "mail and news" "mail")
-				"news")))
-	  (or (buffer-modified-p)
-	      (message-check-element 'unchanged)
-	      (y-or-n-p "No changes in the buffer; really send? ")))
+  (when (or (buffer-modified-p)
+	    (message-check-element 'unchanged)
+	    (y-or-n-p "No changes in the buffer; really send? "))
     ;; Make it possible to undo the coming changes.
     (undo-boundary)
     (let ((inhibit-read-only t))
@@ -2947,7 +2941,7 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-fill-header (header value)
   (let ((begin (point))
-	(fill-column 78)
+	(fill-column 990)
 	(fill-prefix "\t"))
     (insert (capitalize (symbol-name header))
 	    ": "

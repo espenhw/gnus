@@ -1,4 +1,4 @@
-1;;; gnus-score.el --- scoring code for Gnus
+;;; gnus-score.el --- scoring code for Gnus
 ;; Copyright (C) 1995,96,97 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
@@ -371,6 +371,11 @@ If nil, the user will be asked for a duration."
   "Function called with the name of the score file just written to disk."
   :group 'gnus-score-files
   :type 'function)
+
+(defcustom gnus-score-thread-simplify nil
+  "*If non-nil, subjects will simplified as in threading."
+  :group 'gnus-score-various
+  :type 'boolean) 
 
 
 
@@ -1121,10 +1126,14 @@ SCORE is the score to add."
       ;; We then expand any exclude-file directives.
       (setq gnus-scores-exclude-files
 	    (nconc
-	     (mapcar
-	      (lambda (sfile)
-		(expand-file-name sfile (file-name-directory file)))
-	      exclude-files)
+	     (apply
+	      'nconc
+	      (mapcar
+	       (lambda (sfile)
+		 (list
+		  (expand-file-name sfile (file-name-directory file))
+		  (expand-file-name sfile gnus-kill-files-directory)))
+	       exclude-files))
 	     gnus-scores-exclude-files))
       (unless local
 	(save-excursion
@@ -1828,6 +1837,8 @@ SCORE is the score to add."
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	;; gnus-score-index is used as a free variable.
+        (simplify (and gnus-score-thread-simplify
+                       (string= "subject" header)))
 	alike last this art entries alist articles
 	fuzzies arts words kill)
 
@@ -1843,6 +1854,8 @@ SCORE is the score to add."
     (erase-buffer)
     (while (setq art (pop articles))
       (setq this (aref (car art) gnus-score-index))
+      (if simplify
+        (setq this (gnus-map-function gnus-simplify-subject-functions this)))
       (if (equal last this)
 	  ;; O(N*H) cons-cells used here, where H is the number of
 	  ;; headers.
@@ -1868,7 +1881,6 @@ SCORE is the score to add."
 	    entries (assoc header alist))
       (while (cdr entries)		;First entry is the header index.
 	(let* ((kill (cadr entries))
-	       (match (nth 0 kill))
 	       (type (or (nth 3 kill) 's))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
 	       (date (nth 2 kill))
@@ -1876,6 +1888,12 @@ SCORE is the score to add."
 	       (mt (aref (symbol-name type) 0))
 	       (case-fold-search (not (memq mt '(?R ?S ?E ?F))))
 	       (dmt (downcase mt))
+               ; Assume user already simplified regexp and fuzzies
+	       (match (if (and simplify (not (memq dmt '(?f ?r))))
+                          (gnus-map-function
+                           gnus-simplify-subject-functions
+                           (nth 0 kill))
+                        (nth 0 kill)))
 	       (search-func
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)

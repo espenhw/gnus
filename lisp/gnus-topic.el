@@ -1250,6 +1250,10 @@ If COPYP, copy the groups instead."
    (let ((topic (gnus-current-topic)))
      (list topic
 	   (read-string (format "Rename %s to: " topic)))))
+  ;; Check whether the new name exists.
+  (when (gnus-topic-find-topology new-name)
+    (error "Topic '%s' already exists"))
+  ;; Do the renaming.
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))
     (when top

@@ -1383,6 +1383,7 @@ increase the score of each group you read."
     "l" gnus-article-date-local
     "e" gnus-article-date-lapsed
     "o" gnus-article-date-original
+    "i" gnus-article-date-iso8601
     "s" gnus-article-date-user)
 
   (gnus-define-keys (gnus-summary-wash-empty-map "E" gnus-summary-wash-map)
@@ -1584,6 +1585,7 @@ increase the score of each group you read."
 	["Citation" gnus-article-highlight-citation t])
        ("Date"
 	["Local" gnus-article-date-local t]
+	["ISO8601" gnus-article-date-iso8601 t]
 	["UT" gnus-article-date-ut t]
 	["Original" gnus-article-date-original t]
 	["Lapsed" gnus-article-date-lapsed t]

@@ -194,7 +194,8 @@ might take a while.  By setting this variable to nil, you'll save time,
 but you won't be told how many unread articles there are in the
 groups."
   :group 'gnus-group-levels
-  :type 'integer)
+  :type '(choice integer
+		 (const :tag "none" nil)))
 
 (defcustom gnus-save-newsrc-file t
   "*Non-nil means that Gnus will save the `.newsrc' file.

@@ -1446,6 +1446,8 @@ Take into consideration N (the prefix) and the list of marked groups."
     (let ((group (gnus-group-group-name)))
       (and group (list group))))))
 
+;;; !!!Surely gnus-group-iterate should be a macro instead?  I can't
+;;; imagine why I went through these contortions...
 (eval-and-compile
   (let ((function (make-symbol "gnus-group-iterate-function"))
 	(window (make-symbol "gnus-group-iterate-window"))

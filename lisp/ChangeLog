@@ -1,3 +1,58 @@
+Wed Feb 11 15:05:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.24 is released.
+
+Tue Feb 10 21:59:53 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-fetch-session): Reversed reversal.
+
+	* gnus-topic.el (gnus-topic-rename): Check whether the new name
+	exists. 
+
+Tue Feb 10 21:39:47 1998  dave edmondson  <dme@sco.com>
+
+	* message.el (message-font-lock-keywords): Allow : as a citation
+	ending. 
+
+Tue Feb 10 20:09:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-send): Removed dead code.
+
+Mon Feb  9 17:02:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-fill-header): Fill to column 990.
+
+	* gnus-score.el (gnus-score-load-file): Exclude all excluded
+	files. 
+
+Mon Feb  9 16:55:41 1998  jari aalto  <jari.aalto@poboxes.com>
+
+	* gnus-art.el (gnus-article-time-format): Extended variable. 
+
+Mon Feb  9 16:27:59 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-make-date-line): Make 8601 Dates.
+	(article-date-iso8601): New command and keystroke.
+
+Sun Feb  8 21:19:15 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-ignored-mail-headers): Remove Xrefs.
+
+	* nndoc.el (nndoc-open-document-hook): New variable.
+
+Sun Feb  8 21:01:33 1998  Istvan Marko  <istvan@cmdmail.amd.com>
+
+	* gnus-agent.el (gnus-unplugged): Typo fix.
+
+Sun Feb  8 18:34:31 1998  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-score.el (gnus-score-thread-simplify): New variable.
+
+Sun Feb  8 18:31:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-post-encode-mime): Call mmencode with
+	correct params.
+
 Sun Feb  8 18:13:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.23 is released.

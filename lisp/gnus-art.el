@@ -247,8 +247,12 @@ Esample: (_/*word*/_)."
 
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
   "Format for display of Date headers in article bodies.
-See `format-time-string' for the possible values."
-  :type 'string
+See `format-time-string' for the possible values.
+
+The variable can also be function, which should return a complete Date
+header.  The function is called with one argument, the time, which can
+be fed to `format-time-string'."
+  :type '(choice string symbol)
   :link '(custom-manual "(gnus)Article Date")
   :group 'gnus-article-washing)
 
@@ -1347,9 +1351,25 @@ how much time has lapsed since DATE."
     (concat "Date: " date))
    ;; Let the user define the format.
    ((eq type 'user)
+    (if (gnus-functionp gnus-article-time-format)
+	(funcall
+	 gnus-article-time-format
+	 (ignore-errors
+	   (gnus-encode-date
+	    (timezone-make-date-arpa-standard
+	     date nil "UT"))))
+      (concat
+       "Date: "
+       (format-time-string gnus-article-time-format
+			   (ignore-errors
+			     (gnus-encode-date
+			      (timezone-make-date-arpa-standard
+			       date nil "UT")))))))
+   ;; ISO 8601.
+   ((eq type 'iso8601)
     (concat
      "Date: "
-     (format-time-string gnus-article-time-format
+     (format-time-string "%Y%M%DT%h%m%s"
 			 (ignore-errors
 			   (gnus-encode-date
 			    (timezone-make-date-arpa-standard
@@ -1459,6 +1479,11 @@ is to run."
 This format is defined by the `gnus-article-time-format' variable."
   (interactive (list t))
   (article-date-ut 'user highlight))
+
+(defun article-date-iso8601 (&optional highlight)
+  "Convert the current article date to ISO8601."
+  (interactive (list t))
+  (article-date-ut 'iso8601 highlight))
 
 (defun article-show-all ()
   "Show all hidden text in the article buffer."
@@ -1828,6 +1853,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-blank-lines
      article-strip-all-blank-lines
      article-date-local
+     article-date-iso8601
      article-date-original
      article-date-ut
      article-date-user

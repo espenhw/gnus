@@ -1840,7 +1840,8 @@ The user will be asked for a file name."
 
 ;; Encodes with base64 and adds MIME headers
 (defun gnus-uu-post-encode-mime (path file-name)
-  (when (gnus-uu-post-encode-file "mmencode" path file-name)
+  (when (zerop (call-process shell-file-name nil t nil shell-command-switch
+			     (format "%s %s -o %s" "mmencode" path file-name)))
     (gnus-uu-post-make-mime file-name "base64")
     t))
 
