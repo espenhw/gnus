@@ -1,3 +1,7 @@
+2003-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.24 is released.
+
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dgnushack.el (when): Check whether defadvice is fbound.
