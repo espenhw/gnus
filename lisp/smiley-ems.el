@@ -73,7 +73,7 @@ rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
     (let* ((data-directory smiley-data-directory)
 	   (image (find-image (list (list :type 'pbm
 					  :file (nth 2 elt)
-					  :ascent 100)))))
+					  :ascent 'center)))))
       (if image
 	  (push (list (car elt) (cadr elt) image)
 		smiley-cached-regexp-alist)))))
