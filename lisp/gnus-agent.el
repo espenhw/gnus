@@ -1227,6 +1227,9 @@ This can be added to `gnus-select-article-hook' or
 	 'gnus-agent-file-loading-cache
 	 'gnus-agent-read-file)))
 
+;; Why do we have to create the directory for the .fetched files (see
+;; function gnus-agent-save-fetched-headers below) but not for the
+;; .agentview files?
 (defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
   (let* ((file-name-coding-system nnmail-pathname-coding-system)
@@ -1262,9 +1265,12 @@ This can be added to `gnus-select-article-hook' or
   "Save ranges of fetched headers for GROUP.
 This range includes nonexisting articles."
   (let ((file-name-coding-system nnmail-pathname-coding-system)
+	(fetched-file (gnus-agent-article-name ".fetched" group))
 	print-level print-length)
     (setq gnus-agent-fetched-headers range)
-    (with-temp-file (gnus-agent-article-name ".fetched" group)
+    (unless (file-exists-p (file-name-directory fetched-file))
+      (make-directory (file-name-directory fetched-file) t))
+    (with-temp-file fetched-file
       (princ gnus-agent-fetched-headers (current-buffer))
       (insert "\n"))))
 
