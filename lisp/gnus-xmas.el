@@ -331,7 +331,7 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-article-menu-add ()
   (gnus-xmas-menu-add article
     gnus-article-article-menu gnus-article-treatment-menu
-    gnus-article-post-menu))
+    gnus-article-post-menu gnus-article-commands-menu))
 
 (defun gnus-xmas-score-menu-add ()
   (gnus-xmas-menu-add score

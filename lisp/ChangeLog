@@ -1,5 +1,11 @@
 2001-02-06 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-xmas.el (gnus-xmas-article-menu-add): Add
+	gnus-article-commands-menu.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Don't share menu bar
+	in Emacs.
+
 	* gnus-start.el (gnus-read-descriptions-file): Use
 	gnus-group-name-charset and gnus-group-charset-alist.
 
