@@ -1,10 +1,10 @@
-;;; widget-edit.el --- Functions for creating and using widgets.
+;;; wid-edit.el --- Functions for creating and using widgets.
 ;;
 ;; Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.38
+;; Version: 1.48
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -47,15 +47,14 @@ and `end-open' if it should sticky to the front."
   (unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
     ;; We have the old custom-library, hack around it!
     (defmacro defgroup (&rest args) nil)
-    (defmacro defcustom (&rest args) nil)
+    (defmacro defcustom (var value doc &rest args) 
+      `(defvar ,var ,value ,doc))
     (defmacro defface (&rest args) nil)
     (define-widget-keywords :prefix :tag :load :link :options :type :group)
     (when (fboundp 'copy-face)
       (copy-face 'default 'widget-documentation-face)
       (copy-face 'bold 'widget-button-face)
-      (copy-face 'italic 'widget-field-face))
-    (defvar widget-mouse-face 'highlight)
-    (defvar widget-menu-max-size 40)))
+      (copy-face 'italic 'widget-field-face))))
 
 ;;; Compatibility.
 
@@ -85,7 +84,9 @@ into the buffer visible in the event's window."
   :link '(url-link :tag "Development Page" 
 		   "http://www.dina.kvl.dk/~abraham/custom/")
   :prefix "widget-"
-  :group 'emacs)
+  :group 'extensions
+  :group 'faces
+  :group 'hypermedia)
 
 (defface widget-documentation-face '((((class color)
 				       (background dark))
@@ -175,7 +176,7 @@ minibuffer."
 	      event (fboundp 'popup-menu) window-system)
 	 ;; We are in XEmacs, pressed by the mouse
 	 (let ((val (get-popup-menu-response
-		     (cons ""
+		     (cons title
 			   (mapcar
 			    (function
 			     (lambda (x)
@@ -563,7 +564,6 @@ Recommended as a parent keymap for modes using widgets.")
   (define-key widget-keymap "\C-k" 'widget-kill-line)
   (define-key widget-keymap "\t" 'widget-forward)
   (define-key widget-keymap "\M-\t" 'widget-backward)
-  (define-key widget-keymap [(shift tab)] 'widget-backward)
   (define-key widget-keymap [(shift tab)] 'widget-backward)
   (define-key widget-keymap [backtab] 'widget-backward)
   (if (string-match "XEmacs" (emacs-version))
@@ -1122,6 +1122,8 @@ With optional ARG, move across that many fields."
     (if (and (fboundp 'make-gui-button)
 	     (fboundp 'make-glyph)
 	     widget-push-button-gui
+	     (fboundp 'device-on-window-system-p)
+	     (device-on-window-system-p)
 	     (string-match "XEmacs" emacs-version))
 	(progn 
 	  (unless gui
@@ -2376,6 +2378,6 @@ Enable with (run-with-idle-timer 1 t 'widget-echo-help-mouse)"
 
 ;;; The End:
 
-(provide 'widget-edit)
+(provide 'wid-edit)
 
-;; widget-edit.el ends here
+;; wid-edit.el ends here

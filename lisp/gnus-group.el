@@ -1544,6 +1544,8 @@ Returns whether the fetching was successful or not."
     (gnus))
   (gnus-group-read-group nil nil group))
 
+(defvar gnus-ephemeral-group-server 0)
+
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group (group method &optional activate 
@@ -1555,6 +1557,13 @@ ephemeral group.
 If REQUEST-ONLY, don't actually read the group; just request it.
 
 Return the name of the group is selection was successful."
+  ;; Transform the select method into a unique server.
+  (let ((saddr (intern (format "%s-address" (car method)))))
+    (setq method (gnus-copy-sequence method))
+    (unless (assq saddr method)
+      (nconc method `((,saddr ,(cadr method)))))
+    (setf (cadr method) (format "%s-%d" (cadr method)
+				(incf gnus-ephemeral-group-server))))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash

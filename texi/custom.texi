@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.34
+Version: 1.48
 
 @menu
 * Introduction::                
@@ -410,6 +410,7 @@ the buffer.
 * Declaring Groups::            
 * Declaring Variables::         
 * Declaring Faces::             
+* Usage for Package Authors::   
 @end menu
 
 All the customization declarations can be changes by keyword arguments.
@@ -510,7 +511,7 @@ If @var{symbol} is a hook variable, @var{option} should be a hook
 member.  For other types variables, the effect is undefined."
 @end defun
 
-@node  Declaring Faces,  , Declaring Variables, Declarations
+@node  Declaring Faces, Usage for Package Authors, Declaring Variables, Declarations
 @comment  node-name,  next,  previous,  up
 @subsection Declaring Faces
 
@@ -563,6 +564,22 @@ properties saved by the user, and @code{face-documentation} for the
 documentation string.@refill
 
 @end defun
+
+@node Usage for Package Authors,  , Declaring Faces, Declarations
+@comment  node-name,  next,  previous,  up
+@subsection Usage for Package Authors
+
+The recommended usage for the author of a typical emacs lisp package is
+to create one group identifying the package, and make all user options
+and faces members of that group.  If the package has more than around 20
+such options, they should be divided into a number of subgroups, with
+each subgroup being member of the top level group.
+
+The top level group for the package should itself be member of one or
+more of the standard customization groups.  There exists a group for
+each @emph{finder} keyword.  Press @kbd{C-c p} to see a list of finder
+keywords, and add you group to each of them, using the @code{:group}
+keyword. 
 
 @node  Utilities, The Init File, Declarations, Top
 @comment  node-name,  next,  previous,  up
@@ -621,9 +638,6 @@ We need @strong{much} better support for keyboard operations in the
 customize buffer.
 
 @item
-Support real specifiers under XEmacs.
-
-@item
 Integrate with @file{w3} so you can customization buffers with much
 better formatting.  I'm thinking about adding a <custom>name</custom>
 tag. 
@@ -639,11 +653,6 @@ Support undo using lmi's @file{gnus-undo.el}.
 Make it possible to append to `choice', `radio', and `set' options.
 
 @item
-There should be a way to exit the buffer.
-
-An @sc{open look} pushpin would do wonders.
-
-@item
 Ask whether set or modified variables should be saved in
 @code{kill-buffer-hook}. 
 
@@ -652,6 +661,12 @@ Ditto for @code{kill-emacs-query-functions}.
 @item
 Command to check if there are any customization options that
 does not belong to an existing group. 
+
+@item
+Optionally disable the point-cursor and instead highlight the selected
+item in XEmacs.  This is like the *Completions* buffer in XEmacs.
+Suggested by Jens Lautenbacher
+@samp{<jens@@lemming0.lem.uni-karlsruhe.de>}.@refill
 
 @end itemize
 

@@ -45,7 +45,8 @@
 		    (user-full-name custom-variable))
   "Mail and news message composing."
   :link '(custom-manual "(message)Top")
-  :group 'emacs)
+  :group 'mail
+  :group 'news)
 
 (put 'user-mail-address 'custom-type 'string)
 (put 'user-full-name 'custom-type 'string)
@@ -2234,7 +2235,9 @@ to find out how to use this."
      ".fsf")))
 
 (defun message-number-base36 (num len)
-  (if (if (< len 0) (<= num 0) (= len 0))
+  (if (if (< len 0)
+	  (<= num 0)
+	(= len 0))
       ""
     (concat (message-number-base36 (/ num 36) (1- len))
 	    (char-to-string (aref "zyxwvutsrqponmlkjihgfedcba9876543210"
@@ -2789,7 +2792,7 @@ Headers already prepared in the buffer are not modified."
     (message-setup 
      (nconc
       `((To . ,(or to "")) (Subject . ,(or subject "")))
-      (when other-headers (list other-headers))))))
+      (when other-headers other-headers)))))
 
 ;;;###autoload
 (defun message-news (&optional newsgroups subject)

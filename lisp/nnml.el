@@ -106,7 +106,8 @@ all.  This may very well take some time.")
 	    (while sequence
 	      (setq article (car sequence))
 	      (setq file (nnml-article-to-file article))
-	      (when (and (file-exists-p file)
+	      (when (and file
+			 (file-exists-p file)
 			 (not (file-directory-p file)))
 		(insert (format "221 %d Article retrieved.\n" article))
 		(setq beg (point))

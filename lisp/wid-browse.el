@@ -1,10 +1,10 @@
-;;; widget-browse.el --- Functions for browsing widgets.
+;;; wid-browse.el --- Functions for browsing widgets.
 ;;
 ;; Copyright (C) 1997 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.38
+;; Version: 1.48
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -15,7 +15,7 @@
 
 (require 'easymenu)
 (require 'custom)
-(require 'widget-edit)
+(require 'wid-edit)
 (require 'cl)
 
 (defgroup widget-browse nil
@@ -227,6 +227,6 @@ VALUE is assumed to be a list of widgets."
 
 ;;; The End:
 
-(provide 'widget-browse)
+(provide 'wid-browse)
 
-;; widget-browse.el ends here
+;; wid-browse.el ends here

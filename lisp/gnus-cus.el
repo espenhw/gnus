@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(require 'widget-edit)
+(require 'wid-edit)
 (require 'gnus-score)
 
 ;;; Widgets:

@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.4 1997/02/16 21:58:10 steve Exp $
+@c $Id: widget.texi,v 3.60 1997/03/05 06:00:44 larsi Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.34
+Version: 1.48
 
 @menu
 * Introduction::                
@@ -115,7 +115,7 @@ create any widgets, the code has been split in two files:
 @item widget.el
 This will declare the user variables, define the function
 @code{widget-define}, and autoload the function @code{widget-create}. 
-@item widget-edit.el
+@item wid-edit.el
 Everything else is here, there is no reason to load it explicitly, as
 it will be autoloaded when needed.
 @end table
@@ -236,8 +236,8 @@ time.  When you push one of the unselected radio buttons, it will be
 selected and the previous selected radio button will become unselected. 
 @item The @samp{@b{[Apply Form]}} @samp{@b{[Reset Form]}} buttons.
 These are explicit buttons made with the @code{push-button} widget.  The main
-difference from the @code{link} widget is that the buttons are intended
-to be displayed more like buttons in a GUI, once Emacs grows powerful
+difference from the @code{link} widget is that the buttons are will be
+displayed as GUI buttons when possible.
 enough. 
 @end table
 
@@ -278,7 +278,7 @@ Interface}).
 (require 'widget)
 
 (eval-when-compile
-  (require 'widget-edit))
+  (require 'wid-edit))
 
 (defvar widget-example-repeat)
 
@@ -1310,7 +1310,7 @@ Document `helper' functions for defining new widgets.
 @item
 Activate the item this is below the mouse when the button is
 released, not the item this is below the mouse when the button is
-pressed.  Dired and grep gets this right.
+pressed.  Dired and grep gets this right.  Give feedback if possible.
 
 @item
 Use @samp{@@deffn Widget} to document widgets. 
@@ -1335,6 +1335,9 @@ Perhaps the correct model is delegation?
 
 @item
 Document @code{widget-browse}.
+
+@item
+Make indentation work with glyphs and propertional fonts.
 
 @item
 Add object and class hierarchies to the browser.

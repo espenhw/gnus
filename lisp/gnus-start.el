@@ -394,7 +394,7 @@ Can be used to turn version control on or off."
 ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
 (defvar gnus-init-inhibit nil)
 (defun gnus-read-init-file (&optional inhibit-next)
-  ;; Don't load .gnus if -q option was used.
+  ;; Don't load .gnus if the -q option was used.
   (when init-file-user
     (if gnus-init-inhibit
 	(setq gnus-init-inhibit nil)

@@ -1083,6 +1083,34 @@ Put point at the beginning of the signature separator."
       (goto-char cur)
       nil)))
 
+(eval-and-compile
+  (autoload 'w3-parse-buffer "w3-parse"))
+
+(defun gnus-article-treat-html ()
+  "Render HTML."
+  (interactive)
+  (let ((cbuf (current-buffer)))
+    (set-buffer gnus-article-buffer)
+    (let (buf buffer-read-only b e)
+      (goto-char (point-min))
+      (narrow-to-region
+       (if (search-forward "\n\n" nil t)
+	   (setq b (point))
+	 (point-max))
+       (setq e (point-max)))
+      (nnheader-temp-write nil
+	(insert-buffer-substring gnus-article-buffer b e)
+	(save-window-excursion
+	  (setq buf (car (w3-parse-buffer (current-buffer))))))
+      (when buf
+	(delete-region (point-min) (point-max))
+	(insert-buffer-substring buf)
+	(kill-buffer buf))
+      (widen)
+      (goto-char (point-min))
+      (set-window-start (get-buffer-window (current-buffer)) (point-min))
+      (set-buffer cbuf))))
+
 (defun gnus-article-hidden-arg ()
   "Return the current prefix arg as a number, or 0 if no prefix."
   (list (if current-prefix-arg
@@ -1205,7 +1233,8 @@ how much time has lapsed since DATE."
     (concat "Date: " date "\n"))
    ;; Let the user define the format.
    ((eq type 'user)
-    (concat 
+    (concat
+     "Date: "
      (format-time-string gnus-article-time-format
 			 (ignore-errors
 			   (gnus-encode-date
@@ -1285,7 +1314,8 @@ function and want to see what the date was before converting."
   (article-date-ut 'lapsed highlight))
 
 (defun article-date-user (&optional highlight)
-  "Convert the current article date to the user-defined format."
+  "Convert the current article date to the user-defined format.
+This format is defined by the `gnus-article-time-format' variable."
   (interactive (list t))
   (article-date-ut 'user highlight))
 
@@ -1749,6 +1779,7 @@ commands:
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
+  (set (make-local-variable 'gnus-button-marker-list) nil)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
@@ -2689,8 +2720,14 @@ specified by `gnus-button-alist'."
   (save-excursion
     (set-buffer gnus-article-buffer)
     ;; Remove all old markers.
-    (while gnus-button-marker-list
-      (set-marker (pop gnus-button-marker-list) nil))
+    (let (marker entry)
+      (while (setq marker (pop gnus-button-marker-list))
+	(goto-char marker)
+	(when (setq entry (gnus-button-entry))
+	  (put-text-property (match-beginning (nth 1 entry))
+			     (match-end (nth 1 entry))
+			     'gnus-callback nil))
+	(set-marker marker nil)))
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
 	  (case-fold-search t)
@@ -2710,9 +2747,10 @@ specified by `gnus-button-alist'."
 		 (from (match-beginning 0)))
 	    (when (and (or (eq t (nth 1 entry))
 			   (eval (nth 1 entry)))
-		       (not (gnus-button-in-region-p from end 'gnus-callback)))
+		       (not (gnus-button-in-region-p
+			     start end 'gnus-callback)))
 	      ;; That optional form returned non-nil, so we add the
-	      ;; button. 
+	      ;; button.
 	      (gnus-article-add-button 
 	       start end 'gnus-button-push 
 	       (car (push (set-marker (make-marker) from)

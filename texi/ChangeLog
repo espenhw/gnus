@@ -1,3 +1,8 @@
+Sun Mar  2 02:08:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Startup Files): Addition.
+	(Score File Format): Fix.
+
 Fri Feb 28 23:23:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Archived Messages): Clarify.

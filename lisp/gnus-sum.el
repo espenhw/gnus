@@ -1282,7 +1282,8 @@ increase the score of each group you read."
     "r" gnus-summary-caesar-message
     "t" gnus-article-hide-headers
     "v" gnus-summary-verbose-headers
-    "m" gnus-summary-toggle-mime)
+    "m" gnus-summary-toggle-mime
+    "h" gnus-article-treat-html)
 
   (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
     "a" gnus-article-hide
@@ -2913,7 +2914,19 @@ If NO-DISPLAY, don't generate a summary buffer."
        header level nil (gnus-article-mark article)
        (memq article gnus-newsgroup-replied)
        (memq article gnus-newsgroup-expirable)
-       (mail-header-subject header)
+       ;; Only insert the Subject string when it's different
+       ;; from the previous Subject string.
+       (unless (gnus-subject-equal
+		(condition-case ()
+		    (mail-header-subject
+		     (gnus-data-header
+		      (cadr 
+		       (gnus-data-find-list
+			article
+			(gnus-data-list t)))))
+		  (error ""))
+		(mail-header-subject header))
+	 (mail-header-subject header))
        nil (cdr (assq article gnus-newsgroup-scored))
        (memq article gnus-newsgroup-processable))
       (when length
@@ -3868,15 +3881,21 @@ If WHERE is `summary', the summary mode line format will be used."
 		    (gnus-mode-string-quote
 		     (mail-header-subject gnus-current-headers))
 		  ""))
-	       max-len
+	       bufname-length max-len
 	       gnus-tmp-header);; passed as argument to any user-format-funcs
 	  (setq mode-string (eval mformat))
+	  (setq bufname-length (if (string-match "%b" mode-string)
+				   (- (length
+				       (buffer-name
+					(if (eq where 'summary)
+					    nil
+					  (get-buffer gnus-article-buffer))))
+				      2)
+				 0))
 	  (setq max-len (max 4 (if gnus-mode-non-string-length
 				   (- (window-width)
 				      gnus-mode-non-string-length
-				      (if (string-match "%%b" mode-string)
-					  (length (buffer-name))
-					0))
+				      bufname-length)
 				 (length mode-string))))
 	  ;; We might have to chop a bit of the string off...
 	  (when (> (length mode-string) max-len)
@@ -6974,9 +6993,7 @@ groups."
     (save-excursion
       (set-buffer gnus-article-buffer)
       (save-restriction
-	(goto-char (point-min))
-	(search-forward "\n\n")
-	(narrow-to-region (point-min) (point))
+	(gnus-narrow-to-body)
 	(message "This message would go to %s"
 		 (mapconcat 'car (nnmail-article-group 'identity) ", "))))))
 

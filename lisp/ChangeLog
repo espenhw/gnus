@@ -1,3 +1,94 @@
+Sun Mar  2 04:40:48 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.17 is released.
+
+Sun Mar  2 04:01:29 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mail): Don't `list' other-headers.
+
+Sat Mar  1 22:46:37 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el: Added mail keyword.
+	(gnus): Add to mail and news customization groups.
+	(gnus-visual): Added to the faces customization group.
+	* message.el (message): Add to mail and news customization groups.
+
+	* gnus-cus.el (wid-edit): Changed from widget-edit.
+
+Sun Mar  2 03:44:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-respool-query): Use it.
+
+	* gnus.el (gnus-narrow-to-body): New function.
+
+	* nnfolder.el (nnfolder-active-number): Simplify.
+
+Sun Mar  2 03:26:57 1997  Joev Dubach  <dubach1@husc.harvard.edu>
+
+	* gnus-art.el (article-make-date-line): Add "Date: ".
+
+Sun Mar  2 02:54:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-quote-arg-for-sh-or-csh): Also escape {}. 
+
+	* gnus-srvr.el (gnus-server-prepare): Don't insert servers twice.
+
+	* nnmail.el (nnmail-read-passwd): Conditionalize
+	`ange-ftp-read-passwd'.
+
+Sat Mar  1 17:53:05 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el (gnus-xmas-read-event-char): Exit on button-press
+	event.
+
+	* nnml.el (nnml-retrieve-headers): Make sure file is non-nil.
+
+Sun Mar  2 02:43:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndoc.el (nndoc-type-alist): Have rfc934 separators handled
+	better. 
+
+	* nnmail.el (nnmail-move-inbox): Take heed of the return value
+	from movemail.
+
+Fri Feb 21 19:54:24 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-xmas.el (gnus-xmas-redefine): Use `region-active-p'.
+	(gnus-xmas-region-active-p): Removed.
+
+Sun Mar  2 02:16:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-update-article-line): Only insert
+	Subject string when needed.
+
+	* gnus-util.el (gnus-output-to-mail): Quote all "From " lines. 
+
+Sun Mar  2 02:13:17 1997  David Martin  <dm@cs.bu.edu>
+
+	* nndir.el (nndir): Use `nnml-close-group'.
+
+Sun Mar  2 01:51:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-init-file): Changed default.
+
+	* gnus-group.el (gnus-ephemeral-group-server): New server.
+	(gnus-group-read-ephemeral-group): Use it to use unique servers. 
+
+Sat Mar  1 04:06:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-mode): Made `gnus-button-marker-list'
+	buffer-local.
+	(gnus-article-add-buttons): Don't buttonize the same article
+	twice. 
+
+	* gnus-sum.el (gnus-set-mode-line): Chop better.
+
+	* gnus-art.el (gnus-article-treat-html): Not a new function.
+	Uh-uh.  No way.  I don't even exist.
+
+	* gnus-cite.el (gnus-article-fill-cited-article): Bind
+	filladapt-mode to nil.
+
 Sat Mar  1 03:51:18 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.16 is released.

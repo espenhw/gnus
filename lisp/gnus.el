@@ -3,7 +3,7 @@
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
-;; Keywords: news
+;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
 
@@ -33,7 +33,8 @@
 
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
-  :group 'emacs)
+  :group 'news
+  :group 'mail)
 
 (defgroup gnus-start nil
   "Starting your favorite newsreader."
@@ -184,7 +185,8 @@
 ;; Other
 (defgroup gnus-visual nil
   "Options controling the visual fluff."
-  :group 'gnus)
+  :group 'gnus
+  :group 'faces)
 
 (defgroup gnus-files nil
   "Files used by Gnus."
@@ -223,7 +225,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.16"
+(defconst gnus-version-number "5.4.17"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2307,6 +2309,15 @@ just the host name."
 	(setq name (concat foreign name group)
 	      group nil)))
     name))
+
+(defun gnus-narrow-to-body ()
+  "Narrow to the body of an article."
+  (narrow-to-region
+   (progn
+     (goto-char (point-min))
+     (or (search-forward "\n\n" nil t)
+	 (point-max)))
+   (point-max)))
 
 
 ;;;

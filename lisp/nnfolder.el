@@ -601,20 +601,16 @@ time saver for large mailboxes.")
     (nnmail-activate 'nnfolder)))
 
 (defun nnfolder-active-number (group)
-  (when group
-    (save-excursion 
-      ;; Find the next article number in GROUP.
-      (prog1
-	  (let ((active (cadr (assoc group nnfolder-group-alist))))
-	    (if active
-		(setcdr active (1+ (cdr active)))
-	      ;; This group is new, so we create a new entry for it.
-	      ;; This might be a bit naughty... creating groups on the drop of
-	      ;; a hat, but I don't know...
-	      (push (list group (setq active (cons 1 1)))
-		    nnfolder-group-alist))
-	    (cdr active))
-	(nnfolder-possibly-activate-groups group)))))
+  ;; Find the next article number in GROUP.
+  (let ((active (cadr (assoc group nnfolder-group-alist))))
+    (if active
+	(setcdr active (1+ (cdr active)))
+      ;; This group is new, so we create a new entry for it.
+      ;; This might be a bit naughty... creating groups on the drop of
+      ;; a hat, but I don't know...
+      (push (list group (setq active (cons 1 1)))
+	    nnfolder-group-alist))
+    (cdr active)))
 
 
 ;; This method has a problem if you've accidentally let the active list get

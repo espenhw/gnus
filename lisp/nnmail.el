@@ -532,7 +532,7 @@ parameter.  It should return nil, `warn' or `delete'."
       (delete-file nnmail-crash-box))
     (let ((inbox (file-truename (expand-file-name inbox)))
 	  (tofile (file-truename (expand-file-name nnmail-crash-box)))
-	  movemail popmail errors)
+	  movemail popmail errors result)
       (if (setq popmail (string-match
 			 "^po:" (file-name-nondirectory inbox)))
 	  (setq inbox (file-name-nondirectory inbox))
@@ -582,16 +582,18 @@ parameter.  It should return nil, `warn' or `delete'."
 		(let ((default-directory "/"))
 		  (if (nnheader-functionp nnmail-movemail-program)
 		      (funcall nnmail-movemail-program inbox tofile)
-		    (apply 
-		     'call-process
-		     (append
-		      (list
-		       (expand-file-name 
-			nnmail-movemail-program exec-directory)
-		       nil errors nil inbox tofile)
-		      (when nnmail-internal-password
-			(list nnmail-internal-password))))))
-		(if (not (buffer-modified-p errors))
+		    (setq result
+			  (apply 
+			   'call-process
+			   (append
+			    (list
+			     (expand-file-name 
+			      nnmail-movemail-program exec-directory)
+			     nil errors nil inbox tofile)
+			    (when nnmail-internal-password
+			      (list nnmail-internal-password)))))))
+		(if (and (not (buffer-modified-p errors))
+			 (zerop result))
 		    ;; No output => movemail won
 		    (progn
 		      (unless popmail
@@ -617,8 +619,8 @@ parameter.  It should return nil, `warn' or `delete'."
 		    (when (looking-at "movemail: ")
 		      (delete-region (point-min) (match-end 0)))
 		    (unless (yes-or-no-p
-			     (format "movemail: %s.  Continue? "
-				     (buffer-string)))
+			     (format "movemail: %s (%d return).  Continue? "
+				     (buffer-string) result))
 		      (error "%s" (buffer-string)))
 		    (setq tofile nil)))))))
 	(message "Getting mail from %s...done" inbox)
@@ -1573,7 +1575,8 @@ If ARGS, PROMPT is used as an argument to `format'."
     (unless nnmail-read-passwd
       (if (load "passwd" t)
 	  (setq nnmail-read-passwd 'read-passwd)
-	(autoload 'ange-ftp-read-passwd "ange-ftp")
+	(unless (fboundp 'ange-ftp-read-passwd)
+	  (autoload 'ange-ftp-read-passwd "ange-ftp"))
 	(setq nnmail-read-passwd 'ange-ftp-read-passwd)))
     (funcall nnmail-read-passwd prompt)))
 

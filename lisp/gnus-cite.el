@@ -419,6 +419,7 @@ If WIDTH (the numerical prefix), use that text width when filling."
 	  (inhibit-point-motion-hooks t)
 	  (marks (gnus-dissect-cited-text))
 	  (adaptive-fill-mode nil)
+	  (filladapt-mode nil)
 	  (fill-column (if width (prefix-numeric-value width) fill-column)))
       (save-restriction
 	(while (cdr marks)

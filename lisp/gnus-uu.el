@@ -1695,7 +1695,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-quote-arg-for-sh-or-csh (arg)
   (let ((pos 0) new-pos accum)
     ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[!`\"$\\& \t]" arg pos))
+    (while (setq new-pos (string-match "[!`\"$\\& \t{}]" arg pos))
       (push (substring arg pos new-pos) accum)
       (push "\\" accum)
       (push (list (aref arg new-pos)) accum)
