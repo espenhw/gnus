@@ -5071,6 +5071,11 @@ For example:
 %t  The security MIME type
 %i  Additional info")
 
+(defvar gnus-mime-security-button-end-line-format "%{%([[End of %t]]%)%}\n"
+  "The following specs can be used:
+%t  The security MIME type
+%i  Additional info")
+
 (defvar gnus-mime-security-button-line-format-alist
   '((?t gnus-tmp-type ?s)
     (?i gnus-tmp-info ?s)))
@@ -5132,7 +5137,8 @@ For example:
 	       (nth 2 (assoc protocol mm-decrypt-function-alist))
 	       "Unknown")
 	   (if (equal (car handle) "multipart/signed")
-	       " Signed" " Encrypted")))
+	       " Signed" " Encrypted")
+	   " Part"))
 	 (gnus-tmp-info
 	  (or (mm-handle-multipart-ctl-parameter handle 'gnus-info)
 	      "Undecided"))
@@ -5171,14 +5177,9 @@ For example:
     (gnus-mime-display-mixed (cdr handle))
     (unless (bolp)
       (insert "\n"))
-    (let ((protocol (mm-handle-multipart-ctl-parameter handle 'protocol)))
-      (insert "[End of "
-	      (or (nth 2 (assoc protocol mm-verify-function-alist))
-		  (nth 2 (assoc protocol mm-decrypt-function-alist))
-		  "Unknown")
-	       (if (equal (car handle) "multipart/signed")
-		   " Signed" " Encrypted")
-	      "]\n"))
+    (let ((gnus-mime-security-button-line-format 
+	   gnus-mime-security-button-end-line-format))
+      (gnus-insert-mime-security-button handle))
     (mm-set-handle-multipart-parameter handle 'gnus-region 
 				       (cons (set-marker (make-marker)
 							 (point-min))
