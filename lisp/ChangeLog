@@ -1,3 +1,8 @@
+2003-03-21  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (article-decode-group-name): Replace Newsgroups and
+	Followup-To data inline.
+
 2003-03-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-treat-display-xface): Don't enable if
