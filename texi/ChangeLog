@@ -1,5 +1,7 @@
 2005-01-15  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Article Washing): Mention `W i'.
+
 	* gnus-news.texi: Mention De-IDNA washing.
 
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>

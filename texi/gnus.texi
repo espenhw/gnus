@@ -10,7 +10,7 @@
 
 @copying
 Copyright (c) 1995, 1996, 1997, 1998, 1999, 2000, 2001,
-2002, 2003, 2004
+2002, 2003, 2004, 2005
 Free Software Foundation, Inc.
 
 @quotation
@@ -8460,6 +8460,14 @@ is rumored to have employed this form of, uh, somewhat weak encryption.
 @kindex W m (Summary)
 @findex gnus-summary-morse-message
 Morse decode the article buffer (@code{gnus-summary-morse-message}).
+
+@item W i
+@kindex W i (Summary)
+@findex gnus-summary-idna-message
+Decode IDNA encoded domain names in the current articles.  IDNA
+encoded domain names looks like @samp{xn--bar}.  If a string remain
+unencoded after running invoking this, it is likely an invalid IDNA
+string (@samp{xn--bar} is invalid).
 
 @item W t
 @item t
