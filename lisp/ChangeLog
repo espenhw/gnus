@@ -1,3 +1,13 @@
+2003-01-15  Kevin Ryde  <user42@zip.com.au>
+
+	* gnus.texi (Using MIME): Mention auto-compression-mode with
+	gnus-mime-copy-part.
+
+2003-01-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send): Don't warn about duplicates when
+	superseding. 
+
 2003-01-15  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-split-download-body): New variable.

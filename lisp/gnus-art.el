@@ -3986,7 +3986,9 @@ The uncompress method used is derived from `buffer-file-name'."
             (jka-compr-delete-temp-file err-file)))))))
 
 (defun gnus-mime-copy-part (&optional handle)
-  "Put the MIME part under point into a new buffer."
+  "Put the MIME part under point into a new buffer.
+If `auto-compression-mode' is enabled, compressed files like .gz and .bz2
+are decompressed."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
