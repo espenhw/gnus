@@ -1,5 +1,9 @@
 2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
 
+	* gnus.el (gnus-other-frame): Trivial fix.
+
+2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
+
 	* gnus.el (gnus-other-frame-parameters): New user option.
 	(gnus-other-frame-object): New variable.
 	(gnus-other-frame): Make it search for existing Gnus frame; don't

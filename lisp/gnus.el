@@ -3379,30 +3379,30 @@ server."
   "Pop up a frame to read news."
   (interactive "P")
   (let ((alive (gnus-alive-p)))
-    (or (and alive
-	     (catch 'found
-	       (walk-windows
-		(lambda (window)
-		  (when (with-current-buffer (window-buffer window)
-			  (string-match "\\`gnus-.+-mode\\'"
-					(symbol-name major-mode)))
-		    (gnus-select-frame-set-input-focus
-		     (setq gnus-other-frame-object (window-frame window)))
-		    (select-window window)
-		    (throw 'found t)))
-		'ignore t)))
-	(gnus-select-frame-set-input-focus
-	 (setq gnus-other-frame-object
-	       (make-frame gnus-other-frame-parameters)))
-	(if alive
-	    (switch-to-buffer gnus-group-buffer)
-	  (gnus arg)
-	  (add-hook 'gnus-exit-gnus-hook
-		    (lambda nil
-		      (when (and (frame-live-p gnus-other-frame-object)
-				 (cdr (frame-list)))
-			(delete-frame gnus-other-frame-object))
-		      (setq gnus-other-frame-object nil)))))))
+    (unless (and alive
+		 (catch 'found
+		   (walk-windows
+		    (lambda (window)
+		      (when (with-current-buffer (window-buffer window)
+			      (string-match "\\`gnus-.+-mode\\'"
+					    (symbol-name major-mode)))
+			(gnus-select-frame-set-input-focus
+			 (setq gnus-other-frame-object (window-frame window)))
+			(select-window window)
+			(throw 'found t)))
+		    'ignore t)))
+      (gnus-select-frame-set-input-focus
+       (setq gnus-other-frame-object
+	     (make-frame gnus-other-frame-parameters)))
+      (if alive
+	  (switch-to-buffer gnus-group-buffer)
+	(gnus arg)
+	(add-hook 'gnus-exit-gnus-hook
+		  (lambda nil
+		    (when (and (frame-live-p gnus-other-frame-object)
+			       (cdr (frame-list)))
+		      (delete-frame gnus-other-frame-object))
+		    (setq gnus-other-frame-object nil)))))))
 
 ;;(setq thing ?				; this is a comment
 ;;      more 'yes)
