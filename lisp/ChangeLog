@@ -1,3 +1,13 @@
+2002-01-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-emphasis-alist): Include !? as sentence-ending
+	characters.
+
+2002-01-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-xmas.el (gnus-xmas-completing-read): New function.
+	(gnus-xmas-redefine): Redefine conditionally.
+
 2002-01-22  Josh Huber  <huber@alum.wpi.edu>
 
 	* mml.el (mml-parse-1): Fixed usage of recipients in the secure

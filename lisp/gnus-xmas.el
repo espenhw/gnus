@@ -427,11 +427,11 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
   (defalias 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
   (defalias 'gnus-appt-select-lowest-window
-	'gnus-xmas-appt-select-lowest-window)
+    'gnus-xmas-appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'character-to-event)
   (defalias 'gnus-mode-line-buffer-identification
-	'gnus-xmas-mode-line-buffer-identification)
+    'gnus-xmas-mode-line-buffer-identification)
   (defalias 'gnus-key-press-event-p 'key-press-event-p)
   (defalias 'gnus-region-active-p 'region-active-p)
   (defalias 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
@@ -441,6 +441,11 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-create-image 'gnus-xmas-create-image)
   (defalias 'gnus-remove-image 'gnus-xmas-remove-image)
 
+  (when (or (< emacs-major-version 21)
+	    (and (= emacs-major-version 21)
+		 (< emacs-minor-version 3)))
+    (defalias gnus-completing-read gnus-xmas-completing-read))
+  
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved
   ;; where each variable is defined, in order not to mess with user settings.
@@ -851,6 +856,21 @@ Warning: Don't insert text immediately after the image."
        (set-extent-property ext 'end-glyph nil))
      nil)
    nil nil nil nil nil 'gnus-image))
+
+(defun gnus-xmas-completing-read (prompt table &optional
+					 predicate require-match history)
+  (when (and history
+	     (not (boundp history)))
+    (set history nil))
+  (completing-read
+   (if (symbol-value history)
+       (concat prompt " (" (car (symbol-value history)) "): ")
+     (concat prompt ": "))
+   table
+   predicate
+   require-match
+   nil
+   history))
 
 (provide 'gnus-xmas)
 
