@@ -1,3 +1,9 @@
+2000-07-16 18:25:07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-type-alist): Add outlook.
+	(nndoc-outlook-type-p): New function.
+	(nndoc-outlook-article-begin): Ditto.
+
 2000-07-16  Daiki Ueno  <ueno@unixuser.org>
 
 	* gnus-sum.el (gnus-restore-hidden-threads-configuration): Save

@@ -125,6 +125,9 @@ from the document.")
     (rfc822-forward
      (article-begin . "^\n")
      (body-end-function . nndoc-rfc822-forward-body-end-function))
+    (outlook
+     (article-begin-function . nndoc-outlook-article-begin)
+     (body-end .  "\0"))
     (guess
      (guess . t)
      (subtype nil))
@@ -588,6 +591,14 @@ from the document.")
 (defun nndoc-nsmail-type-p ()
   (when (looking-at "From - ")
     t))
+
+(defun nndoc-outlook-article-begin ()
+  (prog1 (re-search-forward "From:\\|Received:" nil t)
+    (goto-char (match-beginning 0))))
+
+(defun nndoc-outlook-type-p ()
+  ;; FIXME: Is JMF the magic of outlook mailbox? -- ShengHuo.
+  (looking-at "JMF"))
 
 (deffoo nndoc-request-accept-article (group &optional server last)
   nil)
