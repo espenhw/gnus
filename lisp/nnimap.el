@@ -80,8 +80,8 @@
   "Address of physical IMAP server.  If nil, use the virtual server's name.")
 
 (defvoo nnimap-server-port nil
-  "Port number on physical IMAP server.  If nil, defaults to 993 for
-SSL connections and 143 otherwise.")
+  "Port number on physical IMAP server.
+If nil, defaults to 993 for SSL connections and 143 otherwise.")
 
 ;; Splitting variables
 

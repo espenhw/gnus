@@ -100,3 +100,5 @@
       (funcall hash (concat k_opad de-hexed)))))
 
 (provide 'rfc2104)
+
+;;; rfc2104.el ends here
