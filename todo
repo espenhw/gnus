@@ -119,6 +119,8 @@
 * A nnfolder like backend with .overview files.
   This would not only speed up things, but also allow nnir to work on it.
 
+  [done]
+
 * Allow article editing in groups which do not support it, but
   emulating it via deleting the old article and entering the new one
   into the group.  This would be very useful to support `T ^' (say) in
@@ -153,7 +155,13 @@
 * New backend between nnfolder and nnml: have more than one article
   per file, but more than one file per group.  With .overview files.
 
+  [done. nnfolder has .overview.  Backward- and forward-compatible
+   between 1.0 and 2.0. (setq nnfolder-nov-is-evil t) disables the
+   feature]
+
 * .overview files for nnfolder?
+  
+  [done]
 
 * New backend nnbabylfolder.  There is also nnbabyl which is like
   nnmbox but uses babyl format, but there is no babyl format
