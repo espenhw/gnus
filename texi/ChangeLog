@@ -1,3 +1,9 @@
+2004-01-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi: Set documentencoding.
+
+	* emacs-mime.texi: do.
+
 2004-01-27  Simon Josefsson  <jas@extundo.com>
 
 	* emacs-mime.texi (Flowed text): Add.

@@ -9,6 +9,7 @@
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
 @end direntry
+@documentencoding ISO-8859-1
 @iftex
 @finalout
 @end iftex
