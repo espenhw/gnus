@@ -1,3 +1,8 @@
+2004-07-16  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-clone-locals): Clone sendmail and smtp
+	variables.
+
 2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Fix last change.
