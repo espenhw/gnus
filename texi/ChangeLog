@@ -1,0 +1,26 @@
+Wed Sep 20 16:14:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Drafts): New.
+	(Thread Commands): Addition.
+	(Rejected Articles): New.
+
+Tue Sep 19 00:30:15 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Mail): Addition.
+	(Mail Group Commands): Addition.
+	(Group Parameters): Addition.
+	(Summary Buffer Mode Line): Addition.
+	(Finding the Parent): Addition.
+
+Mon Sep 18 11:49:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Limiting): New.
+	(Slave Gnusii): New.
+	(Setting Process Marks): Addition.
+	(The Server is Down): Change.
+	(Article Treatment): New.
+	(Article Hiding): New.
+	(Article Washing): New.
+	(Article Date): New.
+	(Finding the News): Addition.
+	(Customizing Threading): Addition.
