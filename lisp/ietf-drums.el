@@ -67,6 +67,11 @@
     (modify-syntax-entry ?* " " table)
     (modify-syntax-entry ?\; " " table)
     (modify-syntax-entry ?\' " " table)
+    (if (featurep 'xemacs)
+	(let ((i 128))
+	  (while (< i 256)
+	    (modify-syntax-entry i "w" table)
+	    (setq i (1+ i)))))
     table))
 
 (defun ietf-drums-token-to-list (token)

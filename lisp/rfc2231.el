@@ -1,6 +1,6 @@
 ;;; rfc2231.el --- Functions for decoding rfc2231 headers
 
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -112,10 +112,11 @@ The list will be on the form
 	      (setq value
 		    (buffer-substring (1+ (point))
 				      (progn (forward-sexp 1) (1- (point))))))
-	     ((and (memq c ttoken)
+	     ((and (or (memq c ttoken)
+		       (> c ?\177)) ;; EXTENSION: Support non-ascii chars.
 		   (not (memq c stoken)))
 	      (setq value (buffer-substring
-			   (point) (progn (forward-sexp 1) (point)))))
+			   (point) (progn (forward-sexp) (point)))))
 	     (t
 	      (error "Invalid header: %s" string)))
 	    (when encoded

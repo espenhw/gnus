@@ -1,5 +1,13 @@
 2002-02-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-decode.el (mm-dissect-multipart): Consider the case of empty
+	parts.
+
+	* ietf-drums.el (ietf-drums-syntax-table): Modify syntax of
+	non-ascii chars.
+
+	* rfc2231.el (rfc2231-parse-string): Support non-ascii chars.
+
 	* gnus-art.el (gnus-article-wash-html-with-w3): Remove
 	w3-delay-image-loads.
 	* mm-view.el (mm-inline-text-html-render-with-w3): Ditto.

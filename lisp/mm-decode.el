@@ -567,7 +567,9 @@ for types in mm-keep-viewer-alive-types."
 	  (save-restriction
 	    (narrow-to-region start (point))
 	    (setq parts (nconc (list (mm-dissect-buffer t)) parts)))))
-      (forward-line 2)
+      (end-of-line 2)
+      (or (looking-at boundary)
+	  (forward-line 1))
       (setq start (point)))
     (when (and start (< start end))
       (save-excursion
