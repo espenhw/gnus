@@ -64,6 +64,12 @@
     (erase-buffer)
     (insert-buffer-substring cur)
     (goto-char (point-min))
+    (when (search-forward "@copying" nil t)
+      (latexi-copying))
+    (while (search-forward "@insertcopying" nil t)
+      (delete-region (match-beginning 0) (match-end 0))
+      (latexi-insertcopying))
+    (goto-char (point-min))
     (latexi-strip-line)
     (latexi-translate-string "@'e" "\\'{e}")
     (latexi-translate-string "@`a" "\\`{a}")
@@ -392,5 +398,25 @@
 		"\\\\\n"))
       (insert "\\end{tabular}\n")
       (widen))))
-	
+
+(defvar latexi-copying-text ""
+  "Text of the copyright notice and copying permissions.")
+
+(defun latexi-copying ()
+  "Copy the copyright notice and copying permissions from the Texinfo file,
+as indicated by the @copying ... @end copying command;
+insert the text with the @insertcopying command."
+  (let ((beg (progn (beginning-of-line) (point)))
+	(end  (progn (re-search-forward "^@end copying[ \t]*\n") (point))))
+    (setq latexi-copying-text
+	  (buffer-substring-no-properties
+	   (save-excursion (goto-char beg) (forward-line 1) (point))
+	   (save-excursion (goto-char end) (forward-line -1) (point))))
+    (delete-region beg end)))
+
+(defun latexi-insertcopying ()
+  "Insert the copyright notice and copying permissions from the Texinfo file,
+which are indicated by the @copying ... @end copying command."
+  (insert (concat "\n" latexi-copying-text)))
+
 ;;; arch-tag: 31e30f7f-4876-4dd1-ba3a-6f9f7ea0d256

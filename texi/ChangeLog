@@ -1,3 +1,11 @@
+2004-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* texi2latex.el (latexi-translate-file): Support @copying and
+	@insertcopying.
+	(latexi-copying-text): New variable.
+	(latexi-copying): New function.
+	(latexi-insertcopying): New function.
+
 2004-09-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.texi: Fix typo in previous commit.
