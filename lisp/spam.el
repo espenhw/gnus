@@ -1325,6 +1325,8 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	(when spam-use-stat (spam-stat-save))))
 
   (file-error (progn
+		(defalias 'spam-stat-load 'ignore)
+		(defalias 'spam-stat-save 'ignore)
 		(defalias 'spam-maybe-spam-stat-load 'ignore)
 		(defalias 'spam-maybe-spam-stat-save 'ignore)
 		(defalias 'spam-stat-register-ham-routine 'ignore)
