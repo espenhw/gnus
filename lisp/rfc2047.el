@@ -144,6 +144,14 @@ Should be called narrowed to the head of the message."
 		       mail-parse-charset)
 		  (mm-encode-coding-region (point-min) (point-max) 
 					   mail-parse-charset)))
+	     ((null method)
+	      (and (delq 'ascii 
+			 (mm-find-charset-region (point-min) 
+						 (point-max)))
+		   (if (y-or-n-p 
+			"Some texts are not encoded. Encode them anyway?")
+		       (rfc2047-encode-region (point-min) (point-max))
+		     (error "Cannot send unencoded text."))))
 	     ((mm-coding-system-p method)
 	      (if (featurep 'mule)
 		  (mm-encode-coding-region (point-min) (point-max) method)))
