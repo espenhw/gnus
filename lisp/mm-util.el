@@ -385,7 +385,7 @@ If the charset is `composition', return the actual one."
 	     mail-parse-mule-charset)))))))
 
 (defun mm-mime-charset (charset)
-  "Return the MIME charset corresponding to the MULE CHARSET."
+  "Return the MIME charset corresponding to the given Mule CHARSET."
   (if (eq charset 'unknown)
       (error "The message contains non-printable characters, please use attachment"))
   (if (and (fboundp 'coding-system-get) (fboundp 'get-charset-property))
