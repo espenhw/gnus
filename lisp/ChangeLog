@@ -1,3 +1,8 @@
+2002-09-15 John Paul Wallington <jpw@shootybangbang.com>
+
+	* gnus-sum.el (gnus-summary-toggle-header): The article window may
+	not exist. Toggle it anyway.
+
 2002-09-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-copy-article-buffer): Bind mail-header-separator.

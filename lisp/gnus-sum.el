@@ -8350,37 +8350,37 @@ If ARG is a negative number, hide the unwanted header lines."
   (interactive "P")
   (let ((window (and (gnus-buffer-live-p gnus-article-buffer)
 		     (get-buffer-window gnus-article-buffer t))))
-    (when window
-      (with-current-buffer gnus-article-buffer
+    (with-current-buffer gnus-article-buffer
+      (widen)
+      (article-narrow-to-head)
+      (let* ((buffer-read-only nil)
+	     (inhibit-point-motion-hooks t)
+	     (hidden (if (numberp arg)
+			 (>= arg 0)
+		       (gnus-article-hidden-text-p 'headers)))
+	     s e)
+	(delete-region (point-min) (point-max))
+	(with-current-buffer gnus-original-article-buffer
+	  (goto-char (setq s (point-min)))
+	  (setq e (if (search-forward "\n\n" nil t)
+		      (1- (point))
+		    (point-max))))
+	(insert-buffer-substring gnus-original-article-buffer s e)
+	(article-decode-encoded-words)
+	(if hidden
+	    (let ((gnus-treat-hide-headers nil)
+		  (gnus-treat-hide-boring-headers nil))
+	      (gnus-delete-wash-type 'headers)
+	      (gnus-treat-article 'head))
+	  (gnus-treat-article 'head))
 	(widen)
-	(article-narrow-to-head)
-	(let* ((buffer-read-only nil)
-	       (inhibit-point-motion-hooks t)
-	       (hidden (if (numberp arg)
-			   (>= arg 0)
-			 (gnus-article-hidden-text-p 'headers)))
-	       s e)
-	  (delete-region (point-min) (point-max))
-	  (with-current-buffer gnus-original-article-buffer
-	    (goto-char (setq s (point-min)))
-	    (setq e (if (search-forward "\n\n" nil t)
-			(1- (point))
-		      (point-max))))
-	  (insert-buffer-substring gnus-original-article-buffer s e)
-	  (article-decode-encoded-words)
-	  (if hidden
-	      (let ((gnus-treat-hide-headers nil)
-		    (gnus-treat-hide-boring-headers nil))
-		(gnus-delete-wash-type 'headers)
-		(gnus-treat-article 'head))
-	    (gnus-treat-article 'head))
-	  (widen)
-	  (set-window-start window (goto-char (point-min)))
-	  (setq gnus-page-broken
-		(when gnus-break-pages
-		  (gnus-narrow-to-page)
-		  t))
-	  (gnus-set-mode-line 'article))))))
+	(if window
+	    (set-window-start window (goto-char (point-min))))
+	(setq gnus-page-broken
+	      (when gnus-break-pages
+		(gnus-narrow-to-page)
+		t))
+	(gnus-set-mode-line 'article)))))
 
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
