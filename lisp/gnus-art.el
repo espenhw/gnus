@@ -5432,8 +5432,8 @@ groups."
 
 (defcustom gnus-button-url-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
-      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?[-a-z0-9_=!?#$@~`%&*+|\\/:;.,[:word:]]+[-a-z0-9_=#$@~`%&*+|\\/[:word:]]\\)"
-    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\([-a-z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)")
+      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?[-a-z0-9_=!?#$@~`%&*+\\/:;.,[:word:]]+[-a-z0-9_=#$@~`%&*+\\/[:word:]]\\)"
+    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\([-a-z0-9_=!?#$@~`%&*+\\/:;.,]\\|\\w\\)+\\([-a-z0-9_=#$@~`%&*+\\/]\\|\\w\\)\\)")
   "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
