@@ -1,3 +1,18 @@
+2002-09-28  Simon Josefsson  <jas@extundo.com>
+
+	* alist.el, calist.el: Don't require product/APEL.
+
+	* pgg-parse.el (top-level): Remove dependency on static.el,
+	pccl.el, mel.el.
+	(pgg-parse-crc24, pgg-parse-crc24-string): Only define if
+	`define-ccl-program' is boundp, instead of using broken.
+
+	* broken.el, mcharset.el, mcs-20.el, mcs-e20.el, mcs-xm.el,
+	mcs-xmu.el mel.el, mime-def.el, path-util.el, pccl-20.el, pccl.el,
+	pces-20.el pces-e20.el, pces-raw.el, pces-xfc.el, pces-xm.el,
+	pces.el, pcustom.el poe-xemacs.el, poe.el, poem-xm.el, poem.el,
+	product.el, pym.el: Removed.
+
 2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* luna.el (luna-define-method): Clear method cache of child

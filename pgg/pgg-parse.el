@@ -37,11 +37,7 @@
 
 (eval-when-compile (require 'cl))
 
-(eval-when-compile (require 'static))
-
-(require 'pccl)
 (require 'custom)
-(require 'mel)
 
 (defgroup pgg-parse ()
   "OpenPGP packet parsing"
@@ -154,7 +150,8 @@
 (defmacro pgg-set-alist (alist key value)
   `(setq ,alist (nconc ,alist (list (cons ,key ,value)))))
 
-(unless-broken ccl-usable
+(when (fboundp 'define-ccl-program)
+
   (define-ccl-program pgg-parse-crc24
     '(1
       ((loop
@@ -464,7 +461,7 @@
 	 (checksum (buffer-substring (point) (+ 4 (point)))))
     (delete-region marker (point-max))
     (mime-decode-region (point-min) marker "base64")
-    (static-when (fboundp 'pgg-parse-crc24-string )
+    (when (fboundp 'pgg-parse-crc24-string )
       (or pgg-ignore-packet-checksum
 	  (string-equal
 	   (funcall (mel-find-function 'mime-encode-string "base64")
