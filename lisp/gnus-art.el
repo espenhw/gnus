@@ -3659,12 +3659,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (with-temp-file file
 		    (insert contents))
 		  (call-process shell-file-name nil
-				(setq buffer
-				      (generate-new-buffer " *mm*"))
+				(generate-new-buffer " *mm*")
 				nil
 				shell-command-switch
 				(mm-mailcap-command
-				 method file (mm-handle-type handle))))
+				 printer file (mm-handle-type handle))))
 	      (delete-file file))
 	  (with-temp-buffer
 	    (insert contents)

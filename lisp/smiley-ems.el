@@ -50,11 +50,14 @@
 
 ;; The XEmacs version has a baroque, if not rococo, set of these.
 (defcustom smiley-regexp-alist
-  '(("\\(:-?)\\)\\W" 1 "smile.pbm")
-    ("\\(;-?)\\)\\W" 1 "blink.pbm")
-    ("\\(:-[/\\]\\)\\W" 1 "wry.pbm")
-    ("\\(:-(\\)\\W" 1 "sad.pbm")
-    ("\\(:-{\\)\\W" 1 "frown.pbm"))
+  '(("\\(:-?)\\)\\W" 1 "smile")
+    ("\\(;-?)\\)\\W" 1 "blink")
+    ("\\(:-]\\)\\W" 1 "forced")
+    ("\\(8-)\\)\\W" 1 "braindamaged")
+    ("\\(:-|\\)\\W" 1 "indifferent")
+    ("\\(:-[/\\]\\)\\W" 1 "wry")
+    ("\\(:-(\\)\\W" 1 "sad")
+    ("\\(:-{\\)\\W" 1 "frown"))
   "*A list of regexps to map smilies to images.
 The elements are (REGEXP MATCH FILE), where MATCH is the submatch in
 regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
@@ -68,21 +71,35 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
   :initialize 'custom-initialize-default
   :group 'smiley)
 
+(defcustom gnus-smiley-file-types
+  (let ((types (list "pbm")))
+    (when (gnus-image-type-available-p 'xpm)
+      (push "xpm" types))
+    types)
+  "*List of suffixes on picon file names to try."
+  :type '(repeat string)
+  :group 'smiley)
+
 (defvar smiley-cached-regexp-alist nil)
 
 (defun smiley-update-cache ()
   (dolist (elt (if (symbolp smiley-regexp-alist)
 		   (symbol-value smiley-regexp-alist)
 		 smiley-regexp-alist))
-    (let* ((data-directory smiley-data-directory)
-	   (image (find-image (list (list :type 
-					  (image-type-from-file-header 
-					   (nth 2 elt)) 
-					  :file (nth 2 elt)
-					  :ascent 'center)))))
-      (if image
+    (let ((types gnus-smiley-file-types)
+	  file type)
+      (while (and (not file)
+		  (setq type (pop types)))
+	(unless (file-exists-p
+	       (setq file (expand-file-name (concat (nth 2 elt) "." type)
+					    smiley-data-directory)))
+	  (setq file nil)))
+      (let ((image (find-image (list (list :type (intern type) 
+					   :file file
+					   :ascent 'center)))))
+	(when image
 	  (push (list (car elt) (cadr elt) image)
-		smiley-cached-regexp-alist)))))
+		smiley-cached-regexp-alist))))))
 
 (defvar smiley-active nil
   "Non-nil means smilies in the buffer will be displayed.")

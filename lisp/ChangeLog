@@ -1,5 +1,12 @@
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-mime-print-part): Fix typos.
+
+	* smiley-ems.el (gnus-smiley-file-types): New variable.
+	(smiley-update-cache): Use it.
+	(smiley-regexp-alist): Suffix-less smiley names.
+	(smiley-regexp-alist): Added more smileys.
+
 	* gnus-sum.el (gnus-print-buffer): Made into own function.
 	(gnus-summary-print-article): Use it.
 
