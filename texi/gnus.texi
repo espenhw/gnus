@@ -10646,7 +10646,7 @@ An example @sc{imap} mail source:
 
 @item webmail
 Get mail from a webmail server, such as www.hotmail.com, 
-mail.yahoo.com, and www.netaddress.com. 
+mail.yahoo.com, www.netaddress.com and www.my-deja.com. 
 
 NOTE: Webmail largely depends on w3 (url) package, whose version of "WWW
 4.0pre.46 1999/10/01" or previous ones may not work.
@@ -10658,7 +10658,7 @@ Keywords:
 @table @code
 @item :subtype
 The type of the webmail server.  The default is @code{hotmail}.  The
-alternatives are @code{yahoo}, @code{netaddress}.
+alternatives are @code{yahoo}, @code{netaddress}, @code{my-deja}.
 
 @item :user
 The user name to give to the webmail server.  The default is the login
