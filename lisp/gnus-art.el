@@ -755,6 +755,13 @@ When nil (the default value), then some MIME parts do not get buttons,
 as described by the variables `gnus-buttonized-mime-types' and
 `gnus-unbuttonized-mime-types'."
   :version "21.3"
+  :group 'gnus-article-mime
+  :type 'boolean)
+
+(defcustom gnus-mime-recompute-hierarchical-structure nil
+  "Non-nil means recompute article's hierarchical MIME structure.
+The hierarchy numbers will be displayed in MIME buttons."
+  :group 'gnus-article-mime
   :type 'boolean)
 
 (defcustom gnus-body-boundary-delimiter "_"
@@ -791,10 +798,19 @@ on parts -- for instance, adding Vcard info to a database."
   :type 'function)
 
 (defcustom gnus-mime-multipart-functions nil
-  "An alist of MIME types to functions to display them."
+  "An alist of MIME types to functions to display them.
+Consider using `gnus-mime-accumulate-hierarchy' for each MIME handle
+when defining your function.  For example:
+
+\(setq gnus-mime-multipart-functions
+      (list (cons \"multipart/examples\"
+		  (lambda (handles)
+		    (dolist (handle (cdr handles))
+		      (gnus-mime-accumulate-hierarchy handle)
+		      (function-to-display-an-example handle))))))"
   :version "21.1"
   :group 'gnus-article-mime
-  :type 'alist)
+  :type '(repeat (cons :format "%v" (string :tag "MIME type") function)))
 
 (defcustom gnus-article-date-lapsed-new-header nil
   "Whether the X-Sent and Date headers can coexist.
@@ -1442,6 +1458,8 @@ This requires GNU Libidn, and by default only enabled if it is found."
 (defvar gnus-article-mime-handle-alist nil)
 (defvar article-lapsed-timer nil)
 (defvar gnus-article-current-summary nil)
+(defvar gnus-article-mime-hierarchy nil)
+(defvar gnus-article-mime-hierarchy-next nil)
 
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
@@ -3642,6 +3660,7 @@ commands:
   (make-local-variable 'gnus-article-image-alist)
   (make-local-variable 'gnus-article-charset)
   (make-local-variable 'gnus-article-ignored-charsets)
+  (make-local-variable 'gnus-article-mime-hierarchy)
   (gnus-set-default-directory)
   (buffer-disable-undo)
   (setq buffer-read-only t)
@@ -3660,6 +3679,8 @@ commands:
     (setq gnus-article-buffer name)
     (setq gnus-original-article-buffer original)
     (setq gnus-article-mime-handle-alist nil)
+    (setq gnus-article-mime-hierarchy nil
+	  gnus-article-mime-hierarchy-next nil)
     ;; This might be a variable local to the summary buffer.
     (unless gnus-single-article-buffer
       (save-excursion
@@ -3688,6 +3709,7 @@ commands:
 	    (setq gnus-article-mime-handles nil))
 	  ;; Set it to nil in article-buffer!
 	  (setq gnus-article-mime-handle-alist nil)
+	  (setq gnus-article-mime-hierarchy nil)
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
 	  ;; This list just keeps growing if we don't reset it.
@@ -4461,11 +4483,17 @@ N is the numerical prefix."
     (setq b (point))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
-     `(keymap ,gnus-mime-button-map
-	      gnus-callback gnus-mm-display-part
-	      gnus-part ,gnus-tmp-id
-	      article-type annotation
-	      gnus-data ,handle))
+     (prog1
+	 `(keymap ,gnus-mime-button-map
+		  gnus-callback gnus-mm-display-part
+		  gnus-part ,gnus-tmp-id
+		  article-type annotation
+		  gnus-data ,handle)
+       (when gnus-mime-recompute-hierarchical-structure
+	 (setq gnus-tmp-id (mapconcat 'number-to-string
+				      (car (nth (1- gnus-tmp-id)
+						gnus-article-mime-hierarchy))
+				      ".")))))
     (setq e (if (bolp)
 		;; Exclude a newline.
 		(1- (point))
@@ -4574,44 +4602,112 @@ If displaying \"text/html\" is discouraged \(see
   :group 'gnus-article-mime
   :type 'boolean)
 
+(defun gnus-mime-accumulate-hierarchy (handle &optional single)
+  "Accumulate the MIME hierarchy."
+  (when gnus-mime-recompute-hierarchical-structure
+    (prog1
+	(setq gnus-article-mime-hierarchy
+	      (nconc
+	       gnus-article-mime-hierarchy
+	       (list
+		(cons
+		 (or
+		  gnus-article-mime-hierarchy-next
+		  (if gnus-article-mime-hierarchy
+		      (let ((last (1- (length gnus-article-mime-hierarchy))))
+			(prog1
+			    (setq last
+				  (copy-sequence
+				   (car (nth last
+					     gnus-article-mime-hierarchy))))
+			  (setq last (nthcdr (1- (length last)) last))
+			  (setcar last (1+ (car last)))))
+		    (list 1)))
+		 ;; A placeholder which may be replaced with `handle'.
+		 nil))))
+      (if (and single
+	       (not (member (mm-handle-media-type handle)
+			    '("message/rfc822"))))
+	  (let ((last (copy-sequence
+		       (car (nth (1- (length gnus-article-mime-hierarchy))
+				 gnus-article-mime-hierarchy)))))
+	    (setq gnus-article-mime-hierarchy-next last
+		  last (nthcdr (1- (length last)) last))
+	    (setcar last (1+ (car last))))
+	(setq gnus-article-mime-hierarchy-next nil)))))
+
+(defun gnus-mime-enter-multipart ()
+  (when gnus-mime-recompute-hierarchical-structure
+    (setq gnus-article-mime-hierarchy-next
+	  (cond (gnus-article-mime-hierarchy-next
+		 (nconc gnus-article-mime-hierarchy-next (list 1)))
+		(gnus-article-mime-hierarchy
+		 (append (car (nth (1- (length gnus-article-mime-hierarchy))
+				   gnus-article-mime-hierarchy))
+			 (list 1)))
+		(t
+		 (list 1))))))
+
+(defun gnus-mime-leave-multipart ()
+  (when gnus-mime-recompute-hierarchical-structure
+    (setq gnus-article-mime-hierarchy-next
+	  (when gnus-article-mime-hierarchy
+	    (let ((last (car (nth (1- (length gnus-article-mime-hierarchy))
+				  gnus-article-mime-hierarchy))))
+	      (when (cdr last)
+		(prog1
+		    (setq last (butlast last))
+		  (setq last (nthcdr (1- (length last)) last))
+		  (setcar last (1+ (car last))))))))))
+
 (defun gnus-mime-display-part (handle)
-  (cond
-   ;; Single part.
-   ((not (stringp (car handle)))
-    (gnus-mime-display-single handle))
-   ;; User-defined multipart
-   ((cdr (assoc (car handle) gnus-mime-multipart-functions))
-    (funcall (cdr (assoc (car handle) gnus-mime-multipart-functions))
-	     handle))
-   ;; multipart/alternative
-   ((and (equal (car handle) "multipart/alternative")
-	 (not (or gnus-mime-display-multipart-as-mixed
-		  gnus-mime-display-multipart-alternative-as-mixed)))
-    (let ((id (1+ (length gnus-article-mime-handle-alist))))
-      (push (cons id handle) gnus-article-mime-handle-alist)
-      (gnus-mime-display-alternative (cdr handle) nil nil id)))
-   ;; multipart/related
-   ((and (equal (car handle) "multipart/related")
-	 (not (or gnus-mime-display-multipart-as-mixed
-		  gnus-mime-display-multipart-related-as-mixed)))
-    ;;;!!!We should find the start part, but we just default
-    ;;;!!!to the first part.
-    ;;(gnus-mime-display-part (cadr handle))
-    ;;;!!! Most multipart/related is an HTML message plus images.
-    ;;;!!! Unfortunately we are unable to let W3 display those
-    ;;;!!! included images, so we just display it as a mixed multipart.
-    ;;(gnus-mime-display-mixed (cdr handle))
-    ;;;!!! No, w3 can display everything just fine.
-    (gnus-mime-display-part (cadr handle)))
-   ((equal (car handle) "multipart/signed")
-    (gnus-add-wash-type 'signed)
-    (gnus-mime-display-security handle))
-   ((equal (car handle) "multipart/encrypted")
-    (gnus-add-wash-type 'encrypted)
-    (gnus-mime-display-security handle))
-   ;; Other multiparts are handled like multipart/mixed.
-   (t
-    (gnus-mime-display-mixed (cdr handle)))))
+  (if (not (stringp (car handle)))
+      ;; Single part.
+      (progn
+	(gnus-mime-accumulate-hierarchy handle t)
+	(gnus-mime-display-single handle))
+    (gnus-mime-enter-multipart)
+    (prog1
+	(cond
+	 ;; User-defined multipart
+	 ((cdr (assoc (car handle) gnus-mime-multipart-functions))
+	  (gnus-mime-accumulate-hierarchy handle)
+	  (funcall (cdr (assoc (car handle) gnus-mime-multipart-functions))
+		   handle))
+	 ;; multipart/alternative
+	 ((and (equal (car handle) "multipart/alternative")
+	       (not (or gnus-mime-display-multipart-as-mixed
+			gnus-mime-display-multipart-alternative-as-mixed)))
+	  (gnus-mime-accumulate-hierarchy handle)
+	  (let ((id (1+ (length gnus-article-mime-handle-alist))))
+	    (push (cons id handle) gnus-article-mime-handle-alist)
+	    (gnus-mime-display-alternative (cdr handle) nil nil id)))
+	 ;; multipart/related
+	 ((and (equal (car handle) "multipart/related")
+	       (not (or gnus-mime-display-multipart-as-mixed
+			gnus-mime-display-multipart-related-as-mixed)))
+	  (gnus-mime-accumulate-hierarchy handle)
+	  ;;;!!!We should find the start part, but we just default
+	  ;;;!!!to the first part.
+	  ;;(gnus-mime-display-part (cadr handle))
+	  ;;;!!! Most multipart/related is an HTML message plus images.
+	  ;;;!!! Unfortunately we are unable to let W3 display those
+	  ;;;!!! included images, so we just display it as a mixed multipart.
+	  ;;(gnus-mime-display-mixed (cdr handle))
+	  ;;;!!! No, w3 can display everything just fine.
+	  (gnus-mime-display-part (cadr handle)))
+	 ((equal (car handle) "multipart/signed")
+	  (gnus-mime-accumulate-hierarchy handle)
+	  (gnus-add-wash-type 'signed)
+	  (gnus-mime-display-security handle))
+	 ((equal (car handle) "multipart/encrypted")
+	  (gnus-mime-accumulate-hierarchy handle)
+	  (gnus-add-wash-type 'encrypted)
+	  (gnus-mime-display-security handle))
+	 ;; Other multiparts are handled like multipart/mixed.
+	 (t
+	  (gnus-mime-display-mixed (cdr handle))))
+      (gnus-mime-leave-multipart))))
 
 (defun gnus-mime-part-function (handles)
   (if (stringp (car handles))
@@ -4732,7 +4828,14 @@ If displaying \"text/html\" is discouraged \(see
 	  (gnus-add-text-properties
 	   (setq from (point))
 	   (progn
-	     (insert (format "%d.  " id))
+	     (insert (format "%s.  "
+			     (if gnus-mime-recompute-hierarchical-structure
+				 (mapconcat
+				  'number-to-string
+				  (car (nth (1- id)
+					    gnus-article-mime-hierarchy))
+				  ".")
+			       id)))
 	     (point))
 	   `(gnus-callback
 	     (lambda (handles)

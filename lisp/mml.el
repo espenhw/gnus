@@ -1123,6 +1123,8 @@ If RAW, don't highlight the article."
 	  (let ((gnus-newsgroup-name "dummy")
 		(gnus-newsrc-hashtb (or gnus-newsrc-hashtb
 					(gnus-make-hashtable 5))))
+	    (setq gnus-article-mime-hierarchy nil
+		  gnus-article-mime-hierarchy-next nil)
 	    (gnus-article-prepare-display))))
       ;; Disable article-mode-map.
       (use-local-map nil)

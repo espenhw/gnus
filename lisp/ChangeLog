@@ -1,3 +1,23 @@
+2004-03-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-recompute-hierarchical-structure): New
+	user option.
+	(gnus-mime-multipart-functions): Doc and customization fix.
+	(gnus-article-mime-hierarchy): New variable.
+	(gnus-article-mime-hierarchy-next): New variable.
+	(gnus-article-mode): Make gnus-article-mime-hierarchy buffer-local.
+	(gnus-article-setup-buffer): Set gnus-article-mime-hierarchy and
+	gnus-article-mime-hierarchy-next to nil.
+	(gnus-insert-mime-button): Show hierarchy numbers.
+	(gnus-mime-accumulate-hierarchy): New function.
+	(gnus-mime-enter-multipart): New function.
+	(gnus-mime-leave-multipart): New function.
+	(gnus-mime-display-part): Recompute hierarchical MIME structure.
+	(gnus-mime-display-alternative): Show hierarchy numbers.
+
+	* mml.el (mml-preview): Set gnus-article-mime-hierarchy and
+	gnus-article-mime-hierarchy-next to nil.
+
 2004-03-19  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* dns.el: Don't require gnus-xmas.
