@@ -2632,10 +2632,15 @@ If there is, use Gnus to create an nnrss group"
 	      (desc  (read-from-minibuffer "Description: "
 					   (cdr (assoc 'description
 						       feedinfo))))
-	      (href (cdr (assoc 'href feedinfo))))
+	      (href (cdr (assoc 'href feedinfo)))
+	      (encodable (mm-coding-system-p 'utf-8)))
+	  (when encodable
+	    ;; Unify non-ASCII text.
+	    (setq title (mm-decode-coding-string
+			 (mm-encode-coding-string title 'utf-8) 'utf-8)))
 	  (push (list title href desc)
 		nnrss-group-alist)
-	  (gnus-group-make-group (if (mm-coding-system-p 'utf-8)
+	  (gnus-group-make-group (if encodable
 				     (mm-encode-coding-string title 'utf-8)
 				   title)
 				 '(nnrss ""))
