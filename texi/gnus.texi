@@ -364,7 +364,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to pre-Oort Gnus.
+This manual corresponds to Oort Gnus v0.01.
 
 @end ifinfo
 
@@ -9388,6 +9388,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-hide-boring-headers (head)
 @item gnus-treat-hide-signature (t, last)
 @item gnus-treat-hide-citation (t, integer)
+@item gnus-treat-hide-citation-maybe (t, integer)
 @item gnus-treat-strip-pgp (t, last, integer)
 @item gnus-treat-strip-pem (t, last, integer)
 @item gnus-treat-highlight-headers (head)
@@ -9397,6 +9398,8 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-date-local (head)
 @item gnus-treat-date-lapsed (head)
 @item gnus-treat-date-original (head)
+@item gnus-treat-date-iso8601 (head)
+@item gnus-treat-date-user-defined (head)
 @item gnus-treat-strip-headers-in-body (t, integer)
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
 @item gnus-treat-strip-leading-blank-lines (t, integer)

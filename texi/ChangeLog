@@ -1,3 +1,16 @@
+2000-12-29 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Top): Set version to Oort Gnus v0.01.
+
+	* Makefile.in (install): The info files are in the current
+	directory.
+
+2000-12-29  Christopher Splinter  <chris@splinter.inka.de>
+
+	* gnus.texi (Customizing Articles): Added documentation for
+	`gnus-treat-hide-citation-maybe', `gnus-treat-date-iso8601' and
+	`gnus-treat-date-user-defined'.
+
 2000-12-29 00:38:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Posting Styles): Addition.
