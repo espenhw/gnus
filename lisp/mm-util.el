@@ -269,6 +269,8 @@ used as the line break code type of the coding system."
   (when lbt
     (setq charset (intern (format "%s-%s" charset lbt))))
   (cond
+   ((null charset)
+    charset)
    ;; Running in a non-MULE environment.
    ((null (mm-get-coding-system-list))
     charset)

@@ -1,3 +1,8 @@
+2001-11-01 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-to-coding-system): Return nil, if charset
+	is nil.
+
 2001-11-01 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smiley-ems.el (smiley-update-cache): Auto detect file type.
