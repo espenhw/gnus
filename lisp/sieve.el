@@ -34,7 +34,7 @@
 ;;
 ;; 2001-10-31 Committed to Oort Gnus.
 ;;
-;; $Id: sieve.el,v 1.15 2001/08/17 11:20:15 jas Exp $
+;; $Id: sieve.el,v 6.1 2001/11/01 00:50:22 jas Exp $
 ;;
 ;; Todo:
 ;;
@@ -56,7 +56,6 @@
 
 ;;; Code:
 
-(require 'easy-mmode)
 (require 'sieve-manage)
 (require 'sieve-mode)
 

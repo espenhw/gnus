@@ -1,3 +1,8 @@
+2001-11-01  Simon Josefsson  <jas@extundo.com>
+
+	* sieve.el: Don't require easy-mmode. Suggested by Katsumi Yamaoka
+	<yamaoka@jpl.org>.
+
 2001-10-31 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* sieve-manage.el (sieve-string-bytes): No complain.
