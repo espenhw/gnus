@@ -11137,7 +11137,8 @@ If REVERSE, save parts that do not match TYPE."
                  (c cond)
                  (list gnus-summary-highlight))
             (while list
-              (setcdr c (cons (list (caar list) (list 'quote (cdar list))) nil))
+              (setcdr c (cons (list (caar list) (list 'quote (cdar list)))
+			      nil))
               (setq c (cdr c)
                     list (cdr list)))
             (gnus-byte-compile (list 'lambda nil cond))))))

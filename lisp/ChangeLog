@@ -1,5 +1,7 @@
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-highlight-line-0): Indent.
+
 	* gnus-fun.el (gnus-fun-ppm-change-string): New function.
 	(gnus-grab-cam-face): Use it.
 
