@@ -54,7 +54,14 @@
 (eval-and-compile
   (autoload 'ifile-spam-filter "ifile-gnus"))
 
+;; autoload query-dig
+(eval-and-compile
+  (autoload 'query-dig "dig"))
+
 ;;; Main parameters.
+
+(defvar spam-use-dig t
+  "True if query-dig should be used instead of query-dns.")
 
 (defvar spam-use-blacklist t
   "True if the blacklist should be used.")
@@ -213,7 +220,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   "List of blackhole servers.")
 
 (defun spam-check-blackholes ()
-  "Check the Receieved headers for blackholed relays."
+  "Check the Received headers for blackholed relays."
   (let ((headers (message-fetch-field "received"))
 	ips matches)
     (when headers
@@ -229,9 +236,17 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		ips)))
       (dolist (server spam-blackhole-servers)
 	(dolist (ip ips)
-	  (when (query-dns (concat ip "." server))
-	    (push (list ip server (query-dns (concat ip "." server) 'TXT))
-		  matches)))))
+	  (let ((query-string (concat ip "." server)))
+	    (if spam-use-dig
+		(let ((query-result (query-dig query-string)))
+		  (when query-result
+		    (message "spam detected with blackhole check of relay %s (dig query result '%s')" query-string query-result)
+		    (push (list ip server query-result)
+			  matches)))
+	      ;; else, if not using dig.el
+	      (when (query-dns query-string)
+		(push (list ip server (query-dns query-string 'TXT))
+		      matches)))))))
     (when matches
       spam-split-group)))
 
