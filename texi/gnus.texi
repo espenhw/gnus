@@ -8426,10 +8426,11 @@ be nice if Gnus could just fetch whatever it is that people talk about
 with the minimum of fuzz when you hit @kbd{RET} or use the middle mouse
 button on these references.
 
+@vindex gnus-button-man-handler
 Gnus adds @dfn{buttons} to certain standard references by default:
-Well-formed URLs, mail addresses and Message-IDs.  This is controlled by
-two variables, one that handles article bodies and one that handles
-article heads:
+Well-formed URLs, mail addresses, Message-IDs, Info links and man pages.
+This is controlled by two variables, one that handles article bodies and
+one that handles article heads:
 
 @table @code
 

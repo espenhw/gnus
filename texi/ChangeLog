@@ -1,3 +1,7 @@
+2002-09-09  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Article Buttons): Add.
+
 2002-09-09  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Splitting Mail): Document nnmail-resplit-incoming,
