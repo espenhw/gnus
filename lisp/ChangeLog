@@ -1,3 +1,13 @@
+2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-display-while-building): Default to
+	nil. 
+
+2003-01-01  Wes Hardaker  <wes@hardakers.net>
+
+	* gnus-sum.el (gnus-summary-display-while-building): New
+	variable. 
+
 2002-01-01  Raymond Scholz  <ray-2003@zonix.de>
 
 	* deuglify.el (gnus-outlook-rearrange-article): Kill overlays

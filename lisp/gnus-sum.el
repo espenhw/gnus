@@ -4492,6 +4492,8 @@ or a straight list of headers."
   (let ((gnus-tmp-level 0)
 	(default-score (or gnus-summary-default-score 0))
 	(gnus-visual-p (gnus-visual-p 'summary-highlight 'highlight))
+	(building-line-count gnus-summary-display-while-building)
+	(building-count (integerp gnus-summary-display-while-building))
 	thread number subject stack state gnus-tmp-gathered beg-match
 	new-roots gnus-tmp-new-adopts thread-end simp-subject
 	gnus-tmp-header gnus-tmp-unread gnus-tmp-downloaded
@@ -4511,6 +4513,8 @@ or a straight list of headers."
 
       ;; Do the threaded display.
 
+      (if gnus-summary-display-while-building
+	  (switch-to-buffer (buffer-name)))
       (while (or threads stack gnus-tmp-new-adopts new-roots)
 
 	(if (and (= gnus-tmp-level 0)
@@ -4760,6 +4764,17 @@ or a straight list of headers."
 	(push (if (nth 1 thread) 1 0) tree-stack)
 	(incf gnus-tmp-level)
 	(setq threads (if thread-end nil (cdar thread)))
+	(if gnus-summary-display-while-building
+	    (if building-count
+		(progn
+		  ;; use a set frequency
+		  (setq building-line-count (1- building-line-count))
+		  (when (= building-line-count 0)
+		    (sit-for 0)
+		    (setq building-line-count
+			  gnus-summary-display-while-building)))
+	      ;; always
+	      (sit-for 0)))
 	(unless threads
 	  (setq gnus-tmp-level 0)))))
   (gnus-message 7 "Generating summary...done"))
@@ -5075,7 +5090,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
 (defun gnus-articles-to-read (group &optional read-all)
   "Find out what articles the user wants to read."
-  (let* ((articles
+  (let* ((display (gnus-group-find-parameter group 'display))
+	 (articles
 	  ;; Select all articles if `read-all' is non-nil, or if there
 	  ;; are no unread articles.
 	  (if (or read-all
@@ -8774,6 +8790,15 @@ re-spool using this method."
 If nil, use to the current newsgroup method."
   :type 'symbol
   :group 'gnus-summary-mail)
+
+(defcustom gnus-summary-display-while-building nil
+  "If not-nil, show and update the summary buffer as it's being built.
+If the value is t, update the buffer after every line is inserted.  If
+the value is an integer (N), update the display every N lines."
+  :group 'gnus-thread
+  :type '(choice (const :tag "off" nil)
+		 number
+		 (const :tag "frequently" t)))
 
 (defun gnus-summary-respool-article (&optional n method)
   "Respool the current article.
