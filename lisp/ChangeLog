@@ -1,3 +1,7 @@
+2003-01-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-group-alist): Add and clear up.
+
 2003-01-07  Teodor Zlatanov  <tzz@beld.net>
 
 	* spam.el: removed unnecessary condition-case for loading bbdb-com.el

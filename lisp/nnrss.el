@@ -103,46 +103,36 @@
     ("Reuters.Health.rdf"
      "http://www.reutershealth.com/eline.rdf"
      "Consumer-oriented health-related news stories.")
-;;("4xt" "http://4xt.org/news/general.rss10" "Resources for XT users.")
     ("Aaronland" "http://aaronland.net/xml/abhb.rdf" "A boy and his basement.")
     ("Art of the Mix" "http://www.artofthemix.org/xml/rss.asp" "A website devoted to the art of making mixed tapes and cds.")
     ("Dave Beckett's RDF Resource Guide" "http://www.ilrt.bristol.ac.uk/discovery/rdf/resources/rss.rdf" "A comprehensive guide to resources about RDF.")
     ("David Chess" "http://www.davidchess.com/words/log.rss" "Mostly-daily musings on philosophy, children, culture, technology, the emergence of life from matter, chocolate, Nomic, and all that sort of thing.")
-;;("Dublin Core Metadata Intitiative" "http://www.dublincore.org/news.rss" "Latest news from DCMI.")
     ("Figby Articles" "http://www.figby.com/index-rss.php" "A weblog with daily stories about technology, books and publishing, privacy, science, and occasional humor.")
-;;("Figby News" "http://www.figby.com/news.php" "Categorized RSS feeds from various sources.")
     ("Figby Quickies" "http://www.figby.com/quickies-rss.php" "Quick commented links to other sites from Figby.com.")
     ("Flutterby!" "http://www.flutterby.com/main.rdf" "News and views from Dan Lyke.")
-    ("Groovelog" "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss.xml" "The open-access groove users' weblog.")
-;;("Groovelog.rss10" "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss10.xml" "The open-access groove users' weblog.")
+    ("Groovelog" 
+     "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss.xml"
+     "The open-access groove users' weblog.")
     ("Hit or Miss" "http://hit-or-miss.org/rss/" "Daily weblog and journal.")
-;;("Internet.com Feeds" "http://www.webreference.com/services/news/" "News from ")
     ("Larkfarm News" "http://www.larkfarm.com/Larkfarm.rdf" "Mike Gunderloy's web site.")
     ("Latest RFCs" "http://x42.com/rss/rfc.rss")
     ("Linux Today" "http://linuxtoday.com/backend/biglt.rss")
     ("Linux Today.rdf" "http://linuxtoday.com/backend/my-netscape10.rdf")
     ("More Like This WebLog" "http://www.whump.com/moreLikeThis/RSS" "Because the more you know, the more jokes you get.")
     ("Motivational Quotes of the Day" "http://www.quotationspage.com/data/mqotd.rss" "Four motivational quotations each day from the Quotations Page.")
-;;("My Netscape Network" "http://www.dmoz.org/Netscape/My_Netscape_Network/")
-    ;;("My UserLand" "http://my.userland.com/choose")
     ("Network World Fusion NetFlash" "http://www.nwfusion.com/netflash.rss" "Daily breaking news about networking products, technologies and services.")
-;;("News Feeds" "http://newsfeeds.manilasites.com/" "Jeff Barr highlights high quality RSS feeds.")
-    ;;("News Is Free Export" "http://www.newsisfree.com/export.php3")
     ("News Is Free" "http://www.newsisfree.com/news.rdf.php3")
-;;("News is Free XML Export" "http://www.newsisfree.com/ocs/directory.xml")
     ("O'Reilly Network Articles" "http://www.oreillynet.com/cs/rss/query/q/260?x-ver=1.0")
     ("Quotes of the Day" "http://www.quotationspage.com/data/qotd.rss" "Four humorous quotations each day from the Quotations Page.")
     ("RDF Interest Group" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-interest" "An experimental channel scraped from the RDF Interest Group mail archives.")
     ("RDF Logic List" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-logic" "An experimental channel scraped from the RDF Logic mail archives.")
     ("RSS Info" "http://www.blogspace.com/rss/rss10" "News and information on the RSS format")
-;;("RSS-DEV listing" "http://www.egroups.com/links/rss-dev/Feeds_000966335046/" "A listing of RSS files from the RSS-DEV list.")
-    ("Semantic Web List" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=semantic-web" "An experimental channel scraped from the W3C's Semantic Web mail archives.")
-;;("Sherch!" "http://www.sherch.com/~pldms/cgi-bin/sherch.pl" "Sherlock for the rest of us.")
-;;("Street Fusion Archived Financial Webcasts" "http://partners.streetfusion.com/rdf/archive.rdf")
-;;("Street Fusion Upcoming Financial Webcasts" "http://partners.streetfusion.com/rdf/live.rdf")
-;;("TNL.net newsletter" "http://www.tnl.net/newsletter/channel100.asp" "A newsletter about Internet technology and issues.")
-    ("W3C" "http://www.w3.org/2000/08/w3c-synd/home.rss" "The latest news at the World Wide Web Consortium.")
-;;("XML News: RSS Live Content" "http://www.xmlnews.org/RSS/content.html" "A listing of well-known RSS feeds.")
+    ("Semantic Web List"
+     "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=semantic-web"
+     "An experimental channel scraped from the W3C's Semantic Web mail archives.")
+    ("W3C"
+     "http://www.w3.org/2000/08/w3c-synd/home.rss"
+     "The latest news at the World Wide Web Consortium.")
     ("|fr| XMLfr" "http://xmlfr.org/actualites/general.rss10"
      "French speaking portal site dedicated to XML.")
     ("XMLhack" "http://xmlhack.com/rss10.php"
@@ -162,7 +152,14 @@
     ("Jabber Software Foundation News"
      "http://www.jabber.org/news/rss.xml"
      "News and announcements from the Jabber Software Foundation.")
-    ))
+    ("MacRumors"
+     "http://www.macrumors.com/macrumors.xml"
+     "The mac news you care about.")
+    ("Mac OS X Hints"
+     "http://www.macosxhints.com/backend/geeklog.rdf"
+     "Mac OS X Hits.")
+    )
+  "List of RSS addresses.")
 
 (defvar nnrss-use-local nil)
 
