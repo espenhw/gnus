@@ -8062,7 +8062,7 @@ advertisements.  For example, if a sender has the mail address
 following element to remove them:
 
 @lisp
-("@@yoo-hoo\.co\.jp\\'" . "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
+("@@yoo-hoo\\.co\\.jp\\'" . "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
 @end lisp
 
 @end table
