@@ -1,3 +1,115 @@
+Sun Jun 13 07:30:40 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.86 is released.
+
+1999-06-13 08:51:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-translate): New variable.
+	(gnus-treat-predicate): Accept a list of regexps.
+	(gnus-article-treat-custom): Allow a list of regexps.
+
+1999-06-09  Markus Rost  <markus.rost@mathematik.uni-regensburg.de>
+
+	* gnus/gnus-group.el (gnus-permanently-visible-groups): Fix custom
+	type.
+
+1999-06-13 05:15:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-babel): Narrow a bit.
+
+	* gnus-agent.el (gnus-agent-get-undownloaded-list): Was too slow. 
+
+1999-06-12  Simon Josefsson  <jas@pdc.kth.se>
+
+        (gnus-agent-get-undownloaded-list): Operate on all articles, not
+        only unread ones.
+        (gnus-agent-fetch-headers): Fetch headers from unread and marked
+        articles, not only unread ones.
+
+1999-06-13 03:01:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-limit-to-extra): New command and
+	keystroke. 
+
+	* gnus-art.el (gnus-article-x-face-command): Ditto.
+
+	* gnus-uu.el (gnus-uu-default-view-rules): Default to "display".
+
+	* gnus.el (gnus-method-simplify): Accept server names.
+
+1999-06-13 02:36:15  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el (article-babel-prompt): New function.
+	(article-babel): New command.
+
+1999-06-13 01:01:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-part-wrapper): Go to part.
+
+	* mml.el (mml-generate-mime-1): Don't insert literally.
+
+	* gnus-util.el (gnus-parse-netrc): Skip lines with #'s.
+	(gnus-netrc-syntax-table): Removed.
+	(gnus-parse-netrc): Don't use syntax table; just use whitespace. 
+
+Wed May  5 13:51:13 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Fix charset for text/html.
+
+Wed May  5 01:15:08 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-draft-coding-system): Use emacs-mule-dos.
+
+1999-06-12 07:29:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-split-incoming): Return the number of split
+	mails. 
+	(nnmail-process-babyl-mail-format): Ditto.
+	(nnmail-process-unix-mail-format): Ditto.
+	(nnmail-process-mmdf-mail-format): Ditto.
+	(nnmail-process-maildir-mail-format): Ditto.
+
+	* mail-source.el (mail-source-callback): Return the number from
+	the callback.
+
+	* message.el (message-send-mail): Generate Lines.
+
+	* mail-source.el (mail-source-call-script): New function.
+	(mail-source-call-script): New function.
+
+Sun May  2 02:00:27 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-setup-highlight-words): New function.
+	(gnus-select-newsgroup): Use it.
+	(gnus-group-highlight-words-alist): New variable.
+	(gnus-newsgroup-emphasis-alist): New variable.
+	(gnus-summary-local-variables):  Use it.
+	* lpath.el: Use it.
+	* gnus-art.el (article-emphasize): Use it.
+	(gnus-emphasis-highlight-words): New face.
+	* gnus-cus.el (gnus-group-parameters): New parameter.
+
+Sun May  2 01:00:02 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Remove
+ 	parameter `headers'.
+	(gnus-cache-enter-article): Ditto.
+	(gnus-cache-update-article): Ditto.  
+	* gnus-sum.el (gnus-summary-move-article): Ditto.
+	(gnus-summary-mark-article-as-unread): Ditto.
+	(gnus-summary-mark-article): Ditto.
+
+1999-06-12 03:59:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-message-insert-stylings): Removed.
+	(gnus-posting-style-alist): Removed.
+	(gnus-message-style-insertions): Ditto.
+	(gnus-configure-posting-styles): Reimplementation.
+
+	* mail-source.el (mail-source-fetch): Error the message.
+
+	* gnus-msg.el (gnus-inews-do-gcc): Do mml and encoding.
+
 Sat Jun 12 00:19:57 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.85 is released.

@@ -100,14 +100,6 @@ the second with the current group name.")
 (defvar gnus-posting-styles nil
   "*Alist of styles to use when posting.")
 
-(defvar gnus-posting-style-alist
-  '((organization . message-user-organization)
-    (signature . message-signature)
-    (signature-file . message-signature-file)
-    (address . user-mail-address)
-    (name . user-full-name))
-  "*Mapping from style parameters to variables.")
-
 (defcustom gnus-group-posting-charset-alist
   '(("^no\\." iso-8859-1)
     (message-this-is-mail nil)
@@ -984,6 +976,10 @@ this is a reply."
 	      (save-excursion
 		(nnheader-set-temp-buffer " *acc*")
 		(insert-buffer-substring cur)
+		(message-encode-message-body)
+		(save-restriction
+		  (message-narrow-to-headers)
+		  (mail-encode-encoded-word-buffer))
 		(goto-char (point-min))
 		(when (re-search-forward
 		       (concat "^" (regexp-quote mail-header-separator) "$")
@@ -1088,27 +1084,23 @@ this is a reply."
 
 ;;; Posting styles.
 
-(defvar gnus-message-style-insertions nil)
-
 (defun gnus-configure-posting-styles ()
   "Configure posting styles according to `gnus-posting-styles'."
   (unless gnus-inhibit-posting-styles
-    (let ((styles gnus-posting-styles)
-	  (gnus-newsgroup-name (or gnus-newsgroup-name ""))
-	  style match variable attribute value value-value)
-      (make-local-variable 'gnus-message-style-insertions)
+    (let ((group (or gnus-newsgroup-name ""))
+	  (styles gnus-posting-styles)
+	  style match variable attribute value v styles results
+	  filep name address element)
       ;; If the group has a posting-style parameter, add it at the end with a
       ;; regexp matching everything, to be sure it takes precedence over all
       ;; the others.
-      (unless (zerop (length gnus-newsgroup-name))
-	(let ((tmp-style (gnus-group-find-parameter
-			  gnus-newsgroup-name 'posting-style t)))
+      (when gnus-newsgroup-name
+	(let ((tmp-style (gnus-group-find-parameter group 'posting-style t)))
 	  (when tmp-style
 	    (setq styles (append styles (list (cons ".*" tmp-style)))))))
       ;; Go through all styles and look for matches.
-      (while styles
-	(setq style (pop styles)
-	      match (pop style))
+      (dolist (style styles)
+	(setq match (pop style))
 	(when (cond
 	       ((stringp match)
 		;; Regexp string match on the group name.
@@ -1126,59 +1118,85 @@ this is a reply."
 		;; This is a form to be evaled.
 		(eval match)))
 	  ;; We have a match, so we set the variables.
-	  (while style
-	    (setq attribute (pop style)
-		  value (cadr attribute)
-		  variable nil)
-	    ;; We find the variable that is to be modified.
-	    (if (and (not (stringp (car attribute)))
-		     (not (eq 'body (car attribute)))
-		     (not (setq variable
-				(cdr (assq (car attribute)
-					   gnus-posting-style-alist)))))
-		(message "Couldn't find attribute %s" (car attribute))
-	      ;; We get the value.
-	      (setq value-value
+	  (dolist (attribute style)
+	    (setq element (pop attribute)
+		  variable nil
+		  filep nil)
+	    (setq value
+		  (cond
+		   ((eq (car attribute) :file)
+		    (setq filep t)
+		    (cadr attribute))
+		   ((eq (car attribute) :value)
+		    (cadr attribute))
+		   (t
+		    (car attribute))))
+	    ;; We get the value.
+	    (setq v
+		  (cond
+		   ((stringp value)
+		    value)
+		   ((or (symbolp value)
+			(gnus-functionp value))
+		    (cond ((gnus-functionp value)
+			   (funcall value))
+			  ((boundp value)
+			   (symbol-value value))))
+		   ((listp value)
+		    (eval value))))
+	    ;; Translate obsolescent value.
+	    (when (eq element 'signature-file)
+	      (setq element 'signature
+		    filep t))
+	    ;; Get the contents of file elems.
+	    (when filep
+	      (setq v (with-temp-buffer
+			(insert-file-contents v)
+			(buffer-string))))
+	    (setq results (delq (assoc element results) results))
+	    (push (cons element
+			v) results))))
+      ;; Now we have all the styles, so we insert them.
+      (setq name (assq 'name results)
+	    address (assq 'address results))
+      (setq results (delq name (delq address results)))
+      (make-local-variable 'message-setup-hook)
+      (dolist (result results)
+	(when (cdr result)
+	  (add-hook 'message-setup-hook
 		    (cond
-		     ((stringp value)
-		      value)
-		     ((or (symbolp value)
-			  (gnus-functionp value))
-		      (cond ((gnus-functionp value)
-			     (funcall value))
-			    ((boundp value)
-			     (symbol-value value))))
-		     ((listp value)
-		      (eval value))))
-	      (if variable
-		  ;; This is an ordinary variable.
-		  (set (make-local-variable variable) value-value)
-		;; This is either a body or a header to be inserted in the
-		;; message.
-		(let ((attr (car attribute)))
-		  (make-local-variable 'message-setup-hook)
-		  (if (eq 'body attr)
-		      (add-hook 'message-setup-hook
-				`(lambda ()
-				   (save-excursion
-				     (message-goto-body)
-				     (insert ,value-value))))
-		    (add-hook 'message-setup-hook
-			      'gnus-message-insert-stylings)
-		    (push (cons (if (stringp attr) attr
-				  (symbol-name attr))
-				value-value)
-			  gnus-message-style-insertions)))))))))))
-
-(defun gnus-message-insert-stylings ()
-  (let (val)
-    (save-excursion
-      (while (setq val (pop gnus-message-style-insertions))
-	(when (cdr val)
-	  (message-remove-header (car val))
-	  (message-goto-eoh)
-	  (insert (car val) ": " (cdr val) "\n"))
-	(gnus-pull (car val) gnus-message-style-insertions t)))))
+		     ((eq 'body (car result))
+		      `(lambda ()
+			 (save-excursion
+			   (message-goto-body)
+			   (insert ,(cdr result)))))
+		     ((eq 'signature (car result))
+		      (set (make-local-variable 'message-signature) nil)
+		      (set (make-local-variable 'message-signature-file) nil)
+		      `(lambda ()
+			 (save-excursion
+			   (let ((message-signature ,(cdr result)))
+			     (message-insert-signature)))))
+		     (t
+		      (let ((header
+			     (if (symbolp (car result))
+				 (capitalize (symbol-name (car result)))
+			       (car result))))
+			`(lambda ()
+			   (save-excursion
+			     (message-remove-header ,header)
+			     (message-goto-eoh)
+			     (insert ,header ": " ,(cdr result) "\n")))))))))
+      (when (or name address)
+	(add-hook 'message-setup-hook
+		  `(lambda ()
+		     (let ((user-full-name ,(or (cdr name) user-full-name))
+			   (user-mail-address
+			    ,(or (cdr address) user-mail-address)))
+		       (save-excursion
+			 (message-remove-header "From")
+			 (message-goto-eoh)
+			 (insert "From: " (message-make-from) "\n")))))))))
 
 ;;; Allow redefinition of functions.
 

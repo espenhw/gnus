@@ -515,11 +515,13 @@ the actual number of articles toggled is returned."
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-load-alist gnus-newsgroup-name)
       ;; First mark all undownloaded articles as undownloaded.
-      (let ((articles gnus-newsgroup-unreads)
+      (let ((articles (append gnus-newsgroup-unreads
+			      gnus-newsgroup-marked
+			      gnus-newsgroup-dormant))
 	    article)
 	(while (setq article (pop articles))
 	  (unless (or (cdr (assq article gnus-agent-article-alist))
-		  (memq article gnus-newsgroup-downloadable))
+		      (memq article gnus-newsgroup-downloadable))
 	    (push article gnus-newsgroup-undownloaded))))
       ;; Then mark downloaded downloadable as not-downloadable,
       ;; if you get my drift.
@@ -787,15 +789,21 @@ the actual number of articles toggled is returned."
       (pop gnus-agent-group-alist))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
-  (let ((articles (if (gnus-agent-load-alist group)
- 		      (gnus-sorted-intersection
- 		       (gnus-list-of-unread-articles group)
- 		       (gnus-uncompress-range
- 			(cons (1+ (caar (last gnus-agent-article-alist)))
- 			      (cdr (gnus-active group)))))
- 		    (gnus-list-of-unread-articles group)))
+  (let ((articles (gnus-list-of-unread-articles group))
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group)))
+    ;; add article with marks to list of article headers we want to fetch
+    (dolist (arts (gnus-info-marks (gnus-get-info group)))
+      (setq articles (union (gnus-uncompress-sequence (cdr arts))
+                           articles)))
+    (setq articles (sort articles '<))
+    ;; remove known articles
+    (when (gnus-agent-load-alist group)
+      (setq articles (gnus-sorted-intersection
+                     articles
+                     (gnus-uncompress-range
+                      (cons (1+ (caar (last gnus-agent-article-alist)))
+                            (cdr (gnus-active group)))))))
     ;; Fetch them.
     (gnus-make-directory (nnheader-translate-file-chars
 			  (file-name-directory file)))

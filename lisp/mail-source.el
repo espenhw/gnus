@@ -181,7 +181,7 @@ Return the number of files that were found."
              (funcall function source callback)
            (error
             (unless (yes-or-no-p
-		     (format "Mail source error.  Continue? "))
+		     (format "Mail source error (%s).  Continue? " err))
               (error "Cannot get new mail."))
             0))))))
 
@@ -202,19 +202,19 @@ Pass INFO on to CALLBACK."
 	(when (file-exists-p mail-source-crash-box)
 	  (delete-file mail-source-crash-box))
 	0)
-    (funcall callback mail-source-crash-box info)
-    (when (file-exists-p mail-source-crash-box)
-      ;; Delete or move the incoming mail out of the way.
-      (if mail-source-delete-incoming
-	  (delete-file mail-source-crash-box)
-	(let ((incoming
-	       (mail-source-make-complex-temp-name
-		(expand-file-name
-		 "Incoming" mail-source-directory))))
-	  (unless (file-exists-p (file-name-directory incoming))
-	    (make-directory (file-name-directory incoming) t))
-	  (rename-file mail-source-crash-box incoming t))))
-    1))
+    (prog1
+	(funcall callback mail-source-crash-box info)
+      (when (file-exists-p mail-source-crash-box)
+	;; Delete or move the incoming mail out of the way.
+	(if mail-source-delete-incoming
+	    (delete-file mail-source-crash-box)
+	  (let ((incoming
+		 (mail-source-make-complex-temp-name
+		  (expand-file-name
+		   "Incoming" mail-source-directory))))
+	    (unless (file-exists-p (file-name-directory incoming))
+	      (make-directory (file-name-directory incoming) t))
+	    (rename-file mail-source-crash-box incoming t)))))))
 
 (defun mail-source-movemail (from to)
   "Move FROM to TO using movemail."
@@ -302,6 +302,14 @@ If ARGS, PROMPT is used as an argument to `format'."
   (zerop (call-process shell-file-name nil nil nil
 		       shell-command-switch program)))
 
+(defun mail-source-call-script (script)
+  (let ((background nil))
+    (when (string-match "& *$" script)
+      (setq script (substring script 0 (match-beginning 0))
+	    background 0))
+    (call-process shell-file-name nil background nil
+		  shell-command-switch script)))
+
 ;;;
 ;;; Different fetchers
 ;;;
@@ -312,11 +320,9 @@ If ARGS, PROMPT is used as an argument to `format'."
     (when prescript
       (if (and (symbolp prescript) (fboundp prescript))
 	  (funcall prescript)
-	(call-process shell-file-name nil nil nil
-		      shell-command-switch 
-		      (format-spec
-		       prescript
-		       (format-spec-make ?t mail-source-crash-box)))))
+	(mail-source-call-script
+	 (format-spec
+	  prescript (format-spec-make ?t mail-source-crash-box)))))
     (let ((mail-source-string (format "file:%s" path)))
       (if (mail-source-movemail path mail-source-crash-box)
 	  (prog1
@@ -324,11 +330,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (when prescript
 	      (if (and (symbolp prescript) (fboundp prescript))
 		  (funcall prescript)
-		(call-process shell-file-name nil nil nil
-			      shell-command-switch 
-			      (format-spec
-			       postscript
-			       (format-spec-make ?t mail-source-crash-box))))))
+		(mail-source-call-script 
+		 (format-spec
+		  postscript (format-spec-make ?t mail-source-crash-box))))))
 	0))))
 
 (defun mail-source-fetch-directory (source callback)
@@ -351,12 +355,10 @@ If ARGS, PROMPT is used as an argument to `format'."
       (if (and (symbolp prescript)
 	       (fboundp prescript))
 	  (funcall prescript)
-	(call-process shell-file-name nil 0 nil
-		      shell-command-switch 
-		      (format-spec
-		       prescript
-		       (format-spec-make ?p password ?t mail-source-crash-box
-					 ?s server ?P port ?u user)))))
+	(mail-source-call-script 
+	 (format-spec
+	  prescript (format-spec-make ?p password ?t mail-source-crash-box
+				      ?s server ?P port ?u user)))))
     (let ((from (format "%s:%s:%s" server user port))
 	  (mail-source-string (format "pop:%s@%s" user server))
 	  result)
@@ -396,13 +398,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      (if (and (symbolp postscript)
 		       (fboundp postscript))
 		  (funcall postscript)
-		(call-process shell-file-name nil 0 nil
-			      shell-command-switch 
-			      (format-spec
-			       postscript
-			       (format-spec-make
-				?p password ?t mail-source-crash-box
-				?s server ?P port ?u user))))))
+		(mail-source-call-script 
+		 (format-spec
+		  postscript (format-spec-make
+			      ?p password ?t mail-source-crash-box
+			      ?s server ?P port ?u user))))))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

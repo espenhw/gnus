@@ -797,73 +797,55 @@ ARG is passed to the first function."
 ;;; .netrc and .authinforc parsing
 ;;;
 
-(defvar gnus-netrc-syntax-table
-  (let ((table (copy-syntax-table text-mode-syntax-table)))
-    (modify-syntax-entry ?@ "w" table)
-    (modify-syntax-entry ?- "w" table)
-    (modify-syntax-entry ?_ "w" table)
-    (modify-syntax-entry ?! "w" table)
-    (modify-syntax-entry ?. "w" table)
-    (modify-syntax-entry ?, "w" table)
-    (modify-syntax-entry ?: "w" table)
-    (modify-syntax-entry ?\; "w" table)
-    (modify-syntax-entry ?% "w" table)
-    (modify-syntax-entry ?) "w" table)
-    (modify-syntax-entry ?( "w" table)
-    table)
-  "Syntax table when parsing .netrc files.")
-
 (defun gnus-parse-netrc (file)
   "Parse FILE and return an list of all entries in the file."
-  (if (not (file-exists-p file))
-      ()
-    (save-excursion
+  (when (file-exists-p file)
+    (with-temp-buffer
       (let ((tokens '("machine" "default" "login"
 		      "password" "account" "macdef" "force"))
 	    alist elem result pair)
-	(nnheader-set-temp-buffer " *netrc*")
-	(unwind-protect
-	    (progn
-	      (set-syntax-table gnus-netrc-syntax-table)
-	      (insert-file-contents file)
-	      (goto-char (point-min))
-	      ;; Go through the file, line by line.
-	      (while (not (eobp))
-		(narrow-to-region (point) (gnus-point-at-eol))
-		;; For each line, get the tokens and values.
-		(while (not (eobp))
-		  (skip-chars-forward "\t ")
-		  (unless (eobp)
-		    (setq elem (buffer-substring
-				(point) (progn (forward-sexp 1) (point))))
-		    (cond
-		     ((equal elem "macdef")
-		      ;; We skip past the macro definition.
-		      (widen)
-		      (while (and (zerop (forward-line 1))
-				  (looking-at "$")))
-		      (narrow-to-region (point) (point)))
-		     ((member elem tokens)
-		      ;; Tokens that don't have a following value are ignored,
-		      ;; except "default".
-		      (when (and pair (or (cdr pair)
-					  (equal (car pair) "default")))
-			(push pair alist))
-		      (setq pair (list elem)))
-		     (t
-		      ;; Values that haven't got a preceding token are ignored.
-		      (when pair
-			(setcdr pair elem)
-			(push pair alist)
-			(setq pair nil))))))
-		(if alist
-		    (push (nreverse alist) result))
-		(setq alist nil
-		      pair nil)
-		(widen)
-		(forward-line 1))
-	      (nreverse result))
-	  (kill-buffer " *netrc*"))))))
+	(insert-file-contents file)
+	(goto-char (point-min))
+	;; Go through the file, line by line.
+	(while (not (eobp))
+	  (narrow-to-region (point) (gnus-point-at-eol))
+	  ;; For each line, get the tokens and values.
+	  (while (not (eobp))
+	    (skip-chars-forward "\t ")
+	    ;; Skip lines that begin with a "#".
+	    (if (eq (char-after) ?#)
+		(goto-char (point-max))
+	      (unless (eobp)
+		(setq elem (buffer-substring
+			    (point) (progn (skip-chars-forward "^\t ")
+					   (point))))
+		(cond
+		 ((equal elem "macdef")
+		  ;; We skip past the macro definition.
+		  (widen)
+		  (while (and (zerop (forward-line 1))
+			      (looking-at "$")))
+		  (narrow-to-region (point) (point)))
+		 ((member elem tokens)
+		  ;; Tokens that don't have a following value are ignored,
+		  ;; except "default".
+		  (when (and pair (or (cdr pair)
+				      (equal (car pair) "default")))
+		    (push pair alist))
+		  (setq pair (list elem)))
+		 (t
+		  ;; Values that haven't got a preceding token are ignored.
+		  (when pair
+		    (setcdr pair elem)
+		    (push pair alist)
+		    (setq pair nil)))))))
+	  (when alist
+	    (push (nreverse alist) result))
+	  (setq alist nil
+		pair nil)
+	  (widen)
+	  (forward-line 1))
+	(nreverse result)))))
 
 (defun gnus-netrc-machine (list machine)
   "Return the netrc values from LIST for MACHINE or for the default entry."

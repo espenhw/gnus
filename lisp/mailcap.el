@@ -181,11 +181,6 @@
       (viewer . "ee %s")
       (type . "image/*")
       (test   . (eq (mm-device-type) 'x))
-      ("needsx11"))
-     (".*"
-      (viewer . "ee %s")
-      (type . "image/*")
-      (test   . (eq (mm-device-type) 'x))
       ("needsx11")))
     ("text"
      ("plain"

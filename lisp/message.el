@@ -862,7 +862,9 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-draft-coding-system
   (cond
    ((not (fboundp 'coding-system-p)) nil)
-   ((coding-system-p 'emacs-mule) 'emacs-mule)
+   ((coding-system-p 'emacs-mule) 
+    (if (string-match "nt" system-configuration)
+	'emacs-mule-dos 'emacs-mule))
    ((memq 'escape-quoted (mm-get-coding-system-list)) 'escape-quoted)
    ((coding-system-p 'no-conversion) 'no-conversion)
    (t nil))
@@ -2110,6 +2112,9 @@ the user from the mailer."
 	  (message-encode-message-body)
 	  (save-restriction
 	    (message-narrow-to-headers)
+	    ;; We (re)generate the Lines header.
+	    (when (memq 'Lines message-required-mail-headers)
+	      (message-generate-headers '(Lines)))
 	    ;; Remove some headers.
 	    (message-remove-header message-ignored-mail-headers t)
 	    (mail-encode-encoded-word-buffer))
@@ -2288,6 +2293,9 @@ to find out how to use this."
 	      ;; Remove some headers.
 	      (save-restriction
 		(message-narrow-to-headers)
+		;; We (re)generate the Lines header.
+		(when (memq 'Lines message-required-mail-headers)
+		  (message-generate-headers '(Lines)))
 		;; Remove some headers.
 		(message-remove-header message-ignored-news-headers t)
 		(let ((mail-parse-charset message-posting-charset))

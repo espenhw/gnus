@@ -37,26 +37,31 @@
 		     find-charset-region
 		     find-coding-systems-region get-charset-property
 		     coding-system-get w3-region
+		     w3-coding-system-for-mime-charset 
 		     rmail-summary-exists rmail-select-summary
 		     rmail-update-summary url-retrieve
-		     temp-directory
+		     temp-directory babel-fetch babel-wash
 		     ))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
 		    font-lock-defaults user-full-name user-login-name
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
-		    gnus-newsgroup-charset
+		    gnus-newsgroup-charset gnus-newsgroup-emphasis-alist
 		    mail-mode-hook enable-multibyte-characters
 		    adaptive-fill-first-line-regexp adaptive-fill-regexp
 		    url-current-mime-headers buffer-file-coding-system
 		    w3-image-mappings url-current-mime-type
+		    w3-meta-content-type-charset-regexp
+		    w3-meta-charset-content-type-regexp
 		    url-current-callback-func url-current-callback-data
-		    url-be-asynchronous temporary-file-directory)))
+		    url-be-asynchronous temporary-file-directory
+		    babel-translations babel-history)))
   (maybe-bind '(mail-mode-hook
 		enable-multibyte-characters browse-url-browser-function
 		adaptive-fill-first-line-regexp adaptive-fill-regexp
-		url-current-mime-headers help-echo-owns-message))
+		url-current-mime-headers help-echo-owns-message
+		babel-translations babel-history))
   (maybe-fbind '(color-instance-rgb-components temp-directory
 		 glyph-width annotation-glyph window-pixel-width glyph-height
 		 window-pixel-height
@@ -78,9 +83,10 @@
 		 annotationp delete-annotation make-image-specifier
 		 make-annotation
 		 w3-do-setup w3-region
+		 w3-coding-system-for-mime-charset 
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
 		 url-generic-parse-url valid-image-instantiator-format-p
-		 )))
+		 babel-fetch babel-wash)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

@@ -631,15 +631,15 @@ used as score."
     (setq extra
 	  (and gnus-extra-headers
 	       (equal (nth 1 entry) "extra")
-	       (intern					; need symbol
+	       (intern			; need symbol
 		(gnus-completing-read
 		 (symbol-name (car gnus-extra-headers))	; default response
-		 "Score extra header:"			; prompt
-		 (mapcar (lambda (x)			; completion list
+		 "Score extra header:"	; prompt
+		 (mapcar (lambda (x)	; completion list
 			   (cons (symbol-name x) x))
 			 gnus-extra-headers)
-		 nil					; no completion limit
-		 t))))					; require match
+		 nil			; no completion limit
+		 t))))			; require match
     ;; extra is now nil or a symbol.
 
     ;; We have all the data, so we enter this score.

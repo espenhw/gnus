@@ -260,7 +260,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.85"
+(defconst gnus-version-number "0.86"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -2455,12 +2455,14 @@ You should probably use `gnus-find-method-for-group' instead."
 
 (defun gnus-method-simplify (method)
   "Return the shortest uniquely identifying string or method for METHOD."
-  (cond ((gnus-native-method-p method)
-        nil)
-       ((gnus-secondary-method-p method)
-        (format "%s:%s" (nth 0 method) (nth 1 method)))
-       (t
-        method)))
+  (cond ((stringp method)
+	 method)
+	((gnus-native-method-p method)
+	 nil)
+	((gnus-secondary-method-p method)
+	 (format "%s:%s" (nth 0 method) (nth 1 method)))
+	(t
+	 method)))
 
 (defun gnus-groups-from-server (server)
   "Return a list of all groups that are fetched from SERVER."

@@ -168,7 +168,18 @@ Always display this group, even when there are no unread articles
 in it..")
 
     (charset (symbol :tag "Charset") "\
-The default charset to use in the group."))
+The default charset to use in the group.")
+	     
+    (highlight-words 
+     (choice :tag "Highlight words"
+	     :value nil
+	     (repeat (list (regexp :tag "Highlight regexp")
+			   (number :tag "Group for entire word" 0)
+			   (number :tag "Group for displayed part" 0)
+			   (symbol :tag "Face" 
+				   gnus-emphasis-highlight-words))))
+  "highlight regexps.
+See gnus-emphasis-alist."))
   "Alist of valid group parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter

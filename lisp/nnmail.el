@@ -514,6 +514,7 @@ If SOURCE is a directory spec, try to return the group name component."
 
 (defun nnmail-process-babyl-mail-format (func artnum-func)
   (let ((case-fold-search t)
+	(count 0)
 	start message-id content-length do-search end)
     (while (not (eobp))
       (goto-char (point-min))
@@ -585,8 +586,10 @@ If SOURCE is a directory spec, try to return the group name component."
 	  (narrow-to-region start (point))
 	  (goto-char (point-min))
 	  (nnmail-check-duplication message-id func artnum-func)
+	  (incf count)
 	  (setq end (point-max))))
-      (goto-char end))))
+      (goto-char end))
+    count))
 
 (defsubst nnmail-search-unix-mail-delim ()
   "Put point at the beginning of the next Unix mbox message."
@@ -648,6 +651,7 @@ If SOURCE is a directory spec, try to return the group name component."
 
 (defun nnmail-process-unix-mail-format (func artnum-func)
   (let ((case-fold-search t)
+	(count 0)
 	start message-id content-length end skip head-end)
     (goto-char (point-min))
     (if (not (and (re-search-forward "^From " nil t)
@@ -726,13 +730,16 @@ If SOURCE is a directory spec, try to return the group name component."
 	  (save-restriction
 	    (narrow-to-region start (point))
 	    (goto-char (point-min))
+	    (incf count)
 	    (nnmail-check-duplication message-id func artnum-func)
 	    (setq end (point-max))))
-	(goto-char end)))))
+	(goto-char end)))
+    count))
 
 (defun nnmail-process-mmdf-mail-format (func artnum-func)
   (let ((delim "^\^A\^A\^A\^A$")
 	(case-fold-search t)
+	(count 0)
 	start message-id end)
     (goto-char (point-min))
     (if (not (and (re-search-forward delim nil t)
@@ -776,13 +783,15 @@ If SOURCE is a directory spec, try to return the group name component."
 	  (save-restriction
 	    (narrow-to-region start (point))
 	    (goto-char (point-min))
+	    (incf count)
 	    (nnmail-check-duplication message-id func artnum-func)
 	    (setq end (point-max))))
 	(goto-char end)
-	(forward-line 2)))))
+	(forward-line 2)))
+    count))
 
 (defun nnmail-process-maildir-mail-format (func artnum-func)
-; In a maildir, every file contains exactly one mail
+  ;; In a maildir, every file contains exactly one mail.
   (let ((case-fold-search t)
 	message-id)
     (goto-char (point-min))
@@ -803,7 +812,7 @@ If SOURCE is a directory spec, try to return the group name component."
 	(setq message-id (match-string 1))
       ;; There is no Message-ID here, so we create one.
       (save-excursion
-	    (when (re-search-backward "^Message-ID[ \t]*:" nil t)
+	(when (re-search-backward "^Message-ID[ \t]*:" nil t)
 	  (beginning-of-line)
 	  (insert "Original-")))
       (forward-line 1)
@@ -812,8 +821,9 @@ If SOURCE is a directory spec, try to return the group name component."
     ;; Allow the backend to save the article.
     (widen)
     (save-excursion
-	(goto-char (point-min))
-	(nnmail-check-duplication message-id func artnum-func))))
+      (goto-char (point-min))
+      (nnmail-check-duplication message-id func artnum-func))
+    1))
 
 (defun nnmail-split-incoming (incoming func &optional exit-func
 				       group artnum-func)
@@ -831,24 +841,26 @@ FUNC will be called with the buffer narrowed to each mail."
       (erase-buffer)
       (let ((nnheader-file-coding-system nnmail-incoming-coding-system))
 	(nnheader-insert-file-contents incoming))
-      (unless (zerop (buffer-size))
-	(goto-char (point-min))
-	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
-	;; Handle both babyl, MMDF and unix mail formats, since movemail will
-	;; use the former when fetching from a mailbox, the latter when
-	;; fetching from a file.
-	(cond ((or (looking-at "\^L")
-		   (looking-at "BABYL OPTIONS:"))
-	       (nnmail-process-babyl-mail-format func artnum-func))
-	      ((looking-at "\^A\^A\^A\^A")
-	       (nnmail-process-mmdf-mail-format func artnum-func))
-	      ((looking-at "Return-Path:")
-	       (nnmail-process-maildir-mail-format func artnum-func))
-	      (t
-	       (nnmail-process-unix-mail-format func artnum-func))))
-      (when exit-func
-	(funcall exit-func))
-      (kill-buffer (current-buffer)))))
+      (prog1
+	  (if (zerop (buffer-size))
+	      0
+	    (goto-char (point-min))
+	    (save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
+	    ;; Handle both babyl, MMDF and unix mail formats, since
+	    ;; movemail will use the former when fetching from a
+	    ;; mailbox, the latter when fetching from a file.
+	    (cond ((or (looking-at "\^L")
+		       (looking-at "BABYL OPTIONS:"))
+		   (nnmail-process-babyl-mail-format func artnum-func))
+		  ((looking-at "\^A\^A\^A\^A")
+		   (nnmail-process-mmdf-mail-format func artnum-func))
+		  ((looking-at "Return-Path:")
+		   (nnmail-process-maildir-mail-format func artnum-func))
+		  (t
+		   (nnmail-process-unix-mail-format func artnum-func))))
+	(when exit-func
+	  (funcall exit-func))
+	(kill-buffer (current-buffer))))))
 
 (defun nnmail-article-group (func &optional trace)
   "Look at the headers and return an alist of groups that match.

@@ -25,17 +25,6 @@
 
 ;;; Commentary:
 
-;; These macros may look very much like the ones in GNUS 4.1.  They
-;; are, in a way, but you should note that the indices they use have
-;; been changed from the internal GNUS format to the NOV format.  The
-;; makes it possible to read headers from XOVER much faster.
-;;
-;; The format of a header is now:
-;; [number subject from date id references chars lines xref]
-;;
-;; (That last entry is defined as "misc" in the NOV format, but Gnus
-;; uses it for xrefs.)
-
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -66,6 +55,17 @@ on your system, you could say something like:
  (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
+
+;; These macros may look very much like the ones in GNUS 4.1.  They
+;; are, in a way, but you should note that the indices they use have
+;; been changed from the internal GNUS format to the NOV format.  The
+;; makes it possible to read headers from XOVER much faster.
+;;
+;; The format of a header is now:
+;; [number subject from date id references chars lines xref extra]
+;;
+;; (That next-to-last entry is defined as "misc" in the NOV format,
+;; but Gnus uses it for xrefs.)
 
 (defmacro mail-header-number (header)
   "Return article number in HEADER."

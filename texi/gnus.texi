@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.85 Manual
+@settitle Pterodactyl Gnus 0.86 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.85 Manual
+@title Pterodactyl Gnus 0.86 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.85.
+This manual corresponds to Pterodactyl Gnus 0.86.
 
 @end ifinfo
 
@@ -4693,6 +4693,13 @@ Limit the summary buffer to articles that match some subject
 Limit the summary buffer to articles that match some author
 (@code{gnus-summary-limit-to-author}).
 
+@item / x
+@kindex / x (Summary)
+@findex gnus-summary-limit-to-extra
+Limit the summary buffer to articles that match one of the ``extra''
+headers (@pxref{To From Newsgroups})
+(@code{gnus-summary-limit-to-author}).
+
 @item / u
 @itemx x
 @kindex / u (Summary)
@@ -6294,6 +6301,7 @@ these articles easier.
 * Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
 * Article Date::            Grumble, UT!
 * Article Signature::       What is a signature?
+* Article Miscellania::     Various other stuff.
 @end menu
 
 
@@ -6451,6 +6459,13 @@ say something like:
 @lisp
 (copy-face 'red 'gnus-emphasis-italic)
 @end lisp
+
+@vindex gnus-group-highlight-words-alist
+
+If you want to highlight arbitrary words, you can use the
+@code{gnus-group-highlight-words-alist} variable, which uses the same
+syntax as @code{gnus-emphasis-alist}.  The @code{highlight-words} group
+parameter (@pxref{Group Parameters}) can also be used.
 
 @xref{Customizing Articles}, for how to fontize articles automatically.
 
@@ -7032,11 +7047,31 @@ the regular expression @samp{^---*Forwarded article}, then it isn't a
 signature after all.
 
 
+@node Article Miscellania
+@subsection Article Miscellania
+
+@table @kbd
+@item A t
+@kindex A t (Summary)
+@findex gnus-article-babel
+Translate the article from one language to another
+(@code{gnus-article-babel}). 
+
+@end table
+
+
 @node MIME Commands
-@section MIME Commands
+@section @sc{mime} Commands
 @cindex MIME decoding
 
 @table @kbd
+@item X m
+@kindex X m (Summary)
+@findex gnus-summary-save-parts
+Save all parts matching a @sc{mime} type to a directory
+(@code{gnus-summary-save-parts}).  Understands the process/prefix
+convention (@pxref{Process/Prefix}).
+
 @item M-t
 @kindex M-t (Summary)
 @findex gnus-summary-display-buttonized
@@ -8333,6 +8368,8 @@ to look at you disdainfully, and you'll feel rather stupid.)
 
 Any similarity to real events and people is purely coincidental.  Ahem.
 
+Also see @pxref{MIME Commands}.
+
 
 @node Customizing Articles
 @section Customizing Articles
@@ -8365,7 +8402,12 @@ An integer: Do this treatment on all body parts that have a length less
 than this number.
 
 @item
-A list:
+A list of strings: Do this treatment on all body parts that are in
+articles that are read in groups that have names that match one of the
+regexps in the list.
+
+@item
+A list where the first element is not a string:
 
 The list is evaluated recursively.  The first element of the list is a
 predicate.  The following predicates are recognized: @code{or},
@@ -8424,6 +8466,10 @@ group.
 @item gnus-treat-display-xface
 @item gnus-treat-display-smileys
 @item gnus-treat-display-picons
+@item gnus-treat-capitalize-sentences
+@item gnus-treat-fill-long-lines
+@item gnus-treat-play-sounds
+@item gnus-treat-translate
 @end table
 
 @vindex gnus-part-display-hook
