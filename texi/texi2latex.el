@@ -62,6 +62,12 @@
     (latexi-translate-string "%@{" "\\gnuspercent{}\\gnusbraceleft{}")
     (latexi-translate-string "%@}" "\\gnuspercent{}\\gnusbraceright{}")
     (latexi-translate-string "%1@{" "\\gnuspercent{}1\\gnusbraceright{}")
+    (latexi-translate-string "@*" "\\newline{}")
+    (latexi-translate-string "S@{" "S\\gnusbraceleft{}")
+    (latexi-translate-string "@code{\\222}" "@code{\\gnusbackslash{}222}")
+    (latexi-translate-string "@code{\\264}" "@code{\\gnusbackslash{}264}")
+    (latexi-translate-string "@samp{\\Deleted}" "@samp{\\gnusbackslash{}Deleted}")
+    (latexi-translate-string "@samp{\\Seen}" "@samp{\\gnusbackslash{}Seen}")
 ;    (while (re-search-forward "{\"[^\"]*\\(\\\\\\)[^\"]*\"}\\\\" nil t)
 ;      (replace-match "\\verb+\\\\+ " t t))
     (while (not (zerop (decf times)))
@@ -221,7 +227,9 @@
 		(error "Unknown command (line %d): %s"
 		       (save-excursion
 			 (widen)
-			 (1+ (count-lines (point-min) (point-at-bol))))
+			 (1+ (count-lines (point-min) (progn
+							(beginning-of-line)
+							(point)))))
 		       command))))
 	  ;; These are commands with {}.
 	  (setq arg (match-string 5))
@@ -252,7 +260,9 @@
 	    (error "Unknown command (line %d): %s"
 		   (save-excursion
 		     (widen)
-		     (1+ (count-lines (point-min) (point-at-bol))))
+		     (1+ (count-lines (point-min) (progn
+						    (beginning-of-line)
+						    (point)))))
 		   command))))))
     (latexi-translate-string "$" "\\gnusdollar{}")
     (latexi-translate-string "&" "\\gnusampersand{}")

@@ -1,3 +1,10 @@
+2001-08-01  Simon Josefsson  <jas@extundo.com>
+
+	* texi2latex.el (latexi-translate-file): Don't use point-at-bol.
+	(latexi-translate-file): Translate some more things, including
+	some hardcoded things that cause problems for LaTeX.  From Jesper
+	Harder <harder@ifa.au.dk>.
+
 2001-07-31  Simon Josefsson  <jas@extundo.com>
 
 	* bembo.sty: New file.
