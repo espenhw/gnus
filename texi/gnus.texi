@@ -15379,7 +15379,7 @@ message.  This means that only likely only Gnus will understand and
 treat the @code{gnus-expire} mark properly, although other clients may
 allow to view client specific flags on a message.  It also means that
 your server must support the permanent storage of client specific
-flags on messages.  Most though, fortunately.
+flags on messages.  Most do, fortunately.
 
 @table @code
 
