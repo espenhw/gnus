@@ -74,6 +74,7 @@ buffers.
 * Interface::         Setting up message buffers.
 * Commands::          Commands you can execute in message mode buffers.
 * Variables::         Customizing the message buffers.
+* Compatibility::     Making Message backwards compatible.
 * Index::             Variable, function and concept index.
 * Key Index::         List of Message mode keys.
 @end menu
@@ -930,12 +931,11 @@ you send to mailing lists, you could do something like the following:
 
 @lisp
 (defun my-message-header-setup-hook ()
-  (when (or (message-fetch-field "newsgroups")
-	    (gnus-group-find-parameter
-             gnus-newsgroup-name 'to-address)
-	    (gnus-group-find-parameter
-             gnus-newsgroup-name 'to-list))
-    (insert "Mail-Copies-To: never\n")))
+  (let ((group (or gnus-newsgroup-name "")))
+    (when (or (message-fetch-field "newsgroups")
+              (gnus-group-find-parameter group 'to-address)
+              (gnus-group-find-parameter group 'to-list))
+      (insert "Mail-Copies-To: never\n"))))
 
 (add-hook 'message-header-setup-hook 'my-message-header-setup-hook)
 @end lisp
@@ -1067,6 +1067,24 @@ killed, postponed or exited.
 An @dfn{action} can be either: a normal function, or a list where the
 @code{car} is a function and the @code{cdr} is the list of arguments, or
 a form to be @code{eval}ed.
+
+
+@node Compatibility
+@chapter Compatibility
+@cindex compatibility
+
+Message uses virtually only its own variables---older @code{mail-}
+variables aren't consulted.  To force Message to take those variables
+into account, you can put the following in your @code{.emacs} file:
+
+@lisp
+(require 'messcompat)
+@end lisp
+
+This will initialize many Message variables from the values in the
+corresponding mail variables.
+
+
 
 @node Index
 @chapter Index

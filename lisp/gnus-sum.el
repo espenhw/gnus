@@ -3873,7 +3873,10 @@ If WHERE is `summary', the summary mode line format will be used."
 	  (setq mode-string (eval mformat))
 	  (setq max-len (max 4 (if gnus-mode-non-string-length
 				   (- (window-width)
-				      gnus-mode-non-string-length)
+				      gnus-mode-non-string-length
+				      (if (string-match "%%b" mode-string)
+					  (length (buffer-name))
+					0))
 				 (length mode-string))))
 	  ;; We might have to chop a bit of the string off...
 	  (when (> (length mode-string) max-len)
@@ -4299,9 +4302,9 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
       ;; headers using HEAD.
       (if (or (not also-fetch-heads)
 	      (not sequence))
+	  ;; We (probably) got all the headers.
 	  (nreverse headers)
-	(let ((gnus-nov-is-evil t)
-	      (nntp-nov-is-evil t))
+	(let ((gnus-nov-is-evil t))
 	  (nconc
 	   (nreverse headers)
 	   (when (gnus-retrieve-headers sequence group)
@@ -5260,6 +5263,10 @@ If BACKWARD, the previous article is selected instead of the next."
     (unless (gnus-ephemeral-group-p gnus-newsgroup-name)
       (gnus-summary-jump-to-group gnus-newsgroup-name))
     (let ((cmd last-command-char)
+	  (point
+	   (save-excursion
+	     (set-buffer gnus-group-buffer)
+	     (point)))
 	  (group
 	   (if (eq gnus-keep-same-level 'best)
 	       (gnus-summary-best-group gnus-newsgroup-name)
@@ -5288,16 +5295,16 @@ If BACKWARD, the previous article is selected instead of the next."
        (t
 	(when (gnus-key-press-event-p last-input-event)
 	  (gnus-summary-walk-group-buffer
-	   gnus-newsgroup-name cmd unread backward))))))))
+	   gnus-newsgroup-name cmd unread backward point))))))))
 
-(defun gnus-summary-walk-group-buffer (from-group cmd unread backward)
+(defun gnus-summary-walk-group-buffer (from-group cmd unread backward start)
   (let ((keystrokes '((?\C-n (gnus-group-next-unread-group 1))
 		      (?\C-p (gnus-group-prev-unread-group 1))))
 	(cursor-in-echo-area t)
 	keve key group ended)
     (save-excursion
       (set-buffer gnus-group-buffer)
-      (gnus-summary-jump-to-group from-group)
+      (goto-char start)
       (setq group
 	    (if (eq gnus-keep-same-level 'best)
 		(gnus-summary-best-group gnus-newsgroup-name)
@@ -7694,7 +7701,7 @@ with that article."
     (gnus-summary-goto-subject article)))
 
 (defun gnus-summary-reparent-thread ()
-  "Make current article child of the marked (or previous) article.
+  "Make the current article child of the marked (or previous) article.
 
 Note that the re-threading will only work if `gnus-thread-ignore-subject'
 is non-nil or the Subject: of both articles are the same."
@@ -7706,7 +7713,7 @@ is non-nil or the Subject: of both articles are the same."
   (save-window-excursion
     (let ((gnus-article-buffer " *reparent*")
 	  (current-article (gnus-summary-article-number))
-					; first grab the marked article, otherwise one line up.
+	  ;; First grab the marked article, otherwise one line up.
 	  (parent-article (if (not (null gnus-newsgroup-processable))
 			      (car gnus-newsgroup-processable)
 			    (save-excursion
@@ -7720,19 +7727,18 @@ is non-nil or the Subject: of both articles are the same."
 	(unless (and message-id (not (equal message-id "")))
 	  (error "No message-id in desired parent."))
 	(gnus-summary-select-article t t nil current-article)
-	(set-buffer gnus-article-buffer)
-	(setq buffer-read-only nil)
+	(set-buffer gnus-original-article-buffer)
 	(let ((buf (format "%s" (buffer-string))))
-	  (erase-buffer)
-	  (insert buf))
-	(goto-char (point-min))
-	(if (search-forward-regexp "^References: " nil t)
-	    (insert message-id " " )
-	  (insert "References: " message-id "\n"))
-	(unless (gnus-request-replace-article current-article
-					      (car gnus-article-current)
-					      gnus-article-buffer)
-	  (error "Couldn't replace article."))
+	  (nnheader-temp-write nil
+	    (insert buf)
+	    (goto-char (point-min))
+	    (if (search-forward-regexp "^References: " nil t)
+		(insert message-id " " )
+	      (insert "References: " message-id "\n"))
+	    (unless (gnus-request-replace-article
+		     current-article (car gnus-article-current)
+		     (current-buffer))
+	      (error "Couldn't replace article."))))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-rethread-current)

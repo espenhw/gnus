@@ -274,6 +274,7 @@
      (nnmh-request-article article group server)
      (save-excursion
        (set-buffer buf)
+       (erase-buffer)
        (insert-buffer-substring nntp-server-buffer)
        (setq result (eval accept-form))
        (kill-buffer (current-buffer))

@@ -707,12 +707,13 @@ is a spool.  If not using procmail, return GROUP."
       (goto-char (point-max))
       ;; Find the Message-ID header.
       (save-excursion
-	(if (re-search-backward "^Message-ID:[ \t]*\\(<[^>]*>\\)" nil t)
+	(if (re-search-backward
+	     "^Message-ID[ \t]*:[ \n\t]*\\(<[^>]*>\\)" nil t)
 	    (setq message-id (buffer-substring (match-beginning 1)
 					       (match-end 1)))
 	  ;; There is no Message-ID here, so we create one.
 	  (save-excursion
-	    (when (re-search-backward "^Message-ID:" nil t)
+	    (when (re-search-backward "^Message-ID[ \t]*:" nil t)
 	      (beginning-of-line)
 	      (insert "Original-")))
 	  (forward-line -1)
@@ -781,7 +782,7 @@ is a spool.  If not using procmail, return GROUP."
 		       (forward-line 1)
 		       (while (looking-at ">From ")
 			 (forward-line 1))
-		       (looking-at "[^ \t:]+[ \t]*:")))
+		       (looking-at "[^ \n\t:]+[ \n\t]*:")))
 	    (setq found 'yes)))))
     (beginning-of-line)
     (eq found 'yes)))
@@ -810,7 +811,7 @@ is a spool.  If not using procmail, return GROUP."
 		       (forward-line 1)
 		       (while (looking-at ">From ")
 			 (forward-line 1))
-		       (looking-at "[^ \t:]+[ \t]*:")))
+		       (looking-at "[^ \n\t:]+[ \n\t]*:")))
 	    (setq found 'yes)))))
     (beginning-of-line)
     (eq found 'yes)))
@@ -840,10 +841,10 @@ is a spool.  If not using procmail, return GROUP."
 	     (point))))
 	;; Find the Message-ID header.
 	(goto-char (point-min))
-	(if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
+	(if (re-search-forward "^Message-ID[ \t]*:[ \n\t]*\\(<[^>]+>\\)" nil t)
 	    (setq message-id (match-string 1))
 	  (save-excursion
-	    (when (re-search-forward "^Message-ID:" nil t)
+	    (when (re-search-forward "^Message-ID[ \t]*:" nil t)
 	      (beginning-of-line)
 	      (insert "Original-")))
 	  ;; There is no Message-ID here, so we create one.
@@ -924,11 +925,11 @@ is a spool.  If not using procmail, return GROUP."
 	     (point))))
 	;; Find the Message-ID header.
 	(goto-char (point-min))
-	(if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
+	(if (re-search-forward "^Message-ID[ \t]*:[ \n\t]*\\(<[^>]+>\\)" nil t)
 	    (setq message-id (match-string 1))
 	  ;; There is no Message-ID here, so we create one.
 	  (save-excursion
-	    (when (re-search-backward "^Message-ID:" nil t)
+	    (when (re-search-backward "^Message-ID[ \t]*:" nil t)
 	      (beginning-of-line)
 	      (insert "Original-")))
 	  (forward-line 1)
@@ -1443,7 +1444,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (let ((case-fold-search t)
 	    (newid (nnmail-message-id)))
 	(goto-char (point-min))
-	(when (re-search-forward "^message-id:" nil t)
+	(when (re-search-forward "^message-id[ \t]*:" nil t)
 	  (beginning-of-line)
 	  (insert "Original-"))
 	(beginning-of-line)
@@ -1581,7 +1582,7 @@ If ARGS, PROMPT is used as an argument to `format'."
   (save-restriction
     (message-narrow-to-head)
     (let ((case-fold-search t))
-      (unless (re-search-forward "^Message-ID:" nil t)
+      (unless (re-search-forward "^Message-ID[ \t]*:" nil t)
 	(insert "Message-ID: " (nnmail-message-id) "\n")))))
 
 (defun nnmail-write-region (start end filename &optional append visit lockname)

@@ -99,3 +99,8 @@ out:
 veryclean:
 	make clean
 	rm -f gnus.dvi gnus.ps
+
+distclean:
+	make clean
+	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9]
+	rm -f message message-[0-9] widget custom

@@ -101,17 +101,11 @@ all.  This may very well take some time.")
 	    beg article)
 	(if (stringp (car sequence))
 	    'headers
-	  (unless nnml-article-file-alist
-	    (setq nnml-article-file-alist
-		  (nnheader-article-to-file-alist nnml-current-directory)))
 	  (if (nnml-retrieve-headers-with-nov sequence fetch-old)
 	      'nov
 	    (while sequence
 	      (setq article (car sequence))
-	      (setq file 
-		    (concat nnml-current-directory 
-			    (or (cdr (assq article nnml-article-file-alist))
-				"")))
+	      (setq file (nnml-article-to-file article))
 	      (when (and (file-exists-p file)
 			 (not (file-directory-p file)))
 		(insert (format "221 %d Article retrieved.\n" article))
@@ -261,15 +255,8 @@ all.  This may very well take some time.")
 	 article rest mod-time number)
     (nnmail-activate 'nnml)
 
-    (unless nnml-article-file-alist
-      (setq nnml-article-file-alist
-	    (nnheader-article-to-file-alist nnml-current-directory)))
-
     (while (and articles is-old)
-      (when (setq article
-		  (assq (setq number (pop articles)) 
-			nnml-article-file-alist))
-	(setq article (concat nnml-current-directory (cdr article)))
+      (when (setq article (nnml-article-to-file (setq number (pop articles))))
 	(when (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (nnml-deletable-article-p group number)
 		   (setq is-old 
@@ -299,9 +286,7 @@ all.  This may very well take some time.")
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
     (nnml-possibly-change-directory group server)
-    (unless nnml-article-file-alist
-      (setq nnml-article-file-alist
-	    (nnheader-article-to-file-alist nnml-current-directory)))
+    (nnml-update-file-alist)
     (and 
      (nnml-deletable-article-p group article)
      (nnml-request-article article group server)
@@ -315,8 +300,7 @@ all.  This may very well take some time.")
        (nnml-possibly-change-directory group server)
        (condition-case ()
 	   (funcall nnmail-delete-file-function
-		    (concat nnml-current-directory 
-			    (int-to-string article)))
+		    (nnml-article-to-file  article))
 	 (file-error nil))
        (nnml-nov-delete-article group article)
        (when last
@@ -357,8 +341,9 @@ all.  This may very well take some time.")
 		(progn
 		  (nnmail-write-region 
 		   (point-min) (point-max)
-		   (concat nnml-current-directory
-			   (int-to-string article))
+		   (or (nnml-article-to-file article)
+		       (concat nnml-current-directory
+			       (int-to-string article)))
 		   nil (if (nnheader-be-verbose 5) nil 'nomesg))
 		  t)
 	      (error nil))
@@ -466,18 +451,15 @@ all.  This may very well take some time.")
 ;;; Internal functions.
 
 (defun nnml-article-to-file (article)
-  (unless nnml-article-file-alist
-    (setq nnml-article-file-alist
-	  (nnheader-article-to-file-alist nnml-current-directory)))
+  (nnml-update-file-alist)
   (let (file)
     (when (setq file (cdr (assq article nnml-article-file-alist)))
       (concat nnml-current-directory file))))
 
 (defun nnml-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
-  (let (file path)
-    (when (setq file (cdr (assq article nnml-article-file-alist)))
-      (setq path (concat nnml-current-directory file))
+  (let (path)
+    (when (setq path (nnml-article-to-file article))
       (when (file-writable-p path)
 	(or (not nnmail-keep-last-article)
 	    (not (eq (cdr (nth 1 (assoc group nnml-group-alist)))
@@ -789,6 +771,11 @@ all.  This may very well take some time.")
 			 (numberp num))
 		(setf (car active) num)))))))
     t))
+
+(defun nnml-update-file-alist ()
+  (unless nnml-article-file-alist
+    (setq nnml-article-file-alist
+	  (nnheader-article-to-file-alist nnml-current-directory))))
 
 (provide 'nnml)
 

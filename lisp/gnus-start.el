@@ -337,6 +337,11 @@ This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
+(defcustom gnus-started-hook nil
+  "A hook called as the last thing after startup."
+  :group 'gnus-start
+  :type 'hook)
+
 (defcustom gnus-get-new-news-hook nil
   "A hook run just before Gnus checks for new news."
   :group 'gnus-group-new
@@ -630,7 +635,10 @@ prompt the user for the name of an NNTP server to use."
 	     (eq major-mode 'gnus-group-mode)))
       (progn
 	(switch-to-buffer gnus-group-buffer)
-	(gnus-group-get-new-news))
+	(gnus-group-get-new-news
+	 (and (numberp arg)
+	      (> arg 0)
+	      (max (car gnus-group-list-mode) arg))))
 
     (gnus-splash)
     (gnus-clear-system)
@@ -675,7 +683,8 @@ prompt the user for the name of an NNTP server to use."
 	  (gnus-group-list-groups level)
 	  (gnus-group-first-unread-group)
 	  (gnus-configure-windows 'group)
-	  (gnus-group-set-mode-line))))))
+	  (gnus-group-set-mode-line)
+	  (run-hooks 'gnus-started-hook))))))
 
 ;;;###autoload
 (defun gnus-unload ()
@@ -1819,7 +1828,10 @@ If FORCE is non-nil, the .newsrc file is read."
       (condition-case nil
 	  (load ding-file t t t)
 	(error
-	 (gnus-error 1 "Error in %s" ding-file)))
+	 (ding)
+	 (unless (gnus-yes-or-no-p
+		  (format "Error in %s; continue? " ding-file))
+	   (error "Error in %s" ding-file))))
       (when gnus-newsrc-assoc
 	(setq gnus-newsrc-alist gnus-newsrc-assoc)))
     (gnus-make-hashtable-from-newsrc-alist)

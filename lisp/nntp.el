@@ -233,7 +233,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	(re-search-backward "^[0-9]" nil t)
 	(when (looking-at "^[23]")
 	  (while (progn
-		   (goto-char (- (point-max) 3))
+		   (goto-char (point-max))
+		   (forward-line -1)
 		   (not (looking-at "^\\.\r?\n")))
 	    (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
@@ -1086,8 +1087,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
     (nntp-wait-for-string "^\r*200")
     (beginning-of-line)
     (delete-region (point-min) (point))
-    proc)
-  )
+    proc))
 
 (defun nntp-find-group-and-number ()
   (save-excursion

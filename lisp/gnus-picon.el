@@ -44,7 +44,8 @@ also add gnus-article-display-picons to gnus-article-display-hook."
   :group 'picons)
 
 (defcustom gnus-picons-display-where 'picons
-  "Where to display the group and article icons."
+  "Where to display the group and article icons.
+Legal values are `article' and `picons'."
   :type '(choice symbol string)
   :group 'picons)
 

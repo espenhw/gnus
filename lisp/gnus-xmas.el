@@ -137,9 +137,12 @@ It is provided only to ease porting of broken FSF Emacs programs."
     (set-extent-face gnus-newsgroup-selected-overlay
 		     gnus-summary-selected-face)))
 
-(defvar gnus-xmas-force-redisplay t
+(defvar gnus-xmas-force-redisplay nil
   "If non-nil, force a redisplay before recentering the summary buffer.
 This is ugly, but it works around a bug in `window-displayed-height'.")
+
+(defun gnus-xmas-switch-horizontal-scrollbar-off ()
+  (set-specifier scrollbar-height (cons (current-buffer) 0)))
 
 (defun gnus-xmas-summary-recenter ()
   "\"Center\" point in the summary window.
@@ -475,6 +478,8 @@ call it with the value of the `gnus-data' text property."
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
+
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off)
 
   (when (and (<= emacs-major-version 19)
 	     (<= emacs-minor-version 13))

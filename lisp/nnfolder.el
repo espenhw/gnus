@@ -614,7 +614,6 @@ time saver for large mailboxes.")
 	      (push (list group (setq active (cons 1 1)))
 		    nnfolder-group-alist))
 	    (cdr active))
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)
 	(nnfolder-possibly-activate-groups group)))))
 
 

@@ -34,3 +34,7 @@ gnus-load.el:
 	echo "(provide 'gnus-load)" >> gnus-load.el
 	echo >> gnus-load.el
 	echo ";;; gnus-load.el ends here" >> gnus-load.el
+
+distclean:
+	rm -f *.orig *.rej *.elc *~
+

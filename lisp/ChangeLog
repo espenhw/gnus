@@ -1,3 +1,66 @@
+Sat Mar  1 03:51:18 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.16 is released.
+
+Sat Mar  1 00:04:09 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-set-mode-line): Possibly take into account the
+	buffer name.
+
+	* gnus-srvr.el (gnus-server-prepare): Try to make sure we only
+	insert servers once.
+
+	* gnus-sum.el (gnus-summary-walk-group-buffer): Don't move point
+	much. 
+
+	* gnus-group.el (gnus-group-update-group): Don't move point.
+
+	* gnus-xmas.el (gnus-xmas-force-redisplay): Changed default to
+	nil. 
+	(gnus-xmas-switch-horizontal-scrollbar-off): New function.
+	(gnus-xmas-redefine): Use it.
+
+	* nnfolder.el (nnfolder-active-number): Don't save active here.
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Use the original
+	article. 
+
+Fri Feb 28 01:01:33 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-1): Pass ARG on to listing.
+	(gnus-started-hook): New.
+	(gnus-1): Use it.
+
+	* gnus-group.el (gnus-group-get-new-news): List using ARG if ARG
+	is higher than current listing.
+
+Tue Feb 25 23:28:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-retrieve-headers): Go to the next-to-last line.
+
+Fri Feb 21 00:28:37 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-rename-group): Rename to right name.
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Allow continuation
+	Message-IDs.
+	(nnmail-process-unix-mail-format): Ditto.
+	(nnmail-process-mmdf-mail-format): Ditto.
+
+	* nnml.el (nnml-update-file-alist): New function.
+	(nnml-retrieve-headers): Use it.
+	(nnml-request-move-article): Delete zipped files.
+	(nnml-request-replace-article): Write to gzipped, if wanted.
+
+Thu Feb 20 18:36:22 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-display-where): Doc fix.
+
+	* gnus-start.el (gnus-read-newsrc-el-file): Offer to break.
+
+	* nnmail.el (nnmail-search-unix-mail-delim): Exclude newlines from
+	matches.
+
 Thu Feb 20 04:16:50 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.15 is released.
