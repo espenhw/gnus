@@ -2085,16 +2085,18 @@ Prefix arg means justify as well."
 (defun message-insert-importance-high ()
   "Insert header to mark message as important."
   (interactive)
-  (message-remove-header "Importance")
-  (message-goto-eoh)
-  (insert "Importance: high\n"))
+  (save-excursion
+    (message-remove-header "Importance")
+    (message-goto-eoh)
+    (insert "Importance: high\n")))
 
 (defun message-insert-importance-low ()
   "Insert header to mark message as unimportant."
   (interactive)
-  (message-remove-header "Importance")
-  (message-goto-eoh)
-  (insert "Importance: low\n"))
+  (save-excursion
+    (message-remove-header "Importance")
+    (message-goto-eoh)
+    (insert "Importance: low\n")))
 
 (defun message-insert-or-toggle-importance ()
   "Insert a \"Importance: high\" header, or cycle through the header values.

@@ -1,5 +1,8 @@
 2001-11-16  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-insert-importance-high) 
+	(message-insert-importance-low): Save point.
+
 	* mail-source.el (mail-source-fetch-imap): Fix BODY.PEEK return
 	value.
 
