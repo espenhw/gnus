@@ -6080,9 +6080,9 @@ Optional DIGEST will use digest to forward."
   (if message-forward-before-signature
       (message-goto-body)
     (goto-char (point-max)))
-  (if message-forward-as-mime
-      (if digest
-	  (message-forward-make-body-digest forward-buffer)
+  (if digest
+      (message-forward-make-body-digest forward-buffer)
+    (if message-forward-as-mime
 	(if (and message-forward-show-mml
 		 (not (and (eq message-forward-show-mml 'best)
 			   (with-current-buffer forward-buffer
