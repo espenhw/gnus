@@ -3909,6 +3909,9 @@ If NEWSGROUP is nil, return the global kill file name instead."
       (setq valids (cdr valids)))
     outs))
 
+(eval-when-compile
+  (autoload 'message-y-or-n-p "message" nil nil 'macro))
+
 (defun gnus-read-group (prompt &optional default)
   "Prompt the user for a group name.
 Disallow invalid group names."
