@@ -2651,6 +2651,8 @@ display only a single character."
 	(make-local-variable 'gnus-article-current)
 	(make-local-variable 'gnus-original-article-buffer))
       (setq gnus-newsgroup-name group)
+      ;; Set any local variables in the group parameters.
+      (gnus-summary-set-local-parameters gnus-newsgroup-name)
       t)))
 
 (defun gnus-set-global-variables ()
@@ -3026,8 +3028,6 @@ If NO-DISPLAY, don't generate a summary buffer."
 	     (gnus-active gnus-newsgroup-name)))
       ;; You can change the summary buffer in some way with this hook.
       (gnus-run-hooks 'gnus-select-group-hook)
-      ;; Set any local variables in the group parameters.
-      (gnus-summary-set-local-parameters gnus-newsgroup-name)
       (gnus-update-format-specifications
        nil 'summary 'summary-mode 'summary-dummy)
       (gnus-update-summary-mark-positions)
