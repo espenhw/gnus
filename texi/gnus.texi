@@ -21063,7 +21063,7 @@ because of the incident.
 
 The statistical approach to spam filtering is also popular.  It is
 based on a statistical analysis of previous spam messages.  Usually
-the analysis is a simple word frequency count, with perhaps pairs or
+the analysis is a simple word frequency count, with perhaps pairs of
 words or 3-word combinations thrown into the mix.  Statistical
 analysis of spam works very well in most of the cases, but it can
 classify legitimate e-mail as spam in some cases.  It takes time to
@@ -21339,7 +21339,7 @@ your spam in one or more spam groups, and set the variable
 @code{spam-junk-mailgroups} as appropriate.  In these groups, all messages
 are considered to be spam by default: they get the @samp{H} mark.  You must
 review these messages from time to time and remove the @samp{H} mark for
-every message that is not spam after all.  When you leave a a spam
+every message that is not spam after all.  When you leave a spam
 group, all messages that continue with the @samp{H} mark, are passed on to
 the spam-detection engine (bogofilter, ifile, and others).  To remove
 the @samp{H} mark, you can use @kbd{M-u} to "unread" the article, or @kbd{d} for
@@ -21349,7 +21349,7 @@ marked articles, saved or unsaved, are sent to Bogofilter or ifile
 them as spam samples.
 
 Messages may also be deleted in various other ways, and unless
-@code{`spam-ham-marks-form} gets overridden below, marks @samp{R} and @samp{r} for
+@code{spam-ham-marks-form} gets overridden below, marks @samp{R} and @samp{r} for
 default read or explicit delete, marks @samp{X} and @samp{K} for automatic or
 explicit kills, as well as mark @samp{Y} for low scores, are all considered
 to be associated with articles which are not spam.  This assumption
@@ -21375,7 +21375,7 @@ that functionality should go in @code{ifile-gnus.el} rather than @code{spam.el}.
 
 To use the @code{spam.el} facilities for incoming mail filtering, you
 must add the following to your fancy split list
-(@code{nnmail-split-fancy} or @code{nnimap-split-fancy}:
+@code{nnmail-split-fancy} or @code{nnimap-split-fancy}:
 
 @example
 (: spam-split)
@@ -21518,9 +21518,11 @@ yet, but you can use @code{ifile-gnus.el} on its own if you like.
 Say you want to add a new backend called blackbox.  Provide the following:
 
 @enumerate
-@item documentation
+@item
+documentation
 
-@item code
+@item
+code
 
 @example
 (defvar spam-use-blackbox nil
@@ -21533,7 +21535,9 @@ Add
 @end example
 to @code{spam-list-of-checks}.
 
-@item functionality
+@item
+functionality
+
 Write the @code{spam-check-blackbox} function.  It should return
 @samp{nil} or @code{spam-split-group}.  See the existing
 @code{spam-check-*} functions for examples of what you can do.
