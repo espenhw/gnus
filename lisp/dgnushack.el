@@ -266,6 +266,20 @@ Modify to suit your needs."))
 
 (defun dgnushack-make-auto-load ()
   (require 'autoload)
+  (unless (make-autoload '(define-derived-mode child parent name
+			    "docstring" body)
+			 "file")
+    (defadvice make-autoload (around handle-define-derived-mode activate)
+      "Handle `define-derived-mode'."
+      (if (eq (car-safe (ad-get-arg 0)) 'define-derived-mode)
+	  (setq ad-return-value
+		(list 'autoload
+		      (list 'quote (nth 1 (ad-get-arg 0)))
+		      (ad-get-arg 1)
+		      (nth 4 (ad-get-arg 0))
+		      t nil))
+	ad-do-it))
+    (put 'define-derived-mode 'doc-string-elt 3))
   (let ((generated-autoload-file dgnushack-gnus-load-file)
 	(make-backup-files nil)
 	(autoload-package-name "gnus"))

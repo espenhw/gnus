@@ -1,3 +1,8 @@
+2001-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (dgnushack-make-auto-load): Advise `make-autoload'
+	to handle `define-derived-mode'.
+	
 2001-07-16 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From:  Stefan Monnier  <monnier@cs.yale.edu>
 
