@@ -14519,7 +14519,7 @@ This variable can also have a function as its value, the function will
 be called with the headers narrowed and should return a group where it
 thinks the article should be split to.  See @code{nnimap-split-fancy}.
 
-The splitting code tries to create mailboxes if it need too.
+The splitting code tries to create mailboxes if it needs to.
 
 To allow for different split rules on different virtual servers, and
 even different split rules in different inboxes on the same server,

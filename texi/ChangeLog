@@ -1,3 +1,8 @@
+2001-12-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Splitting in IMAP): Typo.  From Colin Marquardt
+	<c.marquardt@alcatel.de>.
+
 2001-12-03 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* infohack.el (infohack): To process write-protected files safely,
