@@ -332,6 +332,11 @@ sent to just the list, and not the poster as well.  This will happen
 if the poster is already subscribed to the list.
 
 @item
+A mailing list poster can use MFT to express that responses should be
+sent to the list and the poster as well.  This will happen if the poster
+is not subscribed to the list.
+
+@item
 If a message is posted to several mailing lists, MFT may also be used
 to direct the following discussion to one list only, because
 discussions that are spread over several lists tend to be fragmented
@@ -404,21 +409,26 @@ set this variable to the name of the file and life would be good.
 You can use one or more of the above variables.  All their values are
 ``added'' in some way that works :-)
 
-Now you are all set.  Just start composing a message as you normally
-do.  And just send it; as always.  Just before the message is sent
-out, Gnus' MFT generation thingy kicks in and checks if the message
-already has a MFT header.  If there is one, the header is left alone.
-If not then the list of recipient addresses (in the To: and Cc:
-headers) is checked to see if one of them is a list address you are
-subscribed to.  If none of them is a list address, then no MFT is
-generated; otherwise, a MFT is added to the other headers and set to
-the value of all addresses in To: and Cc:
+Now you are all set.  Just start composing a message as you normally do.
+And just send it; as always.  Just before the message is sent out, Gnus'
+MFT generation thingy kicks in and checks if the message already has a
+MFT field.  If there is one, it is left alone.  (Except if it's empty -
+in that case, the field is removed and is not replaced with an
+automatically generated one.  This lets you disable MFT generation on a
+per-message basis.)  If there is none, then the list of recipient
+addresses (in the To: and Cc: headers) is checked to see if one of them
+is a list address you are subscribed to.  If none of them is a list
+address, then no MFT is generated; otherwise, a MFT is added to the
+other headers and set to the value of all addresses in To: and Cc:
 
 Hm. ``So'', you ask, ``what if I send an email to a list I am not
-subscribed to?''  Well, the kind folks at Gnus Towers are working on a
-database of all known mailing list addresses that can be used for this
-purpose.  Till then, you could, like, insert a MFT header manually,
-with the help of @kbd{C-c C-f C-m} !!
+subscribed to?  I want my MFT to say that I want an extra copy.''  (This
+is supposed to be interpreted by others the same way as if there were no
+MFT, but you can use an explicit MFT to override someone else's
+to-address group parameter.)  Well, the kind folks at Gnus Towers are
+working on a database of all known mailing list addresses that can be
+used for this purpose.  Till then, you could, like, insert a MFT header
+manually, with the help of @kbd{C-c C-f C-m} !!
 
 @c @node Honoring an MFT post
 @subsection Honoring an MFT post
@@ -429,15 +439,15 @@ header, Gnus' action will depend on the value of the variable
 @code{message-use-mail-followup-to}.  This variable can be one of:
 
 @table @code
-@item t
+@item use
  Always honor MFTs.  The To: and Cc: headers in your followup will be
- derived from the MFT header of the original post.
+ derived from the MFT header of the original post.  This is the default.
 
 @item nil
  Always dishonor MFTs (just ignore the darned thing)
 
 @item ask
-Gnus will prompt you for an action.  This is the default.
+Gnus will prompt you for an action.
 
 @end table
 

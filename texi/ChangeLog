@@ -1,3 +1,10 @@
+2002-03-01  Paul Jarc  <prj@po.cwru.edu>
+
+	* message.texi (Mailing Lists): 'use is the default for
+	message-use-mail-followup-to, not nil; 'use is also not t.
+	Mention why an unsubscribed list poster might use MFT, and how to
+	disable MFT for a single message.
+
 2002-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Splitting Mail): Addition.
@@ -13,9 +20,9 @@
 
 2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus.texi (Slave Gnusae): Addition. 
-	From  David S. Goldberg <david.goldberg6@verizon.net> 
-	
+	* gnus.texi (Slave Gnusae): Addition.
+	From  David S. Goldberg <david.goldberg6@verizon.net>
+
 2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* emacs-mime.texi (mailcap): Addition.
