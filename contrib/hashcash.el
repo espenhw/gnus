@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; $Revision: 1.8 $
+;; $Revision: 1.9 $
 ;; Copyright (C) 1997--2002 Paul E. Foley
 ;; Copyright (C) 2003 Free Software Foundation
 
@@ -126,22 +126,20 @@ is used instead.")
   ;;
   ;; Version 1.0 looked like nnnnnrrrrrxxxxxxxxxxxxxxxx
   ;;   This is no longer supported.
-  (if token
-      (cond ((equal (aref token 1) ?:) 1.2)
-	    ((equal (aref token 6) ?:) 1.1)
-	    (t (error "Unknown hashcash format version")))
-    nil))
+  (cond ((equal (aref token 1) ?:) 1.2)
+	((equal (aref token 6) ?:) 1.1)
+	(t (error "Unknown hashcash format version"))))
 
 ;;;###autoload
 (defun hashcash-insert-payment (arg)
   "Insert X-Payment and X-Hashcash headers with a payment for ARG"
   (interactive "sPay to: ")
-  (let* ((pay (hashcash-generate-payment (hashcash-payment-to arg)
-					 (hashcash-payment-required arg)))
-	 (version (hashcash-version pay)))
+  (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
+					(hashcash-payment-required arg))))
     (when pay
       (insert-before-markers "X-Payment: hashcash "
-			     (number-to-string version) " " pay "\n")
+			     (number-to-string (hashcash-version pay)) " "
+			     pay "\n")
       (insert-before-markers "X-Hashcash: " pay "\n"))))
 
 ;;;###autoload
