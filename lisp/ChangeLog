@@ -1,3 +1,8 @@
+2001-09-02  Benjamin Rutt  <brutt@bloomington.in.us>
+
+	* nnmbox.el (nnmbox-find-article): Fix infinite loop when
+	searching for an article that isn't in the mbox.
+
 2001-09-02 23:12:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Get references

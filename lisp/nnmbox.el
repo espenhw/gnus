@@ -510,9 +510,9 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 	       (nnmbox-in-header-p (point)))
 	  (progn
 	    (goto-char (point-min))
-	    (while (not found)
-	      (setq found (and (search-forward art-string nil t)
-			       (nnmbox-in-header-p (point)))))
+	    (while (and (not found)
+			(search-forward art-string nil t))
+	      (setq found (nnmbox-in-header-p (point))))
 	    found)))))
 
 (defun nnmbox-record-active-article (group-art)
