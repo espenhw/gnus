@@ -21166,6 +21166,10 @@ it, copy the Emacs window to a file (with @code{xwd}, for instance), put
 it somewhere it can be reached, and include the URL of the picture in
 the bug report.
 
+@cindex patches
+If you would like to contribute a patch to fix bugs or make
+improvements, please produce the patch using @samp{diff -u}.
+
 If you just need help, you are better off asking on
 @samp{gnu.emacs.gnus}.  I'm not very helpful.
 
