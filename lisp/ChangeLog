@@ -1,5 +1,14 @@
 2003-04-06  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-uu.el (mm-uu-pgp-signed-extract-1): Set
+	buffer-file-coding-system.
+
+	* mm-bodies.el (mm-decode-body): Set buffer-file-coding-system to
+	last-coding-system-used.
+
+	* mml2015.el (mml2015-pgg-clear-verify): Encode the text
+	according to buffer-file-coding-system.
+
 	* pgg-gpg.el (pgg-gpg-process-region): Revert previous change.
 
 	* pgg-pgp.el (pgg-pgp-process-region, pgg-pgp-verify-region)

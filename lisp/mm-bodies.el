@@ -1,6 +1,6 @@
 ;;; mm-bodies.el --- Functions for decoding MIME things
 
-;; Copyright (C) 1998, 1999, 2000, 2001
+;; Copyright (C) 1998, 1999, 2000, 2001, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -276,7 +276,8 @@ use the supplied charset unconditionally."
 	      (mm-decode-coding-region (point-min) (point-max)
 					      coding-system)
 	    (mm-decode-coding-region-safely (point-min) (point-max)
-					    coding-system)))))))
+					    coding-system))))
+      (setq buffer-file-coding-system last-coding-system-used))))
 
 (defun mm-decode-coding-region-safely (start end coding-system)
   "Decode region between START and END with CODING-SYSTEM.

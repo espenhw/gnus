@@ -1,5 +1,5 @@
 ;;; mm-uu.el --- Return uu stuff as mm handles
-;; Copyright (c) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: postscript uudecode binhex shar forward gnatsweb pgp
@@ -316,8 +316,10 @@ Return that buffer."
   (defvar gnus-newsgroup-charset))
 
 (defun mm-uu-pgp-signed-extract-1 (handles ctl)
-  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
+  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max)))
+	(coding-system buffer-file-coding-system))
     (with-current-buffer buf
+      (setq buffer-file-coding-system coding-system)
       (if (mm-uu-pgp-signed-test)
 	  (progn
 	    (mml2015-clean-buffer)

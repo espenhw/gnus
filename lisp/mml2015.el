@@ -1,5 +1,5 @@
 ;;; mml2015.el --- MIME Security with Pretty Good Privacy (PGP)
-;; Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: PGP MIME MML
@@ -773,11 +773,12 @@
 
 (defun mml2015-pgg-clear-verify ()
   (let ((pgg-errors-buffer mml2015-result-buffer)
-	(text (current-buffer)))
+	(text (buffer-string))
+	(coding-system buffer-file-coding-system))
     (if (condition-case err
 	    (prog1
 		(mm-with-unibyte-buffer
-		  (insert-buffer text)
+		  (insert (encode-coding-string text coding-system))
 		  (pgg-verify-region (point-min) (point-max) nil t))
 	      (goto-char (point-min))
 	      (while (search-forward "\r\n" nil t)
