@@ -1243,7 +1243,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.76"
+(defconst gnus-version "(ding) Gnus v0.77"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
