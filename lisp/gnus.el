@@ -3715,11 +3715,21 @@ Disallow invalid group names."
 				      (cons (or default "") 0)
 				      'gnus-group-history)))
 	(let ((match (match-string 0 group)))
-	  (unless (y-or-n-p
-		   (format
-		    "Name \"%s\" contain forbidden \"%s\" (see "
-		    "gnus-invalid-group-regexp).  Proceed? "
-		    group match))
+	  ;; `/' may be okay (e.g. for nnimap), so ask the user:
+	  (unless (and (string-match "/" match)
+		       (message-y-or-n-p
+			"Proceed and create group anyway? " t
+"The group name \"" group "\" contains a forbidden character: \"" match "\".
+
+Usually, it's dangerous to create a group with this name, because it's not
+supported by all back ends and servers.  On some IMAP servers, it's valid to
+use the character \"/\".
+
+If you are really sure, you can proceed anyway and create the group.
+
+You may customize the variable `gnus-invalid-group-regexp', which currently is
+set to \"" gnus-invalid-group-regexp
+"\", if you want to get rid of this query."))
 	    (setq prefix (format "Invalid group name: \"%s\".  " group)
 		  group nil)))))
     group))

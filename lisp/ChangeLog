@@ -1,5 +1,8 @@
 2003-08-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.el (gnus-read-group): Offer to continue only if the invalid
+	char is `/' and add more information for the user.
+
 	* gnus-art.el (gnus-button-alist): Add `+' (gnus-button-handle-man).
 	(gnus-header-button-alist): Added `In-Reply-To'.
 
