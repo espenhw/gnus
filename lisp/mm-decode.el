@@ -77,13 +77,18 @@ Return WORD if not."
        (error word))
      word)))
 
+(eval-and-compile
+  (if (fboundp 'decode-coding-string)
+      (fset 'mm-decode-coding-string 'decode-coding-string)
+    (fset 'mm-decode-coding-string (lambda (s a) s))))
+
 (defun mm-decode-text (charset encoding string)
   "Decode STRING as an encoded text.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
   (let ((cs (mm-charset-to-coding-system charset)))
     (when cs
-      (decode-coding-string
+      (mm-decode-coding-string
        (cond
 	((equal "B" encoding)
 	 (base64-decode string))

@@ -229,8 +229,8 @@
 				(expand-file-name nnmh-toplev))))
 	       dir)
 	      (nnheader-replace-chars-in-string
-	       (decode-coding-string (substring dir (match-end 0))
-				     nnmail-pathname-coding-system)
+	       (nnheader-decode-coding-string (substring dir (match-end 0))
+					      nnmail-pathname-coding-system)
 	       ?/ ?.))
 	    (apply 'max files)
 	    (apply 'min files)))))))

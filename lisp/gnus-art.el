@@ -1935,7 +1935,8 @@ commands:
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
   (set-syntax-table gnus-article-mode-syntax-table)
-  (set-buffer-multibyte t)
+  (when (fboundp 'set-buffer-multibyte)
+    (set-buffer-multibyte t))
   (gnus-run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()

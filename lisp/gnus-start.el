@@ -2530,8 +2530,8 @@ If FORCE is non-nil, the .newsrc file is read."
 			  enable-multibyte-characters
 			  (fboundp 'gnus-mule-get-coding-system)
 			  (gnus-mule-get-coding-system (symbol-name group)))))
-		(if coding
-		    (setq str (decode-coding-string str (car coding))))
+		(when coding
+		  (setq str (nnheader-decode-coding-string str (car coding))))
 		(set group str)))
 	    (forward-line 1))))
       (gnus-message 5 "Reading descriptions file...done")

@@ -654,7 +654,7 @@ without formatting."
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
        (concat dir
-	       (encode-coding-string
+	       (nnheader-encode-coding-string
 		(nnheader-replace-chars-in-string group ?. ?/)
 		nnheader-pathname-coding-system)
 	       "/")))
@@ -809,6 +809,14 @@ find-file-hooks, etc.
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)
 (fset 'nnheader-cancel-function-timers 'cancel-function-timers)
+
+(if (fboundp 'encode-coding-string)
+    (fset 'nnheader-encode-coding-string 'encode-coding-string)
+  (fset 'nnheader-encode-coding-string (lambda (s a) s)))
+
+(if (fboundp 'decode-coding-string)
+    (fset 'nnheader-decode-coding-string 'decode-coding-string)
+  (fset 'nnheader-decode-coding-string (lambda (s a) s)))
 
 (when (string-match "XEmacs\\|Lucid" emacs-version)
   (require 'nnheaderxm))

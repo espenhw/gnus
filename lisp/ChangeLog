@@ -1,3 +1,14 @@
+Sun Aug 30 00:59:15 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.6 is released.
+
+1998-08-30 00:36:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el (fboundp): Protect code-coding-string.
+
+	* gnus-art.el (gnus-article-mode): Check that set-buffer-multibyte 
+	is available.
+
 Sat Aug 29 23:24:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.5 is released.

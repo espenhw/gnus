@@ -513,7 +513,7 @@ parameter.  It should return nil, `warn' or `delete'."
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
        (concat dir
-	       (encode-coding-string
+	       (nnheader-encode-coding-string
 		(nnheader-replace-chars-in-string group ?. ?/)
 		nnmail-pathname-coding-system)
 	       "/")))
@@ -1201,8 +1201,9 @@ Return the number of characters in the body."
       (insert (format "Xref: %s" (system-name)))
       (while group-alist
 	(insert (format " %s:%d"
-			(encode-coding-string (caar group-alist)
-					      nnmail-pathname-coding-system)
+			(nnheader-encode-coding-string
+			 (caar group-alist)
+			 nnmail-pathname-coding-system)
 			(cdar group-alist)))
 	(setq group-alist (cdr group-alist)))
       (insert "\n"))))
