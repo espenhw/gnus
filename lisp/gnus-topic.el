@@ -222,7 +222,7 @@ If TOPIC, start with that topic."
 	     (> unread 0))
 	   (and gnus-list-groups-with-ticked-articles
 		(cdr (assq 'tick (gnus-info-marks info))))
-					; Has right readedness.
+	   ;; Has right readedness.
 	   ;; Check for permanent visibility.
 	   (and gnus-permanently-visible-groups
 		(string-match gnus-permanently-visible-groups group))
@@ -999,7 +999,7 @@ articles in the topic and its subtopics."
 	  (if (null arg) (not gnus-topic-mode)
 	    (> (prefix-numeric-value arg) 0)))
     ;; Infest Gnus with topics.
-     (if (not gnus-topic-mode)
+    (if (not gnus-topic-mode)
  	(setq gnus-goto-missing-group-function nil)
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
@@ -1066,9 +1066,9 @@ If performed over a topic line, toggle folding the topic."
     (save-excursion
       (gnus-message 5 "Expiring groups in %s..." topic)
       (let ((gnus-group-marked
-            (mapcar (lambda (entry) (car (nth 2 entry)))
-                    (gnus-topic-find-groups topic gnus-level-killed t))))
-       (gnus-group-expire-articles nil))
+	     (mapcar (lambda (entry) (car (nth 2 entry)))
+		     (gnus-topic-find-groups topic gnus-level-killed t))))
+	(gnus-group-expire-articles nil))
       (gnus-message 5 "Expiring groups in %s...done" topic))))
 
 (defun gnus-topic-read-group (&optional all no-article group)
@@ -1521,7 +1521,7 @@ If REVERSE, reverse the sorting order."
       (error "Can't find topic `%s'" current))
     (unless to-top
       (error "Can't find topic `%s'" to))
-    (if (gnus-topic-find-topology to current-top 0) ;; Don't care the level
+    (if (gnus-topic-find-topology to current-top 0);; Don't care the level
 	(error "Can't move `%s' to its sub-level" current))
     (gnus-topic-find-topology current nil nil 'delete)
     (while (cdr to-top)

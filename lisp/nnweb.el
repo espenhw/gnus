@@ -206,9 +206,7 @@ and `altavista'.")
     t))
 
 (deffoo nnweb-request-update-info (group info &optional server)
-  (nnweb-possibly-change-server group server)
-  ;;(setcar (cddr info) nil)
-  )
+  (nnweb-possibly-change-server group server))
 
 (deffoo nnweb-asynchronous-p ()
   t)
@@ -486,7 +484,6 @@ and `altavista'.")
 	  (goto-char (point-min))
 	  (search-forward "</pre><hr>" nil t)
 	  (delete-region (point-min) (point))
-					;(nnweb-decode-entities)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^ +[0-9]+\\." nil t)
 	    (narrow-to-region

@@ -160,82 +160,82 @@ Read `mail-source-bind' for details."
 (deffoo nnwarchive-retrieve-headers (articles &optional group server fetch-old)
   (nnwarchive-possibly-change-server group server)
   (nnwarchive-bind 
-    (setq nnwarchive-headers (cdr (assoc group nnwarchive-headers-cache)))
-    (save-excursion
-      (set-buffer nnwarchive-buffer)
-      (erase-buffer)
-      (let (point start starts)
-	(setq starts (nnwarchive-paged (sort articles '<)))
-	(while (setq start (pop starts))
-	  (goto-char (point-max))
-	  (nnwarchive-url nnwarchive-xover-url))
-	(if nnwarchive-xover-dissect
-	    (funcall nnwarchive-xover-dissect))))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (let (header)
-	(dolist (art articles)
-	  (if (setq header (assq art nnwarchive-headers))
-	      (nnheader-insert-nov (cdr header))))))
-    (let ((elem (assoc group nnwarchive-headers-cache)))
-      (if elem
-	  (setcdr elem nnwarchive-headers)
-	(push (cons group nnwarchive-headers) nnwarchive-headers-cache)))
-    'nov))
+   (setq nnwarchive-headers (cdr (assoc group nnwarchive-headers-cache)))
+   (save-excursion
+     (set-buffer nnwarchive-buffer)
+     (erase-buffer)
+     (let (point start starts)
+       (setq starts (nnwarchive-paged (sort articles '<)))
+       (while (setq start (pop starts))
+	 (goto-char (point-max))
+	 (nnwarchive-url nnwarchive-xover-url))
+       (if nnwarchive-xover-dissect
+	   (funcall nnwarchive-xover-dissect))))
+   (save-excursion
+     (set-buffer nntp-server-buffer)
+     (erase-buffer)
+     (let (header)
+       (dolist (art articles)
+	 (if (setq header (assq art nnwarchive-headers))
+	     (nnheader-insert-nov (cdr header))))))
+   (let ((elem (assoc group nnwarchive-headers-cache)))
+     (if elem
+	 (setcdr elem nnwarchive-headers)
+       (push (cons group nnwarchive-headers) nnwarchive-headers-cache)))
+   'nov))
 
 (deffoo nnwarchive-retrieve-groups (groups &optional server)
   "Retrieve group info on GROUPS."
   (nnwarchive-possibly-change-server nil server)
   (nnwarchive-bind 
-    (if nnwarchive-list-groups
-	(funcall nnwarchive-list-groups groups))
-    (nnwarchive-write-groups)
-    (nnwarchive-generate-active)
-    'active))
+   (if nnwarchive-list-groups
+       (funcall nnwarchive-list-groups groups))
+   (nnwarchive-write-groups)
+   (nnwarchive-generate-active)
+   'active))
 
 (deffoo nnwarchive-request-group (group &optional server dont-check)
   (nnwarchive-possibly-change-server nil server)
   (nnwarchive-bind 
-    (if nnwarchive-list-groups
-	(funcall nnwarchive-list-groups (list group)))
-    (nnwarchive-write-groups)
-    (let ((elem (assoc group nnwarchive-groups)))
-      (cond
-       ((not elem)
-	(nnheader-report 'nnwarchive "Group does not exist"))
-       (t
-	(nnheader-report 'nnwarchive "Opened group %s" group)
-	(nnheader-insert
-	 "211 %d %d %d %s\n" (or (cadr elem) 0) 1 (or (cadr elem) 0)
-	 (prin1-to-string group))
-	t)))))
+   (if nnwarchive-list-groups
+       (funcall nnwarchive-list-groups (list group)))
+   (nnwarchive-write-groups)
+   (let ((elem (assoc group nnwarchive-groups)))
+     (cond
+      ((not elem)
+       (nnheader-report 'nnwarchive "Group does not exist"))
+      (t
+       (nnheader-report 'nnwarchive "Opened group %s" group)
+       (nnheader-insert
+	"211 %d %d %d %s\n" (or (cadr elem) 0) 1 (or (cadr elem) 0)
+	(prin1-to-string group))
+       t)))))
 
 (deffoo nnwarchive-close-group (group &optional server)
   (nnwarchive-possibly-change-server group server)
   (nnwarchive-bind
-    (when (gnus-buffer-live-p nnwarchive-buffer)
-      (save-excursion
-	(set-buffer nnwarchive-buffer)
-      (kill-buffer nnwarchive-buffer)))
-    t))
+   (when (gnus-buffer-live-p nnwarchive-buffer)
+     (save-excursion
+       (set-buffer nnwarchive-buffer)
+       (kill-buffer nnwarchive-buffer)))
+   t))
 
 (deffoo nnwarchive-request-article (article &optional group server buffer)
   (nnwarchive-possibly-change-server group server)
   (nnwarchive-bind 
-    (let (contents)
-      (save-excursion
-	(set-buffer nnwarchive-buffer)
-	(goto-char (point-min))
-	(nnwarchive-url nnwarchive-article-url)
-	(setq contents (funcall nnwarchive-article-dissect)))
-      (when contents
-	(save-excursion
-	  (set-buffer (or buffer nntp-server-buffer))
-	  (erase-buffer)
-	  (insert contents)
-	  (nnheader-report 'nnwarchive "Fetched article %s" article)
-	  (cons group article))))))
+   (let (contents)
+     (save-excursion
+       (set-buffer nnwarchive-buffer)
+       (goto-char (point-min))
+       (nnwarchive-url nnwarchive-article-url)
+       (setq contents (funcall nnwarchive-article-dissect)))
+     (when contents
+       (save-excursion
+	 (set-buffer (or buffer nntp-server-buffer))
+	 (erase-buffer)
+	 (insert contents)
+	 (nnheader-report 'nnwarchive "Fetched article %s" article)
+	 (cons group article))))))
 
 (deffoo nnwarchive-close-server (&optional server)
   (when (and (nnwarchive-server-opened server)
@@ -248,22 +248,22 @@ Read `mail-source-bind' for details."
 (deffoo nnwarchive-request-list (&optional server)
   (nnwarchive-possibly-change-server nil server)
   (nnwarchive-bind
-    (save-excursion
-      (set-buffer nnwarchive-buffer)
-      (erase-buffer)
-      (if nnwarchive-list-url
-	  (nnwarchive-url nnwarchive-list-url))
-      (if nnwarchive-list-dissect
-	  (funcall nnwarchive-list-dissect))
-      (nnwarchive-write-groups)
-      (nnwarchive-generate-active)))
+   (save-excursion
+     (set-buffer nnwarchive-buffer)
+     (erase-buffer)
+     (if nnwarchive-list-url
+	 (nnwarchive-url nnwarchive-list-url))
+     (if nnwarchive-list-dissect
+	 (funcall nnwarchive-list-dissect))
+     (nnwarchive-write-groups)
+     (nnwarchive-generate-active)))
   'active)
 
 (deffoo nnwarchive-request-newgroups (date &optional server)
   (nnwarchive-possibly-change-server nil server)
   (nnwarchive-bind
-    (nnwarchive-write-groups)
-    (nnwarchive-generate-active))
+   (nnwarchive-write-groups)
+   (nnwarchive-generate-active))
   'active)
 
 (deffoo nnwarchive-asynchronous-p ()
@@ -284,18 +284,18 @@ Read `mail-source-bind' for details."
     (setq nnwarchive-passwd
 	  (or nnwarchive-passwd
 	      (mail-source-read-passwd
-	     (format "Password for %s at %s: " nnwarchive-login server))))
+	       (format "Password for %s at %s: " nnwarchive-login server))))
     (nnwarchive-bind 
-      (unless nnwarchive-groups
-	(nnwarchive-read-groups))
-      (save-excursion
-	(set-buffer nnwarchive-buffer)
-	(erase-buffer)
-	(if nnwarchive-open-url
-	  (nnwarchive-url nnwarchive-open-url))
-	(if nnwarchive-open-dissect
-	    (funcall nnwarchive-open-dissect))
-	(setq nnwarchive-opened t)))
+     (unless nnwarchive-groups
+       (nnwarchive-read-groups))
+     (save-excursion
+       (set-buffer nnwarchive-buffer)
+       (erase-buffer)
+       (if nnwarchive-open-url
+	   (nnwarchive-url nnwarchive-open-url))
+       (if nnwarchive-open-dissect
+	   (funcall nnwarchive-open-dissect))
+       (setq nnwarchive-opened t)))
     t))
 
 (nnoo-define-skeleton nnwarchive)
@@ -431,17 +431,17 @@ Read `mail-source-bind' for details."
 	(nnwarchive-url nnwarchive-xover-last-url)
 	(goto-char (point-min))
 	(when (re-search-forward "of \\([0-9]+\\)</title>" nil t)
-	(setq articles (string-to-number (match-string 1)))) 
+	  (setq articles (string-to-number (match-string 1)))) 
 	(let ((elem (assoc group nnwarchive-groups)))
-	(if elem
-	    (setcar (cdr elem) articles)
-	  (push (list group articles "") nnwarchive-groups)))
+	  (if elem
+	      (setcar (cdr elem) articles)
+	    (push (list group articles "") nnwarchive-groups)))
 	(setq nnwarchive-headers (cdr (assoc group nnwarchive-headers-cache)))
-      (nnwarchive-egroups-xover)
-      (let ((elem (assoc group nnwarchive-headers-cache)))
-	(if elem
-	    (setcdr elem nnwarchive-headers)
-	  (push (cons group nnwarchive-headers) nnwarchive-headers-cache)))))))
+	(nnwarchive-egroups-xover)
+	(let ((elem (assoc group nnwarchive-headers-cache)))
+	  (if elem
+	      (setcdr elem nnwarchive-headers)
+	    (push (cons group nnwarchive-headers) nnwarchive-headers-cache)))))))
 
 (defun nnwarchive-egroups-list ()
   (let ((case-fold-search t)
@@ -468,28 +468,28 @@ Read `mail-source-bind' for details."
     (while (re-search-forward
 	    "<a href=\"/group/\\([^/]+\\)/\\([0-9]+\\)\\.html[^>]+>\\([^<]+\\)<"
 	    nil t)
-	  (setq group  (match-string 1)
-		article (string-to-number (match-string 2))
-		subject (match-string 3))
-	  (forward-line 1)
-	  (unless (assq article nnwarchive-headers)
-	    (if (looking-at "<td[^>]+><font[^>]+>\\([^<]+\\)</font>")
-		(setq from (match-string 1)))
-	    (forward-line 1)
-	    (if (looking-at "<td[^>]+><font[^>]+>\\([^<]+\\)</font>")
-		(setq date (identity (match-string 1))))
-	    (push (cons
-		   article
-		   (make-full-mail-header
-		    article 
-		    (nnwarchive-decode-entities-string subject)
-		    (nnwarchive-decode-entities-string from)
-		    date
-		    (concat "<" group "%"
-			    (number-to-string article) 
-			    "@egroup.com>")
-		    ""
-		    0 0 "")) nnwarchive-headers))))
+      (setq group  (match-string 1)
+	    article (string-to-number (match-string 2))
+	    subject (match-string 3))
+      (forward-line 1)
+      (unless (assq article nnwarchive-headers)
+	(if (looking-at "<td[^>]+><font[^>]+>\\([^<]+\\)</font>")
+	    (setq from (match-string 1)))
+	(forward-line 1)
+	(if (looking-at "<td[^>]+><font[^>]+>\\([^<]+\\)</font>")
+	    (setq date (identity (match-string 1))))
+	(push (cons
+	       article
+	       (make-full-mail-header
+		article 
+		(nnwarchive-decode-entities-string subject)
+		(nnwarchive-decode-entities-string from)
+		date
+		(concat "<" group "%"
+			(number-to-string article) 
+			"@egroup.com>")
+		""
+		0 0 "")) nnwarchive-headers))))
   nnwarchive-headers)
 
 (defun nnwarchive-egroups-article ()

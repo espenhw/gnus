@@ -29,7 +29,7 @@
 (require 'mm-bodies)
 
 (defgroup mime-display ()
-    "Display of MIME in mail and news articles."
+  "Display of MIME in mail and news articles."
   :link '(custom-manual "(emacs-mime)Customization")
   :group 'mail
   :group 'news)
@@ -275,13 +275,13 @@ to:
 (defun mm-dissect-multipart (ctl)
   (goto-char (point-min))
   (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
-	(close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
-	start parts
-	(end (save-excursion
-	       (goto-char (point-max))
-	       (if (re-search-backward close-delimiter nil t)
-		   (match-beginning 0)
-		 (point-max)))))
+	 (close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
+	 start parts
+	 (end (save-excursion
+		(goto-char (point-max))
+		(if (re-search-backward close-delimiter nil t)
+		    (match-beginning 0)
+		  (point-max)))))
     (while (search-forward boundary end t)
       (goto-char (match-beginning 0))
       (when start
@@ -444,6 +444,7 @@ external if displayed external."
       (while (setq handle (pop handles))
 	(cond
 	 ((stringp handle)
+	  ;; Do nothing.
 	  )
 	 ((and (listp handle)
 	       (stringp (car handle)))
@@ -460,6 +461,7 @@ external if displayed external."
       (while (setq handle (pop handles))
 	(cond
 	 ((stringp handle)
+	  ;; Do nothing.
 	  )
 	 ((and (listp handle)
 	       (stringp (car handle)))

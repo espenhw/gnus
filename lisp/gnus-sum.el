@@ -345,7 +345,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
 			 (cons :value ("" "") regexp (repeat string))
 			 (sexp :value nil))))
 
-(defcustom gnus-unread-mark ? ;Whitespace
+(defcustom gnus-unread-mark ?		;Whitespace
   "*Mark used for unread articles."
   :group 'gnus-summary-marks
   :type 'character)
@@ -460,7 +460,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-empty-thread-mark ? ;Whitespace
+(defcustom gnus-empty-thread-mark ?	;Whitespace
   "*There is no thread under the article."
   :group 'gnus-summary-marks
   :type 'character)
@@ -875,8 +875,7 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
 (defvar gnus-thread-indent-array nil)
 (defvar gnus-thread-indent-array-level gnus-thread-indent-level)
 (defvar gnus-sort-gathered-threads-function 'gnus-thread-sort-by-number
-  "Function called to sort the articles within a thread after it has 
-been gathered together.")
+  "Function called to sort the articles within a thread after it has been gathered together.")
 
 ;; Avoid highlighting in kill files.
 (defvar gnus-summary-inhibit-highlight nil)
@@ -1099,8 +1098,8 @@ variable (string, integer, character, etc).")
   '(mail-decode-encoded-word-string)
   "List of methods used to decode encoded words.
 
-This variable is a list of FUNCTION or (REGEXP . FUNCTION). If item is
-FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
+This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item is
+FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
 (REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
 whose names match REGEXP.
 
@@ -1180,7 +1179,7 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 (defsubst gnus-simplify-buffer-fuzzy-step (regexp &optional newtext)
   (goto-char (point-min))
   (while (re-search-forward regexp nil t)
-      (replace-match (or newtext ""))))
+    (replace-match (or newtext ""))))
 
 (defun gnus-simplify-buffer-fuzzy ()
   "Simplify string in the buffer fuzzily.
@@ -1605,8 +1604,7 @@ increase the score of each group you read."
     "c" gnus-article-copy-part
     "e" gnus-article-externalize-part
     "i" gnus-article-inline-part
-    "|" gnus-article-pipe-part)
-  )
+    "|" gnus-article-pipe-part))
 
 (defun gnus-summary-make-menu-bar ()
   (gnus-turn-off-edit-menu 'summary)
@@ -1773,8 +1771,7 @@ increase the score of each group you read."
        ["Mark thread as read" gnus-summary-kill-thread t]
        ["Lower thread score" gnus-summary-lower-thread t]
        ["Raise thread score" gnus-summary-raise-thread t]
-       ["Rethread current" gnus-summary-rethread-current t]
-       ))
+       ["Rethread current" gnus-summary-rethread-current t]))
 
     (easy-menu-define
      gnus-summary-post-menu gnus-summary-mode-map ""
@@ -2602,7 +2599,7 @@ marks of articles."
 	  (if (or (null gnus-summary-default-score)
 		  (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 		      gnus-summary-zcore-fuzz))
-	      ? ;Whitespace
+	      ?				;Whitespace
 	    (if (< gnus-tmp-score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
 	 (gnus-tmp-replied
@@ -2667,7 +2664,7 @@ marks of articles."
 	 (if (or (null gnus-summary-default-score)
 		 (<= (abs (- score gnus-summary-default-score))
 		     gnus-summary-zcore-fuzz))
-	     ? ;Whitespace
+	     ?				;Whitespace
 	   (if (< score gnus-summary-default-score)
 	       gnus-score-below-mark gnus-score-over-mark))
 	 'score))
@@ -3255,19 +3252,19 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
 	  (setq header
 		(make-full-mail-header
-		 number				; number
+		 number			; number
 		 (funcall gnus-decode-encoded-word-function
 			  (nnheader-nov-field))	; subject
 		 (funcall gnus-decode-encoded-word-function
 			  (nnheader-nov-field))	; from
-		 (nnheader-nov-field)		; date
+		 (nnheader-nov-field)	; date
 		 (nnheader-nov-read-message-id)	; id
-		 (nnheader-nov-field)		; refs
-		 (nnheader-nov-read-integer)	; chars
-		 (nnheader-nov-read-integer)	; lines
+		 (nnheader-nov-field)	; refs
+		 (nnheader-nov-read-integer) ; chars
+		 (nnheader-nov-read-integer) ; lines
 		 (unless (eobp)
-		   (nnheader-nov-field))		; misc
-		 (nnheader-nov-parse-extra))))	; extra
+		   (nnheader-nov-field)) ; misc
+		 (nnheader-nov-parse-extra)))) ; extra
 
       (widen))
 
@@ -3629,7 +3626,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
   ;; using some other form will lead to serious barfage.
   (or (symbolp thread) (signal 'wrong-type-argument '(symbolp thread)))
   ;; (8% speedup to gnus-summary-prepare, just for fun :-)
-  (list 'byte-code "\10\211:\203\17\0\211@;\203\16\0A@@\207" ;
+  (list 'byte-code "\10\211:\203\17\0\211@ ;\203\16\0A@@\207" ;
 	(vector thread) 2))
 
 (defsubst gnus-article-sort-by-number (h1 h2)
@@ -3956,7 +3953,7 @@ or a straight list of headers."
 	     (if (or (null gnus-summary-default-score)
 		     (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 			 gnus-summary-zcore-fuzz))
-		 ? ;Whitespace
+		 ?			;Whitespace
 	       (if (< gnus-tmp-score gnus-summary-default-score)
 		   gnus-score-below-mark gnus-score-over-mark))
 	     gnus-tmp-replied
@@ -4345,9 +4342,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; Add all marks lists to the list of marks lists.
       (while (setq type (pop types))
 	(setq list (symbol-value
-			  (setq symbol
-				(intern (format "gnus-newsgroup-%s"
-						(car type))))))
+		    (setq symbol
+			  (intern (format "gnus-newsgroup-%s"
+					  (car type))))))
 
 	(when list
 	  ;; Get rid of the entries of the articles that have the
@@ -4366,24 +4363,24 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(setq arts (cdr arts)))
 	      (setq list (cdr all)))))
 
-       (or (memq (cdr type) uncompressed)
-           (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
+	(or (memq (cdr type) uncompressed)
+	    (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
        
-       (when (gnus-check-backend-function 'request-set-mark
-                                          gnus-newsgroup-name)
-         ;; uncompressed:s are not proper flags (they are cons cells)
-         ;; cache is a internal gnus flag
-         (unless (memq (cdr type) (cons 'cache uncompressed))
-           (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
-                  (del (gnus-remove-from-range (gnus-copy-sequence old) list))
-                  (add (gnus-remove-from-range (gnus-copy-sequence list) old)))
-             (if add
-                 (push (list add 'add (list (cdr type))) delta-marks))
-             (if del
-                 (push (list del 'del (list (cdr type))) delta-marks)))))
+	(when (gnus-check-backend-function 'request-set-mark
+					   gnus-newsgroup-name)
+	  ;; uncompressed:s are not proper flags (they are cons cells)
+	  ;; cache is a internal gnus flag
+	  (unless (memq (cdr type) (cons 'cache uncompressed))
+	    (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
+		   (del (gnus-remove-from-range (gnus-copy-sequence old) list))
+		   (add (gnus-remove-from-range (gnus-copy-sequence list) old)))
+	      (if add
+		  (push (list add 'add (list (cdr type))) delta-marks))
+	      (if del
+		  (push (list del 'del (list (cdr type))) delta-marks)))))
 	  
 	(when list
-         (push (cons (cdr type) list) newmarked)))
+	  (push (cons (cdr type) list) newmarked)))
 
       (when delta-marks
 	(unless (gnus-check-group gnus-newsgroup-name)
@@ -4618,10 +4615,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	headers id end ref
 	(mail-parse-charset gnus-newsgroup-charset)
 	(mail-parse-ignored-charsets 
-	     (save-excursion (condition-case nil
-				 (set-buffer gnus-summary-buffer)
-			       (error))
-			     gnus-newsgroup-ignored-charsets)))
+	 (save-excursion (condition-case nil
+			     (set-buffer gnus-summary-buffer)
+			   (error))
+			 gnus-newsgroup-ignored-charsets)))
     (save-excursion
       (set-buffer nntp-server-buffer)
       ;; Translate all TAB characters into SPACE characters.
@@ -5216,8 +5213,7 @@ displayed, no centering will be performed."
 	  (key-binding
 	   (read-key-sequence
 	    (substitute-command-keys
-	     "\\<gnus-summary-mode-map>\\[gnus-summary-universal-argument]"
-	     ))))
+	     "\\<gnus-summary-mode-map>\\[gnus-summary-universal-argument]"))))
 	 'undefined)
 	(gnus-error 1 "Undefined key")
       (save-excursion
@@ -7319,7 +7315,7 @@ and `request-accept' functions."
 		  gnus-newsgroup-name)) ; Server
 	  (list 'gnus-request-accept-article
 		to-newsgroup (list 'quote select-method)
-		(not articles) t)		; Accept form
+		(not articles) t)	; Accept form
 	  (not articles)))		; Only save nov last time
 	;; Copy the article.
 	((eq action 'copy)
@@ -7360,9 +7356,9 @@ and `request-accept' functions."
 	       art-group))))))
       (cond
        ((not art-group)
-       (gnus-message 1 "Couldn't %s article %s: %s"
-                     (cadr (assq action names)) article
-                     (nnheader-get-report (car to-method))))
+	(gnus-message 1 "Couldn't %s article %s: %s"
+		      (cadr (assq action names)) article
+		      (nnheader-get-report (car to-method))))
        ((and (eq art-group 'junk)
 	     (eq action 'move))
 	(gnus-summary-mark-article article gnus-canceled-mark)
@@ -8612,9 +8608,7 @@ Returns nil if no threads were there to be hidden."
 		(subst-char-in-region start (point) ?\n ?\^M)
 		(gnus-summary-goto-subject article))
 	    (goto-char start)
-	    nil)
-	;;(gnus-summary-position-point)
-	))))
+	    nil)))))
 
 (defun gnus-summary-go-to-next-thread (&optional previous)
   "Go to the same level (or less) next thread.
@@ -9334,16 +9328,16 @@ If REVERSE, save parts that do not match TYPE."
 	       (gnus-info-set-read ',info ',(gnus-info-read info))
 	       (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
 	       (gnus-group-update-group ,group t))))
-       ;; Propagate the read marks to the backend.
-       (if (gnus-check-backend-function 'request-set-mark group)
-           (let ((del (gnus-remove-from-range (gnus-info-read info) read))
-                 (add (gnus-remove-from-range read (gnus-info-read info))))
-             (when (or add del)
-	       (unless (gnus-check-group group)
-		 (error "Can't open server for %s" group))
-               (gnus-request-set-mark
-                group (delq nil (list (if add (list add 'add '(read)))
-                                      (if del (list del 'del '(read)))))))))
+	;; Propagate the read marks to the backend.
+	(if (gnus-check-backend-function 'request-set-mark group)
+	    (let ((del (gnus-remove-from-range (gnus-info-read info) read))
+		  (add (gnus-remove-from-range read (gnus-info-read info))))
+	      (when (or add del)
+		(unless (gnus-check-group group)
+		  (error "Can't open server for %s" group))
+		(gnus-request-set-mark
+		 group (delq nil (list (if add (list add 'add '(read)))
+				       (if del (list del 'del '(read)))))))))
 	;; Enter this list into the group info.
 	(gnus-info-set-read info read)
 	;; Set the number of unread articles in gnus-newsrc-hashtb.
@@ -9382,38 +9376,38 @@ If REVERSE, save parts that do not match TYPE."
   "Setup newsgroup default charset."
   (if (equal gnus-newsgroup-name "nndraft:drafts")
       (setq gnus-newsgroup-charset nil)
-  (let* ((name (and gnus-newsgroup-name
-		   (gnus-group-real-name gnus-newsgroup-name)))
-	 (ignored-charsets 
-	  (or gnus-newsgroup-ephemeral-ignored-charsets
-	      (append
-	       (and gnus-newsgroup-name
-		    (or (gnus-group-find-parameter gnus-newsgroup-name
-						   'ignored-charsets t)
-			(let ((alist gnus-group-ignored-charsets-alist)
-			   elem (charsets nil))
-			  (while (setq elem (pop alist))
-			    (when (and name
-				       (string-match (car elem) name))
-			      (setq alist nil
-				    charsets (cdr elem))))
-			  charsets))))
-	      gnus-newsgroup-ignored-charsets)))
-    (setq gnus-newsgroup-charset
-	  (or gnus-newsgroup-ephemeral-charset
-	      (and gnus-newsgroup-name
-		   (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
-		       (let ((alist gnus-group-charset-alist)
-			     elem charset)
-			 (while (setq elem (pop alist))
-			   (when (and name
-				      (string-match (car elem) name))
-			     (setq alist nil
-				   charset (cadr elem))))
-			 charset)))
-	      gnus-default-charset))
-    (set (make-local-variable 'gnus-newsgroup-ignored-charsets) 
-	 ignored-charsets))))
+    (let* ((name (and gnus-newsgroup-name
+		      (gnus-group-real-name gnus-newsgroup-name)))
+	   (ignored-charsets 
+	    (or gnus-newsgroup-ephemeral-ignored-charsets
+		(append
+		 (and gnus-newsgroup-name
+		      (or (gnus-group-find-parameter gnus-newsgroup-name
+						     'ignored-charsets t)
+			  (let ((alist gnus-group-ignored-charsets-alist)
+				elem (charsets nil))
+			    (while (setq elem (pop alist))
+			      (when (and name
+					 (string-match (car elem) name))
+				(setq alist nil
+				      charsets (cdr elem))))
+			    charsets))))
+		gnus-newsgroup-ignored-charsets)))
+      (setq gnus-newsgroup-charset
+	    (or gnus-newsgroup-ephemeral-charset
+		(and gnus-newsgroup-name
+		     (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
+			 (let ((alist gnus-group-charset-alist)
+			       elem charset)
+			   (while (setq elem (pop alist))
+			     (when (and name
+					(string-match (car elem) name))
+			       (setq alist nil
+				     charset (cadr elem))))
+			   charset)))
+		gnus-default-charset))
+      (set (make-local-variable 'gnus-newsgroup-ignored-charsets) 
+	   ignored-charsets))))
 
 ;;;
 ;;; Mime Commands

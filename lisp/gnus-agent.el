@@ -727,7 +727,7 @@ the actual number of articles toggled is returned."
     ;; Prune off articles that we have already fetched.
     (while (and articles
 		(cdr (assq (car articles) gnus-agent-article-alist)))
-     (pop articles))
+      (pop articles))
     (let ((arts articles))
       (while (cdr arts)
 	(if (cdr (assq (cadr arts) gnus-agent-article-alist))
@@ -807,7 +807,7 @@ the actual number of articles toggled is returned."
       (setcdr alist (cons (cons (cdar crosses) t) (cdr alist)))
       (save-excursion
 	(set-buffer (gnus-get-buffer-create (format " *Gnus agent overview %s*"
-					       group)))
+						    group)))
 	(when (= (point-max) (point-min))
 	  (push (cons group (current-buffer)) gnus-agent-buffer-alist)
 	  (ignore-errors
@@ -842,15 +842,15 @@ the actual number of articles toggled is returned."
     ;; add article with marks to list of article headers we want to fetch
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
       (setq articles (union (gnus-uncompress-sequence (cdr arts))
-                           articles)))
+			    articles)))
     (setq articles (sort articles '<))
     ;; remove known articles
     (when (gnus-agent-load-alist group)
       (setq articles (gnus-sorted-intersection
-                     articles
-                     (gnus-uncompress-range
-                      (cons (1+ (caar (last gnus-agent-article-alist)))
-                            (cdr (gnus-active group)))))))
+		      articles
+		      (gnus-uncompress-range
+		       (cons (1+ (caar (last gnus-agent-article-alist)))
+			     (cdr (gnus-active group)))))))
     ;; Fetch them.
     (gnus-make-directory (nnheader-translate-file-chars
 			  (file-name-directory file)))
@@ -1002,12 +1002,12 @@ the actual number of articles toggled is returned."
 			 (gnus-get-newsgroup-headers-xover articles nil nil 
 							   group)))
 		 ;; `gnus-agent-overview-buffer' may be killed for
-		 ;; timeout reason. If so, recreate it.
+		 ;; timeout reason.  If so, recreate it.
 		 (gnus-agent-create-buffer)))
       (setq category (gnus-group-category group))
       (setq predicate
 	    (gnus-get-predicate
-            (or (gnus-group-find-parameter group 'agent-predicate t)
+	     (or (gnus-group-find-parameter group 'agent-predicate t)
 		 (cadr category))))
       ;; Do we want to download everything, or nothing?
       (if (or (eq (caaddr predicate) 'gnus-agent-true)
@@ -1464,7 +1464,7 @@ The following commands are available:
 		 (set-buffer overview)
 		 (erase-buffer)
 		 (when (file-exists-p nov-file)
-	       (nnheader-insert-file-contents nov-file))
+		   (nnheader-insert-file-contents nov-file))
 		 (goto-char (point-min))
 		 (setq article 0)
 		 (while (setq elem (pop articles))

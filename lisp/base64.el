@@ -63,7 +63,7 @@ base64-encoder-program.")
     ( ?w . 48) ( ?x . 49) ( ?y . 50) ( ?z . 51) ( ?0 . 52) ( ?1 . 53)
     ( ?2 . 54) ( ?3 . 55) ( ?4 . 56) ( ?5 . 57) ( ?6 . 58) ( ?7 . 59)
     ( ?8 . 60) ( ?9 . 61) ( ?+ . 62) ( ?/ . 63)
-   ))
+    ))
 
 (defvar base64-alphabet-decoding-vector
   (let ((v (make-vector 123 nil))
@@ -126,9 +126,9 @@ base64-encoder-program.")
 	  (if base64-decoder-program
 	      (let* ((binary-process-output t) ; any text already has CRLFs
 		     (status (apply 'base64-run-command-on-region
-				   start end work-buffer
-				   base64-decoder-program
-				   base64-decoder-switches)))
+				    start end work-buffer
+				    base64-decoder-program
+				    base64-decoder-switches)))
 		(if (not (eq status t))
 		    (error "%s" (cdr status))))
 	    (goto-char start)
@@ -147,7 +147,7 @@ base64-encoder-program.")
 		  (cond ((= counter 4)
 			 (base64-insert-char (lsh bits -16) 1 nil work-buffer)
 			 (base64-insert-char (logand (lsh bits -8) 255) 1 nil
-					 work-buffer)
+					     work-buffer)
 			 (base64-insert-char (logand bits 255) 1 nil
 					     work-buffer)
 			 (setq bits 0 counter 0))

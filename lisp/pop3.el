@@ -137,9 +137,9 @@ Returns the process associated with the connection."
   (let ((process-buffer
 	 (get-buffer-create (format "trace of POP session to %s" mailhost)))
 	(process)
-	(coding-system-for-read 'binary)   ;; because FSF Emacs 20 and
-	(coding-system-for-write 'binary)  ;; XEmacs 20 & 21 are st00pid
-    )
+	(coding-system-for-read 'binary);; because FSF Emacs 20 and
+	(coding-system-for-write 'binary);; XEmacs 20 & 21 are st00pid
+	)
     (save-excursion
       (set-buffer process-buffer)
       (erase-buffer)
@@ -163,15 +163,15 @@ Returns the process associated with the connection."
     (insert output)))
 
 (defun pop3-send-command (process command)
-    (set-buffer (process-buffer process))
-    (goto-char (point-max))
-;;    (if (= (aref command 0) ?P)
-;;	(insert "PASS <omitted>\r\n")
-;;      (insert command "\r\n"))
-    (setq pop3-read-point (point))
-    (goto-char (point-max))
-    (process-send-string process (concat command "\r\n"))
-    )
+  (set-buffer (process-buffer process))
+  (goto-char (point-max))
+  ;;    (if (= (aref command 0) ?P)
+  ;;	(insert "PASS <omitted>\r\n")
+  ;;      (insert command "\r\n"))
+  (setq pop3-read-point (point))
+  (goto-char (point-max))
+  (process-send-string process (concat command "\r\n"))
+  )
 
 (defun pop3-read-response (process &optional return)
   "Read the response from the server.
@@ -341,16 +341,16 @@ This function currently does nothing.")
 	;; bill@att.com
 	;; condensed into:
 	;; (sometimes causes problems for really large messages.)
-;	(if (> (buffer-size) 20000) (sleep-for (/ (buffer-size) 20000)))
+	;;	(if (> (buffer-size) 20000) (sleep-for (/ (buffer-size) 20000)))
 	(goto-char start))
       (setq pop3-read-point (point-marker))
-;; this code does not seem to work for some POP servers...
-;; and I cannot figure out why not.
-;      (goto-char (match-beginning 0))
-;      (backward-char 2)
-;      (if (not (looking-at "\r\n"))
-;	  (insert "\r\n"))
-;      (re-search-forward "\\.\r\n")
+      ;; this code does not seem to work for some POP servers...
+      ;; and I cannot figure out why not.
+      ;;      (goto-char (match-beginning 0))
+      ;;      (backward-char 2)
+      ;;      (if (not (looking-at "\r\n"))
+      ;;	  (insert "\r\n"))
+      ;;      (re-search-forward "\\.\r\n")
       (goto-char (match-beginning 0))
       (setq end (point-marker))
       (pop3-clean-region start end)

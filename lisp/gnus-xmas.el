@@ -634,8 +634,7 @@ If it is non-nil, it must be a toolbar.  The five valid values are
      gnus-summary-catchup t "Catchup"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
-    [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
-    )
+    [gnus-summary-exit gnus-summary-exit t "Exit this summary"])
   "The summary buffer toolbar.")
 
 (defvar gnus-summary-mail-toolbar
@@ -645,14 +644,10 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     [gnus-summary-next-unread
      gnus-summary-next-unread-article t "Next unread article"]
     [gnus-summary-mail-reply gnus-summary-reply t "Reply"]
-;    [gnus-summary-mail-get gnus-mail-get t "Message get"]
     [gnus-summary-mail-originate gnus-summary-post-news t "Originate"]
     [gnus-summary-mail-save gnus-summary-save-article t "Save"]
     [gnus-summary-mail-copy gnus-summary-copy-article t "Copy message"]
-;    [gnus-summary-mail-delete gnus-summary-delete-article t "Delete message"]
     [gnus-summary-mail-forward gnus-summary-mail-forward t "Forward message"]
-;    [gnus-summary-mail-spell gnus-mail-spell t "Spell"]
-;    [gnus-summary-mail-help gnus-mail-help  t "Message help"]
     [gnus-summary-caesar-message
      gnus-summary-caesar-message t "Rot 13"]
     [gnus-uu-decode-uu
@@ -665,8 +660,7 @@ If it is non-nil, it must be a toolbar.  The five valid values are
      gnus-summary-catchup t "Catchup"]
     [gnus-summary-catchup-and-exit
      gnus-summary-catchup-and-exit t "Catchup and exit"]
-    [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
-    )
+    [gnus-summary-exit gnus-summary-exit t "Exit this summary"])
   "The summary buffer mail toolbar.")
 
 (defun gnus-xmas-setup-group-toolbar ()

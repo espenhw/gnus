@@ -151,8 +151,8 @@ All keywords that can be used must be listed here."))
 
 (eval-and-compile
   (defun mail-source-strip-keyword (keyword)
-  "Strip the leading colon off the KEYWORD."
-  (intern (substring (symbol-name keyword) 1))))
+    "Strip the leading colon off the KEYWORD."
+    (intern (substring (symbol-name keyword) 1))))
 
 (eval-and-compile
   (defun mail-source-bind-1 (type)
@@ -444,7 +444,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (mail-source-run-script
      prescript
      (format-spec-make ?p password ?t mail-source-crash-box
-				      ?s server ?P port ?u user)
+		       ?s server ?P port ?u user)
      prescript-delay)
     (let ((from (format "%s:%s:%s" server user port))
 	  (mail-source-string (format "pop:%s@%s" user server))

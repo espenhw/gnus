@@ -43,10 +43,10 @@
   (if (memq system-type '(win32 w32 mswindows windows-nt))
       (setq filename (downcase filename)))
   (cond ((eq system-type 'vax-vms)
-        (concat (substring filename 0 (string-match ";" filename)) "c"))
-       ((string-match emacs-lisp-file-regexp filename)
-        (concat (substring filename 0 (match-beginning 0)) ".elc"))
-       (t (concat filename ".elc"))))
+	 (concat (substring filename 0 (string-match ";" filename)) "c"))
+	((string-match emacs-lisp-file-regexp filename)
+	 (concat (substring filename 0 (match-beginning 0)) ".elc"))
+	(t (concat filename ".elc"))))
 
 (require 'bytecomp)
 

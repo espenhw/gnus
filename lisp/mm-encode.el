@@ -75,8 +75,10 @@ or base64 will be used, depending on what is more efficient.")
        (message "Error while decoding: %s" error)
        nil)))
    ((memq encoding '(7bit 8bit binary))
+    ;; Do nothing.
     )
    ((null encoding)
+    ;; Do nothing.
     )
    ((functionp encoding)
     (ignore-errors (funcall encoding (point-min) (point-max))))

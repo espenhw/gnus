@@ -49,7 +49,8 @@
   :type 'boolean)
 
 (defcustom gnus-winconf-kill-file nil
-  "What does this do, Lars?"
+  "What does this do, Lars?
+I don't know, Per."
   :group 'gnus-score-kill
   :type 'sexp)
 

@@ -38,14 +38,14 @@
   "~\\({\\([\041-\167][\041-\176]\\| \\)+\\(~}\\|$\\)")
 
 (defvar rfc1843-word-regexp-strictly
-      "~\\({\\([\041-\167][\041-\176]\\)+\\(~}\\|$\\)")
+  "~\\({\\([\041-\167][\041-\176]\\)+\\(~}\\|$\\)")
 
 (defvar rfc1843-hzp-word-regexp
   "~\\({\\([\041-\167][\041-\176]\\| \\)+\\|\
 [<>]\\([\041-\175][\041-\176]\\| \\)+\\)\\(~}\\|$\\)")
 
 (defvar rfc1843-hzp-word-regexp-strictly
-      "~\\({\\([\041-\167][\041-\176]\\)+\\|\
+  "~\\({\\([\041-\167][\041-\176]\\)+\\|\
 [<>]\\([\041-\175][\041-\176]\\)+\\)\\(~}\\|$\\)")
 
 (defcustom rfc1843-decode-loosely nil
@@ -100,8 +100,8 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
 	      (cond ((eq (char-after) ?\n)
 		     (delete-char -1)
 		     (delete-char 1))
-		  ((eq (char-after) ?~)
-		   (delete-char 1)))))))))
+		    ((eq (char-after) ?~)
+		     (delete-char 1)))))))))
 
 (defun rfc1843-decode-string (string)
   "Decode HZ STRING and return the results."
@@ -115,7 +115,7 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
       (buffer-string))))
 
 (defun rfc1843-decode (word &optional firstc)
-  "Decode HZ WORD and return it"
+  "Decode HZ WORD and return it."
   (let ((i -1) (s (substring word 0)) v)
     (if (or (not firstc) (eq firstc ?{))
 	(while (< (incf i) (length s))
@@ -130,26 +130,26 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
     s))
 
 (defun rfc1843-decode-article-body ()
-   "Decode HZ encoded text in the article body."
-   (if (string-match (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>")
-		     (or gnus-newsgroup-name ""))
-       (save-excursion
-	 (save-restriction
-	   (message-narrow-to-head)
-	   (let* ((inhibit-point-motion-hooks t)
-		  (case-fold-search t)
-		  (ct (message-fetch-field "Content-Type" t))
-		  (ctl (and ct (ignore-errors
-				 (mail-header-parse-content-type ct)))))
-	     (if (and ctl (not (string-match "/" (car ctl)))) 
-		 (setq ctl nil))
-	     (goto-char (point-max))
-	     (widen)
-	     (forward-line 1)
-	     (narrow-to-region (point) (point-max))
-	     (when (or (not ctl)
-		       (equal (car ctl) "text/plain"))
-	       (rfc1843-decode-region (point) (point-max))))))))
+  "Decode HZ encoded text in the article body."
+  (if (string-match (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>")
+		    (or gnus-newsgroup-name ""))
+      (save-excursion
+	(save-restriction
+	  (message-narrow-to-head)
+	  (let* ((inhibit-point-motion-hooks t)
+		 (case-fold-search t)
+		 (ct (message-fetch-field "Content-Type" t))
+		 (ctl (and ct (ignore-errors
+				(mail-header-parse-content-type ct)))))
+	    (if (and ctl (not (string-match "/" (car ctl)))) 
+		(setq ctl nil))
+	    (goto-char (point-max))
+	    (widen)
+	    (forward-line 1)
+	    (narrow-to-region (point) (point-max))
+	    (when (or (not ctl)
+		      (equal (car ctl) "text/plain"))
+	      (rfc1843-decode-region (point) (point-max))))))))
 
 (defvar rfc1843-old-gnus-decode-header-function  nil)
 (defvar gnus-decode-header-methods)

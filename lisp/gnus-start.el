@@ -224,12 +224,12 @@ not match this regexp will be removed before saving the list."
   :type 'boolean)
 
 (defcustom gnus-ignored-newsgroups
- (mapconcat 'identity
-	    '("^to\\."			; not "real" groups
-	      "^[0-9. \t]+ "		; all digits in name
-	      "^[\"][]\"[#'()]"		; bogus characters
-	      )
-	    "\\|")
+  (mapconcat 'identity
+	     '("^to\\."			; not "real" groups
+	       "^[0-9. \t]+ "		; all digits in name
+	       "^[\"][]\"[#'()]"	; bogus characters
+	       )
+	     "\\|")
   "*A regexp to match uninteresting newsgroups in the active file.
 Any lines in the active file matching this regular expression are
 removed from the newsgroup list before anything else is done to it,
@@ -958,16 +958,16 @@ for new groups, and subscribe the new groups as zombies."
   (let* ((gnus-subscribe-newsgroup-method
 	  gnus-subscribe-newsgroup-method)
 	 (check (cond
-		((or (and (= (or arg 1) 4)
-			  (not (listp gnus-check-new-newsgroups)))
-		     (null gnus-read-active-file)
-		     (eq gnus-read-active-file 'some))
-		 'ask-server)
-		((= (or arg 1) 16)
-		 (setq gnus-subscribe-newsgroup-method
-		       'gnus-subscribe-zombies)
-		 t)
-		(t gnus-check-new-newsgroups))))
+		 ((or (and (= (or arg 1) 4)
+			   (not (listp gnus-check-new-newsgroups)))
+		      (null gnus-read-active-file)
+		      (eq gnus-read-active-file 'some))
+		  'ask-server)
+		 ((= (or arg 1) 16)
+		  (setq gnus-subscribe-newsgroup-method
+			'gnus-subscribe-zombies)
+		  t)
+		 (t gnus-check-new-newsgroups))))
     (unless (gnus-check-first-time-used)
       (if (or (consp check)
 	      (eq check 'ask-server))
@@ -1102,10 +1102,10 @@ for new groups, and subscribe the new groups as zombies."
 	 hashtb))
       (when new-newsgroups
 	(gnus-subscribe-hierarchical-interactive new-newsgroups)))
-     (if (> groups 0)
-	 (gnus-message 5 "%d new newsgroup%s arrived"
-		       groups (if (> groups 1) "s have" " has"))
-       (gnus-message 5 "No new newsgroups"))
+    (if (> groups 0)
+	(gnus-message 5 "%d new newsgroup%s arrived"
+		      groups (if (> groups 1) "s have" " has"))
+      (gnus-message 5 "No new newsgroups"))
     (when got-new
       (setq gnus-newsrc-last-checked-date new-date))
     got-new))
@@ -1259,14 +1259,14 @@ for new groups, and subscribe the new groups as zombies."
 	    (setq active (gnus-active group))
 	    (setq num
 		  (if active (- (1+ (cdr active)) (car active)) t))
-           ;; Shorten the select method if possible, if we need to
-           ;; store it at all (native groups).
-           (let ((method (gnus-method-simplify
-                          (or gnus-override-subscribe-method
-                              (gnus-group-method group)))))
-             (if method
-                 (setq info (list group level nil nil method))
-               (setq info (list group level nil)))))
+	    ;; Shorten the select method if possible, if we need to
+	    ;; store it at all (native groups).
+	    (let ((method (gnus-method-simplify
+			   (or gnus-override-subscribe-method
+			       (gnus-group-method group)))))
+	      (if method
+		  (setq info (list group level nil nil method))
+		(setq info (list group level nil)))))
 	  (unless previous
 	    (setq previous
 		  (let ((p gnus-newsrc-alist))
@@ -1384,7 +1384,7 @@ newsgroup."
 	   t)
 	 (condition-case ()
 	     (inline (gnus-request-group group dont-check method))
-	   ;(error nil)
+	   ;;(error nil)
 	   (quit nil))
 	 (setq active (gnus-parse-active))
 	 ;; If there are no articles in the group, the GROUP

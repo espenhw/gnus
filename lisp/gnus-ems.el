@@ -112,7 +112,7 @@
 
     ;; [Note] Now there are three kinds of mule implementations,
     ;; original MULE, XEmacs/mule and beta version of Emacs including
-    ;; some mule features. Unfortunately these API are different. In
+    ;; some mule features.  Unfortunately these API are different.  In
     ;; particular, Emacs (including original MULE) and XEmacs are
     ;; quite different.
     ;; Predicates to check are following:
@@ -121,9 +121,9 @@
     ;; (featurep 'mule) is t when every mule variants are running.
 
     ;; These implementations may be able to share between original
-    ;; MULE and beta version of new Emacs. In addition, it is able to
+    ;; MULE and beta version of new Emacs.  In addition, it is able to
     ;; detect XEmacs/mule by (featurep 'mule) and to check variable
-    ;; `emacs-version'. In this case, implementation for XEmacs/mule
+    ;; `emacs-version'.  In this case, implementation for XEmacs/mule
     ;; may be able to share between XEmacs and XEmacs/mule.
 
     (defvar gnus-summary-display-table nil
@@ -152,8 +152,7 @@
 	  gnus-tmp-closing-bracket)
 	 (point))
        gnus-mouse-face-prop gnus-mouse-face)
-      (insert " " gnus-tmp-subject-or-nil "\n"))
-    )))
+      (insert " " gnus-tmp-subject-or-nil "\n")))))
 
 (defun gnus-region-active-p ()
   "Say whether the region is active."

@@ -66,19 +66,19 @@
   "Directory where Big Brother Database is found.")
 
 (defvar gnus-use-mhe nil
-  "Set this if you want to use MH-E for mail reading")
+  "Set this if you want to use MH-E for mail reading.")
 (defvar gnus-use-rmail nil
-  "Set this if you want to use RMAIL for mail reading")
+  "Set this if you want to use RMAIL for mail reading.")
 (defvar gnus-use-sendmail t
-  "Set this if you want to use SENDMAIL for mail reading")
+  "Set this if you want to use SENDMAIL for mail reading.")
 (defvar gnus-use-vm nil
-  "Set this if you want to use the VM package for mail reading")
+  "Set this if you want to use the VM package for mail reading.")
 (defvar gnus-use-sc nil
-  "Set this if you want to use Supercite")
+  "Set this if you want to use Supercite.")
 (defvar gnus-use-mailcrypt t
-  "Set this if you want to use Mailcrypt for dealing with PGP messages")
+  "Set this if you want to use Mailcrypt for dealing with PGP messages.")
 (defvar gnus-use-bbdb nil
-  "Set this if you want to use the Big Brother DataBase")
+  "Set this if you want to use the Big Brother DataBase.")
 
 (when (and (not gnus-use-installed-gnus)
 	   (null (member gnus-gnus-lisp-directory load-path)))

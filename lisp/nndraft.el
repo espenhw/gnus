@@ -156,7 +156,7 @@
   (nndraft-possibly-change-group group)
   (let ((gnus-verbose-backends nil)
 	(buf (current-buffer))
-	 article file)
+	article file)
     (with-temp-buffer
       (insert-buffer-substring buf)
       (setq article (nndraft-request-accept-article

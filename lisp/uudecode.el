@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.6 $
+;; $Revision: 5.7 $
 ;; Keywords: uudecode
 
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -169,25 +169,25 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 			 (uudecode-insert-char
 			  (logand (lsh bits -8) 255) 1 nil work-buffer)
 			 (uudecode-insert-char (logand bits 255) 1 nil
-					 work-buffer)
+					       work-buffer)
 			 (setq bits 0 counter 0))
 			(t (setq bits (lsh bits 6)))))))
 	      (cond
-		 (done)
-		 ((> 0 remain)
-		  (error "uucode line ends unexpectly")
-		  (setq done t))
-		 ((and (= (point) end) (not done))
-		  ;(error "uucode ends unexpectly")
-		  (setq done t))
-		 ((= counter 3)
-		  (uudecode-insert-char (logand (lsh bits -16) 255) 1 nil
-				  work-buffer)
-		  (uudecode-insert-char (logand (lsh bits -8) 255) 1 nil
-				  work-buffer))
-		 ((= counter 2)
-		  (uudecode-insert-char (logand (lsh bits -10) 255) 1 nil
-				  work-buffer)))
+	       (done)
+	       ((> 0 remain)
+		(error "uucode line ends unexpectly")
+		(setq done t))
+	       ((and (= (point) end) (not done))
+		;;(error "uucode ends unexpectly")
+		(setq done t))
+	       ((= counter 3)
+		(uudecode-insert-char (logand (lsh bits -16) 255) 1 nil
+				      work-buffer)
+		(uudecode-insert-char (logand (lsh bits -8) 255) 1 nil
+				      work-buffer))
+	       ((= counter 2)
+		(uudecode-insert-char (logand (lsh bits -10) 255) 1 nil
+				      work-buffer)))
 	      (skip-chars-forward non-data-chars end))
 	    (if file-name
 		(save-excursion

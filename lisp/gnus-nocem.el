@@ -50,8 +50,7 @@
     "clewis@ferret.ocunix.on.ca"	; Chris Lewis
     "jem@xpat.com"			; Despammer from Korea
     "snowhare@xmission.com"		; Benjamin "Snowhare" Franz
-    "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; ARMM! ARMM!
-    )
+    "red@redpoll.mrfs.oh.us (Richard E. Depew)") ; ARMM! ARMM!
   "*List of NoCeM issuers to pay attention to.
 
 This can also be a list of `(ISSUER CONDITIONS)' elements."

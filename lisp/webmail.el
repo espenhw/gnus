@@ -76,7 +76,7 @@
      ;; W3 hate redirect POST
      (login-url
       "http://%s/cgi-bin/dologin?login=%s&passwd=%s&enter=Sign+in&sec=no&curmbox=ACTIVE&_lang=&js=yes&id=2&tw=-10000&beta="
-       webmail-aux user password)
+      webmail-aux user password)
      (list-snarf . webmail-hotmail-list)
      (article-snarf . webmail-hotmail-article)
      (trash-url 
@@ -87,7 +87,7 @@
      (address . "mail.yahoo.com")
      (open-url "http://mail.yahoo.com")
      (open-snarf . webmail-yahoo-open)
-     (login-url ;; yahoo will not accept GET
+     (login-url;; yahoo will not accept GET
       content 
       ("%s" webmail-aux)
       ".tries=1&.src=ym&.last=&promo=&lg=us&.intl=us&.bypass=&.chkP=Y&.done=http%%253a%%2F%%2Fedit.yahoo.com%%2Fconfig%%2Fmail%%253f.intl%%3D&login=%s&passwd=%s" 
@@ -104,7 +104,7 @@
      (address . "www.netaddress.com")
      (open-url "http://www.netaddress.com")
      (open-snarf . webmail-netaddress-open)
-     (login-url ;; yahoo will not accept GET
+     (login-url;; yahoo will not accept GET
       content 
       ("%s" webmail-aux)
       "LoginState=2&SuccessfulLogin=%%2Ftpl&NewServerName=www.netaddress.com&JavaScript=JavaScript1.2&DomainID=4&NA31site=classic.netaddress.com&NA31port=80&UserID=%s&passwd=%s" 
@@ -250,7 +250,7 @@
 (defvar url-cookie-multiple-line)
 (defvar url-confirmation-func)
 
-;; Hack W3 POST redirect. See `url-parse-mime-headers'.
+;; Hack W3 POST redirect.  See `url-parse-mime-headers'.
 ;;
 ;; Netscape uses "GET" as redirect method when orignal method is POST
 ;; and status is 302, .i.e no security risks by default without
@@ -262,7 +262,7 @@
 (defun webmail-url-confirmation-func (prompt)
   (cond 
    ((equal prompt (concat "Honor redirection with non-GET method "
-		       "(possible security risks)? "))
+			  "(possible security risks)? "))
     nil)
    ((equal prompt "Continue (with method of GET)? ")
     t)
@@ -272,7 +272,7 @@
   "Redirect refresh url in META."
   (goto-char (point-min))
   (while (re-search-forward "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
-			   nil t)
+			    nil t)
     (let ((url (match-string 1)))
       (erase-buffer)
       (nnweb-insert url))
@@ -313,25 +313,25 @@
       (if webmail-list-snarf 
 	  (funcall webmail-list-snarf))
       (while (setq item (pop webmail-articles))
-	  (message "Fetching mail #%d..." (setq n (1+ n)))
-	  (erase-buffer)
-	  (nnweb-insert (cdr item))
-	  (setq id (car item))
-	  (if webmail-article-snarf 
-	      (funcall webmail-article-snarf file id))
-	  (when (and webmail-trash-url webmail-move-to-trash-can)
-	    (message "Move mail #%d to trash can..." n)
-	    (condition-case err
-		(progn
-		  (webmail-url webmail-trash-url)
-		  (let (buf)
-		    (while (setq buf (pop webmail-buffer-list))
-		      (kill-buffer buf))))
-	      (error 
-	       (let (buf)
-		 (while (setq buf (pop webmail-buffer-list))
-		   (kill-buffer buf)))
-	       (error err))))))
+	(message "Fetching mail #%d..." (setq n (1+ n)))
+	(erase-buffer)
+	(nnweb-insert (cdr item))
+	(setq id (car item))
+	(if webmail-article-snarf 
+	    (funcall webmail-article-snarf file id))
+	(when (and webmail-trash-url webmail-move-to-trash-can)
+	  (message "Move mail #%d to trash can..." n)
+	  (condition-case err
+	      (progn
+		(webmail-url webmail-trash-url)
+		(let (buf)
+		  (while (setq buf (pop webmail-buffer-list))
+		    (kill-buffer buf))))
+	    (error 
+	     (let (buf)
+	       (while (setq buf (pop webmail-buffer-list))
+		 (kill-buffer buf)))
+	     (error err))))))
     (if webmail-post-process
 	(funcall webmail-post-process))))
 
@@ -404,7 +404,7 @@
       (while (re-search-forward "<div>\\|\\(http://[^/]+/cgi-bin/getmsg/\\([^\?]+\\)\?[^\"]*\\)\"" nil t)
 	(if (setq attachment (match-string 1))
 	    (let ((filename (match-string 2))
-		  bufname) ;; Attachment
+		  bufname);; Attachment
 	      (delete-region p (match-end 0))
 	      (save-excursion
 		(set-buffer (generate-new-buffer " *webmail-att*"))
@@ -496,7 +496,7 @@
     (goto-char (point-min))
     (when (re-search-forward 
 	   "showing [0-9]+-\\([0-9]+\\) of \\([0-9]+\\)" nil t) 
-      ;(setq listed (match-string 1))
+      ;;(setq listed (match-string 1))
       (message "Found %s mail(s)" (match-string 2)))
     (if (string-match "http://[^/]+" webmail-aux)
 	(setq webmail-aux (match-string 0 webmail-aux))
@@ -627,7 +627,7 @@
 		(cons id 
 		      (format "%s/tpl/Message/%s/Read?Q=%s&FolderID=-4&SortUseCase=True&Sort=Date&Headers=True"
 			      (car webmail-open-url)
-			       webmail-session id)))
+			      webmail-session id)))
 	(if (or (not webmail-newmail-only)
 		(equal (match-string 1) "True"))
 	    (push item webmail-articles))))))
@@ -642,7 +642,7 @@
       (replace-match " "))
     (goto-char (point-min))
     (while (re-search-forward "<br>" nil t)
-	(replace-match "\n"))
+      (replace-match "\n"))
     (webmail-remove-markup)
     (webmail-decode-entities) 
     nil)
@@ -710,7 +710,7 @@
 	      (unless (search-forward "</TABLE>" nil t)
 		(error "Can't find end label (article@8)"))
 	      (delete-region p (point))
-	      (let (bufname) ;; Attachment
+	      (let (bufname);; Attachment
 		(save-excursion
 		  (set-buffer (generate-new-buffer " *webmail-att*"))
 		  (nnweb-insert (concat (car webmail-open-url) attachment))
@@ -734,9 +734,9 @@
 	  (setq p (point))
 	  (widen)))
       (unless mime
-	  (narrow-to-region p (point-max))
-	  (setq mime (webmail-netaddress-single-part))
-	  (widen))
+	(narrow-to-region p (point-max))
+	(setq mime (webmail-netaddress-single-part))
+	(widen))
       (goto-char (point-min))
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")

@@ -337,7 +337,7 @@ Return WORD if not."
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
   (if (stringp charset)
-    (setq charset (intern (downcase charset))))
+      (setq charset (intern (downcase charset))))
   (if (or (not charset) 
 	  (eq 'gnus-all mail-parse-ignored-charsets)
 	  (memq 'gnus-all mail-parse-ignored-charsets)
@@ -347,7 +347,7 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
     (if (and (not cs) charset 
 	     (listp mail-parse-ignored-charsets)
 	     (memq 'gnus-unknown mail-parse-ignored-charsets))
-      (setq cs (mm-charset-to-coding-system mail-parse-charset)))
+	(setq cs (mm-charset-to-coding-system mail-parse-charset)))
     (when cs
       (when (and (eq cs 'ascii)
 		 mail-parse-charset)

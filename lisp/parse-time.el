@@ -47,15 +47,15 @@
 
 (unless (aref parse-time-digits ?0)
   (loop for i from ?0 to ?9
-	do (aset parse-time-digits i (- i ?0))))
+    do (aset parse-time-digits i (- i ?0))))
 
 (unless (aref parse-time-syntax ?0)
   (loop for i from ?0 to ?9
-	do (aset parse-time-syntax i ?0))
+    do (aset parse-time-syntax i ?0))
   (loop for i from ?A to ?Z
-	do (aset parse-time-syntax i ?A))
+    do (aset parse-time-syntax i ?A))
   (loop for i from ?a to ?z
-	do (aset parse-time-syntax i ?a))
+    do (aset parse-time-syntax i ?a))
   (aset parse-time-syntax ?+ 1)
   (aset parse-time-syntax ?- -1)
   (aset parse-time-syntax ?: ?d)

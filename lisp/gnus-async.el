@@ -159,42 +159,42 @@ It should return non-nil if the article is to be prefetched."
   "Possibly prefetch several articles starting with ARTICLE."
   (if (not (gnus-buffer-live-p summary))
       (gnus-async-with-semaphore
-       (setq gnus-async-fetch-list nil))
+	(setq gnus-async-fetch-list nil))
     (when (and gnus-asynchronous
 	       (gnus-alive-p))
       (when next
 	(gnus-async-with-semaphore
-	 (pop gnus-async-fetch-list)))
+	  (pop gnus-async-fetch-list)))
       (let ((do-fetch next)
-	    (do-message t)) ;(eq major-mode 'gnus-summary-mode)))
+	    (do-message t))		;(eq major-mode 'gnus-summary-mode)))
 	(when (and (gnus-group-asynchronous-p group)
 		   (gnus-buffer-live-p summary)
 		   (or (not next)
 		       gnus-async-fetch-list))
 	  (gnus-async-with-semaphore
-	   (unless next
-	     (setq do-fetch (not gnus-async-fetch-list))
-	     ;; Nix out any outstanding requests.
-	     (setq gnus-async-fetch-list nil)
-	     ;; Fill in the new list.
-	     (let ((n gnus-use-article-prefetch)
-		   (data (gnus-data-find-list article))
-		   d)
-	       (while (and (setq d (pop data))
-			   (if (numberp n)
-			       (natnump (decf n))
-			     n))
-		 (unless (or (gnus-async-prefetched-article-entry
-			      group (setq article (gnus-data-number d)))
-			     (not (natnump article))
-			     (not (funcall gnus-async-prefetch-article-p d)))
-		   ;; Not already fetched -- so we add it to the list.
-		   (push article gnus-async-fetch-list)))
-	       (setq gnus-async-fetch-list
-		     (nreverse gnus-async-fetch-list))))
+	    (unless next
+	      (setq do-fetch (not gnus-async-fetch-list))
+	      ;; Nix out any outstanding requests.
+	      (setq gnus-async-fetch-list nil)
+	      ;; Fill in the new list.
+	      (let ((n gnus-use-article-prefetch)
+		    (data (gnus-data-find-list article))
+		    d)
+		(while (and (setq d (pop data))
+			    (if (numberp n)
+				(natnump (decf n))
+			      n))
+		  (unless (or (gnus-async-prefetched-article-entry
+			       group (setq article (gnus-data-number d)))
+			      (not (natnump article))
+			      (not (funcall gnus-async-prefetch-article-p d)))
+		    ;; Not already fetched -- so we add it to the list.
+		    (push article gnus-async-fetch-list)))
+		(setq gnus-async-fetch-list
+		      (nreverse gnus-async-fetch-list))))
 
-	   (when do-fetch
-	     (setq article (car gnus-async-fetch-list))))
+	    (when do-fetch
+	      (setq article (car gnus-async-fetch-list))))
 
 	  (when (and do-fetch article)
 	    ;; We want to fetch some more articles.
@@ -228,16 +228,16 @@ It should return non-nil if the article is to be prefetched."
     (when arg
       (gnus-async-set-buffer)
       (gnus-async-with-semaphore
-       (setq
-	gnus-async-article-alist
-	(cons (list (intern (format "%s-%d" group article)
-			    gnus-async-hashtb)
-		    mark (set-marker (make-marker) (point-max))
-		    group article)
-	      gnus-async-article-alist))))
+	(setq
+	 gnus-async-article-alist
+	 (cons (list (intern (format "%s-%d" group article)
+			     gnus-async-hashtb)
+		     mark (set-marker (make-marker) (point-max))
+		     group article)
+	       gnus-async-article-alist))))
     (if (not (gnus-buffer-live-p summary))
 	(gnus-async-with-semaphore
-	 (setq gnus-async-fetch-list nil))
+	  (setq gnus-async-fetch-list nil))
       (gnus-async-prefetch-article group next summary t))))
 
 (defun gnus-async-unread-p (data)
@@ -297,8 +297,8 @@ It should return non-nil if the article is to be prefetched."
     (set-marker (cadr entry) nil)
     (set-marker (caddr entry) nil))
   (gnus-async-with-semaphore
-   (setq gnus-async-article-alist
-	 (delq entry gnus-async-article-alist))))
+    (setq gnus-async-article-alist
+	  (delq entry gnus-async-article-alist))))
 
 (defun gnus-async-prefetch-remove-group (group)
   "Remove all articles belonging to GROUP from the prefetch buffer."

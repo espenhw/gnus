@@ -170,7 +170,7 @@
   (mm-enable-multibyte)
   (let (handles)
     (let (gnus-article-mime-handles)
-      ;; Double decode problem may happen. See mm-inline-message.
+      ;; Double decode problem may happen.  See mm-inline-message.
       (run-hooks 'gnus-article-decode-hook)
       (gnus-article-prepare-display)
       (setq handles gnus-article-mime-handles))

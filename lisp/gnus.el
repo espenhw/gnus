@@ -966,8 +966,8 @@ If, for instance, you want to read your mail with the nnml backend,
 you could set this variable:
 
 \(setq gnus-secondary-select-methods '((nnml \"\")))"
-:group 'gnus-server
-:type '(repeat gnus-select-method))
+  :group 'gnus-server
+  :type '(repeat gnus-select-method))
 
 (defvar gnus-backup-default-subscribed-newsgroups
   '("news.announce.newusers" "news.groups.questions" "gnu.emacs.gnus")
@@ -1552,11 +1552,11 @@ If nil, no default charset is assumed when posting."
 
 (defvar gnus-variable-list
   '(gnus-newsrc-options gnus-newsrc-options-n
-    gnus-newsrc-last-checked-date
-    gnus-newsrc-alist gnus-server-alist
-    gnus-killed-list gnus-zombie-list
-    gnus-topic-topology gnus-topic-alist
-    gnus-format-specs)
+			gnus-newsrc-last-checked-date
+			gnus-newsrc-alist gnus-server-alist
+			gnus-killed-list gnus-zombie-list
+			gnus-topic-topology gnus-topic-alist
+			gnus-format-specs)
   "Gnus variables saved in the quick startup file.")
 
 (defvar gnus-newsrc-alist nil
@@ -1668,20 +1668,20 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-cache-retrieve-headers gnus-cache-possibly-alter-active
       gnus-cache-enter-remove-article gnus-cached-article-p
       gnus-cache-open gnus-cache-close gnus-cache-update-article)
-      ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
-       gnus-cache-remove-article gnus-summary-insert-cached-articles)
-      ("gnus-score" :interactive t
-       gnus-summary-increase-score gnus-summary-set-score
-       gnus-summary-raise-thread gnus-summary-raise-same-subject
-       gnus-summary-raise-score gnus-summary-raise-same-subject-and-select
-       gnus-summary-lower-thread gnus-summary-lower-same-subject
-       gnus-summary-lower-score gnus-summary-lower-same-subject-and-select
-       gnus-summary-current-score gnus-score-default
-       gnus-score-flush-cache gnus-score-close
-       gnus-possibly-score-headers gnus-score-followup-article
-       gnus-score-followup-thread)
-      ("gnus-score"
-       (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
+     ("gnus-cache" :interactive t gnus-jog-cache gnus-cache-enter-article
+      gnus-cache-remove-article gnus-summary-insert-cached-articles)
+     ("gnus-score" :interactive t
+      gnus-summary-increase-score gnus-summary-set-score
+      gnus-summary-raise-thread gnus-summary-raise-same-subject
+      gnus-summary-raise-score gnus-summary-raise-same-subject-and-select
+      gnus-summary-lower-thread gnus-summary-lower-same-subject
+      gnus-summary-lower-score gnus-summary-lower-same-subject-and-select
+      gnus-summary-current-score gnus-score-default
+      gnus-score-flush-cache gnus-score-close
+      gnus-possibly-score-headers gnus-score-followup-article
+      gnus-score-followup-thread)
+     ("gnus-score"
+      (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
       gnus-current-score-file-nondirectory gnus-score-adaptive
       gnus-score-find-trace gnus-score-file-name)
      ("gnus-cus" :interactive t gnus-group-customize gnus-score-customize)
@@ -2471,9 +2471,9 @@ You should probably use `gnus-find-method-for-group' instead."
   (let ((methods gnus-secondary-select-methods)
 	(gmethod (gnus-server-get-method nil method)))
     (while (and methods
-               (not (gnus-method-equal
-                     (gnus-server-get-method nil (car methods))
-                     gmethod)))
+		(not (gnus-method-equal
+		      (gnus-server-get-method nil (car methods))
+		      gmethod)))
       (setq methods (cdr methods)))
     methods))
 
@@ -2706,7 +2706,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (let ((opened gnus-opened-servers))
     (while (and method opened)
       (when (and (equal (cadr method) (cadaar opened))
-                (equal (car method) (caaar opened))
+		 (equal (car method) (caaar opened))
 		 (not (equal method (caar opened))))
 	(setq method nil))
       (pop opened))
@@ -2743,7 +2743,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (or gnus-override-method
       (and (not group)
 	   gnus-select-method)
-      (and (not (gnus-group-entry group)) ;; a new group
+      (and (not (gnus-group-entry group));; a new group
 	   (gnus-group-name-to-method group))
       (let ((info (or info (gnus-get-info group)))
 	    method)

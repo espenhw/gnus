@@ -85,9 +85,9 @@
 		  (article 1.0)))
       (t
        '(vertical 1.0
-		 (summary 0.25 point)
-		 (if gnus-carpal '(summary-carpal 4))
-		 (article 1.0)))))
+		  (summary 0.25 point)
+		  (if gnus-carpal '(summary-carpal 4))
+		  (article 1.0)))))
     (server
      (vertical 1.0
 	       (server 1.0 point)
@@ -506,7 +506,7 @@ should have point."
 	(if (and (setq buf (get-buffer (gnus-window-to-buffer-helper buffer)))
 		 (setq win (get-buffer-window buf t)))
 	    (if (memq 'point split)
-	      (setq all-visible win))
+		(setq all-visible win))
 	  (setq all-visible nil)))
        (t
 	(when (eq type 'frame)

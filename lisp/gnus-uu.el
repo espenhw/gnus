@@ -387,17 +387,17 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   "P" gnus-uu-decode-postscript-and-save)
 
 (gnus-define-keys
- (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
- "u" gnus-uu-decode-uu-view
- "U" gnus-uu-decode-uu-and-save-view
- "s" gnus-uu-decode-unshar-view
- "S" gnus-uu-decode-unshar-and-save-view
- "o" gnus-uu-decode-save-view
- "O" gnus-uu-decode-save-view
- "b" gnus-uu-decode-binhex-view
- "B" gnus-uu-decode-binhex-view
- "p" gnus-uu-decode-postscript-view
- "P" gnus-uu-decode-postscript-and-save-view)
+    (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
+  "u" gnus-uu-decode-uu-view
+  "U" gnus-uu-decode-uu-and-save-view
+  "s" gnus-uu-decode-unshar-view
+  "S" gnus-uu-decode-unshar-and-save-view
+  "o" gnus-uu-decode-save-view
+  "O" gnus-uu-decode-save-view
+  "b" gnus-uu-decode-binhex-view
+  "B" gnus-uu-decode-binhex-view
+  "p" gnus-uu-decode-postscript-view
+  "P" gnus-uu-decode-postscript-and-save-view)
 
 
 ;; Commands.

@@ -221,14 +221,14 @@ This variable allows the same syntax as `gnus-home-score-file'."
     (gnus-catchup-mark (subject -10))
     (gnus-killed-mark (from -1) (subject -20))
     (gnus-del-mark (from -2) (subject -15)))
-"*Alist of marks and scores."
-:group 'gnus-score-adapt
-:type '(repeat (cons (symbol :tag "Mark")
-		     (repeat (list (choice :tag "Header"
-					   (const from)
-					   (const subject)
-					   (symbol :tag "other"))
-				   (integer :tag "Score"))))))
+  "*Alist of marks and scores."
+  :group 'gnus-score-adapt
+  :type '(repeat (cons (symbol :tag "Mark")
+		       (repeat (list (choice :tag "Header"
+					     (const from)
+					     (const subject)
+					     (symbol :tag "other"))
+				     (integer :tag "Score"))))))
 
 (defcustom gnus-ignored-adaptive-words nil
   "List of words to be ignored when doing adaptive word scoring."
@@ -259,10 +259,10 @@ This variable allows the same syntax as `gnus-home-score-file'."
     (,gnus-catchup-mark . -10)
     (,gnus-killed-mark . -20)
     (,gnus-del-mark . -15))
-"*Alist of marks and scores."
-:group 'gnus-score-adapt
-:type '(repeat (cons (character :tag "Mark")
-		     (integer :tag "Score"))))
+  "*Alist of marks and scores."
+  :group 'gnus-score-adapt
+  :type '(repeat (cons (character :tag "Mark")
+		       (integer :tag "Score"))))
 
 (defcustom gnus-adaptive-word-minimum nil
   "If a number, this is the minimum score value that can be assigned to a word."
@@ -1882,7 +1882,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
       ;; with working on them as a group.  What a hassle.
       ;; Just wait 'til you see what horrors we commit against `match'...
       (if (= gnus-score-index 9)
-	  (setq this (prin1-to-string this)))	; ick.
+	  (setq this (prin1-to-string this))) ; ick.
 
       (if simplify
 	  (setq this (gnus-map-function gnus-simplify-subject-functions this)))
@@ -1935,7 +1935,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	  (when extra
 	    (setq match (concat "[ (](" extra " \\. \"[^)]*"
 				match "[^(]*\")[ )]")
-		  search-func 're-search-forward))	; XXX danger?!?
+		  search-func 're-search-forward)) ; XXX danger?!?
 
 	  (cond
 	   ;; Fuzzy matches.  We save these for later.
@@ -2063,6 +2063,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	      (cond
 	       ;; Permanent.
 	       ((null date)
+		;; Do nothing.
 		)
 	       ;; Match, update date.
 	       ((and found gnus-update-score-entry-dates)
@@ -2101,6 +2102,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 		(cond
 		 ;; Permanent.
 		 ((null date)
+		  ;; Do nothing.
 		  )
 		 ;; Match, update date.
 		 ((and found gnus-update-score-entry-dates)
@@ -2936,8 +2938,7 @@ See `(Gnus)Scoring Tips' for examples of good regular expressions."
        (cond
 	(bad (cons 'bad bad))
 	(new (cons 'new new))
-	;; or nil
-	)))))
+	(t nil))))))
 
 (provide 'gnus-score)
 

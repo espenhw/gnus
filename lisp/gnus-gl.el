@@ -137,10 +137,10 @@
 This pseudonym is obtained during the registration process")
 
 (defvar grouplens-bbb-host "grouplens.cs.umn.edu"
-  "Host where the bbbd is running" )
+  "Host where the bbbd is running.")
 
 (defvar grouplens-bbb-port 9000
-  "Port where the bbbd is listening" )
+  "Port where the bbbd is listening.")
 
 (defvar grouplens-newsgroups
   '("comp.groupware" "comp.human-factors" "comp.lang.c++"
@@ -194,19 +194,19 @@ GroupLens scores can be combined with gnus scores in one of three ways.
 ;;;; Program global variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar grouplens-bbb-token nil
-  "Current session token number")
+  "Current session token number.")
 
 (defvar grouplens-bbb-process nil
-  "Process Id of current bbbd network stream process")
+  "Process Id of current bbbd network stream process.")
 
 (defvar grouplens-bbb-buffer nil
-  "Buffer associated with the BBBD process")
+  "Buffer associated with the BBBD process.")
 
 (defvar grouplens-rating-alist nil
-  "Current set of  message-id rating pairs")
+  "Current set of  message-id rating pairs.")
 
 (defvar grouplens-current-hashtable nil
-  "A hashtable to hold predictions from the BBB")
+  "A hashtable to hold predictions from the BBB.")
 
 (defvar grouplens-current-group nil)
 
@@ -312,7 +312,7 @@ If this times out we give up and assume that something has died..." )
 				(concat "login " grouplens-pseudonym))
 	      (if (bbb-read-response bbb-process)
 		  (setq grouplens-bbb-token (bbb-extract-token-number))
-	      (gnus-message 3 "Error: GroupLens login failed")))))
+		(gnus-message 3 "Error: GroupLens login failed")))))
     (gnus-message 3 "Error: you must set a pseudonym"))
   grouplens-bbb-token)
 
@@ -406,7 +406,7 @@ recommend using both scores and grouplens predictions together."
 		pred (bbb-get-pred))
 	  (push `(,mid ,pred nil s) resp)
 	  (gnus-sethash mid (list pred (bbb-get-confl) (bbb-get-confh))
-		      grouplens-current-hashtable)
+			grouplens-current-hashtable)
 	  (forward-line 1)
 	  t)
 	 ((looking-at "\\(<.*>\\) :pred=\\([0-9]\.[0-9][0-9]\\)")
@@ -779,12 +779,12 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 (unless gnus-grouplens-mode-map
   (setq gnus-grouplens-mode-map (make-keymap))
   (gnus-define-keys
-   gnus-grouplens-mode-map
-   "n" grouplens-next-unread-article
-   "r" bbb-summary-rate-article
-   "k" grouplens-score-thread
-   "c" grouplens-summary-catchup-and-exit
-   "," grouplens-best-unread-article))
+      gnus-grouplens-mode-map
+    "n" grouplens-next-unread-article
+    "r" bbb-summary-rate-article
+    "k" grouplens-score-thread
+    "c" grouplens-summary-catchup-and-exit
+    "," grouplens-best-unread-article))
 
 (defun gnus-grouplens-make-menu-bar ()
   (unless (boundp 'gnus-grouplens-menu)

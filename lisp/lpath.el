@@ -68,31 +68,31 @@
 		babel-translations babel-history
 		display-time-mail-function))
   (maybe-fbind '(color-instance-rgb-components temp-directory
-		 glyph-width annotation-glyph window-pixel-width glyph-height
-		 window-pixel-height map-extents
-		 make-color-instance color-instance-name specifier-instance
-		 device-type device-class get-popup-menu-response event-object
-		 x-defined-colors read-color add-submenu set-font-family
-		 font-create-object set-font-size frame-device find-face
-		 set-extent-property make-extent characterp display-error
-		 set-face-doc-string frame-property face-doc-string
-		 button-press-event-p next-command-event
-		 widget-make-intangible glyphp make-glyph set-glyph-image
-		 set-glyph-property event-glyph glyph-property event-point
-		 device-on-window-system-p make-gui-button Info-goto-node
-		 pp-to-string color-name
-		 gnus-mule-get-coding-system decode-coding-string
-		 mail-aliases-setup
-		 mm-copy-tree url-view-url w3-prepare-buffer
-		 mule-write-region-no-coding-system char-int
-		 annotationp delete-annotation make-image-specifier
-		 make-annotation events-to-keys
-		 w3-do-setup w3-region
-		 w3-coding-system-for-mime-charset 
-		 rmail-summary-exists rmail-select-summary rmail-update-summary
-		 url-generic-parse-url valid-image-instantiator-format-p
-		 babel-fetch babel-wash babel-as-string sc-cite-regexp
-		 pop3-get-message-count)))
+					       glyph-width annotation-glyph window-pixel-width glyph-height
+					       window-pixel-height map-extents
+					       make-color-instance color-instance-name specifier-instance
+					       device-type device-class get-popup-menu-response event-object
+					       x-defined-colors read-color add-submenu set-font-family
+					       font-create-object set-font-size frame-device find-face
+					       set-extent-property make-extent characterp display-error
+					       set-face-doc-string frame-property face-doc-string
+					       button-press-event-p next-command-event
+					       widget-make-intangible glyphp make-glyph set-glyph-image
+					       set-glyph-property event-glyph glyph-property event-point
+					       device-on-window-system-p make-gui-button Info-goto-node
+					       pp-to-string color-name
+					       gnus-mule-get-coding-system decode-coding-string
+					       mail-aliases-setup
+					       mm-copy-tree url-view-url w3-prepare-buffer
+					       mule-write-region-no-coding-system char-int
+					       annotationp delete-annotation make-image-specifier
+					       make-annotation events-to-keys
+					       w3-do-setup w3-region
+					       w3-coding-system-for-mime-charset 
+					       rmail-summary-exists rmail-select-summary rmail-update-summary
+					       url-generic-parse-url valid-image-instantiator-format-p
+					       babel-fetch babel-wash babel-as-string sc-cite-regexp
+					       pop3-get-message-count)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

@@ -190,7 +190,7 @@
   (let ((coding-system-for-write 
 	 (or nnmbox-file-coding-system-for-write
 	     nnmbox-file-coding-system)))
-	 (save-buffer)))
+    (save-buffer)))
 
 (defun nnmbox-save-active (group-alist active-file)
   (let ((nnmail-active-file-coding-system
@@ -243,7 +243,7 @@
   (nnheader-report 'nnmbox "LIST NEWSGROUPS is not implemented."))
 
 (deffoo nnmbox-request-expire-articles
-  (articles newsgroup &optional server force)
+    (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
 	 rest)
@@ -278,7 +278,7 @@
       (nconc rest articles))))
 
 (deffoo nnmbox-request-move-article
-  (article group server accept-form &optional last)
+    (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnmbox move*"))
 	result)
     (and

@@ -154,8 +154,10 @@ If no encoding was done, nil is returned."
 				    (delete-region (point) (point-max))
 				    (point))))
 	   ((memq encoding '(7bit 8bit binary))
+	    ;; Do nothing.
 	    )
 	   ((null encoding)
+	    ;; Do nothing.
 	    )
 	   ((memq encoding '(x-uuencode x-uue))
 	    (funcall mm-uu-decode-function (point-min) (point-max)))
@@ -179,7 +181,7 @@ If no encoding was done, nil is returned."
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
   (if (stringp charset)
-    (setq charset (intern (downcase charset))))
+      (setq charset (intern (downcase charset))))
   (if (or (not charset) 
 	  (eq 'gnus-all mail-parse-ignored-charsets)
 	  (memq 'gnus-all mail-parse-ignored-charsets)
@@ -208,7 +210,7 @@ The characters in CHARSET should then be decoded."
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
   (if (stringp charset)
-    (setq charset (intern (downcase charset))))
+      (setq charset (intern (downcase charset))))
   (if (or (not charset) 
 	  (eq 'gnus-all mail-parse-ignored-charsets)
 	  (memq 'gnus-all mail-parse-ignored-charsets)
@@ -216,12 +218,12 @@ The characters in CHARSET should then be decoded."
       (setq charset mail-parse-charset))
   (or
    (when (featurep 'mule)
-      (let ((mule-charset (mm-charset-to-coding-system charset)))
-	(if (and (not mule-charset)
-		 (listp mail-parse-ignored-charsets)
-		 (memq 'gnus-unknown mail-parse-ignored-charsets))
-	    (setq mule-charset 
-		  (mm-charset-to-coding-system mail-parse-charset)))
+     (let ((mule-charset (mm-charset-to-coding-system charset)))
+       (if (and (not mule-charset)
+		(listp mail-parse-ignored-charsets)
+		(memq 'gnus-unknown mail-parse-ignored-charsets))
+	   (setq mule-charset 
+		 (mm-charset-to-coding-system mail-parse-charset)))
        (when (and charset mule-charset
 		  (mm-multibyte-p)
 		  (or (not (eq mule-charset 'ascii))

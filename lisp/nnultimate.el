@@ -137,7 +137,7 @@
 	    ;;(setq total-contents (nreverse total-contents))
 	    (dolist (art (cdr elem))
 	      (if (not (nth (1- (cdr art)) total-contents))
-		  ();(debug)
+		  ()			;(debug)
 		(push (list (car art)
 			    (nth (1- (cdr art)) total-contents)
 			    subject)
@@ -368,8 +368,8 @@
     (nnultimate-open-server server))
   (unless nnultimate-groups-alist
     (nnultimate-read-groups)
-  (setq nnultimate-groups (cdr (assoc nnultimate-address
-				      nnultimate-groups-alist)))))
+    (setq nnultimate-groups (cdr (assoc nnultimate-address
+					nnultimate-groups-alist)))))
 
 (deffoo nnultimate-open-server (server &optional defs connectionless)
   (nnheader-init-server-buffer)
@@ -433,7 +433,7 @@
 	  case-fold-search)
       (when (and href (string-match
 		       "postings\\|forumdisplay\\|Forum[0-9]+/HTML\\|getbio"
-				    href))
+		       href))
 	t))))
 
 (provide 'nnultimate)

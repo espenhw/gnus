@@ -42,10 +42,10 @@ article has citations."
   :type 'string)
 
 (defcustom gnus-cite-always-check nil
-  "Check article always for citations. Set it t to check all articles."
+  "Check article always for citations.  Set it t to check all articles."
   :group 'gnus-cite
   :type '(choice (const :tag "no" nil)
-		  (const :tag "yes" t)))
+		 (const :tag "yes" t)))
 
 (defcustom gnus-cited-opened-text-button-line-format "%(%{[-]%}%)\n"
   "Format of opened cited text buttons."
@@ -238,8 +238,8 @@ It is merged with the face for the cited text belonging to the attribution."
 
 (defcustom gnus-cite-face-list
   '(gnus-cite-face-1 gnus-cite-face-2 gnus-cite-face-3 gnus-cite-face-4
-    gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8
-    gnus-cite-face-9 gnus-cite-face-10 gnus-cite-face-11)
+		     gnus-cite-face-5 gnus-cite-face-6 gnus-cite-face-7 gnus-cite-face-8
+		     gnus-cite-face-9 gnus-cite-face-10 gnus-cite-face-11)
   "*List of faces used for highlighting citations.
 
 When there are citations from multiple articles in the same message,

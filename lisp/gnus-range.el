@@ -225,19 +225,19 @@ Note: LIST has to be sorted over `<'."
       out)))
 
 (defun gnus-remove-from-range (range1 range2)
-  "Return a range that has all articles from RANGE2 removed from
-RANGE1. The returned range is always a list. RANGE2 can also be a
-unsorted list of articles. RANGE1 is modified by side effects, RANGE2
-is not modified."
+  "Return a range that has all articles from RANGE2 removed from RANGE1.
+The returned range is always a list.  RANGE2 can also be a unsorted
+list of articles.  RANGE1 is modified by side effects, RANGE2 is not
+modified."
   (if (or (null range1) (null range2))
       range1
     (let (out r1 r2 r1_min r1_max r2_min r2_max
-             (range2 (gnus-copy-sequence range2)))
+	      (range2 (gnus-copy-sequence range2)))
       (setq range1 (if (listp (cdr range1)) range1 (list range1))
-           range2 (sort (if (listp (cdr range2)) range2 (list range2))
-                        (lambda (e1 e2)
-                          (< (if (consp e1) (car e1) e1)
-                             (if (consp e2) (car e2) e2))))
+	    range2 (sort (if (listp (cdr range2)) range2 (list range2))
+			 (lambda (e1 e2)
+			   (< (if (consp e1) (car e1) e1)
+			      (if (consp e2) (car e2) e2))))
 	    r1 (car range1)
 	    r2 (car range2)
 	    r1_min (if (consp r1) (car r1) r1)
@@ -245,7 +245,7 @@ is not modified."
 	    r2_min (if (consp r2) (car r2) r2)
 	    r2_max (if (consp r2) (cdr r2) r2))
       (while (and range1 range2)
-	(cond ((< r2_max r1_min)                           ; r2 < r1
+	(cond ((< r2_max r1_min)	; r2 < r1
 	       (pop range2)
 	       (setq r2 (car range2)
 		     r2_min (if (consp r2) (car r2) r2)
@@ -266,7 +266,7 @@ is not modified."
 		   (push r1_min out)
 		 (push (cons r1_min (1- r2_min)) out))
 	       (pop range2)
-	       (if (< r2_max r1_max) ; finished with r1?
+	       (if (< r2_max r1_max)	; finished with r1?
 		   (setq r1_min (1+ r2_max))
 		 (pop range1)
 		 (setq r1 (car range1)
@@ -283,7 +283,7 @@ is not modified."
 	       (setq r1 (car range1)
 		     r1_min (if (consp r1) (car r1) r1)
 		     r1_max (if (consp r1) (cdr r1) r1)))
-	      ((< r1_max r2_min)                           ; r2 > r1
+	      ((< r1_max r2_min)	; r2 > r1
 	       (pop range1)
 	       (if (eq r1_min r1_max)
 		   (push r1_min out)

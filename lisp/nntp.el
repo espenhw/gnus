@@ -48,10 +48,10 @@ server spawn an nnrpd server.")
 It is called with no parameters.")
 
 (defvoo nntp-server-action-alist
-  '(("nntpd 1\\.5\\.11t"
-     (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader))
-    ("NNRP server Netscape"
-     (setq nntp-server-list-active-group nil)))
+    '(("nntpd 1\\.5\\.11t"
+       (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader))
+      ("NNRP server Netscape"
+       (setq nntp-server-list-active-group nil)))
   "Alist of regexps to match on server types and actions to be taken.
 For instance, if you want Gnus to beep every time you connect
 to innd, you could say something like:
@@ -436,36 +436,36 @@ noticing asynchronous data.")
 	    (nntp-inhibit-erase t)
 	    article)
 	;; Send HEAD commands.
-      (while (setq article (pop articles))
-	(nntp-send-command
-	 nil
-	 "HEAD" (if (numberp article)
-		    (int-to-string article)
-		  ;; `articles' is either a list of article numbers
-		  ;; or a list of article IDs.
-		  article))
-	(incf count)
-	;; Every 400 requests we have to read the stream in
-	;; order to avoid deadlocks.
-	(when (or (null articles)	;All requests have been sent.
-		  (zerop (% count nntp-maximum-request)))
-	  (nntp-accept-response)
-	  (while (progn
-		   (set-buffer buf)
-		   (goto-char last-point)
-		   ;; Count replies.
-		   (while (nntp-next-result-arrived-p)
-		     (setq last-point (point))
-		     (incf received))
-		   (< received count))
-	    ;; If number of headers is greater than 100, give
-	    ;;  informative messages.
-	    (and (numberp nntp-large-newsgroup)
-		 (> number nntp-large-newsgroup)
-		 (zerop (% received 20))
-		 (nnheader-message 6 "NNTP: Receiving headers... %d%%"
-				   (/ (* received 100) number)))
-	    (nntp-accept-response))))
+	(while (setq article (pop articles))
+	  (nntp-send-command
+	   nil
+	   "HEAD" (if (numberp article)
+		      (int-to-string article)
+		    ;; `articles' is either a list of article numbers
+		    ;; or a list of article IDs.
+		    article))
+	  (incf count)
+	  ;; Every 400 requests we have to read the stream in
+	  ;; order to avoid deadlocks.
+	  (when (or (null articles)	;All requests have been sent.
+		    (zerop (% count nntp-maximum-request)))
+	    (nntp-accept-response)
+	    (while (progn
+		     (set-buffer buf)
+		     (goto-char last-point)
+		     ;; Count replies.
+		     (while (nntp-next-result-arrived-p)
+		       (setq last-point (point))
+		       (incf received))
+		     (< received count))
+	      ;; If number of headers is greater than 100, give
+	      ;;  informative messages.
+	      (and (numberp nntp-large-newsgroup)
+		   (> number nntp-large-newsgroup)
+		   (zerop (% received 20))
+		   (nnheader-message 6 "NNTP: Receiving headers... %d%%"
+				     (/ (* received 100) number)))
+	      (nntp-accept-response))))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
 	     (nnheader-message 6 "NNTP: Receiving headers...done"))
@@ -787,13 +787,13 @@ If SEND-IF-FORCE, only send authinfo to the server if the
       (unless (member user '(nil ""))
 	(nntp-send-command "^3.*\r?\n" "AUTHINFO USER" user)
 	(when t				;???Should check if AUTHINFO succeeded
-      (nntp-send-command
-       "^2.*\r?\n" "AUTHINFO PASS"
-       (or passwd
-	   nntp-authinfo-password
-	   (setq nntp-authinfo-password
+	  (nntp-send-command
+	   "^2.*\r?\n" "AUTHINFO PASS"
+	   (or passwd
+	       nntp-authinfo-password
+	       (setq nntp-authinfo-password
 		     (mail-source-read-passwd (format "NNTP (%s@%s) password: "
-						 user nntp-address))))))))))
+						      user nntp-address))))))))))
 
 (defun nntp-send-nosy-authinfo ()
   "Send the AUTHINFO to the nntp server."
@@ -803,7 +803,7 @@ If SEND-IF-FORCE, only send authinfo to the server if the
       (when t				;???Should check if AUTHINFO succeeded
 	(nntp-send-command "^2.*\r?\n" "AUTHINFO PASS"
 			   (mail-source-read-passwd "NNTP (%s@%s) password: "
-					       user nntp-address))))))
+						    user nntp-address))))))
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.

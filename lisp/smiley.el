@@ -154,7 +154,7 @@ above them."
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))
 
 (defvar smiley-map (make-sparse-keymap "smiley-keys")
- "Keymap to toggle smiley states.")
+  "Keymap to toggle smiley states.")
 
 (define-key smiley-map [(button2)] 'smiley-toggle-extent)
 (define-key smiley-map [(button3)] 'smiley-popup-menu)

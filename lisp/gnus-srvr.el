@@ -174,12 +174,12 @@ The following commands are available:
 	 (gnus-tmp-where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
 	 (gnus-tmp-status (cond ((eq (nth 1 elem) 'denied)
-			"(denied)")
-		       ((or (gnus-server-opened method)
-			    (eq (nth 1 elem) 'ok))
-			"(opened)")
-		       (t
-			"(closed)"))))
+				 "(denied)")
+				((or (gnus-server-opened method)
+				     (eq (nth 1 elem) 'ok))
+				 "(opened)")
+				(t
+				 "(closed)"))))
     (beginning-of-line)
     (gnus-add-text-properties
      (point)
@@ -509,28 +509,28 @@ The following commands are available:
   (suppress-keymap gnus-browse-mode-map)
 
   (gnus-define-keys
-   gnus-browse-mode-map
-   " " gnus-browse-read-group
-   "=" gnus-browse-select-group
-   "n" gnus-browse-next-group
-   "p" gnus-browse-prev-group
-   "\177" gnus-browse-prev-group
-   [delete] gnus-browse-prev-group
-   "N" gnus-browse-next-group
-   "P" gnus-browse-prev-group
-   "\M-n" gnus-browse-next-group
-   "\M-p" gnus-browse-prev-group
-   "\r" gnus-browse-select-group
-   "u" gnus-browse-unsubscribe-current-group
-   "l" gnus-browse-exit
-   "L" gnus-browse-exit
-   "q" gnus-browse-exit
-   "Q" gnus-browse-exit
-   "\C-c\C-c" gnus-browse-exit
-   "?" gnus-browse-describe-briefly
+      gnus-browse-mode-map
+    " " gnus-browse-read-group
+    "=" gnus-browse-select-group
+    "n" gnus-browse-next-group
+    "p" gnus-browse-prev-group
+    "\177" gnus-browse-prev-group
+    [delete] gnus-browse-prev-group
+    "N" gnus-browse-next-group
+    "P" gnus-browse-prev-group
+    "\M-n" gnus-browse-next-group
+    "\M-p" gnus-browse-prev-group
+    "\r" gnus-browse-select-group
+    "u" gnus-browse-unsubscribe-current-group
+    "l" gnus-browse-exit
+    "L" gnus-browse-exit
+    "q" gnus-browse-exit
+    "Q" gnus-browse-exit
+    "\C-c\C-c" gnus-browse-exit
+    "?" gnus-browse-describe-briefly
 
-   "\C-c\C-i" gnus-info-find-node
-   "\C-c\C-b" gnus-bug))
+    "\C-c\C-i" gnus-info-find-node
+    "\C-c\C-b" gnus-bug))
 
 (defun gnus-browse-make-menu-bar ()
   (gnus-turn-off-edit-menu 'browse)

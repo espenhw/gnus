@@ -159,7 +159,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
                               thenMin
                               thenHour
                               ;; If THEN is earlier than NOW, make it
-                              ;; same time tomorrow. Doc for encode-time
+                              ;; same time tomorrow.  Doc for encode-time
                               ;; says that this is OK.
                               (+ (elt nowParts 3)
                                  (if (or (< thenHour (elt nowParts 2))

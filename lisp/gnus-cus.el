@@ -147,7 +147,7 @@ All posts will be send to the specified group.")
 Specify default value for GCC header.
 
 If this symbol is present in the group parameter list and set to `t',
-new composed messages will be `Gcc''d to the current group. If it is
+new composed messages will be `Gcc''d to the current group.  If it is
 present and set to `none', no `Gcc:' header will be generated, if it
 is present and a string, this string will be inserted literally as a
 `gcc' header (this symbol takes precedence over any default `Gcc'
@@ -176,7 +176,7 @@ Use with caution.")
 When to expire.
 
 Overrides any `nnmail-expiry-wait' and `nnmail-expiry-wait-function'
-when expiring expirable messages. The value can either be a number of
+when expiring expirable messages.  The value can either be a number of
 days (not necessarily an integer) or the symbols `never' or
 `immediate'.")
 
@@ -236,7 +236,7 @@ default charset will be used instead.")
 			   (number :tag "Group for displayed part" 0)
 			   (symbol :tag "Face" 
 				   gnus-emphasis-highlight-words))))
-  "highlight regexps.
+     "highlight regexps.
 See gnus-emphasis-alist."))
   "Alist of valid group or topic parameters.
 
@@ -343,9 +343,9 @@ put something like `(dummy-variable (ding))' in the parameters of that
 group.  `dummy-variable' will be set to the result of the `(ding)'
 form, but who cares?"
 				  (list :format "%v" :value (nil nil)
-					 (symbol :tag "Variable")
-					 (sexp :tag
-					       "Value")))
+					(symbol :tag "Variable")
+					(sexp :tag
+					      "Value")))
 
 			 '(repeat :inline t
 				  :tag "Unknown entries"
@@ -490,9 +490,9 @@ documentation string for the parameter.")
 	 (item `(const :format "" :value ,(downcase tag)))
 	 (match '(string :tag "Match"))
 	 (score '(choice :tag "Score"
-			(const :tag "default" nil)
-			(integer :format "%v"
-				 :hide-front-space t)))
+			 (const :tag "default" nil)
+			 (integer :format "%v"
+				  :hide-front-space t)))
 	 (expire '(choice :tag "Expire"
 			  (const :tag "off" nil)
 			  (integer :format "%v"
@@ -563,9 +563,9 @@ each score entry has four elements:
 	 (item `(const :format "" :value ,(downcase tag)))
 	 (match '(integer :tag "Match"))
 	 (score '(choice :tag "Score"
-			(const :tag "default" nil)
-			(integer :format "%v"
-				 :hide-front-space t)))
+			 (const :tag "default" nil)
+			 (integer :format "%v"
+				  :hide-front-space t)))
 	 (expire '(choice :tag "Expire"
 			  (const :tag "off" nil)
 			  (integer :format "%v"
@@ -600,9 +600,9 @@ each score entry has four elements:
 	 (item `(const :format "" :value ,(downcase tag)))
 	 (match '(string :tag "Match"))
 	 (score '(choice :tag "Score"
-			(const :tag "default" nil)
-			(integer :format "%v"
-				 :hide-front-space t)))
+			 (const :tag "default" nil)
+			 (integer :format "%v"
+				  :hide-front-space t)))
 	 (expire '(choice :tag "Expire"
 			  (const :tag "off" nil)
 			  (integer :format "%v"
@@ -652,11 +652,11 @@ eh?")))
   (interactive (list gnus-current-score-file))
   (let ((scores (gnus-score-load file))
 	(types (mapcar (lambda (entry)
-		 `(group :format "%v%h\n"
-			 :doc ,(nth 2 entry)
-			 (const :format "" ,(nth 0 entry))
-			 ,(nth 1 entry)))
-	       gnus-score-parameters)))
+			 `(group :format "%v%h\n"
+				 :doc ,(nth 2 entry)
+				 (const :format "" ,(nth 0 entry))
+				 ,(nth 1 entry)))
+		       gnus-score-parameters)))
     ;; Ready.
     (kill-buffer (gnus-get-buffer-create "*Gnus Customize*"))
     (switch-to-buffer (gnus-get-buffer-create "*Gnus Customize*"))

@@ -313,7 +313,7 @@ backend for the messages.")
       (setq info (pop infolist)
 	    range-list (gnus-uncompress-range (car info))
 	    prefix (gnus-soup-area-prefix (nth 1 info)))
-      (when ;; All the articles in this file are marked for expiry.
+      (when;; All the articles in this file are marked for expiry.
 	  (and (or (setq mod-time (nth 5 (file-attributes
 					  (nnsoup-file prefix))))
 		   (setq mod-time (nth 5 (file-attributes

@@ -72,7 +72,7 @@ If a form, the result from the form will be used instead.")
 
 ;; Deleted the autoload cookie because this crashes in loaddefs.el.
 (defvar message-signature-file mail-signature-file
-  "*File containing the text inserted at end of message. buffer.")
+  "*File containing the text inserted at end of the message buffer.")
 
 (defvar message-default-headers mail-default-headers
   "*A string containing header lines to be inserted in outgoing messages.

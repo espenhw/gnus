@@ -60,7 +60,7 @@ If a group matches both gnus-cacheable-groups and gnus-uncacheable-groups
 it's not cached."
   :group 'gnus-cache
   :type '(choice (const :tag "off" nil)
-                regexp))
+		 regexp))
 
 (defcustom gnus-uncacheable-groups nil
   "*Groups that match this regexp will not be cached.
@@ -486,7 +486,7 @@ Returns the list of articles removed."
       (set-buffer cache-buf)
       (erase-buffer)
       (let ((coding-system-for-read 
-	    gnus-cache-overview-coding-system))
+	     gnus-cache-overview-coding-system))
 	(insert-file-contents 
 	 (or file (gnus-cache-file-name group ".overview"))))
       (goto-char (point-min))

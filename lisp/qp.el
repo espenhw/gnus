@@ -59,11 +59,11 @@
 	(message "Malformed MIME quoted-printable message"))))))
 
 (defun quoted-printable-decode-string (string)
- "Decode the quoted-printable-encoded STRING and return the results."
- (with-temp-buffer
-   (insert string)
-   (quoted-printable-decode-region (point-min) (point-max))
-   (buffer-string)))
+  "Decode the quoted-printable-encoded STRING and return the results."
+  (with-temp-buffer
+    (insert string)
+    (quoted-printable-decode-region (point-min) (point-max))
+    (buffer-string)))
 
 (defun quoted-printable-encode-region (from to &optional fold class)
   "QP-encode the region between FROM and TO.
@@ -73,7 +73,7 @@ matched by that regexp."
   (save-excursion
     (save-restriction
       (narrow-to-region from to)
-;;      (mm-encode-body)
+      ;;      (mm-encode-body)
       ;; Encode all the non-ascii and control characters.
       (goto-char (point-min))
       (while (and (skip-chars-forward
@@ -99,7 +99,7 @@ matched by that regexp."
 	  (end-of-line)
 	  (while (> (current-column) 72)
 	    (beginning-of-line)
-	    (forward-char 71) ;; 71 char plus an "="
+	    (forward-char 71);; 71 char plus an "="
 	    (search-backward "=" (- (point) 2) t)
 	    (insert "=\n")
 	    (end-of-line))
@@ -107,11 +107,11 @@ matched by that regexp."
 	    (forward-line)))))))
 
 (defun quoted-printable-encode-string (string)
- "QP-encode STRING and return the results."
- (mm-with-unibyte-buffer
-   (insert string)
-   (quoted-printable-encode-region (point-min) (point-max))
-   (buffer-string)))
+  "QP-encode STRING and return the results."
+  (mm-with-unibyte-buffer
+    (insert string)
+    (quoted-printable-encode-region (point-min) (point-max))
+    (buffer-string)))
 
 (provide 'qp)
 

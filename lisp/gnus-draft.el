@@ -67,8 +67,8 @@
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
     (when (set (make-local-variable 'gnus-draft-mode)
-		  (if (null arg) (not gnus-draft-mode)
-		    (> (prefix-numeric-value arg) 0)))
+	       (if (null arg) (not gnus-draft-mode)
+		 (> (prefix-numeric-value arg) 0)))
       ;; Set up the menu.
       (when (gnus-visual-p 'draft-menu 'menu)
 	(gnus-draft-make-menu-bar))
@@ -185,20 +185,20 @@
 ;;;!!!but for the time being, we'll just run this tiny function uncompiled.
 
 (progn
-(defun gnus-draft-setup (narticle group)
-  (gnus-setup-message 'forward
-    (let ((article narticle))
-      (message-mail)
-      (erase-buffer)
-      (if (not (gnus-request-restore-buffer article group))
-	  (error "Couldn't restore the article")
-	;; Insert the separator.
-	(goto-char (point-min))
-	(search-forward "\n\n")
-	(forward-char -1)
-	(insert mail-header-separator)
-	(forward-line 1)
-	(message-set-auto-save-file-name))))))
+  (defun gnus-draft-setup (narticle group)
+    (gnus-setup-message 'forward
+      (let ((article narticle))
+	(message-mail)
+	(erase-buffer)
+	(if (not (gnus-request-restore-buffer article group))
+	    (error "Couldn't restore the article")
+	  ;; Insert the separator.
+	  (goto-char (point-min))
+	  (search-forward "\n\n")
+	  (forward-char -1)
+	  (insert mail-header-separator)
+	  (forward-line 1)
+	  (message-set-auto-save-file-name))))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

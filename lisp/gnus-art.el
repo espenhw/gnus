@@ -182,7 +182,7 @@ the end of the buffer."
   :group 'gnus-article-signature)
 
 (defcustom gnus-signature-limit nil
-   "Provide a limit to what is considered a signature.
+  "Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
 that number.  If it is a floating point number, no signature may be
 longer (in lines) than that number.  If it is a function, the function
@@ -621,9 +621,9 @@ be added below it (otherwise)."
   "Function called with a MIME handle as the argument.
 This is meant for people who want to view first matched part.
 For `undisplayed-alternative' (default), the first undisplayed 
-part or alternative part is used. For `undisplayed', the first 
-undisplayed part is used. For a function, the first part which 
-the function return `t' is used. For `nil', the first part is
+part or alternative part is used.  For `undisplayed', the first 
+undisplayed part is used.  For a function, the first part which 
+the function return `t' is used.  For `nil', the first part is
 used."
   :group 'gnus-article-mime
   :type '(choice 
@@ -1434,9 +1434,9 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(mail-content-type-get ctl 'charset))))
 	     (mail-parse-charset gnus-newsgroup-charset)
 	     (mail-parse-ignored-charsets 
-             (save-excursion (condition-case nil
-                                 (set-buffer gnus-summary-buffer)
-                               (error))
+	      (save-excursion (condition-case nil
+				  (set-buffer gnus-summary-buffer)
+				(error))
 			      gnus-newsgroup-ignored-charsets))
 	     buffer-read-only)
 	(if (and ctl (not (string-match "/" (car ctl)))) 
@@ -1485,8 +1485,8 @@ or not."
 	    (mm-decode-body charset)))))))
 
 (defun article-hide-list-identifiers ()
-  "Remove any list identifiers in `gnus-list-identifiers' from Subject
-header in the current article."
+  "Remove list identifies from the Subject header.
+The `gnus-list-identifiers' variable specifies what to do."
   (interactive)
   (save-excursion
     (save-restriction
@@ -1825,7 +1825,7 @@ If HIDE, hide the text instead."
 (defun article-date-ut (&optional type highlight header)
   "Convert DATE date to universal time in the current article.
 If TYPE is `local', convert to local time; if it is `lapsed', output
-how much time has lapsed since DATE. For `lapsed', the value of
+how much time has lapsed since DATE.  For `lapsed', the value of
 `gnus-article-date-lapsed-new-header' says whether the \"X-Sent:\" header
 should replace the \"Date:\" one, or should be added below it."
   (interactive (list 'ut t))
@@ -1904,9 +1904,9 @@ should replace the \"Date:\" one, or should be added below it."
       (concat "Date: "
 	      (current-time-string
 	       (let* ((e (parse-time-string date))
-		     (tm (apply 'encode-time e))
-		     (ms (car tm))
-		     (ls (- (cadr tm) (car (current-time-zone time)))))
+		      (tm (apply 'encode-time e))
+		      (ms (car tm))
+		      (ls (- (cadr tm) (car (current-time-zone time)))))
 		 (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
 		       ((> ls 65535) (list (1+ ms) (- ls 65536)))
 		       (t (list ms ls)))))
@@ -2645,7 +2645,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (gnus-summary-mark-article article gnus-canceled-mark)
 		  (unless (memq article gnus-newsgroup-sparse)
 		    (gnus-error 1
-		     "No such article (may have expired or been canceled)")))))
+				"No such article (may have expired or been canceled)")))))
 	  (if (or (eq result 'pseudo)
 		  (eq result 'nneething))
 	      (progn
@@ -2955,7 +2955,7 @@ In no internal viewer is available, use an external viewer."
 		    ((eq condition 'undisplayed) 
 		     (not (or (mm-handle-undisplayer (cdr ihandle))
 			      (equal (mm-handle-media-type (cdr ihandle))
-				 "multipart/alternative"))))
+				     "multipart/alternative"))))
 		    ((eq condition 'undisplayed-alternative)
 		     (not (mm-handle-undisplayer (cdr ihandle))))
 		    (t t))
@@ -3106,7 +3106,7 @@ In no internal viewer is available, use an external viewer."
 	  ;; Top-level call; we clean up.
 	  (when gnus-article-mime-handles
 	    (mm-destroy-parts gnus-article-mime-handles)
-	    (setq gnus-article-mime-handle-alist nil)) ;; A trick.
+	    (setq gnus-article-mime-handle-alist nil));; A trick.
 	  (setq gnus-article-mime-handles handles)
 	  ;; We allow users to glean info from the handles.
 	  (when gnus-article-mime-part-function
@@ -4463,8 +4463,8 @@ forbidden in URL encoding."
   '(mail-decode-encoded-word-region)
   "List of methods used to decode headers.
 
-This variable is a list of FUNCTION or (REGEXP . FUNCTION). If item is
-FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
+This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item
+is FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
 (REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
 whose names match REGEXP.
 

@@ -140,7 +140,7 @@ move those articles instead."
     (buffer-disable-undo tmp-buf)
     (save-excursion
       (while articles
-	  ;; Put the article in a buffer.
+	;; Put the article in a buffer.
 	(set-buffer tmp-buf)
 	(when (gnus-request-article-this-buffer
 	       (car articles) gnus-newsgroup-name)

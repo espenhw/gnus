@@ -260,7 +260,7 @@
   (nnheader-report 'nnbabyl "nnbabyl: LIST NEWSGROUPS is not implemented."))
 
 (deffoo nnbabyl-request-expire-articles
-  (articles newsgroup &optional server force)
+    (articles newsgroup &optional server force)
   (nnbabyl-possibly-change-newsgroup newsgroup server)
   (let* ((is-old t)
 	 rest)
@@ -296,7 +296,7 @@
       (nconc rest articles))))
 
 (deffoo nnbabyl-request-move-article
-  (article group server accept-form &optional last)
+    (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnbabyl move*"))
 	result)
     (and
@@ -432,9 +432,9 @@
       (widen)
       (narrow-to-region
        (save-excursion
-	(unless (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
-	  (goto-char (point-min))
-	  (end-of-line))
+	 (unless (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	   (goto-char (point-min))
+	   (end-of-line))
 	 (if leave-delim (progn (forward-line 1) (point))
 	   (match-beginning 0)))
        (progn
@@ -558,10 +558,10 @@
   (nnbabyl-create-mbox)
 
   (unless (and nnbabyl-mbox-buffer
-	   (buffer-name nnbabyl-mbox-buffer)
-	   (save-excursion
-	     (set-buffer nnbabyl-mbox-buffer)
-	     (= (buffer-size) (nnheader-file-size nnbabyl-mbox-file))))
+	       (buffer-name nnbabyl-mbox-buffer)
+	       (save-excursion
+		 (set-buffer nnbabyl-mbox-buffer)
+		 (= (buffer-size) (nnheader-file-size nnbabyl-mbox-file))))
     ;; This buffer has changed since we read it last.  Possibly.
     (save-excursion
       (let ((delim (concat "^" nnbabyl-mail-delimiter))

@@ -83,7 +83,7 @@
   "*The program used to put a message in an NNDB group.")
 
 (defvoo nndb-server-side-expiry nil
-  "If t, expiry calculation will occur on the server side")
+  "If t, expiry calculation will occur on the server side.")
 
 (defvoo nndb-set-expire-date-on-mark nil
   "If t, the expiry date for a given article will be set to the time
@@ -152,7 +152,7 @@ article was posted to nndb")
   (nntp-send-command nil "X-TOUCH" article))
 
 (deffoo nndb-request-update-mark
-  (group article mark)
+    (group article mark)
   "Sets the expiry date for ARTICLE in GROUP to now, if the mark is 'E'"
   (if (and nndb-set-expire-date-on-mark (string-equal mark "E"))
       (nndb-touch-article group article))
@@ -299,8 +299,7 @@ Optional LAST is ignored."
     (list art)))
 
 (deffoo nndb-request-replace-article (article group buffer)
-  "ARTICLE is the number of the article in GROUP to be replaced
-with the contents of the BUFFER."
+  "ARTICLE is the number of the article in GROUP to be replaced with the contents of the BUFFER."
   (set-buffer buffer)
   (when (nntp-send-command "^[23].*\r?\n" "X-REPLACE" (int-to-string article))
     (nnheader-insert "")

@@ -331,7 +331,7 @@ variable."
     ((= unread 0) .
      gnus-group-mail-low-empty-face)
     (t .
-     gnus-group-mail-low-face))
+       gnus-group-mail-low-face))
   "*Controls the highlighting of group buffer lines.
 
 Below is a list of `Form'/`Face' pairs.  When deciding how a a
@@ -2286,12 +2286,12 @@ score file entries for articles to include in the group."
 
    An access control list is a list of (identifier . rights) elements.
 
-   The identifier string specifies the corresponding user. The
+   The identifier string specifies the corresponding user.  The
    identifier \"anyone\" is reserved to refer to the universal identity.
 
    Rights is a string listing a (possibly empty) set of alphanumeric
    characters, each character listing a set of operations which is being
-   controlled. Letters are reserved for ``standard'' rights, listed
+   controlled.  Letters are reserved for ``standard'' rights, listed
    below.  Digits are reserved for implementation or site defined rights.
 
    l - lookup (mailbox is visible to LIST/LSUB commands)
@@ -2963,7 +2963,7 @@ entail asking the server for the groups."
   ;; First we make sure that we have really read the active file.
   (unless (gnus-read-active-file-p)
     (let ((gnus-read-active-file t)
-	  (gnus-agent nil)) ; Trick the agent into ignoring the active file.
+	  (gnus-agent nil))		; Trick the agent into ignoring the active file.
       (gnus-read-active-file)))
   ;; Find all groups and sort them.
   (let ((groups
@@ -3455,19 +3455,19 @@ and the second element is the address."
     (or (not info)
 	(and (not (setq marked (nthcdr 3 info)))
 	     (or (null articles)
-                (setcdr (nthcdr 2 info)
-                        (list (list (cons type (gnus-compress-sequence
-                                                articles t)))))))
+		 (setcdr (nthcdr 2 info)
+			 (list (list (cons type (gnus-compress-sequence
+						 articles t)))))))
 	(and (not (setq m (assq type (car marked))))
 	     (or (null articles)
-                (setcar marked
-                        (cons (cons type (gnus-compress-sequence articles t) )
-                              (car marked)))))
+		 (setcar marked
+			 (cons (cons type (gnus-compress-sequence articles t) )
+			       (car marked)))))
 	(if force
 	    (if (null articles)
-               (setcar (nthcdr 3 info)
-                       (gnus-delete-alist type (car marked)))
-             (setcdr m (gnus-compress-sequence articles t)))
+		(setcar (nthcdr 3 info)
+			(gnus-delete-alist type (car marked)))
+	      (setcdr m (gnus-compress-sequence articles t)))
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))
 				  (copy-sequence articles)) '<) t))))))
@@ -3492,7 +3492,7 @@ or `gnus-group-catchup-group-hook'."
 (defun gnus-group-timestamp-delta (group)
   "Return the offset in seconds from the timestamp for GROUP to the current time, as a floating point number."
   (let* ((time (or (gnus-group-timestamp group)
-		  (list 0 0)))
+		   (list 0 0)))
          (delta (subtract-time (current-time) time)))
     (+ (* (nth 0 delta) 65536.0)
        (nth 1 delta))))

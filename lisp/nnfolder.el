@@ -40,27 +40,29 @@
   "The name of the nnfolder directory.")
 
 (defvoo nnfolder-active-file
-  (nnheader-concat nnfolder-directory "active")
+    (nnheader-concat nnfolder-directory "active")
   "The name of the active file.")
 
 ;; I renamed this variable to something more in keeping with the general GNU
 ;; style. -SLB
 
 (defvoo nnfolder-ignore-active-file nil
-  "If non-nil, causes nnfolder to do some extra work in order to determine
-the true active ranges of an mbox file.  Note that the active file is still
-saved, but it's values are not used.  This costs some extra time when
-scanning an mbox when opening it.")
+  "If non-nil, the active file is ignores.
+This causes nnfolder to do some extra work in order to determine the
+true active ranges of an mbox file.  Note that the active file is
+still saved, but it's values are not used.  This costs some extra time
+when scanning an mbox when opening it.")
 
 (defvoo nnfolder-distrust-mbox nil
-  "If non-nil, causes nnfolder to not trust the user with respect to
-inserting unaccounted for mail in the middle of an mbox file.  This can greatly
-slow down scans, which now must scan the entire file for unmarked messages.
-When nil, scans occur forward from the last marked message, a huge
-time saver for large mailboxes.")
+  "If non-nil, the folder will be distrusted.
+This means that nnfolder will not trust the user with respect to
+inserting unaccounted for mail in the middle of an mbox file.  This
+can greatly slow down scans, which now must scan the entire file for
+unmarked messages.  When nil, scans occur forward from the last marked
+message, a huge time saver for large mailboxes.")
 
 (defvoo nnfolder-newsgroups-file
-  (concat (file-name-as-directory nnfolder-directory) "newsgroups")
+    (concat (file-name-as-directory nnfolder-directory) "newsgroups")
   "Mail newsgroups description file.")
 
 (defvoo nnfolder-get-new-mail t
@@ -318,7 +320,7 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	numbers))))
 
 (deffoo nnfolder-request-expire-articles
-  (articles newsgroup &optional server force)
+    (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup server)
   (let* ((is-old t)
 	 ;; The articles we have deleted so far.
@@ -341,12 +343,12 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 				   nil t))
 	  (forward-sexp)
 	  (when (setq is-old
-		    (nnmail-expired-article-p
-		     newsgroup
-		     (buffer-substring
-		      (point) (progn (end-of-line) (point)))
-		     force nnfolder-inhibit-expiry))
-		(nnheader-message 5 "Deleting article %d..."
+		      (nnmail-expired-article-p
+		       newsgroup
+		       (buffer-substring
+			(point) (progn (end-of-line) (point)))
+		       force nnfolder-inhibit-expiry))
+	    (nnheader-message 5 "Deleting article %d..."
 			      (car maybe-expirable) newsgroup)
 	    (nnfolder-delete-mail)
 	    ;; Must remember which articles were actually deleted

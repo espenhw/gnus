@@ -46,13 +46,13 @@ on your system, you could say something like:
 \(setq nnheader-file-name-translation-alist '((?: . ?_)))")
 
 (eval-and-compile
- (autoload 'nnmail-message-id "nnmail")
- (autoload 'mail-position-on-field "sendmail")
- (autoload 'message-remove-header "message")
- (autoload 'cancel-function-timers "timers")
- (autoload 'gnus-point-at-eol "gnus-util")
- (autoload 'gnus-delete-line "gnus-util")
- (autoload 'gnus-buffer-live-p "gnus-util"))
+  (autoload 'nnmail-message-id "nnmail")
+  (autoload 'mail-position-on-field "sendmail")
+  (autoload 'message-remove-header "message")
+  (autoload 'cancel-function-timers "timers")
+  (autoload 'gnus-point-at-eol "gnus-util")
+  (autoload 'gnus-delete-line "gnus-util")
+  (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
 
@@ -649,7 +649,7 @@ The first string in ARGS can be a format string."
   "Get the most recent report from BACKEND."
   (condition-case ()
       (nnheader-message 5 "%s" (symbol-value (intern (format "%s-status-string"
-						  backend))))
+							     backend))))
     (error (nnheader-message 5 ""))))
 
 (defun nnheader-insert (format &rest args)

@@ -44,8 +44,8 @@ This method will not be used in mail groups and the like, only in
 \"real\" newsgroups.
 
 If not nil nor `native', the value must be a valid method as discussed
-in the documentation of `gnus-select-method'. It can also be a list of
-methods. If that is the case, the user will be queried for what select
+in the documentation of `gnus-select-method'.  It can also be a list of
+methods.  If that is the case, the user will be queried for what select
 method to use when posting."
   :group 'gnus-group-foreign
   :type `(choice (const nil)
@@ -504,7 +504,7 @@ If SILENT, don't prompt the user."
      ;; the default method.
      ((null group-method)
       (or (and (null (eq gnus-post-method 'active)) gnus-post-method)
-	       gnus-select-method message-post-method))
+	  gnus-select-method message-post-method))
      ;; We want the inverse of the default
      ((and arg (not (eq arg 0)))
       (if (eq gnus-post-method 'active)

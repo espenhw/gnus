@@ -506,6 +506,7 @@ If N, return the Nth ancestor instead."
 	      first 't2
 	      last 't1))
        ((gnus-functionp function)
+	;; Do nothing.
 	)
        (t
 	(error "Invalid sort spec: %s" function))))

@@ -1,3 +1,9 @@
+1999-12-04 01:34:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Fixed all the doc strings to match the FSF convetions.
+	Indent all functions.  Fix all comments to match the comment
+	conventions.  Double-space after full stop.
+
 1999-12-04 01:14:55  YAMAMOTO Kouji  <kouji@pobox.com>
 
 	* nnmail.el (nnmail-split-it): I redefined nnmail-split-fancy's

@@ -25,16 +25,15 @@
 (require 'nnmail)
 
 (defvar gnus-group-split-updated-hook nil
-  "Hook called just after nnmail-split-fancy is updated by
-gnus-group-split-update")
+  "Hook called just after nnmail-split-fancy is updated by gnus-group-split-update.")
 
 (defvar gnus-group-split-default-catch-all-group "mail.misc"
-  "Group used by gnus-group-split and gnus-group-split-update as
-default catch-all group")
+  "Group used by gnus-group-split and gnus-group-split-update as default catch-all group.")
 
 ;;;###autoload
 (defun gnus-group-split-setup (&optional auto-update catch-all)
-  "Sets things up so that nnmail-split-fancy is used for mail
+  "Set up the split for nnmail-split-fancy.
+Sets things up so that nnmail-split-fancy is used for mail
 splitting, and defines the variable nnmail-split-fancy according with
 group parameters.
 
@@ -52,19 +51,18 @@ nnmail-pre-get-new-mail-hook."
 
 ;;;###autoload
 (defun gnus-group-split-update (&optional catch-all)
-  "Computes nnmail-split-fancy from group params, by calling
-\(gnus-group-split-fancy nil nil DEFAULTGROUP)"
+  "Computes nnmail-split-fancy from group params.
+It does this by calling \(gnus-group-split-fancy nil nil DEFAULTGROUP)."
   (interactive)
   (setq nnmail-split-fancy
 	(gnus-group-split-fancy
 	 nil nil (or catch-all gnus-group-split-default-catch-all-group)))
-  (run-hooks 'gnus-group-split-updated-hook)
-  )
+  (run-hooks 'gnus-group-split-updated-hook))
 
 ;;;###autoload
 (defun gnus-group-split ()
-  "Uses information from group parameters in order to split mail.  See
-gnus-group-split-fancy for more information.
+  "Uses information from group parameters in order to split mail.
+See gnus-group-split-fancy for more information.
 
 If no group is defined as catch-all, the value of
 gnus-group-split-default-catch-all-group is used.

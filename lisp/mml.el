@@ -706,9 +706,9 @@ TYPE is the MIME type to use."
 
 (defun mml-insert-multipart (&optional type)
   (interactive (list (completing-read "Multipart type (default mixed): "
-		     '(("mixed") ("alternative") ("digest") ("parallel")
-		       ("signed") ("encrypted"))
-		     nil nil "mixed")))
+				      '(("mixed") ("alternative") ("digest") ("parallel")
+					("signed") ("encrypted"))
+				      nil nil "mixed")))
   (or type
       (setq type "mixed"))
   (mml-insert-empty-tag "multipart" 'type type)
@@ -721,26 +721,26 @@ TYPE is the MIME type to use."
   (forward-line -1))
 
 (defun mml-preview (&optional raw)
- "Display current buffer with Gnus, in a new buffer.
+  "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
- (interactive "P")
- (let ((buf (current-buffer)))
-   (switch-to-buffer (get-buffer-create 
-                     (concat (if raw "*Raw MIME preview of "
-                               "*MIME preview of ") (buffer-name))))
-   (erase-buffer)
-   (insert-buffer buf)
-   (if (re-search-forward
-	(concat "^" (regexp-quote mail-header-separator) "\n") nil t)
-       (replace-match "\n"))
-   (mml-to-mime)
-   (unless raw
-     (run-hooks 'gnus-article-decode-hook)
-     (let ((gnus-newsgroup-name "dummy"))
-      (gnus-article-prepare-display)))
-   (fundamental-mode)
-   (setq buffer-read-only t)
-   (goto-char (point-min))))
+  (interactive "P")
+  (let ((buf (current-buffer)))
+    (switch-to-buffer (get-buffer-create 
+		       (concat (if raw "*Raw MIME preview of "
+				 "*MIME preview of ") (buffer-name))))
+    (erase-buffer)
+    (insert-buffer buf)
+    (if (re-search-forward
+	 (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
+	(replace-match "\n"))
+    (mml-to-mime)
+    (unless raw
+      (run-hooks 'gnus-article-decode-hook)
+      (let ((gnus-newsgroup-name "dummy"))
+	(gnus-article-prepare-display)))
+    (fundamental-mode)
+    (setq buffer-read-only t)
+    (goto-char (point-min))))
 
 (defun mml-validate ()
   "Validate the current MML document."
