@@ -667,12 +667,13 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-delete-overlays ()
   (dolist (overlay gnus-cite-overlay-list)
-    (when (or (not (gnus-overlay-end overlay))
-	      (and (>= (gnus-overlay-end overlay) (point-min))
-		   (<= (gnus-overlay-end overlay) (point-max))))
-      (setq gnus-cite-overlay-list (delete overlay gnus-cite-overlay-list))
-      (ignore-errors
-	(gnus-delete-overlay overlay)))))
+    (ignore-errors
+      (when (or (not (gnus-overlay-end overlay))
+		(and (>= (gnus-overlay-end overlay) (point-min))
+		     (<= (gnus-overlay-end overlay) (point-max))))
+	(setq gnus-cite-overlay-list (delete overlay gnus-cite-overlay-list))
+	(ignore-errors
+	  (gnus-delete-overlay overlay))))))
 
 (defun gnus-cite-parse-wrapper ()
   ;; Wrap chopped gnus-cite-parse.

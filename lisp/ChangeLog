@@ -1,3 +1,7 @@
+2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-cite-delete-overlays): Protect against more
+	errors.
 2003-01-12  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el (sieve-upload-and-bury): New.  Suggested by
