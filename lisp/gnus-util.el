@@ -36,7 +36,6 @@
   (require 'cl)
   ;; Fixme: this should be a gnus variable, not nnmail-.
   (defvar nnmail-pathname-coding-system))
-(require 'nnheader)
 (require 'time-date)
 (require 'netrc)
 
@@ -45,7 +44,9 @@
   (autoload 'gnus-get-buffer-window "gnus-win")
   (autoload 'rmail-insert-rmail-file-header "rmail")
   (autoload 'rmail-count-new-messages "rmail")
-  (autoload 'rmail-show-message "rmail"))
+  (autoload 'rmail-show-message "rmail")
+  (autoload 'nnheader-narrow-to-headers "nnheader")
+  (autoload 'nnheader-replace-chars-in-string "nnheader"))
 
 (eval-and-compile
   (cond
@@ -233,7 +234,6 @@
 	(delete-char 1))
       (goto-char (next-single-property-change (point) prop nil (point-max))))))
 
-(require 'nnheader)
 (defun gnus-newsgroup-directory-form (newsgroup)
   "Make hierarchical directory name from NEWSGROUP name."
   (let* ((newsgroup (gnus-newsgroup-savable-name newsgroup))
@@ -1173,12 +1173,13 @@ If you find some problem with the directory separator character, try
 	(+ 10 (- x ?A)))
     (- x ?0)))
 
+;; Fixme: Do it like QP.
 (defun gnus-url-unhex-string (str &optional allow-newlines)
   "Remove %XX, embedded spaces, etc in a url.
 If optional second argument ALLOW-NEWLINES is non-nil, then allow the
 decoding of carriage returns and line feeds in the string, which is normally
 forbidden in URL encoding."
-  (setq str (or (mm-subst-char-in-string ?+ ?  str) ""))
+  (setq str (or (mm-subst-char-in-string ?+ ?  str) "")) ; why `or'?
   (let ((tmp "")
 	(case-fold-search t))
     (while (string-match "%[0-9a-f][0-9a-f]" str)
