@@ -235,11 +235,13 @@
 	 (format nnslashdot-comments-url sid nnslashdot-threshold 4 start))
 	(goto-char point)
 	(while (re-search-forward
-		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score\\([^)]+\\))"
+		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
 		nil t)
 	  (setq article (string-to-number (match-string 1))
 		subject (match-string 2)
 		score (match-string 3))
+	  (when (string-match "^Re: *" subject)
+	    (setq subject (concat "Re: " (substring subject (match-end 0)))))
 	  (forward-line 1)
 	  (if (looking-at
 	       "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")

@@ -200,14 +200,11 @@
 	  (erase-buffer)
 	  (dolist (header nnultimate-headers)
 	    (nnheader-insert-nov (cdr header)))))
-      (setcar (nthcdr 6 entry) (nth 1 entry))
-      (nnultimate-write-groups)
       'nov)))
 
 (deffoo nnultimate-request-group (group &optional server dont-check)
   (nnultimate-possibly-change-server nil server)
-  (when (or (not dont-check)
-	    (not nnultimate-groups))
+  (when (not nnultimate-groups)
     (nnultimate-request-list))
   (unless dont-check
     (nnultimate-create-mapping group))
@@ -263,7 +260,7 @@
 	    (setq forum (string-to-number (match-string 1 href)))
 	    (if (setq elem (assoc group nnultimate-groups))
 		(setcar (cdr elem) articles)
-	      (push (list group articles forum description nil nil nil)
+	      (push (list group articles forum description nil nil nil nil)
 		    nnultimate-groups))))))
     (nnultimate-write-groups)
     (nnultimate-generate-active)
@@ -278,6 +275,12 @@
 
 ;;; Internal functions
 
+(defun nnultimate-prune-days (group time)
+  "Compute the number of days to fetch info for."
+  (let ((old-time (nth 7 (assoc group nnultimate-groups))))
+    (if (null old-time)
+	1000
+      (- (time-to-days time) (time-to-days old-time)))))
 
 (defun nnultimate-create-mapping (group)
   (let* ((entry (assoc group nnultimate-groups))
@@ -285,7 +288,11 @@
 	 (topics (nth 4 entry))
 	 (mapping (nth 5 entry))
 	 (old-total (or (nth 6 entry) 1))
-	 (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
+	 (current-time (current-time))
+	 (furl
+	  (concat "forumdisplay.cgi?action=topics&number=%d&DaysPrune="
+		  (number-to-string
+		   (nnultimate-prune-days group current-time))))
 	 (furls (list (concat nnultimate-address (format furl sid))))
 	 contents forum-contents furl-fetched a subject href
 	 garticles topic tinfo old-max inc parse)
@@ -299,10 +306,10 @@
 	      (cdr (nth 2 (car (nth 2 (nnultimate-find-forum-table
 				       parse))))))
 	(setq forum-contents (nconc contents forum-contents))
-	(when (and (not mapping)
-		   (not furl-fetched))
+	(unless furl-fetched
 	  (setq furl-fetched t)
-	  ;; On the first mapping, we fetch all the forum URLs.
+	  ;; On the first time through this loop, we find all the
+	  ;; forum URLs.
 	  (dolist (a (nnweb-parse-find-all 'a parse))
 	    (let ((href (cdr (assq 'href (nth 1 a)))))
 	      (when (and href
@@ -350,6 +357,8 @@
 	    (incf old-max inc)
 	    (setcar (nthcdr 5 entry) mapping)
 	    (setcar (nthcdr 6 entry) old-total)))))
+    (setcar (nthcdr 7 entry) current-time)
+    (setcar (nthcdr 1 entry) old-total)
     (nnultimate-write-groups)
     mapping))
 
