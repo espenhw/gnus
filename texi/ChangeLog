@@ -1,5 +1,10 @@
 2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* gnus.texi (Mail Source Specifiers, IMAP, Agent and IMAP):
+	Improve IMAP discussion.
+
+2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* message.texi (Message Headers): `message-generate-headers-first'.
 
 2001-02-06 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>

@@ -11424,10 +11424,11 @@ Two example maildir mail sources:
 @end lisp
 
 @item imap
-Get mail from a @sc{imap} server.  If you don't want to use @sc{imap} as
-intended, as a network mail reading protocol (ie with nnimap), for some
-reason or other, Gnus let you treat it similar to a POP server and
-fetches articles from a given @sc{imap} mailbox.
+Get mail from a @sc{imap} server.  If you don't want to use @sc{imap}
+as intended, as a network mail reading protocol (ie with nnimap), for
+some reason or other, Gnus let you treat it similar to a POP server
+and fetches articles from a given @sc{imap} mailbox.  @xref{IMAP}, for
+more information.
 
 Keywords:
 
@@ -13822,9 +13823,25 @@ So, to use this, simply say something like:
 @cindex @sc{imap}
 
 @sc{imap} is a network protocol for reading mail (or news, or ...),
-think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap} server
-is much similar to connecting to a news server, you just specify the
-network address of the server.
+think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap}
+server is much similar to connecting to a news server, you just
+specify the network address of the server.
+
+@sc{imap} has two properties.  First, @sc{imap} can do everything that
+POP can, it can hence be viewed as POP++.  Secondly, @sc{imap} is a
+mail storage protocol, similar to @sc{nntp} being a news storage
+protocol.  (@sc{imap} offers more features than @sc{nntp} because news
+is more or less read-only whereas mail is read-write.)
+
+If you want to use @sc{imap} as POP++, use an imap entry in
+mail-sources.  With this, Gnus will fetch mails from the @sc{imap}
+server and store them on the local disk.  This is not the usage
+described in this section.  @xref{Mail Sources}.
+
+If you want to use @sc{imap} as a mail storage protocol, use an nnimap
+entry in gnus-secondary-select-methods.  With this, Gnus will
+manipulate mails stored on the @sc{imap} server.  This is the kind of
+usage explained in this section.
 
 A server configuration in @code{~/.gnus} with a few @sc{imap} servers
 might look something like this:
@@ -13926,7 +13943,7 @@ SSL). Require the external library @samp{starttls.el} and program
 @dfn{ssl:} Connect through SSL. Require OpenSSL (the
 program @samp{openssl}) or SSLeay (@samp{s_client}).
 @item
-@dfn{shell:} Use a shell command to start IMAP connection.
+@dfn{shell:} Use a shell command to start @sc{imap} connection.
 @item
 @dfn{network:} Plain, TCP/IP network connection.
 @end itemize
@@ -13948,7 +13965,7 @@ to OpenSSL/SSLeay.
 
 @vindex imap-shell-program
 @vindex imap-shell-host
-For IMAP connections using the @code{shell} stream, the variable
+For @sc{imap} connections using the @code{shell} stream, the variable
 @code{imap-shell-program} specify what program to call.
 
 @item nnimap-authenticator
@@ -15061,13 +15078,13 @@ unread, ticked and dormant articles will be kept indefinitely.
 @node Agent and IMAP
 @subsection Agent and IMAP
 
-The Agent work with any Gnus backend, including nnimap.  However, since
-there are some conceptual differences between NNTP and IMAP, this
-section (should) provide you with some information to make Gnus Agent
-work smoother as a IMAP Disconnected Mode client.
+The Agent work with any Gnus backend, including nnimap.  However,
+since there are some conceptual differences between @sc{nntp} and
+@sc{imap}, this section (should) provide you with some information to
+make Gnus Agent work smoother as a @sc{imap} Disconnected Mode client.
 
 The first thing to keep in mind is that all flags (read, ticked, etc)
-are kept on the IMAP server, rather than in @code{.newsrc} as is the
+are kept on the @sc{imap} server, rather than in @code{.newsrc} as is the
 case for nntp.  Thus Gnus need to remember flag changes when
 disconnected, and synchronize these flags when you plug back in.
 
@@ -15090,7 +15107,7 @@ re-connect, this can be done manually with the
 in the group buffer by default.
 
 Some things are currently not implemented in the Agent that you'd might
-expect from a disconnected IMAP client, including:
+expect from a disconnected @sc{imap} client, including:
 
 @itemize @bullet
 
@@ -18822,7 +18839,7 @@ names who could possibly mess up Gnus internally (like allowing
 @samp{:} in a group name, which is normally used to delimit method and
 group).
 
-IMAP users might want to allow @samp{/} in group names though.
+@sc{imap} users might want to allow @samp{/} in group names though.
 
 
 @end table
