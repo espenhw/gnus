@@ -195,7 +195,7 @@
 	dir)
     ;; Recurse down directories.
     (while (setq dir (pop dirs))
-      (when (and (not (string-match "/\\.\\.?$" dir))
+      (when (and (not (member (file-name-nondirectory file) '("." "..")))
 		 (file-directory-p dir)
 		 (file-readable-p dir))
 	(nnmh-request-list-1 dir))))

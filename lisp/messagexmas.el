@@ -66,6 +66,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 (defun message-xmas-setup-toolbar (bar &optional force package)
   (let ((dir (message-xmas-find-glyph-directory package))
+	(xpm (if (featurep 'xpm) "xpm" "xbm"))
 	icon up down disabled name)
     (unless package
       (setq message-xmas-glyph-directory dir))
@@ -77,9 +78,9 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	  (setq icon (aref (car bar) 0)
 		name (symbol-name icon)
 		bar (cdr bar))
-	  (setq up (concat dir name "-up.xpm"))
-	  (setq down (concat dir name "-down.xpm"))
-	  (setq disabled (concat dir name "-disabled.xpm"))
+	  (setq up (concat dir name "-up." xpm))
+	  (setq down (concat dir name "-down." xpm))
+	  (setq disabled (concat dir name "-disabled." xpm))
 	  (if (not (file-exists-p up))
 	      (set icon nil)
 	    (set icon (toolbar-make-button-list

@@ -1,3 +1,17 @@
+Mon Jun 10 03:21:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Various Message Variables): Addition.
+
+Sun Jun  9 23:36:12 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.texi (Composing Messages): Reference Message.
+
+Sun Jun  9 05:43:26 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* Makefile (all): Don't make refcard by default.
+
+	* gnus.texi (Canceling and Superseding): Delatia.
+
 Wed Jun  5 20:25:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.texi (Message Buffers): Add menu entry.

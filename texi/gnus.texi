@@ -3155,13 +3155,6 @@ Go to the original article and press @kbd{S s}
 where you can edit the article all you want before sending it off the
 usual way.
 
-@vindex gnus-delete-supersedes-headers
-You probably want to delete some of the old headers before sending the
-superseding article---@code{Path} and @code{Date} are probably
-incorrect.  Set @code{gnus-delete-supersedes-headers} to a regexp to
-match the lines you want removed.  The default is
-@samp{^Path:\\|^Date}. 
-
 The same goes for superseding as for canceling, only more so: Some
 sites do not honor superseding.  On those sites, it will appear that you
 have posted almost the same article twice.
@@ -6380,9 +6373,10 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @kindex C-c C-c (Post)
 All commands for posting and mailing will put you in a message buffer
 where you can edit the article all you like, before you send the article
-by pressing @kbd{C-c C-c}.  If you are in a foreign news group, and you
-wish to post the article using the foreign server, you can give a prefix
-to @kbd{C-c C-c} to make Gnus try to post using the foreign server.
+by pressing @kbd{C-c C-c}.  (@pxref{(message)Top}).  If you are in a
+foreign news group, and you wish to post the article using the foreign
+server, you can give a prefix to @kbd{C-c C-c} to make Gnus try to post
+using the foreign server.
 
 @menu 
 * Mail::                 Mailing and replying.

@@ -389,7 +389,7 @@ on your system, you could say something like:
 
 (put 'nnheader-temp-write 'lisp-indent-function 1)
 (put 'nnheader-temp-write 'lisp-indent-hook 1)
-(put 'nnheader-temp-write 'edebug-form-spec '(file &rest form))
+(put 'nnheader-temp-write 'edebug-form-spec '(form body))
 
 (defvar jka-compr-compression-info-list)
 (defvar nnheader-numerical-files

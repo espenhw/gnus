@@ -36,25 +36,25 @@ If this variable is nil, Gnus will try to locate the directory
 automatically.")
 
 (defvar gnus-xmas-logo-color-alist
-  '((flame "##cc3300" "##ff2200") 
-    (pine "##c0cc93" "##f8ffb8") 
-    (moss "##a1cc93" "##d2ffb8")
-    (irish "##04cc90" "##05ff97")
-    (sky "##049acc" "##05deff")
-    (tin "##6886cc" "##82b6ff")
-    (velvet "##7c68cc" "##8c82ff")
-    (grape "##b264cc" "##cf7df")
-    (labia "##cc64c2" "##fd7dff")
-    (berry "##cc6485" "##ff7db5")
-    (neutral "##b4b4b4" "##878787")
+  '((flame "#cc3300" "#ff2200") 
+    (pine "#c0cc93" "#f8ffb8") 
+    (moss "#a1cc93" "#d2ffb8")
+    (irish "#04cc90" "#05ff97")
+    (sky "#049acc" "#05deff")
+    (tin "#6886cc" "#82b6ff")
+    (velvet "#7c68cc" "#8c82ff")
+    (grape "#b264cc" "#cf7df")
+    (labia "#cc64c2" "#fd7dff")
+    (berry "#cc6485" "#ff7db5")
+    (neutral "#b4b4b4" "#878787")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
 
 (defvar gnus-xmas-logo-color-style 'september
   "Color styles used for the Gnus logo.")
 
-(defvar gnus-xmas-logo-colors (cdr (assq gnus-xmas-logo-color-style 
-					 gnus-xmas-logo-color-alist))
+(defvar gnus-xmas-logo-colors
+  (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
 ;;; Internal variables.
@@ -137,6 +137,7 @@ displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   (when gnus-auto-center-summary
+    (sit-for 0)
     (let* ((height (if (fboundp 'window-displayed-height)
 		       (window-displayed-height)
 		     (- (window-height) 2)))

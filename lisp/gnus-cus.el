@@ -597,13 +597,13 @@ ticked: The number of ticked articles.")
 	       ((= unread 0) . italic)))
 	    ((eq gnus-background-mode 'dark)
 	     `(((and (not mailp) (eq level 1)) .
-		,(custom-face-lookup "LemonChiffon1" nil nil t))
+		,(custom-face-lookup "PaleTurquoise" nil nil t))
 	       ((and (not mailp) (eq level 2)) .
-		,(custom-face-lookup "LemonChiffon2" nil nil t))
+		,(custom-face-lookup "turquoise" nil nil t))
 	       ((and (not mailp) (eq level 3)) .
-		,(custom-face-lookup "LemonChiffon3" nil nil t))
+		,(custom-face-lookup "MediumTurquoise" nil nil t))
 	       ((and (not mailp) (>= level 4)) .
-		,(custom-face-lookup "LemonChiffon4" nil nil t))
+		,(custom-face-lookup "DarkTurquoise" nil nil t))
 	       ((and mailp (eq level 1)) .
 		,(custom-face-lookup "aquamarine1" nil nil t))
 	       ((and mailp (eq level 2)) .

@@ -865,7 +865,7 @@ SCORE is the score to add."
 	  (adapt (gnus-score-get 'adapt alist))
 	  (thread-mark-and-expunge
 	   (car (gnus-score-get 'thread-mark-and-expunge alist)))
-	  (adapt-file (car (gnus-score-get 'adapt-file)))
+	  (adapt-file (car (gnus-score-get 'adapt-file alist)))
 	  (local (gnus-score-get 'local alist))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; We do not respect eval and files atoms from global score
@@ -1057,7 +1057,9 @@ SCORE is the score to add."
 	    (setq score (setcdr entry (delq (assq 'touched score) score)))
 	    (erase-buffer)
 	    (let (emacs-lisp-mode-hook)
-	      (if (string-match (concat gnus-adaptive-file-suffix "$") file)
+	      (if (string-match 
+		   (concat (regexp-quote gnus-adaptive-file-suffix)
+			   "$") file)
 		  ;; This is an adaptive score file, so we do not run
 		  ;; it through `pp'.  These files can get huge, and
 		  ;; are not meant to be edited by human hands.
@@ -1859,17 +1861,17 @@ SCORE is the score to add."
 	trace)
     (setq gnus-score-trace nil)
     (gnus-possibly-score-headers 'trace)
-    (or (setq trace gnus-score-trace)
-	(error "No score rules apply to the current article."))
-    (pop-to-buffer "*Gnus Scores*")
-    (gnus-add-current-to-buffer-list)
-    (erase-buffer)
-    (while trace
-      (insert (format "%S  ->  %s\n" (cdar trace)
-		      (file-name-nondirectory (caar trace))))
-      (setq trace (cdr trace)))
-    (goto-char (point-min))
-    (pop-to-buffer buf)))
+    (if (not (setq trace gnus-score-trace))
+	(gnus-error 1 "No score rules apply to the current article.")
+      (pop-to-buffer "*Gnus Scores*")
+      (gnus-add-current-to-buffer-list)
+      (erase-buffer)
+      (while trace
+	(insert (format "%S  ->  %s\n" (cdar trace)
+			(file-name-nondirectory (caar trace))))
+	(setq trace (cdr trace)))
+      (goto-char (point-min))
+      (pop-to-buffer buf))))
 
 (defun gnus-summary-rescore ()
   "Redo the entire scoring process in the current summary."
@@ -2005,7 +2007,7 @@ SCORE is the score to add."
     (while (setq file (pop files))
       (cond 
        ;; Ignore "." and "..".
-       ((string-match "/\\.\\.?\\'" file)
+       ((member (file-name-nondirectory file) '("." ".."))
 	nil)
        ;; Recurse down directories.
        ((file-directory-p file)
@@ -2019,8 +2021,8 @@ SCORE is the score to add."
        
 (defun gnus-score-file-regexp ()
   "Return a regexp that match all score files."
-  (concat "\\(" gnus-score-file-suffix 
-	  "\\|" gnus-adaptive-file-suffix "\\)\\'"))
+  (concat "\\(" (regexp-quote gnus-score-file-suffix )
+	  "\\|" (regexp-quote gnus-adaptive-file-suffix) "\\)\\'"))
 	
 (defun gnus-score-find-bnews (group)
   "Return a list of score files for GROUP.
@@ -2067,7 +2069,12 @@ GROUP using BNews sys file syntax."
 		 (search-forward "+")
 		 (forward-char -1)
 		 (insert "\\")))
+	  ;; Kludge to deal with "++".
+	  (goto-char (point-min))
+	  (while (search-forward "++" nil t)
+	    (replace-match "\\+\\+" t t))
 	  ;; Translate "all" to ".*".
+	  (goto-char (point-min))
 	  (while (search-forward "all" nil t)
 	    (replace-match ".*" t t))
 	  (goto-char (point-min))

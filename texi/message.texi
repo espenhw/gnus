@@ -251,8 +251,8 @@ If this variable is @code{t}, which it is by default, your personal
 signature will be inserted before the forwarded message.  If not, the
 forwarded message will be inserted first in the new mail.
 
-@item message-forward-included-headers
-@vindex message-forward-included-headers
+@item message-included-forward-headers
+@vindex message-included-forward-headers
 Regexp matching header lines to be included in forwarded messages.  
 
 @end table
@@ -862,9 +862,14 @@ Directory used by many mailey things.  The default is @file{~/Mail/}.
 @vindex message-autosave-directory
 Directory where message buffers will be autosaved to.
 
+@item message-signature-setup-hook
+@vindex message-signature-setup-hook
+Hook run when initializing the message buffer.  It is run after the
+headers have been inserted but before the signature has been inserted. 
+
 @item message-setup-hook
 @vindex message-setup-hook
-Hook run when the message buffer has been initialized.
+Hook run as the last thing when the message buffer has been initialized.
 
 @item message-header-setup-hook
 @vindex message-header-setup-hook

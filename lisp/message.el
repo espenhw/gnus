@@ -123,8 +123,7 @@ included.  Organization, Lines and X-Mailer are optional.")
   "*Regexp of headers to be removed unconditionally before mailing.")
 
 ;;;###autoload
-(defvar message-ignored-supersedes-headers
-  "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|Return-Path:"
+(defvar message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|Return-Path:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion.")
@@ -252,6 +251,11 @@ always use the value.")
 (defvar message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
 The function `message-setup' runs this hook.")
+
+(defvar message-signature-setup-hook nil
+  "Normal hook, run each time a new outgoing message is initialized.
+It is run after the headers have been inserted and before 
+the signature is inserted.")
 
 (defvar message-mode-hook nil
   "Hook run in message mode buffers.")
@@ -1561,9 +1565,10 @@ the user from the mailer."
 	   (while (and headers (not error))
 	     (when (setq header (mail-fetch-field (car headers)))
 	       (if (or
-		    (not (string-match
-			  "\\`\\([-.a-zA-Z0-9]+\\)?\\(,[-.a-zA-Z0-9]+\\)*\\'"
-			  header))
+		    (not 
+		     (string-match
+		      "\\`\\([-+_&.a-zA-Z0-9]+\\)?\\(,[-.a-zA-Z0-9]+\\)*\\'"
+		      header))
 		    (memq 
 		     nil (mapcar 
 			  (lambda (g)
@@ -2294,6 +2299,7 @@ Headers already prepared in the buffer are not modified."
        (delq 'Lines
 	     (delq 'Subject
 		   (copy-sequence message-required-mail-headers))))))
+  (run-hooks 'message-signature-setup-hook)
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction

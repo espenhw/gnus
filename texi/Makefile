@@ -6,7 +6,7 @@ LATEX=latex
 DVIPS=dvips
 PERL=perl
 
-all: gnus.info message.info refcard.dvi 
+all: gnus.info message.info 
 
 most: texi2latexi.elc latex latexps
 

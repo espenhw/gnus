@@ -193,7 +193,7 @@ The buffer is not selected, just returned to the caller."
     (fset 'nnheader-insert-file-contents-literally
 	  'insert-file-contents-literally)
     ))
-  (when (memq system-type '())
+  (when (memq system-type '(windows-nt))
     (add-hook 'nnmail-prepare-incoming-hook 'nnheader-ms-strip-cr)))
 
 (provide 'nnheaderems)

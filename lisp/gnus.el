@@ -144,7 +144,11 @@ see the manual for details.")
     (nnfolder-get-new-mail nil)
     (nnfolder-inhibit-expiry t))
   "*Method used for archiving messages you've sent.
-This should be a mail method.")
+This should be a mail method.
+
+It's probably not a very effective to change this variable once you've
+run Gnus once.  After doing that, you must edit this server from the
+server buffer.")
 
 (defvar gnus-refer-article-method nil
   "*Preferred method for fetching an article by Message-ID.
@@ -1728,7 +1732,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.12"
+(defconst gnus-version-number "5.2.13"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2126,6 +2130,10 @@ Thank you for your help in stamping out bugs.
 	       (pop-to-buffer ,buf))
 	     ,@forms)
 	 (select-window ,tempvar)))))
+
+(put 'gnus-eval-in-buffer-window 'lisp-indent-function 1)
+(put 'gnus-eval-in-buffer-window 'lisp-indent-hook 1)
+(put 'gnus-eval-in-buffer-window 'edebug-form-spec '(form body))
 
 (defmacro gnus-gethash (string hashtable)
   "Get hash value of STRING in HASHTABLE."
@@ -6513,7 +6521,8 @@ If N is negative, this group and the N-1 previous groups will be checked."
     (cond (current-prefix-arg
 	   (completing-read
 	    "Faq dir: " (and (listp gnus-group-faq-directory)
-			     gnus-group-faq-directory))))))
+			     (mapcar (lambda (file) (list file))
+				     gnus-group-faq-directory)))))))
   (or faq-dir
       (setq faq-dir (if (listp gnus-group-faq-directory)
 			(car gnus-group-faq-directory)
@@ -10500,9 +10509,8 @@ article."
 	      (not (equal (car gnus-article-current) gnus-newsgroup-name)))
 	  ;; Selected subject is different from current article's.
 	  (gnus-summary-display-article article)
-	(gnus-eval-in-buffer-window
-	 gnus-article-buffer
-	 (setq endp (gnus-article-next-page lines)))
+	(gnus-eval-in-buffer-window gnus-article-buffer
+	  (setq endp (gnus-article-next-page lines)))
 	(if endp
 	    (cond (circular
 		   (gnus-summary-beginning-of-article))
@@ -10531,7 +10539,7 @@ Argument LINES specifies lines to be scrolled down."
 	(gnus-summary-display-article article)
       (gnus-summary-recenter)
       (gnus-eval-in-buffer-window gnus-article-buffer
-				  (gnus-article-prev-page lines))))
+	(gnus-article-prev-page lines))))
   (gnus-summary-position-point))
 
 (defun gnus-summary-scroll-up (lines)
@@ -10542,13 +10550,12 @@ Argument LINES specifies lines to be scrolled up (or down if negative)."
   (gnus-configure-windows 'article)
   (gnus-summary-show-thread)
   (when (eq (gnus-summary-select-article nil nil 'pseudo) 'old)
-    (gnus-eval-in-buffer-window
-     gnus-article-buffer
-     (cond ((> lines 0)
-	    (if (gnus-article-next-page lines)
-		(gnus-message 3 "End of message")))
-	   ((< lines 0)
-	    (gnus-article-prev-page (- lines))))))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (cond ((> lines 0)
+	     (if (gnus-article-next-page lines)
+		 (gnus-message 3 "End of message")))
+	    ((< lines 0)
+	     (gnus-article-prev-page (- lines))))))
   (gnus-summary-recenter)
   (gnus-summary-position-point))
 
@@ -11152,10 +11159,9 @@ If REGEXP-P (the prefix) is non-nil, do regexp isearch."
   (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
-  (gnus-eval-in-buffer-window
-   gnus-article-buffer
-   (goto-char (point-min))
-   (isearch-forward regexp-p)))
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (goto-char (point-min))
+    (isearch-forward regexp-p)))
 
 (defun gnus-summary-search-article-forward (regexp &optional backward)
   "Search for an article containing REGEXP forward.
@@ -11295,11 +11301,10 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
   (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
-  (gnus-eval-in-buffer-window
-   gnus-article-buffer
-   (widen)
-   (goto-char (point-min))
-   (and gnus-break-pages (gnus-narrow-to-page))))
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (widen)
+    (goto-char (point-min))
+    (and gnus-break-pages (gnus-narrow-to-page))))
 
 (defun gnus-summary-end-of-article ()
   "Scroll to the end of the article."
@@ -11307,12 +11312,11 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
   (gnus-set-global-variables)
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
-  (gnus-eval-in-buffer-window
-   gnus-article-buffer
-   (widen)
-   (goto-char (point-max))
-   (recenter -3)
-   (and gnus-break-pages (gnus-narrow-to-page))))
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (widen)
+    (goto-char (point-max))
+    (recenter -3)
+    (and gnus-break-pages (gnus-narrow-to-page))))
 
 (defun gnus-summary-show-article (&optional arg)
   "Force re-fetching of the current article.
@@ -11400,21 +11404,21 @@ forward."
   (gnus-set-global-variables)
   (gnus-summary-select-article)
   (let ((mail-header-separator ""))
-    (gnus-eval-in-buffer-window
-     gnus-article-buffer
-     (save-restriction
-       (widen)
-       (let ((start (window-start))
-	     buffer-read-only)
-	 (message-caesar-buffer-body arg)
-	 (set-window-start (get-buffer-window (current-buffer)) start))))))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (save-restriction
+	(widen)
+	(let ((start (window-start))
+	      buffer-read-only)
+	  (message-caesar-buffer-body arg)
+	  (set-window-start (get-buffer-window (current-buffer)) start))))))
 
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  (gnus-eval-in-buffer-window gnus-article-buffer (widen)))
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (widen)))
 
 (defun gnus-summary-move-article (&optional n to-newsgroup select-method action)
   "Move the current article to a different newsgroup.
@@ -13178,12 +13182,11 @@ Directory to save to is default to `gnus-article-save-directory'."
 		(t (gnus-read-save-file-name
 		    "Save in rmail file:" default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window
-     gnus-original-article-buffer
-     (save-excursion
-       (save-restriction
-	 (widen)
-	 (gnus-output-to-rmail filename))))
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (gnus-output-to-rmail filename))))
     ;; Remember the directory name to save articles
     (setq gnus-newsgroup-last-rmail filename)))
 
@@ -13207,15 +13210,14 @@ Directory to save to is default to `gnus-article-save-directory'."
 			    (and default-name
 				 (file-name-directory default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window
-     gnus-original-article-buffer
-     (save-excursion
-       (save-restriction
-	 (widen)
-	 (if (and (file-readable-p filename) (mail-file-babyl-p filename))
-	     (gnus-output-to-rmail filename)
-	   (let ((mail-use-rfc822 t))
-	     (rmail-output filename 1 t t))))))
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (if (and (file-readable-p filename) (mail-file-babyl-p filename))
+	      (gnus-output-to-rmail filename)
+	    (let ((mail-use-rfc822 t))
+	      (rmail-output filename 1 t t))))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail filename)))
 
@@ -13235,12 +13237,11 @@ Directory to save to is default to `gnus-article-save-directory'."
 		(t (gnus-read-save-file-name
 		    "Save in file:" default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window
-     gnus-original-article-buffer
-     (save-excursion
-       (save-restriction
-	 (widen)
-	 (gnus-output-to-file filename))))
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (gnus-output-to-file filename))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-file filename)))
 
@@ -13260,15 +13261,14 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		(t (gnus-read-save-file-name
 		    "Save body in file:" default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window
-     gnus-article-buffer
-     (save-excursion
-       (save-restriction
-	 (widen)
-	 (goto-char (point-min))
-	 (and (search-forward "\n\n" nil t)
-	      (narrow-to-region (point) (point-max)))
-	 (gnus-output-to-file filename))))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (goto-char (point-min))
+	  (and (search-forward "\n\n" nil t)
+	       (narrow-to-region (point) (point-max)))
+	  (gnus-output-to-file filename))))
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-file filename)))
 
@@ -13284,11 +13284,10 @@ The directory to save in defaults to `gnus-article-save-directory'."
 			      gnus-last-shell-command))))
   (if (string-equal command "")
       (setq command gnus-last-shell-command))
-  (gnus-eval-in-buffer-window
-   gnus-article-buffer
-   (save-restriction
-     (widen)
-     (shell-command-on-region (point-min) (point-max) command nil)))
+  (gnus-eval-in-buffer-window gnus-article-buffer
+    (save-restriction
+      (widen)
+      (shell-command-on-region (point-min) (point-max) command nil)))
   (setq gnus-last-shell-command command))
 
 ;; Summary extract commands
@@ -13894,7 +13893,7 @@ Provided for backwards compatibility."
   "Toggle whether to hide unwanted headers and possibly sort them as well.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive "P")
+  (interactive (gnus-hidden-arg))
   (if (gnus-article-check-hidden-text 'headers arg)
       ;; Show boring headers as well.
       (gnus-article-show-hidden-text 'boring-headers)
@@ -13966,7 +13965,7 @@ always hide."
   "Toggle hiding of headers that aren't very interesting.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive "P")
+  (interactive (gnus-hidden-arg))
   (unless (gnus-article-check-hidden-text 'boring-headers arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
@@ -14205,7 +14204,7 @@ or not."
   "Toggle hiding of any PGP headers and signatures in the current article.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive "P")
+  (interactive (gnus-hidden-arg))
   (unless (gnus-article-check-hidden-text 'pgp arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
@@ -14240,7 +14239,7 @@ always hide."
   "Hide the signature in the current article.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive "P")
+  (interactive (gnus-hidden-arg))
   (unless (gnus-article-check-hidden-text 'signature arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
@@ -14285,19 +14284,29 @@ always hide."
       (narrow-to-region (point) (point-max))
       t)))
 
+(defun gnus-hidden-arg ()
+  "Return the current prefix arg as a number, or 0 if no prefix."
+  (list (if current-prefix-arg
+	    (prefix-numeric-value current-prefix-arg)
+	  0)))
+
 (defun gnus-article-check-hidden-text (type arg)
-  "Return nil if hiding is necessary."
+  "Return nil if hiding is necessary.
+Arg can be nil or a number.  Nil and positive means hide, negative
+means show, 0 means toggle."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((hide (gnus-article-hidden-text-p type)))
-      (cond ((or (and (null arg) (eq hide 'hidden))
-		 (and arg (< (prefix-numeric-value arg) 1)))
-	     (gnus-article-show-hidden-text type))
-	    ((and (numberp arg) (> (prefix-numeric-value arg) 0))
-	     nil)
-	    ((eq hide 'shown)
-	     (gnus-article-show-hidden-text type t))
-	    (t nil)))))
+      (cond
+       ((or (null arg)
+	    (> arg 0))
+	nil)
+       ((< arg 0)
+	(gnus-article-show-hidden-text type))
+       (t
+	(if (eq hide 'hidden)
+	    (gnus-article-show-hidden-text type)
+	  nil))))))
 
 (defun gnus-article-hidden-text-p (type)
   "Say whether the current buffer contains hidden text of type TYPE."
@@ -14711,7 +14720,7 @@ Argument LINES specifies lines to be scrolled down."
   (let ((nosaves
 	 '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"	"a" "f" "F"
 	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
-	   "=" "^" "\M-^"))
+	   "=" "^" "\M-^" "|"))
 	keys)
     (save-excursion
       (set-buffer gnus-summary-buffer)

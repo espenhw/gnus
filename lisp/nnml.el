@@ -681,7 +681,7 @@ all. This may very well take some time.")
 	dir)
     (while dirs 
       (setq dir (pop dirs))
-      (when (and (not (string-match "/\\.\\.?$" dir))
+      (when (and (not (member (file-name-nondirectory file) '("." "..")))
 		 (file-directory-p dir))
 	(nnml-generate-nov-databases-1 dir))))
   ;; Do this directory.

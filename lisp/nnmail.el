@@ -236,7 +236,7 @@ Example:
     (mail . "mailer-daemon\\|postmaster"))
   "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
-(defvar nnmail-delete-incoming nil
+(defvar nnmail-delete-incoming t
   "*If non-nil, the mail backends will delete incoming files after splitting.")
 
 (defvar nnmail-message-id-cache-length 1000
