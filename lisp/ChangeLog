@@ -1,4 +1,14 @@
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* gnus.el: Add article-unsplit-urls.
+	* gnus-sum.el: Ditto.
+	* gnus-art.el (gnus-treat-strip-cr): New variable.
+	(gnus-treatment-function-alist): Use it.
+	(article-unsplit-urls): New function.
+	(gnus-article-make-menu-bar): Use it.
+	From: Michael Cook <michael.cook@cisco.com>
+
+2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-braid-nov): Find the first article to
 	copy.

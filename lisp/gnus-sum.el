@@ -1740,6 +1740,7 @@ increase the score of each group you read."
     "6" gnus-article-de-base64-unreadable
     "Z" gnus-article-decode-HZ
     "h" gnus-article-wash-html
+    "u" gnus-article-unsplit-urls
     "s" gnus-summary-force-verify-and-decrypt
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
@@ -1964,6 +1965,7 @@ increase the score of each group you read."
 	      ["Unfold headers" gnus-article-treat-unfold-headers t]
 	      ["Fold newsgroups" gnus-article-treat-fold-newsgroups t]
 	      ["Html" gnus-article-wash-html t]
+	      ["URLs" gnus-article-unsplit-urls t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t])
 	     ("Output"
