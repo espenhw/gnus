@@ -280,7 +280,7 @@ typical complete file name would be
 (defvoo nnimap-nov-file-name-suffix ".novcache"
   "Suffix for NOV cache base filename.")
 
-(defvoo nnimap-nov-is-evil t
+(defvoo nnimap-nov-is-evil gnus-agent
   "If non-nil, never generate or use a local nov database for this backend.
 Using nov databases should speed up header fetching considerably.
 However, it will invoke a UID SEARCH UID command on the server, and
