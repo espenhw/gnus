@@ -1,5 +1,5 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1570,15 +1570,16 @@ See the documentation for the variable `nnmail-split-fancy' for details."
       (save-excursion
 	(set-buffer nnmail-cache-buffer)
 	(goto-char (point-max))
-	(if (and grp (not (string= "" grp))
-		 (gnus-methods-equal-p gnus-command-method
-				       (nnmail-cache-primary-mail-backend)))
+	(if (and grp (not (string= "" grp)))
 	    (let ((regexp (if (consp nnmail-cache-ignore-groups)
 			      (mapconcat 'identity nnmail-cache-ignore-groups
 					 "\\|")
 			    nnmail-cache-ignore-groups)))
 	      (unless (and regexp (string-match regexp grp))
-		(insert id "\t" grp "\n")))
+		(if (gnus-methods-equal-p gnus-command-method
+					  (nnmail-cache-primary-mail-backend))
+		    (insert id "\t" grp "\n")
+		  (insert id "\n"))))
 	  (insert id "\n"))))))
   
 (defun nnmail-cache-primary-mail-backend ()
