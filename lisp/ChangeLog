@@ -1,5 +1,11 @@
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-default-article-saver): Add
+	gnus-summary-save-body-in-file.
+	(gnus-summary-write-to-file): Fix doc.
+
+2001-11-07  Simon Josefsson  <jas@extundo.com>
+
 	* gnus-art.el (gnus-treat-highlight-signature): Add cross
 	reference to the correct chapter in the manual.
 

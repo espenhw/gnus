@@ -410,6 +410,7 @@ Gnus provides the following functions:
 * gnus-summary-save-in-mail (Unix mail format)
 * gnus-summary-save-in-folder (MH folder)
 * gnus-summary-save-in-file (article format)
+* gnus-summary-save-body-in-file (article body)
 * gnus-summary-save-in-vm (use VM's folder format)
 * gnus-summary-write-to-file (article format -- overwrite)."
   :group 'gnus-article-saving
@@ -417,6 +418,7 @@ Gnus provides the following functions:
 		(function-item gnus-summary-save-in-mail)
 		(function-item gnus-summary-save-in-folder)
 		(function-item gnus-summary-save-in-file)
+		(function-item gnus-summary-save-body-in-file)
 		(function-item gnus-summary-save-in-vm)
 		(function-item gnus-summary-write-to-file)))
 
@@ -2712,7 +2714,7 @@ Directory to save to is default to `gnus-article-save-directory'."
   filename)
 
 (defun gnus-summary-write-to-file (&optional filename)
-  "Write this article to a file.
+  "Write this article to a file, overwriting it if the file exists.
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (gnus-summary-save-in-file nil t))
