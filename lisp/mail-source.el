@@ -66,6 +66,11 @@ This variable is a list of mail source specifiers."
   "A dynamically bound string that says what the current mail source is.")
 
 (eval-and-compile
+  (defvar mail-source-common-keyword-map
+    '((:plugged))
+    "Mapping from keywords to default values.
+Common keywords should be listed here.")
+
   (defvar mail-source-keyword-map
     '((file
        (:prescript)
@@ -121,6 +126,8 @@ All keywords that can be used must be listed here."))
 
 (defvar mail-source-password-cache nil)
 
+(defvar mail-source-plugged t)
+
 ;;; Functions
 
 (eval-and-compile
@@ -168,6 +175,39 @@ the `mail-source-keyword-map' variable."
 	       (mail-source-value value)
 	     (mail-source-value (cadr default)))))))
 
+(eval-and-compile
+  (defun mail-source-bind-common-1 ()
+    (let* ((defaults mail-source-common-keyword-map)
+	   default bind)
+      (while (setq default (pop defaults))
+	(push (list (mail-source-strip-keyword (car default))
+		    nil)
+	      bind))
+      bind)))
+
+(defun mail-source-set-common-1 (source)
+  (let* ((type (pop source))
+	 (defaults mail-source-common-keyword-map)
+	 (defaults-1 (cdr (assq type mail-source-keyword-map)))
+	 default value keyword)
+    (while (setq default (pop defaults))
+      (set (mail-source-strip-keyword (setq keyword (car default)))
+	   (if (setq value (plist-get source keyword))
+	       (mail-source-value value)
+	     (if (setq value (plist-get defaults-1 keyword))
+		 (mail-source-value value)
+	       (mail-source-value (cadr default))))))))
+
+(defmacro mail-source-bind-common (source &rest body)
+  "Return a `let' form that binds all common variables.
+See `mail-source-bind'."
+  `(let ,(mail-source-bind-common-1)
+     (mail-source-set-common-1 source)
+     ,@body))
+
+(put 'mail-source-bind-common 'lisp-indent-function 1)
+(put 'mail-source-bind-common 'edebug-form-spec '(form body))
+
 (defun mail-source-value (value)
   "Return the value of VALUE."
   (cond
@@ -187,24 +227,26 @@ the `mail-source-keyword-map' variable."
 CALLBACK will be called with the name of the file where (some of)
 the mail from SOURCE is put.
 Return the number of files that were found."
-  (save-excursion
-    (let ((function (cadr (assq (car source) mail-source-fetcher-alist)))
-	  (found 0))
-      (unless function
-	(error "%S is an invalid mail source specification" source))
-      ;; If there's anything in the crash box, we do it first.
-      (when (file-exists-p mail-source-crash-box)
-	(message "Processing mail from %s..." mail-source-crash-box)
-	(setq found (mail-source-callback
-                     callback mail-source-crash-box)))
-      (+ found
-         (condition-case err
-             (funcall function source callback)
-           (error
-            (unless (yes-or-no-p
-		     (format "Mail source error (%s).  Continue? " err))
-              (error "Cannot get new mail."))
-            0))))))
+  (mail-source-bind-common source
+    (if (or mail-source-plugged plugged)
+	(save-excursion
+	  (let ((function (cadr (assq (car source) mail-source-fetcher-alist)))
+		(found 0))
+	    (unless function
+	      (error "%S is an invalid mail source specification" source))
+	    ;; If there's anything in the crash box, we do it first.
+	    (when (file-exists-p mail-source-crash-box)
+	      (message "Processing mail from %s..." mail-source-crash-box)
+	      (setq found (mail-source-callback
+			   callback mail-source-crash-box)))
+	    (+ found
+	       (condition-case err
+		   (funcall function source callback)
+		 (error
+		  (unless (yes-or-no-p
+			   (format "Mail source error (%s).  Continue? " err))
+		    (error "Cannot get new mail."))
+		  0))))))))
 
 (defun mail-source-make-complex-temp-name (prefix)
   (let ((newname (make-temp-name prefix))

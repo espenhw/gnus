@@ -413,13 +413,14 @@ If BUFFER, insert the article in that group."
 (defun gnus-request-scan (group gnus-command-method)
   "Request a SCAN being performed in GROUP from GNUS-COMMAND-METHOD.
 If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
-  (when gnus-plugged
-    (let ((gnus-command-method
-	   (if group (gnus-find-method-for-group group) gnus-command-method))
-	  (gnus-inhibit-demon t))
-      (funcall (gnus-get-function gnus-command-method 'request-scan)
-	       (and group (gnus-group-real-name group))
-	       (nth 1 gnus-command-method)))))
+  (let ((gnus-command-method
+	 (if group (gnus-find-method-for-group group) gnus-command-method))
+	(gnus-inhibit-demon t)
+	(mail-source-plugged gnus-plugged))
+    (if (or gnus-plugged (not (gnus-agent-method-p gnus-command-method)))
+	(funcall (gnus-get-function gnus-command-method 'request-scan)
+		 (and group (gnus-group-real-name group))
+		 (nth 1 gnus-command-method)))))
 
 (defsubst gnus-request-update-info (info gnus-command-method)
   "Request that GNUS-COMMAND-METHOD update INFO."

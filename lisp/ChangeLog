@@ -1,3 +1,10 @@
+1999-12-01 17:41:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-common-keyword-map): New variable.
+	(mail-source-bind-common): New macro.
+	(mail-source-fetch): Support plugged mail source.
+	* gnus-int.el (gnus-request-scan): Use them.
+
 1999-12-01 21:59:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-view.el (mm-inline-message): Check whether charset is a
