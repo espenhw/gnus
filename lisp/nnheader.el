@@ -70,6 +70,14 @@ Integer values will in effect be rounded up to the nearest multiple of
 (defvar nnheader-head-chop-length 2048
   "*Length of each read operation when trying to fetch HEAD headers.")
 
+(defvar nnheader-read-timeout
+  (if (string-match "windows-nt\\|os/2\\|emx\\|cygwin"
+		    (symbol-name system-type))
+      1.0
+    0.1)
+  "How long nntp should wait between checking for the end of output.
+Shorter values mean quicker response, but is more CPU intensive.")
+
 (defvar nnheader-file-name-translation-alist
   (let ((case-fold-search t))
     (cond
@@ -999,6 +1007,14 @@ find-file-hooks, etc.
 (defalias 'nnheader-cancel-timer 'cancel-timer)
 (defalias 'nnheader-cancel-function-timers 'cancel-function-timers)
 (defalias 'nnheader-string-as-multibyte 'string-as-multibyte)
+
+(defun nnheader-accept-process-output (process)
+  (accept-process-output
+   process
+   (truncate nnheader-read-timeout)
+   (truncate (* (- nnheader-read-timeout
+		   (truncate nnheader-read-timeout))
+		1000))))
 
 (when (featurep 'xemacs)
   (require 'nnheaderxm))

@@ -5,6 +5,13 @@
 
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nntp.el (nntp-accept-process-output): Use new function.
+
+	* nnheader.el (nnheader-read-timeout): New variable.
+	(nnheader-accept-process-output): New function.
+
+	* nntp.el (nntp-read-timeout): Removed.
+
 	* gnus-sum.el (gnus-summary-prepare-threads): Add comment.
 
 2003-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>

@@ -208,13 +208,6 @@ NOTE: This variable is never seen to work in Emacs 20 and XEmacs 21.")
   "*Hook run just before posting an article.  It is supposed to be used
 to insert Cancel-Lock headers.")
 
-(defvoo nntp-read-timeout (if (string-match "windows-nt\\|os/2\\|emx\\|cygwin"
-					    (symbol-name system-type))
-			      1.0
-			    0.1)
-  "How long nntp should wait between checking for the end of output.
-Shorter values mean quicker response, but is more CPU intensive.")
-
 ;;; Internal variables.
 
 (defvar nntp-record-commands nil
@@ -1308,12 +1301,7 @@ password contained in '~/.nntp-authinfo'."
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))
-    (accept-process-output
-     process
-     (truncate nntp-read-timeout)
-     (truncate (* (- nntp-read-timeout
-		     (truncate nntp-read-timeout))
-		  1000)))
+    (nnheader-accept-process-output process)
     ;; accept-process-output may update status of process to indicate
     ;; that the server has closed the connection.  This MUST be
     ;; handled here as the buffer restored by the save-excursion may
