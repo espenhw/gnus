@@ -466,7 +466,7 @@ FIELD must match a complete field name.  VALUE must match a complete
 word according to the `nnmail-split-fancy-syntax-table' syntax table.
 You can use \".*\" in the regexps to match partial field names or words.
 
-FIELD and VALUE can also be lisp symbols, in that case they are expanded
+FIELD and VALUE can also be Lisp symbols, in that case they are expanded
 as specified in `nnmail-split-abbrev-alist'.
 
 GROUP can contain \\& and \\N which will substitute from matching

@@ -496,7 +496,7 @@ Optional 1st argument COMMAND is default to
 	(gnus-summary-mark-as-read nil \"X\").
 If optional 2nd argument ALL is non-nil, articles marked are also applied to.
 If FIELD is an empty string (or nil), entire article body is searched for.
-COMMAND must be a lisp expression or a string representing a key sequence."
+COMMAND must be a Lisp expression or a string representing a key sequence."
   ;; We don't want to change current point nor window configuration.
   (let ((old-buffer (current-buffer)))
     (save-excursion
@@ -624,7 +624,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
       did-kill)))
 
 (defun gnus-execute (field regexp form &optional backward unread)
-  "If FIELD of article header matches REGEXP, execute lisp FORM (or a string).
+  "If FIELD of article header matches REGEXP, execute Lisp FORM (or a string).
 If FIELD is an empty string (or nil), entire article body is searched for.
 If optional 1st argument BACKWARD is non-nil, do backward instead.
 If optional 2nd argument UNREAD is non-nil, articles which are

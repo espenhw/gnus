@@ -1,3 +1,11 @@
+2004-03-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* sha1-el.el (sha1-maximum-internal-length): Doc fix.
+
+	* nnmail.el (nnmail-split-fancy): do.
+
+	* gnus-kill.el (gnus-kill, gnus-execute): do.
+
 2004-03-05  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-sum.el (gnus-widget-reversible-match) 
