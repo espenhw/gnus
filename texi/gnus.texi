@@ -14356,7 +14356,7 @@ INBOX.mailbox).
 @kindex G x
 @findex gnus-group-nnimap-expunge
 
-If you're using the @code{never} setting of @code{nnimap-expunge-close},
+If you're using the @code{never} setting of @code{nnimap-expunge-on-close},
 you may want the option of expunging all deleted articles in a mailbox
 manually.  This is exactly what @kbd{G x} does.
 
