@@ -1,3 +1,8 @@
+2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Mail and Post): Added `gnus-user-agent', removed
+	`gnus-version-expose-system'.
+
 2003-02-24  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: Markup fixes.
