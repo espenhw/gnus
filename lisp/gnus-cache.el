@@ -123,7 +123,8 @@ it's not cached."
 	  (overview-file (gnus-cache-file-name
 			  (car gnus-cache-buffer) ".overview")))
       ;; write the overview only if it was modified
-      (when (and (buffer-live-p buffer) (buffer-modified-p buffer))
+      (when (and (buffer-live-p buffer)
+		 (buffer-modified-p buffer))
 	(with-current-buffer buffer
 	  (if (> (buffer-size) 0)
 	      ;; Non-empty overview, write it to a file.
@@ -141,8 +142,8 @@ it's not cached."
 		(delete-directory (file-name-directory overview-file))
 	      (error)))
 
-	  (gnus-cache-update-overview-total-fetched-for (car gnus-cache-buffer) 
-							overview-file)))
+	  (gnus-cache-update-overview-total-fetched-for
+	   (car gnus-cache-buffer) overview-file)))
       ;; Kill the buffer -- it's either unmodified or saved.
       (gnus-kill-buffer buffer)
       (setq gnus-cache-buffer nil))))
