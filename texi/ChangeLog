@@ -1,3 +1,8 @@
+2001-03-30 23:34:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Adaptive Scoring): Addition.
+	(Summary Mail Commands): Addition.
+
 2001-03-17  Matthias Wiehl  <mwiehl@gmx.de>
 
 	* message.texi (Security): Typos.

@@ -4620,6 +4620,22 @@ Mail a wide reply to the current article and include the original
 message (@code{gnus-summary-wide-reply-with-original}).  This command uses
 the process/prefix convention.
 
+@item S v
+@kindex S v (Summary)
+@findex gnus-summary-very-wide-reply
+Mail a very wide reply to the author of the current article
+(@code{gnus-summary-wide-reply}).  A @dfn{very wide reply} is a reply
+that goes out to all people listed in the @code{To}, @code{From} (or
+@code{Reply-to}) and @code{Cc} headers in all the process/prefixed
+articles.  This command uses the process/prefix convention.
+
+@item S W
+@kindex S W (Summary)
+@findex gnus-summary-wide-reply-with-original
+Mail a very wide reply to the current article and include the original
+message (@code{gnus-summary-wide-reply-with-original}).  This command uses
+the process/prefix convention.
+
 @item S o m
 @itemx C-c C-f
 @kindex S o m (Summary)
@@ -16200,6 +16216,12 @@ score with 30 points.
 Words that appear in the @code{gnus-default-ignored-adaptive-words} list
 will be ignored.  If you wish to add more words to be ignored, use the
 @code{gnus-ignored-adaptive-words} list instead.
+
+@vindex gnus-adaptive-word-length-limit
+Some may feel that short words shouldn't count when doing adaptive
+scoring.  If so, you may set @code{gnus-adaptive-word-length-limit} to
+an integer.  Words shorter than this number will be ignored.  This
+variable defaults til @code{nil}.
 
 @vindex gnus-adaptive-word-syntax-table
 When the scoring is done, @code{gnus-adaptive-word-syntax-table} is the
