@@ -1097,7 +1097,6 @@ and that there are no duplicates."
 		 ((= cur prev-num)
 		       (gnus-message 1
 				     "Duplicate overview line for %d" cur)
-		       (debug nil (format "Duplicate overview line for %d" cur))
 		  (delete-region (point) (progn (forward-line 1) (point))))
 		 ((< cur prev-num)
 		       (gnus-message 1 "Overview buffer not sorted!")
