@@ -1,8 +1,15 @@
+2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Improved to speed
+	up.  Suggested by Yuuichi Teranishi <teranisi@gohome.org>.
+
+	* gnus-art.el (article-display-x-face): Sort gray X-Faces.
+
 2002-02-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	Some ideas is inspired by code from Hrvoje Niksic
 	<hniksic@arsdigita.com>
-	
+
 	* gnus-art.el (gnus-article-wash-function): Set the default to
 	nil, so that we use mm-text-html-renderer instead.
 	(article-wash-html): Use mm-text-html-renderer.
@@ -11,7 +18,7 @@
 	(mm-text-html-renderer): New variable.
 	(mm-inline-text-html-renderer): Set the default to nil, so that we
 	use mm-text-html-renderer instead.
-	
+
 	* mm-view.el (mm-inline-text-html): New function.
 	(mm-text-html-renderer-alist): New variable.
 	(mm-inline-text-vcard): New function.
@@ -25,7 +32,7 @@
 	(mm-inline-wash-with-stdin): New function.
 
 2002-02-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* message-utils.el: Fix installation doc.
 	From: Reiner Steib <4uce.02.r.steib@gmx.net>
 

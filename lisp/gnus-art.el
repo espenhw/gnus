@@ -1843,13 +1843,22 @@ unfolded."
 	      (set-buffer gnus-original-article-buffer))
 	    (save-restriction
 	      (mail-narrow-to-head)
-	      (let ((regexp
-		     (if gnus-treat-display-grey-xface
-			 "x-face\\(-[0-9]+\\)?"
-		       "x-face")))
-		(while (gnus-article-goto-header regexp)
-		  (when (match-beginning 2)
-		    (setq grey t))
+	      (if gnus-treat-display-grey-xface
+		  (progn
+		    (while (gnus-article-goto-header "X-Face\\(-[0-9]+\\)?")
+		      (if (match-beginning 2)
+			  (progn
+			    (setq grey t)
+			    (push (cons (string-to-number (match-string 2))
+					(mail-header-field-value))
+				  x-faces))
+			(push (cons 0 (mail-header-field-value)) x-faces)))
+		    (dolist (x-face (prog1
+					(nreverse (sort x-faces
+							'car-less-than-car))
+				      (setq x-faces nil)))
+		      (push (cdr x-face) x-faces)))
+		(while (gnus-article-goto-header "X-Face")
 		  (push (mail-header-field-value) x-faces)))
 	      (setq from (message-fetch-field "from"))))
 	  (if grey
