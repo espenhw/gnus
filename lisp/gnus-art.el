@@ -2441,7 +2441,7 @@ The `gnus-list-identifiers' variable specifies what to do."
 	(regexp (if (consp gnus-list-identifiers)
 		    (mapconcat 'identity gnus-list-identifiers " *\\|")
 		  gnus-list-identifiers))
-	(inhibit-read-only))
+	(inhibit-read-only t))
     (when regexp
       (save-excursion
 	(save-restriction
