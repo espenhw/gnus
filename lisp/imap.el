@@ -202,7 +202,7 @@ NAME names the authenticator.  CHECK is a function returning non-nil if
 the server support the authenticator and AUTHENTICATE is a function
 for doing the actuall authentification.")
 
-(defvar imap-utf7-p nil
+(defvar imap-use-utf7 t
   "If non-nil, do utf7 encoding/decoding of mailbox names.
 Since the UTF7 decoding currently only decodes into ISO-8859-1
 characters, you may disable this decoding if you need to access UTF7
@@ -331,7 +331,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	     prompt)))
 
 (defsubst imap-utf7-encode (string)
-  (if imap-utf7-p
+  (if imap-use-utf7
       (and string
 	   (condition-case ()
 	       (utf7-encode string t)
@@ -342,7 +342,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     string))
 
 (defsubst imap-utf7-decode (string)
-  (if imap-utf7-p
+  (if imap-use-utf7
       (and string
 	   (condition-case ()
 	       (utf7-decode string t)
