@@ -888,6 +888,16 @@ articles in the thread.
 
 (eval-when-compile
   (defvar category-fields nil)
+  (defvar gnus-agent-cat-name)
+  (defvar gnus-agent-cat-score-file)
+  (defvar gnus-agent-cat-length-when-short)
+  (defvar gnus-agent-cat-length-when-long)
+  (defvar gnus-agent-cat-low-score)
+  (defvar gnus-agent-cat-high-score)
+  (defvar gnus-agent-cat-enable-expiration)
+  (defvar gnus-agent-cat-days-until-old)
+  (defvar gnus-agent-cat-predicate)
+  (defvar gnus-agent-cat-groups)
 )
 
 (defun gnus-trim-whitespace (s)
