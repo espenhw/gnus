@@ -1,3 +1,7 @@
+2003-04-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* smime.el (smime-decrypt-region): Insert From header.
+
 2003-04-21  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* gnus-fun.el (gnus-face-from-file, gnus-convert-png-to-face):

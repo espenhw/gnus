@@ -366,6 +366,9 @@ Any details (stdout and stderr) are left in the buffer specified by
     (insert-buffer-substring smime-details-buffer)
     nil))
 
+(eval-when-compile
+  (defvar from))
+
 (defun smime-decrypt-region (b e keyfile)
   "Decrypt S/MIME message in region between B and E with key in KEYFILE.
 On success, replaces region with decrypted data and return non-nil.
@@ -390,6 +393,9 @@ in the buffer specified by `smime-details-buffer'."
 	    (delete-file tmpfile)))
 	(progn
 	  (delete-region b e)
+	  (when (boundp 'from)
+	    ;; `from' is dynamically bound in mm-dissect.
+	    (insert "From: " from "\n"))
 	  (insert-buffer-substring buffer)
 	  (kill-buffer buffer)
 	  t)
