@@ -1,3 +1,7 @@
+2000-12-20  Jesper Harder <jesper_harder@hotmail.com>
+
+	* make.bat: set max-lisp-eval-depth.
+
 2000-10-12  Jesper Harder <jesper_harder@hotmail.com>
 
 	* make.bat: Makes it possible to generate the Info files on

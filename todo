@@ -1,6 +1,8 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Understand mail-user-agent. Maybe gnus-mail-user-agent.
+
 * Emphasis delimiters show when `W W c'.
 
   [Fixed]
