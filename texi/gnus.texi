@@ -4545,11 +4545,6 @@ instead.  The default is @samp{> }.
 Used for the false root of a thread (@pxref{Loose Threads}).  If
 @code{nil}, use subject instead.  The default is @samp{> }.
 
-@item gnus-sum-thread-tree-false-root
-@vindex gnus-sum-thread-tree-false-root
-Used for the root of a thread if it is a false root.  If @code{nil},
-use subject instead. The default is @samp{> }.
-
 @item gnus-sum-thread-tree-single-indent
 @vindex gnus-sum-thread-tree-single-indent
 Used for a thread with just one message.  If @code{nil}, use subject
