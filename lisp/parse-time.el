@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))		;and ah ain't kiddin' 'bout it
+(eval-when-compile (require 'cl))	;and ah ain't kiddin' 'bout it
 
 (defvar parse-time-syntax (make-vector 256 nil))
 (defvar parse-time-digits (make-vector 256 nil))

@@ -453,7 +453,8 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
       ;; hits C-g, you won't leave the component groups in a half-way state.
       (progn
 	;; move (un)read
-	(let ((gnus-newsgroup-active nil)) ;workaround guns-update-read-articles
+	;; bind for workaround guns-update-read-articles
+	(let ((gnus-newsgroup-active nil))
 	  (while (setq entry (pop unreads))
 	    (gnus-update-read-articles (car entry) (cdr entry))))
 

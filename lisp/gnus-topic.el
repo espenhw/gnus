@@ -361,7 +361,8 @@ If TOPIC, start with that topic."
 
 ;;; Generating group buffers
 
-(defun gnus-group-prepare-topics (level &optional all lowest regexp list-topic topic-level)
+(defun gnus-group-prepare-topics (level &optional all lowest
+					regexp list-topic topic-level)
   "List all newsgroups with unread articles of level LEVEL or lower.
 Use the `gnus-group-topics' to sort the groups.
 If ALL is non-nil, list groups that have no unread articles.

@@ -318,7 +318,7 @@ See the Gnus manual for an explanation of the syntax used.")
       (let ((buffer (cond ((stringp type) type)
 			  (t (cdr (assq type gnus-window-to-buffer))))))
 	(unless buffer
-	  (error "Illegal buffer type: %s" type))
+	  (error "Invalid buffer type: %s" type))
 	(switch-to-buffer (gnus-get-buffer-create
 			   (gnus-window-to-buffer-helper buffer)))
 	(when (memq 'frame-focus split)
@@ -373,7 +373,7 @@ See the Gnus manual for an explanation of the syntax used.")
 		  ((integerp size)
 		   (setq s size))
 		  (t
-		   (error "Illegal size: %s" size)))
+		   (error "Invalid size: %s" size)))
 	    ;; Try to make sure that we are inside the safe limits.
 	    (cond ((zerop s))
 		  ((eq type 'horizontal)
@@ -500,7 +500,7 @@ should have point."
 	(setq buffer (cond ((stringp type) type)
 			   (t (cdr (assq type gnus-window-to-buffer)))))
 	(unless buffer
-	  (error "Illegal buffer type: %s" type))
+	  (error "Invalid buffer type: %s" type))
 	(if (and (setq buf (get-buffer (gnus-window-to-buffer-helper buffer)))
 		 (setq win (get-buffer-window buf t)))
 	    (if (memq 'point split)

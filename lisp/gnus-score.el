@@ -556,7 +556,7 @@ used as score."
 	  (gnus-score-kill-help-buffer)
 	  (unless (setq entry (assq (downcase hchar) char-to-header))
 	    (if mimic (error "%c %c" prefix hchar)
-	      (error "Illegal header type")))
+	      (error "Invalid header type")))
 
 	  (when (/= (downcase hchar) hchar)
 	    ;; This was a majuscule, so we end reading and set the defaults.
@@ -589,7 +589,7 @@ used as score."
 	    (gnus-score-kill-help-buffer)
 	    (unless (setq type (nth 1 (assq (downcase tchar) legal-types)))
 	      (if mimic (error "%c %c" prefix hchar)
-		(error "Illegal match type"))))
+		(error "Invalid match type"))))
 
 	  (when (/= (downcase tchar) tchar)
 	    ;; It was a majuscule, so we end reading and use the default.
@@ -622,7 +622,7 @@ used as score."
 	      (error "You rang?"))
 	    (if mimic
 		(error "%c %c %c %c" prefix hchar tchar pchar)
-	      (error "Illegal match duration"))))
+	      (error "Invalid match duration"))))
       ;; Always kill the score help buffer.
       (gnus-score-kill-help-buffer))
 
@@ -1277,11 +1277,11 @@ EXTRA is the possible non-standard header."
 	 err
 	 (cond
 	  ((not (listp (car a)))
-	   (format "Illegal score element %s in %s" (car a) file))
+	   (format "Invalid score element %s in %s" (car a) file))
 	  ((stringp (caar a))
 	   (cond
 	    ((not (listp (setq sr (cdar a))))
-	     (format "Illegal header match %s in %s" (nth 1 (car a)) file))
+	     (format "Invalid header match %s in %s" (nth 1 (car a)) file))
 	    (t
 	     (setq type (caar a))
 	     (while (and sr (not err))
@@ -1292,7 +1292,7 @@ EXTRA is the possible non-standard header."
 		 ((if (member (downcase type) '("lines" "chars"))
 		      (not (numberp (car s)))
 		    (not (stringp (car s))))
-		  (format "Illegal match %s in %s" (car s) file))
+		  (format "Invalid match %s in %s" (car s) file))
 		 ((and (cadr s) (not (integerp (cadr s))))
 		  (format "Non-integer score %s in %s" (cadr s) file))
 		 ((and (caddr s) (not (integerp (caddr s))))
@@ -1573,7 +1573,7 @@ EXTRA is the possible non-standard header."
 	       (match-func (if (or (eq type '>) (eq type '<) (eq type '<=)
 				   (eq type '>=) (eq type '=))
 			       type
-			     (error "Illegal match type: %s" type)))
+			     (error "Invalid match type: %s" type)))
 	       (articles gnus-scores-articles))
 	  ;; Instead of doing all the clever stuff that
 	  ;; `gnus-score-string' does to minimize searches and stuff,
@@ -1633,7 +1633,7 @@ EXTRA is the possible non-standard header."
 	   ((eq type 'regexp)
 	    (setq match-func 'string-match
 		  match (nth 0 kill)))
-	   (t (error "Illegal match type: %s" type)))
+	   (t (error "Invalid match type: %s" type)))
 	  ;; Instead of doing all the clever stuff that
 	  ;; `gnus-score-string' does to minimize searches and stuff,
 	  ;; I will assume that people generally will put so few
@@ -1731,7 +1731,7 @@ EXTRA is the possible non-standard header."
 				     (eq type 'string) (eq type 'String))
 				 'search-forward)
 				(t
-				 (error "Illegal match type: %s" type)))))
+				 (error "Invalid match type: %s" type)))))
 		    (goto-char (point-min))
 		    (when (funcall search-func match nil t)
 		      ;; Found a match, update scores.
@@ -1817,7 +1817,7 @@ EXTRA is the possible non-standard header."
 	       (search-func
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
-		      (t (error "Illegal match type: %s" type))))
+		      (t (error "Invalid match type: %s" type))))
 	       arts art)
 	  (goto-char (point-min))
 	  (if (= dmt ?e)
@@ -1950,7 +1950,7 @@ EXTRA is the possible non-standard header."
 	       (mt (aref (symbol-name type) 0))
 	       (case-fold-search (not (memq mt '(?R ?S ?E ?F))))
 	       (dmt (downcase mt))
-					; Assume user already simplified regexp and fuzzies
+	       ;; Assume user already simplified regexp and fuzzies
 	       (match (if (and simplify (not (memq dmt '(?f ?r))))
                           (gnus-map-function
                            gnus-simplify-subject-functions
@@ -1960,11 +1960,12 @@ EXTRA is the possible non-standard header."
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
 		      ((= dmt ?w) nil)
-		      (t (error "Illegal match type: %s" type)))))
+		      (t (error "Invalid match type: %s" type)))))
 
 	  ;; Evil hackery to make match usable in non-standard headers.
 	  (when extra
-	    (setq match (concat "[ (](" extra " \\. \"[^)]*" match "[^(]*\")[ )]")
+	    (setq match (concat "[ (](" extra " \\. \"[^)]*"
+				match "[^(]*\")[ )]")
 		  search-func 're-search-forward))	; XXX danger?!?
 
 	  (cond

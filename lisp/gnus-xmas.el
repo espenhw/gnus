@@ -577,7 +577,7 @@ call it with the value of the `gnus-data' text property."
 				'default-toolbar
 			      nil)
   "*If nil, do not use a toolbar.
-If it is non-nil, it must be a toolbar.  The five legal values are
+If it is non-nil, it must be a toolbar.  The five valid values are
 `default-toolbar', `top-toolbar', `bottom-toolbar',
 `right-toolbar', and `left-toolbar'."
   :type '(choice (const default-toolbar)

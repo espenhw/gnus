@@ -1446,7 +1446,7 @@ newsgroup."
 	;; Then we want to peel off any elements that are higher
 	;; than the upper active limit.
 	(let ((srange range))
-	  ;; Go past all legal elements.
+	  ;; Go past all valid elements.
 	  (while (and (cdr srange)
 		      (<= (or (and (atom (cadr srange))
 				   (cadr srange))
@@ -1454,7 +1454,7 @@ newsgroup."
 			  (cdr active)))
 	    (setq srange (cdr srange)))
 	  (when (cdr srange)
-	    ;; Nuke all remaining illegal elements.
+	    ;; Nuke all remaining invalid elements.
 	    (setcdr srange nil))
 
 	  ;; Adjust the final element.
@@ -1786,7 +1786,7 @@ newsgroup."
 		(symbolp group)
 		(set group nil))
 	   (unless ignore-errors
-	     (gnus-message 3 "Warning - illegal active: %s"
+	     (gnus-message 3 "Warning - invalid active: %s"
 			   (buffer-substring
 			    (gnus-point-at-bol) (gnus-point-at-eol))))))
 	(widen)
@@ -2111,7 +2111,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			    (buffer-substring (gnus-point-at-bol)
 					      (gnus-point-at-eol))))
 	      nil))
-	  ;; Skip past ", ".  Spaces are illegal in these ranges, but
+	  ;; Skip past ", ".  Spaces are invalid in these ranges, but
 	  ;; we allow them, because it's a common mistake to put a
 	  ;; space after the comma.
 	  (skip-chars-forward ", "))

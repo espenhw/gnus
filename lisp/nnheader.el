@@ -1,5 +1,5 @@
 ;;; nnheader.el --- header access macros for Gnus and its backends
-;; Copyright (C) 198,997,88,89,90,93,94,95,96,97,98 Free Software Foundation, Inc.
+;; Copyright (C) 1987-1990,1993-1999 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -50,7 +50,7 @@
 
 (defvar nnheader-file-name-translation-alist nil
   "*Alist that says how to translate characters in file names.
-For instance, if \":\" is illegal as a file character in file names
+For instance, if \":\" is invalid as a file character in file names
 on your system, you could say something like:
 
 \(setq nnheader-file-name-translation-alist '((?: . ?_)))")
@@ -494,7 +494,8 @@ the line could be found."
 (defun nnheader-insert-references (references message-id)
   "Insert a References header based on REFERENCES and MESSAGE-ID."
   (if (and (not references) (not message-id))
-      ()				; This is illegal, but not all articles have Message-IDs.
+      ;; This is invalid, but not all articles have Message-IDs.
+      ()
     (mail-position-on-field "References")
     (let ((begin (save-excursion (beginning-of-line) (point)))
 	  (fill-column 78)

@@ -517,7 +517,8 @@ deleted.  Point is left where the deleted region was."
   (save-restriction
     (narrow-to-region
      (save-excursion
-       (forward-line 1)			; in case point is at beginning of message already
+       ;; In case point is at the beginning of the message already.
+       (forward-line 1)
        (nnmail-search-unix-mail-delim-backward)
        (if leave-delim (progn (forward-line 1) (point))
 	 (point)))

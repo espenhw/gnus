@@ -736,7 +736,9 @@ on parts -- for instance, adding Vcard info to a database."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
-(defcustom gnus-treat-display-smileys (if gnus-xemacs t nil)
+(defcustom gnus-treat-display-smileys (if (and gnus-xemacs
+					       (featurep 'xpm))
+					  t nil)
   "Display smileys."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
@@ -1710,7 +1712,7 @@ how much time has lapsed since DATE."
      ((eq type 'iso8601)
       (concat
        "Date: "
-       (format-time-string "%Y%M%DT%h%m%s" time)))
+       (format-time-string "%Y%m%dT%H%M%S" time)))
      ;; Do an X-Sent lapsed format.
      ((eq type 'lapsed)
       ;; If the date is seriously mangled, the timezone functions are
@@ -2204,6 +2206,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   " " gnus-article-goto-next-page
   "\177" gnus-article-goto-prev-page
   [delete] gnus-article-goto-prev-page
+  [backspace] gnus-article-goto-prev-page
   "\C-c^" gnus-article-refer-article
   "h" gnus-article-show-summary
   "s" gnus-article-show-summary

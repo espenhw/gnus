@@ -127,7 +127,8 @@ included.")
 	   (nnmail-find-file file)	; Insert the file in the nntp buf.
 	   (unless (nnheader-article-p)	; Either it's a real article...
 	     (goto-char (point-min))
-	     (nneething-make-head file (current-buffer)) ; ... or we fake some headers.
+	     (nneething-make-head
+	      file (current-buffer))	; ... or we fake some headers.
 	     (insert "\n"))
 	   t))))
 
@@ -315,7 +316,8 @@ included.")
 		       (substring file
 				  (match-beginning 1)
 				  (match-end 1))
-		     (when (string-match "/\\(users\\|home\\)/\\([^/]+\\)/" file)
+		     (when (string-match
+			    "/\\(users\\|home\\)/\\([^/]+\\)/" file)
 		       (setq login (substring file
 					      (match-beginning 2)
 					      (match-end 2))

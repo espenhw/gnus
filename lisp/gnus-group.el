@@ -2582,7 +2582,7 @@ or nil if no action could be taken."
 			      gnus-level-default-subscribed))
 	 s)))))
   (unless (and (>= level 1) (<= level gnus-level-killed))
-    (error "Illegal level: %d" level))
+    (error "Invalid level: %d" level))
   (let ((groups (gnus-group-process-prefix n))
 	group)
     (while (setq group (pop groups))
@@ -2824,7 +2824,7 @@ yanked) a list of yanked groups is returned."
       (gnus-make-hashtable-from-newsrc-alist)
       (gnus-group-list-groups)))
    (t
-    (error "Can't kill; illegal level: %d" level))))
+    (error "Can't kill; invalid level: %d" level))))
 
 (defun gnus-group-list-all-groups (&optional arg)
   "List all newsgroups with level ARG or lower.

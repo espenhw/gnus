@@ -85,7 +85,8 @@ case, this list will be used as the parameter list given to rsh.")
 (defvoo nntp-rlogin-user-name nil
   "*User name on remote system when using the rlogin connect method.")
 
-(defvoo nntp-telnet-parameters '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
+(defvoo nntp-telnet-parameters
+    '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-telnet'.
 That function may be used as `nntp-open-connection-function'.  In that
 case, this list will be executed as a command after logging in

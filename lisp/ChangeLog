@@ -1,3 +1,42 @@
+Sat Jan 23 14:23:27 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.73 is released.
+
+1999-01-23 11:38:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-spool-file): Changed to use mail-source.
+	(nnmail-crash-box, nnmail-use-procmail, nnmail-procmail-directory,
+	nnmail-procmail-suffix, nnmail-resplit-incoming): Removed.
+	(nnmail-movemail-program): Removed.
+	(nnmail-movemail-args): Removed.
+	(nnmail-pop-password-required): Ditto.
+	(nnmail-tmp-directory): Ditto.
+	(nnmail-delete-incoming): Removed.
+	(nnmail-pop-password, nnmail-moved-inboxes,
+	nnmail-internal-password, nnmail-move-inbox): Removed.
+	(nnmail-read-passwd): Ditto.
+	(nnmail-get-spool-files): Removed.
+	(nnmail-resplit-incoming): Reinstated.
+
+	* mail-source.el: New file.
+
+1999-01-23 09:08:31  James H. Cloos, Jr.  <cloos@jhcloos.com>
+
+	* gnus-art.el (gnus-article-mode-map): Bind backspace.
+
+1999-01-23 09:05:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-make-date-line): Fix iso8601 display.
+
+1999-01-20 02:53:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-display-smileys): Check xpm.
+
+	* gnus-picon.el (gnus-group-display-picons): Goto body.
+
+	* gnus.el: Indented all functions; broke long lines; changed all
+ 	instances of illegal/legal to invalid/valid.  Yes, I'm bored.
+
 Wed Jan 20 00:50:53 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.72 is released.

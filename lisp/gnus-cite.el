@@ -71,7 +71,7 @@ Set it to nil to parse all articles."
 		 integer))
 
 (defcustom gnus-cite-prefix-regexp
-  "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
+  "^[]>»|:}+ ]*[]>»|:}+]\\(.*>»\\)?\\|^.*>"
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'gnus-cite
   :type 'regexp)

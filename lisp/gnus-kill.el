@@ -444,7 +444,7 @@ Returns the number of articles marked as read."
 	     (setq beg (point))
 	     (setq form (ignore-errors (read (current-buffer)))))
       (unless (listp form)
-	(error "Illegal kill entry (possibly rn kill file?): %s" form))
+	(error "Invalid kill entry (possibly rn kill file?): %s" form))
       (if (or (eq (car form) 'gnus-kill)
 	      (eq (car form) 'gnus-raise)
 	      (eq (car form) 'gnus-lower))

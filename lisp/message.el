@@ -344,7 +344,7 @@ The provided functions are:
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
 
-Legal values include `message-send-mail-with-sendmail' (the default),
+Valid values include `message-send-mail-with-sendmail' (the default),
 `message-send-mail-with-mh', `message-send-mail-with-qmail' and
 `smtpmail-send-it'."
   :type '(radio (function-item message-send-mail-with-sendmail)
@@ -1875,7 +1875,7 @@ prefix, and don't delete any headers."
 	(insert "\n"))
       (funcall message-citation-line-function))))
 
-(defvar mail-citation-hook) ;Compiler directive
+(defvar mail-citation-hook)		;Compiler directive
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
   (if (and (boundp 'mail-citation-hook)
@@ -2074,7 +2074,8 @@ the user from the mailer."
   (message-check 'invisible-text
     (when (text-property-any (point-min) (point-max) 'invisible t)
       (put-text-property (point-min) (point-max) 'invisible nil)
-      (unless (yes-or-no-p "Invisible text found and made visible; continue posting? ")
+      (unless (yes-or-no-p
+	       "Invisible text found and made visible; continue posting? ")
 	(error "Invisible text found and made visible")))))
 
 (defun message-add-action (action &rest types)
@@ -2320,12 +2321,6 @@ to find out how to use this."
 		(replace-match "\n")
 		(backward-char 1))
 	      (run-hooks 'message-send-news-hook)
-	      ;;(require (car method))
-	      ;;(funcall (intern (format "%s-open-server" (car method)))
-	      ;;(cadr method) (cddr method))
-	      ;;(setq result
-	      ;;	  (funcall (intern (format "%s-request-post" (car method)))
-	      ;;		   (cadr method)))
 	      (gnus-open-server method)
 	    (setq result (let ((mail-header-separator ""))
 			   (gnus-request-post method))))
@@ -3803,7 +3798,9 @@ Optional NEWS will use news to forward instead of mail."
   (let ((cur (current-buffer))
 	(subject (message-make-forward-subject))
 	art-beg)
-    (if news (message-news nil subject) (message-mail nil subject))
+    (if news
+	(message-news nil subject)
+      (message-mail nil subject))
     ;; Put point where we want it before inserting the forwarded
     ;; message.
     (if message-signature-before-forwarded-message

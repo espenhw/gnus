@@ -2436,7 +2436,8 @@ marks of articles."
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."
   (if (not (setq article (or article (gnus-summary-article-number))))
-      t					; All non-existent numbers are the last article.  :-)
+      ;; All non-existent numbers are the last article.  :-)
+      t
     (not (cdr (gnus-data-find-list article)))))
 
 (defun gnus-make-thread-indent-array ()
@@ -4200,7 +4201,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     out))
 
 (defun gnus-adjust-marked-articles (info)
-  "Set all article lists and remove all marks that are no longer legal."
+  "Set all article lists and remove all marks that are no longer valid."
   (let* ((marked-lists (gnus-info-marks info))
 	 (active (gnus-active (gnus-info-group info)))
 	 (min (car active))
@@ -4453,7 +4454,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 (active (gnus-active group))
 	 ninfo)
     (when entry
-      ;; First peel off all illegal article numbers.
+      ;; First peel off all invalid article numbers.
       (when active
 	(let ((ids articles)
 	      id first)
@@ -8073,7 +8074,8 @@ returned."
 The difference between N and the actual number of articles marked is
 returned."
   (interactive "p")
-  (gnus-summary-mark-forward (- n) gnus-del-mark gnus-inhibit-user-auto-expire))
+  (gnus-summary-mark-forward
+   (- n) gnus-del-mark gnus-inhibit-user-auto-expire))
 
 (defun gnus-summary-mark-as-read (&optional article mark)
   "Mark current article as read.

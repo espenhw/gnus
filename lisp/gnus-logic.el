@@ -218,7 +218,7 @@
 		      ((memq type '(s S string String))
 		       'search-forward)
 		      (t
-		       (error "Illegal match type: %s" type)))))
+		       (error "Invalid match type: %s" type)))))
 	  (goto-char (point-min))
 	  (prog1
 	      (funcall search-func match nil t)

@@ -684,7 +684,8 @@ PARENT is the message-ID of the parent summary line, or nil for none."
       (goto-char head-begin)
     (setq content-type (message-fetch-field "Content-Type"))
     (when content-type
-      (when (string-match "^ *\\([^ \t\n/;]+\\)/\\([^ \t\n/;]+\\)" content-type)
+      (when (string-match
+	     "^ *\\([^ \t\n/;]+\\)/\\([^ \t\n/;]+\\)" content-type)
 	(setq type (downcase (match-string 1 content-type))
 	      subtype (downcase (match-string 2 content-type))
 	      message-rfc822 (and (string= type "message")

@@ -882,7 +882,7 @@ ARG is passed to the first function."
 
 ;;; Various
 
-(defvar gnus-group-buffer) ; Compiler directive
+(defvar gnus-group-buffer)		; Compiler directive
 (defun gnus-alive-p ()
   "Say whether Gnus is running or not."
   (and (boundp 'gnus-group-buffer)
