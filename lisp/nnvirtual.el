@@ -374,7 +374,8 @@ component group will show up when you enter the virtual group.")
 			      #'(lambda (article)
 				  (nnvirtual-reverse-map-article
 				   group article))
-			      (gnus-group-expire-articles-1 group)))))
+			      (gnus-uncompress-range
+			       (gnus-group-expire-articles-1 group))))))
     (sort unexpired '<)))
 
 

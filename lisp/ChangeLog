@@ -1,3 +1,7 @@
+2000-11-05 15:06:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnvirtual.el (nnvirtual-request-expire-articles): Uncompress range.
+
 2000-11-05  Simon Josefsson  <sj@extundo.com>
 
 	* mml-smime.el (mml-smime-verify): Work in original multipart
