@@ -1,3 +1,8 @@
+2001-10-05  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-select-newsgroup): Don't enable `display'
+	limiting if read-all (C-u RET) was used.
+
 2001-10-04  Simon Josefsson  <jas@extundo.com>
 
 	* mail-source.el (mail-source-movemail-program): New variable.

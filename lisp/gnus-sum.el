@@ -4542,6 +4542,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (let ((display (gnus-group-find-parameter group 'display)))
       (setq gnus-newsgroup-display
 	    (cond
+	     (read-all
+	      'gnus-not-ignore)
 	     ((eq display 'all)
 	      'gnus-not-ignore)
 	     ((arrayp display)
