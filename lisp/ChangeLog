@@ -1,5 +1,7 @@
 2003-05-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mail-source.el (mail-source-delete-incoming): Changed to t. 
+
 	* rfc2047.el (rfc2047-syntax-table): Funcall.
 
 	* lpath.el ((featurep 'xemacs)): Added set-char-table-range. 
