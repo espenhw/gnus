@@ -319,7 +319,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	;; `address-mime' case -- take care of quoted words, comments.
 	(with-syntax-table rfc2047-syntax-table
 	  (goto-char (point-min))
-	  (condition-case nil		; in case of unbalanced quotes
+	  (condition-case err		; in case of unbalanced quotes
 	      ;; Look for rfc2822-style: sequences of atoms, quoted
 	      ;; strings, specials, whitespace.  (Specials mustn't be
 	      ;; encoded.)
@@ -396,14 +396,23 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 				(goto-char (match-beginning 0))
 				(setq end nil)))
 			  (goto-char end))))
+		    ;; Where the value nil of `end' means there may be
+		    ;; text to have to be encoded following the point.
+		    ;; Otherwise, the point reached to the end of ASCII
+		    ;; words separated by whitespace or a special char.
 		    (unless end
-		      (setq end t)
 		      (when (looking-at encodable-regexp)
-			(goto-char (match-end 0))
+			(goto-char (setq begin (match-end 0)))
 			(while (and (looking-at "[ \t\n]+\\([^ \t\n]+\\)")
 				    (setq end (match-end 0))
-				    (string-match encodable-regexp
-						  (match-string 1)))
+				    (progn
+				      (while (re-search-forward
+					      encodable-regexp end t))
+				      (< begin (point)))
+				    (or (not (re-search-forward "\\Sw" end t))
+					(progn
+					  (goto-char (match-beginning 0))
+					  nil)))
 			  (goto-char end))
 			(when (looking-at "[^ \t\n]+")
 			  (setq end (match-end 0))
@@ -417,6 +426,8 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 				    (t
 				     (goto-char (1- (match-end 0)))
 				     (unless (= (point) (match-beginning 0))
+				       ;; Separate encodable text and
+				       ;; delimiter.
 				       (insert " "))))
 			    (goto-char end)
 			    (skip-chars-forward " \t\n")
@@ -430,12 +441,19 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (goto-char start)
 		  (if (re-search-forward encodable-regexp end 'move)
 		      (progn
-			(rfc2047-encode start end)
+			(goto-char start)
+			(unless (memq (char-before) '(nil ?\t ? ))
+			  ;; Separate encodable text and delimiter.
+			  (insert " ")
+			  (setq end (1+ end)))
+			(rfc2047-encode (point) end)
 			(setq last-encoded t))
 		    (setq last-encoded nil)))))
 	    (error
-	     (error "Invalid data for rfc2047 encoding: %s"
-		    (mm-replace-in-string orig-text "[ \t\n]+" " ")))))))
+	     (if (or debug-on-quit debug-on-error)
+		 (signal (car err) (cdr err))
+	       (error "Invalid data for rfc2047 encoding: %s"
+		      (mm-replace-in-string orig-text "[ \t\n]+" " "))))))))
     (rfc2047-fold-region b (point))
     (goto-char (point-max))))
 
@@ -448,11 +466,22 @@ By default, the string is treated as containing addresses (see
     (rfc2047-encode-region (point-min) (point-max))
     (buffer-string)))
 
+(defvar rfc2047-encode-max-chars 76
+  "Maximum characters of each header line that contain encoded-words.
+If it is nil, encoded-words will not be folded.  Too small value may
+cause an error.  Don't change this for no particular reason.")
+
 (defun rfc2047-encode-1 (column string cs encoder start space &optional eword)
   "Subroutine used by `rfc2047-encode'."
   (cond ((string-equal string "")
 	 (or eword ""))
-	((>= column 76)
+	((not rfc2047-encode-max-chars)
+	 (concat start
+		 (funcall encoder (if cs
+				      (mm-encode-coding-string string cs)
+				    string))
+		 "?="))
+	((>= column rfc2047-encode-max-chars)
 	 (when (and eword
 		    (string-match "\n[ \t]+\\'" eword))
 	   ;; Reomove a superfluous empty line.
@@ -474,7 +503,7 @@ By default, the string is treated as containing addresses (see
 					      cs)
 					   (substring string 0 (1+ index))))
 				"?="))
-	     (if (<= (+ column (length next)) 76)
+	     (if (<= (+ column (length next)) rfc2047-encode-max-chars)
 		 (setq prev next
 		       index (1+ index))
 	       (setq next prev
@@ -668,6 +697,28 @@ Point moves to the end of the region."
      "-\b\n\f !#-'*+0-9A-Z\\^`-~\d")
     (subst-char-in-region (point-min) (point-max) ?  ?_)
     (buffer-string)))
+
+(defun rfc2047-encode-parameter (param value)
+  "Return and PARAM=VALUE string encoded in the RFC2047-like style.
+This is a replacement for the `rfc2231-encode-string' function.
+
+When attaching files as MIME parts, we should use the RFC2231 encoding
+to specify the file names containing non-ASCII characters.  However,
+many mail softwares don't support it in practice and recipients won't
+be able to extract files with correct names.  Instead, the RFC2047-like
+encoding is acceptable generally.  This function provides the very
+RFC2047-like encoding, resigning to such a regrettable trend.  To use
+it, put the following line in your ~/.gnus.el file:
+
+\(defalias 'mail-header-encode-parameter 'rfc2047-encode-parameter)
+"
+  (let* ((rfc2047-encoding-type 'mime)
+	 (rfc2047-encode-max-chars nil)
+	 (string (rfc2047-encode-string value)))
+    (if (string-match "[][()<>@,;:\\\"/?=]" ;; tspecials
+		      string)
+	(concat param "=" (format "%S" string))
+      (concat param "=" string))))
 
 ;;;
 ;;; Functions for decoding RFC2047 messages

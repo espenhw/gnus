@@ -803,7 +803,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
       (insert " " param)
       (when (> (current-column) 71)
 	(goto-char point)
-	(insert "\n ")
+	(insert "\n")
 	(end-of-line)))))
 
 ;;;

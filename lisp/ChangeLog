@@ -1,3 +1,14 @@
+2004-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Check carefully whether to
+	encode special characters; fix some kind of misconfigured headers;
+	signal a real error if debug-on-quit or debug-on-error is non-nil.
+	(rfc2047-encode-max-chars): New variable.
+	(rfc2047-encode-1): Use it.
+	(rfc2047-encode-parameter): New function.
+
+	* mml.el (mml-insert-parameter): Remove an excessive space.
+
 2004-07-17  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-make-group-simple): Add, suggested by
