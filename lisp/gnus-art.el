@@ -1324,8 +1324,7 @@ It is a string, such as \"PGP\". If nil, ask user."
   "Function used for converting HTML into text.")
 
 (defcustom gnus-use-idna (and (condition-case nil (require 'idna) (file-error))
-			      (fboundp 'coding-system-p)
-			      (coding-system-p 'utf-8))
+			      (mm-coding-system-p 'utf-8))
   "Whether IDNA decoding of headers is used when viewing messages.
 This requires GNU Libidn, and by default only enabled if it is found."
   :group 'gnus-article-headers
