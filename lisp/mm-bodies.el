@@ -271,7 +271,21 @@ The characters in CHARSET should then be decoded."
 		   (or (not (eq coding-system 'ascii))
 		       (setq coding-system mail-parse-charset))
 		   (not (eq coding-system 'gnus-decoded)))
-	  (mm-decode-coding-region (point-min) (point-max) coding-system))))))
+	  (mm-decode-coding-region-safely (point-min) (point-max)
+					  coding-system))))))
+
+(defun mm-decode-coding-region-safely (start end coding-system)
+  "Decode region between START and END with CODING-SYSTEM.
+If CODING-SYSTEM is not a valid coding system for the text, let Emacs
+decide which coding system to use."
+  (let* ((decoded (mm-decode-coding-string (buffer-substring start end)
+					   coding-system))
+	 (charsets (find-charset-string decoded)))
+    (if (or (memq 'eight-bit-control charsets)
+	    (memq 'eight-bit-graphic charsets))
+	(mm-decode-coding-region start end 'undecided)
+      (delete-region start end)
+      (insert decoded))))
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."

@@ -538,7 +538,7 @@ The buffer may be narrowed."
 		   mail-parse-charset
 		   (not (eq mail-parse-charset 'us-ascii))
 		   (not (eq mail-parse-charset 'gnus-decoded)))
-	  (mm-decode-coding-region b (point-max) mail-parse-charset))))))
+	  (mm-decode-coding-region-safely b (point-max) mail-parse-charset))))))
 
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
@@ -555,7 +555,12 @@ The buffer may be narrowed."
 	       mail-parse-charset
 	       (not (eq mail-parse-charset 'us-ascii))
 	       (not (eq mail-parse-charset 'gnus-decoded)))
-	  (mm-decode-coding-string string mail-parse-charset)
+	  (let* ((decoded (mm-decode-coding-string string mail-parse-charset))
+		 (charsets (find-charset-string decoded)))
+	    (if (or (memq 'eight-bit-control charsets)
+		    (memq 'eight-bit-graphic charsets))
+		(mm-decode-coding-string string 'undecided)
+	      decoded))
 	string))))
 
 (defun rfc2047-parse-and-decode (word)
