@@ -3595,6 +3595,16 @@ Delete an empty topic (@code{gnus-topic-delete}).
 List all groups that Gnus knows about in a topics-ified way
 (@code{gnus-topic-list-active}).
 
+@item T M-n
+@kindex T M-n (Topic)
+@findex gnus-topic-goto-next-topic
+Go to the next topic (@code{gnus-topic-goto-next-topic}).
+
+@item T M-p
+@kindex T M-p (Topic)
+@findex gnus-topic-goto-previous-topic
+Go to the next topic (@code{gnus-topic-goto-previous-topic}).
+
 @item G p
 @kindex G p (Topic)
 @findex gnus-topic-edit-parameters
@@ -4465,6 +4475,9 @@ In summary, you'd typically put something like the following in
 (setq gnus-ignored-from-addresses
       "Your Name Here")
 @end lisp
+
+(The values listed above are the default values in Gnus.  Alter them
+to fit your needs.)
 
 Now, this is mostly useful for mail groups, where you have control over
 the @sc{nov} files that are created.  However, if you can persuade your
