@@ -1,3 +1,8 @@
+2000-04-28  Dave Love  <fx@gnu.org>
+
+	* gnus-start.el (gnus-unload): Iterate over `features', not
+	`load-history'.
+
 2000-04-28 09:52:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-parse-1): Don't create blank parts.
