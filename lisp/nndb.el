@@ -60,12 +60,6 @@
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
-  (unless (fboundp 'open-network-stream)
-    (require 'tcp)))
-
-(eval-when-compile (require 'cl))
-
-(eval-and-compile
   (autoload 'telnet-send-input "telnet" nil t)
   (autoload 'gnus-declare-backend "gnus-start"))
 
