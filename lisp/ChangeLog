@@ -1,3 +1,11 @@
+2002-03-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el (gnus-sum-thread-tree-root) 
+	(gnus-sum-thread-tree-single-indent) 
+	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent) 
+	(gnus-sum-thread-tree-leaf-with-other) 
+	(gnus-sum-thread-tree-single-leaf): Make customizable.
+
 2002-03-16  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-util.el (gnus-extract-address-components): Don't break on
