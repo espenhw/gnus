@@ -3910,10 +3910,23 @@ Scroll the current article one line backward
 @kindex A g (Summary)
 @kindex g (Summary)
 @findex gnus-summary-show-article
+@vindex gnus-summary-show-article-charset-alist
 (Re)fetch the current article (@code{gnus-summary-show-article}).  If
 given a prefix, fetch the current article, but don't run any of the
 article treatment functions.  This will give you a ``raw'' article, just
 the way it came from the server.
+
+If given a numerical prefix, you can do semi-manual charset stuff.
+@kbd{C-u 0 g cn-gb-2312 RET} will decode the message as if it were
+encoded in the @code{cn-gb-2312} charset.  If you have
+
+@lisp
+(setq gnus-summary-show-article-charset-alist 
+      '((1 . cn-gb-2312) 
+        (2 . big5)))
+@end lisp
+
+then you can say @kbd{C-u 1 g} to get the same effect.
 
 @item A <
 @itemx <

@@ -1,3 +1,7 @@
+1999-12-02 00:00:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Paging the Article): Addition.
+
 1999-11-24  Carsten Leonhardt  <leo@arioch.oche.de>
 
 	* gnus.texi (Mail Source Specifiers): Mention maildir in the
