@@ -192,7 +192,7 @@ GroupLens scores can be combined with gnus scores in one of three ways.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Program global variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar grouplens-bbb-token "0"
+(defvar grouplens-bbb-token nil
   "Current session token number")
 
 (defvar grouplens-bbb-process nil
@@ -316,7 +316,7 @@ If this times out we give up and assume that something has died..." )
   grouplens-bbb-token)
 
 (defun bbb-extract-token-number ()
-  (let ((token-pos (search-forward "token=" nil t) ))
+  (let ((token-pos (search-forward "token=" nil t)))
     (when (looking-at "[0-9]+")
       (buffer-substring token-pos (match-end 0)))))
 
@@ -358,25 +358,22 @@ recommend using both scores and grouplens predictions together."
 
 (defun bbb-get-predictions (midlist groupname)
   "Ask the bbb for predictions, and build up the score alist."
-  (if (or (null grouplens-bbb-token)
-	  (equal grouplens-bbb-token "0"))
-      (progn
-	(gnus-message 3 "Error: You are not logged in to a BBB")
-	(ding))
-    (gnus-message 5 "Fetching Predictions...")
-    (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host
-					    grouplens-bbb-port)))
-      (when bbb-process
-	(save-excursion
-	  (set-buffer (process-buffer bbb-process))
-	  (bbb-send-command bbb-process
-			    (bbb-build-predict-command midlist groupname
-						       grouplens-bbb-token))
-	  (if (not (bbb-read-response bbb-process))
-	      (progn
-		(gnus-message 1 "Invalid Token, login and try again")
-		(ding))
-	    (bbb-get-prediction-response bbb-process)))))))
+  (gnus-message 5 "Fetching Predictions...")
+  (if grouplens-bbb-token
+      (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host
+					      grouplens-bbb-port)))
+	(when bbb-process
+	  (save-excursion
+	    (set-buffer (process-buffer bbb-process))
+	    (bbb-send-command bbb-process
+			      (bbb-build-predict-command midlist groupname
+							 grouplens-bbb-token))
+	    (if (bbb-read-response bbb-process)
+		(bbb-get-prediction-response bbb-process)
+	      (gnus-message 1 "Invalid Token, login and try again")
+	      (ding)))))
+    (gnus-message 3 "Error: You are not logged in to a BBB")
+    (ding)))
 
 (defun bbb-get-all-mids ()
   (mapcar (function (lambda (x) (mail-header-id x))) gnus-newsgroup-headers))
@@ -833,9 +830,9 @@ recommend using both scores and grouplens predictions together."
        ;; leave the gnus-score-find-score-files variable alone
        ((eq gnus-grouplens-override-scoring 'separate)
 	(add-hook 'gnus-select-group-hook 
-		  '(lambda ()
-		     (bbb-get-predictions (bbb-get-all-mids) 
-					  gnus-newsgroup-name))))
+		  (lambda ()
+		    (bbb-get-predictions (bbb-get-all-mids)
+					 gnus-newsgroup-name))))
        ;; default is to override
        (t 
 	(setq gnus-score-find-score-files-function 

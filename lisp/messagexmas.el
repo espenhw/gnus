@@ -27,7 +27,7 @@
 
 (require 'nnheader)
 
-(defvar message-xmas-dont-activate-region nil
+(defvar message-xmas-dont-activate-region t
   "If t, don't activate region after yanking.")
 
 (defvar message-xmas-glyph-directory nil

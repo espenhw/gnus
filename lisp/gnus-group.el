@@ -3401,9 +3401,10 @@ and the second element is the address."
   "Change the timestamp of the current group to the current time.
 This function can be used in hooks like `gnus-select-group-hook'
 or `gnus-group-catchup-group-hook'."
-  (let ((time (current-time)))
-    (setcdr (cdr time) nil)
-    (gnus-group-set-parameter gnus-newsgroup-name 'timestamp time)))
+  (when gnus-newsgroup-name
+    (let ((time (current-time)))
+      (setcdr (cdr time) nil)
+      (gnus-group-set-parameter gnus-newsgroup-name 'timestamp time))))
 
 (defsubst gnus-group-timestamp (group)
   "Return the timestamp for GROUP."

@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.63"
+(defconst gnus-version-number "0.64"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -88,7 +88,8 @@ be set in `.emacs' instead."
   (defalias 'gnus-character-to-event 'identity)
   (defalias 'gnus-add-text-properties 'add-text-properties)
   (defalias 'gnus-put-text-property 'put-text-property)
-  (defalias 'gnus-mode-line-buffer-identification 'identity))
+  (defalias 'gnus-mode-line-buffer-identification 'identity)
+  (defalias 'gnus-key-press-event-p 'numberp))
 
 ;; The XEmacs people think this is evil, so it must go.
 (defun custom-face-lookup (&optional fg bg stipple bold italic underline)
@@ -837,12 +838,10 @@ face."
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
-	gnus-article-de-quoted-unreadable
 	gnus-article-display-x-face)
     '(gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
-      gnus-article-de-quoted-unreadable
       gnus-article-maybe-highlight))
   "Controls how the article buffer will look.
 
@@ -1216,6 +1215,7 @@ with some simple extensions.
 %t   Number of articles under the current thread (number).
 %e   Whether the thread is empty or not (character).
 %l   GroupLens score (string).
+%V   Total thread score (number).
 %P   The line number (number).
 %u   User defined specifier.  The next character in the format string should
      be a letter.  Gnus will call the function gnus-user-format-function-X,
@@ -1954,7 +1954,7 @@ Disallow illegal group names."
 	group)
     (while (not group)
       (when (string-match
-	     "[ `'\"/]\\|^$"
+	     "[: `'\"/]\\|^$"
 	     (setq group (read-string (concat prefix prompt)
 				      "" 'gnus-group-history)))
 	(setq prefix (format "Illegal group name: \"%s\".  " group)

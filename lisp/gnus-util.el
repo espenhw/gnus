@@ -572,7 +572,8 @@ Bind `print-quoted' to t while printing."
 
 (defun gnus-make-directory (directory)
   "Make DIRECTORY (and all its parents) if it doesn't exist."
-  (when (not (file-exists-p directory))
+  (when (and directory
+	     (not (file-exists-p directory)))
     (make-directory directory t))
   t)
 

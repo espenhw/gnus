@@ -2558,7 +2558,7 @@ The list is determined from the variable gnus-score-file-alist."
 	 (setq funcs (list funcs)))
     ;; Get the initial score files for this group.
     (when funcs 
-      (setq score-files (gnus-score-find-alist group)))
+      (setq score-files (nreverse (gnus-score-find-alist group))))
     ;; Add any home adapt files.
     (let ((home (gnus-home-score-file group t)))
       (when home
@@ -2590,6 +2590,7 @@ The list is determined from the variable gnus-score-file-alist."
 	(when (stringp (car files))
 	  (setcar files (expand-file-name (car files))))
 	(pop files)))
+    (setq score-files (nreverse score-files))
     ;; Remove any duplicate score files.
     (while (and score-files
 		(member (car score-files) (cdr score-files)))

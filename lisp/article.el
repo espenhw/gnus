@@ -120,7 +120,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\|[\"\(]\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;:\"\)]\\)")
+	 "\\(\\s-\\|^\\|[-\"\(]\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[-?!.,;:\"\)]\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)

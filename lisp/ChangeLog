@@ -1,3 +1,77 @@
+Mon Nov 18 21:42:40 1996  Loren Schall  <schall@saifr00.ateng.az.honeywell.com>
+
+	* gnus-sum.el (gnus-summary-insert-line): Pick apart the From
+	header in reversed order.
+
+Mon Nov 18 02:00:33 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-refer-references): Protect against nil
+	References.
+
+	* gnus-score.el (gnus-all-score-files): Remove duplicate score
+	files from the end first.
+
+	* gnus-start.el (gnus-after-getting-new-news-hook,
+	gnus-get-new-news-hook): Switched defaults.
+
+	* gnus-score.el (gnus-all-score-files): Returned score files in
+	reverse order. 
+
+	* gnus-util.el (gnus-make-directory): Protect against nil dirs.
+
+	* gnus-art.el (gnus-decode-encoded-word-method): Default to
+	'gnus-article-de-quoted-unreadable. 
+
+	* gnus.el (gnus-read-group): Prohibit : in group name.
+	(gnus-article-display-hook): Removed
+	`gnus-article-de-quoted-unreadable'. 
+
+	* article.el (gnus-emphasis-alist): Accept "-" as word marker.
+
+	* messagexmas.el (message-xmas-dont-activate-region): Changed
+	default to t.
+
+Sun Nov 17 01:09:21 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el: Added customize support.
+
+Sun Nov 17 23:42:03 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus-gl.el (bbb-extract-token-number): Fix.
+
+Sun Nov 17 12:18:27 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-next-article): Use it.
+	(gnus-group-make-articles-read): Quote undo forms.
+	(gnus-update-read-articles): Ditto.
+
+	* gnus.el (gnus-key-press-event-p): New alias.
+
+Sat Nov 16 22:05:24 1996  Steven L Baur  <steve@miranova.com>
+
+	* gnus-sum.el (gnus-summary-next-article): XEmacs doesn't use
+	integers for keyboard events.
+
+Sun Nov 17 12:09:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-set-timestamp): Protect against nil
+	gnus-newsgroup-name. 
+
+Sun Nov 17 01:09:21 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el: Added customize support.
+
+Sat Nov 16 22:59:47 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-line-format): Dox fix.
+
+	* nnfolder.el (nnfolder-save-mail): Would insert extra newline at
+	the start.
+
+Sat Nov 16 19:43:22 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.63 is released.
+
 Sat Nov 16 11:32:43 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-next-article): Ignore non-keyboard

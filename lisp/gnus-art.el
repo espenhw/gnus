@@ -146,8 +146,8 @@ The function is called from the article buffer."
   :group 'article
   :type 'function)
 
-(defcustom gnus-decode-encoded-word-method (lambda ())
-  "*Function to decode a MIME encoded-words.
+(defcustom gnus-decode-encoded-word-method 'gnus-article-de-quoted-unreadable
+  "*Function to decode MIME encoded words.
 The function is called from the article buffer."
   :group 'article
   :type 'function)

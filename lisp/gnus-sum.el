@@ -2477,15 +2477,15 @@ This is all marks except unread, ticked, dormant, and expirable."
 	 (gnus-tmp-from (mail-header-from gnus-tmp-header))
 	 (gnus-tmp-name
 	  (cond
-	   ((string-match "(.+)" gnus-tmp-from)
-	    (substring gnus-tmp-from
-		       (1+ (match-beginning 0)) (1- (match-end 0))))
 	   ((string-match "<[^>]+> *$" gnus-tmp-from)
 	    (let ((beg (match-beginning 0)))
 	      (or (and (string-match "^\"[^\"]*\"" gnus-tmp-from)
 		       (substring gnus-tmp-from (1+ (match-beginning 0))
 				  (1- (match-end 0))))
 		  (substring gnus-tmp-from 0 beg))))
+	   ((string-match "(.+)" gnus-tmp-from)
+	    (substring gnus-tmp-from
+		       (1+ (match-beginning 0)) (1- (match-end 0))))
 	   (t gnus-tmp-from)))
 	 (gnus-tmp-subject (mail-header-subject gnus-tmp-header))
 	 (gnus-tmp-number (mail-header-number gnus-tmp-header))
@@ -3552,15 +3552,15 @@ or a straight list of headers."
 	     gnus-tmp-from (mail-header-from gnus-tmp-header)
 	     gnus-tmp-name
 	     (cond
-	      ((string-match "(.+)" gnus-tmp-from)
-	       (substring gnus-tmp-from
-			  (1+ (match-beginning 0)) (1- (match-end 0))))
 	      ((string-match "<[^>]+> *$" gnus-tmp-from)
 	       (setq beg-match (match-beginning 0))
 	       (or (and (string-match "^\"[^\"]*\"" gnus-tmp-from)
 			(substring gnus-tmp-from (1+ (match-beginning 0))
 				   (1- (match-end 0))))
 		   (substring gnus-tmp-from 0 beg-match)))
+	      ((string-match "(.+)" gnus-tmp-from)
+	       (substring gnus-tmp-from
+			  (1+ (match-beginning 0)) (1- (match-end 0))))
 	      (t gnus-tmp-from)))
 	    (when (string= gnus-tmp-name "")
 	      (setq gnus-tmp-name gnus-tmp-from))
@@ -4047,8 +4047,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (setq articles (delq id articles))))))
     (gnus-undo-register
       `(progn
-	 (gnus-info-set-marks ,info ,(gnus-info-marks info))
-	 (gnus-info-set-read ,info ,(gnus-info-read info))
+	 (gnus-info-set-marks ,info ',(gnus-info-marks info))
+	 (gnus-info-set-read ,info ',(gnus-info-read info))
 	 (gnus-group-update-group group t)))
     ;; If the read list is nil, we init it.
     (and active
@@ -5332,7 +5332,7 @@ If BACKWARD, the previous article is selected instead of the next."
 			  "exiting"))
 	  (gnus-summary-next-group nil group backward)))
        (t
-	(when (numberp last-input-event)
+	(when (gnus-key-press-event-p last-input-event)
 	  (gnus-summary-walk-group-buffer
 	   gnus-newsgroup-name cmd unread backward))))))))
 
@@ -6018,16 +6018,19 @@ Return how many articles were fetched."
   (let ((ref (mail-header-references (gnus-summary-article-header)))
 	(current (gnus-summary-article-number))
 	(n 0))
-    ;; For each Message-ID in the References header...
-    (while (string-match "<[^>]*>" ref)
-      (incf n)
-      ;; ... fetch that article.
-      (gnus-summary-refer-article
-       (prog1 (match-string 0 ref)
-	 (setq ref (substring ref (match-end 0))))))
-    (gnus-summary-goto-subject current)
-    (gnus-summary-position-point)
-    n))
+    (if (or (not ref)
+	    (equal ref ""))
+	(error "No References in the current article")
+      ;; For each Message-ID in the References header...
+      (while (string-match "<[^>]*>" ref)
+	(incf n)
+	;; ... fetch that article.
+	(gnus-summary-refer-article
+	 (prog1 (match-string 0 ref)
+	   (setq ref (substring ref (match-end 0))))))
+      (gnus-summary-goto-subject current)
+      (gnus-summary-position-point)
+      n)))
 
 (defun gnus-summary-refer-article (message-id)
   "Fetch an article specified by MESSAGE-ID."
@@ -8420,8 +8423,8 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (gnus-undo-register
 	`(progn
-	   (gnus-info-set-marks ,info ,(gnus-info-marks info))
-	   (gnus-info-set-read ,info ,(gnus-info-read info))
+	   (gnus-info-set-marks ,info ',(gnus-info-marks info))
+	   (gnus-info-set-read ,info ',(gnus-info-read info))
 	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
       ;; Enter this list into the group info.
       (gnus-info-set-read

@@ -30,6 +30,7 @@
 (require 'gnus-int)
 (require 'gnus-spec)
 (require 'gnus-range)
+(require 'gnus-util)
 (require 'message)
 
 (defcustom gnus-startup-file "~/.newsrc"
@@ -336,14 +337,14 @@ This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-get-new-news-hook 
-  (when (gnus-boundp 'display-time-timer)
-    '(display-time-event-handler))
+(defcustom gnus-get-new-news-hook nil
   "A hook run just before Gnus checks for new news."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-after-getting-new-news-hook nil
+(defcustom gnus-after-getting-new-news-hook 
+  (when (gnus-boundp 'display-time-timer)
+    '(display-time-event-handler))
   "A hook run after Gnus checks for new news."
   :group 'gnus-start
   :type 'hook)

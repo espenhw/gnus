@@ -446,6 +446,7 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-article-show-hidden-text 'gnus-xmas-article-show-hidden-text)
   (fset 'gnus-mode-line-buffer-identification
 	'gnus-xmas-mode-line-buffer-identification)
+  (fset 'gnus-key-press-event-p 'key-press-event-p)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
