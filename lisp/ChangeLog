@@ -1,3 +1,9 @@
+2003-12-16  Simon Josefsson  <jas@extundo.com>
+
+	* sha1-el.el (autoload): Don't use ignore-errors.
+	(sha1-use-external): Use condition-case.  Suggested by Katsumi
+	Yamaoka <yamaoka@jpl.org>.
+
 2003-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-split-fancy): Make it customizable with Emacs
