@@ -1,3 +1,18 @@
+2004-03-04  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-gmane-xref): new backend
+	(spam-gmane-xref-spam-group): variable to control the name of the
+	Gmane spam group
+	(spam-blackhole-servers, spam-blackhole-good-server-regex)
+	(spam-regex-headers-spam, spam-regex-headers-ham)
+	(spam-regex-body-spam, spam-regex-body-ham): clarified docs
+	(spam-list-of-checks): added spam-use-gmane-xref to list of
+	backends and checks
+	(spam-check-gmane-xref): function for spam-use-gmane-xref
+
+	* gnus.el (spam-autodetect-methods): add spam-use-gmane-xref as
+	an autodetect method
+
 2004-03-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-int.el (gnus-request-accept-article): Inform the agent that

@@ -162,6 +162,11 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-gmane-xref nil
+  "Whether the Gmane spam xref should be used by `spam-split'."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-blacklist nil
   "Whether the blacklist should be used by `spam-split'."
   :type 'boolean
@@ -260,6 +265,7 @@ them."
 
 (defcustom spam-install-hooks (or
 			       spam-use-dig
+			       spam-use-gmane-xref
 			       spam-use-blacklist
 			       spam-use-whitelist
 			       spam-use-whitelist-exclusive
@@ -296,14 +302,23 @@ All unmarked article in such group receive the spam mark on group entry."
   :type '(repeat (string :tag "Group"))
   :group 'spam)
 
+
+(defcustom spam-gmane-xref-spam-group "gmane.spam.detected"
+  "The group where spam xrefs can be found on Gmane.
+Only meaningful if you enable `spam-use-gmane-xref'."
+  :type 'string
+  :group 'spam)
+
 (defcustom spam-blackhole-servers '("bl.spamcop.net" "relays.ordb.org"
 				    "dev.null.dk" "relays.visi.com")
-  "List of blackhole servers."
+  "List of blackhole servers.
+Only meaningful if you enable `spam-use-blackholes'."
   :type '(repeat (string :tag "Server"))
   :group 'spam)
 
 (defcustom spam-blackhole-good-server-regex nil
-  "String matching IP addresses that should not be checked in the blackholes."
+  "String matching IP addresses that should not be checked in the blackholes.
+Only meaningful if you enable `spam-use-blackholes'."
   :type '(radio (const nil)
 		(regexp :format "%t: %v\n" :size 0))
   :group 'spam)
@@ -314,22 +329,26 @@ All unmarked article in such group receive the spam mark on group entry."
   :group 'spam)
 
 (defcustom spam-regex-headers-spam '("^X-Spam-Flag: YES")
-  "Regular expression for positive header spam matches."
+  "Regular expression for positive header spam matches.
+Only meaningful if you enable `spam-use-regex-headers'."
   :type '(repeat (regexp :tag "Regular expression to match spam header"))
   :group 'spam)
 
 (defcustom spam-regex-headers-ham '("^X-Spam-Flag: NO")
-  "Regular expression for positive header ham matches."
+  "Regular expression for positive header ham matches.
+Only meaningful if you enable `spam-use-regex-headers'."
   :type '(repeat (regexp :tag "Regular expression to match ham header"))
   :group 'spam)
 
 (defcustom spam-regex-body-spam '()
-  "Regular expression for positive body spam matches."
+  "Regular expression for positive body spam matches.
+Only meaningful if you enable `spam-use-regex-body'."
   :type '(repeat (regexp :tag "Regular expression to match spam body"))
   :group 'spam)
 
 (defcustom spam-regex-body-ham '()
-  "Regular expression for positive body ham matches."
+  "Regular expression for positive body ham matches.
+Only meaningful if you enable `spam-use-regex-body'."
   :type '(repeat (regexp :tag "Regular expression to match ham body"))
   :group 'spam)
 
@@ -960,6 +979,7 @@ Respects the process/prefix convention."
 (defvar spam-list-of-checks
   '((spam-use-blacklist  	 	. 	spam-check-blacklist)
     (spam-use-regex-headers  	 	. 	spam-check-regex-headers)
+    (spam-use-gmane-xref  	 	. 	spam-check-gmane-xref)
     (spam-use-regex-body  	 	. 	spam-check-regex-body)
     (spam-use-whitelist  	 	. 	spam-check-whitelist)
     (spam-use-BBDB	 	 	. 	spam-check-BBDB)
@@ -1370,6 +1390,20 @@ functions")
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)
       (setq nnimap-split-download-body-default t))))
+
+
+;;;; Gmane xrefs
+(defun spam-check-gmane-xref ()
+  (let ((header (or
+		 (message-fetch-field "Xref")
+		 (message-fetch-field "Newsgroups")))
+	(spam-split-group (if spam-split-symbolic-return
+			      'spam
+			    spam-split-group)))
+    (when header			; return nil when no header
+      (when (string-match spam-gmane-xref-spam-group
+			  header)
+	  spam-split-group))))
 
 
 ;;;; Regex body
