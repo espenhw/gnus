@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.6 2000/12/14 15:48:28 zsh Exp $
+;; $Id: gpg.el,v 1.7 2000/12/15 04:50:15 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -143,12 +143,19 @@
 
 ;;; Customization: Widgets:
 
-(define-widget 'gpg-command-alist 'alist
-  "An association list for GnuPG command names."
-  :key-type '(symbol :tag   "Abbreviation")
-  :value-type '(string :tag "Program name")
-  :convert-widget 'widget-alist-convert-widget
-  :tag "Alist")
+(if (get 'alist 'widget-type)
+    (define-widget 'gpg-command-alist 'alist
+      "An association list for GnuPG command names."
+      :key-type '(symbol :tag   "Abbreviation")
+      :value-type '(string :tag "Program name")
+      :convert-widget 'widget-alist-convert-widget
+      :tag "Alist")
+    (define-widget 'gpg-command-alist 'repeat
+      "An association list for GnuPG command names."
+      :args '((cons :format "%v"
+		    (symbol :tag   "Abbreviation")
+		    (string :tag "Program name")))
+      :tag "Alist"))
 
 (define-widget 'gpg-command-program 'choice
   "Widget for entering the name of a program (mostly the GnuPG binary)."
