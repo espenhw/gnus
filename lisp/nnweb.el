@@ -767,6 +767,23 @@ and `altavista'.")
 	    (nnweb-parse-find-1 type element
 				(and maxdepth (1- maxdepth)))))))))
 
+(defun nnweb-parse-find-all (type parse)
+  "Find all elements of TYPE in PARSE."
+  (catch 'found
+    (nnweb-parse-find-all-1 type parse)))
+
+(defun nnweb-parse-find-all-1 (type contents)
+  (let (result)
+    (when (consp contents)
+      (if (eq (car contents) type)
+	  (push contents result)
+	(when (listp (cdr contents))
+	  (dolist (element contents)
+	    (when (consp element)
+	      (setq result
+		    (nconc result (nnweb-parse-find-all-1 type element))))))))
+    result))
+
 (defvar nnweb-text)
 (defun nnweb-text (parse)
   "Return a list of text contents in PARSE."

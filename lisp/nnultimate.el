@@ -79,167 +79,121 @@
 	   (mapping (nth 5 entry))
 	   (old-total (or (nth 6 entry) 1))
 	   (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
+	   (furls (list (concat nnultimate-address (format furl sid))))
 	   headers article subject score from date lines parent point
 	   contents tinfo fetchers map elem a href garticles topic old-max
 	   inc datel table string current-page total-contents pages
-	   farticles)
-      (with-temp-buffer
-	(nnweb-insert (concat nnultimate-address (format furl sid)))
-	(goto-char (point-min))
-	(setq contents
-	      (nth 2 (car (nth 2 (nnultimate-find-forum-table
-				  (w3-parse-buffer (current-buffer)))))))
-	;; The main idea here is to map Gnus article numbers to
-	;; nnultimate article numbers.  Say there are three topics in
-	;; this forum, the first with 4 articles, the seconds with 2,
-	;; and the third with 1.  Then this will translate into 7 Gnus
-	;; article numbers, where 1-4 comes from the first topic, 5-6
-	;; from the second and 7 from the third.  Now, then next time
-	;; the group is entered, there's 2 new articles in topic one
-	;; and 1 in topic three.  Then Gnus article number 8-9 be 5-6
-	;; in topic one and 10 will be the 2 in topic three.
-	(dolist (row (reverse (cdr contents)))
-	  (setq row (nth 2 row))
-	  (when (setq a (nnweb-parse-find 'a row))
-	    (setq subject (car (last (nnweb-text a)))
-		  href (cdr (assq 'href (nth 1 a))))
-	    (let ((artlist (nreverse (nnweb-text row)))
-		  art)
-	      (while (and (not art)
-			  artlist)
-		(when (string-match "^[0-9]+$" (car artlist))
-		  (setq art (1+ (string-to-number (car artlist)))))
-		(pop artlist))
-	      (setq garticles art))
-	    (string-match "/\\([0-9]+\\).html" href)
-	    (setq topic (string-to-number (match-string 1 href)))
-	    (if (setq tinfo (assq topic topics))
-		(progn
-		  (setq old-max (cadr tinfo))
-		  (setcar (cdr tinfo) garticles))
-	      (setq old-max 0)
-	      (push (list topic garticles subject href) topics)
-	      (setcar (nthcdr 4 entry) topics))
-	    (when (not (= old-max garticles))
-	      (setq inc (- garticles old-max))
-	      (setq mapping (nconc mapping
-				   (list
-				    (list
-				     old-total (1- (incf old-total inc))
-				     topic (1+ old-max)))))
-	      (incf old-max inc)
-	      (setcar (nthcdr 5 entry) mapping)
-	      (setcar (nthcdr 6 entry) old-total))))
-	(setq map mapping)
-	(while (and (setq article (car articles))
-		    map)
-	  (while (and map
-		      (> article (caar map)))
-	    (pop map))
-	  (when (setq mmap (car map))
-	    (setq farticle -1)
-	    (while (and article
-			(<= article (nth 1 mmap)))
-	      ;; Do we already have a fetcher for this topic?
-	      (if (setq elem (assq (nth 2 mmap) fetchers))
-		  ;; Yes, so we just add the spec to the end.
-		  (nconc elem (list (cons article
-					  (+ (nth 3 mmap) (incf farticle)))))
-		;; No, so we add a new one.
-		(push (list (nth 2 mmap)
-			    (cons article
-				  (+ (nth 3 mmap) (incf farticle))))
-		      fetchers))
-	      (pop articles)
-	      (setq article (car articles)))))
-	;; Now we have the mapping from/to Gnus/nnultimate article numbers,
-	;; so we start fetching the topics that we need to satisfy the
-	;; request.
-	(if (not fetchers)
-	    (save-excursion
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer))
-	  (setq nnultimate-articles nil)
-	  (with-temp-buffer
-	    (dolist (elem fetchers)
-	      (setq pages 1
-		    current-page 1
-		    total-contents nil)
-	      (while (<= current-page pages)
-		(erase-buffer)
-		(setq subject (nth 2 (assq (car elem) topics)))
-		(setq href (nth 3 (assq (car elem) topics)))
-		(if (= current-page 1)
-		    (nnweb-insert href)
-		  (string-match "\\.html$" href)
-		  (nnweb-insert (concat (substring href 0 (match-beginning 0))
-					"-" (number-to-string current-page)
-					(match-string 0 href))))
-		(goto-char (point-min))
-		(setq contents (w3-parse-buffer (current-buffer)))
-		(setq table (nnultimate-find-forum-table contents))
-		(setq string (mapconcat 'identity (nnweb-text table) ""))
-		(when (string-match "topic is \\([0-9]\\) pages" string)
-		  (setq pages (string-to-number (match-string 1 string)))
-		  (setcdr table nil)
-		  (setq table (nnultimate-find-forum-table contents)))
-		(setq contents (cdr (nth 2 (car (nth 2 table)))))
-		(setq total-contents (nconc contents total-contents))
-		(incf current-page))
-	      ;(setq total-contents (nreverse total-contents))
-	      (dolist (art (cdr elem))
-		(if (not (nth (1- (cdr art)) total-contents))
-		    (debug)
-		  (push (list (car art)
-			      (nth (1- (cdr art)) total-contents)
-			      subject)
-			nnultimate-articles)))))
-	  (setq nnultimate-articles
-		(sort nnultimate-articles 'car-less-than-car))
-	  ;; Now we have all the articles, conveniently in an alist
-	  ;; where the key is the Gnus article number.
-	  (dolist (articlef nnultimate-articles)
-	    (setq article (nth 0 articlef)
-		  contents (nth 1 articlef)
-		  subject (nth 2 articlef))
-	    (setq from (mapconcat 'identity
-				  (nnweb-text (car (nth 2 contents)))
-				  " ")
-		  datel (nnweb-text (nth 2 (car (cdr (nth 2 contents))))))
-	    (while datel
-	      (when (string-match "Posted" (car datel))
-		(setq date (substring (car datel) (match-end 0))
-		      datel nil))
-	      (pop datel))
-	    (setq date (delete "" (split-string date "[- \n\t\r    ]")))
-	    (setq date (format "%s %s %s %s"
-			       (car (rassq (string-to-number (nth 1 date))
-					   parse-time-months))
-			       (nth 0 date) (nth 2 date) (nth 3 date)))
-	    (push
-	     (cons
-	      article
-	      (make-full-mail-header
-	       article subject
-	       from (or date "")
-	       (concat "<" (number-to-string sid) "%"
-		       (number-to-string article) 
-		       "@ultimate>")
-	       "" 0
-	       (/ (length (mapconcat
-			   'identity
-			   (nnweb-text
-			    (cdr (nth 2 (nth 1 (nth 2 contents)))))
-			   ""))
-		  70)
-	       nil nil))
-	     headers))
-	  (setq nnultimate-headers (sort headers 'car-less-than-car))
+	   farticles forum-contents parse furl-fetched)
+      (setq map mapping)
+      (while (and (setq article (car articles))
+		  map)
+	(while (and map
+		    (> article (caar map)))
+	  (pop map))
+	(when (setq mmap (car map))
+	  (setq farticle -1)
+	  (while (and article
+		      (<= article (nth 1 mmap)))
+	    ;; Do we already have a fetcher for this topic?
+	    (if (setq elem (assq (nth 2 mmap) fetchers))
+		;; Yes, so we just add the spec to the end.
+		(nconc elem (list (cons article
+					(+ (nth 3 mmap) (incf farticle)))))
+	      ;; No, so we add a new one.
+	      (push (list (nth 2 mmap)
+			  (cons article
+				(+ (nth 3 mmap) (incf farticle))))
+		    fetchers))
+	    (pop articles)
+	    (setq article (car articles)))))
+      ;; Now we have the mapping from/to Gnus/nnultimate article numbers,
+      ;; so we start fetching the topics that we need to satisfy the
+      ;; request.
+      (if (not fetchers)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (dolist (header nnultimate-headers)
-	      (nnheader-insert-nov (cdr header))))))
+	    (erase-buffer))
+	(setq nnultimate-articles nil)
+	(with-temp-buffer
+	  (dolist (elem fetchers)
+	    (setq pages 1
+		  current-page 1
+		  total-contents nil)
+	    (while (<= current-page pages)
+	      (erase-buffer)
+	      (setq subject (nth 2 (assq (car elem) topics)))
+	      (setq href (nth 3 (assq (car elem) topics)))
+	      (if (= current-page 1)
+		  (nnweb-insert href)
+		(string-match "\\.html$" href)
+		(nnweb-insert (concat (substring href 0 (match-beginning 0))
+				      "-" (number-to-string current-page)
+				      (match-string 0 href))))
+	      (goto-char (point-min))
+	      (setq contents (w3-parse-buffer (current-buffer)))
+	      (setq table (nnultimate-find-forum-table contents))
+	      (setq string (mapconcat 'identity (nnweb-text table) ""))
+	      (when (string-match "topic is \\([0-9]\\) pages" string)
+		(setq pages (string-to-number (match-string 1 string)))
+		(setcdr table nil)
+		(setq table (nnultimate-find-forum-table contents)))
+	      (setq contents (cdr (nth 2 (car (nth 2 table)))))
+	      (setq total-contents (nconc contents total-contents))
+	      (incf current-page))
+	    ;;(setq total-contents (nreverse total-contents))
+	    (dolist (art (cdr elem))
+	      (if (not (nth (1- (cdr art)) total-contents))
+		  ();(debug)
+		(push (list (car art)
+			    (nth (1- (cdr art)) total-contents)
+			    subject)
+		      nnultimate-articles)))))
+	(setq nnultimate-articles
+	      (sort nnultimate-articles 'car-less-than-car))
+	;; Now we have all the articles, conveniently in an alist
+	;; where the key is the Gnus article number.
+	(dolist (articlef nnultimate-articles)
+	  (setq article (nth 0 articlef)
+		contents (nth 1 articlef)
+		subject (nth 2 articlef))
+	  (setq from (mapconcat 'identity
+				(nnweb-text (car (nth 2 contents)))
+				" ")
+		datel (nnweb-text (nth 2 (car (cdr (nth 2 contents))))))
+	  (while datel
+	    (when (string-match "Posted" (car datel))
+	      (setq date (substring (car datel) (match-end 0))
+		    datel nil))
+	    (pop datel))
+	  (setq date (delete "" (split-string date "[- \n\t\r    ]")))
+	  (setq date (format "%s %s %s %s"
+			     (car (rassq (string-to-number (nth 1 date))
+					 parse-time-months))
+			     (nth 0 date) (nth 2 date) (nth 3 date)))
+	  (push
+	   (cons
+	    article
+	    (make-full-mail-header
+	     article subject
+	     from (or date "")
+	     (concat "<" (number-to-string sid) "%"
+		     (number-to-string article) 
+		     "@ultimate>")
+	     "" 0
+	     (/ (length (mapconcat
+			 'identity
+			 (nnweb-text
+			  (cdr (nth 2 (nth 1 (nth 2 contents)))))
+			 ""))
+		70)
+	     nil nil))
+	   headers))
+	(setq nnultimate-headers (sort headers 'car-less-than-car))
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (dolist (header nnultimate-headers)
+	    (nnheader-insert-nov (cdr header)))))
       (setcar (nthcdr 6 entry) (nth 1 entry))
       (nnultimate-write-groups)
       'nov)))
@@ -249,6 +203,8 @@
   (when (or (not dont-check)
 	    (not nnultimate-groups))
     (nnultimate-request-list))
+  (unless dont-check
+    (nnultimate-create-mapping group))
   (let ((elem (assoc group nnultimate-groups)))
     (cond
      ((not elem)
@@ -315,6 +271,81 @@
 (nnoo-define-skeleton nnultimate)
 
 ;;; Internal functions
+
+
+(defun nnultimate-create-mapping (group)
+  (let* ((entry (assoc group nnultimate-groups))
+	 (sid (nth 2 entry))
+	 (topics (nth 4 entry))
+	 (mapping (nth 5 entry))
+	 (old-total (or (nth 6 entry) 1))
+	 (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
+	 (furls (list (concat nnultimate-address (format furl sid))))
+	 contents forum-contents furl-fetched a subject href
+	 garticles topic tinfo old-max inc)
+    (with-temp-buffer
+      (while furls
+	(erase-buffer)
+	(nnweb-insert (pop furls))
+	(goto-char (point-min))
+	(setq parse (w3-parse-buffer (current-buffer)))
+	(setq contents
+	      (cdr (nth 2 (car (nth 2 (nnultimate-find-forum-table
+				       parse))))))
+	(setq forum-contents (nconc contents forum-contents))
+	(when (and (not mapping)
+		   (not furl-fetched))
+	  (setq furl-fetched t)
+	  ;; On the first mapping, we fetch all the forum URLs.
+	  (dolist (a (nnweb-parse-find-all 'a parse))
+	    (let ((href (cdr (assq 'href (nth 1 a)))))
+	      (when (and href
+			 (string-match "forumdisplay.*startpoint" href))
+		(push href furls))))
+	  (setq furls (nreverse furls))))
+      ;; The main idea here is to map Gnus article numbers to
+      ;; nnultimate article numbers.  Say there are three topics in
+      ;; this forum, the first with 4 articles, the seconds with 2,
+      ;; and the third with 1.  Then this will translate into 7 Gnus
+      ;; article numbers, where 1-4 comes from the first topic, 5-6
+      ;; from the second and 7 from the third.  Now, then next time
+      ;; the group is entered, there's 2 new articles in topic one
+      ;; and 1 in topic three.  Then Gnus article number 8-9 be 5-6
+      ;; in topic one and 10 will be the 2 in topic three.
+      (dolist (row (reverse forum-contents))
+	(setq row (nth 2 row))
+	(when (setq a (nnweb-parse-find 'a row))
+	  (setq subject (car (last (nnweb-text a)))
+		href (cdr (assq 'href (nth 1 a))))
+	  (let ((artlist (nreverse (nnweb-text row)))
+		art)
+	    (while (and (not art)
+			artlist)
+	      (when (string-match "^[0-9]+$" (car artlist))
+		(setq art (1+ (string-to-number (car artlist)))))
+	      (pop artlist))
+	    (setq garticles art))
+	  (string-match "/\\([0-9]+\\).html" href)
+	  (setq topic (string-to-number (match-string 1 href)))
+	  (if (setq tinfo (assq topic topics))
+	      (progn
+		(setq old-max (cadr tinfo))
+		(setcar (cdr tinfo) garticles))
+	    (setq old-max 0)
+	    (push (list topic garticles subject href) topics)
+	    (setcar (nthcdr 4 entry) topics))
+	  (when (not (= old-max garticles))
+	    (setq inc (- garticles old-max))
+	    (setq mapping (nconc mapping
+				 (list
+				  (list
+				   old-total (1- (incf old-total inc))
+				   topic (1+ old-max)))))
+	    (incf old-max inc)
+	    (setcar (nthcdr 5 entry) mapping)
+	    (setcar (nthcdr 6 entry) old-total)))))
+    (nnultimate-write-groups)
+    mapping))
 
 (defun nnultimate-possibly-change-server (&optional group server)
   (nnultimate-init server)
@@ -395,7 +426,8 @@
 		     (nth 2 parse))))
     (let ((href (cdr (assq 'href (nth 1 (nnweb-parse-find 'a parse 20)))))
 	  case-fold-search)
-      (when (and href (string-match "forumdisplay\\|Forum[0-9]+/HTML\\|getbio"
+      (when (and href (string-match
+		       "postings\\|forumdisplay\\|Forum[0-9]+/HTML\\|getbio"
 				    href))
 	t))))
 

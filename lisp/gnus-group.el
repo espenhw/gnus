@@ -2963,7 +2963,8 @@ entail asking the server for the groups."
   (interactive)
   ;; First we make sure that we have really read the active file.
   (unless (gnus-read-active-file-p)
-    (let ((gnus-read-active-file t))
+    (let ((gnus-read-active-file t)
+	  (gnus-agent nil)) ; Trick the agent into ignoring the active file.
       (gnus-read-active-file)))
   ;; Find all groups and sort them.
   (let ((groups

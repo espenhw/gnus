@@ -295,6 +295,11 @@ The provided functions are:
  :type '(radio (function-item message-forward-subject-author-subject)
 	       (function-item message-forward-subject-fwd)))
 
+(defcustom message-forward-as-mime t
+  "*If non-nil, forward messages as an inline/rfc822 MIME section.  Otherwise, directly inline the old message in the forwarded message."
+  :group 'message-forwarding
+  :type 'boolean)
+
 (defcustom message-wash-forwarded-subjects nil
   "*If non-nil, try to remove as much old cruft as possible from the subject of messages before generating the new subject of a forward."
   :group 'message-forwarding
@@ -304,7 +309,6 @@ The provided functions are:
   "*All headers that match this regexp will be deleted when resending a message."
   :group 'message-interface
   :type 'regexp)
-
 
 (defcustom message-forward-ignored-headers nil
   "*All headers that match this regexp will be deleted when forwarding a message."
@@ -3821,12 +3825,15 @@ Optional NEWS will use news to forward instead of mail."
     ;; Put point where we want it before inserting the forwarded
     ;; message.
     (message-goto-body)
-    (insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
+    (if message-forward-as-mime
+	 (insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
+      (insert "\n\n"))
     (let ((b (point))
 	  e)
       (mml-insert-buffer cur)
       (setq e (point))
-      (insert "<#/part>\n")
+      (and message-forward-as-mime
+	   (insert "<#/part>\n"))
       (when message-forward-ignored-headers
 	(save-restriction
 	  (narrow-to-region b e)

@@ -1,3 +1,7 @@
+1999-11-11 07:31:51  Matt Pharr  <mmp@graphics.stanford.edu>
+
+	* message.el (message-forward-as-mime): New variable.
+
 1999-11-11 05:24:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-util.el (gnus-dd-mmm): Beware buggy dates.
