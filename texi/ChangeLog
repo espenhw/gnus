@@ -1,3 +1,13 @@
+2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Finding the News): Add a note for NNTP marks.
+	Improved by Romain Francoise.
+
+2004-11-23  Romain Francoise  <romain@orebokech.com>
+
+	* gnus.texi (NNTP marks): New node.
+	(NNTP): Move NNTP marks variables to the new node.
+
 2004-11-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi, gnus-news.texi, pgg.texi, sasl.texi: backend -> back

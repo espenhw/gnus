@@ -646,6 +646,7 @@ Getting News
 * Direct Functions::            Connecting directly to the server.
 * Indirect Functions::          Connecting indirectly to the server.
 * Common Variables::            Understood by several connection functions.
+* NNTP marks::                  Storing marks for @acronym{NNTP} servers.
 
 Getting Mail
 
@@ -1042,6 +1043,11 @@ you would typically set this variable to
 @lisp
 (setq gnus-secondary-select-methods '((nnmbox "")))
 @end lisp
+
+Note: the @acronym{NNTP} back end stores marks in marks files
+(@pxref{NNTP marks}).  This feature makes it easy to share marks between
+several Gnus installations, but may slow down things a bit when fetching
+new articles.  @xref{NNTP marks} for more information.
 
 
 @node The First Time
@@ -12804,21 +12810,13 @@ default is 0.1 seconds.  If you have a slow line to the server (and
 don't like to see Emacs eat your available CPU power), you might set
 this to, say, 1.
 
-@item nntp-marks-is-evil
-@vindex nntp-marks-is-evil
-If non-@code{nil}, this back end will ignore any @sc{marks} files.  The
-default is @code{nil}.
-
-@item nntp-marks-directory
-@vindex nntp-marks-directory
-The directory where @sc{marks} for nntp groups will be stored.
-
 @end table
 
 @menu
 * Direct Functions::            Connecting directly to the server.
 * Indirect Functions::          Connecting indirectly to the server.
 * Common Variables::            Understood by several connection functions.
+* NNTP marks::                  Storing marks for @acronym{NNTP} servers.
 @end menu
 
 
@@ -13065,6 +13063,52 @@ just for the real @acronym{NNTP} server.  The default is
 @vindex nntp-telnet-switches
 A list of switches to pass to @code{nntp-telnet-command}.  The default
 is @samp{("-8")}.
+
+@end table
+
+@node NNTP marks
+@subsubsection NNTP marks
+@cindex storing NNTP marks
+
+Gnus stores marks (@pxref{Marking Articles}) for @acronym{NNTP}
+servers in marks files.  A marks file records what marks you have set
+in a group and each file is specific to the corresponding server.
+Marks files are stored in @file{~/News/marks}
+(@code{nntp-marks-directory}) under a classic hierarchy resembling
+that of a news server, for example marks for the group
+@samp{gmane.discuss} on the news.gmane.org server will be stored in
+the file @file{~/News/marks/news.gmane.org/gmane/discuss/.marks}.
+
+Marks files are useful because you can copy the @file{~/News/marks}
+directory (using rsync, scp or whatever) to another Gnus installation,
+and it will realize what articles you have read and marked.  The data
+in @file{~/News/marks} has priority over the same data in
+@file{~/.newsrc.eld}.
+
+Note that marks files are very much server-specific: Gnus remembers
+the article numbers so if you don't use the same servers on both
+installations things are most likely to break (most @acronym{NNTP}
+servers do not use the same article numbers as any other server).
+However, if you use servers A, B, C on one installation and servers A,
+D, E on the other, you can sync the marks files for A and then you'll
+get synchronization for that server between the two installations.
+
+Using @acronym{NNTP} marks can possibly incur a performance penalty so
+if Gnus feels sluggish, try setting the @code{nntp-marks-is-evil}
+variable to @code{t}.  Marks will then be stored in @file{~/.newsrc.eld}.
+
+Related variables:
+
+@table @code
+
+@item nntp-marks-is-evil
+@vindex nntp-marks-is-evil
+If non-@code{nil}, this back end will ignore any marks files.  The
+default is @code{nil}.
+
+@item nntp-marks-directory
+@vindex nntp-marks-directory
+The directory where marks for nntp groups will be stored.
 
 @end table
 
