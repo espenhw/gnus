@@ -1,3 +1,11 @@
+2000-04-23 00:32:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Thread Commands): Add keystrokes.
+
+2000-04-22 21:12:25  Alan Shutko  <ats@acm.org>
+
+	* Makefile.in: Add pdf support.
+
 2000-04-21 12:07:20  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Listing Groups): Addition.

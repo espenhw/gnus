@@ -5799,11 +5799,19 @@ understand the numeric prefix.
 
 @item T n
 @kindex T n (Summary)
+@itemx M-C-n
+@kindex M-C-n (Summary)
+@itemx M-down
+@kindex M-down (Summary)
 @findex gnus-summary-next-thread
 Go to the next thread (@code{gnus-summary-next-thread}).
 
 @item T p
 @kindex T p (Summary)
+@itemx M-C-p
+@kindex M-C-p (Summary)
+@itemx M-up
+@kindex M-up (Summary)
 @findex gnus-summary-prev-thread
 Go to the previous thread (@code{gnus-summary-prev-thread}).
 

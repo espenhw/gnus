@@ -172,9 +172,11 @@ This variable will only be used if the value of
 This applies to marking commands as well as other commands that
 \"naturally\" select the next article, like, for instance, `SPC' at
 the end of an article.
-If nil, only the marking commands will go to the next (un)read article.
-If `never', commands that usually go to the next unread article, will
-go to the next article, whether it is read or not."
+
+If nil, the marking commands do NOT go to the next unread article
+(they go to the next article instead).  If `never', commands that
+usually go to the next unread article, will go to the next article,
+whether it is read or not."
   :group 'gnus-summary-marks
   :link '(custom-manual "(gnus)Setting Marks")
   :type '(choice (const :tag "off" nil)
@@ -1322,6 +1324,8 @@ increase the score of each group you read."
     "\M-\C-h" gnus-summary-hide-thread
     "\M-\C-f" gnus-summary-next-thread
     "\M-\C-b" gnus-summary-prev-thread
+    [(meta down)] gnus-summary-next-thread
+    [(meta up)] gnus-summary-prev-thread
     "\M-\C-u" gnus-summary-up-thread
     "\M-\C-d" gnus-summary-down-thread
     "&" gnus-summary-execute-command

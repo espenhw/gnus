@@ -862,12 +862,12 @@ the actual number of articles toggled is returned."
   (let ((articles (gnus-list-of-unread-articles group))
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group)))
-    ;; add article with marks to list of article headers we want to fetch
+    ;; Add article with marks to list of article headers we want to fetch.
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
       (setq articles (union (gnus-uncompress-sequence (cdr arts))
 			    articles)))
     (setq articles (sort articles '<))
-    ;; remove known articles
+    ;; Remove known articles.
     (when (gnus-agent-load-alist group)
       (setq articles (gnus-sorted-intersection
 		      articles

@@ -1,8 +1,21 @@
+2000-04-23 00:32:32  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (t): M-down and M-up.
+
+2000-04-22 20:22:03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el: Doc fix.
+
 2000-04-22 10:25:56  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-egroups-article): Remove < and >.
 
 2000-04-22 14:25:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Remove the context
+	string. 
+	(nnweb-request-group): Don't scan twice.
+	(nnweb-request-scan): Don't nix out the hashtb.
 
 	* message.el (message-get-reply-headers): Return a value.
 

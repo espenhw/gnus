@@ -6,11 +6,12 @@ top_srcdir = @top_srcdir@
 
 VPATH=$(srcdir)
 TEXI2DVI=texi2dvi
-EMACS=emacs
+TEXI2PDF=texi2pdf
 MAKEINFO=@MAKEINFO@
 EMACSINFO=$(EMACS) -batch -q -no-site-file
 INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 XINFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+PDFLATEX=pdflatex
 LATEX=latex
 DVIPS=dvips
 PERL=perl
@@ -23,7 +24,7 @@ all: gnus message emacs-mime
 
 most: texi2latex.elc latex latexps
 
-.SUFFIXES: .texi .dvi .ps
+.SUFFIXES: .texi .dvi .ps .pdf
 
 .texi:
 	if test -x $(MAKEINFO); then \
@@ -34,14 +35,27 @@ most: texi2latex.elc latex latexps
 
 dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi
 
+pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
+ 
 .texi.dvi :
 	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
 	$(TEXI2DVI) gnustmp.texi
 	cp gnustmp.dvi $*.dvi
 	rm gnustmp.*
 
+.texi.pdf :
+	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
+	$(TEXI2PDF) gnustmp.texi
+	cp gnustmp.pdf $*.pdf
+	rm gnustmp.*
+
 refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
 	$(LATEX) refcard.tex
+
+
+refcard.pdf: refcard.tex gnuslogo.refcard gnusref.tex
+	epstopdf gnuslogo.refcard --outfile=gnuslogo.refcard.pdf
+	$(PDFLATEX) refcard.tex
 
 clean:
 	rm -f gnus.*.bak *.ky *.cp *.fn *.cps *.kys *.log *.aux *.dvi *.vr \
