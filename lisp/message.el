@@ -1319,7 +1319,7 @@ no, only reply back to the author."
      ;; We want to match the results of any of these manglings.
      ;; The following regexp rejects names whose first characters are
      ;; obviously bogus, but after that anything goes.
-     "\\([^\0-\b\n-\r\^?].*\\)? "
+     "\\([^\0-\b\n-\r\^?].*\\)?"
 
      ;; The time the message was sent.
      "\\([^\0-\r \^?]+\\) +"		; day of the week

@@ -1,3 +1,9 @@
+2003-02-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* message.el (message-unix-mail-delimiter): Accept any whitespace
+	after the email address and before the date; do not require the
+	space character.  From Kurt B. Kaiser <kbk@shore.net>.
+
 2003-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-only-boring-p): Make sure that the
