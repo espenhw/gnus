@@ -588,13 +588,17 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   "Register an article, given as a string, with a category.
 Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (when (stringp article-string)
-    (let ((category (or category gnus-newsgroup-name)))
+    (let ((category (or category gnus-newsgroup-name))
+          (db-param (spam-get-ifile-database-parameter)))
       (with-temp-buffer
 	(insert-string article-string)
-	(call-process-region (point-min) (point-max) spam-ifile-path 
-			     nil nil nil 
-			     "-h" "-i" category 
-			     (spam-get-ifile-database-parameter))))))
+	(if db-param
+            (call-process-region (point-min) (point-max) spam-ifile-path 
+                                 nil nil nil 
+                                 "-h" "-i" category db-param)
+          (call-process-region (point-min) (point-max) spam-ifile-path 
+                               nil nil nil 
+                               "-h" "-i" category))))))
 
 (defun spam-ifile-register-spam-routine ()
   (spam-generic-register-routine 

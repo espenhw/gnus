@@ -2,6 +2,7 @@
 
 	* spam.el (spam-check-ifile): fixed call-process-region to use the
 	db parameter only if it's set
+	(spam-ifile-register-with-ifile): ditto
 
 2002-01-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
