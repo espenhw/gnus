@@ -396,6 +396,9 @@ ARTICLE is the article number of the current headline.")
     (let ((coding-system-for-write 'binary)
 	  print-level print-length)
       (with-temp-file file
+	(insert "(setq nnrss-group-alist '"
+		(prin1-to-string nnrss-group-alist)
+		")\n")
 	(insert "(setq nnrss-server-data '"
 		(prin1-to-string nnrss-server-data)
 		")\n")))))

@@ -695,7 +695,7 @@ displayed by the first non-nil matching CONTENT face."
     ("\225" "*")
     ("\226" "-")
     ("\227" "--")
-    ("\230" "-")			; This might not be correct.
+    ("\230" "~")
     ("\231" "(TM)")
     ("\233" ">")
     ("\234" "oe")
