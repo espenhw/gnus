@@ -1418,7 +1418,7 @@ When called interactively, prompt for REGEXP."
 
     ;; The original article buffer is hosed, shoot it down.
     (gnus-kill-buffer gnus-original-article-buffer)
-
+    (setq gnus-current-article nil)
     result-files))
 
 (defun gnus-uu-grab-view (file)
