@@ -986,8 +986,7 @@ password contained in '~/.nntp-authinfo'."
   (open-network-stream "nntpd" buffer nntp-address nntp-port-number))
 
 (defun nntp-open-ssl-stream (buffer)
-  (let* ((ssl-program-arguments '("-connect" (concat host ":" service)))
-	 (proc (open-ssl-stream "nntpd" buffer nntp-address nntp-port-number)))
+  (let ((proc (open-ssl-stream "nntpd" buffer nntp-address nntp-port-number)))
     (save-excursion
       (set-buffer buffer)
       (nntp-wait-for-string "^\r*20[01]")

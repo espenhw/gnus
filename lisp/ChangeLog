@@ -1,5 +1,8 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
 
+	* nntp.el (nntp-open-ssl-stream): Don't mess with internal
+	`ssl.el' variables.
+
 	* gnus-agent.el (gnus-agent-save-group-info): Delete everything
 	but line instead of narrowing to it, because `nnmail-parse-active'
 	calls widen.  Thanks to Christoph Conrad
