@@ -1,3 +1,15 @@
+2002-05-04  Simon Josefsson  <jas@extundo.com>
+
+	* mml1991.el (mml1991-function-alist): Doc fix.
+
+	* mml.el (mml-preview): Bind gnus-newsrc-hashtb temporarily if it
+	doesn't exist (for previewing messages without having Gnus
+	started).
+
+	* mm-util.el (mm-coding-system-priorities): Defcustom.
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Defcustom.
+
 2002-05-01  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus-msg.el (gnus-message-replysignencrypted): enabled by

@@ -30,7 +30,7 @@
 (eval-and-compile
   (autoload 'mm-body-7-or-8 "mm-bodies"))
 
-(defvar mm-content-transfer-encoding-defaults
+(defcustom mm-content-transfer-encoding-defaults
   '(("text/x-patch" 8bit)
     ("text/.*" qp-or-base64)
     ("message/rfc822" 8bit)
@@ -40,7 +40,15 @@
     (".*" base64))
   "Alist of regexps that match MIME types and their encodings.
 If the encoding is `qp-or-base64', then either quoted-printable
-or base64 will be used, depending on what is more efficient.")
+or base64 will be used, depending on what is more efficient."
+  :type '(repeat (list (regexp :tag "MIME type")
+		       (choice :tag "encoding"
+			       (const 7bit)
+			       (const 8bit)
+			       (const qp-or-base64)
+			       (const quoted-printable)
+			       (const base64))))
+  :group 'mime)
 
 (defvar mm-use-ultra-safe-encoding nil
   "If non-nil, use encodings aimed at Procrustean bed survival.

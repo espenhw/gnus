@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.5 2001/12/18 16:14:19 huber Exp $
+;; RCS: $Id: mml1991.el,v 6.6 2002/02/20 00:15:32 yamaoka Exp $
 
 ;;; Code:
 
@@ -36,7 +36,7 @@
 	       mml1991-mailcrypt-encrypt)
     (gpg mml1991-gpg-sign
 	 mml1991-gpg-encrypt))
-  "Alist of PGP/MIME functions.")
+  "Alist of PGP functions.")
 
 ;;; mailcrypt wrapper
 

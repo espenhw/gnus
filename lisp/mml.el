@@ -1022,7 +1022,9 @@ If RAW, don't highlight the article."
 	(let ((gnus-newsgroup-charset (car message-posting-charset))
 	      gnus-article-prepare-hook gnus-original-article-buffer)
 	  (run-hooks 'gnus-article-decode-hook)
-	  (let ((gnus-newsgroup-name "dummy"))
+	  (let ((gnus-newsgroup-name "dummy")
+		(gnus-newsrc-hashtb (or gnus-newsrc-hashtb
+					(gnus-make-hashtable 5))))
 	    (gnus-article-prepare-display))))
       ;; Disable article-mode-map.
       (use-local-map nil)
