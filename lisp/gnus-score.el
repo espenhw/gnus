@@ -1648,6 +1648,10 @@ This mode is an extended emacs-lisp mode.
     (goto-char (point-min))
     (pop-to-buffer buf)))
   
+(defun gnus-score-flush-cache ()
+  "Flush the cache of score files."
+  (interactive)
+  (setq gnus-score-cache nil))
 
 (provide 'gnus-score)
 

@@ -1,3 +1,14 @@
+Fri Sep 22 14:44:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Various Various): Addition.
+
+Thu Sep 21 13:55:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Article Washing): Change.
+	(Selecting a Group): Addition.
+	(Mail & Post): Change.
+	(Scoring): Made into a chapter.
+
 Wed Sep 20 16:14:11 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Drafts): New.

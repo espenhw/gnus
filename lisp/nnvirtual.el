@@ -238,11 +238,6 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defalias 'nnvirtual-request-post 'nntp-request-post)
 
-(defun nnvirtual-request-post-buffer 
-  (post group subject header article-buffer info follow-to respect-poster)
-  (nntp-request-post-buffer post "" subject header article-buffer
-			    info follow-to respect-poster))
-
 
 ;;; Internal functions.
 

@@ -113,8 +113,6 @@
 (defun nndir-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nndir-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nndir-request-expire-articles 
   (articles group &optional server force)
   (nndir-execute-nnmh-command

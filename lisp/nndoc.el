@@ -257,7 +257,6 @@ Possible values:
   nil)
 
 (defalias 'nndoc-request-post 'nnmail-request-post)
-(defalias 'nndoc-request-post-buffer 'nnmail-request-post-buffer)
 
 
 ;;; Internal functions.

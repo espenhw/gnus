@@ -242,8 +242,6 @@
 (defun nnmh-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nnmh-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
   (nnmh-possibly-change-directory newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
@@ -276,10 +274,10 @@
 				days))))
 	      (progn
 		(and gnus-verbose-backends 
-		     (message "Deleting article %d..." 
+		     (message "Deleting article %s in %s..." 
 			      article newsgroup))
 		(condition-case ()
-		    (delete-file article)
+		    (funcall nnmail-delete-file-function article)
 		  (file-error
 		   (setq rest (cons (car articles) rest)))))
 	    (setq rest (cons (car articles) rest))))
@@ -303,8 +301,8 @@
        (kill-buffer (current-buffer))
        result)
      (condition-case ()
-	 (delete-file (concat nnmh-current-directory 
-			      (int-to-string article)))
+	 (funcall nnmail-delete-file-function
+		  (concat nnmh-current-directory (int-to-string article)))
        (file-error nil)))
     result))
 

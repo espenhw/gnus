@@ -249,8 +249,6 @@
 (defun nnbabyl-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nnbabyl-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nnbabyl-request-expire-articles
   (articles newsgroup &optional server force)
   (nnbabyl-possibly-change-newsgroup newsgroup)

@@ -182,8 +182,6 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defalias 'nnkiboze-request-post 'nntp-request-post)
 
-(defalias 'nnkiboze-request-post-buffer 'nntp-request-post-buffer)
-
 
 ;;; Internal functions.
 

@@ -86,6 +86,7 @@ luck.
 * The Summary Buffer::      Reading, saving and posting articles.
 * The Article Buffer::      Displaying and handling articles.
 * The Server Buffer::       Making and editing virtual servers.
+* Scoring::                 Assigning values to articles.
 * Various::                 General purpose settings.
 * Customization::           Tailoring Gnus to your needs.
 * Troubleshooting::         What you might try if things do not work.
@@ -410,9 +411,9 @@ Gnus implements a sliding scale of subscribedness to groups
 (@pxref{Group Levels}).
 
 @item 
-You can score articles according to any number of criteria (@pxref{Score
-Files}).  You can even get Gnus to score articles for you
-(@pxref{Adaptive Scoring}). 
+You can score articles according to any number of criteria
+(@pxref{Scoring}).  You can even get Gnus to score articles for you
+(@pxref{Adaptive Scoring}).
 
 @item 
 Gnus maintains a dribble buffer that is auto-saved the normal Emacs
@@ -1278,6 +1279,7 @@ the commands that say they move to the next unread group.
 @cindex group selection
 
 @table @kbd
+
 @item SPACE
 @kindex SPACE (Group)
 @findex gnus-group-read-group
@@ -1289,6 +1291,7 @@ group from the server.  If you give a numerical prefix @var{N}, Gnus
 will fetch @var{N} number of articles.  If @var{N} is positive, fetch
 the @var{N} newest articles, if @var{N} is negative, fetch the
 @var{abs(N)} oldest articles.
+
 @item RET
 @kindex RET (Group)
 @findex gnus-group-select-group
@@ -1297,11 +1300,22 @@ Select the current group and switch to the summary buffer
 @code{gnus-group-read-group} - the only difference is that this command
 does not display the first unread article automatically upon group
 entry. 
+
+@item M-RET
+@kindex M-RET (Group)
+@findex gnus-group-quick-select-group
+This does the same as the command above, but tries to do it with the
+minimum amount off fuzz (@code{gnus-group-quick-select-group}).  No
+scoring/killing will be performed, there will be no highlights and no
+expunging.  This might be useful if you're in a real hurry and have to
+enter some humongous groups.
+
 @item c
 @kindex c (Group)
 @findex gnus-group-catchup-current
 Mark all unticked articles in this group as read
 (@code{gnus-group-catchup-current}). 
+
 @item C
 @kindex C (Group)
 @findex gnus-group-catchup-current-all
@@ -1665,6 +1679,8 @@ server:
 @vindex nntp-server-opened-hook
 @cindex @sc{mode reader}
 @cindex authinfo
+@cindex authentification
+@cindex nntp authentification
 @findex nntp-send-authinfo
 @findex nntp-send-mode-reader
 @code{nntp-server-opened-hook} is run after a connection has been made.
@@ -1910,7 +1926,7 @@ similarities between nnkiboze and nnvirtual ends.
 
 In addition to this regexp detailing component groups, an nnkiboze group
 must have a score file to say what articles that are to be included in
-the group (@pxref{Score Files}).
+the group (@pxref{Scoring}).
 
 @kindex M-x nnkiboze-generate-groups
 @findex nnkiboze-generate-groups
@@ -2698,6 +2714,7 @@ off using the @kbd{G p} command to just edit the group parameters.
 These commands all list various slices of the groups that are available.
 
 @table @kbd
+
 @item l
 @itemx A s
 @kindex A s (Group)
@@ -2707,6 +2724,7 @@ List all groups that have unread articles
 (@code{gnus-group-list-groups}).  If the numeric prefix is used, this
 command will list only groups of level ARG and lower.  By default, it
 only lists groups of level five or lower (i.e., just subscribed groups).
+
 @item L
 @itemx A u
 @kindex A u (Group)
@@ -2717,23 +2735,37 @@ List all groups, whether they have unread articles or not
 this command will list only groups of level ARG and lower.  By default,
 it lists groups of level seven or lower (i.e., just subscribed and
 unsubscribed groups).
+
 @item A k
 @kindex A k (Group)
 @findex gnus-group-list-killed
 List all killed groups (@code{gnus-group-list-killed}).
+
 @item A z
 @kindex A z (Group)
 @findex gnus-group-list-zombies
 List all zombie groups (@code{gnus-group-list-zombies}).
+
 @item A m
 @kindex A m (Group)
 @findex gnus-group-list-matching
 List all subscribed groups with unread articles that match a regexp
 (@code{gnus-group-list-matching}). 
+
 @item A M
 @kindex A M (Group)
 @findex gnus-group-list-all-matching
 List groups that match a regexp (@code{gnus-group-list-all-matching}).
+
+@item A A
+@kindex A A (Group)
+@findex gnus-group-list-active
+List absolutely all groups that are in the active file(s) of the
+server(s) you are connected to (@code{gnus-group-list-active}).  This
+might very well take quite a while.  It might actually be a better idea
+to do a @kbd{A m} to list all matching, and just give @samp{.} as the
+thing to match on.
+
 @end table
 
 @node Group Maintenance
@@ -2892,12 +2924,16 @@ plastic chair.
 @section Misc Group Stuff
 
 @table @kbd
+
 @item g
 @kindex g (Group)
 @findex gnus-group-get-new-news
-Check server for new articles.  If the numeric prefix is used, this
-command will check only groups of level ARG and lower
-(@code{gnus-group-get-new-news}). 
+Check server for new articles.  If the numerical prefix is used, this
+command will check only groups of level @var{arg} and lower
+(@code{gnus-group-get-new-news}).  If given a non-numerical prefix, this
+command will force a total rereading of the active file(s) from the
+backend(s).  
+
 @item M-g
 @kindex M-g (Group)
 @findex gnus-group-get-new-news-this-group
@@ -2916,7 +2952,7 @@ Server Buffer}.
 Try to fetch the FAQ for the current group
 (@code{gnus-group-fetch-faq}).  Gnus will try to get the FAQ from
 @code{gnus-group-faq-directory}, which is usually a directory on a
-remote machine. ange-ftp will be used for fetching the file.
+remote machine.  @code{ange-ftp} will be used for fetching the file.
 @item R
 @kindex R (Group)
 @findex gnus-group-restart
@@ -3011,13 +3047,12 @@ move around, read articles, post articles and reply to articles.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
 * Article Treatment::           The article buffer can be mangled at will.
-* Various Article Stuff::       Various stuff dealing with articles.
 * Summary Sorting::             You can sort the summary buffer four ways.
 * Finding the Parent::          No child support? Get the parent.
-* Score Files::                 Maintaining a score file.
 * Mail Group Commands::         Some commands can only be used in mail groups.
 * Various Summary Stuff::       What didn't fit anywhere else.
 @end menu
+
 
 @node Summary Buffer Format
 @section Summary Buffer Format
@@ -3432,6 +3467,7 @@ server.
 * Post::                 Posting and following up.
 * Mail & Post::          Mailing and posting at the same time.
 * Drafts::               Postponing messages and rejected messages.
+* Rejected Articles::    What happens if the server doesn't like your article?
 @end menu
 
 @node Mail
@@ -3956,14 +3992,15 @@ If all of @code{gnus-user-login-name}, @code{gnus-use-generic-from} and
 
 @item gnus-user-from-line
 @vindex gnus-user-from-line
-Your full, complete e-mail address.  This variable overrides the other
-Gnus variables if it is non-@code{nil}.
+Your full, complete e-mail address with name.  This variable overrides
+the other Gnus variables if it is non-@code{nil}.
 
 Here are two example values of this variable: @samp{"larsi@@ifi.uio.no
 (Lars Magne Ingebrigtsen)"} and @samp{"Lars Magne Ingebrigtsen
-<larsi@@ifi.uio.no>"}. The latter version is recommended, but the name
-has to be quoted if it contains non-alpha-numerical characters -
-@samp{"\"Lars M. Ingebrigtsen\" <larsi@@ifi.uio.no>"}.
+<larsi@@ifi.uio.no>"}. The latter version is recommended in news (and is
+probably illegal in mail), but the name has to be quoted if it contains
+non-alpha-numerical characters - @samp{"\"Lars M. Ingebrigtsen\"
+<larsi@@ifi.uio.no>"}.
 
 @item mail-default-headers
 @vindex mail-default-headers
@@ -4442,7 +4479,8 @@ Mark all articles in the buffer in the order they appear
 
 
 @node Limiting
-@subsection Limiting
+@section Limiting
+@cindex limiting
 
 It can be convenient to limit the summary buffer to just show some
 subset of the articles currently in the group.  The effect most limit
@@ -4516,7 +4554,7 @@ Hide all dormant articles (@code{gnus-summary-limit-exclude-dormant}).
 Hide all dormant articles that have no children
 (@code{gnus-summary-limit-exclude-childless-dormant}). 
 
-
+@end table
 
 
 @node Threading
@@ -5432,12 +5470,12 @@ these articles easier.
 @menu
 * Article Highlighting::    You want to make the article look like fruit salad.
 * Article Hiding::          You also want to make certain info go away.
-* Article Mangling::        Lots of way-neat functions to make life better.
+* Article Washing::         Lots of way-neat functions to make life better.
 * Article Date::            Grumble, UT!
 @end menu
 
 
-@node Article Highlighing
+@node Article Highlighting
 @subsection Article Highlighting
 @cindex highlight
 
@@ -5525,6 +5563,8 @@ considered a signature.
 
 
 @node Article Hiding
+@subsection Article Hiding
+@cindex article hiding
 
 Or rather, hiding certain things in each article.  There usually is much
 to much gruft in most articles.  
@@ -5572,11 +5612,11 @@ citation customization.
 
 @end table
 
-@end table
-
 
 @node Article Washing
-@section Article Washin
+@subsection Article Washing
+@cindex washing
+@cindex article washing
 
 We call this "article washing" for a really good reason.  Namely, the
 @kbd{A} key was taken, so we had to use the @kbd{W} key instead.
@@ -5602,10 +5642,10 @@ Do a Caesar rotate (rot13) on the article buffer
 @item A g
 @kindex A g (Summary)
 @findex gnus-summary-show-article
-(Re)fetch the current article (@code{gnus-summary-show-article}). If
-given a prefix, don't actually refetch any articles, just jump to the
-current article and configure the windows to display the current
-article.
+(Re)fetch the current article (@code{gnus-summary-show-article}).  If
+given a prefix, fetch the current article, but don't run any of the
+article treatment functions.  This will give you a "raw" article, just
+the way it came from the server.
 
 @item W t
 @kindex W t (Summary)
@@ -5657,7 +5697,7 @@ matches the @code{From} header, the face will not be shown.
 @end table
 
 @node Article Date
-@section Article Date
+@subsection Article Date
 
 The date is most likely generated in some obscure timezone you've never
 heard of, so it's quite nice to be able to find out what the time was
@@ -5683,7 +5723,7 @@ Say how much time has (e)lapsed between the article was posted and now
 (@code{gnus-article-date-lapsed}).
 
 @item W T o
-@item W T o (Summary)
+@kindex W T o (Summary)
 @findex gnus-article-date-original
 Display the original date (@code{gnus-article-date-original}).  This can
 be useful if you normally use some other conversion function and is
@@ -5752,7 +5792,7 @@ summary buffer, point will just move to this article.
 @kindex A R (Summary)
 You can have Gnus fetch all articles mentioned in the @code{References}
 header of the article by pushing @kbd{A R}
-(code{gnus-summary-refer-references}). 
+(@code{gnus-summary-refer-references}). 
 
 @findex gnus-summary-refer-article
 @kindex M-^ (Summary)
@@ -5777,746 +5817,6 @@ not do a particularly excellent job of it.  That is, @code{nnmbox} and
 @code{nnml} and @code{nnfolder} are only able to locate articles that
 have been posted to the current group.  (Anything else would be too time
 consuming.)  @code{nnmh} does not support this at all.
-
-@node Score Files
-@section Score Files
-@cindex score files
-
-Other people use @dfn{kill files}, but we here at Gnus Towers like
-scoring better than killing, so we'd rather switch than fight.  They do
-something completely different as well, so sit up straight and pay
-attention!
-
-@vindex gnus-summary-mark-below
-All articles have a default score (@code{gnus-summary-default-score}).
-This score may be raised or lowered either interactively or by score
-files.  Articles that have a score lower than
-@code{gnus-summary-mark-below} are marked as read.
-
-Gnus will read any @dfn{score files} that apply to the current group
-before generating the summary buffer.
-
-There are several commands in the summary buffer that insert score
-entries based on the current article. You can, for instance, ask Gnus to
-lower or increase the score of all articles with a certain subject.
-
-There are two sorts of scoring entries: Permanent and temporary.
-Temporary score entries are self-expiring entries.  Any entries that are
-temporary and have not been used for, say, a week, will be removed
-silently to help keep the sizes of the score files down.
-
-@menu 
-* Summary Score Commands::   Adding score commands to the score file.
-* Score Variables::          Customize your scoring.  (My, what terminology).
-* Score File Format::        What a score file may contain.
-* Score File Editing::       You can edit score files by hand as well.
-* Adaptive Scoring::         Big Sister Gnus *knows* what you read.
-* Scoring Tips::             How to score effectively.
-* Reverse Scoring::          That problem child of old is not problem.
-* Global Score Files::       Earth-spanning, ear-splitting score files.
-* Kill Files::               They are still here, but they can be ignored.
-@end menu
-
-@node Summary Score Commands
-@subsection Summary Score Commands
-@cindex score commands
-
-The score commands that alter score entries do not actually modify real
-score files.  That would be too inefficient.  Gnus maintains a cache of
-previously loaded score files, one of which is considered the
-@dfn{current score file alist}.  The score commands simply insert
-entries into this list, and upon group exit, this list is saved.
-
-The current score file is by default the group's local score file, even
-if no such score file actually exists.  To insert score commands into
-some other score file (eg. @file{all.SCORE}), you must first make this
-score file the current one.
-
-General score commands that don't actually change the score file:
-
-@table @kbd
-@item V s
-@kindex V s (Summary)
-@findex gnus-summary-set-score
-Set the score of the current article (@code{gnus-summary-set-score}).  
-@item V S
-@kindex V S (Summary)
-@findex gnus-summary-current-score
-Display the score of the current article
-(@code{gnus-summary-current-score}).   
-@item V t
-@kindex V t (Summary)
-@findex gnus-score-find-trace
-Display all score rules that have been used on the current article
-(@code{gnus-score-find-trace}).   
-@item V a
-@kindex V a (Summary)
-@findex gnus-summary-score-entry
-Add a new score entry, and allow specifying all elements 
-(@code{gnus-summary-score-entry}).
-@item V c
-@kindex V c (Summary)
-@findex gnus-score-change-score-file
-Make a different score file the current
-(@code{gnus-score-change-score-file}). 
-@item V e
-@kindex V e (Summary)
-@findex gnus-score-edit-alist
-Edit the current score file (@code{gnus-score-edit-alist}).  You will be
-popped into a @code{gnus-score-mode} buffer (@pxref{Score File
-Editing}).
-@item V f
-@kindex V f (Summary)
-@findex gnus-score-edit-file
-Edit a score file and make this score file the current one
-(@code{gnus-score-edit-file}).
-@item I C-i
-@kindex I C-i (Summary)
-@findex gnus-summary-raise-score
-Increase the score of the current article
-(@code{gnus-summary-raise-score}).
-@item L C-l
-@kindex L C-l (Summary)
-@findex gnus-summary-lower-score
-Lower the score of the current article
-(@code{gnus-summary-lower-score}). 
-@end table
-
-The rest of these commands modify the local score file.
-
-@table @kbd
-@item V m
-@kindex V m (Summary)
-@findex gnus-score-set-mark-below
-Prompt for a score, and mark all articles with a score below this as
-read (@code{gnus-score-set-mark-below}).
-@item V E
-@kindex V E (Summary)
-@findex gnus-score-set-expunge-below
-Expunge all articles with a score below the default score (or the
-numeric prefix) (@code{gnus-score-set-expunge-below}).
-@end table
-
-The keystrokes for actually making score entries follow a very regular
-pattern, so there's no need to list all the commands.  (Hundreds of
-them.)  
-
-@enumerate
-@item
-The first key is either @kbd{I} (upper case i) for increasing the score
-or @kbd{L} for lowering the score. 
-@item
-The second key says what header you want to score on.  The following
-keys are available:
-@table @kbd
-@item a
-Score on the author name.
-@item s
-Score on the subject line.
-@item x
-Score on the Xref line - i.e., the cross-posting line.
-@item t
-Score on thread - the References line.
-@item d
-Score on the date.
-@item l
-Score on the number of lines.
-@item i
-Score on the Message-ID.
-@item f
-Score on followups.
-@item b
-Score on the body.
-@item h
-Score on the head.
-@end table
-
-@item
-The third key is the match type.  Which match types are legal depends on
-what headers you are scoring on.
-
-@table @code
-@item strings 
-
-@table @kbd
-@item e
-Exact matching.
-@item s
-Substring matching.
-@item f
-Fuzzy matching.
-@item r
-Regexp matching
-@end table
-
-@item date
-@table @kbd
-@item b
-Before date.
-@item a
-At date.
-@item n
-This date.
-@end table
-
-@item number
-@table @kbd
-@item <
-Less than number.
-@item =
-Equal to number.
-@item >
-Greater than number.
-@end table
-@end table
-
-@item 
-The fourth and final key says whether this is a temporary (i.e., expiring)
-score entry, or a permanent (i.e., non-expiring) score entry, or whether
-it is to be done immediately, without adding to the score file.
-@table @kbd
-@item t
-Temporary score entry.
-@item p
-Permanent score entry.
-@item i
-Immediately scoring.
-@end table
-
-@end enumerate
-
-So, let's say you want to increase the score on the current author with
-exact matching permanently: @kbd{I a e p}.  If you want to lower the
-score based on the subject line, using substring matching, and make a
-temporary score entry: @kbd{L s s t}.  Pretty easy.
-
-To make things a bit more complicated, there are shortcuts.  If you use
-a capital letter on either the second or third keys, Gnus will use
-defaults for the remaining one or two keystrokes.  The defaults are
-"substring" and "temporary".  So @kbd{I A} is the same as @kbd{I a s t},
-and @kbd{I a R} is the same as @kbd{I a r t}.
-
-@vindex gnus-score-mimic-keymap
-The @code{gnus-score-mimic-keymap} says whether these commands will
-pretend they are keymaps or not.
-
-@node Score Variables
-@subsection Score Variables
-@cindex score variables
-
-@table @code
-@item gnus-use-scoring
-@vindex gnus-use-scoring
-If @code{nil}, Gnus will not check for score files, and will not, in
-general, do any score-related work.
-@item gnus-kill-killed
-@vindex gnus-kill-killed
-If this variable is @code{nil}, Gnus will never apply score files to
-articles that have already been through the kill process.  While this
-may save you lots of time, it also means that if you apply a kill file
-to a group, and then change the kill file and want to run it over you
-group again to kill more articles, it won't work.  You have to set this
-variable to @code{t} to do that.
-@item gnus-kill-files-directory
-@vindex gnus-kill-files-directory
-All kill and score files will be stored in this directory, which is
-initialized from the @samp{SAVEDIR} environment variable by default.
-@item gnus-score-file-suffix
-@vindex gnus-score-file-suffix
-Suffix to add to the group name to arrive at the score file name
-(@samp{SCORE} by default.)
-@item gnus-score-interactive-default-score
-@vindex gnus-score-interactive-default-score
-Score used by all the interactive raise/lower commands to raise/lower
-score with.  Default is 1000, which may seem excessive, but this is to
-ensure that the adaptive scoring scheme gets enough room to play with.
-We don't want the small changes from the adaptive scoring to overwrite
-manually entered data.
-@item gnus-summary-default-score
-@vindex gnus-summary-default-score
-Default score of an article, which is 0 by default.
-@item gnus-score-over-mark
-@vindex gnus-score-over-mark
-Mark (in the third column) used for articles with a score over the
-default.  Default is @samp{+}.
-@item gnus-score-below-mark
-@vindex gnus-score-below-mark
-Mark (in the third column) used for articles with a score below the
-default.  Default is @samp{-}.
-@item gnus-score-find-score-files-function
-@vindex gnus-score-find-score-files-function
-Function used to find score files for the current group.  This function
-is called with the name of the group as the argument. 
-
-Predefined functions available are:
-@table @code
-
-@item gnus-score-find-single
-@findex gnus-score-find-single
-Only apply the group's own score file.
-
-@item gnus-score-find-bnews
-@findex gnus-score-find-bnews
-Apply all score files that match, using bnews syntax.  For instance, if
-the current group is @samp{gnu.emacs.gnus}, @samp{all.emacs.all.SCORE},
-@samp{not.alt.all.SCORE} and @samp{gnu.all.SCORE} would all apply.  In
-short, the instances of @samp{all} in the score file names are
-translated into @samp{.*}, and then a regexp match is done.
-
-If @code{gnus-use-long-file-name} is non-@code{nil}, this won't work
-very will. It will find stuff like @file{gnu/all/SCORE}, but will not
-find files like @file{not/gnu/all/SCORE}. 
-
-@item gnus-score-find-hierarchical
-@findex gnus-score-find-hierarchical
-Apply all score files from all the parent groups.
-@end table
-This variable can also be a list of functions.  In that case, all these
-functions will be called, and all the returned lists of score files will
-be applied.  These functions can also return lists of score alists
-directly.  In that case, the functions that return these non-file score
-alists should probably be placed before the "real" score file functions,
-to ensure that the last score file returned is the local score file.
-Phu. 
-@item gnus-score-expiry-days
-@vindex gnus-score-expiry-days
-This variable says how many days should pass before an unused score file
-entry is expired.  The default is 7.
-@end table
-
-@node Score File Format
-@subsection Score File Format
-@cindex score file format
-
-A score file is an @code{emacs-lisp} file that normally contains just a
-single form.  Casual users are not expected to edit these files;
-everything can be changed from the summary buffer.
-
-Anyway, if you'd like to dig into it yourself, here's an example:
-
-@lisp
-(("from"
-  ("Lars Ingebrigtsen" -10000)
-  ("Per Abrahamsen")
-  ("larsi\\|lmi" -50000 nil R))
- ("subject"
-  ("Ding is Badd" nil 728373))
- ("xref"
-  ("alt.politics" -1000 728372 s))
- ("lines"
-  (2 -100 nil <))
- (mark 0)
- (expunge -1000)
- (mark-and-expunge -10)
- (read-only nil)
- (orphan -10)
- (adapt t)
- (files "/hom/larsi/News/gnu.SCORE")
- (local (gnus-newsgroup-auto-expire t)
-        (gnus-summary-make-false-root 'empty))
- (eval (ding)))
-@end lisp
-
-This example demonstrates absolutely everything about a score file. 
-
-Even though this looks much like lisp code, nothing here is actually
-@code{eval}ed.  The lisp reader is used to read this form, though, so it
-has to be legal syntactically, if not semantically.
-
-Six keys are supported by this alist:
-
-@table @code
-@item STRING
-If the key is a string, it is the name of the header to perform the
-match on.  Scoring can only be performed on these eight headers:
-@samp{From}, @samp{Subject}, @samp{References}, @samp{Message-ID},
-@samp{Xref}, @samp{Lines}, @samp{Chars} and @samp{Date}.  In addition to
-these headers, there are three strings to tell Gnus to fetch the entire
-article and do the match on larger parts of the article: @samp{Body}
-will perform the match on the body of the article, @samp{Head} will
-perform the match on the head of the article, and @samp{All} will
-perform the match on the entire article.  Note that using any of these
-last three keys will slow down group entry @emph{considerably}.  
-
-Following this key is a random number of score entries, where each score
-entry has one to four elements.
-@enumerate
-@item 
-The first element is the @dfn{match element}.  On most headers this will
-be a string, but on the Lines and Chars headers, this must be an
-integer. 
-@item 
-If the second element is present, it should be a number - the @dfn{score
-element}.  This number should be an integer in the neginf to posinf
-interval.  This number is added to the score of the article if the match
-is successful.  If this element is not present, the
-@code{gnus-score-interactive-default-score} number will be used instead.
-@item 
-If the third element is present, it should be a number - the @dfn{date
-element}.  This date says when the last time this score entry matched,
-which provides a mechanism for expiring the score entries.  It this
-element is not present, the score entry is permanent.  The date is
-represented by the number of days since December 31, 1 ce.
-@item 
-If the fourth element is present, it should be a symbol - the @dfn{type
-element}.  This element specifies what function should be used to see
-whether this score entry matches the article.  What match types that can
-be used depends on what header you wish to perform the match on.
-@table @dfn
-@item From, Subject, References, Xref, Message-ID
-For most header types, there are the @code{r} and @code{R} (regexp) as
-well as @code{s} and @code{S} (substring) types and @code{e} and
-@code{E} (exact match) types.  If this element is not present, Gnus will
-assume that substring matching should be used.  @code{R} and @code{S}
-differ from the other two in that the matches will be done in a
-case-sensitive manner.  All these one-letter types are really just
-abbreviations for the @code{regexp}, @code{string} and @code{exact}
-types, which you can use instead, if you feel like.
-@item Lines, Chars
-These two headers use different match types: @code{<}, @code{>},
-@code{=}, @code{>=} and @code{<=}.
-@item Date
-For the Date header we have three match types: @code{before}, @code{at}
-and @code{after}.  I can't really imagine this ever being useful, but,
-like, it would feel kinda silly not to provide this function.  Just in
-case.  You never know.  Better safe than sorry.  Once burnt, twice shy.
-Don't judge a book by its cover.  Never not have sex on a first date.
-@item Head, Body, All
-These three match keys use the same match types as the @code{From} (etc)
-header uses.
-@item Followup
-This match key will add a score entry on all articles that followup to
-some author.  Uses the same match types as the @code{From} header uses.
-@end table
-@end enumerate
-
-@item mark
-The value of this entry should be a number.  Any articles with a score
-lower than this number will be marked as read.
-@item expunge
-The value of this entry should be a number.  Any articles with a score
-lower than this number will be removed from the summary buffer.
-@item mark-and-expunge
-The value of this entry should be a number.  Any articles with a score
-lower than this number will be marked as read and removed from the
-summary buffer.
-@item files
-The value of this entry should be any number of file names.  These files
-are assumed to be score files as well, and will be loaded the same way
-this one was.
-@item exclude-files
-The clue of this entry should be any number of files.  This files will
-not be loaded, even though they would normally be so, for some reason or
-other. 
-@item eval
-The value of this entry will be @code{eval}el.  This element will be
-ignored when handling global score files. 
-@item read-only
-Read-only score files will not be updated or saved.  Global score files
-should feature this atom (@pxref{Global Score Files}).
-@item orphan
-The value of this entry should be a number.  Articles that do not have
-parents will get this number added to their scores.
-@item adapt
-This entry controls the adaptive scoring.  If it is @code{t}, the
-default adaptive scoring rules will be used.  If it is @code{ignore}, no
-adaptive scoring will be performed on this group.  If it is a list, this
-list will be used as the adaptive scoring rules.  If it isn't present,
-or is something other than @code{t} or @code{ignore}, the default
-adaptive scoring rules will be used.  If you want to use adaptive
-scoring on most groups, you'd set @code{gnus-use-adaptive-scoring} to
-@code{t}, and insert an @code{(adapt ignore)} in the groups where you do
-not want adaptive scoring.  If you only want adaptive scoring in a few
-groups, you'd set @code{gnus-use-adaptive-scoring} to @code{nil}, and
-insert @code{(adapt t)} in the score files of the groups where you want
-it. 
-@item local
-@cindex local variables
-The value of this entry should be a list of @code{(VAR VALUE)} pairs.
-Each @var{var} will be made buffer-local to the current summary buffer,
-and set to the value specified. This is a convenient, if somewhat
-strange, way of setting variables in some groups if you don't like hooks
-much.
-@end table
-
-@node Score File Editing
-@subsection Score File Editing
-
-You normally enter all scoring commands from the summary buffer, but you
-might feel the urge to edit them by hand as well, so we've supplied you
-with a mode for that.  
-
-It's simply a slightly customized @code{emacs-lisp} mode, with these
-additional commands:
-
-@table @kbd
-@item C-c C-c
-@kindex C-c C-c (Score)
-@findex gnus-score-edit-done
-Save the changes you have made and return to the summary buffer
-(@code{gnus-score-edit-done}). 
-@item C-c C-d
-@kindex C-c C-d (Score)
-@findex gnus-score-edit-insert-date
-Insert the current date in numerical format
-(@code{gnus-score-edit-insert-date}).  This is really the day number, if
-you were wondering.
-@end table
-
-@node Adaptive Scoring
-@subsection Adaptive Scoring
-@cindex adaptive scoring
-
-If all this scoring is getting you down, Gnus has a way of making it all
-happen automatically - as if by magic.  Or rather, as if by artificial
-stupidity, to be precise.
-
-@vindex gnus-use-adaptive-scoring
-When you read an article, or mark an article as read, or kill an
-article, you leave marks behind.  On exit from the group, Gnus can sniff
-these marks and add score elements depending on what marks it finds.
-You turn on this ability by setting @code{gnus-use-adaptive-scoring} to
-@code{t}. 
-
-@vindex gnus-default-adaptive-score-alist
-To give you complete control over the scoring process, you can customize
-the @code{gnus-default-adaptive-score-alist} variable.  By default, it
-looks something like this:
-
-@lisp
-(defvar gnus-default-adaptive-score-alist
-  '((gnus-unread-mark)
-    (gnus-ticked-mark (from 4))
-    (gnus-dormant-mark (from 5))
-    (gnus-del-mark (from -4) (subject -1))
-    (gnus-read-mark (from 4) (subject 2))
-    (gnus-expirable-mark (from -1) (subject -1))
-    (gnus-killed-mark (from -1) (subject -3))
-    (gnus-kill-file-mark)
-    (gnus-catchup-mark (from -1) (subject -1))))
-@end lisp
-
-As you see, each element in this alist has a mark as a key (either a
-variable name or a "real" mark - a character).  Following this key is a
-random number of header/score pairs.  
-
-To take @code{gnus-del-mark} as an example - this alist says that all
-articles that have that mark (i.e., are marked with @samp{D}) will have a
-score entry added to lower based on the @code{From} header by -4, and
-lowered by @code{Subject} by -1.  Change this to fit your prejudices. 
-
-If you use this scheme, you should set @code{mark-below} to something
-small - like -300, perhaps, to avoid having small random changes result
-in articles getting marked as read.
-
-After using adaptive scoring for a week or so, Gnus should start to
-become properly trained and enhance the authors you like best, and kill
-the authors you like least, without you having to say so explicitly. 
-
-You can control what groups the adaptive scoring is to be performed on
-by using the score files (@pxref{Score File Format}).  This will also
-let you use different rules in different groups.
-
-@vindex gnus-adaptive-file-suffix
-The adaptive score entries will be put into a file where the name is the
-group name with @code{gnus-adaptive-file-suffix} appended.
-
-@vindex gnus-score-exact-adapt-limit
-When doing adaptive scoring, substring or fuzzy matching would probably
-give you the best results in most cases. However, if the header one
-matches is short, the possibility for false positives is great, so if
-the length of the match is less than
-@code{gnus-score-exact-adapt-limit}, exact matching will be used. If
-this variable is @code{nil}, exact matching will always be used to avoid
-this problem.
-
-@node Scoring Tips
-@subsection Scoring Tips
-@cindex scoring tips
-
-@table @dfn
-@item Crossposts
-If you want to lower the score of crossposts, the line to match on is
-the @code{Xref} header.
-@lisp
-("xref" (" talk.politics.misc:" -1000))
-@end lisp
-@item Multiple crossposts
-If you want to lower the score of articles that have been crossposted to
-more than, say, 3 groups:
-@lisp
-("xref" (" +[^ ]+:[0-9]+ +[^ ]+:[0-9]+ +[^ ]+:[0-9]+" -1000 nil r))
-@end lisp
-@item Matching on the body
-This is generally not a very good idea - it takes a very long time.
-Gnus actually has to fetch each individual article from the server.  But
-you might want to anyway, I guess.  Even though there are three match
-keys (@code{Head}, @code{Body} and @code{All}), you should choose one
-and stick with it in each score file.  If you use any two, each article
-will be fetched @emph{twice}.  If you want to match a bit on the
-@code{Head} and a bit on the @code{Body}, just use @code{All} for all
-the matches.  
-@item Marking as read
-You will probably want to mark articles that has a score below a certain
-number as read.  This is most easily achieved by putting the following
-in your @file{all.SCORE} file:
-@lisp
-((mark -100))
-@end lisp
-You may also consider doing something similar with @code{expunge}.  
-
-@item Negated charater classes
-If you say stuff like @code{[^abcd]*}, you may get unexpected results.
-That will match newlines, which might lead to, well, The Unknown.  Say
-@code{[^abcd\n]*} instead.
-@end table
-
-@node Reverse Scoring
-@subsection Reverse Scoring
-@cindex reverse scoring
-
-If you want to keep just articles that have @samp{Sex with Emacs} in the
-subject header, and expunge all other articles, you could put something
-like this in your score file:
-
-@lisp
-(("subject"
-  ("Sex with Emacs" 2))
- (mark 1)
- (expunge 1))
-@end lisp
-
-So, you raise all articles that match @samp{Sex with Emacs} and mark the
-rest as read, and expunge them to boot.
-
-@node Global Score Files
-@subsection Global Score Files
-@cindex global score files
-
-Sure, other newsreaders have "global kill files".  These are usually
-nothing more than a single kill file that applies to all groups, stored
-in the user's home directory.  Bah!  Puny, weak newsreaders!
-
-What I'm talking about here are Global Score Files.  Score files from
-all over the world, from users everywhere, uniting all nations in one
-big, happy score file union!  Ange-score!  New and untested!
-
-@vindex gnus-global-score-files
-All you have to do to use other people's score files is to set the
-@code{gnus-global-score-files} variable.  One entry for each score file,
-or each score file directory.  Gnus will decide by itself what score
-files are applicable to which group.
-
-Say you want to use all score files in the
-@file{/ftp@@ftp.some-where:/pub/score} directory and the single score
-file @file{/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE}:
-
-@lisp
-(setq gnus-global-score-files
-      '("/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE"
-        "/ftp@@ftp.some-where:/pub/score/"))
-@end lisp
-
-@findex gnus-score-search-global-directories
-Simple, eh?  Directory names must end with a @samp{/}.  These
-directories are typically scanned only once during each Gnus session.
-If you feel the need to manually re-scan the remote directories, you can
-use the @code{gnus-score-search-global-directories} command.
-
-Note that, at present, using this option will slow down group entry
-somewhat.  (That is - a lot.)
-
-If you want to start maintaining score files for other people to use,
-just put your score file up for anonymous ftp and announce it to the
-world.  Become a retro-moderator!  Participate in the retro-moderator
-wars sure to ensue, where retro-moderators battle it out for the
-sympathy of the people, luring them to use their score files on false
-premises!  Yay!  The net is saved!
-
-Here are some tips for the would-be retro-moderator, off the top of my
-head: 
-
-@itemize @bullet
-@item 
-Articles that are heavily crossposted are probably junk. 
-@item
-To lower a single inappropriate article, lower by @code{Message-Id}.
-@item
-Particularly brilliant authors can be raised on a permanent basis. 
-@item
-Authors that repeatedly post off-charter for the group can safely be
-lowered out of existence.
-@item
-Set the @code{mark} and @code{expunge} atoms to obliterate the nastiest
-articles completely.
-@item 
-Use expiring score entries to keep the size of the file down.  You
-should probably have a long expiry period, though, as some sites keep
-old articles for a long time.
-@end itemize
-
-... I wonder whether other newsreaders will support global score files
-in the future.  @emph{Snicker}.  Yup, any day now, newsreaders like Blue
-Wave, xrn and 1stReader are bound to implement scoring.  Should we start
-holding our breath yet?
-
-@node Kill Files
-@subsection Kill Files
-@cindex kill files
-
-Gnus still supports those pesky old kill files.  In fact, the kill file
-entries can now be expiring, which is something I wrote before Per
-thought of doing score files, so I've left the code in there.
-
-In short, kill processing is a lot slower (and I do mean @emph{a lot})
-than score processing, so it might be a good idea to rewrite your kill
-files into score files.
-
-Anyway, a kill file is a normal @code{emacs-lisp} file.  You can put any
-forms into this file, which means that you can use kill files as some
-sort of primitive hook function to be run on group entry, even though
-that isn't a very good idea.
-
-XCNormal kill files look like this:
-
-@lisp
-(gnus-kill "From" "Lars Ingebrigtsen")
-(gnus-kill "Subject" "ding")
-(gnus-expunge "X")
-@end lisp
-
-This will mark every article written by me as read, and remove them from
-the summary buffer.  Very useful, you'll agree.
-
-Other programs use a totally different kill file syntax.  If Gnus
-encounters what looks like a @code{rn} kill file, it will take a stab at
-interpreting it. 
-
-Two functions for editing a GNUS kill file:
-
-@table @kbd
-@item M-k
-@kindex M-k (Summary)
-@findex gnus-summary-edit-local-kill
-Edit this group's kill file (@code{gnus-summary-edit-local-kill}).
-
-@item M-K
-@kindex M-K (Summary)
-@findex gnus-summary-edit-global-kill
-Edit the general kill file (@code{gnus-summary-edit-global-kill}).
-@end table
-
-@vindex gnus-kill-file-name
-A kill file for the group @samp{soc.motss} is normally called
-@file{soc.motss.KILL}.  The suffix appended to the group name to get
-this file name is detailed by the @code{gnus-kill-file-name} variable.
-The "global" kill file (not in the score file sense of "global", of
-course) is called just @file{KILL}.
-
-@vindex gnus-kill-save-kill-file
-If @code{gnus-kill-save-kill-file} is non-@code{nil}, Gnus will save the
-kill file after processing, which is necessary if you use expiring
-kills. 
 
 
 @node Mail Group Commands
@@ -6625,7 +5925,10 @@ care.
 Try to fetch the FAQ (list of frequently asked questions) for the
 current group (@code{gnus-summary-fetch-faq}).  Gnus will try to get the
 FAQ from @code{gnus-group-faq-directory}, which is usually a directory
-on a remote machine. @code{ange-ftp} will be used for fetching the file.
+on a remote machine.  This variable can also be a list of directories.
+In that case, giving a prefix to this command will allow you to choose
+between the various sites.  @code{ange-ftp} probably will be used for
+fetching the file.
 @item H d
 @kindex H d (Summary)
 @findex gnus-summary-describe-group
@@ -7056,6 +6359,770 @@ instead.  This could potentially save lots of typing.  And it's nice all
 over.
 
 
+@node Scoring
+@chapter Scoring
+@cindex scoring
+
+Other people use @dfn{kill files}, but we here at Gnus Towers like
+scoring better than killing, so we'd rather switch than fight.  They do
+something completely different as well, so sit up straight and pay
+attention!
+
+@vindex gnus-summary-mark-below
+All articles have a default score (@code{gnus-summary-default-score}).
+This score may be raised or lowered either interactively or by score
+files.  Articles that have a score lower than
+@code{gnus-summary-mark-below} are marked as read.
+
+Gnus will read any @dfn{score files} that apply to the current group
+before generating the summary buffer.
+
+There are several commands in the summary buffer that insert score
+entries based on the current article. You can, for instance, ask Gnus to
+lower or increase the score of all articles with a certain subject.
+
+There are two sorts of scoring entries: Permanent and temporary.
+Temporary score entries are self-expiring entries.  Any entries that are
+temporary and have not been used for, say, a week, will be removed
+silently to help keep the sizes of the score files down.
+
+@menu 
+* Summary Score Commands::   Adding score entries for the current group.
+* Group Score Commands::     General score commands.
+* Score Variables::          Customize your scoring.  (My, what terminology).
+* Score File Format::        What a score file may contain.
+* Score File Editing::       You can edit score files by hand as well.
+* Adaptive Scoring::         Big Sister Gnus *knows* what you read.
+* Scoring Tips::             How to score effectively.
+* Reverse Scoring::          That problem child of old is not problem.
+* Global Score Files::       Earth-spanning, ear-splitting score files.
+* Kill Files::               They are still here, but they can be ignored.
+@end menu
+
+@node Summary Score Commands
+@section Summary Score Commands
+@cindex score commands
+
+The score commands that alter score entries do not actually modify real
+score files.  That would be too inefficient.  Gnus maintains a cache of
+previously loaded score files, one of which is considered the
+@dfn{current score file alist}.  The score commands simply insert
+entries into this list, and upon group exit, this list is saved.
+
+The current score file is by default the group's local score file, even
+if no such score file actually exists.  To insert score commands into
+some other score file (eg. @file{all.SCORE}), you must first make this
+score file the current one.
+
+General score commands that don't actually change the score file:
+
+@table @kbd
+@item V s
+@kindex V s (Summary)
+@findex gnus-summary-set-score
+Set the score of the current article (@code{gnus-summary-set-score}).  
+@item V S
+@kindex V S (Summary)
+@findex gnus-summary-current-score
+Display the score of the current article
+(@code{gnus-summary-current-score}).   
+@item V t
+@kindex V t (Summary)
+@findex gnus-score-find-trace
+Display all score rules that have been used on the current article
+(@code{gnus-score-find-trace}).   
+@item V a
+@kindex V a (Summary)
+@findex gnus-summary-score-entry
+Add a new score entry, and allow specifying all elements 
+(@code{gnus-summary-score-entry}).
+@item V c
+@kindex V c (Summary)
+@findex gnus-score-change-score-file
+Make a different score file the current
+(@code{gnus-score-change-score-file}). 
+@item V e
+@kindex V e (Summary)
+@findex gnus-score-edit-alist
+Edit the current score file (@code{gnus-score-edit-alist}).  You will be
+popped into a @code{gnus-score-mode} buffer (@pxref{Score File
+Editing}).
+@item V f
+@kindex V f (Summary)
+@findex gnus-score-edit-file
+Edit a score file and make this score file the current one
+(@code{gnus-score-edit-file}).
+@item I C-i
+@kindex I C-i (Summary)
+@findex gnus-summary-raise-score
+Increase the score of the current article
+(@code{gnus-summary-raise-score}).
+@item L C-l
+@kindex L C-l (Summary)
+@findex gnus-summary-lower-score
+Lower the score of the current article
+(@code{gnus-summary-lower-score}). 
+@end table
+
+The rest of these commands modify the local score file.
+
+@table @kbd
+@item V m
+@kindex V m (Summary)
+@findex gnus-score-set-mark-below
+Prompt for a score, and mark all articles with a score below this as
+read (@code{gnus-score-set-mark-below}).
+@item V E
+@kindex V E (Summary)
+@findex gnus-score-set-expunge-below
+Expunge all articles with a score below the default score (or the
+numeric prefix) (@code{gnus-score-set-expunge-below}).
+@end table
+
+The keystrokes for actually making score entries follow a very regular
+pattern, so there's no need to list all the commands.  (Hundreds of
+them.)  
+
+@enumerate
+@item
+The first key is either @kbd{I} (upper case i) for increasing the score
+or @kbd{L} for lowering the score. 
+@item
+The second key says what header you want to score on.  The following
+keys are available:
+@table @kbd
+@item a
+Score on the author name.
+@item s
+Score on the subject line.
+@item x
+Score on the Xref line - i.e., the cross-posting line.
+@item t
+Score on thread - the References line.
+@item d
+Score on the date.
+@item l
+Score on the number of lines.
+@item i
+Score on the Message-ID.
+@item f
+Score on followups.
+@item b
+Score on the body.
+@item h
+Score on the head.
+@end table
+
+@item
+The third key is the match type.  Which match types are legal depends on
+what headers you are scoring on.
+
+@table @code
+@item strings 
+
+@table @kbd
+@item e
+Exact matching.
+@item s
+Substring matching.
+@item f
+Fuzzy matching.
+@item r
+Regexp matching
+@end table
+
+@item date
+@table @kbd
+@item b
+Before date.
+@item a
+At date.
+@item n
+This date.
+@end table
+
+@item number
+@table @kbd
+@item <
+Less than number.
+@item =
+Equal to number.
+@item >
+Greater than number.
+@end table
+@end table
+
+@item 
+The fourth and final key says whether this is a temporary (i.e., expiring)
+score entry, or a permanent (i.e., non-expiring) score entry, or whether
+it is to be done immediately, without adding to the score file.
+@table @kbd
+@item t
+Temporary score entry.
+@item p
+Permanent score entry.
+@item i
+Immediately scoring.
+@end table
+
+@end enumerate
+
+So, let's say you want to increase the score on the current author with
+exact matching permanently: @kbd{I a e p}.  If you want to lower the
+score based on the subject line, using substring matching, and make a
+temporary score entry: @kbd{L s s t}.  Pretty easy.
+
+To make things a bit more complicated, there are shortcuts.  If you use
+a capital letter on either the second or third keys, Gnus will use
+defaults for the remaining one or two keystrokes.  The defaults are
+"substring" and "temporary".  So @kbd{I A} is the same as @kbd{I a s t},
+and @kbd{I a R} is the same as @kbd{I a r t}.
+
+@vindex gnus-score-mimic-keymap
+The @code{gnus-score-mimic-keymap} says whether these commands will
+pretend they are keymaps or not.
+
+
+@node Group Score Commands
+@section Group Score Commands
+@cindex group score commands
+
+There aren't many of these as yet, I'm afraid.
+
+@table @kbd
+
+@item W f
+@kindex W f (Group)
+@findex gnus-score-flush-cache
+Gnus maintains a cache of score alists to avoid having to reload them
+all the time.  This command will flush the cache
+(@code{gnus-score-flush-cache}). 
+
+@end table
+
+
+@node Score Variables
+@section Score Variables
+@cindex score variables
+
+@table @code
+@item gnus-use-scoring
+@vindex gnus-use-scoring
+If @code{nil}, Gnus will not check for score files, and will not, in
+general, do any score-related work.
+@item gnus-kill-killed
+@vindex gnus-kill-killed
+If this variable is @code{nil}, Gnus will never apply score files to
+articles that have already been through the kill process.  While this
+may save you lots of time, it also means that if you apply a kill file
+to a group, and then change the kill file and want to run it over you
+group again to kill more articles, it won't work.  You have to set this
+variable to @code{t} to do that.
+@item gnus-kill-files-directory
+@vindex gnus-kill-files-directory
+All kill and score files will be stored in this directory, which is
+initialized from the @samp{SAVEDIR} environment variable by default.
+@item gnus-score-file-suffix
+@vindex gnus-score-file-suffix
+Suffix to add to the group name to arrive at the score file name
+(@samp{SCORE} by default.)
+@item gnus-score-interactive-default-score
+@vindex gnus-score-interactive-default-score
+Score used by all the interactive raise/lower commands to raise/lower
+score with.  Default is 1000, which may seem excessive, but this is to
+ensure that the adaptive scoring scheme gets enough room to play with.
+We don't want the small changes from the adaptive scoring to overwrite
+manually entered data.
+@item gnus-summary-default-score
+@vindex gnus-summary-default-score
+Default score of an article, which is 0 by default.
+@item gnus-score-over-mark
+@vindex gnus-score-over-mark
+Mark (in the third column) used for articles with a score over the
+default.  Default is @samp{+}.
+@item gnus-score-below-mark
+@vindex gnus-score-below-mark
+Mark (in the third column) used for articles with a score below the
+default.  Default is @samp{-}.
+@item gnus-score-find-score-files-function
+@vindex gnus-score-find-score-files-function
+Function used to find score files for the current group.  This function
+is called with the name of the group as the argument. 
+
+Predefined functions available are:
+@table @code
+
+@item gnus-score-find-single
+@findex gnus-score-find-single
+Only apply the group's own score file.
+
+@item gnus-score-find-bnews
+@findex gnus-score-find-bnews
+Apply all score files that match, using bnews syntax.  For instance, if
+the current group is @samp{gnu.emacs.gnus}, @samp{all.emacs.all.SCORE},
+@samp{not.alt.all.SCORE} and @samp{gnu.all.SCORE} would all apply.  In
+short, the instances of @samp{all} in the score file names are
+translated into @samp{.*}, and then a regexp match is done.
+
+If @code{gnus-use-long-file-name} is non-@code{nil}, this won't work
+very will. It will find stuff like @file{gnu/all/SCORE}, but will not
+find files like @file{not/gnu/all/SCORE}. 
+
+@item gnus-score-find-hierarchical
+@findex gnus-score-find-hierarchical
+Apply all score files from all the parent groups.
+@end table
+This variable can also be a list of functions.  In that case, all these
+functions will be called, and all the returned lists of score files will
+be applied.  These functions can also return lists of score alists
+directly.  In that case, the functions that return these non-file score
+alists should probably be placed before the "real" score file functions,
+to ensure that the last score file returned is the local score file.
+Phu. 
+@item gnus-score-expiry-days
+@vindex gnus-score-expiry-days
+This variable says how many days should pass before an unused score file
+entry is expired.  The default is 7.
+@end table
+
+@node Score File Format
+@section Score File Format
+@cindex score file format
+
+A score file is an @code{emacs-lisp} file that normally contains just a
+single form.  Casual users are not expected to edit these files;
+everything can be changed from the summary buffer.
+
+Anyway, if you'd like to dig into it yourself, here's an example:
+
+@lisp
+(("from"
+  ("Lars Ingebrigtsen" -10000)
+  ("Per Abrahamsen")
+  ("larsi\\|lmi" -50000 nil R))
+ ("subject"
+  ("Ding is Badd" nil 728373))
+ ("xref"
+  ("alt.politics" -1000 728372 s))
+ ("lines"
+  (2 -100 nil <))
+ (mark 0)
+ (expunge -1000)
+ (mark-and-expunge -10)
+ (read-only nil)
+ (orphan -10)
+ (adapt t)
+ (files "/hom/larsi/News/gnu.SCORE")
+ (local (gnus-newsgroup-auto-expire t)
+        (gnus-summary-make-false-root 'empty))
+ (eval (ding)))
+@end lisp
+
+This example demonstrates absolutely everything about a score file. 
+
+Even though this looks much like lisp code, nothing here is actually
+@code{eval}ed.  The lisp reader is used to read this form, though, so it
+has to be legal syntactically, if not semantically.
+
+Six keys are supported by this alist:
+
+@table @code
+@item STRING
+If the key is a string, it is the name of the header to perform the
+match on.  Scoring can only be performed on these eight headers:
+@samp{From}, @samp{Subject}, @samp{References}, @samp{Message-ID},
+@samp{Xref}, @samp{Lines}, @samp{Chars} and @samp{Date}.  In addition to
+these headers, there are three strings to tell Gnus to fetch the entire
+article and do the match on larger parts of the article: @samp{Body}
+will perform the match on the body of the article, @samp{Head} will
+perform the match on the head of the article, and @samp{All} will
+perform the match on the entire article.  Note that using any of these
+last three keys will slow down group entry @emph{considerably}.  
+
+Following this key is a random number of score entries, where each score
+entry has one to four elements.
+@enumerate
+@item 
+The first element is the @dfn{match element}.  On most headers this will
+be a string, but on the Lines and Chars headers, this must be an
+integer. 
+@item 
+If the second element is present, it should be a number - the @dfn{score
+element}.  This number should be an integer in the neginf to posinf
+interval.  This number is added to the score of the article if the match
+is successful.  If this element is not present, the
+@code{gnus-score-interactive-default-score} number will be used instead.
+@item 
+If the third element is present, it should be a number - the @dfn{date
+element}.  This date says when the last time this score entry matched,
+which provides a mechanism for expiring the score entries.  It this
+element is not present, the score entry is permanent.  The date is
+represented by the number of days since December 31, 1 ce.
+@item 
+If the fourth element is present, it should be a symbol - the @dfn{type
+element}.  This element specifies what function should be used to see
+whether this score entry matches the article.  What match types that can
+be used depends on what header you wish to perform the match on.
+@table @dfn
+@item From, Subject, References, Xref, Message-ID
+For most header types, there are the @code{r} and @code{R} (regexp) as
+well as @code{s} and @code{S} (substring) types and @code{e} and
+@code{E} (exact match) types.  If this element is not present, Gnus will
+assume that substring matching should be used.  @code{R} and @code{S}
+differ from the other two in that the matches will be done in a
+case-sensitive manner.  All these one-letter types are really just
+abbreviations for the @code{regexp}, @code{string} and @code{exact}
+types, which you can use instead, if you feel like.
+@item Lines, Chars
+These two headers use different match types: @code{<}, @code{>},
+@code{=}, @code{>=} and @code{<=}.
+@item Date
+For the Date header we have three match types: @code{before}, @code{at}
+and @code{after}.  I can't really imagine this ever being useful, but,
+like, it would feel kinda silly not to provide this function.  Just in
+case.  You never know.  Better safe than sorry.  Once burnt, twice shy.
+Don't judge a book by its cover.  Never not have sex on a first date.
+@item Head, Body, All
+These three match keys use the same match types as the @code{From} (etc)
+header uses.
+@item Followup
+This match key will add a score entry on all articles that followup to
+some author.  Uses the same match types as the @code{From} header uses.
+@end table
+@end enumerate
+
+@item mark
+The value of this entry should be a number.  Any articles with a score
+lower than this number will be marked as read.
+@item expunge
+The value of this entry should be a number.  Any articles with a score
+lower than this number will be removed from the summary buffer.
+@item mark-and-expunge
+The value of this entry should be a number.  Any articles with a score
+lower than this number will be marked as read and removed from the
+summary buffer.
+@item files
+The value of this entry should be any number of file names.  These files
+are assumed to be score files as well, and will be loaded the same way
+this one was.
+@item exclude-files
+The clue of this entry should be any number of files.  This files will
+not be loaded, even though they would normally be so, for some reason or
+other. 
+@item eval
+The value of this entry will be @code{eval}el.  This element will be
+ignored when handling global score files. 
+@item read-only
+Read-only score files will not be updated or saved.  Global score files
+should feature this atom (@pxref{Global Score Files}).
+@item orphan
+The value of this entry should be a number.  Articles that do not have
+parents will get this number added to their scores.
+@item adapt
+This entry controls the adaptive scoring.  If it is @code{t}, the
+default adaptive scoring rules will be used.  If it is @code{ignore}, no
+adaptive scoring will be performed on this group.  If it is a list, this
+list will be used as the adaptive scoring rules.  If it isn't present,
+or is something other than @code{t} or @code{ignore}, the default
+adaptive scoring rules will be used.  If you want to use adaptive
+scoring on most groups, you'd set @code{gnus-use-adaptive-scoring} to
+@code{t}, and insert an @code{(adapt ignore)} in the groups where you do
+not want adaptive scoring.  If you only want adaptive scoring in a few
+groups, you'd set @code{gnus-use-adaptive-scoring} to @code{nil}, and
+insert @code{(adapt t)} in the score files of the groups where you want
+it. 
+@item local
+@cindex local variables
+The value of this entry should be a list of @code{(VAR VALUE)} pairs.
+Each @var{var} will be made buffer-local to the current summary buffer,
+and set to the value specified. This is a convenient, if somewhat
+strange, way of setting variables in some groups if you don't like hooks
+much.
+@end table
+
+@node Score File Editing
+@section Score File Editing
+
+You normally enter all scoring commands from the summary buffer, but you
+might feel the urge to edit them by hand as well, so we've supplied you
+with a mode for that.  
+
+It's simply a slightly customized @code{emacs-lisp} mode, with these
+additional commands:
+
+@table @kbd
+@item C-c C-c
+@kindex C-c C-c (Score)
+@findex gnus-score-edit-done
+Save the changes you have made and return to the summary buffer
+(@code{gnus-score-edit-done}). 
+@item C-c C-d
+@kindex C-c C-d (Score)
+@findex gnus-score-edit-insert-date
+Insert the current date in numerical format
+(@code{gnus-score-edit-insert-date}).  This is really the day number, if
+you were wondering.
+@end table
+
+@node Adaptive Scoring
+@section Adaptive Scoring
+@cindex adaptive scoring
+
+If all this scoring is getting you down, Gnus has a way of making it all
+happen automatically - as if by magic.  Or rather, as if by artificial
+stupidity, to be precise.
+
+@vindex gnus-use-adaptive-scoring
+When you read an article, or mark an article as read, or kill an
+article, you leave marks behind.  On exit from the group, Gnus can sniff
+these marks and add score elements depending on what marks it finds.
+You turn on this ability by setting @code{gnus-use-adaptive-scoring} to
+@code{t}. 
+
+@vindex gnus-default-adaptive-score-alist
+To give you complete control over the scoring process, you can customize
+the @code{gnus-default-adaptive-score-alist} variable.  By default, it
+looks something like this:
+
+@lisp
+(defvar gnus-default-adaptive-score-alist
+  '((gnus-unread-mark)
+    (gnus-ticked-mark (from 4))
+    (gnus-dormant-mark (from 5))
+    (gnus-del-mark (from -4) (subject -1))
+    (gnus-read-mark (from 4) (subject 2))
+    (gnus-expirable-mark (from -1) (subject -1))
+    (gnus-killed-mark (from -1) (subject -3))
+    (gnus-kill-file-mark)
+    (gnus-catchup-mark (from -1) (subject -1))))
+@end lisp
+
+As you see, each element in this alist has a mark as a key (either a
+variable name or a "real" mark - a character).  Following this key is a
+random number of header/score pairs.  
+
+To take @code{gnus-del-mark} as an example - this alist says that all
+articles that have that mark (i.e., are marked with @samp{D}) will have a
+score entry added to lower based on the @code{From} header by -4, and
+lowered by @code{Subject} by -1.  Change this to fit your prejudices. 
+
+If you use this scheme, you should set @code{mark-below} to something
+small - like -300, perhaps, to avoid having small random changes result
+in articles getting marked as read.
+
+After using adaptive scoring for a week or so, Gnus should start to
+become properly trained and enhance the authors you like best, and kill
+the authors you like least, without you having to say so explicitly. 
+
+You can control what groups the adaptive scoring is to be performed on
+by using the score files (@pxref{Score File Format}).  This will also
+let you use different rules in different groups.
+
+@vindex gnus-adaptive-file-suffix
+The adaptive score entries will be put into a file where the name is the
+group name with @code{gnus-adaptive-file-suffix} appended.
+
+@vindex gnus-score-exact-adapt-limit
+When doing adaptive scoring, substring or fuzzy matching would probably
+give you the best results in most cases. However, if the header one
+matches is short, the possibility for false positives is great, so if
+the length of the match is less than
+@code{gnus-score-exact-adapt-limit}, exact matching will be used. If
+this variable is @code{nil}, exact matching will always be used to avoid
+this problem.
+
+@node Scoring Tips
+@section Scoring Tips
+@cindex scoring tips
+
+@table @dfn
+@item Crossposts
+If you want to lower the score of crossposts, the line to match on is
+the @code{Xref} header.
+@lisp
+("xref" (" talk.politics.misc:" -1000))
+@end lisp
+@item Multiple crossposts
+If you want to lower the score of articles that have been crossposted to
+more than, say, 3 groups:
+@lisp
+("xref" (" +[^ ]+:[0-9]+ +[^ ]+:[0-9]+ +[^ ]+:[0-9]+" -1000 nil r))
+@end lisp
+@item Matching on the body
+This is generally not a very good idea - it takes a very long time.
+Gnus actually has to fetch each individual article from the server.  But
+you might want to anyway, I guess.  Even though there are three match
+keys (@code{Head}, @code{Body} and @code{All}), you should choose one
+and stick with it in each score file.  If you use any two, each article
+will be fetched @emph{twice}.  If you want to match a bit on the
+@code{Head} and a bit on the @code{Body}, just use @code{All} for all
+the matches.  
+@item Marking as read
+You will probably want to mark articles that has a score below a certain
+number as read.  This is most easily achieved by putting the following
+in your @file{all.SCORE} file:
+@lisp
+((mark -100))
+@end lisp
+You may also consider doing something similar with @code{expunge}.  
+
+@item Negated charater classes
+If you say stuff like @code{[^abcd]*}, you may get unexpected results.
+That will match newlines, which might lead to, well, The Unknown.  Say
+@code{[^abcd\n]*} instead.
+@end table
+
+@node Reverse Scoring
+@section Reverse Scoring
+@cindex reverse scoring
+
+If you want to keep just articles that have @samp{Sex with Emacs} in the
+subject header, and expunge all other articles, you could put something
+like this in your score file:
+
+@lisp
+(("subject"
+  ("Sex with Emacs" 2))
+ (mark 1)
+ (expunge 1))
+@end lisp
+
+So, you raise all articles that match @samp{Sex with Emacs} and mark the
+rest as read, and expunge them to boot.
+
+@node Global Score Files
+@section Global Score Files
+@cindex global score files
+
+Sure, other newsreaders have "global kill files".  These are usually
+nothing more than a single kill file that applies to all groups, stored
+in the user's home directory.  Bah!  Puny, weak newsreaders!
+
+What I'm talking about here are Global Score Files.  Score files from
+all over the world, from users everywhere, uniting all nations in one
+big, happy score file union!  Ange-score!  New and untested!
+
+@vindex gnus-global-score-files
+All you have to do to use other people's score files is to set the
+@code{gnus-global-score-files} variable.  One entry for each score file,
+or each score file directory.  Gnus will decide by itself what score
+files are applicable to which group.
+
+Say you want to use all score files in the
+@file{/ftp@@ftp.some-where:/pub/score} directory and the single score
+file @file{/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE}:
+
+@lisp
+(setq gnus-global-score-files
+      '("/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE"
+        "/ftp@@ftp.some-where:/pub/score/"))
+@end lisp
+
+@findex gnus-score-search-global-directories
+Simple, eh?  Directory names must end with a @samp{/}.  These
+directories are typically scanned only once during each Gnus session.
+If you feel the need to manually re-scan the remote directories, you can
+use the @code{gnus-score-search-global-directories} command.
+
+Note that, at present, using this option will slow down group entry
+somewhat.  (That is - a lot.)
+
+If you want to start maintaining score files for other people to use,
+just put your score file up for anonymous ftp and announce it to the
+world.  Become a retro-moderator!  Participate in the retro-moderator
+wars sure to ensue, where retro-moderators battle it out for the
+sympathy of the people, luring them to use their score files on false
+premises!  Yay!  The net is saved!
+
+Here are some tips for the would-be retro-moderator, off the top of my
+head: 
+
+@itemize @bullet
+@item 
+Articles that are heavily crossposted are probably junk. 
+@item
+To lower a single inappropriate article, lower by @code{Message-Id}.
+@item
+Particularly brilliant authors can be raised on a permanent basis. 
+@item
+Authors that repeatedly post off-charter for the group can safely be
+lowered out of existence.
+@item
+Set the @code{mark} and @code{expunge} atoms to obliterate the nastiest
+articles completely.
+@item 
+Use expiring score entries to keep the size of the file down.  You
+should probably have a long expiry period, though, as some sites keep
+old articles for a long time.
+@end itemize
+
+... I wonder whether other newsreaders will support global score files
+in the future.  @emph{Snicker}.  Yup, any day now, newsreaders like Blue
+Wave, xrn and 1stReader are bound to implement scoring.  Should we start
+holding our breath yet?
+
+
+@node Kill Files
+@section Kill Files
+@cindex kill files
+
+Gnus still supports those pesky old kill files.  In fact, the kill file
+entries can now be expiring, which is something I wrote before Per
+thought of doing score files, so I've left the code in there.
+
+In short, kill processing is a lot slower (and I do mean @emph{a lot})
+than score processing, so it might be a good idea to rewrite your kill
+files into score files.
+
+Anyway, a kill file is a normal @code{emacs-lisp} file.  You can put any
+forms into this file, which means that you can use kill files as some
+sort of primitive hook function to be run on group entry, even though
+that isn't a very good idea.
+
+XCNormal kill files look like this:
+
+@lisp
+(gnus-kill "From" "Lars Ingebrigtsen")
+(gnus-kill "Subject" "ding")
+(gnus-expunge "X")
+@end lisp
+
+This will mark every article written by me as read, and remove them from
+the summary buffer.  Very useful, you'll agree.
+
+Other programs use a totally different kill file syntax.  If Gnus
+encounters what looks like a @code{rn} kill file, it will take a stab at
+interpreting it. 
+
+Two functions for editing a GNUS kill file:
+
+@table @kbd
+@item M-k
+@kindex M-k (Summary)
+@findex gnus-summary-edit-local-kill
+Edit this group's kill file (@code{gnus-summary-edit-local-kill}).
+
+@item M-K
+@kindex M-K (Summary)
+@findex gnus-summary-edit-global-kill
+Edit the general kill file (@code{gnus-summary-edit-global-kill}).
+@end table
+
+@vindex gnus-kill-file-name
+A kill file for the group @samp{soc.motss} is normally called
+@file{soc.motss.KILL}.  The suffix appended to the group name to get
+this file name is detailed by the @code{gnus-kill-file-name} variable.
+The "global" kill file (not in the score file sense of "global", of
+course) is called just @file{KILL}.
+
+@vindex gnus-kill-save-kill-file
+If @code{gnus-kill-save-kill-file} is non-@code{nil}, Gnus will save the
+kill file after processing, which is necessary if you use expiring
+kills. 
+
+
+
+
 @node Various
 @chapter Various
 
@@ -7294,9 +7361,61 @@ clock), you should modify this variable:
 
 @item gnus-visual
 @vindex gnus-visual
+@cindex visual
+@cindex highlighting
+@cindex menus
+
 If @code{nil}, Gnus won't attempt to create menus or use fancy colors
 or fonts.  This will also inhibit loading the @file{gnus-visual.el}
 file.
+
+This variable can also be a list of visual properties that are enabled.
+The following elements are legal, and are all set by default:
+
+@table @code
+
+@item summary-highlight
+Perform various highlighting in the summary buffer.
+
+@item article-highlight
+Perform various highlighting in the article buffer.
+
+@item highlight
+Turn on highlighting in all buffers.
+
+@item group-menu
+Create menus in the group buffer.
+
+@item summary-menu
+Create menus in the summary buffer.
+
+@item article-menu
+Create menus in the article buffer.
+
+@item browse-menu
+Create menus in the browse buffer.
+
+@item server-menu
+Create menus in the server buffer.
+
+@item menu
+Create menus in all buffers.
+
+@end table
+
+So if you only want highlighting in the article buffer and menus in all
+buffers, you couls say something like:
+
+@lisp
+(setq gnus-visual '(article-highlight menu))
+@end lisp
+
+If you want only highlighting and no menus whatsoever, you'd say:
+
+@lisp
+(setq gnus-visual '(highlight))
+@end lisp
+
 @item gnus-mouse-face
 @vindex gnus-mouse-face
 This is the face (i.e., font) used for mouse highlighting in Gnus.  No

@@ -388,14 +388,29 @@ instead call function `nntp-status-message' to get status message.")
 		(kill-buffer nntp-async-buffer))))
     (while nntp-async-group-alist
       (and (nth 3 (car nntp-async-group-alist))
+	   (progn
+	     (condition-case ()
+		 (process-send-string (nth 3 nntp-async-group-alist) "QUIT\n")
+	       (error nil))
+	     t)
 	   (delete-process (nth 3 (car nntp-async-group-alist))))
       (setq nntp-async-group-alist (cdr nntp-async-group-alist)))
     (while nntp-server-alist
       (and 
        (setq proc (nth 1 (assq 'nntp-server-process (car nntp-server-alist))))
+       (progn
+	 (condition-case ()
+	     (process-send-string proc "QUIT\n")
+	   (error nil))
+	 t)
        (delete-process proc))
       (and 
        (setq proc (nth 1 (assq 'nntp-async-process (car nntp-server-alist))))
+       (progn
+	 (condition-case ()
+	     (process-send-string proc "QUIT\n")
+	   (error nil))
+	 t)
        (delete-process proc))
       (and (setq proc (nth 1 (assq 'nntp-async-buffer
 				   (car nntp-server-alist))))
@@ -601,87 +616,6 @@ instead call function `nntp-status-message' to get status message.")
 	;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
 	;;  appended to end of the status message.
 	(nntp-wait-for-response "^[23].*\n"))))
-
-(defun nntp-request-post-buffer 
-  (post group subject header article-buffer info follow-to respect-poster)
-  "Request a buffer suitable for composing an article.
-If POST, this is an original article; otherwise it's a followup.
-GROUP is the group to be posted to, the article should have subject
-SUBJECT.  HEADER is a Gnus header vector.  ARTICLE-BUFFER contains the
-article being followed up.  INFO is a Gnus info list.  If FOLLOW-TO,
-post to this group instead.  If RESPECT-POSTER, heed the special
-\"poster\" value of the Followup-to header."
-  (if (assq 'to-address (nth 5 info))
-      (nnmail-request-post-buffer 
-       post group subject header article-buffer info follow-to respect-poster)
-    (let ((mail-default-headers 
-	   (or nntp-news-default-headers mail-default-headers))
-	  from date to followup-to newsgroups message-of
-	  references distribution message-id)
-      (save-excursion
-	(set-buffer (get-buffer-create "*post-news*"))
-	(news-reply-mode)
-	(if (and (buffer-modified-p)
-		 (> (buffer-size) 0)
-		 (not (y-or-n-p "Unsent article being composed; erase it? ")))
-	    ()
-	  (erase-buffer)
-	  (if post
-	      (news-setup nil subject nil group nil)
-	    (save-excursion
-	      (set-buffer article-buffer)
-	      (goto-char (point-min))
-	      (narrow-to-region (point-min)
-				(progn (search-forward "\n\n") (point)))
-	      (setq from (mail-header-from header))
-	      (setq date (mail-header-date header))
-	      (and from
-		   (let ((stop-pos 
-			  (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		     (setq 
-		      message-of
-		      (concat (if stop-pos (substring from 0 stop-pos) from) 
-			      "'s message of " date))))
-	      (setq subject (or subject (mail-header-subject header)))
-	      (or (string-match "^[Rr][Ee]:" subject)
-		  (setq subject (concat "Re: " subject)))
-	      (setq followup-to (mail-fetch-field "followup-to"))
-	      (if (or (null respect-poster) ;Ignore followup-to: field.
-		      (string-equal "" followup-to) ;Bogus header.
-		      (string-equal "poster" followup-to);Poster
-		      (and (eq respect-poster 'ask)
-			   followup-to
-			   (not (y-or-n-p (concat "Followup to " 
-						  followup-to "? ")))))
-		  (setq followup-to nil))
-	      (setq newsgroups
-		    (or follow-to followup-to (mail-fetch-field "newsgroups")))
-	      (setq references (mail-header-references header))
-	      (setq distribution (mail-fetch-field "distribution"))
-	      ;; Remove bogus distribution.
-	      (and (stringp distribution)
-		   (string-match "world" distribution)
-		   (setq distribution nil))
-	      (setq message-id (mail-header-id header))
-	      (widen))
-	    (setq news-reply-yank-from from)
-	    (setq news-reply-yank-message-id message-id)
-	    (news-setup to subject message-of 
-			(if (stringp newsgroups) newsgroups "") 
-			article-buffer)
-	    (if (and newsgroups (listp newsgroups))
-		(progn
-		  (goto-char (point-min))
-		  (while newsgroups
-		    (insert (car (car newsgroups)) ": " 
-			    (cdr (car newsgroups)) "\n")
-		    (setq newsgroups (cdr newsgroups)))))
-	    (nnheader-insert-references references message-id)
-	    (if distribution
-		(progn
-		  (mail-position-on-field "Distribution")
-		  (insert distribution)))))
-	(current-buffer)))))
 
 ;;; Internal functions.
 
@@ -893,10 +827,11 @@ It will prompt for a password."
       (goto-char (point-min))
       ;; We first find the number by looking at the status line.
       (let ((number (and (looking-at "2[0-9][0-9] +\\([0-9]+\\) ")
-			 (int-to-string 
-			  (buffer-substring (match-beginning 0)
-					    (match-end 0)))))
+			 (string-to-int
+			  (buffer-substring (match-beginning 1)
+					    (match-end 1)))))
 	    group newsgroups xref)
+	(and number (zerop number) (setq number nil))
 	;; Then we find the group name.
 	(setq group
 	      (cond 
@@ -914,9 +849,12 @@ It will prompt for a password."
 	       ;; article happens to have the same number in several
 	       ;; groups, but that's life. 
 	       ((and (setq xref (mail-fetch-field "xref"))
+		     number
 		     (string-match (format "\\([^ :]+\\):%d" number) xref))
 		(substring xref (match-beginning 1) (match-end 1)))
 	       (t "")))
+	(and (string-match "\r" group) 
+	     (setq group (substring group 0 (match-beginning 0))))
 	(cons group number)))))
 
 (defun nntp-retrieve-headers-with-xover (sequence &optional fetch-old)

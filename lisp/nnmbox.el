@@ -237,8 +237,6 @@
 (defun nnmbox-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nnmbox-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup)

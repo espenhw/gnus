@@ -110,6 +110,10 @@ save those articles instead."
     ;; Remember the directory name to save articles.
     (setq gnus-newsgroup-last-mail folder)))
   
+(defun gnus-vm-mail-setup (to subject in-reply-to cc replybuffer actions)
+  (gnus-sendmail-mail-setup to subject in-reply-to cc replybuffer actions)
+  )
+
 (defun gnus-mail-forward-using-vm (&optional buffer)
   "Forward the current message to another user using vm."
   (let* ((gnus-buffer (or buffer (current-buffer)))

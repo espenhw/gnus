@@ -170,8 +170,6 @@
 (defun nneething-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nneething-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nneething-close-group (group &optional server)
   t)
 

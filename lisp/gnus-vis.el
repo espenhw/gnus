@@ -293,6 +293,7 @@ variable it the real callback function.")
 	["Edit kill file" gnus-group-edit-local-kill t]
 	["Expire articles" gnus-group-expire-articles t]
 	["Set group level" gnus-group-set-current-level t]
+	["Select quick" gnus-group-quick-select-group t]
 	))
   
      (easy-menu-define
@@ -309,7 +310,8 @@ variable it the real callback function.")
 	 ["Describe all groups" gnus-group-describe-all-groups t]
 	 ["Group apropos" gnus-group-apropos t]
 	 ["Group and description apropos" gnus-group-description-apropos t]
-	 ["List groups matching..." gnus-group-list-matching t])
+	 ["List groups matching..." gnus-group-list-matching t]
+	 ["List active file" gnus-group-list-active t])
 	("Mark"
 	 ["Mark group" gnus-group-mark-group t]
 	 ["Unmark group" gnus-group-unmark-group t]
@@ -331,6 +333,8 @@ variable it the real callback function.")
 	 ["Parameters" gnus-group-edit-group-parameters t]
 	 ["Select method" gnus-group-edit-group-method t]
 	 ["Info" gnus-group-edit-group t])
+	("Score file"
+	 ["Flush cache" gnus-score-flush-cache t])
 	["Read a directory as a group" gnus-group-enter-directory t]
 	["Jump to group" gnus-group-jump-to-group t]
 	["Best unread group" gnus-group-best-unread-group t]
@@ -458,7 +462,8 @@ variable it the real callback function.")
 	  ["Mark all" gnus-uu-mark-all t]
 	  ["Mark buffer" gnus-uu-mark-buffer t]
 	  ["Mark sparse" gnus-uu-mark-sparse t]
-	  ["Mark thread" gnus-uu-mark-thread t]))
+	  ["Mark thread" gnus-uu-mark-thread t]
+	  ["Unmark thread" gnus-uu-unmark-thread t]))
 	("Move"
 	 ["Scroll article forwards" gnus-summary-next-page t]
 	 ["Next unread article" gnus-summary-next-unread-article t]
@@ -726,6 +731,9 @@ variable it the real callback function.")
 	["Reply & followup" gnus-summary-followup-and-reply t]
 	["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
 	["Uuencode and post" gnus-uu-post-news t]
+	("Draft"
+	 ["Send" gnus-summary-send-draft t]
+	 ["Send bounced" gnus-resend-bounced-mail t])
 	))
      (run-hooks 'gnus-summary-menu-hook)
      )))

@@ -111,6 +111,9 @@ several files - eg. \".spool[0-9]*\".")
 (defvar nnmail-resplit-incoming nil
   "*If non-nil, re-split incoming procmail sorted mail.")
 
+(defvar nnmail-delete-file-function 'delete-file
+  "Function called to delete files in some mail backends.")
+
 (defvar nnmail-movemail-program "movemail"
   "*A command to be executed to move mail from the inbox.
 The default is \"movemail\".")
@@ -219,91 +222,6 @@ perfomed.")
 
 (defun nnmail-request-post (&optional server)
   (mail-send-and-exit nil))
-
-(defun nnmail-request-post-buffer (post group subject header article-buffer
-					info follow-to respect-poster)
-  (let ((method-address (cdr (assq 'to-address (nth 5 info))))
-	from date to reply-to message-of
-	references message-id cc new-cc sendto elt)
-    (setq method-address
-	  (if (and (stringp method-address) 
-		   (string= method-address ""))
-	      nil method-address))
-    (save-excursion
-      (set-buffer (get-buffer-create "*mail*"))
-      (if (and (buffer-modified-p)
-	       (> (buffer-size) 0)
-	       (not (y-or-n-p "Unsent mail being composed; erase it? ")))
-	  ()
-	(erase-buffer)
-	(if post
-	    (progn
-	      (mail-setup method-address subject nil nil nil nil)
-	      (auto-save-mode auto-save-default))
-	  (save-excursion
-	    (set-buffer article-buffer)
-	    (goto-char (point-min))
-	    (narrow-to-region (point-min)
-			      (progn (search-forward "\n\n") (point)))
-	    (let ((buffer-read-only nil))
-	      (set-text-properties (point-min) (point-max) nil))
-	    (setq from (mail-header-from header))
-	    (setq date (mail-header-date header))
-	    (and from
-		 (let ((stop-pos 
-			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		   (setq message-of
-			 (concat (if stop-pos (substring from 0 stop-pos) from)
-				 "'s message of " date))))
-	    (setq cc (mail-strip-quoted-names (or (mail-fetch-field "cc") "")))
-	    (setq to (mail-strip-quoted-names (or (mail-fetch-field "to") "")))
-	    (setq new-cc (rmail-dont-reply-to 
-			  (concat (or to "")
-				  (if cc (concat (if to ", " "") cc) ""))))
-	    (let ((rmail-dont-reply-to-names 
-		   (regexp-quote (mail-strip-quoted-names
-				  (or method-address reply-to from "")))))
-	      (setq new-cc (rmail-dont-reply-to new-cc)))
-	    (setq subject (mail-header-subject header))
-	    (or (string-match "^[Rr][Ee]:" subject)
-		(setq subject (concat "Re: " subject)))
-	    (setq reply-to (mail-fetch-field "reply-to"))
-	    (setq references (mail-header-references header))
-	    (setq message-id (mail-header-id header))
-	    (widen))
-	  (setq news-reply-yank-from from)
-	  (setq news-reply-yank-message-id message-id)
-	  
-	  ;; Gather the "to" addresses out of the follow-to list and remove
-	  ;; them as we go.
-	  (if (and follow-to (listp follow-to))
-	      (while (setq elt (assoc "To" follow-to))
-		(setq sendto (concat sendto (and sendto ", ") (cdr elt)))
-		(setq follow-to (delq elt follow-to))))
-	  (mail-setup (if (and follow-to (listp follow-to)) 
-			  sendto
-			(or method-address reply-to from ""))
-		      subject message-of 
-		      (if (zerop (length new-cc)) nil new-cc)
-		      article-buffer nil)
-	  (mail-mode)
-	  (auto-save-mode auto-save-default)
-	  ;; Note that "To" elements should already be in the message.
-	  (if (and follow-to (listp follow-to))
-	      (progn
-		(goto-char (point-min))
-		(re-search-forward "^To:" nil t)
-		(beginning-of-line)
-		(forward-line 1)
-		(while follow-to
-		  (insert 
-		   (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
-		  (setq follow-to (cdr follow-to)))))
-	  (nnheader-insert-references references message-id)))
-      (use-local-map (copy-keymap (current-local-map)))
-      (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
-      (local-set-key "\C-c\C-p" 'gnus-put-message)
-      (current-buffer))))
 
 (defun nnmail-find-file (file)
   "Insert FILE in server buffer safely."

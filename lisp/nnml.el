@@ -257,8 +257,6 @@ all. This may very well take some time.")
 (defun nnml-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nnml-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
@@ -291,10 +289,10 @@ all. This may very well take some time.")
 				     days)))))
 	      (progn
 		(and gnus-verbose-backends 
-		     (message "Deleting article %d in %s..."
+		     (message "Deleting article %s in %s..."
 			      article newsgroup))
 		(condition-case ()
-		    (delete-file article)
+		    (funcall nnmail-delete-file-function article)
 		  (file-error
 		   (setq rest (cons (car articles) rest))))
 		(setq active-articles (delq (car articles) active-articles))
@@ -325,8 +323,9 @@ all. This may very well take some time.")
        result)
      (progn
        (condition-case ()
-	   (delete-file (concat nnml-current-directory 
-				(int-to-string article)))
+	   (funcall nnmail-delete-file-function
+		    (concat nnml-current-directory 
+			    (int-to-string article)))
 	 (file-error nil))
        (nnml-nov-delete-article group article)
        (and last (nnml-save-nov))))
@@ -675,7 +674,7 @@ all. This may very well take some time.")
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (if (file-exists-p nov)
-	      (delete-file nov))
+	      (funcall nnmail-delete-file-function nov))
 	  (save-excursion
 	    (set-buffer nov-buffer)
 	    (buffer-disable-undo (current-buffer))

@@ -311,8 +311,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-post (&optional server)
   (mail-send-and-exit nil))
 
-(defalias 'nnfolder-request-post-buffer 'nnmail-request-post-buffer)
-
 (defun nnfolder-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnfolder-possibly-change-group newsgroup)

@@ -1,8 +1,86 @@
+Thu Sep 21 14:19:41 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+
+	* gnus.el (gnus-article-display-x-face): Use start-process instead
+	  of call-process-region so that we may delete the old x-face
+	  process when visiting a new article.
+
+Fri Sep 22 22:35:37 1995  Lars Magne Ingebrigtsen  <larsi@mimir.ifi.uio.no>
+
+	* gnus.el (gnus-read-header): Didn't work when reffing.
+
+Fri Sep 22 21:28:32 1995  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
+
+	* nntp.el (nntp-find-group-and-number): int-to-string instead of
+		string-to-int. 
+
+	* gnus.el (gnus-set-global-variables): Didn't set
+		gnus-newsgroup-data. 
+
+	* gnus-msg.el (gnus-mail-send): Didn't remove
+		mail-header-separator. 
+
+	* gnus.el (gnus-activate-group): Scanned groups too late.
+
+Fri Sep 22 01:05:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-prepare-threads): Use `gnus-subject-equal'
+	to compare the not-thread-ignore-subject thing.
+	(gnus-visual-p): New function.
+	(gnus-visual): Can now be a list of visual elements.
+	(gnus-request-article-this-buffer): Request all article to
+	`gnus-original-article-buffer', and then copy it to wherever it's
+	supposed to go.
+	(gnus-original-article-buffer): New variable.
+	(gnus-summary-insert-article): New function.
+	(gnus-summary-goto-subject): Allow jumping to articles not
+	currently in the buffer.
+
+	* gnus-msg.el: Reworked all the sendmail/mh-e/vm/rnewspost buffer
+	entry points. 
+
+Thu Sep 21 13:47:01 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-mode-map): New score submap.
+  	(gnus-group-list-active): New command and keystroke.
+	(gnus-group-get-new-news): Allow a forced re-read of the active
+	file(s). 
+
+	* gnus-score.el (gnus-score-flush-cache): New command and
+	keystroke. 
+
+	* gnus.el (gnus-group-set-current-level): Display current level.
+	(gnus-group-quick-select-group): New command and keystroke.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): If the subject or from
+	are the same in a series, use that from or subject in the
+	headers. 
+
+	* nnmail.el (nnmail-delete-file-function): New variable.
+	* nnml.el (nnml-request-expire-articles): Use it.
+
+	* gnus.el (gnus-summary-read-group): Allow entering a group for
+	side-effects; without generating the summary buffer lines.
+	(gnus-summary-show-article): Allow the prefix to fetch the "raw"
+	article. 
+	(gnus-group-faq-directory): Allow lists as values.
+	(gnus-group-fetch-faq): If given a prefix arg, prompt for faq dir
+	from list above.
+
+	* nntp.el (nntp-request-close): Send QUIT to the server before
+	hanging up. 
+
+Thu Sep 21 02:10:14 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* nnml.el (nnml-request-expire-articles): Bugged out.
+	(nnmh-request-expire-articles): Ditto.
+
 Wed Sep 20 22:20:09 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: v0.01 is released.
 
 	* gnus.el (gnus-create-xref-hashtb): Our newsreader has Xrefs with
 		"group/number" instead of "group:number".
-
+		
 	* gnus-msg.el (gnus-cancel-news): Make sure the From line is the
 		read address.
 

@@ -60,7 +60,11 @@ GNUS can be made colorful and fun or grey and dull as you wish.")
 If `visual' is disabled, there will be no menus and few faces.  Most of
 the visual customization options below will be ignored.  GNUS will use
 less space and be faster as a result.")
-		  (default . t)
+		  (default . 
+		    (summary-highlight 
+		     article-highlight 
+		     summary-menu group-menu article-menu
+		     browse-menu server-menu))
 		  (name . gnus-visual)
 		  (type . toggle))
 		 ((tag . "WWW Browser")

@@ -37,7 +37,7 @@ This is most commonly `inews' or `injnews'.")
   "Switches for nnspool-request-post to pass to `inews' for posting news.
 If you are using Cnews, you probably should set this variable to nil.")
 
-(defvar nnspool-spool-directory news-path
+(defvar nnspool-spool-directory (file-name-as-directory news-path)
   "Local news spool directory.")
 
 (defvar nnspool-nov-directory (concat nnspool-spool-directory "over.view/")
@@ -360,8 +360,6 @@ Newsgroup must be selected before calling this function."
       (message "nnspool: %s" nnspool-status-string)
       (ding)
       (run-hooks 'nnspool-rejected-article-hook))))
-
-(defalias 'nnspool-request-post-buffer 'nntp-request-post-buffer)
 
 
 ;;; Internal functions.
