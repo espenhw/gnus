@@ -353,9 +353,9 @@ last form in your `.gnus.el' file:
 
 \(gnus-agentize)
 
-This will modify the `gnus-before-startup-hook', `gnus-post-method',
-and `message-send-mail-function' variables, and install the Gnus
-agent minor mode in all Gnus buffers."
+This will modify the `gnus-setup-news-hook', and
+`message-send-mail-function' variables, and install the Gnus agent
+minor mode in all Gnus buffers."
   (interactive)
   (gnus-open-agent)
   (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)

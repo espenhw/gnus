@@ -1,3 +1,7 @@
+2001-02-02 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agentize): Fix doc.
+
 2001-02-02  Karl Kleinpaste <karl@charcoal.com>
 
 	* mml.el (mml-preview): Bind `q'.
