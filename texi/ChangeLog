@@ -2,6 +2,7 @@
 
 	* gnus.texi (Converting Kill Files): Fix URL.
 	(Posting Styles): Fix regexp.
+	(Mail Source Specifiers): Fix.
 
 2000-09-29 12:53:27  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

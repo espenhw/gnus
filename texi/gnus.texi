@@ -11285,8 +11285,8 @@ Then all articles in the mailbox is fetched, no matter what.  For a
 complete list of predicates, see RFC 2060 §6.4.4.
 
 @item :fetchflag
-How to flag fetched articles on the server, the default @samp{Deleted}
-will mark them as deleted, an alternative would be @samp{Seen} which
+How to flag fetched articles on the server, the default @samp{\Deleted}
+will mark them as deleted, an alternative would be @samp{\Seen} which
 would simply mark them as read.  These are the two most likely choices,
 but more flags are defined in RFC 2060 §2.3.2.
 
