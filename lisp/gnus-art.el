@@ -981,7 +981,7 @@ See Info node `(gnus)Customizing Articles' for details."
   :link '(custom-manual "(gnus)Customizing Articles")
   :type gnus-article-treat-custom)
 
-(make-obsolete-variable 'gnus-treat-strip-pgp 
+(make-obsolete-variable 'gnus-treat-strip-pgp
 			"This option is obsolete in Gnus 5.10.")
 
 (defcustom gnus-treat-strip-pem nil
@@ -1977,19 +1977,28 @@ unfolded."
   "Display any Face headers in the header."
   (interactive)
   (gnus-with-article-headers
-    (let ((face (message-fetch-field "face")))
-      (when face
-	(let ((png (gnus-convert-face-to-png face))
-	      image)
-	  (when png
-	    (setq image (gnus-create-image png 'png t))
-	    (gnus-article-goto-header "from")
-	    (when (bobp)
-	      (insert "From: [no `from' set]\n")
-	      (forward-char -17))
-	    (gnus-add-wash-type 'face)
-	    (gnus-add-image 'face image)
-	    (gnus-put-image image)))))))
+    (if (memq 'face gnus-article-wash-types)
+	(gnus-delete-images 'face)
+      (let (face faces)
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (save-restriction
+	    (mail-narrow-to-head)
+	    (while (gnus-article-goto-header "Face")
+	      (push (mail-header-field-value) faces))))
+	(while (setq face (pop faces))
+	  (let ((png (gnus-convert-face-to-png face))
+		image)
+	    (when png
+	      (setq image (gnus-create-image png 'png t))
+	      (gnus-article-goto-header "from")
+	      (when (bobp)
+		(insert "From: [no `from' set]\n")
+		(forward-char -17))
+	      (gnus-add-wash-type 'face)
+	      (gnus-add-image 'face image)
+	      (gnus-put-image image))))))
+    ))
 
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
@@ -3227,7 +3236,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
       (shell-command-on-region (point-min) (point-max) command nil)))
   (setq gnus-last-shell-command command))
 
-(defmacro gnus-read-string (prompt &optional initial-contents history 
+(defmacro gnus-read-string (prompt &optional initial-contents history
 			    default-value)
   "Like `read-string' but allow for older XEmacsen that don't have the 5th arg."
   (if (and (featurep 'xemacs)
@@ -4107,7 +4116,7 @@ The uncompress method used is derived from `buffer-file-name'."
               (message "%s %s..." message basename))
           (unwind-protect
               (unless (memq (apply 'call-process-region
-                                   (point-min) (point-max) 
+                                   (point-min) (point-max)
                                    prog
                                    t (list t err-file) nil
                                    args)

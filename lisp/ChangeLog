@@ -1,3 +1,8 @@
+2003-06-18  Didier Verna  <didier@xemacs.org>
+
+	* gnus-art.el (article-display-face): Correctly toggle between
+	display and hiding. Handle multiple Face headers.
+
 2003-06-17  Dave Love  <fx@gnu.org>
 
 	* nnimap.el: Require cl when compiling.

@@ -558,16 +558,16 @@ Reply, Followup and Post
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::   
+* Canceling and Superseding::
 
 Marking Articles
 
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::               
-* Generic Marking Commands::    
-* Setting Process Marks::       
+* Setting Marks::
+* Generic Marking Commands::
+* Setting Process Marks::
 
 Marking Articles
 
@@ -625,7 +625,7 @@ Various Summary Stuff
 
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::  
+* Summary Generation Commands::
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 
 Article Buffer
@@ -713,7 +713,7 @@ Choosing a Mail Back End
 
 Browsing the Web
 
-* Archiving Mail::              
+* Archiving Mail::
 * Web Searches::                Creating groups from articles that match a string.
 * Slashdot::                    Reading the Slashdot comments.
 * Ultimate::                    The Ultimate Bulletin Board systems.
@@ -859,8 +859,8 @@ Thwarting Email Spam
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
-* Filtering Spam Using The Spam ELisp Package::  
-* Filtering Spam Using Statistics with spam-stat::  
+* Filtering Spam Using The Spam ELisp Package::
+* Filtering Spam Using Statistics with spam-stat::
 
 Appendices
 
@@ -1824,7 +1824,7 @@ comment element in the group parameters.
 Newsgroup description.  You need to read the group descriptions
 before these will appear, and to do that, you either have to set
 @code{gnus-read-active-file} or use the group buffer @kbd{M-d}
-command. 
+command.
 
 @item o
 @samp{m} if moderated.
@@ -1921,7 +1921,7 @@ background is dark:
        (defface my-group-face-1
          '((t (:foreground "Red" :bold t))) "First group face")
        (defface my-group-face-2
-         '((t (:foreground "DarkSeaGreen4" :bold t))) 
+         '((t (:foreground "DarkSeaGreen4" :bold t)))
          "Second group face")
        (defface my-group-face-3
          '((t (:foreground "Green4" :bold t))) "Third group face")
@@ -5056,7 +5056,7 @@ the server and display it in the article buffer.
 @item gnus-select-article-hook
 @vindex gnus-select-article-hook
 This hook is called whenever an article is selected.  By default it
-exposes any threads hidden under the selected article.  If you would 
+exposes any threads hidden under the selected article.  If you would
 like each article to be saved in the Agent as you read it, putting
 @code{gnus-agent-fetch-selected-article} on this hook will do so.
 
@@ -5178,7 +5178,7 @@ Select the article buffer (@code{gnus-summary-select-article-buffer}).
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::   
+* Canceling and Superseding::
 @end menu
 
 
@@ -8229,7 +8229,7 @@ banner something like @samp{Do You Yoo-hoo!?} in all articles he
 sends, you can use the following element to remove them:
 
 @lisp
-("@@yoo-hoo\\.co\\.jp\\'" . 
+("@@yoo-hoo\\.co\\.jp\\'" .
  "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
 @end lisp
 
@@ -8974,11 +8974,14 @@ buffer in Emacs versions that support them.
 @code{X-Face} headers are small black-and-white images supplied by the
 message headers (@pxref{X-Face}).
 
-Picons, on the other hand, reside on your own system, and Gnus will
-try to match the headers to what you have (@pxref{Picons}).
+@code{Face} headers are small colored images supplied by the message
+headers (@pxref{Face}).
 
 Smileys are those little @samp{:-)} symbols that people like to litter
 their messages with (@pxref{Smileys}).
+
+Picons, on the other hand, reside on your own system, and Gnus will
+try to match the headers to what you have (@pxref{Picons}).
 
 All these functions are toggles---if the elements already exist,
 they'll be removed.
@@ -9766,10 +9769,10 @@ Variables related to the display are:
 @item gnus-tree-brackets
 @vindex gnus-tree-brackets
 This is used for differentiating between ``real'' articles and
-``sparse'' articles.  The format is 
+``sparse'' articles.  The format is
 @example
-((@var{real-open} . @var{real-close}) 
- (@var{sparse-open} . @var{sparse-close}) 
+((@var{real-open} . @var{real-close})
+ (@var{sparse-open} . @var{sparse-close})
  (@var{dummy-open} . @var{dummy-close}))
 @end example
 and the default is @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}) (?< . ?>))}.
@@ -10019,7 +10022,7 @@ suggestions you find reasonable.  (Note that
 @menu
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::  
+* Summary Generation Commands::
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 @end menu
 
@@ -11051,6 +11054,10 @@ is controlled by @code{gnus-body-boundary-delimiter}.
 
 @xref{X-Face}.
 
+@item gnus-treat-display-face (head)
+
+@xref{Face}.
+
 @item gnus-treat-emphasize (t, head, integer)
 @item gnus-treat-fill-article (t, integer)
 @item gnus-treat-fill-long-lines (t, integer)
@@ -11347,7 +11354,7 @@ press R anyway, this variable might be for you.
 If non-@code{nil}, Gnus also requests confirmation according to
 @code{gnus-confirm-mail-reply-to-news} when replying to mail.  This is
 useful for treating mailing lists like newsgroups.
- 
+
 @end table
 
 
@@ -15284,7 +15291,7 @@ filename is unrelated to the article number in Gnus.  @code{nnmaildir}
 also stores the equivalent of @code{nnml}'s overview files in one file
 per article, so it uses about twice as many inodes as @code{nnml}.  (Use
 @code{df -i} to see how plentiful your inode supply is.)  If this slows
-you down or takes up very much space, consider switching to 
+you down or takes up very much space, consider switching to
 @uref{http://www.namesys.com/, ReiserFS} or another non-block-structured
 file system.
 
@@ -15353,7 +15360,7 @@ Gnus has been getting a bit of a collection of back ends for providing
 interfaces to these sources.
 
 @menu
-* Archiving Mail::              
+* Archiving Mail::
 * Web Searches::                Creating groups from articles that match a string.
 * Slashdot::                    Reading the Slashdot comments.
 * Ultimate::                    The Ultimate Bulletin Board systems.
@@ -18098,7 +18105,7 @@ efficient, and it's not a particularly good idea to interrupt them (with
 @kbd{C-g} or anything else) once you've started one of them.
 
 Note that other functions, e.g. @code{gnus-request-expire-articles},
-might run @code{gnus-agent-expire} for you to keep the agent 
+might run @code{gnus-agent-expire} for you to keep the agent
 synchronized with the group.
 
 The agent parameter @code{agent-enable-expiration} may be used to
@@ -18391,7 +18398,7 @@ may ask:
 @code{gnus-agent-fetch-selected-article} to
 @code{gnus-select-article-hook}.
 
-@item If I read an article while plugged, and the article already exists in 
+@item If I read an article while plugged, and the article already exists in
 the Agent, will it get downloaded once more?
 
 @strong{No}, unless @code{gnus-agent-cache} is @code{nil}.
@@ -21352,7 +21359,7 @@ by default.
 @item gnus-nocem-groups
 @vindex gnus-nocem-groups
 Gnus will look for NoCeM messages in the groups in this list.  The
-default is 
+default is
 @lisp
 ("news.lists.filters" "news.admin.net-abuse.bulletins"
  "alt.nocem.misc" "news.admin.net-abuse.announce")
@@ -21571,137 +21578,12 @@ support images yet.}, is able to display pictures and stuff, so Gnus has
 taken advantage of that.
 
 @menu
-* Picons::                      How to display pictures of what you're reading.
-* Smileys::                     Show all those happy faces the way they were meant to be shown.
 * X-Face::                      Display a funky, teensy black-and-white image.
+* Face::                        Display a funkier, teensier colored image.
+* Smileys::                     Show all those happy faces the way they were meant to be shown.
+* Picons::                      How to display pictures of what you're reading.
 * XVarious::                    Other XEmacsy Gnusey variables.
 @end menu
-
-
-@node Picons
-@subsection Picons
-
-@iftex
-@iflatex
-\include{picons}
-@end iflatex
-@end iftex
-
-So@dots{}  You want to slow down your news reader even more!  This is a
-good way to do so.  It's also a great way to impress people staring
-over your shoulder as you read news.
-
-What are Picons?  To quote directly from the Picons Web site:
-
-@iftex
-@iflatex
-\margindex{}
-@end iflatex
-@end iftex
-
-@quotation
-@dfn{Picons} is short for ``personal icons''.  They're small,
-constrained images used to represent users and domains on the net,
-organized into databases so that the appropriate image for a given
-e-mail address can be found.  Besides users and domains, there are picon
-databases for Usenet newsgroups and weather forecasts.  The picons are
-in either monochrome @code{XBM} format or color @code{XPM} and
-@code{GIF} formats.
-@end quotation
-
-@vindex gnus-picon-databases
-For instructions on obtaining and installing the picons databases,
-point your Web browser at
-@uref{http://www.cs.indiana.edu/picons/ftp/index.html}.
-
-If you are using Debian GNU/Linux, saying @samp{apt-get install
-picons.*} will install the picons where Gnus can find them.
-
-To enable displaying picons, simply make sure that
-@code{gnus-picon-databases} points to the directory containing the
-Picons databases.
-
-The following variables offer control over where things are located.
-
-@table @code
-
-@item gnus-picon-databases
-@vindex gnus-picon-databases
-The location of the picons database.  This is a list of directories
-containing the @file{news}, @file{domains}, @file{users} (and so on)
-subdirectories.  Defaults to @code{("/usr/lib/picon"
-"/usr/local/faces")}.
-
-@item gnus-picon-news-directories
-@vindex gnus-picon-news-directories
-List of subdirectories to search in @code{gnus-picon-databases} for
-newsgroups faces.  @code{("news")} is the default.
-
-@item gnus-picon-user-directories
-@vindex gnus-picon-user-directories
-List of subdirectories to search in @code{gnus-picon-databases} for user
-faces.  @code{("users" "usenix" "local" "misc")} is the default.
-
-@item gnus-picon-domain-directories
-@vindex gnus-picon-domain-directories
-List of subdirectories to search in @code{gnus-picon-databases} for
-domain name faces.  Defaults to @code{("domains")}.  Some people may
-want to add @samp{"unknown"} to this list.
-
-@item gnus-picon-file-types
-@vindex gnus-picon-file-types
-Ordered list of suffixes on picon file names to try.  Defaults to
-@code{("xpm" "gif" "xbm")} minus those not built-in your Emacs.
-
-@end table
-
-@node Smileys
-@subsection Smileys
-@cindex smileys
-
-@iftex
-@iflatex
-\gnusfig{-3cm}{0.5cm}{\epsfig{figure=ps/BigFace,height=20cm}}
-\input{smiley}
-@end iflatex
-@end iftex
-
-@dfn{Smiley} is a package separate from Gnus, but since Gnus is
-currently the only package that uses Smiley, it is documented here.
-
-In short---to use Smiley in Gnus, put the following in your
-@file{~/.gnus.el} file:
-
-@lisp
-(setq gnus-treat-display-smileys t)
-@end lisp
-
-Smiley maps text smiley faces---@samp{:-)}, @samp{8-)}, @samp{:-(} and
-the like---to pictures and displays those instead of the text smiley
-faces.  The conversion is controlled by a list of regexps that matches
-text and maps that to file names.
-
-@vindex smiley-regexp-alist
-The alist used is specified by the @code{smiley-regexp-alist}
-variable.  The first item in each element is the regexp to be matched;
-the second element is the regexp match group that is to be replaced by
-the picture; and the third element is the name of the file to be
-displayed.
-
-The following variables customize where Smiley will look for these
-files:
-
-@table @code
-
-@item smiley-data-directory
-@vindex smiley-data-directory
-Where Smiley will look for smiley faces files.
-
-@item gnus-smiley-file-types
-@vindex gnus-smiley-file-types
-List of suffixes on smiley file names to try.
-
-@end table
 
 
 @node X-Face
@@ -21715,7 +21597,6 @@ readers.
 
 @cindex x-face
 @findex gnus-article-display-x-face
-@findex gnus-article-x-face-command
 @vindex gnus-article-x-face-command
 @vindex gnus-article-x-face-too-ugly
 @iftex
@@ -21797,6 +21678,173 @@ Using the last function would be something like this:
                                 (gnus-x-face-from-file
                                  "~/My-face.gif"))))))
 @end lisp
+
+
+@node Face
+@subsection Face
+@cindex face
+
+@c #### FIXME: faces and x-faces'implementations should really be harmonized.
+
+@code{Face} headers are essentially a funkier version of @code{X-Face}
+ones. They describe a 48x48 pixel colored image that's supposed to
+represent the author of the message.
+
+@cindex face
+@findex gnus-article-display-face
+The contents of a @code{Face} header must be a base64 encoded PNG image.
+See @url{http://quimby.gnus.org/circus/face/} for the precise
+specifications.
+
+Gnus provides a few convenience functions and variables to allow
+easier insertion of Face headers in outgoing messages.
+
+@findex gnus-convert-png-to-face
+@code{gnus-convert-png-to-face} takes a 48x48 PNG image, no longer than
+726 bytes long, and converts it to a face.
+
+@findex gnus-face-from-file
+@vindex gnus-convert-image-to-face-command
+@code{gnus-face-from-file} takes a JPEG file as the parameter, and then
+converts the file to Face format by using the
+@code{gnus-convert-image-to-face-command} shell command.
+
+Here's how you would typically use this function. Put something like the
+following in your @file{~/.gnus.el} file:
+
+@lisp
+(setq message-required-news-headers
+      (nconc message-required-news-headers
+             (list '(Face . (lambda ()
+                              (gnus-face-from-file "~/face.jpg"))))))
+@end lisp
+
+
+@node Smileys
+@subsection Smileys
+@cindex smileys
+
+@iftex
+@iflatex
+\gnusfig{-3cm}{0.5cm}{\epsfig{figure=ps/BigFace,height=20cm}}
+\input{smiley}
+@end iflatex
+@end iftex
+
+@dfn{Smiley} is a package separate from Gnus, but since Gnus is
+currently the only package that uses Smiley, it is documented here.
+
+In short---to use Smiley in Gnus, put the following in your
+@file{~/.gnus.el} file:
+
+@lisp
+(setq gnus-treat-display-smileys t)
+@end lisp
+
+Smiley maps text smiley faces---@samp{:-)}, @samp{8-)}, @samp{:-(} and
+the like---to pictures and displays those instead of the text smiley
+faces.  The conversion is controlled by a list of regexps that matches
+text and maps that to file names.
+
+@vindex smiley-regexp-alist
+The alist used is specified by the @code{smiley-regexp-alist}
+variable.  The first item in each element is the regexp to be matched;
+the second element is the regexp match group that is to be replaced by
+the picture; and the third element is the name of the file to be
+displayed.
+
+The following variables customize where Smiley will look for these
+files:
+
+@table @code
+
+@item smiley-data-directory
+@vindex smiley-data-directory
+Where Smiley will look for smiley faces files.
+
+@item gnus-smiley-file-types
+@vindex gnus-smiley-file-types
+List of suffixes on smiley file names to try.
+
+@end table
+
+
+@node Picons
+@subsection Picons
+
+@iftex
+@iflatex
+\include{picons}
+@end iflatex
+@end iftex
+
+So@dots{}  You want to slow down your news reader even more!  This is a
+good way to do so.  It's also a great way to impress people staring
+over your shoulder as you read news.
+
+What are Picons?  To quote directly from the Picons Web site:
+
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
+
+@quotation
+@dfn{Picons} is short for ``personal icons''.  They're small,
+constrained images used to represent users and domains on the net,
+organized into databases so that the appropriate image for a given
+e-mail address can be found.  Besides users and domains, there are picon
+databases for Usenet newsgroups and weather forecasts.  The picons are
+in either monochrome @code{XBM} format or color @code{XPM} and
+@code{GIF} formats.
+@end quotation
+
+@vindex gnus-picon-databases
+For instructions on obtaining and installing the picons databases,
+point your Web browser at
+@uref{http://www.cs.indiana.edu/picons/ftp/index.html}.
+
+If you are using Debian GNU/Linux, saying @samp{apt-get install
+picons.*} will install the picons where Gnus can find them.
+
+To enable displaying picons, simply make sure that
+@code{gnus-picon-databases} points to the directory containing the
+Picons databases.
+
+The following variables offer control over where things are located.
+
+@table @code
+
+@item gnus-picon-databases
+@vindex gnus-picon-databases
+The location of the picons database.  This is a list of directories
+containing the @file{news}, @file{domains}, @file{users} (and so on)
+subdirectories.  Defaults to @code{("/usr/lib/picon"
+"/usr/local/faces")}.
+
+@item gnus-picon-news-directories
+@vindex gnus-picon-news-directories
+List of subdirectories to search in @code{gnus-picon-databases} for
+newsgroups faces.  @code{("news")} is the default.
+
+@item gnus-picon-user-directories
+@vindex gnus-picon-user-directories
+List of subdirectories to search in @code{gnus-picon-databases} for user
+faces.  @code{("users" "usenix" "local" "misc")} is the default.
+
+@item gnus-picon-domain-directories
+@vindex gnus-picon-domain-directories
+List of subdirectories to search in @code{gnus-picon-databases} for
+domain name faces.  Defaults to @code{("domains")}.  Some people may
+want to add @samp{"unknown"} to this list.
+
+@item gnus-picon-file-types
+@vindex gnus-picon-file-types
+Ordered list of suffixes on picon file names to try.  Defaults to
+@code{("xpm" "gif" "xbm")} minus those not built-in your Emacs.
+
+@end table
 
 
 @node XVarious
@@ -21908,8 +21956,8 @@ This is annoying.  Here's what you can do about it.
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
-* Filtering Spam Using The Spam ELisp Package::  
-* Filtering Spam Using Statistics with spam-stat::  
+* Filtering Spam Using The Spam ELisp Package::
+* Filtering Spam Using Statistics with spam-stat::
 @end menu
 
 @node The problem of spam
@@ -22435,17 +22483,17 @@ The following are the methods you can use to control the behavior of
 @code{spam-split} and their corresponding spam and ham processors:
 
 @menu
-* Blacklists and Whitelists::   
-* BBDB Whitelists::             
-* Gmane Spam Reporting::        
-* Anti-spam Hashcash Payments::  
-* Blackholes::                  
-* Regular Expressions Header Matching::  
-* Bogofilter::                  
-* ifile spam filtering::        
-* spam-stat spam filtering::    
+* Blacklists and Whitelists::
+* BBDB Whitelists::
+* Gmane Spam Reporting::
+* Anti-spam Hashcash Payments::
+* Blackholes::
+* Regular Expressions Header Matching::
+* Bogofilter::
+* ifile spam filtering::
+* spam-stat spam filtering::
 * SpamOracle::
-* Extending the spam elisp package::  
+* Extending the spam elisp package::
 @end menu
 
 @node Blacklists and Whitelists
@@ -22859,7 +22907,7 @@ the advantage that the user can see the @emph{X-Spam} headers.
 The easiest method is to make @code{spam.el} (@pxref{Filtering Spam
 Using The Spam ELisp Package}) call SpamOracle.
 
-@vindex spam-use-spamoracle 
+@vindex spam-use-spamoracle
 To enable SpamOracle usage by @code{spam.el}, set the variable
 @code{spam-use-spamoracle} to @code{t} and configure the
 @code{nnmail-split-fancy} or @code{nnimap-split-fancy} as described in
@@ -22983,7 +23031,7 @@ For processing spam and ham messages, provide the following:
 @enumerate
 
 @item
-code 
+code
 
 Note you don't have to provide a spam or a ham processor.  Only
 provide them if Blackbox supports spam or ham processing.
@@ -23069,9 +23117,9 @@ collections, and save it.  And last but not least, you need to use
 this dictionary in your fancy mail splitting rules.
 
 @menu
-* Creating a spam-stat dictionary::  
-* Splitting mail using spam-stat::  
-* Low-level interface to the spam-stat dictionary::  
+* Creating a spam-stat dictionary::
+* Splitting mail using spam-stat::
+* Low-level interface to the spam-stat dictionary::
 @end menu
 
 @node Creating a spam-stat dictionary
@@ -24905,7 +24953,7 @@ Dired integration
 @code{gnus-dired-minor-mode} installs key bindings in dired buffers to send
 a file as an attachment (@kbd{C-c C-a}), open a file using the appropriate
 mailcap entry (@kbd{C-c C-l}), and print a file using the mailcap entry
-(@kbd{C-c P}).  It is enabled with 
+(@kbd{C-c P}).  It is enabled with
 @lisp
 (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 @end lisp
@@ -24948,14 +24996,14 @@ If @code{auto-compression-mode} is enabled, attachments are automatically
 decompressed when activated.
 
 @item
-If the new option @code{nnml-use-compressed-files} is non-@code{nil}, 
+If the new option @code{nnml-use-compressed-files} is non-@code{nil},
 the nnml back end allows compressed message files.
 
 @item
 Signed article headers (X-PGP-Sig) can be verified with @kbd{W p}.
 
 @item
-The Summary Buffer uses an arrow in the fringe to indicate the current 
+The Summary Buffer uses an arrow in the fringe to indicate the current
 article.  Use @code{(setq gnus-summary-display-arrow nil)} to disable it.
 
 @item
@@ -24975,14 +25023,14 @@ The new @code{recent} mark @samp{.} indicates newly arrived messages (as
 opposed to old but unread messages).
 
 @item
-The new option @code{gnus-gcc-mark-as-read} automatically marks 
+The new option @code{gnus-gcc-mark-as-read} automatically marks
 Gcc articles as read.
 
 @item
 The nndoc back end now supports mailman digests and exim bounces.
 
 @item
-Gnus supports RFC 2369 mailing list headers, and adds a number of 
+Gnus supports RFC 2369 mailing list headers, and adds a number of
 related commands in mailing list groups.  @xref{Mailing List}.
 
 @item
@@ -25124,6 +25172,9 @@ are also new.  @xref{Thwarting Email Spam}.
 
 @item
 Easy inclusion of X-Faces headers.
+
+@item
+Face headers handling.
 
 @item
 In the summary buffer, the new command @kbd{/ N} inserts new messages
@@ -25720,7 +25771,7 @@ specified by RFC 1153.
 @cindex mail filtering (splitting)
 The action of sorting your emails according to certain rules. Sometimes
 incorrectly called mail filtering.
- 
+
 @end table
 
 
@@ -25949,7 +26000,7 @@ Sometimes, a problem do not directly generate an elisp error but
 manifests itself by causing Gnus to be very slow.  In these cases, you
 can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-g} when things are
 slow, and then try to analyze the backtrace (repeating the procedure
-helps isolating the real problem areas).  
+helps isolating the real problem areas).
 
 A fancier approach is to use the elisp profiler, ELP.  The profiler is
 (or should be) fully documented elsewhere, but to get you started

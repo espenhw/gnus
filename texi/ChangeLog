@@ -1,3 +1,10 @@
+2003-06-18  Didier Verna  <didier@xemacs.org>
+
+	* gnus.texi (Face): New node.
+	* gnus.texi (Article Display): Reference it.
+	* gnus.texi (Customizing Articles): Ditto.
+	* gnus.texi (Image Enhancements): Put the Face node into the menu.
+
 2003-06-17  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* gnus.texi (Splitting Mail): Add "splitting" entry and concept
@@ -69,7 +76,7 @@
 
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Anti-Spam Basics): Removed mention of gnus-junk. 
+	* gnus.texi (Anti-Spam Basics): Removed mention of gnus-junk.
 
 2003-05-13  Jesper Harder  <harder@ifa.au.dk>
 
@@ -130,11 +137,11 @@
 
 	* texi2latex.el (latexi-translate-file): Add @syncodeindex.
 
-	* gnus.texi: Markup and formatting improvements.  
+	* gnus.texi: Markup and formatting improvements.
 	Use @syncodeindex for merging indexes to get the same font for
 	@defvar and @vindex entries.  Be more consistent about the case
 	of index entries.
-	
+
 
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -210,7 +217,7 @@
 	* gnus-faq.texi: Allow inclusion in `gnus.texi' again.
 
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
-		
+
 	* gnus-faq.texi: New, the Gnus FAQ from http://my.gnus.org/FAQ.
 	From Frank Schmitt <ich@frank-schmitt.net>.
 
