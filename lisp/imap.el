@@ -252,6 +252,16 @@ encoded mailboxes which doesn't translate into ISO-8859-1."
   :group 'imap
   :type 'string)
 
+(defcustom imap-read-timeout (if (string-match
+				  "windows-nt\\|os/2\\|emx\\|cygwin"
+				  (symbol-name system-type))
+				 1.0
+			       0.1)
+  "*How long to wait between checking for the end of output.
+Shorter values mean quicker response, but is more CPU intensive."
+  :type 'number
+  :group 'imap)
+
 ;; Various variables.
 
 (defvar imap-fetch-data-hook nil
@@ -1737,7 +1747,11 @@ on failure."
 	  (unless (< len 10)
 	    (setq imap-have-messaged t)
 	    (message "imap read: %dk" len))
-	  (accept-process-output imap-process 1)))
+	  (accept-process-output imap-process
+				 (truncate imap-read-timeout)
+				 (truncate (* (- imap-read-timeout
+						 (truncate imap-read-timeout))
+					      1000)))))
       (when imap-have-messaged
 	(message ""))
       (and (memq (process-status imap-process) '(open run))

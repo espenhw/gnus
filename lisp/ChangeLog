@@ -11,6 +11,8 @@
 
 	* imap.el (imap-gssapi-program): Also try GNU SASL.
 	(imap-gssapi-open): Accept GNU SASL greeting.
+	(imap-read-timeout): New.
+	(imap-wait-for-tag): Use it.
 
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
