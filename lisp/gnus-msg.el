@@ -1612,6 +1612,7 @@ this is a reply."
 			      group (gnus-status-message method))
 		(sit-for 2))
 	      (when (and group-art
+			 (gnus-alive-p)
 			 (or gnus-gcc-mark-as-read
 			     gnus-inews-mark-gcc-as-read))
 		(gnus-group-mark-article-read group (cdr group-art)))
