@@ -1,3 +1,8 @@
+2004-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-expire-articles-1): Decode group name.
+	(gnus-group-set-current-level): Decode group name.
+
 2004-12-15  Maciek Pasternacki  <maciekp@japhy.fnord.org>  (tiny change)
 
 	* nnrss.el (nnrss-fetch): Signal an error if w3-parse-buffer also

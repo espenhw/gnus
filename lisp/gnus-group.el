@@ -3219,7 +3219,8 @@ Uses the process/prefix convention."
 
 (defun gnus-group-expire-articles-1 (group)
   (when (gnus-check-backend-function 'request-expire-articles group)
-    (gnus-message 6 "Expiring articles in %s..." group)
+    (gnus-message 6 "Expiring articles in %s..."
+		  (gnus-group-decoded-name group))
     (let* ((info (gnus-get-info group))
 	   (expirable (if (gnus-group-total-expirable-p group)
 			  (cons nil (gnus-list-of-read-articles group))
@@ -3244,7 +3245,8 @@ Uses the process/prefix convention."
 	    (gnus-request-expire-articles
 	     (gnus-uncompress-sequence (cdr expirable)) group))))
 	(gnus-close-group group))
-      (gnus-message 6 "Expiring articles in %s...done" group)
+      (gnus-message 6 "Expiring articles in %s...done"
+		    (gnus-group-decoded-name group))
       ;; Return the list of un-expired articles.
       (cdr expirable))))
 
@@ -3281,7 +3283,8 @@ Uses the process/prefix convention."
   (dolist (group (gnus-group-process-prefix n))
     (gnus-group-remove-mark group)
     (gnus-message 6 "Changed level of %s from %d to %d"
-		  group (or (gnus-group-group-level) gnus-level-killed)
+		  (gnus-group-decoded-name group)
+		  (or (gnus-group-group-level) gnus-level-killed)
 		  level)
     (gnus-group-change-level
      group level (or (gnus-group-group-level) gnus-level-killed))
