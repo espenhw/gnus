@@ -3,7 +3,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news, help
-;; Version: 0.0
+;; Version: 0.1
 
 ;;; Commentary:
 ;;
@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'custom)
+(require 'gnus-score)
 
 (autoload 'gnus-score-load "gnus-score")
 
@@ -456,7 +457,7 @@ field."))
 	       (t
 		(setcdr (assoc name gnus-score-alist) (list value)))))
 	((null value))
-	((litsp value)
+	((listp value)
 	 (setq gnus-score-alist (cons (cons name value) gnus-score-alist)))
 	(t
 	 (setq gnus-score-alist 

@@ -208,8 +208,7 @@ highlight-headers-follow-url-netscape:
      ["Read init file" gnus-group-read-init-file t]
      ["Browse foreign server" gnus-group-browse-foreign-server t]
      ["Enter server buffer" gnus-group-enter-server-mode t]
-     ["Edit the global kill file" gnus-group-edit-global-kill t]
-     ["Expire all expirable articles" gnus-group-expire-all-groups t]
+     ["Expire expirable articles" gnus-group-expire-all-groups t]
      ["Generate any kiboze groups" nnkiboze-generate-groups t]
      ["Gnus version" gnus-version t]
      ["Save .newsrc files" gnus-group-save-newsrc t]
@@ -217,8 +216,8 @@ highlight-headers-follow-url-netscape:
      ["Clear dribble buffer" gnus-group-clear-dribble t]
      ["Exit from Gnus" gnus-group-exit t]
      ["Exit without saving" gnus-group-quit t]
+     ["Edit global kill file" gnus-group-edit-global-kill t]
      ["Sort group buffer" gnus-group-sort-groups t]
-     ["Edit global KILL file" gnus-group-edit-global-kill t]
      ))
 
   )
@@ -402,7 +401,6 @@ highlight-headers-follow-url-netscape:
      ["Expire expirable articles" gnus-summary-expire-articles t]
      ["Describe group" gnus-summary-describe-group t]
      ["Edit local kill file" gnus-summary-edit-local-kill t]
-     ["Edit global kill file" gnus-summary-edit-global-kill t]
      ))
 
   (easy-menu-define
@@ -438,6 +436,7 @@ highlight-headers-follow-url-netscape:
      ["Current score" gnus-summary-current-score t]
      ["Set score" gnus-summary-set-score t]
      ("Score file"
+      ["Customize score file" gnus-score-customize t]
       ["Switch current score file" gnus-score-change-score-file t]
       ["Set mark below" gnus-score-set-mark-below t]
       ["Set expunge below" gnus-score-set-expunge-below t]

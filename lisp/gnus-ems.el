@@ -39,7 +39,7 @@
     (setq gnus-easymenu 'auc-menu)
 
     (or (memq 'underline (list-faces))
-	(make-face 'underline))
+	(funcall (intern "make-face") 'underline))
     (or (face-differs-from-default-p 'underline)
 	(set-face-underline-p 'underline t))
     (or (fboundp 'set-text-properties)
@@ -99,8 +99,8 @@
   (cond
    ((not window-system)
     (defun gnus-dummy-func (&rest args))
-    (let ((funcs '(mouse-set-point make-face set-face-foreground
-				   set-face-background)))
+    (let ((funcs '(mouse-set-point set-face-foreground
+				   set-face-background x-popup-menu)))
       (while funcs
 	(or (fboundp (car funcs))
 	    (fset (car funcs) 'gnus-dummy-func))

@@ -73,7 +73,8 @@
 	  (setq active (nth 2 (car map)))
 	  (setq articles nil)
 	  (while (and sequence (<= (car sequence) top))
-	    (setq articles (cons (- (+ active (car sequence)) offset) articles))
+	    (setq articles (cons (- (+ active (car sequence)) offset) 
+				 articles))
 	    (setq sequence (cdr sequence)))
 	  (setq articles (nreverse articles))
 	  (if (and articles
@@ -93,7 +94,8 @@
 		  (delete-region beg (point))
 		  (insert (int-to-string (+ (- article active) offset)))
 		  (beginning-of-line)
-		  (looking-at "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+		  (looking-at 
+		   "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
 		  (goto-char (match-end 0))
 		  (or (search-forward 
 		       "\t" (save-excursion (end-of-line) (point)) t)
@@ -138,6 +140,13 @@
 
 (defun nnvirtual-close-server (&rest dum)
   "Close news server."
+  t)
+
+(defun nnvirtual-request-close ()
+  (setq nnvirtual-current-group nil
+	nnvirtual-current-groups nil
+	nnvirtual-current-mapping nil
+	nnvirtual-group-alist nil)
   t)
 
 (defun nnvirtual-server-opened (&optional server)
@@ -417,6 +426,13 @@ If the stream is opened, return T, otherwise return NIL."
 	      (- (+ article (nth 2 (car map))) offset)
 	    (cons (- (+ (car article) (nth 2 (car map))) offset)
 		  (cdr article))))))
+
+(defun nnvirtual-catchup-group (group &optional server all)
+  (nnvirtual-possibly-change-newsgroups group server)
+  (let ((gnus-group-marked nnvirtual-current-groups)
+	(gnus-expert-user t))
+    (set-buffer gnus-group-buffer)
+    (gnus-group-catchup-current nil all)))
 
 (provide 'nnvirtual)
 

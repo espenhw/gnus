@@ -340,6 +340,7 @@
   ;; Beginning of the article.
   (save-excursion
     (save-restriction
+      (widen)
       (narrow-to-region
        (save-excursion
 	 (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)

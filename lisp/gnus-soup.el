@@ -61,14 +61,16 @@
 
 ;;; Code:
 
-;;; Hack `gnus.el':
-
+(require 'gnus-msg)
 (require 'gnus)
 
 ;;; User Variables:
 
-(defvar gnus-soup-directory "~/SOUP/"
-  "*Directory containing unpacked SOUP packet.")
+(defvar gnus-soup-directory "~/SoupBrew/"
+  "*Directory containing an unpacked SOUP packet.")
+
+(defvar gnus-soup-replies-directory (concat gnus-soup-directory "SoupReplies/")
+  "*Directory where Gnus will do processing of replies.")
 
 (defvar gnus-soup-prefix-file "gnus-prefix"
   "*Name of the file where Gnus stores the last used prefix.")
@@ -78,6 +80,16 @@
 The SOUP files will be inserted where the %s is in the string.
 This string MUST contain both %s and %d. The file number will be
 inserted where %d appears.")
+
+(defvar gnus-soup-unpacker "gunzip -c %s | tar xvf -"
+  "*Format string command for unpacking a SOUP packet.
+The SOUP packet file name will be inserted at the %s.")
+
+(defvar gnus-soup-packet-directory "~/"
+  "*Where gnus-soup will look for REPLIES packets.")
+
+(defvar gnus-soup-packet-regexp "Soupin"
+  "*Regular expression matching SOUP REPLIES packets in `gnus-soup-packet-directory'.")
 
 ;;; Internal Variables:
 
@@ -97,11 +109,51 @@ format.")
 Gnus will determine by itself what type to use in what group, so
 setting this variable won't do much.")
 
-(defconst gnus-soup-areas nil)
+(defvar gnus-soup-areas nil)
 (defvar gnus-soup-last-prefix nil)
+(defvar gnus-soup-prev-prefix nil)
 (defvar gnus-soup-buffers nil)
 
+;;; Access macros:
+
+(defmacro gnus-soup-area-prefix (area)
+  (` (aref (, area) 0)))
+(defmacro gnus-soup-area-name (area)
+  (` (aref (, area) 1)))
+(defmacro gnus-soup-area-encoding (area)
+  (` (aref (, area) 2)))
+(defmacro gnus-soup-area-description (area)
+  (` (aref (, area) 3)))
+(defmacro gnus-soup-area-number (area)
+  (` (aref (, area) 4)))
+(defmacro gnus-soup-area-set-number (area value)
+  (` (aset (, area) 4 (, value))))
+
+(defmacro gnus-soup-encoding-format (encoding)
+  (` (aref (, encoding) 0)))
+(defmacro gnus-soup-encoding-index (encoding)
+  (` (aref (, encoding) 1)))
+(defmacro gnus-soup-encoding-kind (encoding)
+  (` (aref (, encoding) 2)))
+
+(defmacro gnus-soup-reply-prefix (reply)
+  (` (aref (, reply) 0)))
+(defmacro gnus-soup-reply-kind (reply)
+  (` (aref (, reply) 1)))
+(defmacro gnus-soup-reply-encoding (reply)
+  (` (aref (, reply) 2)))
+
 ;;; Commands:
+
+(defun gnus-soup-send-replies ()
+  "Unpack and send all replies in the reply packet."
+  (interactive)
+  (let ((packets (directory-files
+		  gnus-soup-packet-directory t gnus-soup-packet-regexp)))
+    (while packets
+      (and (gnus-soup-send-packet (car packets))
+	   (delete-file (car packets)))
+      (setq packets (cdr packets)))))
 
 (defun gnus-soup-add-article (n)
   "Add the current article to SOUP packet.
@@ -111,73 +163,135 @@ If N is nil and any articles have been marked with the process mark,
 move those articles instead."
   (interactive "P")
   (gnus-set-global-variables)
-  (add-hook 'gnus-exit-gnus-hook 'gnus-soup-save)
-  (or (file-directory-p gnus-soup-directory)
-      (gnus-make-directory gnus-soup-directory))
   (let* ((articles (gnus-summary-work-articles n))
 	 (tmp-buf (get-buffer-create "*soup work*"))
-	 (prefix (aref (gnus-soup-area gnus-newsgroup-name) 0))
-	 (msg-buf (find-file-noselect
-		   (concat gnus-soup-directory prefix ".MSG")))
-	 (idx-buf (find-file-noselect
-		   (concat gnus-soup-directory prefix ".IDX")))
-	 from head-line beg type headers)
-    (setq gnus-soup-buffers (cons msg-buf (cons idx-buf gnus-soup-buffers)))
+	 (area (gnus-soup-area gnus-newsgroup-name))
+	 (prefix (gnus-soup-area-prefix area))
+	 headers)
     (buffer-disable-undo tmp-buf)
-    (buffer-disable-undo msg-buf)
-    (buffer-disable-undo idx-buf)
     (save-excursion
       (while articles
+	;; Find the header of the article.
+	(set-buffer gnus-summary-buffer)
+	(setq headers (gnus-get-header-by-number (car articles)))
 	;; Put the article in a buffer.
 	(set-buffer tmp-buf)
 	(gnus-request-article-this-buffer 
 	 (car articles) gnus-newsgroup-name)
-	;; Make sure the last char in the buffer is a newline.
-	(goto-char (point-max))
-	(or (= (current-column) 0)
-	    (insert "\n"))
-	;; Find the "from".
-	(goto-char (point-min))
-	(setq from
-	      (mail-strip-quoted-names
-	       (or (mail-fetch-field "from")
-		   (mail-fetch-field "really-from")
-		   (mail-fetch-field "sender"))))
-	(goto-char (point-min))
-	;; Depending on what encoding is supposed to be used, we make
-	;; a soup header. 
-	(setq head-line
-	      (cond 
-	       ((= gnus-soup-encoding-type ?n)
-		(format "#! rnews %d\n" (buffer-size)))
-	       ((= gnus-soup-encoding-type ?m)
-		(while (search-forward "\nFrom " nil t)
-		  (replace-match "\n>From " t t))
-		(concat "From " (or from "unknown")
-			" " (current-time-string) "\n"))
-	       ((= gnus-soup-encoding-type ?M)
-		"\^a\^a\^a\^a\n")
-	       (t (error "Unsupported type: %c" gnus-soup-encoding-type))))
-	;; Find the header of the article.
-	(set-buffer gnus-summary-buffer)
-	(setq headers (gnus-get-header-by-number (car articles)))
-	;; Insert the soup header and the article in the MSG buf.
-	(set-buffer msg-buf)
-	(goto-char (point-max))
-	(insert head-line)
-	(setq beg (point))
-	(insert-buffer tmp-buf)
-	;; Insert the index in the IDX buf.
-	(cond ((= gnus-soup-index-type ?c)
-	       (set-buffer idx-buf)
-	       (gnus-soup-insert-idx beg headers))
-	      ((/= gnus-soup-index-type ?n)
-	       (error "Unknown index type: %c" type)))
+	(gnus-soup-store gnus-soup-directory prefix headers
+			 gnus-soup-encoding-type 
+			 gnus-soup-index-type)
+	(gnus-soup-area-set-number area
+	 (1+ (or (gnus-soup-area-number area) 0)))
+	;; Mark article as read. 
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-remove-process-mark (car articles))
 	(gnus-summary-mark-as-read (car articles) "F")
 	(setq articles (cdr articles)))
       (kill-buffer tmp-buf))))
+
+(defun gnus-soup-pack-packet ()
+  "Make a SOUP packet from the SOUP areas."
+  (interactive)
+  (gnus-soup-read-areas)
+  (gnus-soup-pack gnus-soup-directory gnus-soup-packer))
+
+(defun gnus-group-brew-soup (n)
+  "Make a soup packet from the current group.
+Uses the process/prefix convention."
+  (interactive "P")
+  (let ((groups (gnus-group-process-prefix n)))
+    (while groups
+      (gnus-group-remove-mark (car groups))
+      (gnus-soup-group-brew (car groups))
+      (setq groups (cdr groups)))
+    (gnus-soup-save-areas)))
+
+(defun gnus-brew-soup (&optional level)
+  "Go through all groups on LEVEL or less and make a soup packet."
+  (interactive "P")
+  (let ((level (or level gnus-level-subscribed))
+	(newsrc (cdr gnus-newsrc-alist)))
+    (while newsrc
+      (and (<= (nth 1 (car newsrc)) level)
+	   (gnus-soup-group-brew (car (car newsrc))))
+      (setq newsrc (cdr newsrc)))
+    (gnus-soup-save-areas)))
+
+;;;###autoload
+(defun gnus-batch-brew-soup ()
+  "Brew a SOUP packet from groups mention on the command line.
+Will use the remaining command line arguments as regular expressions
+for matching on group names.
+
+For instance, if you want to brew on all the nnml groups, as well as
+groups with \"emacs\" in the name, you could say something like:
+
+$ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
+  (interactive)
+  )
+  
+;;; Internal Functions:
+
+;; Store the article in the current buffer. 
+(defun gnus-soup-store (directory prefix headers format index)
+  (add-hook 'gnus-exit-gnus-hook 'gnus-soup-save-areas)
+  ;; Create the directory, if needed. 
+  (or (file-directory-p directory)
+      (gnus-make-directory directory))
+  (let* ((msg-buf (gnus-find-file-noselect
+		   (concat directory prefix ".MSG")))
+	 (idx-buf (if (= index ?n)
+		      nil
+		    (gnus-find-file-noselect
+		     (concat directory prefix ".IDX"))))
+	 (article-buf (current-buffer))
+	 from head-line beg type)
+    (setq gnus-soup-buffers (cons msg-buf gnus-soup-buffers))
+    (buffer-disable-undo msg-buf)
+    (and idx-buf 
+	 (progn
+	   (setq gnus-soup-buffers (cons idx-buf gnus-soup-buffers))
+	   (buffer-disable-undo idx-buf)))
+    (save-excursion
+      ;; Make sure the last char in the buffer is a newline.
+      (goto-char (point-max))
+      (or (= (current-column) 0)
+	  (insert "\n"))
+      ;; Find the "from".
+      (goto-char (point-min))
+      (setq from
+	    (mail-strip-quoted-names
+	     (or (mail-fetch-field "from")
+		 (mail-fetch-field "really-from")
+		 (mail-fetch-field "sender"))))
+      (goto-char (point-min))
+      ;; Depending on what encoding is supposed to be used, we make
+      ;; a soup header. 
+      (setq head-line
+	    (cond 
+	     ((= gnus-soup-encoding-type ?n)
+	      (format "#! rnews %d\n" (buffer-size)))
+	     ((= gnus-soup-encoding-type ?m)
+	      (while (search-forward "\nFrom " nil t)
+		(replace-match "\n>From " t t))
+	      (concat "From " (or from "unknown")
+		      " " (current-time-string) "\n"))
+	     ((= gnus-soup-encoding-type ?M)
+	      "\^a\^a\^a\^a\n")
+	     (t (error "Unsupported type: %c" gnus-soup-encoding-type))))
+      ;; Insert the soup header and the article in the MSG buf.
+      (set-buffer msg-buf)
+      (goto-char (point-max))
+      (insert head-line)
+      (setq beg (point))
+      (insert-buffer-substring article-buf)
+      ;; Insert the index in the IDX buf.
+      (cond ((= index ?c)
+	     (set-buffer idx-buf)
+	     (gnus-soup-insert-idx beg headers))
+	    ((/= index ?n)
+	     (error "Unknown index type: %c" type))))))
 
 (defun gnus-soup-group-brew (group)
   (let ((gnus-expert-user t)
@@ -189,29 +303,6 @@ move those articles instead."
 		 (append gnus-newsgroup-dormant gnus-newsgroup-marked))))
 	   (gnus-soup-add-article nil)))
     (gnus-summary-exit)))
-
-(defun gnus-group-brew-soup (n)
-  "Make a soup packet from the current group."
-  (interactive "P")
-  (let ((groups (gnus-group-process-prefix n)))
-    (while groups
-      (gnus-group-remove-mark (car groups))
-      (gnus-soup-group-brew (car groups))
-      (setq groups (cdr groups)))
-    (gnus-soup-save)))
-
-(defun gnus-brew-soup (&optional level)
-  "Go through all groups on LEVEL or less and make a soup packet."
-  (interactive "P")
-  (let ((level (or level gnus-level-subscribed))
-	(newsrc (cdr gnus-newsrc-alist)))
-    (while newsrc
-      (and (<= (nth 1 (car newsrc)) level)
-	   (gnus-soup-group-brew (car (car newsrc))))
-      (setq newsrc (cdr newsrc)))
-    (gnus-soup-save)))
-  
-;;; Internal Functions:
 
 (defun gnus-soup-insert-idx (offset header)
   ;; [number subject from date id references chars lines xref]
@@ -232,7 +323,7 @@ move those articles instead."
 	   (or (header-lines header) "0") 
 	   (or (header-xref header) ""))))
 
-(defun gnus-soup-save ()
+(defun gnus-soup-save-areas ()
   (gnus-soup-write-areas)
   (save-excursion
     (let (buf)
@@ -244,32 +335,36 @@ move those articles instead."
 	  (set-buffer buf)
 	  (and (buffer-modified-p) (save-buffer))
 	  (kill-buffer (current-buffer)))))
-    (gnus-set-work-buffer)
-    (insert (format "(setq gnus-soup-last-prefix %d)\n" 
-		    gnus-soup-last-prefix))
-    (write-region (point-min) (point-max) gnus-soup-prefix-file nil 'nomesg)))
+    (let ((prefix gnus-soup-last-prefix))
+      (while prefix
+	(gnus-set-work-buffer)
+	(insert (format "(setq gnus-soup-prev-prefix %d)\n" 
+			(cdr (car prefix))))
+	(write-region (point-min) (point-max)
+		      (concat (car (car prefix)) 
+			      gnus-soup-prefix-file) 
+		      nil 'nomesg)
+	(setq prefix (cdr prefix))))))
 
-(defun gnus-soup-pack ()
-  (let* ((dir (file-name-nondirectory 
-	       (directory-file-name
-		(file-name-as-directory gnus-soup-directory))))
-	 (top (file-name-directory
-	       (directory-file-name
-		(file-name-as-directory gnus-soup-directory))))
-	 (files (mapconcat (lambda (f) (concat dir "/" f))
+(defun gnus-soup-pack (dir packer)
+  (let* ((files (mapconcat 'identity
 			   '("AREAS" "*.MSG" "*.IDX" "INFO"
 			     "LIST" "REPLIES" "COMMANDS" "ERRORS")
 			   " "))
-	 (packer (if (< (string-match "%s" gnus-soup-packer)
-			(string-match "%d" gnus-soup-packer))
-		     (format gnus-soup-packer files
+	 (packer (if (< (string-match "%s" packer)
+			(string-match "%d" packer))
+		     (format packer files
 			     (string-to-int (gnus-soup-unique-prefix)))
-		   (format gnus-soup-packer 
-			   (string-to-int (gnus-soup-unique-prefix)) files))))
+		   (format packer 
+			   (string-to-int (gnus-soup-unique-prefix)) files)))
+	 (dir (expand-file-name dir)))
+    (message "Packing %s..." packer)
     (if (zerop (call-process "sh" nil nil nil "-c" 
-			     (concat "cd " top " ; " packer)))
-	(call-process "sh" nil nil nil "-c" 
-		      (concat "cd " top " ; rm " files))
+			     (concat "cd " dir " ; " packer)))
+	(progn
+	  (call-process "sh" nil nil nil "-c" 
+			(concat "cd " dir " ; rm " files))
+	  (message "Packing...done" packer))
       (error "Couldn't pack packet."))))
 
 (defun gnus-soup-parse-areas (file)
@@ -280,7 +375,7 @@ The vector contain five strings,
 though the two last may be nil if they are missing."
   (let (areas)
     (save-excursion
-      (set-buffer (find-file-noselect file))
+      (set-buffer (gnus-find-file-noselect file 'force))
       (buffer-disable-undo)
       (goto-char (point-min))
       (while (not (eobp))
@@ -288,12 +383,32 @@ though the two last may be nil if they are missing."
 	      (cons (vector (gnus-soup-field) 
 			    (gnus-soup-field)
 			    (gnus-soup-field)
-			    (and (eq (preceding-char) ?\t) (gnus-soup-field))
-			    (and (eq (preceding-char) ?\t) (gnus-soup-field)))
+			    (and (eq (preceding-char) ?\t)
+				 (gnus-soup-field))
+			    (and (eq (preceding-char) ?\t)
+				 (string-to-int (gnus-soup-field))))
 		    areas))
 	(if (eq (preceding-char) ?\t)
 	    (beginning-of-line 2))))
     areas))
+
+(defun gnus-soup-parse-replies (file)
+  "Parse soup REPLIES file FILE.
+The result is a of vectors, each containing one entry from the REPLIES
+file. The vector contain three strings, [prefix name encoding]."
+  (let (replies)
+    (save-excursion
+      (set-buffer (gnus-find-file-noselect file))
+      (buffer-disable-undo (current-buffer))
+      (goto-char (point-min))
+      (while (not (eobp))
+	(setq replies
+	      (cons (vector (gnus-soup-field) (gnus-soup-field)
+			    (gnus-soup-field))
+		    replies))
+	(if (eq (preceding-char) ?\t)
+	    (beginning-of-line 2))))
+    replies))
 
 (defun gnus-soup-field ()
   (prog1
@@ -306,54 +421,161 @@ though the two last may be nil if they are missing."
 	    (gnus-soup-parse-areas (concat gnus-soup-directory "AREAS")))))
 
 (defun gnus-soup-write-areas ()
+  (if (not gnus-soup-areas)
+      ()
+    (save-excursion
+      (set-buffer (gnus-find-file-noselect
+		   (concat gnus-soup-directory "AREAS")))
+      (erase-buffer)
+      (let ((areas gnus-soup-areas)
+	    area)
+	(while areas
+	  (setq area (car areas)
+		areas (cdr areas))
+	  (insert (format "%s\t%s\t%s%s\n"
+			  (gnus-soup-area-prefix area)
+			  (gnus-soup-area-name area) 
+			  (gnus-soup-area-encoding area)
+			  (if (or (gnus-soup-area-description area) 
+				  (gnus-soup-area-number area))
+			      (concat "\t" (or (gnus-soup-area-description
+						area)
+					       "")
+				      (if (gnus-soup-area-number area)
+					  (concat "\t" 
+						  (int-to-string
+						   (gnus-soup-area-number 
+						    area)))
+					"")) "")))))
+      (write-region (point-min) (point-max)
+		    (concat gnus-soup-directory "AREAS"))
+      (set-buffer-modified-p nil)
+      (kill-buffer (current-buffer)))))
+
+(defun gnus-soup-write-replies (dir areas)
   (save-excursion
-    (set-buffer (find-file-noselect (concat gnus-soup-directory "AREAS")))
+    (set-buffer (gnus-find-file-noselect (concat dir "REPLIES")))
     (erase-buffer)
-    (let ((areas gnus-soup-areas)
-	  area)
+    (let (area)
       (while areas
 	(setq area (car areas)
 	      areas (cdr areas))
-	(insert (aref area 0) ?\t (aref area 1) ?\t (aref area 2) ?\n)))
-    (write-region (point-min) (point-max)
-		  (concat gnus-soup-directory "AREAS"))
+	(insert (format "%s\t%s\t%s\n"
+			(gnus-soup-reply-prefix area)
+			(gnus-soup-reply-kind area) 
+			(gnus-soup-reply-encoding area)))))
+    (write-region (point-min) (point-max) (concat dir "REPLIES"))
     (set-buffer-modified-p nil)
     (kill-buffer (current-buffer))))
 
 (defun gnus-soup-area (group)
   (gnus-soup-read-areas)
   (let ((areas gnus-soup-areas)
+	(real-group (gnus-group-real-name group))
 	area result)
     (while areas
       (setq area (car areas)
 	    areas (cdr areas))
-      (if (equal (aref area 1) group)
+      (if (equal (gnus-soup-area-name area) real-group)
 	  (setq result area)))
     (or result
 	(setq result
 	      (vector (gnus-soup-unique-prefix)
-		      group 
+		      real-group 
 		      (format "%c%c%c"
 			      gnus-soup-encoding-type
 			      gnus-soup-index-type
-			      (if (gnus-member-of-valid 'mail group) ?m ?n)
-			      nil nil))
+			      (if (gnus-member-of-valid 'mail group) ?m ?n))
+		      nil nil)
 	      gnus-soup-areas (cons result gnus-soup-areas)))
     result))
 
-(defun gnus-soup-unique-prefix ()
-  (if gnus-soup-last-prefix
-      ()
-    (if (file-exists-p gnus-soup-prefix-file)
-	(condition-case nil
-	    (load-file gnus-soup-prefix-file)
-	  (error 0))
-      (setq gnus-soup-last-prefix 0)))
-  (int-to-string (setq gnus-soup-last-prefix (1+ gnus-soup-last-prefix))))
+(defun gnus-soup-unique-prefix (&optional dir)
+  (let* ((dir (file-name-as-directory (or dir gnus-soup-directory)))
+	 (entry (assoc dir gnus-soup-last-prefix))
+	 gnus-soup-prev-prefix)
+    (if entry
+	()
+      (and (file-exists-p (concat dir gnus-soup-prefix-file))
+	   (condition-case nil
+	       (load-file (concat dir gnus-soup-prefix-file))
+	     (setq error nil)))
+      (setq gnus-soup-last-prefix 
+	    (cons (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
+		  gnus-soup-last-prefix)))
+    (setcdr entry (1+ (cdr entry)))
+    (int-to-string (cdr entry))))
 
+(defun gnus-soup-unpack-packet (dir unpacker packet)
+  (gnus-make-directory dir)
+  (message "Unpacking: %s" (format unpacker packet))
+  (call-process
+   "sh" nil nil nil "-c"
+   (format "cd %s ; %s" (expand-file-name dir) (format unpacker packet)))
+  (message "Unpacking...done"))
+
+(defun gnus-soup-send-packet (packet)
+  (gnus-soup-unpack-packet 
+   gnus-soup-replies-directory gnus-soup-unpacker packet)
+  (let ((replies (gnus-soup-parse-replies 
+		  (concat gnus-soup-replies-directory "REPLIES"))))
+    (save-excursion
+      (while replies
+	(let* ((msg-file (concat gnus-soup-replies-directory
+				 (gnus-soup-reply-prefix (car replies))
+				 ".MSG"))
+	       (msg-buf (and (file-exists-p msg-file)
+			     (gnus-find-file-noselect msg-file)))
+	       (tmp-buf (get-buffer-create " *soup send*"))
+	       beg end)
+	  (cond 
+	   ((/= (gnus-soup-encoding-format 
+		 (gnus-soup-reply-encoding (car replies))) ?n)
+	    (error "Unsupported encoding"))
+	   ((null msg-buf)
+	    t)
+	   (t
+	    (buffer-disable-undo msg-buf)
+	    (buffer-disable-undo tmp-buf)
+	    (set-buffer msg-buf)
+	    (goto-char (point-min))
+	    (while (not (eobp))
+	      (or (looking-at "#! *rnews +\\([0-9]+\\)")
+		  (error "Bad header."))
+	      (forward-line 1)
+	      (setq beg (point)
+		    end (+ (point) (string-to-int 
+				    (buffer-substring 
+				     (match-beginning 1) (match-end 1)))))
+	      (switch-to-buffer tmp-buf)
+	      (erase-buffer)
+	      (insert-buffer-substring msg-buf beg end)
+	      (goto-char (point-min))
+	      (search-forward "\n\n")
+	      (forward-char -1)
+	      (insert mail-header-separator)
+	      (cond 
+	       ((string= (gnus-soup-reply-kind (car replies)) "news")
+		(message "Sending news message to %s..."
+			 (mail-fetch-field "newsgroups"))
+		(sit-for 1)
+		(gnus-inews-article))
+	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
+		(message "Sending mail to %s..."
+			 (mail-fetch-field "to"))
+		(sit-for 1)
+		(gnus-mail-send-and-exit))
+	       (t
+		(error "Unknown reply kind")))
+	      (set-buffer msg-buf)
+	      (goto-char end))
+	    (delete-file (buffer-file-name))
+	    (kill-buffer msg-buf)
+	    (kill-buffer tmp-buf)
+	    (message "Sent packet"))))
+	(setq replies (cdr replies)))
+      t)))
+		   
 (provide 'gnus-soup)
 
 ;;; gnus-soup.el ends here
-
-
-

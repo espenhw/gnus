@@ -105,6 +105,7 @@ of the last succesful match.")
 (define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
 (define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
 (define-key gnus-summary-score-map "t" 'gnus-score-find-trace)
+(define-key gnus-summary-score-map "C" 'gnus-score-customize)
 
 
 

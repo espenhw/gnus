@@ -39,10 +39,10 @@
 	      nil "^$" nil nil)
 	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil nil)
 	(list 'digest
+	      "^------------------------------*[\n \t]+"
 	      "^------------------------------[\n \t]+"
-	      "^------------------------------[\n \t]+"
-	      nil "^$"   
-	      "^------------------------------*[\n \t]*\n[^ ]+: "
+	      nil "^ ?$"   
+	      "^------------------------------*[\n \t]+"
 	      "End of"))
   "Regular expressions for articles of the various types.")
 
@@ -97,7 +97,7 @@
 	  'headers
 	(set-buffer nndoc-current-buffer)
 	(goto-char (point-min))
-	(re-search-forward nndoc-article-begin nil t)
+	(re-search-forward nndoc-first-article nil t)
 	(or (not nndoc-head-begin)
 	    (re-search-forward nndoc-head-begin nil t))
 	(re-search-forward nndoc-head-end nil t)
@@ -274,13 +274,16 @@
     (widen)
     (goto-char (point-min))
     (let ((num 0))
-      (while (and (re-search-forward nndoc-article-begin nil t)
+      (if (re-search-forward nndoc-first-article nil t)
+	(progn
+	  (setq num 1)
+          (while (and (re-search-forward nndoc-article-begin nil t)
 		  (or (not nndoc-end-of-file)
 		      (not (looking-at nndoc-end-of-file)))
 		  (or (not nndoc-head-begin)
 		      (re-search-forward nndoc-head-begin nil t))
 		  (re-search-forward nndoc-head-end nil t))
-	(setq num (1+ num)))
+	    (setq num (1+ num)))))
       num)))
 
 (defun nndoc-narrow-to-article (article)

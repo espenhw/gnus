@@ -148,6 +148,9 @@ RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
 Message-ID.  Organization, Lines and X-Newsreader are optional.  If
 you want Gnus not to insert some header, remove it from this list.")
 
+(defvar gnus-deletable-headers '(Message-ID)
+  "*Headers to be deleted if they already exists.")
+
 (defvar gnus-check-before-posting 
   '(subject-cmsg multiple-headers sendsys message-id from
 		 long-lines control-chars size new-text
@@ -191,6 +194,9 @@ Three pre-made functions are `gnus-mail-other-window-using-mail'
   "*Function to mail a message which is also being posted as an article.
 The message must have To or Cc header.  The default is copied from
 the variable `send-mail-function'.")
+
+(defvar gnus-inews-article-function 'gnus-inews-article
+  "*Function to post an article.")
 
 (defvar gnus-inews-article-hook (list 'gnus-inews-do-fcc)
   "*A hook called before finally posting an article.
@@ -374,6 +380,7 @@ header line with the old Message-ID."
 	     (buffer-name (get-buffer article-buffer)))
 	(save-excursion
 	  (set-buffer article-buffer)
+	  (widen)
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
 	  (set-text-properties (point-min) (point-max) 
 			       nil gnus-article-copy)))))
@@ -442,9 +449,10 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  (setq gnus-article-reply sumart)
 	  ;; Handle `gnus-auto-mail-to-author'.
 	  ;; Suggested by Daniel Quinlan <quinlan@best.com>.
-	  (let ((to (if (eq gnus-auto-mail-to-author 'ask)
-			(and (y-or-n-p "Also send mail to author? ") from)
-		      (and gnus-auto-mail-to-author from))))
+	  (let ((to (and (not post)
+			 (if (eq gnus-auto-mail-to-author 'ask)
+			     (and (y-or-n-p "Also send mail to author? ") from)
+			   (and gnus-auto-mail-to-author from)))))
 	    (if to
 		(progn
 		  (if (mail-fetch-field "To")
@@ -614,6 +622,13 @@ will attempt to use the foreign server to post the article."
 		      (forward-line -1)
 		      (gnus-delete-line)))
 
+		;; We generate a Message-ID so that the mail and the
+		;; news copy of the message both get the same ID.
+		(or (mail-fetch-field "message-id")
+		    (progn
+		      (goto-char (point-max))
+		      (insert "Message-ID: " (gnus-inews-message-id) "\n")))
+
 		(save-restriction
 		  (widen)
 		  (gnus-message 5 "Sending via mail...")
@@ -653,9 +668,9 @@ will attempt to use the foreign server to post the article."
 		      (goto-char (point-max))
 		      (insert fcc-line))))))))
 
-      ;; Send to NNTP server. 
+      ;; Send to server. 
       (gnus-message 5 "Posting to USENET...")
-      (if (gnus-inews-article use-group-method)
+      (if (funcall gnus-inews-article-function use-group-method)
 	  (progn
 	    (gnus-message 5 "Posting to USENET...done")
 	    (if (gnus-buffer-exists-p (car-safe reply))
@@ -853,7 +868,7 @@ will attempt to use the foreign server to post the article."
 		    "This is a cancel message from " from ".\n")
 	    ;; Send the control article to NNTP server.
 	    (gnus-message 5 "Canceling your article...")
-	    (if (gnus-inews-article)
+	    (if (funcall gnus-inews-article-function)
 		(gnus-message 5 "Canceling your article...done")
 	      (ding) 
 	      (gnus-message 1 "Cancel failed; %s" 
@@ -866,32 +881,33 @@ will attempt to use the foreign server to post the article."
 
 (defun gnus-inews-article (&optional use-group-method)
   "Post an article in current buffer using NNTP protocol."
-  ;; Check whether the article is a good Net Citizen.
-  (if (and gnus-article-check-size (not (gnus-inews-check-post)))
-      ;; Aber nein!
-      ()
-    ;; Looks ok, so we do the nasty.
-    (let ((artbuf (current-buffer))
-	  (tmpbuf (get-buffer-create " *Gnus-posting*")))
-      (widen)
-      (goto-char (point-max))
-      ;; require a newline at the end for inews to append .signature to
-      (or (= (preceding-char) ?\n)
-	  (insert ?\n))
-      ;; Prepare article headers.  All message body such as signature
-      ;; must be inserted before Lines: field is prepared.
-      (save-restriction
-	(goto-char (point-min))
-	(narrow-to-region 
-	 (point-min) 
-	 (save-excursion
-	   (re-search-forward 
-	    (concat "^" (regexp-quote mail-header-separator) "$"))
-	   (match-beginning 0)))
-	(gnus-inews-remove-headers)
-	(gnus-inews-insert-headers)
-	(run-hooks gnus-inews-article-header-hook)
-	(widen))
+  (let ((artbuf (current-buffer))
+	(tmpbuf (get-buffer-create " *Gnus-posting*")))
+    (widen)
+    (goto-char (point-max))
+    ;; require a newline at the end for inews to append .signature to
+    (or (= (preceding-char) ?\n)
+	(insert ?\n))
+    ;; Prepare article headers.  All message body such as signature
+    ;; must be inserted before Lines: field is prepared.
+    (save-restriction
+      (goto-char (point-min))
+      (narrow-to-region 
+       (point-min) 
+       (save-excursion
+	 (re-search-forward 
+	  (concat "^" (regexp-quote mail-header-separator) "$"))
+	 (match-beginning 0)))
+      (gnus-inews-remove-headers)
+      (gnus-inews-insert-headers)
+      (run-hooks gnus-inews-article-header-hook)
+      (widen))
+    ;; Check whether the article is a good Net Citizen.
+    (if (and gnus-article-check-size
+	     (not (gnus-inews-check-post)))
+	;; Aber nein!
+	()
+      ;; Looks ok, so we do the nasty.
       (save-excursion
 	(set-buffer tmpbuf)
 	(buffer-disable-undo (current-buffer))
@@ -947,14 +963,15 @@ Headers in `gnus-required-headers' will be generated."
 	(headers gnus-required-headers)
 	(case-fold-search t)
 	header value elem)
-    ;; First we remove any old Message-IDs. This might be slightly
-    ;; fascist, but if the user really wants to generate Message-IDs
-    ;; by herself, she should remove it from the `gnus-required-list'. 
-    (goto-char (point-min))
-    (and (memq 'Message-ID headers)
-	 (re-search-forward "^Message-ID:" nil t)
-	 (delete-region (progn (beginning-of-line) (point))
-			(progn (forward-line 1) (point))))
+    ;; First we remove any old generated headers.
+    (let ((headers gnus-deletable-headers))
+      (while headers
+	(goto-char (point-min))
+	(and (re-search-forward 
+	      (concat "^" (symbol-name (car headers)) ": *") nil t)
+	     (get-text-property 'gnus-delete (match-end 0))
+	     (gnus-delete-line))
+	(setq headers (cdr headers))))
     ;; Insert new Sender if the From is strange. 
     (let ((from (mail-fetch-field "from")))
       (if (and from (not (string= (downcase from) (downcase From))))
@@ -1010,6 +1027,11 @@ Headers in `gnus-required-headers' will be generated."
 		      ;; so we just ask the user.
 		      (read-from-minibuffer
 		       (format "Empty header for %s; enter value: " header))))
+	    ;; Add the deletable property to the headers that require it. 
+	    (and (memq header gnus-deletable-headers)
+		 (add-text-properties 
+		  0 (length value) '(gnus-deletable t) value))
+	    ;; Finally insert the header.
 	    (if (bolp)
 		(save-excursion
 		  (goto-char (point-max))

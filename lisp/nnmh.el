@@ -217,6 +217,7 @@
 	    ()
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
+	    (goto-char (point-max))
 	    (insert 
 	     (format 
 	      "%s %d %d y\n" 
@@ -253,17 +254,19 @@
       (setq article (concat nnmh-current-directory (int-to-string
 						    (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (or force
-		  (> (nnmail-days-between
-		      (current-time-string)
-		      (current-time-string mod-time))
-		     days))
-	      (progn
-		(message "Deleting %s..." article)
-		(condition-case ()
-		    (delete-file article)
-		  (file-error nil)))
-	    (setq rest (cons (car articles) rest))))
+	  (and (or force
+		   (> (nnmail-days-between
+		       (current-time-string)
+		       (current-time-string mod-time))
+		      days))
+	       (progn
+		 (message "Deleting %s..." article)
+		 (condition-case ()
+		     (progn
+		       (delete-file article)
+		       t)
+		   (file-error nil)))
+	       (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
     rest))
 

@@ -77,6 +77,8 @@ other hooks, such as major mode hooks, can do the job."
     (setq intangible 'intangible)
   (setq intangible 'intangible-if-it-had-been-working))
 
+(defvar custom-modified-list nil)
+
 ;;; Faces:
 ;;
 ;; The following variables define the faces used in the customization
@@ -713,7 +715,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
       (setq alist (cons (cons (custom-tag-or-type current) current) alist)))
     (let ((answer (if (listp last-input-event)
 		      (x-popup-menu last-input-event
-				    (list tag (cons "" (reverse alist))))
+			       (list tag (cons "" (reverse alist))))
 		    (let ((choice (completing-read (concat tag " (default "
 							   default "): ") 
 						   alist nil t)))
