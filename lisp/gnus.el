@@ -32,8 +32,6 @@
 (eval-when-compile (require 'cl))
 (require 'mm-util)
 
-(require 'message)
-
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
   :group 'news
@@ -303,9 +301,9 @@ be set in `.emacs' instead."
 				(setq gnus-mode-line-image-cache
 				      (find-image
 				       '((:type xpm :file "gnus-pointer.xpm"
-						:ascent 100)
+						:ascent 80)
 					 (:type xbm :file "gnus-pointer.xbm"
-						:ascent 100))))
+						:ascent 80))))
 			      gnus-mode-line-image-cache)
 			    'help-echo "This is Gnus")
 		      str)
@@ -835,7 +833,6 @@ be set in `.emacs' instead."
 
 ;;; Do the rest.
 
-(require 'custom)
 (require 'gnus-util)
 (require 'nnheader)
 
@@ -939,13 +936,16 @@ see the manual for details."
   :type 'gnus-select-method)
 
 (defcustom gnus-message-archive-method
-  `(nnfolder
-    "archive"
-    (nnfolder-directory ,(nnheader-concat message-directory "archive"))
-    (nnfolder-active-file
-     ,(nnheader-concat message-directory "archive/active"))
-    (nnfolder-get-new-mail nil)
-    (nnfolder-inhibit-expiry t))
+  (progn
+    ;; Don't require it at top level to avoid circularity.
+    (require 'message)
+    `(nnfolder
+      "archive"
+      (nnfolder-directory ,(nnheader-concat message-directory "archive"))
+      (nnfolder-active-file
+       ,(nnheader-concat message-directory "archive/active"))
+      (nnfolder-get-new-mail nil)
+      (nnfolder-inhibit-expiry t)))
   "*Method used for archiving messages you've sent.
 This should be a mail method.
 
