@@ -1,3 +1,7 @@
+2003-01-09  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-tool-bar-map): Add preview.
+
 2003-01-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* mml.el (mml-preview): Get rid of MIME handles and buffers after

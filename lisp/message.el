@@ -6017,6 +6017,9 @@ which specify the range to operate on."
 	       (message-tool-bar-local-item-from-menu
 		'ispell-message "spell" tool-bar-map message-mode-map)
 	       (message-tool-bar-local-item-from-menu
+		'mml-preview "preview"
+		tool-bar-map mml-mode-map)
+	       (message-tool-bar-local-item-from-menu
 		'message-insert-importance-high "important"
 		tool-bar-map message-mode-map)
 	       (message-tool-bar-local-item-from-menu
