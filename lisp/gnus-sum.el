@@ -419,6 +419,8 @@ variable.")
 The hook is intended to mark an article as read (or unread)
 automatically when it is selected.")
 
+;;; Internal variables
+
 (defvar gnus-summary-display-table 
   ;; Change the display table.	Odd characters have a tendency to mess
   ;; up nicely formatted displays - we make all possible glyphs
@@ -443,8 +445,6 @@ automatically when it is selected.")
 	    (aset table i [??]))))
     table)
   "Display table used in summary mode buffers.")
-
-;;; Internal variables
 
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
@@ -2202,7 +2202,8 @@ If NO-DISPLAY, don't generate a summary buffer."
       (run-hooks 'gnus-select-group-hook)
       ;; Set any local variables in the group parameters.
       (gnus-summary-set-local-parameters gnus-newsgroup-name)
-      (gnus-update-format-specifications)
+      (gnus-update-format-specifications
+       nil 'summary 'summary-mode 'summary-dummy)
       ;; Do score processing.
       (when gnus-use-scoring
 	(gnus-possibly-score-headers))
@@ -4945,16 +4946,16 @@ article."
 	  (gnus-summary-display-article article)
 	(gnus-eval-in-buffer-window gnus-article-buffer
 	  (setq endp (gnus-article-next-page lines)))
-	(if endp
-	    (cond (circular
-		   (gnus-summary-beginning-of-article))
-		  (lines
-		   (gnus-message 3 "End of message"))
-		  ((null lines)
-		   (if (and (eq gnus-summary-goto-unread 'never)
-			    (not (gnus-summary-last-article-p article)))
-		       (gnus-summary-next-article)
-		     (gnus-summary-next-unread-article)))))))
+	(when endp
+	  (cond (circular
+		 (gnus-summary-beginning-of-article))
+		(lines
+		 (gnus-message 3 "End of message"))
+		((null lines)
+		 (if (and (eq gnus-summary-goto-unread 'never)
+			  (not (gnus-summary-last-article-p article)))
+		     (gnus-summary-next-article)
+		   (gnus-summary-next-unread-article)))))))
     (gnus-summary-recenter)
     (gnus-summary-position-point)))
 
@@ -5633,9 +5634,12 @@ Obeys the standard process/prefix convention."
      ((not groups)
       (error "None of the articles could be interpreted as documents"))
      ((gnus-group-read-ephemeral-group
-       (setq vgroup (format "%s-%s" gnus-newsgroup-name (current-time-string)))
+       (setq vgroup (format
+		     "%s-%s" gnus-newsgroup-name
+		     (format-time-string "%Y%m%dT%H%M%S" (current-time))))
        `(nnvirtual ,vgroup (nnvirtual-component-groups ,groups))
-       t))
+       t
+       (cons (current-buffer) 'summary)))
      (t
       (error "Couldn't select virtual nndoc group")))))
       

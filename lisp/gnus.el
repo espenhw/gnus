@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.14"
+(defconst gnus-version-number "0.15"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -134,6 +134,7 @@
 (defmacro gnus-sethash (string value hashtable)
   "Set hash value.  Arguments are STRING, VALUE, and HASHTABLE."
   `(set (intern ,string ,hashtable) ,value))
+(put 'nnheader-temp-write 'edebug-form-spec '(form form form))
 
 (defmacro gnus-group-unread (group)
   "Get the currently computed number of unread articles in GROUP."

@@ -1299,14 +1299,13 @@ Returns whether the fetching was successful or not."
 
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
-(defun gnus-group-read-ephemeral-group
-  (group method &optional activate quit-config request-only)
+(defun gnus-group-read-ephemeral-group (group method &optional activate 
+					      quit-config request-only)
   "Read GROUP from METHOD as an ephemeral group.
 If ACTIVATE, request the group first.
-If QUIT-CONFIG, use that window configuration when
-exiting from the ephemeral group.
-If REQUEST-ONLY, don't actually read the group; just
-request it.
+If QUIT-CONFIG, use that window configuration when exiting from the
+ephemeral group.
+If REQUEST-ONLY, don't actually read the group; just request it.
 
 Return the name of the group is selection was successful."
   (let ((group (if (gnus-group-foreign-p group) group
@@ -1322,7 +1321,8 @@ Return the name of the group is selection was successful."
       (error "Unable to contact server: %s" (gnus-status-message method)))
     (when activate
       (unless (gnus-request-group group)
-	(error "Couldn't request group")))
+	(error "Couldn't request group: %s" 
+	       (nnheader-get-report (car method)))))
     (if request-only
 	group
       (condition-case ()

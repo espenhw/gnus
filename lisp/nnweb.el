@@ -91,7 +91,7 @@
     (funcall (nnweb-definition 'map)))
   (cond
    ((not nnweb-articles)
-    (nnheader-report 'nnweb "Couldn't request search"))
+    (nnheader-report 'nnweb "No matching articles"))
    (t
     (nnheader-report 'nnweb "Opened group %s" group)
     (nnheader-insert
@@ -188,7 +188,7 @@
 	(old-asynch url-be-asynchronous)
 	(url-request-data nil)
 	(url-request-extra-headers nil)
-	(url-working-buffer (generate-new-buffer-name " *dejanews*")))
+	(url-working-buffer (generate-new-buffer-name " *nnweb*")))
     (setq-default url-be-asynchronous t)
     (save-excursion
       (set-buffer (get-buffer-create url-working-buffer))
@@ -211,7 +211,9 @@
 	(url-request-method 'POST)
 	(url-request-extra-headers 
 	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (url-insert-file-contents url)))
+    (prog1
+	(url-insert-file-contents url)
+      (setq buffer-file-name nil))))
 
 (defun nnweb-decode-entities ()
   (goto-char (point-min))

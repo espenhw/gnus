@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus Manual
+@settitle Red Gnus 0.15 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus Manual
+@title Red Gnus 0.15 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -6286,7 +6286,10 @@ command understands the process/prefix convention
 @item C-t
 @kindex C-t (Summary)
 @findex gnus-summary-toggle-truncation
-Toggle truncation of summary lines (@code{gnus-summary-toggle-truncation}).
+Toggle truncation of summary lines
+(@code{gnus-summary-toggle-truncation}).  This will probably confuse the
+line centering function in the summary buffer, so it's not a good idea
+to have truncation switched off while reading articles.
 
 @item =
 @kindex = (Summary)

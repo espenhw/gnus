@@ -96,7 +96,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (body-begin . "^ ?$")
      (file-end . "^End of")
      (prepare-body-function . nndoc-unquote-dashes)
-     (subtype digest))  ;; impossible to really guess?
+     (subtype digest guess))
     (lanl-gov-announce
       (article-begin . "^\\\\\\\\\n")
       (head-begin . "^Paper.*:")

@@ -241,7 +241,8 @@ virtual group.")
   mark)
     
 (deffoo nnvirtual-close-group (group &optional server)
-  (when (nnvirtual-possibly-change-server server)
+  (when (and (nnvirtual-possibly-change-server server)
+	     (not (gnus-ephemeral-group-p group)))
     ;; Copy (un)read articles.
     (nnvirtual-update-reads)
     ;; We copy the marks from this group to the component

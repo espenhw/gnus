@@ -890,7 +890,6 @@ If end of article, return non-nil.  Otherwise return nil.
 Argument LINES specifies lines to be scrolled up."
   (interactive "p")
   (move-to-window-line -1)
-  ;; Fixed by enami@ptgd.sony.co.jp (enami tsugutomo)
   (if (save-excursion
 	(end-of-line)
 	(and (pos-visible-in-window-p)	;Not continuation line.

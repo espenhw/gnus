@@ -44,7 +44,7 @@
   "*If non-nil, mark all unpicked articles as read.")
 
 (defvar gnus-summary-pick-line-format
-  "%-5p %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+  "%-5P %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in pick buffers.
 It accepts the same format specs that `gnus-summary-line-format' does.")
 
@@ -108,11 +108,8 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
       (make-local-variable 'gnus-auto-select-first)
       (setq gnus-auto-select-first nil)
       ;; Change line format.
-      (make-local-variable 'gnus-summary-line-format)
-      (setq gnus-summary-line-format 
-	    gnus-summary-pick-line-format)
-      (make-local-variable 'gnus-summary-line-format-spec)
-      (setq gnus-summary-line-format nil)
+      (setq gnus-summary-line-format gnus-summary-pick-line-format)
+      (setq gnus-summary-line-format-spec nil)
       (gnus-update-format-specifications nil 'summary)
       (gnus-update-summary-mark-positions)
       ;; Set up the menu.

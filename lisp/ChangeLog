@@ -1,3 +1,48 @@
+Sun Aug 25 23:09:18 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-send-mail-with-qmail): Use
+	`message-qmail-program', which doesn't exist.
+
+	* nndoc.el (nndoc-type-alist): Slack digests are guessable.
+
+Sun Aug 25 21:27:17 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-salt.el (gnus-pick-mode): Nixed out the format.
+	(gnus-summary-pick-line-format): Buggy def.
+
+	* gnus-sum.el (gnus-summary-read-document): Provide a quit-conf.
+	(gnus-summary-read-document): Do better names.
+
+	* nnvirtual.el (nnvirtual-close-group): Don't do the unread
+	setting on ephemeral groups.
+
+	* nntp.el (nntp-retrieve-groups): Would infloop.
+
+Sun Aug 25 02:52:11 1996  Sudish Joseph  <sudish@MindSpring.COM>
+
+	* message.el (message-qmail-inject-program): New variable.
+	(message-qmail-inject-args): New variable.
+	(message-send-mail-with-qmail): New function, suitable for use
+	as message-send-mail-function.
+
+Sun Aug 25 20:41:45 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* nnweb.el (nnweb-fetch-form): Clear buffer file name. 
+
+	* nntp.el (nntp-request-article): Would try to copy to the same
+	buffer. 
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Better error
+	message. 
+
+	* nnweb.el (nnweb-request-group): Better error report. 
+
+	* gnus-score.el (gnus-score-load-file): Gave `nil' as a day param.
+
+Sun Aug 25 03:32:51 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.14 is released.
+
 Sun Aug 25 00:16:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-util.el (gnus-prin1): New function.

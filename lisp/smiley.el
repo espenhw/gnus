@@ -37,7 +37,7 @@
 
 (require 'annotations)
 (require 'messagexmas)
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
   "Location of the smiley faces files.")
@@ -143,12 +143,12 @@ If this is a symbol, take its value.")
 	(when (extentp (setq ext (extent-property ant 'smiley-extent)))
 	  (set-extent-property ext 'invisible nil)
 	  (hide-annotation ant))
-      (if pt
-	  (while (setq ext (extent-at pt (event-buffer event) nil ext 'at))
-	    (when (annotationp (setq ant 
-				     (extent-property ext 'smiley-annotation)))
-	      (reveal-annotation ant)
-	      (set-extent-property ext 'invisible t)))))))
+      (when pt
+	(while (setq ext (extent-at pt (event-buffer event) nil ext 'at))
+	  (when (annotationp (setq ant 
+				   (extent-property ext 'smiley-annotation)))
+	    (reveal-annotation ant)
+	    (set-extent-property ext 'invisible t)))))))
 
 ;;;###autoload
 (defun smiley-buffer (&optional buffer st nd)
@@ -180,11 +180,12 @@ If this is a symbol, take its value.")
 		(let ((ext (make-extent start end))
 		      (ant (make-annotation glyph end 'text)))
 		  ;; set text extent params
-		  (set-extent-property ext 'invisible t)
 		  (set-extent-property ext 'end-open t)
+		  (set-extent-property ext 'start-open t)
+		  (set-extent-property ext 'invisible t)
 		  (set-extent-property ext 'keymap smiley-map)
 		  (set-extent-property ext 'mouse-face gnus-article-mouse-face)
-;		  (set-extent-property ext 'intangible t)
+		  (set-extent-property ext 'intangible t)
 		  ;; set annotation params
 		  (set-extent-property ant 'mouse-face gnus-article-mouse-face)
 		  (set-extent-property ant 'keymap smiley-map)

@@ -984,7 +984,8 @@ SCORE is the score to add."
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; Perform possible decays.
       (when (and gnus-decay-scores
-		 (gnus-decay-scores alist decay))
+		 (gnus-decay-scores 
+		  alist (or decay (gnus-time-to-day (current-time)))))
 	(gnus-score-set 'touched '(t) alist)
 	(gnus-score-set 'decay (list (gnus-time-to-day (current-time)))))
       ;; We do not respect eval and files atoms from global score

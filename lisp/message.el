@@ -203,8 +203,8 @@ If nil, message won't autosave.")
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
 
-Legal values include `message-send-mail-with-mh' and
-`message-send-mail-with-sendmail', which is the default.")
+Legal values include `message-send-mail-with-sendmail' (the default),
+`message-send-mail-with-mh' and `message-send-mail-with-qmail'.")
 
 ;;;###autoload
 (defvar message-send-news-function 'message-send-news
@@ -237,6 +237,18 @@ If nil, ignore the header. If it is t, use its value, but query before
 using the \"poster\" value.  If it is the symbol `ask', query the user
 whether to ignore the \"poster\" value.  If it is the symbol `use',
 always use the value.")
+
+;; qmail-related stuff
+(defvar message-qmail-inject-program "/var/qmail/bin/qmail-inject"
+  "Location of the qmail-inject program.")
+
+(defvar message-qmail-inject-args nil
+  "Arguments passed to qmail-inject programs.
+This should be a list of strings, one string for each argument.
+
+For e.g., if you wish to set the envelope sender address so that bounces
+go to the right place or to deal with listserv's usage of that address, you
+might set this variable to '(\"-f\" \"you@some.where\").")
 
 (defvar gnus-post-method)
 (defvar gnus-select-method)
@@ -372,6 +384,9 @@ these lines.")
 \(This problem exists on Sunos 4 when sendmail is run in remote mode.)
 The value should be an expression to test whether the problem will
 actually occur.")
+
+;;; Internal variables.
+;;; Well, not really internal.
 
 (defvar message-mode-syntax-table 
   (let ((table (copy-syntax-table text-mode-syntax-table)))
@@ -1433,6 +1448,47 @@ the user from the mailer."
 		   (buffer-substring (point-min) (point-max)))))
       (when (bufferp errbuf)
 	(kill-buffer errbuf)))))
+
+(defun message-send-mail-with-qmail ()
+  "Pass the prepared message buffer to qmail-inject.
+Refer to the documentation for the variable `message-send-mail-function'
+to find out how to use this."
+  ;; replace the header delimiter with a blank line
+  (goto-char (point-min))
+  (re-search-forward
+   (concat "^" (regexp-quote mail-header-separator) "\n"))
+  (replace-match "\n")
+  ;; send the message
+  (case
+      (apply
+       'call-process-region 1 (point-max) message-qmail-inject-program
+       nil nil nil
+       ;; qmail-inject's default behaviour is to look for addresses on the
+       ;; command line; if there're none, it scans the headers.
+       ;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
+       ;;
+       ;; in general, ALL of qmail-inject's defaults are perfect for simply
+       ;; reading a formatted (i.e., at least a To: or Resent-To header)
+       ;; message from stdin.
+       ;;
+       ;; qmail also has the advantage of not having being raped by
+       ;; various vendors, so we don't have to allow for that, either --
+       ;; compare this with message-send-mail-with-sendmail and weep 
+       ;; for sendmail's lost innocence.
+       ;;
+       ;; all this is way cool coz it lets us keep the arguments entirely
+       ;; free for -inject-arguments -- a big win for the user and for us
+       ;; since we don't have to play that double-guessing game and the user
+       ;; gets full control (no gestapo'ish -f's, for instance). --sj
+       message-qmail-inject-args)
+    ;; qmail-inject doesn't say anything on it's stdout/stderr,
+    ;; we have to look at the retval instead
+    (0 nil)
+    (1   (error "qmail-inject reported permanent failure."))
+    (111 (error "qmail-inject reported transient failure."))
+    ;; should never happen
+    (t   (error "qmail-inject reported unknown failure."))))
+
 
 (defun message-send-mail-with-mh ()
   "Send the prepared message buffer with mh."

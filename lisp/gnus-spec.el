@@ -165,7 +165,6 @@
 (defun gnus-update-format-specifications (&optional force &rest types)
   "Update all (necessary) format specifications."
   ;; Make the indentation array.
-
   ;; See whether all the stored info needs to be flushed.
   (when (or force
 	    (not (equal emacs-version
@@ -188,7 +187,7 @@
 	  (setq new-format (symbol-value
 			    (intern (format "gnus-%s-line-format" type))))))
       (setq entry (cdr (assq type gnus-format-specs)))
-      (if (and entry
+      (if (and (car entry)
 	       (equal (car entry) new-format))
 	  ;; Use the old format.
 	  (set (intern (format "gnus-%s-line-format-spec" type))

@@ -243,7 +243,7 @@ server there that you can connect to. See also `nntp-open-connection-function'")
   "Retrieve group info on GROUPS."
   (nntp-possibly-change-group nil server)
   (save-excursion
-    (set-buffer nntp-server-buffer)
+    (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
     ;; The first time this is run, this variable is `try'.  So we
     ;; try.   
     (when (eq nntp-server-list-active-group 'try)
@@ -295,12 +295,12 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(while (re-search-forward "^[.2-5]" nil t)
 	  (delete-region (match-beginning 0) 
 			 (progn (forward-line 1) (point))))
+	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'active))))
 
- (defun nntp-try-list-active (group)
+(defun nntp-try-list-active (group)
   (nntp-list-active-group group)
   (save-excursion
-    (set-buffer nntp-server-buffer)
     (goto-char (point-min))
     (cond ((looking-at "5[0-9]+")
 	   (setq nntp-server-list-active-group nil))
@@ -317,7 +317,8 @@ server there that you can connect to. See also `nntp-open-connection-function'")
   (when (nntp-send-command-and-decode
 	 "\r?\n\\.\r?\n" "ARTICLE"
 	 (if (numberp article) (int-to-string article) article))
-    (when buffer
+    (when (and buffer
+	       (not (equal buffer nntp-server-buffer)))
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(copy-to-buffer buffer (point-min) (point-max))
