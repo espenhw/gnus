@@ -2223,7 +2223,7 @@ message composition doesn't break too bad."
   ;; No reason this should be clutter up customize.  We make it a
   ;; property list (rather than a list of property symbols), to be
   ;; directly useful for `remove-text-properties'.
-  '(field nil read-only nil 
+  '(field nil read-only nil invisible nil intangible nil
 	  mouse-face nil modification-hooks nil insert-in-front-hooks nil
 	  insert-behind-hooks nil point-entered nil point-left nil)
   ;; Other special properties:
@@ -2254,7 +2254,11 @@ This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
   (when (and message-strip-special-text-properties
 	     (message-tamago-not-in-use-p begin))
-    (remove-text-properties begin end message-forbidden-properties)))
+    (while (not (= begin end))
+      (when (not (get-text-property begin 'message-hidden))
+	(remove-text-properties begin (1+ begin)
+				message-forbidden-properties))
+      (incf begin))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
@@ -6487,7 +6491,8 @@ regexp varstr."
   (let ((regexps (if (stringp message-hidden-headers)
 		     (list message-hidden-headers)
 		   message-hidden-headers))
-	(inhibit-point-motion-hooks t))
+	(inhibit-point-motion-hooks t)
+	(after-change-functions nil))
     (when regexps
       (save-excursion
 	(save-restriction

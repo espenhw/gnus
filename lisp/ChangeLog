@@ -1,7 +1,14 @@
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mml.el (mml-minibuffer-read-file): Bind
+	completion-ignored-extensions to nil.
+
 	* message.el (message-fix-before-sending): Comment fix.
 	(message-fix-before-sending): Make hidden headers visible.
+	(message-hide-headers): Bind after-change-functions to nil.
+	(message-forbidden-properties): Put invisible and intangible
+	back. 
+	(message-strip-forbidden-properties): Ignore message-hidden text.
 
 	* gnus-msg.el: Hide headers.
 

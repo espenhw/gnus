@@ -881,7 +881,8 @@ See Info node `(emacs-mime)Composing'.
 ;;;
 
 (defun mml-minibuffer-read-file (prompt)
-  (let ((file (read-file-name prompt nil nil t)))
+  (let* ((completion-ignored-extensions nil)
+	 (file (read-file-name prompt nil nil t)))
     ;; Prevent some common errors.  This is inspired by similar code in
     ;; VM.
     (when (file-directory-p file)
