@@ -1,5 +1,5 @@
 ;;; mailcap.el --- MIME media types configuration
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;       Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@aventail.com>
@@ -255,7 +255,11 @@
      ("html"
       (viewer . mm-w3-prepare-buffer)
       (test   . (fboundp 'w3-prepare-buffer))
-      (type   . "text/html")))
+      (type   . "text/html"))
+     ("dns"
+      (viewer . dns-mode)
+      (test   . (fboundp 'dns-mode))
+      (type   . "text/dns")))
     ("video"
      ("mpeg"
       (viewer . "mpeg_play %s")
@@ -847,6 +851,7 @@ this type is returned."
     (".sit"   . "application/x-stuffit")
     (".siv"   . "application/sieve")
     (".snd"   . "audio/basic")
+    (".soa"   . "text/dns")
     (".src"   . "application/x-wais-source")
     (".tar"   . "archive/tar")
     (".tcl"   . "application/x-tcl")

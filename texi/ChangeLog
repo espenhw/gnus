@@ -1,3 +1,7 @@
+2004-09-11  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-news.texi: Mention text/dns.
+
 2004-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* texi2latex.el (latexi-translate-file): Support @copying and

@@ -78,6 +78,8 @@ customize it using the variable `nnimap-id'.
 ** Gnus now MIME decode articles even when they lack "MIME-Version"
 header.  This changes the default of `gnus-article-loose-mime'.
 
+** Gnus now view DNS master files sent as text/dns using dns-mode.
+
 
 * For older news, see Gnus info node "New Features".
 

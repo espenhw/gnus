@@ -218,6 +218,7 @@ before the external MIME handler is invoked."
        (locate-library "diff-mode")))
     ("application/emacs-lisp" mm-display-elisp-inline identity)
     ("application/x-emacs-lisp" mm-display-elisp-inline identity)
+    ("text/dns" mm-display-dns-inline identity)
     ("text/html"
      mm-inline-text-html
      (lambda (handle)
@@ -285,7 +286,7 @@ when selecting a different article."
 (defcustom mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822" "text/x-patch" "application/pgp-signature"
+    "message/rfc822" "text/x-patch" "text/dns" "application/pgp-signature"
     "application/emacs-lisp" "application/x-emacs-lisp"
     "application/x-pkcs7-signature"
     "application/pkcs7-signature" "application/x-pkcs7-mime"

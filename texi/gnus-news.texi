@@ -94,6 +94,8 @@ using @kbd{W e}.
 @item Gnus now MIME decode articles even when they lack "MIME-Version" header.
 This changes the default of @code{gnus-article-loose-mime}.
 
+@item Gnus now view DNS master files sent as text/dns using dns-mode.
+
 @end itemize
 
 @c gnus-news.texi ends here.

@@ -1,3 +1,15 @@
+2004-09-11  Simon Josefsson  <jas@extundo.com>
+
+	* dns-mode.el: Add.
+
+	* mm-view.el (mm-display-dns-inline): Add.
+
+	* mm-decode.el (mm-inline-media-tests): Add text/dns.
+	(mm-automatic-display): Ditto.
+
+	* mailcap.el (mailcap-mime-data): Add text/dns.
+	(mailcap-mime-extensions): Map .soa to text/dns.
+
 2004-09-10  Miles Bader  <miles@gnu.ai.mit.edu>
 
 	* gnus-art.el (article-decode-mime-words, article-babel)
