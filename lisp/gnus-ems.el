@@ -71,7 +71,7 @@
 	 valstr))))
 
 (eval-and-compile
-  (if gnus-xemacs
+  (if (string-match "XEmacs\\|Lucid" emacs-version)
       nil
 
     (defvar gnus-mouse-face-prop 'mouse-face

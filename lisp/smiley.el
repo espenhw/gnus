@@ -248,6 +248,7 @@ above them."
 		   (= (char-after (1- (point))) ?\()))
       t)))
 
+(defvar gnus-article-buffer)
 ;;;###autoload    
 (defun gnus-smiley-display ()
   (interactive)

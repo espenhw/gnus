@@ -290,7 +290,8 @@
 (deffoo nnmh-request-accept-article (group &optional server last noinsert)
   (nnmh-possibly-change-directory group server)
   (nnmail-check-syntax)
-  (nnmail-save-active nnml-group-alist nnml-active-file)
+  (when nnmail-cache-message-id-when-accepting
+    (nnmail-cache-insert (nnmail-fetch-field "message-id")))
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)

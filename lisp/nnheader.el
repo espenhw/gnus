@@ -56,7 +56,9 @@ on your system, you could say something like:
  (autoload 'nnmail-message-id "nnmail")
  (autoload 'mail-position-on-field "sendmail")
  (autoload 'message-remove-header "message")
- (autoload 'cancel-function-timers "timers"))
+ (autoload 'cancel-function-timers "timers")
+ (autoload 'gnus-point-at-eol "gnus-util")
+ (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
 
@@ -626,19 +628,6 @@ without formatting."
 	(insert (apply 'format format args))
       (apply 'insert format args))
     t))
-
-(defun nnheader-mail-file-mbox-p (file)
-  "Say whether FILE looks like an Unix mbox file."
-  (when (and (file-exists-p file)
-	     (file-readable-p file)
-	     (file-regular-p file))
-    (save-excursion
-      (nnheader-set-temp-buffer " *mail-file-mbox-p*")
-      (nnheader-insert-file-contents file)
-      (goto-char (point-min))
-      (prog1
-	  (looking-at message-unix-mail-delimiter)
-	(kill-buffer (current-buffer))))))
 
 (defun nnheader-replace-chars-in-string (string from to)
   "Replace characters in STRING from FROM to TO."

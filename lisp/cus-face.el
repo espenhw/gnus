@@ -138,24 +138,57 @@ If the colors are not specified in the face, use the default colors."
 	(set-face-foreground face bg frame)
 	(set-face-background face fg frame)))))
 
-(if (string-match "XEmacs" emacs-version)
-    ;; XEmacs.
+(defcustom custom-background-mode nil
+  "The brightness of the background.
+Set this to the symbol dark if your background color is dark, light if
+your background is light, or nil (default) if you want Emacs to
+examine the brightness for you."
+  :group 'customize
+  :type '(choice (choice-item dark) 
+		 (choice-item light)
+		 (choice-item :tag "default" nil)))
+
+(eval-and-compile
+  (if (string-match "XEmacs" emacs-version)
+      ;; XEmacs.
+      (defun custom-extract-frame-properties (frame)
+	"Return a plist with the frame properties of FRAME used by custom."
+	(list 'type (device-type (frame-device frame))
+	      'class (device-class (frame-device frame))
+	      'background (or custom-background-mode
+			      (frame-property frame
+					      'background-mode)
+			      (custom-background-mode frame))))
+    ;; Emacs.
     (defun custom-extract-frame-properties (frame)
       "Return a plist with the frame properties of FRAME used by custom."
-      (list 'type (device-type (frame-device frame))
-	    'class (device-class (frame-device frame))
+      (list 'type window-system
+	    'class (frame-property frame 'display-type)
 	    'background (or custom-background-mode
-			    (frame-property frame
-					    'background-mode)
-			    (custom-background-mode frame))))
-  ;; Emacs.
-  (defun custom-extract-frame-properties (frame)
-    "Return a plist with the frame properties of FRAME used by custom."
-    (list 'type window-system
-	  'class (frame-property frame 'display-type)
-	  'background (or custom-background-mode
-			  (frame-property frame 'background-mode)
-			  (custom-background-mode frame)))))  
+			    (frame-property frame 'background-mode)
+			    (custom-background-mode frame))))))  
+
+(defconst custom-face-attributes
+  '((:bold (toggle :format "Bold: %[%v%]\n") custom-set-face-bold)
+    (:italic (toggle :format "Italic: %[%v%]\n") custom-set-face-italic)
+    (:underline
+     (toggle :format "Underline: %[%v%]\n") set-face-underline-p)
+    (:foreground (color :tag "Foreground") set-face-foreground)
+    (:background (color :tag "Background") set-face-background)
+    (:reverse (const :format "Reverse Video\n" t) 
+	      (lambda (face value &optional frame)
+		;; We don't use VALUE.
+		(reverse-face face frame)))
+    (:stipple (editable-field :format "Stipple: %v") set-face-stipple))
+  "Alist of face attributes. 
+
+The elements are of the form (KEY TYPE SET) where KEY is a symbol
+identifying the attribute, TYPE is a widget type for editing the
+attibute, SET is a function for setting the attribute value.
+
+The SET function should take three arguments, the face to modify, the
+value of the attribute, and optionally the frame where the face should
+be changed.")
 
 ;;; Declaring a face.
 
@@ -204,28 +237,6 @@ If FRAME is nil, set the default face."
       (condition-case nil
 	  (funcall fun face value frame)
 	(error nil)))))
-
-(defconst custom-face-attributes
-  '((:bold (toggle :format "Bold: %[%v%]\n") custom-set-face-bold)
-    (:italic (toggle :format "Italic: %[%v%]\n") custom-set-face-italic)
-    (:underline
-     (toggle :format "Underline: %[%v%]\n") set-face-underline-p)
-    (:foreground (color :tag "Foreground") set-face-foreground)
-    (:background (color :tag "Background") set-face-background)
-    (:reverse (const :format "Reverse Video\n" t) 
-	      (lambda (face value &optional frame)
-		;; We don't use VALUE.
-		(reverse-face face frame)))
-    (:stipple (editable-field :format "Stipple: %v") set-face-stipple))
-  "Alist of face attributes. 
-
-The elements are of the form (KEY TYPE SET) where KEY is a symbol
-identifying the attribute, TYPE is a widget type for editing the
-attibute, SET is a function for setting the attribute value.
-
-The SET function should take three arguments, the face to modify, the
-value of the attribute, and optionally the frame where the face should
-be changed.")
 
 (defun custom-set-face-bold (face value &optional frame)
   "Set the bold property of FACE to VALUE."
@@ -286,16 +297,6 @@ See `defface' for information about SPEC."
 	  (unless frame
 	    (put face 'custom-face-display display))
 	  (setq spec nil))))))
-
-(defcustom custom-background-mode nil
-  "The brightness of the background.
-Set this to the symbol dark if your background color is dark, light if
-your background is light, or nil (default) if you want Emacs to
-examine the brightness for you."
-  :group 'customize
-  :type '(choice (choice-item dark) 
-		 (choice-item light)
-		 (choice-item :tag "default" nil)))
 
 (defun custom-background-mode (frame)
   "Kludge to detect background mode for FRAME."

@@ -25,6 +25,9 @@
 
 ;;; Code:
 
+(eval-and-compile
+  (autoload 'nnheader-insert-file-contents "nnheader"))
+
 (defun nnheader-xmas-run-at-time (time repeat function &rest args)
   (start-itimer
    "nnheader-run-at-time"

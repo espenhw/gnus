@@ -34,6 +34,7 @@
 (require 'gnus)
 (require 'w3)
 (require 'url)
+(require 'nnmail)
 (ignore-errors
   (require 'w3-forms))
 

@@ -28,8 +28,11 @@
 (require 'nnheader)
 (require 'timezone)
 (require 'message)
-(eval-when-compile (require 'cl))
+(require 'cl)
 (require 'custom)
+
+(eval-and-compile
+  (autoload 'gnus-error "gnus-util"))
 
 (defgroup nnmail nil
   "Reading mail with Gnus."
@@ -421,6 +424,11 @@ parameter.  It should return nil, `warn' or `delete'."
   :type '(choice (const :tag "off" nil)
 		 (const warn)
 		 (const delete)))
+
+(defvar nnmail-cache-message-id-when-accepting nil
+  "If non-nil put the Message-ID: of incoming messages in the message ID cache.
+Not doing so is dangerous, but it is how Gnus used to work for a long
+time.")
 
 ;;; Internal variables.
 
@@ -1682,9 +1690,11 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      his nil)))
     found))
 
+(eval-and-compile
+  (autoload 'pop3-movemail "pop3"))
+
 (defun nnmail-pop3-movemail (inbox crashbox)
   "Function to move mail from INBOX on a pop3 server to file CRASHBOX."
-  (require 'pop3)
   (let ((pop3-maildrop
          (substring inbox (match-end (string-match "^po:" inbox)))))
     (pop3-movemail crashbox)))

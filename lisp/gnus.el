@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.20"
+(defconst gnus-version-number "5.4.21"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1370,8 +1370,12 @@ want."
 	     gnus-article-strip-leading-blank-lines
 	     gnus-article-strip-multiple-blank-lines
 	     gnus-article-strip-blank-lines
-	     gnus-article-treat-overstrike
-	     ))
+	     gnus-article-treat-overstrike))
+
+(defcustom gnus-article-save-directory gnus-directory
+  "*Name of the directory articles will be saved in (default \"~/News\")."
+  :group 'gnus-article-saving
+  :type 'directory)
 
 
 ;;; Internal variables
@@ -1638,7 +1642,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-prepare gnus-article-set-window-start
       gnus-article-next-page gnus-article-prev-page
       gnus-request-article-this-buffer gnus-article-mode
-      gnus-article-setup-buffer gnus-narrow-to-page)
+      gnus-article-setup-buffer gnus-narrow-to-page
+      gnus-article-delete-invisible-text)
      ("gnus-art" :interactive t
       gnus-article-hide-headers gnus-article-hide-boring-headers
       gnus-article-treat-overstrike gnus-article-word-wrap

@@ -28,7 +28,7 @@ gnus-load.el:
 	echo ";;" >> gnus-load.el
 	echo ";;; Code:" >> gnus-load.el
 	echo >> gnus-load.el
-	$(EMACS)  $(FLAGS) -l ./dgnushack.el -l custom-edit.el *.el \
+	$(EMACS)  $(FLAGS) -l ./dgnushack.el -l cus-edit.el *.el \
 		-f custom-make-dependencies >> gnus-load.el
 	echo >> gnus-load.el
 	echo "(provide 'gnus-load)" >> gnus-load.el

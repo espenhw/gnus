@@ -313,7 +313,8 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (nnmail-check-syntax)
   (let (result)
-    (nnmail-cache-insert (nnmail-fetch-field "message-id"))
+    (when nnmail-cache-message-id-when-accepting
+      (nnmail-cache-insert (nnmail-fetch-field "message-id")))
     (if (stringp group)
 	(and 
 	 (nnmail-activate 'nnml)

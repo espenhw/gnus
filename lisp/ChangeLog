@@ -1,3 +1,39 @@
+Fri Mar  7 07:36:14 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.21 is released.
+
+Fri Mar  7 04:17:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-request-accept-article): Switch to the
+	right folder.
+
+	* Makefile (gnus-load.el): cus-edit.
+
+	* gnus.el: Removed all compilation warnings under both Emacs and
+	XEmacs. 
+
+	* cus-face.el: Moved variable defintions around a bit to avoid
+	compilation warnings.
+
+	* nnmail.el (nnmail-cache-message-id-when-accepting): New
+	variable. 
+
+	* nnfolder.el (nnfolder-dont-cache-message-id): Removed.
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnml.el (nnml-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Use it.
+
+Thu Mar  6 18:22:29 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* nnfolder.el (nnfolder-dont-cache-message-id): Variable to allow
+	backwards compatibility with respect to saved messages.
+	(nnfolder-request-accept-article): Use it.
+
+Fri Mar  7 04:10:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el: Autoload pop3.
+
 Fri Mar  7 01:33:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.20 is released.

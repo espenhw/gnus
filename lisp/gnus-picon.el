@@ -29,6 +29,8 @@
 (require 'xpm)
 (require 'annotations)
 (require 'custom)
+(require 'gnus-art)
+(require 'gnus-win)
 
 (defgroup picons nil
   "Show pictures of people, domains, and newsgroups (XEmacs).

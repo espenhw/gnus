@@ -382,7 +382,8 @@ time saver for large mailboxes.")
        (forward-line -1)
        (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (nnmail-cache-insert (nnmail-fetch-field "message-id"))
+       (when nnmail-cache-message-id-when-accepting
+	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
        (setq result
 	     (car (nnfolder-save-mail
 		   (if (stringp group)
@@ -391,7 +392,7 @@ time saver for large mailboxes.")
 			   (nnmail-article-group 'nnfolder-active-number)))))))
      (when last
        (save-excursion
-	 (nnfolder-possibly-change-folder (or (car art-group) group))
+	 (nnfolder-possibly-change-folder (or (caar art-group) group))
 	 (nnfolder-save-buffer)
 	 (nnmail-cache-close))))
     (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
@@ -711,7 +712,7 @@ time saver for large mailboxes.")
         file)
     (while (setq file (pop files))
       (when (and (not (backup-file-name-p file))
-                 (nnheader-mail-file-mbox-p
+                 (message-mail-file-mbox-p
 		  (concat nnfolder-directory file)))
         (nnheader-message 5 "Adding group %s..." file)
         (push (list file (cons 1 0)) nnfolder-group-alist)

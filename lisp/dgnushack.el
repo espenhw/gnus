@@ -47,6 +47,9 @@
     (fset 'x-defined-colors 'ignore)
     (fset 'read-color 'ignore)))
 
+(setq byte-compile-warnings 
+      '(free-vars unresolved callargs redefine))
+
 (defun dgnushack-compile ()
   ;;(setq byte-compile-dynamic t)
   (let ((files (directory-files "." nil ".el$"))
@@ -57,12 +60,6 @@
 	(require 'w3-forms)
       (error (setq files (delete "nnweb.el" files))))
     (while (setq file (pop files))
-      (cond 
-       ((or (string= file "custom.el") (string= file "browse-url.el"))
-	(setq byte-compile-warnings nil))
-       (t
-	(setq byte-compile-warnings 
-	      '(free-vars unresolved callargs redefine obsolete))))
       (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el" 
 				    "messagexmas.el" "nnheaderxm.el"
 				    "smiley.el")))

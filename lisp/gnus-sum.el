@@ -314,9 +314,6 @@ It uses the same syntax as the `gnus-split-methods' variable."
 			 (cons regexp (repeat string))
 			 sexp)))
 
-;; Mark variables suggested by Thomas Michanek
-;; <Thomas.Michanek@telelogic.se>.
-
 (defcustom gnus-unread-mark ? 
   "*Mark used for unread articles."
   :group 'gnus-summary-marks

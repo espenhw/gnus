@@ -29,8 +29,7 @@
 
 ;;; Code:
 
-(eval-when-compile 
-  (require 'cl))
+(require 'cl)
 (require 'mailheader)
 (require 'rmail)
 (require 'nnheader)
@@ -823,7 +822,8 @@ The cdr of ech entry is a function for applying the face to a region.")
   (autoload 'gnus-point-at-eol "gnus-util")
   (autoload 'gnus-point-at-bol "gnus-util")
   (autoload 'gnus-output-to-mail "gnus-util")
-  (autoload 'gnus-output-to-rmail "gnus-util"))
+  (autoload 'gnus-output-to-rmail "gnus-util")
+  (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev"))
 
 
 
@@ -873,6 +873,16 @@ The cdr of ech entry is a function for applying the face to a region.")
 		      (not quoted))
 		 (setq paren nil))))
 	(nreverse elems)))))
+
+(defun message-mail-file-mbox-p (file)
+  "Say whether FILE looks like a Unix mbox file."
+  (when (and (file-exists-p file)
+	     (file-readable-p file)
+	     (file-regular-p file))
+    (nnheader-temp-write nil
+      (nnheader-insert-file-contents file)
+      (goto-char (point-min))
+      (looking-at message-unix-mail-delimiter))))
 
 (defun message-fetch-field (header &optional not-all)
   "The same as `mail-fetch-field', only remove all newlines."
@@ -1405,7 +1415,7 @@ Mail and USENET news headers are not rotated."
         (unless (equal 0 (call-process-region
                            (point-min) (point-max) program t t))
             (insert body)
-            (gnus-message 1 "%s failed." program))))))
+            (message "%s failed." program))))))
 
 (defun message-rename-buffer (&optional enter-string)
   "Rename the *message* buffer to \"*message* RECIPIENT\".  

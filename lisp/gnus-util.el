@@ -36,6 +36,9 @@
 (require 'timezone)
 (require 'message)
 
+(eval-and-compile
+  (autoload 'nnmail-date-to-time "nnmail"))
+
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
   (and (boundp variable)
@@ -704,6 +707,7 @@ with potentially long computations."
 
 ;;; Functions for saving to babyl/mail files.
 
+(defvar rmail-default-rmail-file)
 (defun gnus-output-to-rmail (filename &optional ask)
   "Append the current article to an Rmail file named FILENAME."
   (require 'rmail)

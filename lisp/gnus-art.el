@@ -250,11 +250,6 @@ See `format-time-zone' for the possible values."
   (autoload 'timezone-make-date-arpa-standard "timezone")
   (autoload 'mail-extract-address-components "mail-extr"))
 
-(defcustom gnus-article-save-directory gnus-directory
-  "*Name of the directory articles will be saved in (default \"~/News\")."
-  :group 'gnus-article-saving
-  :type 'directory)
-
 (defcustom gnus-save-all-headers t
   "*If non-nil, don't remove any headers before saving."
   :group 'gnus-article-saving
