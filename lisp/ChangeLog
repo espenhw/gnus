@@ -1,3 +1,7 @@
+2002-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el: Autoload gnus-delay-article.
+
 2002-10-11  Jesper harder  <harder@ifa.au.dk>
 
 	* gnus-spec.el (gnus-balloon-face-function): Use the help-echo

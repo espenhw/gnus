@@ -1365,7 +1365,8 @@ no, only reply back to the author."
   (autoload 'gnus-group-name-charset "gnus-group")
   (autoload 'gnus-group-name-decode "gnus-group")
   (autoload 'gnus-groups-from-server "gnus")
-  (autoload 'rmail-output "rmailout"))
+  (autoload 'rmail-output "rmailout")
+  (autoload 'gnus-delay-article "gnus-delay"))
 
 
 
