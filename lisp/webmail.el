@@ -266,8 +266,9 @@
 (defun webmail-refresh-redirect ()
   "Redirect refresh url in META."
   (goto-char (point-min))
-  (while (re-search-forward "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
-			    nil t)
+  (while (re-search-forward 
+	  "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
+	  nil t)
     (let ((url (match-string 1)))
       (erase-buffer)
       (mm-with-unibyte-current-buffer
@@ -344,8 +345,9 @@
 (defun webmail-hotmail-list ()
   (let (site url newp)
     (goto-char (point-min))
-    (if (re-search-forward "[0-9]+ messages, [0-9]+ new") 
-	(message "Found %s" (match-string 0)))
+    (if (re-search-forward "[0-9]+ messages, [0-9]+ new" nil t) 
+	(message "Found %s" (match-string 0))
+      (webmail-error "maybe your w3 version is too old"))
     (goto-char (point-min))
     (if (re-search-forward 
 	 "action=\"https?://\\([^/]+\\)/cgi-bin/HoTMaiL" nil t)
@@ -398,7 +400,9 @@
       (widen)
       (insert "\n")
       (setq p (point))
-      (while (re-search-forward "<div>\\|\\(http://[^/]+/cgi-bin/getmsg/\\([^\?]+\\)\?[^\"]*\\)\"" nil t)
+      (while (re-search-forward 
+	      "<div>\\|\\(http://[^/]+/cgi-bin/getmsg/\\([^\?]+\\)\?[^\"]*\\)\"" 
+	      nil t)
 	(if (setq attachment (match-string 1))
 	    (let ((filename (match-string 2))
 		  bufname);; Attachment
@@ -454,8 +458,9 @@
       (if id
 	  (insert "Message-ID: <" id "@hotmail.com>\n"))
       (unless (looking-at "$") 
-	(search-forward "\n\n" nil t)
-	(forward-line -1))
+	(if (search-forward "\n\n" nil t)
+	    (forward-line -1)
+	  (webmail-error "article@2")))
       (narrow-to-region (point) (point-max))
       (if mime
 	  (insert "MIME-Version: 1.0\n"
@@ -579,8 +584,9 @@
       (if id
 	  (insert "Message-ID: <" id "@yahoo.com>\n"))
       (unless (looking-at "$") 
-	(search-forward "\n\n" nil t)
-	(forward-line -1))
+	(if (search-forward "\n\n" nil t)
+	    (forward-line -1)
+	  (webmail-error "article@2")))
       (narrow-to-region (point) (point-max))
       (insert "MIME-Version: 1.0\n"
 	      (prog1
@@ -740,8 +746,9 @@
       (if id
 	  (insert "Message-ID: <" id "@usa.net>\n"))
       (unless (looking-at "$") 
-	(search-forward "\n\n" nil t)
-	(forward-line -1))
+	(if (search-forward "\n\n" nil t)
+	    (forward-line -1)
+	  (webmail-error "article@2")))
       (when mime
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
