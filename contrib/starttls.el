@@ -138,7 +138,7 @@ The default is what GNUTLS's \"gnutls-cli\" outputs."
 This should typically only be done once.  It typically return a
 multi-line informational message with information about the
 handshake, or NIL on failure."
-  (let (buffer response old-max done-ok done-bad)
+  (let (buffer info old-max done-ok done-bad)
     (if (null (setq buffer (process-buffer process)))
 	;; XXX how to remove/extract the TLS negotiation junk?
 	(signal-process (process-id process) 'SIGALRM)
@@ -189,8 +189,7 @@ specifying a port number to connect to."
 			 "-p" (if (integerp service)
 				  (int-to-string service)
 				service)
-			 starttls-extra-args))
-	 response)
+			 starttls-extra-args)))
     (process-kill-without-query process)
     (while (and process
 		(memq (process-status process) '(open run))
