@@ -1,4 +1,61 @@
+Sun Apr 21 19:59:58 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-bounce): Wrong interactive spec.
+	(message-bounce): Handle mimeish bounces.
+
+	* nnspool.el (nnspool-inews-switches): Suppress signature.
+
+Sun Apr 21 19:50:59 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-summary-cancel-article): Cancel using the
+	proper select method.
+
+	* gnus.el (gnus-find-method-for-group): Allow methods without names.
+
+Sun Apr 21 16:34:35 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* nnmh.el (nnmh-request-list-1): New function.
+
+	* gnus.el (gnus-summary-articles-in-thread): Would respond badly
+	to dummy roots.
+
+	* gnus-msg.el (gnus-article-mail): Use message.
+
+	* gnus-vis.el (gnus-button-reply): Use message.
+
+Sat Apr 20 04:31:02 1996  Jens Lautenbacher  <jens@lemcbed.lem.uni-karlsruhe.de>
+
+	* gnus-vis.el: Greyed out much more entries in group-mode's 
+	menubar and started the same for summary-mode. 
+
+Sun Apr 21 15:50:09 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus-msg.el (gnus-copy-article-buffer): Don't widen
+	permanently. 
+
+	* gnus.el (gnus-read-active-file): Don't nix out active stuff from
+	foreign servers.
+	(gnus-summary-find-next): Wouldn't respond properly to dummy
+	articles. 
+
+Sun Apr 21 15:26:47 1996  Denis Howe  <dbh@doc.ic.ac.uk>
+
+	* browse-url.el: New version installed.
+
+Sun Apr 21 15:16:07 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-reply): Respond properly even when answering
+	to messages with no Message-ID.
+
+Sat Apr 20 18:16:21 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-header-rank): Moved.
+
+	* message.el (message-send-mail): Wouldn't resend. 
+
 Sat Apr 20 00:20:09 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.76 is released.
 
 	* nntp.el (nntp-server-opened-hook): Use the default.
 

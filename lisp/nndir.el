@@ -90,12 +90,9 @@
   (nnml-retrieve-headers 0 nndir-current-group 0 0)
   (nnmh-request-article 0 nndir-current-group 0 0)
   (nnmh-request-group nndir-current-group 0 0)
-  (nnmh-close-group nndir-current-group 0))
-
-(nnoo-import nndir
-  (nnmh
-   nnmh-request-list
-   nnmh-request-newgroups))
+  (nnmh-close-group nndir-current-group 0)
+  (nnmh-request-list (nnoo-current-server 'nndir) nndir-directory)
+  (nnmh-request-newsgroups (nnoo-current-server 'nndir) nndir-directory))
 
 (provide 'nndir)
 

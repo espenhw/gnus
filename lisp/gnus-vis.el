@@ -31,6 +31,7 @@
 (require 'easymenu)
 (require 'custom)
 (require 'browse-url)
+(require 'gnus-score)
 (eval-when-compile (require 'cl))
 
 (defvar gnus-group-menu-hook nil
@@ -321,7 +322,8 @@ ticked: The number of ticked articles in the group.
       '("Group"
 	["Read" gnus-group-read-group (gnus-group-group-name)]
 	["Select" gnus-group-select-group (gnus-group-group-name)]
-	["See old articles" (gnus-group-select-group 'all) :keys "C-u SPC"]
+	["See old articles" (gnus-group-select-group 'all)
+	 :keys "C-u SPC" :active (gnus-group-group-name)]
 	["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
 	["Catch up all articles" gnus-group-catchup-current-all
 	 (gnus-group-group-name)]
@@ -335,8 +337,13 @@ ticked: The number of ticked articles in the group.
 	["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
 	["Edit kill file" gnus-group-edit-local-kill
 	 (gnus-group-group-name)]
+	;; Actually one should check, if any of the marked groups gives t for
+	;; (gnus-check-backend-function 'request-expire-articles ...)
 	["Expire articles" gnus-group-expire-articles
-	 (gnus-group-group-name)]
+	 (or (and (gnus-group-group-name)
+		  (gnus-check-backend-function
+		   'request-expire-articles
+		   (gnus-group-group-name))) gnus-group-marked)]
 	["Set group level" gnus-group-set-current-level
 	 (gnus-group-group-name)]
 	["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
@@ -350,32 +357,45 @@ ticked: The number of ticked articles in the group.
 	 ["List all groups" gnus-group-list-all-groups t]
 	 ["List killed groups" gnus-group-list-killed gnus-killed-list]
 	 ["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
-	 ["List level" gnus-group-list-level t]
+	 ["List level..." gnus-group-list-level t]
 	 ["Describe all groups" gnus-group-describe-all-groups t]
-	 ["Group apropos" gnus-group-apropos t]
-	 ["Group and description apropos" gnus-group-description-apropos t]
+	 ["Group apropos..." gnus-group-apropos t]
+	 ["Group and description apropos..." gnus-group-description-apropos t]
 	 ["List groups matching..." gnus-group-list-matching t]
 	 ["List all groups matching..." gnus-group-list-all-matching t]
 	 ["List active file" gnus-group-list-active t])
 	("Sort"
-	 ["Default sort" gnus-group-sort-groups t]
-	 ["Sort by method" gnus-group-sort-groups-by-method t]
-	 ["Sort by rank" gnus-group-sort-groups-by-rank t]
-	 ["Sort by score" gnus-group-sort-groups-by-score t]
-	 ["Sort by level" gnus-group-sort-groups-by-level t]
-	 ["Sort by unread" gnus-group-sort-groups-by-unread t]
-	 ["Sort by name" gnus-group-sort-groups-by-alphabet t])
+	 ["Default sort" gnus-group-sort-groups
+	  (not gnus-topic-mode)]
+	 ["Sort by method" gnus-group-sort-groups-by-method
+	  (not gnus-topic-mode)]
+	 ["Sort by rank" gnus-group-sort-groups-by-rank
+	  (not gnus-topic-mode)]
+	 ["Sort by score" gnus-group-sort-groups-by-score
+	  (not gnus-topic-mode)]
+	 ["Sort by level" gnus-group-sort-groups-by-level
+	  (not gnus-topic-mode)]
+	 ["Sort by unread" gnus-group-sort-groups-by-unread
+	  (not gnus-topic-mode)]
+	 ["Sort by name" gnus-group-sort-groups-by-alphabet
+	  (not gnus-topic-mode)])
 	("Mark"
-	 ["Mark group" gnus-group-mark-group (gnus-group-group-name)]
-	 ["Unmark group" gnus-group-unmark-group (gnus-group-group-name)]
-	 ["Unmark all" gnus-group-unmark-all-groups t]
-	 ["Mark regexp" gnus-group-mark-regexp t]
-	 ["Mark region" gnus-group-mark-region t]
+	 ["Mark group" gnus-group-mark-group
+	  (and (gnus-group-group-name)
+	       (not (memq (gnus-group-group-name) gnus-group-marked)))]
+	 ["Unmark group" gnus-group-unmark-group
+	  (and (gnus-group-group-name)
+	       (memq (gnus-group-group-name) gnus-group-marked))]
+	 ["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
+	 ["Mark regexp..." gnus-group-mark-regexp t]
+	 ["Mark region" gnus-group-mark-region (region-exists-p)]
 	 ["Mark buffer" gnus-group-mark-buffer t]
-	 ["Execute command" gnus-group-universal-argument t])
+	 ["Execute command" gnus-group-universal-argument
+	  (or gnus-group-marked (gnus-group-group-name))])
 	("Subscribe"
 	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
-	 ["Kill all newsgroups in region" gnus-group-kill-region t]
+	 ["Kill all newsgroups in region" gnus-group-kill-region
+	  (region-exists-p)]
 	 ["Kill all zombie groups" gnus-group-kill-all-zombies
 	  gnus-zombie-list]
 	 ["Kill all groups on level..." gnus-group-kill-level t])
@@ -388,8 +408,12 @@ ticked: The number of ticked articles in the group.
 	 ["Make a kiboze group" gnus-group-make-kiboze-group t]
 	 ["Make a virtual group" gnus-group-make-empty-virtual t]
 	 ["Add a group to a virtual" gnus-group-add-to-virtual t]
-	 ["Rename group" gnus-group-rename-group t]
-	 ["Delete group" gnus-group-delete-group t])
+	 ["Rename group" gnus-group-rename-group
+	  (gnus-check-backend-function
+	   'request-rename-group (gnus-group-group-name))]
+	 ["Delete group" gnus-group-delete-group
+	  (gnus-check-backend-function
+	   'request-delete-group (gnus-group-group-name))])
 	("Editing groups"
 	 ["Parameters" gnus-group-edit-group-parameters
 	  (gnus-group-group-name)]
@@ -397,7 +421,8 @@ ticked: The number of ticked articles in the group.
 	  (gnus-group-group-name)]
 	 ["Info" gnus-group-edit-group (gnus-group-group-name)])
 	("Score file"
-	 ["Flush cache" gnus-score-flush-cache t])
+	 ["Flush cache" gnus-score-flush-cache
+	  (or gnus-score-cache gnus-short-name-score-file-cache)])
 	("Move"
 	 ["Next" gnus-group-next-group t]
 	 ["Previous" gnus-group-prev-group t]
@@ -411,7 +436,7 @@ ticked: The number of ticked articles in the group.
 	 ["Best unread group" gnus-group-best-unread-group t])
 	["Transpose" gnus-group-transpose-groups
 	 (gnus-group-group-name)]
-	["Read a directory as a group" gnus-group-enter-directory t]
+	["Read a directory as a group..." gnus-group-enter-directory t]
 	))
 
      (easy-menu-define
@@ -419,9 +444,9 @@ ticked: The number of ticked articles in the group.
       '("Misc"
 	["Send a bug report" gnus-bug t]
 	["Send a mail" gnus-group-mail t]
-	["Post an article" gnus-group-post-news t]
+	["Post an article..." gnus-group-post-news t]
 	["Customize score file" gnus-score-customize 
-	 (not (string-match "XEmacs" emacs-version)) ]
+	 (not (string-match "XEmacs" emacs-version))]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Activate all groups" gnus-activate-all-groups t]
 	["Delete bogus groups" gnus-group-check-bogus-groups t]
@@ -430,7 +455,7 @@ ticked: The number of ticked articles in the group.
 	["Read init file" gnus-group-read-init-file t]
 	["Browse foreign server" gnus-group-browse-foreign-server t]
 	["Enter server buffer" gnus-group-enter-server-mode t]
-	["Expire expirable articles" gnus-group-expire-all-groups t]
+	["Expire all expirable articles" gnus-group-expire-all-groups t]
 	["Generate any kiboze groups" nnkiboze-generate-groups t]
 	["Gnus version" gnus-version t]
 	["Save .newsrc files" gnus-group-save-newsrc t]
@@ -464,13 +489,15 @@ ticked: The number of ticked articles in the group.
        ("Mark"
 	("Read"
 	 ["Mark as read" gnus-summary-mark-as-read-forward t]
-	 ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
+	 ["Mark same subject and select"
+	  gnus-summary-kill-same-subject-and-select t]
 	 ["Mark same subject" gnus-summary-kill-same-subject t]
 	 ["Catchup" gnus-summary-catchup t]
 	 ["Catchup all" gnus-summary-catchup-all t]
 	 ["Catchup to here" gnus-summary-catchup-to-here t]
-	 ["Catchup region" gnus-summary-mark-region-as-read t]
-	 ["Mark excluded" gnus-summary-limit-mark-exlcuded-as-read t])
+	 ["Catchup region" gnus-summary-mark-region-as-read
+	  (region-exists-p)]
+	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
 	("Various"
 	 ["Tick" gnus-summary-tick-article-forward t]
 	 ["Mark as dormant" gnus-summary-mark-as-dormant t]
@@ -479,18 +506,18 @@ ticked: The number of ticked articles in the group.
 	 ["Set bookmark" gnus-summary-set-bookmark t]
 	 ["Remove bookmark" gnus-summary-remove-bookmark t])
 	("Limit"
-	 ["Unread" gnus-summary-limit-to-unread t]
-	 ["Marks" gnus-summary-limit-to-marks t]
+	 ["Marks..." gnus-summary-limit-to-marks t]
+	 ["Subject..." gnus-summary-limit-to-subject t]
+	 ["Author..." gnus-summary-limit-to-author t]
 	 ["Score" gnus-summary-limit-to-score t]
-	 ["Subject" gnus-summary-limit-to-subject t]
-	 ["Author" gnus-summary-limit-to-author t]
+	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Articles" gnus-summary-limit-to-articles t]
 	 ["Pop limit" gnus-summary-pop-limit t]
 	 ["Show dormant" gnus-summary-limit-include-dormant t]
 	 ["Hide childless dormant" 
 	  gnus-summary-limit-exclude-childless-dormant t]
-	 ["Hide thread" gnus-summary-limit-exclude-thread t]
+	 ;;["Hide thread" gnus-summary-limit-exclude-thread t]
 	 ["Show expunged" gnus-summary-show-all-expunged t])
 	("Process mark"
 	 ["Set mark" gnus-summary-mark-as-processable t]
@@ -498,8 +525,8 @@ ticked: The number of ticked articles in the group.
 	 ["Remove all marks" gnus-summary-unmark-all-processable t]
 	 ["Mark above" gnus-uu-mark-over t]
 	 ["Mark series" gnus-uu-mark-series t]
-	 ["Mark region" gnus-uu-mark-region t]
-	 ["Mark by regexp" gnus-uu-mark-by-regexp t]
+	 ["Mark region" gnus-uu-mark-region (region-exists-p)]
+	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
 	 ["Mark all" gnus-uu-mark-all t]
 	 ["Mark buffer" gnus-uu-mark-buffer t]
 	 ["Mark sparse" gnus-uu-mark-sparse t]
@@ -550,11 +577,13 @@ ticked: The number of ticked articles in the group.
        ("Modes"
 	["Pick and read" gnus-pick-mode t]
 	["Binary" gnus-binary-mode t])
-       ["Filter articles" gnus-summary-execute-command t]
-       ["Run command on subjects" gnus-summary-universal-argument t]
+       ["Filter articles..." gnus-summary-execute-command t]
+       ["Run command on subjects..." gnus-summary-universal-argument t]
        ["Toggle line truncation" gnus-summary-toggle-truncation t]
        ["Expand window" gnus-summary-expand-window t]
-       ["Expire expirable articles" gnus-summary-expire-articles t]
+       ["Expire expirable articles" gnus-summary-expire-articles
+	(gnus-check-backend-function
+	 'request-expire-articles gnus-newsgroup-name)]
        ["Edit local kill file" gnus-summary-edit-local-kill t]
        ["Edit main kill file" gnus-summary-edit-global-kill t]
        ))
@@ -565,7 +594,7 @@ ticked: The number of ticked articles in the group.
       "Score"
       (nconc
        (list
-	["Enter score" gnus-summary-score-entry t])
+	["Enter score..." gnus-summary-score-entry t])
        (gnus-visual-score-map 'increase)
        (gnus-visual-score-map 'lower)
        '(("Mark"
@@ -576,15 +605,15 @@ ticked: The number of ticked articles in the group.
 	 ["Current score" gnus-summary-current-score t]
 	 ["Set score" gnus-summary-set-score t]
 	 ["Customize score file" gnus-score-customize t]
-	 ["Switch current score file" gnus-score-change-score-file t]
-	 ["Set mark below" gnus-score-set-mark-below t]
-	 ["Set expunge below" gnus-score-set-expunge-below t]
+	 ["Switch current score file..." gnus-score-change-score-file t]
+	 ["Set mark below..." gnus-score-set-mark-below t]
+	 ["Set expunge below..." gnus-score-set-expunge-below t]
 	 ["Edit current score file" gnus-score-edit-current-scores t]
 	 ["Edit score file" gnus-score-edit-file t]
 	 ["Trace score" gnus-score-find-trace t]
 	 ["Rescore buffer" gnus-summary-rescore t]
-	 ["Increase score" gnus-summary-increase-score t]
-	 ["Lower score" gnus-summary-lower-score t]))))
+	 ["Increase score..." gnus-summary-increase-score t]
+	 ["Lower score..." gnus-summary-lower-score t]))))
 
     '(("Default header"
        ["Ask" (gnus-score-set-default 'gnus-score-default-header nil)
@@ -739,15 +768,24 @@ ticked: The number of ticked articles in the group.
 	["Pipe through a filter" gnus-summary-pipe-output t]
 	["Add to SOUP packet" gnus-soup-add-article t])
        ("Backend"
-	["Respool article" gnus-summary-respool-article t]
-	["Move article" gnus-summary-move-article t]
-	["Copy article" gnus-summary-copy-article t]
-	["Crosspost article" gnus-summary-crosspost-article t]
-	["Import file" gnus-summary-import-article t]
-	["Edit article" gnus-summary-edit-article t]
-	["Delete article" gnus-summary-delete-article t]
+	["Respool article..." gnus-summary-respool-article t]
+	["Move article..." gnus-summary-move-article
+	 (gnus-check-backend-function
+	  'request-move-article gnus-newsgroup-name)]
+	["Copy article..." gnus-summary-copy-article t]
+	["Crosspost article..." gnus-summary-crosspost-article
+	 (gnus-check-backend-function
+	  'request-replace-article gnus-newsgroup-name)]
+	["Import file..." gnus-summary-import-article t]
+	["Edit article" gnus-summary-edit-article
+	 (not (gnus-group-read-only-p))]
+	["Delete article" gnus-summary-delete-article
+	 (gnus-check-backend-function
+	  'request-expire-articles gnus-newsgroup-name)]
 	["Query respool" gnus-summary-respool-query t]
-	["Delete expirable articles" gnus-summary-expire-articles-now t])
+	["Delete expirable articles" gnus-summary-expire-articles-now
+	 (gnus-check-backend-function
+	  'request-expire-articles gnus-newsgroup-name)])
        ("Extract"
 	["Uudecode" gnus-uu-decode-uu t]
 	["Uudecode and save" gnus-uu-decode-uu-and-save t]
@@ -757,9 +795,9 @@ ticked: The number of ticked articles in the group.
 	["Binhex" gnus-uu-decode-binhex t]
 	["Postscript" gnus-uu-decode-postscript t])
        ["Enter digest buffer" gnus-summary-enter-digest-group t]
-       ["Isearch article" gnus-summary-isearch-article t]
-       ["Search articles forward" gnus-summary-search-article-forward t]
-       ["Search articles backward" gnus-summary-search-article-backward t]
+       ["Isearch article..." gnus-summary-isearch-article t]
+       ["Search articles forward..." gnus-summary-search-article-forward t]
+       ["Search articles backward..." gnus-summary-search-article-backward t]
        ["Beginning of the article" gnus-summary-beginning-of-article t]
        ["End of the article" gnus-summary-end-of-article t]
        ["Fetch parent of article" gnus-summary-refer-parent-article t]
@@ -806,9 +844,9 @@ ticked: The number of ticked articles in the group.
        ["Send bounced mail" gnus-summary-resend-bounced-mail t]
        ["Send a mail" gnus-summary-mail-other-window t]
        ["Uuencode and post" gnus-uu-post-news t]
-       ("Draft"
-	["Send" gnus-summary-send-draft t]
-	["Send bounced" gnus-resend-bounced-mail t])
+       ;;("Draft"
+       ;;["Send" gnus-summary-send-draft t]
+       ;;["Send bounced" gnus-resend-bounced-mail t])
        ))
     (run-hooks 'gnus-summary-menu-hook)
     ))
@@ -1492,7 +1530,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.
-  (gnus-mail-reply t address))
+  (message-reply t address))
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."

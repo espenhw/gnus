@@ -5,7 +5,7 @@
 ;; Author: Denis Howe <dbh@doc.ic.ac.uk>
 ;; Maintainer: Denis Howe <dbh@doc.ic.ac.uk>
 ;; Created: 03 Apr 1995
-;; Version: 0.26 13 Jan 1996
+;; Version: 0.30 23 Mar 1996
 ;; Keywords: hypertext
 ;; X-Home page: http://wombat.doc.ic.ac.uk/
 
@@ -138,10 +138,10 @@
 ;;	(add-hook 'dired-mode-hook
 ;;		  (function (lambda ()
 ;;			      (local-set-key "\C-c\C-zf" 'browse-url-of-dired-file))))
-;;	(if (boundp 'browse-url-browser-function)
-;;	    (global-set-key "\C-c\C-zu" browse-url-browser-function)
-;;	  (eval-after-load "browse-url"
-;;	   '(global-set-key "\C-c\C-zu" browse-url-browser-function)))
+
+;; To browse URLs in mail messages by clicking mouse-2:
+;; (add-hook 'rmail-mode-hook (function (lambda () ; rmail-mode startup
+;;   (define-key rmail-mode-map [mouse-2] 'browse-url-at-mouse))))
 
 ;; To use the Emacs w3 browser when not running under X11:
 ;;	(or (eq window-system 'x)
@@ -173,8 +173,7 @@
 ;;
 ;;	(add-hook 'browse-url-of-file-hook 'browse-url-netscape-reload)
 
-;; You may also want to customise browse-url-netscape-arguments, eg.
-;;
+;; You may also want to customise browse-url-netscape-arguments, e.g.
 ;;	(setq browse-url-netscape-arguments '("-install"))
 ;;
 ;; or similarly for the other browsers. 
@@ -285,8 +284,24 @@
 ;;	run Lynx in an Emacs buffer under terminal-emulator.
 ;;	Thanks Jari Aalto <jaalto@tre.tele.nokia.fi>
 
+;; 0.27 27 Feb 1996
+;;	Changed event-buffer and event-point from macros to functions.
+;;	Other fixes for byte-compilation.
+
+;; 0.28 07 Mar 1996
+;;	browse-url-lynx-emacs uses term.el instead of terminal.el.
+
+;; 0.29 13 Mar 1996
+;;	Added browse-url-CCI-host.  Thanks Greg Marr <gregm@WPI.EDU>.
+
+;; 0.30 23 Mar 1996
+;;	Contact/start Netscape in the background.
+;;	Thanks Per Abrahamsen <abraham@dina.kvl.dk>
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Code:
+
+(eval-when-compile (require 'dired))
 
 (defvar browse-url-regexp
   "\\(https?://\\|ftp://\\|gopher://\\|telnet://\\|wais://\\|file:/\\|s?news:\\|mailto:\\)[^]\t\n \"'()<>[^`{}]*[^]\t\n \"'()<>[^`{}.,;]+"
@@ -345,6 +360,11 @@ which is 30 on SunOS and 16 on HP-UX and Solaris.")
 This can be any number between 1024 and 65535 but must correspond to
 the value set in the browser.")
 
+(defvar browse-url-CCI-host "localhost"
+  "*Host to access XMosaic via CCI.
+This should be the host name of the machine running XMosaic with CCI
+enabled.  The port number should be set in `browse-url-CCI-port'.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; URL input
 
@@ -385,13 +405,15 @@ The URL is loaded according to the value of `browse-url-browser-function'."
 
 ;; Define these if not already defined (XEmacs compatibility)
 
-(or (fboundp 'event-buffer)
-    (defmacro event-buffer (event)
-      `(window-buffer (posn-window (event-start ,event)))))
+(eval-and-compile
+  (or (fboundp 'event-buffer)
+      (defun event-buffer (event)
+	(window-buffer (posn-window (event-start event))))))
 
-(or (fboundp 'event-point)
-    (defmacro event-point (event)
-      `(posn-point (event-start ,event))))
+(eval-and-compile
+  (or (fboundp 'event-point)
+      (defun event-point (event)
+	(posn-point (event-start event)))))
 
 (defun browse-url-at-mouse (event)
   "Ask a WWW browser to load a URL clicked with the mouse.
@@ -526,24 +548,27 @@ used instead of browse-url-new-window-p."
 		       (list (not (eq (null browse-url-new-window-p)
 				      (null current-prefix-arg))))))
   (let ((process (apply 'start-process
-			(concat "netscape " url) nil
-			browse-url-netscape-command
-			(append browse-url-netscape-arguments
-				(if new-window '("-noraise"))
-				(list "-remote" 
-				      (concat "openURL(" url 
-					      (if new-window ",new-window")
-					      ")"))))))
-    (set-process-sentinel 
-     process 
-     `(lambda (process change)
-	(or (eq (process-exit-status process) 0)
-	    (progn
-	      ;; Netscape not running - start it
-	      (message "Starting Netscape...")
-	      (apply 'start-process (concat "netscape" ,url) nil
-		     browse-url-netscape-command
-		     (append browse-url-netscape-arguments (list ,url)))))))))
+ 			(concat "netscape " url) nil
+ 			browse-url-netscape-command
+ 			(append browse-url-netscape-arguments
+ 				(if new-window '("-noraise"))
+ 				(list "-remote" 
+ 				      (concat "openURL(" url 
+ 					      (if new-window ",new-window")
+ 					      ")"))))))
+    (set-process-sentinel process
+       (list 'lambda '(process change)
+	     (list 'browse-url-netscape-sentinel 'process url)))))
+
+(defun browse-url-netscape-sentinel (process url)
+  "Handle a change to the process communicating with Netscape."
+  (or (eq (process-exit-status process) 0)
+      (progn
+	;; Netscape not running - start it
+	(message "Starting Netscape...")
+	(apply 'start-process (concat "netscape" url) nil
+	       browse-url-netscape-command
+	       (append browse-url-netscape-arguments (list url))))))
 
 (defun browse-url-netscape-reload ()
   "Ask Netscape to reload its current document."
@@ -610,7 +635,7 @@ used instead of browse-url-new-window-p."
 		       (list (not (eq (null browse-url-new-window-p)
 				      (null current-prefix-arg))))))
   (open-network-stream "browse-url" " *browse-url*"
-		       "localhost" browse-url-CCI-port)
+		       browse-url-CCI-host browse-url-CCI-port)
   ;; Todo: start browser if fails
   (process-send-string "browse-url"
 		       (concat "get url (" url ") output "
@@ -640,12 +665,20 @@ in an Xterm window."
   (interactive (browse-url-interactive-arg "Lynx URL: "))
   (start-process (concat "lynx" url) nil "xterm" "-e" "lynx" url))
 
+(eval-when-compile (require 'term))
+
 (defun browse-url-lynx-emacs (url)
   "Ask the Lynx WWW browser to load URL.
-Default to the URL around or before point.  A new Lynx process is run
-in an Emacs buffer using terminal-emulator."
+Default to the URL around or before point.  Run a new Lynx process in
+an Emacs buffer."
   (interactive (browse-url-interactive-arg "Lynx URL: "))
   (let ((system-uses-terminfo t))	; Lynx uses terminfo
+    (if (fboundp 'make-term)
+	(let ((term-term-name "vt100"))
+	  (set-buffer (make-term "browse-url" "lynx" nil url))
+	  (term-mode)
+	  (term-char-mode)
+	  (switch-to-buffer "*browse-url*")))
     (terminal-emulator "*browse-url*" "lynx" (list url))))
 
 (provide 'browse-url)

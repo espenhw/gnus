@@ -726,7 +726,7 @@ SCORE is the score to add."
 (defun gnus-score-change-score-file (file)
   "Change current score alist."
   (interactive 
-   (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
+   (list (read-file-name "Change to score file: " gnus-kill-files-directory)))
   (gnus-score-load-file file)
   (gnus-set-mode-line 'summary))
 

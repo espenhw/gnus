@@ -235,6 +235,9 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
+	(message-post-method
+	 `(lambda (arg)
+	    (gnus-post-method nil ,gnus-newsgroup-name)))
 	article)
     (while (setq article (pop articles))
       (when (gnus-summary-select-article t nil nil article)
@@ -267,14 +270,15 @@ header line with the old Message-ID."
   (or (memq gnus-article-copy gnus-buffer-list)
       (setq gnus-buffer-list (cons gnus-article-copy gnus-buffer-list)))
   (let ((article-buffer (or article-buffer gnus-article-buffer)))
-    (if (and (get-buffer article-buffer)
-	     (buffer-name (get-buffer article-buffer)))
-	(save-excursion
-	  (set-buffer article-buffer)
+    (when (and (get-buffer article-buffer)
+	       (buffer-name (get-buffer article-buffer)))
+      (save-excursion
+	(set-buffer article-buffer)
+	(save-restriction
 	  (widen)
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
 	  (gnus-set-text-properties (point-min) (point-max) 
-				    nil gnus-article-copy)))
+				    nil gnus-article-copy))))
     gnus-article-copy))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject
@@ -508,8 +512,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-inews-yank-articles yank)))))
 
 (defun gnus-summary-reply-with-original (n)
-  "Reply mail to news author with original article.
-Customize the variable gnus-mail-reply-method to use another mailer."
+  "Reply mail to news author with original article."
   (interactive "P")
   (gnus-summary-reply (gnus-summary-work-articles n)))
 
@@ -645,10 +648,11 @@ If YANK is non-nil, include the original article."
 	 (buffer-substring
 	  (save-excursion (re-search-backward "[ \t\n]" nil t) (1+ (point)))
 	  (save-excursion (re-search-forward "[ \t\n]" nil t) (1- (point))))))
-    (and address
-	 (progn
-	   (switch-to-buffer gnus-summary-buffer)
-	   (gnus-mail-reply yank address)))))
+    (when address
+      (switch-to-buffer gnus-summary-buffer)
+      (message-reply address)
+      (when yank
+	(gnus-inews-yank-articles yank)))))
 
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."

@@ -179,9 +179,15 @@
   (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
 
 (deffoo nnmh-request-list (&optional server dir)
-  (unless dir
-    (nnheader-insert "")
-    (setq dir (file-truename (file-name-as-directory nnmh-directory))))
+  (nnheader-insert "")
+  (let ((nnmh-toplev
+	 (or dir (file-truename (file-name-as-directory nnmh-directory)))))
+    (nnmh-request-list-1 nnmh-toplev))
+  (setq nnmh-group-alist (nnmail-get-active))
+  t)
+
+(defvar nnmh-toplev)
+(defun nnmh-request-list-1 (dir)
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
@@ -193,9 +199,9 @@
       (when (and (not (string-match "/\\.\\.?$" dir))
 		 (file-directory-p dir)
 		 (file-readable-p dir))
-	(nnmh-request-list nil dir))))
+	(nnmh-request-list-1 dir))))
   ;; For each directory, generate an active file line.
-  (unless (string= (expand-file-name nnmh-directory) dir)
+  (unless (string= (expand-file-name nnmh-toplev) dir)
     (let ((files (mapcar
 		  (lambda (name) (string-to-int name))
 		  (directory-files dir nil "^[0-9]+$" t))))
@@ -209,12 +215,11 @@
 	    (progn
 	      (string-match 
 	       (file-truename (file-name-as-directory 
-			       (expand-file-name nnmh-directory))) dir)
+			       (expand-file-name nnmh-toplev))) dir)
 	      (nnheader-replace-chars-in-string
 	       (substring dir (match-end 0)) ?/ ?.))
 	    (apply (function max) files) 
 	    (apply (function min) files)))))))
-  (setq nnmh-group-alist (nnmail-get-active))
   t)
 
 (deffoo nnmh-request-newgroups (date &optional server)

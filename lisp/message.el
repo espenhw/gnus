@@ -1144,8 +1144,9 @@ the user from the mailer."
 			   ;; We must not do that for a resend
 			   ;; because we would find the original addresses.
 			   ;; For a resend, include the specific addresses.
-			   (or resend-to-addresses
-			       '("-t")))))
+			   (if resend-to-addresses
+			       (list resend-to-addresses)
+			     '("-t")))))
 	  (when message-interactive
 	    (save-excursion
 	      (set-buffer errbuf)
@@ -2082,8 +2083,10 @@ Headers already prepared in the buffer are not modified."
     (message-setup
      `((Subject . ,subject)
        ,@follow-to 
-       (References . ,(concat (or references "") (and references " ")
-			      (or message-id ""))))
+       ,@(if (or references message-id)
+	     `((References . ,(concat (or references "") (and references " ")
+				      (or message-id ""))))
+	   nil))
      cur)))
 
 ;;;###autoload
@@ -2341,13 +2344,26 @@ Optional NEWS will use news to forward instead of mail."
 This only makes sense if the current message is a bounce message than
 contains some mail you have written which has been bounced back to
 you."
-  (interactive "P")
-  (let ((cur (current-buffer)))
+  (interactive)
+  (let ((cur (current-buffer))
+	boundary)
     (message-pop-to-buffer "*mail message*")
     (insert-buffer-substring cur)
     (undo-boundary)
+    (message-narrow-to-head)
+    (if (and (mail-fetch-field "Mime-Version")
+	     (setq boundary (mail-fetch-field "Content-Type")))
+	(if (string-match "boundary=\"\\([^\"]+\\)\"" boundary)
+	    (setq boundary (concat (match-string 1 boundary) " *\n"
+				   "Content-Type: message/rfc822"))
+	  (setq boundary nil)))
+    (widen)
     (goto-char (point-min))
-    (or (and (re-search-forward mail-unsent-separator nil t)
+    (search-forward "\n\n" nil t)
+    (or (and boundary
+	     (re-search-forward boundary nil t)
+	     (forward-line 2))
+	(and (re-search-forward mail-unsent-separator nil t)
 	     (forward-line 1))
 	(and (search-forward "\n\n" nil t)
 	     (re-search-forward "^Return-Path:.*\n" nil t)))

@@ -1702,13 +1702,13 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.76"
+(defconst gnus-version "September Gnus v0.77"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
-  '((gnus-group-mode		"(gnus)The Group Buffer")
-    (gnus-summary-mode		"(gnus)The Summary Buffer")
-    (gnus-article-mode		"(gnus)The Article Buffer"))
+  '((gnus-group-mode "(gnus)The Group Buffer")
+    (gnus-summary-mode "(gnus)The Summary Buffer")
+    (gnus-article-mode "(gnus)The Article Buffer"))
   "Assoc list of major modes and related Info nodes.")
 
 (defvar gnus-group-buffer "*Group*")
@@ -9377,12 +9377,14 @@ If EXCLUDE-GROUP, do not go to this group."
 
 (defun gnus-summary-find-next (&optional unread article backward)
   (if backward (gnus-summary-find-prev)
-    (let* ((article (or article (gnus-summary-article-number)))
+    (let* ((dummy (gnus-summary-article-intangible-p))
+	   (article (or article (gnus-summary-article-number)))
 	   (arts (gnus-data-find-list article))
 	   result)
-      (when (or (not gnus-summary-check-current)
-		(not unread)
-		(not (gnus-data-unread-p (car arts))))
+      (when (and (not dummy)
+		 (or (not gnus-summary-check-current)
+		     (not unread)
+		     (not (gnus-data-unread-p (car arts)))))
 	(setq arts (cdr arts)))
       (when (setq result
 		  (if unread
@@ -12325,26 +12327,26 @@ with that article."
 		 (gnus-simplify-subject-fuzzy
 		  (mail-header-subject (gnus-data-header (car data)))))
 		(t nil)))
+	 (end-point (save-excursion
+		      (gnus-summary-go-to-next-thread) (point)))
 	 articles)
-    (if (not data)
-	()				; This article doesn't exist.
-      (while data
-	(and (or (not top-subject)
-		 (string= top-subject
-			  (if (eq gnus-thread-operation-ignore-subject 'fuzzy)
-			      (gnus-simplify-subject-fuzzy
-			       (mail-header-subject
-				(gnus-data-header (car data))))
-			    (gnus-simplify-subject-re
+    (while (and data
+		(< (gnus-data-pos (car data)) end-point))
+      (and (or (not top-subject)
+	       (string= top-subject
+			(if (eq gnus-thread-operation-ignore-subject 'fuzzy)
+			    (gnus-simplify-subject-fuzzy
 			     (mail-header-subject
-			      (gnus-data-header (car data)))))))
-	     (setq articles (cons (gnus-data-number (car data)) articles)))
-	(if (and (setq data (cdr data))
-		 (> (gnus-data-level (car data)) top-level))
-	    ()
-	  (setq data nil)))
-      ;; Return the list of articles.
-      (nreverse articles))))
+			      (gnus-data-header (car data))))
+			  (gnus-simplify-subject-re
+			   (mail-header-subject
+			    (gnus-data-header (car data)))))))
+	   (setq articles (cons (gnus-data-number (car data)) articles)))
+      (unless (and (setq data (cdr data))
+		   (> (gnus-data-level (car data)) top-level))
+	(setq data nil)))
+    ;; Return the list of articles.
+    (nreverse articles)))
 
 (defun gnus-summary-rethread-current ()
   "Rethread the thread the current article is part of."
@@ -13610,6 +13612,17 @@ Provided for backwards compatibility."
       gnus-inhibit-hiding
       (gnus-article-hide-headers)))
 
+(defsubst gnus-article-header-rank ()
+  "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
+  (let ((list gnus-sorted-header-list)
+	(i 0))
+    (while list
+      (when (looking-at (car list))
+	(setq list nil))
+      (setq list (cdr list))
+      (incf i))
+    i))
+
 (defun gnus-article-hide-headers (&optional arg delete)
   "Toggle whether to hide unwanted headers and possibly sort them as well.
 If given a negative prefix, always show; if given a positive prefix,
@@ -13675,17 +13688,6 @@ always hide."
 		  (delete-region beg (point-max))
 		;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
 		(gnus-hide-text-type beg (point-max) 'headers)))))))))
-
-(defsubst gnus-article-header-rank ()
-  "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
-  (let ((list gnus-sorted-header-list)
-	(i 0))
-    (while list
-      (when (looking-at (car list))
-	(setq list nil))
-      (setq list (cdr list))
-      (incf i))
-    i))
 
 (defun gnus-article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
@@ -15021,9 +15023,12 @@ If GROUP is nil, all groups on METHOD are scanned."
 		       (gnus-server-extend-method group method))
 		      (t
 		       method)))
-	  (if (equal (cadr method) "")
-	      method
-	    (gnus-server-add-address method))))))
+	  (cond ((equal (cadr method) "")
+		 method)
+		((null (cadr method))
+		 (list (car method) ""))
+		(t
+		 (gnus-server-add-address method)))))))
 
 (defun gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC."
@@ -15829,7 +15834,7 @@ Returns whether the updating was successful."
 		  (unless (equal method gnus-message-archive-method)
 		    (gnus-error 1 "Cannot read active file from %s server."
 				(car method)))
-		(gnus-active-to-gnus-format method)
+		(gnus-active-to-gnus-format method gnus-active-hashtb)
 		;; We mark this active file as read.
 		(push method gnus-have-read-active-file)
 		(gnus-message 5 "%sdone" mesg))))))
