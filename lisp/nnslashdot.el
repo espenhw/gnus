@@ -36,11 +36,7 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
-(eval-when-compile
-  (ignore-errors
-    (require 'nnweb)))
-;; Report failure to find w3 at load time if appropriate.
-(eval '(require 'nnweb))
+(require 'mm-url)
 
 (nnoo-declare nnslashdot)
 
@@ -105,12 +101,12 @@
       (let ((case-fold-search t))
 	(erase-buffer)
 	(when (= start 1)
-	  (nnweb-insert (format nnslashdot-article-url
+	  (mm-url-insert (format nnslashdot-article-url
 				(nnslashdot-sid-strip sid)) t)
 	  (goto-char (point-min))
 	  (re-search-forward "Posted by[ \t\r\n]+")
 	  (when (looking-at "\\(<a[^>]+>\\)?[ \t\r\n]*\\([^<\r\n]+\\)")
-	    (setq from (nnweb-decode-entities-string (match-string 2))))
+	    (setq from (mm-url-decode-entities-string (match-string 2))))
 	  (search-forward "on ")
 	  (setq date (nnslashdot-date-to-date
 		      (buffer-substring (point) (1- (search-forward "<")))))
@@ -128,7 +124,7 @@
 	  (setq start (if nnslashdot-threaded 2 (pop articles))))
 	(while (and start (<= start last))
 	  (setq point (goto-char (point-max)))
-	  (nnweb-insert
+	  (mm-url-insert
 	   (format nnslashdot-comments-url
 		   (nnslashdot-sid-strip sid)
 		   nnslashdot-threshold 0 (- start 2))
@@ -154,19 +150,19 @@
 	      (setq changed t))
 	    (when (string-match "^Re: *" subject)
 	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
-	    (setq subject (nnweb-decode-entities-string subject))
+	    (setq subject (mm-url-decode-entities-string subject))
 	    (search-forward "<BR>")
 	    (if (looking-at
 		 "by[ \t\n]+<a[^>]+>\\([^<]+\\)</a>[ \t\n]*(\\(<[^>]+>\\)*\\([^<>)]+\\))")
 		(progn
 		  (goto-char (- (match-end 0) 5))
 		  (setq from (concat
-			      (nnweb-decode-entities-string (match-string 1))
+			      (mm-url-decode-entities-string (match-string 1))
 			      " <" (match-string 3) ">")))
 	      (setq from "")
 	      (when (looking-at "by \\([^<>]*\\) on ")
 		(goto-char (- (match-end 0) 5))
-		(setq from (nnweb-decode-entities-string (match-string 1)))))
+		(setq from (mm-url-decode-entities-string (match-string 1)))))
 	    (search-forward " on ")
 	    (setq date
 		  (nnslashdot-date-to-date
@@ -305,14 +301,14 @@
 	;; First we do the Ultramode to get info on all the latest groups.
 	(progn
 	  (mm-with-unibyte-buffer
-	    (nnweb-insert nnslashdot-backslash-url t)
+	    (mm-url-insert nnslashdot-backslash-url t)
 	    (goto-char (point-min))
 	    (while (search-forward "<story>" nil t)
 	      (narrow-to-region (point) (search-forward "</story>"))
 	      (goto-char (point-min))
 	      (re-search-forward "<title>\\([^<]+\\)</title>")
 	      (setq description
-		    (nnweb-decode-entities-string (match-string 1)))
+		    (mm-url-decode-entities-string (match-string 1)))
 	      (re-search-forward "<url>\\([^<]+\\)</url>")
 	      (setq sid (match-string 1))
 	      (string-match "sid=\\([0-9/]+\\)\\(.shtml\\|$\\)" sid)
@@ -330,14 +326,14 @@
 	  (while (> (- nnslashdot-group-number number) 0)
 	    (mm-with-unibyte-buffer
 	      (let ((case-fold-search t))
-		(nnweb-insert (format nnslashdot-active-url number) t)
+		(mm-url-insert (format nnslashdot-active-url number) t)
 		(goto-char (point-min))
 		(while (re-search-forward
 			"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>"
 			nil t)
 		  (setq sid (match-string 1)
 			description
-			(nnweb-decode-entities-string (match-string 2)))
+			(mm-url-decode-entities-string (match-string 2)))
 		  (forward-line 1)
 		  (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
 		    (setq articles (string-to-number (match-string 1))))
@@ -358,6 +354,7 @@
   t)
 
 (deffoo nnslashdot-request-post (&optional server)
+  (require 'nnweb)
   (nnslashdot-possibly-change-server nil server)
   (let ((sid (nnslashdot-sid-strip (message-fetch-field "newsgroups")))
 	(subject (message-fetch-field "subject"))

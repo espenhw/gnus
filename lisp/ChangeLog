@@ -1,3 +1,9 @@
+2001-12-03 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-url.el: New.
+	* nnslashdot.el: Use it.
+	* mm-extern.el (mm-extern-url): Use it.
+
 2001-12-01 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-save-article): Nix

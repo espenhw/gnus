@@ -29,6 +29,7 @@
 
 (require 'mm-util)
 (require 'mm-decode)
+(require 'mm-url)
 
 (defvar mm-extern-function-alist
   '((local-file . mm-extern-local-file)
@@ -55,14 +56,13 @@
 
 (defun mm-extern-url (handle)
   (erase-buffer)
-  (require 'url)
   (let ((url (cdr (assq 'url (cdr (mm-handle-type handle)))))
 	(name buffer-file-name)
 	(coding-system-for-read mm-binary-coding-system))
     (unless url
       (error "URL is not specified"))
     (mm-with-unibyte-current-buffer-mule4
-      (url-insert-file-contents url))
+      (mm-url-insert-file-contents url))
     (mm-disable-multibyte-mule4)
     (setq buffer-file-name name)))
 
