@@ -253,7 +253,7 @@ ARTICLE is the article number of the current headline.")
 (defun nnrss-fetch (url &optional local)
   "Fetch URL and put it in a the expected Lisp structure."
   (with-temp-buffer
-  ;some CVS versions of url.el need this to close the connection quickly
+    ;;some CVS versions of url.el need this to close the connection quickly
     (let* (xmlform htmlform)
       ;; bit o' work necessary for w3 pre-cvs and post-cvs
       (if local
@@ -261,23 +261,23 @@ ARTICLE is the article number of the current headline.")
 	    (insert-file-contents url))
 	(mm-url-insert url))
 
-;; Because xml-parse-region can't deal with anything that isn't
-;; xml and w3-parse-buffer can't deal with some xml, we have to
-;; parse with xml-parse-region first and, if that fails, parse
-;; with w3-parse-buffer.  Yuck.  Eventually, someone should find out
-;; why w3-parse-buffer fails to parse some well-formed xml and
-;; fix it.
+      ;; Because xml-parse-region can't deal with anything that isn't
+      ;; xml and w3-parse-buffer can't deal with some xml, we have to
+      ;; parse with xml-parse-region first and, if that fails, parse
+      ;; with w3-parse-buffer.  Yuck.  Eventually, someone should find out
+      ;; why w3-parse-buffer fails to parse some well-formed xml and
+      ;; fix it.
 
-    (condition-case err
-	(setq xmlform (xml-parse-region (point-min) (point-max)))
-      (error (if (fboundp 'w3-parse-buffer)
-		 (setq htmlform (caddar (w3-parse-buffer
-					 (current-buffer))))
-	       (message "nnrss: Not valid XML and w3 parse not available (%s)"
-			url))))
-    (if htmlform
-	htmlform
-      xmlform))))
+      (condition-case err
+	  (setq xmlform (xml-parse-region (point-min) (point-max)))
+	(error (if (fboundp 'w3-parse-buffer)
+		   (setq htmlform (caddar (w3-parse-buffer
+					   (current-buffer))))
+		 (message "nnrss: Not valid XML and w3 parse not available (%s)"
+			  url))))
+      (if htmlform
+	  htmlform
+	xmlform))))
 
 (defun nnrss-possibly-change-group (&optional group server)
   (when (and server
