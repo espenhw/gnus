@@ -33,7 +33,6 @@
 (require 'mailheader)
 (require 'nnheader)
 (require 'easymenu)
-(require 'custom)
 (if (string-match "XEmacs\\|Lucid" emacs-version)
     (require 'mail-abbrevs)
   (require 'mailabbrev))
@@ -2398,7 +2397,7 @@ to find out how to use this."
 (defun message-check-news-header-syntax ()
   (and
    ;; Check Newsgroups header.
-   (message-check 'newsgroyps
+   (message-check 'newsgroups
      (let ((group (message-fetch-field "newsgroups")))
        (or
 	(and group
@@ -3794,6 +3793,8 @@ header line with the old Message-ID."
     (cond ((save-window-excursion
 	     (if (not (eq system-type 'vax-vms))
 		 (with-output-to-temp-buffer "*Directory*"
+		   (with-current-buffer standard-output
+		     (fundamental-mode)) ; for Emacs 20.4+
 		   (buffer-disable-undo standard-output)
 		   (let ((default-directory "/"))
 		     (call-process
@@ -4162,6 +4163,7 @@ The following arguments may contain lists of values."
 	(save-excursion
 	  (with-output-to-temp-buffer " *MESSAGE information message*"
 	    (set-buffer " *MESSAGE information message*")
+	    (fundamental-mode)		; for Emacs 20.4+
 	    (mapcar 'princ text)
 	    (goto-char (point-min))))
 	(funcall ask question))
