@@ -1,3 +1,8 @@
+2002-06-03  Simon Josefsson  <jas@extundo.com>
+
+	* nnmail.el (nnmail-mail-splitting-decodes): New variable.
+	(nnmail-article-group): Use it.
+
 2002-05-30  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-msg.el (gnus-inews-yank-articles): Merge split header lines
