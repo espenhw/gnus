@@ -197,6 +197,7 @@ fixed in Emacs after 21.3."
     (autoload 'executable-find "executable")
     (autoload 'font-lock-fontify-buffer "font-lock" nil t)
     (autoload 'info "info" nil t)
+    (autoload 'mail-fetch-field "mail-utils")
     (autoload 'make-annotation "annotations")
     (autoload 'make-display-table "disp-table")
     (autoload 'pp "pp")
