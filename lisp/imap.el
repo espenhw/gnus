@@ -1754,15 +1754,13 @@ on failure."
 				 (truncate (* (- imap-read-timeout
 						 (truncate imap-read-timeout))
 					      1000)))))
-      ;; Maybe the process has died, but the remote end wants to send
-      ;; some more stuff.
+      ;; A process can die _before_ we have processed everything it
+      ;; has to say.  Moreover, this can happen in between the call to
+      ;; accept-process-output and the call to process-status in an
+      ;; iteration of the loop above.
       (when (and (null imap-continuation)
 		 (< imap-reached-tag tag))
-	(accept-process-output imap-process
-			       (truncate imap-read-timeout)
-			       (truncate (* (- imap-read-timeout
-					       (truncate imap-read-timeout))
-					    1000))))
+	(accept-process-output imap-process 0 0))
       (when imap-have-messaged
 	(message ""))
       (and (memq (process-status imap-process) '(open run))
@@ -1789,34 +1787,35 @@ Return nil if no complete line has arrived."
 
 (defun imap-arrival-filter (proc string)
   "IMAP process filter."
-  (with-current-buffer (process-buffer proc)
-    (goto-char (point-max))
-    (insert string)
-    (and imap-log
-	 (with-current-buffer (get-buffer-create imap-log-buffer)
-	   (imap-disable-multibyte)
-	   (buffer-disable-undo)
-	   (goto-char (point-max))
-	   (insert string)))
-    (let (end)
-      (goto-char (point-min))
-      (while (setq end (imap-find-next-line))
-	(save-restriction
-	  (narrow-to-region (point-min) end)
-	  (delete-backward-char (length imap-server-eol))
-	  (goto-char (point-min))
-	  (unwind-protect
-	      (cond ((eq imap-state 'initial)
-		     (imap-parse-greeting))
-		    ((or (eq imap-state 'auth)
-			 (eq imap-state 'nonauth)
-			 (eq imap-state 'selected)
-			 (eq imap-state 'examine))
-		     (imap-parse-response))
-		    (t
-		     (message "Unknown state %s in arrival filter"
-			      imap-state)))
-	    (delete-region (point-min) (point-max))))))))
+  (when (process-buffer proc)
+    (with-current-buffer (process-buffer proc)
+      (goto-char (point-max))
+      (insert string)
+      (and imap-log
+	   (with-current-buffer (get-buffer-create imap-log-buffer)
+	     (imap-disable-multibyte)
+	     (buffer-disable-undo)
+	     (goto-char (point-max))
+	     (insert string)))
+      (let (end)
+	(goto-char (point-min))
+	(while (setq end (imap-find-next-line))
+	  (save-restriction
+	    (narrow-to-region (point-min) end)
+	    (delete-backward-char (length imap-server-eol))
+	    (goto-char (point-min))
+	    (unwind-protect
+		(cond ((eq imap-state 'initial)
+		       (imap-parse-greeting))
+		      ((or (eq imap-state 'auth)
+			   (eq imap-state 'nonauth)
+			   (eq imap-state 'selected)
+			   (eq imap-state 'examine))
+		       (imap-parse-response))
+		      (t
+		       (message "Unknown state %s in arrival filter"
+				imap-state)))
+	      (delete-region (point-min) (point-max)))))))))
 
 
 ;; Imap parser.
