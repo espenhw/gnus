@@ -1,3 +1,11 @@
+2003-09-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
+	From Torsten Hilbrich <torsten.hilbrich@gmx.net>.
+
+	* nnir.el (nnir-imap-search-field, nnir-imap-search-arguments)
+	(nnir-imap-search-argument-history): New variables.
+	(nnir-engines, nnir-run-imap): Use them.
+	(nnir-read-parm): Support reading the new IMAP query parameters.
+
 2003-06-03  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* README: Explain purpose of each file (well, most files).

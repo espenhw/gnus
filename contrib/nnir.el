@@ -298,7 +298,7 @@
 
 ;;; Setup Code:
 
-(defconst nnir-version "$Id: nnir.el,v 1.80 2002/12/22 17:38:15 grossjoh Exp $"
+(defconst nnir-version "$Id: nnir.el,v 1.1 2003/09/30 21:19:01 kaig Exp $"
   "Version of NNIR.")
 
 (require 'cl)
@@ -315,17 +315,39 @@
 
 (gnus-declare-backend "nnir" 'mail)
 
+(defvar nnir-imap-search-field "TEXT"
+  "The IMAP search item when doing an nnir search")
+
+(defvar nnir-imap-search-arguments
+  '(("Whole message" . "TEXT")
+    ("Subject" . "SUBJECT")
+    ("To" . "TO")
+    ("From" . "FROM")
+    (nil . "HEADER \"%s\""))
+  "Mapping from user readable strings to IMAP search items for use in nnir")
+
+(defvar nnir-imap-search-argument-history ()
+  "The history for querying search options in nnir")
+
 ;;; Developer Extension Variable:
 
 (defvar nnir-engines
-  '((glimpse nnir-run-glimpse
+  `((glimpse nnir-run-glimpse
              ((group . "Group spec: ")))
     (wais    nnir-run-waissearch
              ())
     (excite  nnir-run-excite-search
 	     ())
     (imap    nnir-run-imap
-             ())
+             ((criteria 
+	       "Search in: "                      ; Prompt
+	       ,nnir-imap-search-arguments        ; alist for completing
+	       nil                                ; no filtering
+	       nil                                ; allow any user input
+	       nil                                ; initial value
+	       nnir-imap-search-argument-history  ; the history to use
+	       ,nnir-imap-search-field            ; default
+	       )))
     (swish++ nnir-run-swish++
              ((group . "Group spec: ")))
     (swish-e nnir-run-swish-e
@@ -1001,15 +1023,16 @@ pairs (also vectors, actually)."
 ;; send queries as literals
 ;; handle errors
 
-(defun nnir-run-imap (query srv &optional group)
+(defun nnir-run-imap (query srv &optional group-option)
   (require 'imap)
   (require 'nnimap)
-  (unless group
-    (error "Must process-mark groups for IMAP searching."))
   (save-excursion
     (let ((qstring (cdr (assq 'query query)))
 	  (server (cadr (gnus-server-to-method srv)))
+	  (group (or group-option (gnus-group-group-name)))
 	  (defs (caddr (gnus-server-to-method srv)))
+	  (criteria (or (cdr (assq 'criteria query))
+			nnir-imap-search-field))
 	  artlist buf)
       (message "Opening server %s" server)
       (condition-case ()
@@ -1023,7 +1046,7 @@ pairs (also vectors, actually)."
                  (lambda (artnum)
                    (push (vector group artnum 1) artlist)
                    (setq arts (1+ arts)))
-                 (imap-search (concat "TEXT \"" qstring "\"") buf))
+                 (imap-search (concat criteria " \"" qstring "\"") buf))
                 (message "Searching %s... %d matches" mbx arts)))
             (message "Searching %s...done" group))
         (quit nil))
@@ -1402,7 +1425,12 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
 `parmspec' is a cons cell, the car is a symbol, the cdr is a prompt."
   (let ((sym (car parmspec))
         (prompt (cdr parmspec)))
-    (cons sym (read-string prompt))))
+    (if (listp prompt)
+	(let* ((result (apply 'completing-read prompt))
+	       (mapping (or (assoc result nnir-imap-search-arguments)
+			    (assoc nil nnir-imap-search-arguments))))
+	  (cons sym (format (cdr mapping) result)))
+      (cons sym (read-string prompt)))))
 
 (defun nnir-run-query (query)
   "Invoke appropriate search engine function (see `nnir-engines').
