@@ -17783,32 +17783,11 @@ default is @code{("news.lists.filters" "news.admin.net-abuse.bulletins"
 @vindex gnus-nocem-issuers
 There are many people issuing NoCeM messages.  This list says what
 people you want to listen to.  The default is @code{("Automoose-1"
-"rbraver@@ohww.norman.ok.us" "clewis@@ferret.ocunix.on.ca"
-"jem@@xpat.com" "snowhare@@xmission.com" "red@@redpoll.mrfs.oh.us
-(Richard E. Depew)")}; fine, upstanding citizens all of them.
+"clewis@@ferret.ocunix.on.ca" "cosmo.roadkill" "SpamHippo"
+"hweede@snafu.de")}; fine, upstanding citizens all of them.
 
-Known despammers that you can put in this list include:
-
-@table @samp
-@item clewis@@ferret.ocunix.on.ca;
-@cindex Chris Lewis
-Chris Lewis---Major Canadian despammer who has probably canceled more
-usenet abuse than anybody else.
-
-@item Automoose-1
-@cindex CancelMoose[tm]
-The CancelMoose[tm] on autopilot.  The CancelMoose[tm] is reputed to be
-Norwegian, and was the person(s) who invented NoCeM.
-
-@item jem@@xpat.com;
-@cindex Jem
-John Milburn---despammer located in Korea who is getting very busy these
-days.
-
-@item red@@redpoll.mrfs.oh.us (Richard E. Depew)
-Richard E. Depew---lone American despammer.  He mostly cancels binary
-postings to non-binary groups and removes spews (regurgitated articles).
-@end table
+Known despammers that you can put in this list are listed at
+@uref{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
 
 You do not have to heed NoCeM messages from all these people---just the
 ones you want to listen to.  You also don't have to accept all NoCeM
@@ -17872,6 +17851,18 @@ This is where Gnus will store its NoCeM cache files.  The default is
 The number of days before removing old NoCeM entries from the cache.
 The default is 15.  If you make it shorter Gnus will be faster, but you
 might then see old spam.
+
+@item gnus-nocem-check-from
+@vindex gnus-nocem-check-from
+Non-@code{nil} means check for valid issuers in message bodies.
+Otherwise don't bother fetching articles unless their author matches a
+valid issuer; that is much faster if you are selective about the
+issuers.
+
+@item gnus-nocem-check-article-limit
+@vindex gnus-nocem-check-article-limit
+If non-@code{nil}, the maximum number of articles to check in any NoCeM
+group.  NoCeM groups can be huge and very slow to process.
 
 @end table
 
