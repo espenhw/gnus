@@ -262,7 +262,7 @@ being responded to.  These commands are also selectable as @i{Followup
 and Yank} and @i{Reply and Yank} in the Post menu.
 
 @kbd{C-c C-y} grabs the previous message and prefixes each line with
-@code{ail-indentation-spaces} spaces or @code{mail-yank-prefix} if that is
+@code{message-indentation-spaces} spaces or @code{message-yank-prefix} if that is
 non-nil, unless you have set your own @code{mail-citation-hook}, which will
 be called to do the job.
 
