@@ -1,3 +1,9 @@
+2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-article-group): Default to "bogus".
+
+	* mail-source.el (mail-source-delete-incoming): Change to nil.
+
 2003-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mail-source.el (mail-source-fetch-imap): Fix mismatched parens.

@@ -1105,7 +1105,10 @@ FUNC will be called with the group name to determine the article number."
 	      (unless group-art
 		(setq group-art
 		      (list (cons (car method)
-				  (funcall func (car method)))))))))
+				  (funcall func (car method))))))))
+	  ;; Fall back on "bogus" if all else fails.
+	  (unless group-art
+	    (setq group-art (list (cons "bogus" (funcall func "bogus"))))))
 	;; Produce a trace if non-empty.
 	(when (and trace nnmail-split-trace)
 	  (let ((restore (current-buffer)))
