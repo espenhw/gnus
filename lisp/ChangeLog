@@ -1,3 +1,7 @@
+2004-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-dired.el (gnus-dired-mode-map): Change keymaps.
+
 2004-01-02  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* smime.el (smime-crl-check): Doc fix.
