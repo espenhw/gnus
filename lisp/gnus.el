@@ -39,11 +39,122 @@
   "Starting your favorite newsreader."
   :group 'gnus)
 
+;; These belong to gnus-group.el.
+(defgroup gnus-group nil
+  "Group buffers."
+  :link '(custom-manual "(gnus)The Group Buffer")
+  :group 'gnus)
+
+(defgroup gnus-group-foreign nil
+  "Foreign groups."
+  :link '(custom-manual "(gnus)Foreign Groups")
+  :group 'gnus-group)
+
+(defgroup gnus-group-levels nil
+  "Group levels."
+  :link '(custom-manual "(gnus)Group Levels")
+  :group 'gnus-group)
+
+(defgroup gnus-group-select nil
+  "Selecting a Group."
+  :link '(custom-manual "(gnus)Selecting a Group")
+  :group 'gnus-group)
+
+(defgroup gnus-group-listing nil
+  "Showing slices of the group list."
+  :link '(custom-manual "(gnus)Listing Groups")
+  :group 'gnus-group)
+
+(defgroup gnus-group-visual nil
+  "Sorting the group buffer."
+  :link '(custom-manual "(gnus)Group Buffer Format")
+  :group 'gnus-group
+  :group 'gnus-visual)
+
+(defgroup gnus-group-various nil
+  "Various group options."
+  :link '(custom-manual "(gnus)Scanning New Messages")
+  :group 'gnus-group)
+
+;; These belong to gnus-sum.el.
+(defgroup gnus-summary nil
+  "Summary buffers."
+  :link '(custom-manual "(gnus)The Summary Buffer")
+  :group 'gnus)
+
+(defgroup gnus-summary-exit nil
+  "Leaving summary buffers."
+  :link '(custom-manual "(gnus)Exiting the Summary Buffer")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-marks nil
+  "Marks used in summary buffers."
+  :link '(custom-manual "(gnus)Marking Articles")
+  :group 'gnus-summary)
+
+(defgroup gnus-thread nil
+  "Ordering articles according to replies."
+  :link '(custom-manual "(gnus)Threading")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-format nil
+  "Formatting of the summary buffer."
+  :link '(custom-manual "(gnus)Summary Buffer Format")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-choose nil
+  "Choosing Articles."
+  :link '(custom-manual "(gnus)Choosing Articles")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-maneuvering nil
+  "Summary movement commands."
+  :link '(custom-manual "(gnus)Summary Maneuvering")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-mail nil
+  "Mail group commands."
+  :link '(custom-manual "(gnus)Mail Group Commands")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-sort nil
+  "Sorting the summary buffer."
+  :link '(custom-manual "(gnus)Sorting")
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-visual nil
+  "Highlighting and menus in the summary buffer."
+  :link '(custom-manual "(gnus)Summary Highlighting")
+  :group 'gnus-visual
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-various nil
+  "Various summary buffer options."
+  :link '(custom-manual "(gnus)Various Summary Stuff")
+  :group 'gnus-summary)
+
+;; Belongs to to gnus-uu.el
+(defgroup gnus-extract-view nil
+  "Viewing extracted files."
+  :link '(custom-manual "(gnus)Viewing Files")
+  :group 'gnus-extract)
+
+;; Other
 (defgroup gnus-score nil
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "5.4.1"
+(defgroup gnus-exit nil
+  "Exiting gnus."
+  :link '(custom-manual "(gnus)Exiting Gnus")
+  :group 'gnus)
+
+(defgroup gnus-various nil
+  "Other Gnus options."
+  :link '(custom-manual "(gnus)Various Various")
+  :group 'gnus)
+
+(defconst gnus-version-number "5.4.3"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -513,7 +624,7 @@ be set in `.emacs' instead."
   ;; Fontify some.
   (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)
   (goto-char (point-min))
-  (setq mode-line-buffer-identification gnus-version)
+  (setq mode-line-buffer-identification (concat " " gnus-version))
   (setq gnus-simple-splash t)
   (set-buffer-modified-p t))
 
@@ -770,7 +881,7 @@ If the default site is too slow, try one of these:
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
 		  hwarang.postech.ac.kr		 /pub/usenet
 		  ftp.hk.super.net		 /mirror/faqs"
-  :group 'gnus-group
+  :group 'gnus-group-various
   :type '(choice directory
 		 (repeat directory)))
 
@@ -799,7 +910,7 @@ newsgroups."
   "*The number of articles which indicates a large newsgroup.
 If the number of articles in a newsgroup is greater than this value,
 confirmation is required for selecting the newsgroup."
-  :group 'gnus-group
+  :group 'gnus-group-select
   :type 'integer)
 
 (defcustom gnus-use-long-file-name (not (memq system-type '(usg-unix-v xenix)))
@@ -903,7 +1014,7 @@ articles.  This is not a good idea."
   '(gnus-summary-expire-articles)
   "A hook called when preparing to exit from the summary buffer.
 It calls `gnus-summary-expire-articles' by default."
-  :group 'gnus-summary
+  :group 'gnus-summary-exit
   :type 'hook)
 
 (defcustom gnus-novice-user t
@@ -921,12 +1032,12 @@ And that means *anything*."
 
 (defcustom gnus-interactive-catchup t
   "*If non-nil, require your confirmation when catching up a group."
-  :group 'gnus-group
+  :group 'gnus-group-select
   :type 'boolean)
 
 (defcustom gnus-interactive-exit t
   "*If non-nil, require your confirmation when exiting Gnus."
-  :group 'gnus-group
+  :group 'gnus-exit
   :type 'boolean)
 
 (defcustom gnus-extract-address-components 'gnus-extract-address-components
@@ -1024,7 +1135,7 @@ of the modeline intact."
   "*Groups in which to automatically mark read articles as expirable.
 If non-nil, this should be a regexp that should match all groups in
 which to perform auto-expiry.  This only makes sense for mail groups."
-  :group 'gnus-group
+  :group 'gnus-mail
   :type '(choice (const nil)
 		 regexp))
 
@@ -1034,18 +1145,18 @@ Use with extreme caution.  All groups that match this regexp will be
 expiring - which means that all read articles will be deleted after
 \(say) one week.	 (This only goes for mail groups and the like, of
 course.)"
-  :group 'gnus-group
+  :group 'gnus-mail
   :type '(choice (const nil)
 		 regexp))
 
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'integer)
 
 (defcustom gnus-group-use-permanent-levels nil
   "*If non-nil, once you set a level, Gnus will use this level."
-  :group 'gnus-group
+  :group 'gnus-group-levels
   :type 'boolean)
 
 ;; Hooks.
@@ -1406,7 +1517,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-score-find-trace gnus-score-file-name)
      ("gnus-cus" :interactive t gnus-group-customize gnus-score-customize)
      ("gnus-topic" :interactive t gnus-topic-mode)
-     ("gnus-topic" gnus-topic-remove-group)
+     ("gnus-topic" gnus-topic-remove-group gnus-topic-set-parameters)
      ("gnus-salt" :interactive t gnus-pick-mode gnus-binary-mode)
      ("gnus-uu" (gnus-uu-extract-map keymap) (gnus-uu-mark-map keymap))
      ("gnus-uu" :interactive t
@@ -1545,7 +1656,7 @@ possible.
 
 This restriction may disappear in later versions of Gnus."
   :type 'string
-  :group 'gnus-summary)
+  :group 'gnus-summary-format)
 
 ;;;
 ;;; Skeleton keymaps

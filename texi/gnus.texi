@@ -13470,13 +13470,14 @@ renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 ``@sc{gnus}''.  New vs. old.
 
 The first ``proper'' release of Gnus 5 was done in November 1995 when it
-was included in the Emacs 19.30 distribution.
+was included in the Emacs 19.30 distribution (132 (ding) Gnus releases
+plus 15 Gnus 5.0 releases).
 
-In May 1996 the next Gnus generation (aka.  ``September Gnus'') was
-released under the name ``Gnus 5.2''.  
+In May 1996 the next Gnus generation (aka. ``September Gnus'' (after 99
+releases)) was released under the name ``Gnus 5.2'' (40 releases).
 
 On July 28th 1996 work on Red Gnus was begun, and it was released on
-January 25th 1997 as ``Gnus 5.4''.
+January 25th 1997 (after 84 releases) as ``Gnus 5.4''.
 
 If you happen upon a version of Gnus that has a name that is prefixed --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -13804,6 +13805,7 @@ Lee Iverson,
 Rajappa Iyer,
 Randell Jesup,
 Fred Johansen, 
+Greg Klanderman,
 Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,

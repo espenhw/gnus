@@ -134,7 +134,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 	       (set-buffer gnus-summary-buffer)
 	       gnus-pick-mode))
     (message-add-action 
-     '(gnus-configure-windows 'pick t) 'exit 'postpone 'kill)))
+     '(gnus-configure-windows 'pick t) 'send 'exit 'postpone 'kill)))
 
 (defvar gnus-pick-line-number 1)
 (defun gnus-pick-line-number ()

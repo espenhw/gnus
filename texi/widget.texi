@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.1 1997/01/25 22:46:31 steve Exp $
+@c $Id: widget.texi,v 1.2 1997/01/26 19:51:51 steve Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.15
+Version: 1.20
 
 @menu
 * Introduction::                
@@ -442,6 +442,11 @@ The following @samp{%} escapes are available:
 @item %[
 @itemx %]
 The text inside will be marked as a button.
+
+@item %@{
+@itemx %@}
+The text inside will be displayed with the face specified by
+@code{:sample-face}. 
 
 @item %v
 This will be replaces with the buffer representation of the widgets
@@ -1286,6 +1291,34 @@ This could perhaps be implemented by binding @code{widget-inactive} to t
 when inserting the grayed out subwidget, and let the widget-specify
 functions check that variable.
 
+@item
+Flag to make @code{widget-move} skip a specified button.
+
+@item
+Document `helper' functions for defining new widgets.
+
+@item
+Show button menus on mouse down.
+
+@item
+Activate the item this is below the mouse when the button is
+released, not the item this is below the mouse when the button is
+pressed.  Dired and grep gets this right.
+
+@item
+Use @samp{@@deffn Widget} to document widgets. 
+
+@item
+Document global keywords in one place.  
+
+Document keywords particular to a specific widget in the widget
+definition.
+
+Document the `default' widget first. 
+
+Split, when needed, keywords into those useful for normal
+customization, those primarily useful when deriving, and those who
+represent runtime information. 
 @end itemize
 
 @contents

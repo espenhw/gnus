@@ -1,3 +1,27 @@
+Sun Jan 26 09:28:31 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-group.el: Organized customization options, and moved group
+	definitions to `gnus.el'.
+	* gnus-sum.el: Ditto.
+	* gnus.el: Ditto.
+
+Sun Jan 26 07:37:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Autoload topic function.
+
+	* gnus-topic.el (gnus-topic-set-parameters): Quote strings to
+	enter into dribble file.
+
+	* gnus-salt.el (gnus-pick-setup-message): Also restore right
+	config on sending.
+
+	* gnus.el (gnus-group-startup-message): Add a space to the
+	beginning of the version string.
+
+Sat Jan 25 12:17:56 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.1 is released.
+
 Sat Jan 25 10:59:31 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
 
 	* gnus.el: Red Gnus v0.84 is released.

@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.15
+Version: 1.20
 
 @menu
 * Introduction::                
@@ -147,6 +147,7 @@ Each customization option looks similar to the following text:
 
 @example
  *** custom-background-mode: default 
+ State: this item is unchanged from its factory setting.
  [ ] [?] The brightness of the background.
 @end example
 
@@ -178,12 +179,15 @@ may be able to edit the value directly.  If an option should contain a
 file name, it is displayed in an editable field, i.e. you can edit it
 using the standard emacs editing commands.
 
+@item State: this item is unchanged from its factory setting.
+The state line.  This line will explain the state of the option,
+e.g. whether it is currently hidden, or whether it has been modified or
+not.  Activating the button will allow you to change the state, e.g. set
+or reset the changes you have made.  This is explained in detail in the
+following sections.
+
 @item [ ]
-The state button.  This look of this button will indicate the state of
-the option, e.g. whether it is currently hidden, or whether it has been
-modified or not.  Activating the button will allow you to change the
-state, e.g. set or reset the changes you have made.  This is explained
-in detail in the following sections.
+The magic button.  This is an abbreviated version of the state line. 
 
 @item [?] 
 The documentation button.  If the documentation is more than one line,
@@ -340,13 +344,15 @@ work as if you had activated the @samp{Set} menu item on them as well.
 
 @node  The State Button, The Customization Buttons, The Group Options, The Customization Buffer
 @comment  node-name,  next,  previous,  up
-@subsection The State Button
+@subsection The State Line and The Magic Button
 
-The state button has two purposes.  The first is to hold the state menu,
+The state line has two purposes.  The first is to hold the state menu,
 as described in the previous sections.  The second is to indicate the
-state of each customization item.  This is done by the character inside
-the brackets.  The following states have been defined, the first that
-applies to the current item will be used:
+state of each customization item.  
+
+For the magic button, this is done by the character inside the brackets.
+The following states have been defined, the first that applies to the
+current item will be used:
 
 @table @samp
 @item -
@@ -460,7 +466,6 @@ The following additional @var{keyword}'s are defined:
 of a member of the group, that prefix will be ignored when creating a
 tag for that member.
 @end table
-
 @end defun
 
 @node  Declaring Variables, Declaring Faces, Declaring Groups, Declarations
@@ -626,6 +631,12 @@ tag.
 @item
 Add an `examples' section, with explained examples of custom type
 definitions. 
+
+@item
+Support undo using lmi's @file{gnus-undo.el}.
+
+@item
+Make it possible to append to `choice', `radio', and `set' options.
 
 @end itemize
 

@@ -305,7 +305,7 @@ with some simple extensions.
       (nconc (cadr top) (list nil)))
     (setcar (nthcdr 3 (cadr top)) parameters)
     (gnus-dribble-enter
-     (format "(gnus-topic-set-parameters %s '%S)" topic parameters))))
+     (format "(gnus-topic-set-parameters %S '%S)" topic parameters))))
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheritance from topics."

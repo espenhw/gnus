@@ -34,26 +34,22 @@
 (require 'gnus-win)
 (require 'gnus-undo)
 
-(defgroup gnus-group nil
-  "Group buffers."
-  :group 'gnus)
-
 (defcustom gnus-group-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
   "*The address of the (ding) archives."
-  :group 'gnus-group
+  :group 'gnus-group-foreign
   :type 'directory)
 
 (defcustom gnus-group-recent-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
   "*The address of the most recent (ding) articles."
-  :group 'gnus-group
+  :group 'gnus-group-foreign
   :type 'directory)
 
 ;; Suggested by Andrew Eskilsson <pi92ae@lelle.pt.hk-r.se>.
 (defcustom gnus-no-groups-message "No news is horrible news"
   "*Message displayed by Gnus when no groups are available."
-  :group 'gnus-group
+  :group 'gnus-start
   :type 'string)
 
 (defcustom gnus-keep-same-level nil
@@ -68,43 +64,46 @@ available, the next newsgroup with the lowest possible level higher
 than the current level.
 If this variable is `best', Gnus will make the next newsgroup the one
 with the best level."
-  :group 'gnus-group
+  :group 'gnus-group-levels
   :type '(choice (const nil)
 		 (const best)
 		 (sexp :tag "other" t)))
 
 (defcustom gnus-group-goto-unread t
   "*If non-nil, movement commands will go to the next unread and subscribed group."
-  :group 'gnus-group
+  :link '(custom-manual "(gnus)Group Maneuvering")
+  :group 'gnus-group-various
   :type 'boolean)
 
 (defcustom gnus-goto-next-group-when-activating t
   "*If non-nil, the \\<gnus-group-mode-map>\\[gnus-group-get-new-news-this-group] command will advance point to the next group."
-  :group 'gnus-group
+  :link '(custom-manual "(gnus)Scanning New Messages")
+  :group 'gnus-group-various
   :type 'boolean)
 
 (defcustom gnus-permanently-visible-groups nil
   "*Regexp to match groups that should always be listed in the group buffer.
 This means that they will still be listed when there are no unread
 articles in the groups."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type 'regexp)
 
 (defcustom gnus-list-groups-with-ticked-articles t
   "*If non-nil, list groups that have only ticked articles.
 If nil, only list groups that have unread articles."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type 'boolean)
 
 (defcustom gnus-group-default-list-level gnus-level-subscribed
   "*Default listing level.
 Ignored if `gnus-group-use-permanent-levels' is non-nil."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type 'integer)
 
 (defcustom gnus-group-list-inactive-groups t
   "*If non-nil, inactive groups will be listed."
-  :group 'gnus-group
+  :group 'gnus-group-listing
+  :group 'gnus-group-levels
   :type 'boolean)
 
 (defcustom gnus-group-sort-function 'gnus-group-sort-by-alphabet
@@ -119,7 +118,8 @@ for the groups to be sorted.  Pre-made functions include
 This variable can also be a list of sorting functions.	In that case,
 the most significant sort function should be the last function in the
 list."
-  :group 'gnus-group
+  :group 'gnus-group-listing
+  :link '(custom-manual "(gnus)Sorting Groups")
   :type '(radio (function-item gnus-group-sort-by-alphabet)
 		(function-item gnus-group-sort-by-real-name)
 		(function-item gnus-group-sort-by-unread)
@@ -178,7 +178,7 @@ a bit of extra memory will be used.  %D will also worsen performance.
 Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'string)
 
 (defcustom gnus-group-mode-line-format "Gnus: %%b {%M\%:%S}"
@@ -189,28 +189,29 @@ with some simple extensions:
 %S   The native news server.
 %M   The native select method.
 %:   \":\" if %S isn't \"\"."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'string)
 
 (defcustom gnus-group-mode-hook nil
   "Hook for Gnus group mode."
-  :group 'gnus-group
+  :group 'gnus-group-various
   :options '(gnus-topic-mode)
   :type 'hook)
 
 (defcustom gnus-group-menu-hook nil
   "Hook run after the creation of the group mode menu."
-  :group 'gnus-group
+  :group 'gnus-group-various
   :type 'hook)
 
 (defcustom gnus-group-catchup-group-hook nil
   "Hook run when catching up a group from the group buffer."
-  :group 'gnus-group
+  :group 'gnus-group-various
+  :link '(custom-manual "(gnus)Group Data")
   :type 'hook)
 
 (defcustom gnus-group-update-group-hook nil
   "Hook called when updating group lines."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'hook)
 
 (defcustom gnus-group-prepare-function 'gnus-group-prepare-flat
@@ -222,28 +223,28 @@ the third is non-nil, it is a number.  No groups with a level lower
 than this number should be displayed.
 
 The only current function implemented is `gnus-group-prepare-flat'."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type 'function)
 
 (defcustom gnus-group-prepare-hook nil
   "Hook called after the group buffer has been generated.
 If you want to modify the group buffer, you can use this hook."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type 'hook)
 
 (defcustom gnus-suspend-gnus-hook nil
   "Hook called when suspending (not exiting) Gnus."
-  :group 'gnus-group
+  :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-exit-gnus-hook nil
   "Hook called when exiting Gnus."
-  :group 'gnus-group
+  :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-after-exiting-gnus-hook nil
   "Hook called after exiting Gnus."
-  :group 'gnus-group
+  :group 'gnus-exit
   :type 'hook)
 
 (defcustom gnus-group-update-hook '(gnus-group-highlight-line)
@@ -253,7 +254,7 @@ The hook will not be called if `gnus-visual' is nil.
 The default function `gnus-group-highlight-line' will
 highlight the line according to the `gnus-group-highlight'
 variable."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'hook)
 
 (defcustom gnus-useful-groups
@@ -272,7 +273,7 @@ variable."
 			 (error "Couldn't find doc group"))
 		       file))))))
   "Alist of useful group-server pairs."
-  :group 'gnus-group
+  :group 'gnus-group-listing
   :type '(repeat (list (string :tag "Description")
 		       (string :tag "Name")
 		       (sexp :tag "Method"))))
@@ -332,12 +333,12 @@ mailp: Whether it's a mail group or not.
 level: The level of the group.
 score: The score of the group.
 ticked: The number of ticked articles."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type '(repeat (cons (sexp :tag "Form") face)))
 
 (defcustom gnus-new-mail-mark ?%
   "Mark used for groups with new mail."
-  :group 'gnus-group
+  :group 'gnus-group-visual
   :type 'character)
 
 ;;; Internal variables
