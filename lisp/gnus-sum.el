@@ -109,7 +109,7 @@ given by the `gnus-summary-same-subject' variable.)"
 		 (const adopt)
 		 (const empty)))
 
-(defcustom gnus-summary-make-false-root-always t
+(defcustom gnus-summary-make-false-root-always nil
   "Always make a false dummy root."
   :group 'gnus-thread
   :type 'boolean)

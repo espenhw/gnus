@@ -1859,7 +1859,9 @@ this is a reply."
 			   (let ((value ,(cdr result)))
 			     (when value
 			       (message-goto-eoh)
-			       (insert ,header ": " value "\n"))))))))
+			       (insert ,header ": " value)
+			       (unless (bolp)
+				 (insert "\n")))))))))
 		  nil 'local))
       (when (or name address)
 	(add-hook 'message-setup-hook

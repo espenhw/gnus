@@ -1,5 +1,11 @@
 2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-make-false-root-always): Default to
+	nil.
+
+	* gnus-msg.el (gnus-configure-posting-styles): Make sure we don't
+	insert two newlines.
+
 	* message.el (message-check-news-header-syntax): Compute the
 	header length correctly.
 
