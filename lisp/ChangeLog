@@ -1,3 +1,8 @@
+2001-01-24 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode): MIME charset is not coding system.
+	(rfc2047-charset-encoding-alist): Add big5.
+
 2001-01-24 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-add-server): Redraw the line.
