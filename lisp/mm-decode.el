@@ -364,21 +364,16 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 (defun mm-handle-set-external-undisplayer (handle function)
  "Set the undisplayer for this handle; postpone undisplaying of viewers
 for types in mm-keep-viewer-alive-types."
-  (if (mm-keep-viewer-alive-p handle)
-    (progn
-     (setq new-handle (copy-sequence handle))
-     (mm-handle-set-undisplayer new-handle function)
-     (mm-handle-set-undisplayer handle nil)
-     (push new-handle mm-postponed-undisplay-list)
-    )
-  (mm-handle-set-undisplayer handle function)
-  )
-)
+ (if (mm-keep-viewer-alive-p handle)
+     (let ((new-handle (copy-sequence handle)))
+       (mm-handle-set-undisplayer new-handle function)
+       (mm-handle-set-undisplayer handle nil)
+       (push new-handle mm-postponed-undisplay-list))
+   (mm-handle-set-undisplayer handle function)))
 
 (defun mm-destroy-postponed-undisplay-list ()
   (message "Destroying external MIME viewers")
-  (mm-destroy-parts mm-postponed-undisplay-list)
-)
+  (mm-destroy-parts mm-postponed-undisplay-list))
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
