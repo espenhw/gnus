@@ -1176,12 +1176,12 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-send-coding-system 'binary
   "Coding system to encode outgoing mail.")
 
-(defvar message-draft-coding-system (if (mm-coding-system-p 'iso-2022-7bit)
-					'iso-2022-7bit
-				      mm-binary-coding-system)
-  "Coding system to compose mail.
-Note that the default value for this variable was emacs-mule for Emacs
-or escape-quoted for XEmacs-MULE in the past.")
+(defvar message-draft-coding-system
+  mm-auto-save-coding-system
+  "*Coding system to compose mail.
+If you'd like to make it possible to share draft files between XEmacs
+and Emacs, you may use `iso-2022-7bit' for this value at your own risk.
+Note that the coding-system `iso-2022-7bit' isn't suitable to all data.")
 
 (defcustom message-send-mail-partially-limit 1000000
   "The limitation of messages sent as message/partial.
