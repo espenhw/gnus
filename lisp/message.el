@@ -515,13 +515,16 @@ The cdr of ech entry is a function for applying the face to a region.")
 \",\" is used as the separator."
   (let ((regexp (format "[%s]+" (or separator ",")))
 	(beg 1)
+	(first t)
 	quoted elems)
     (save-excursion
       (message-set-work-buffer)
       (insert header)
       (goto-char (point-min))
       (while (not (eobp))
-	(forward-char 1)
+	(if first
+	    (setq first nil)
+	  (forward-char 1))
 	(cond ((and (> (point) beg)
 		    (or (eobp)
 			(and (looking-at regexp)
@@ -2468,10 +2471,9 @@ Headers already prepared in the buffer are not modified."
 	      (message-set-work-buffer)
 	      (unless never-mct
 		(insert (or reply-to from "")))
-	      (insert 
-	       (if (bolp) "" ", ") (or to "")
-	       (if mct (concat (if (bolp) "" ", ") mct) "")
-	       (if cc (concat (if (bolp) "" ", ") cc) ""))
+	      (insert (if (bolp) "" ", ") (or to ""))
+	      (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
+	      (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
 	      ;; Remove addresses that match `rmail-dont-reply-to-names'. 
 	      (insert (prog1 (rmail-dont-reply-to (buffer-string))
 			(erase-buffer)))
@@ -2480,7 +2482,7 @@ Headers already prepared in the buffer are not modified."
 		    (mapcar
 		     (lambda (addr)
 		       (cons (mail-strip-quoted-names addr) addr))
-		     (nreverse (mail-parse-comma-list))))
+		     (message-tokenize-header (buffer-string))))
 	      (let ((s ccalist))
 		(while s
 		  (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))

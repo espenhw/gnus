@@ -540,15 +540,26 @@ whether it is read or not.")
   "*If non-nil, the \\<gnus-group-mode-map>\\[gnus-group-get-new-news-this-group] command will advance point to the next group.")
 
 (defvar gnus-check-new-newsgroups t
-  "*Non-nil means that Gnus will add new newsgroups at startup.
-If this variable is `ask-server', Gnus will ask the server for new
-groups since the last time it checked.	This means that the killed list
-is no longer necessary, so you could set `gnus-save-killed-list' to
-nil.
+  "*Non-nil means that Gnus will run gnus-find-new-newsgroups at startup.
+This normally finds new newsgroups by comparing the active groups the
+servers have already reported with those Gnus already knows, either alive
+or killed.
 
-A variant is to have this variable be a list of select methods.	 Gnus
-will then use the `ask-server' method on all these select methods to
-query for new groups from all those servers.
+When any of the following are true, gnus-find-new-newsgroups will instead
+ask the servers (primary, secondary, and archive servers) to list new
+groups since the last time it checked:
+  1. This variable is `ask-server'.
+  2. This variable is a list of select methods (see below).
+  3. `gnus-read-active-file' is nil or `some'.
+  4. A prefix argument is given to gnus-find-new-newsgroups interactively.
+
+Thus, if this variable is `ask-server' or a list of select methods or
+`gnus-read-active-file' is nil or `some', then the killed list is no
+longer necessary, so you could safely set `gnus-save-killed-list' to nil.
+
+This variable can be a list of select methods which Gnus will query with
+the `ask-server' method in addition to the primary, secondary, and archive
+servers.
 
 Eg.
   (setq gnus-check-new-newsgroups
@@ -1761,7 +1772,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.32"
+(defconst gnus-version-number "5.2.33"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1981,7 +1992,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     gnus-newsgroup-history gnus-newsgroup-ancient
     gnus-newsgroup-sparse
     (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring)
-    gnus-newsgroup-adaptive-score-file
+    gnus-newsgroup-adaptive-score-file (gnus-reffed-article-number . -1)
     (gnus-newsgroup-expunged-tally . 0)
     gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
@@ -7166,6 +7177,7 @@ and the second element is the address."
     "s" gnus-article-hide-signature
     "c" gnus-article-hide-citation
     "p" gnus-article-hide-pgp
+    "P" gnus-article-hide-pem
     "\C-c" gnus-article-hide-citation-maybe)
 
   (gnus-define-keys (gnus-summary-wash-highlight-map "H" gnus-summary-wash-map)
@@ -7612,6 +7624,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 	  (article-buffer gnus-article-buffer)
 	  (original gnus-original-article-buffer)
 	  (gac gnus-article-current)
+	  (reffed gnus-reffed-article-number)
 	  (score-file gnus-current-score-file))
       (save-excursion
 	(set-buffer gnus-group-buffer)
@@ -7624,6 +7637,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 	(setq gnus-summary-buffer summary)
 	(setq gnus-article-buffer article-buffer)
 	(setq gnus-original-article-buffer original)
+	(setq gnus-reffed-article-number reffed)
 	(setq gnus-current-score-file score-file)))))
 
 (defun gnus-summary-last-article-p (&optional article)
@@ -8620,8 +8634,7 @@ or a straight list of headers."
 	   ;; If the article lies outside the current limit,
 	   ;; then we do not display it.
 	   ((and (not (memq number gnus-newsgroup-limit))
-		 ;(not gnus-tmp-dummy-line)
-		 )
+		 (not gnus-tmp-dummy-line))
 	    (setq gnus-tmp-gathered
 		  (nconc (mapcar
 			  (lambda (h) (mail-header-number (car h)))
@@ -8907,7 +8920,6 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	      gnus-newsgroup-end
 	      (mail-header-number
 	       (gnus-last-element gnus-newsgroup-headers))))
-      (setq gnus-reffed-article-number -1)
       ;; GROUP is successfully selected.
       (or gnus-newsgroup-headers t)))))
 
@@ -11252,7 +11264,7 @@ If REGEXP-P (the prefix) is non-nil, do regexp isearch."
   (gnus-summary-select-article)
   (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window gnus-article-buffer
-    (goto-char (point-min))
+    ;;(goto-char (point-min))
     (isearch-forward regexp-p)))
 
 (defun gnus-summary-search-article-forward (regexp &optional backward)
@@ -13615,6 +13627,7 @@ The following commands are available:
       (set-buffer (get-buffer-create gnus-original-article-buffer))
       (buffer-disable-undo (current-buffer))
       (setq major-mode 'gnus-original-article-mode)
+      (gnus-add-current-to-buffer-list)
       (make-local-variable 'gnus-original-article))
     (if (get-buffer name)
 	(save-excursion
@@ -14349,6 +14362,35 @@ always hide."
 	  (while (re-search-forward "^- " nil t)
 	    (gnus-hide-text (match-beginning 0) (match-end 0) props))
 	  (widen))))))
+
+(defun gnus-article-hide-pem (&optional arg)
+  "Toggle hiding of any PEM headers and signatures in the current article.
+If given a negative prefix, always show; if given a positive prefix,
+always hide."
+  (interactive (gnus-hidden-arg))
+  (unless (gnus-article-check-hidden-text 'pem arg)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (let ((props (nconc (list 'gnus-type 'pem) gnus-hidden-properties))
+	    buffer-read-only end)
+	(widen)
+	(goto-char (point-min))
+	;; hide the horrendously ugly "header".
+	(and (search-forward "\n-----BEGIN PRIVACY-ENHANCED MESSAGE-----\n"
+			     nil
+			     t)
+	     (setq end (1+ (match-beginning 0)))
+	     (gnus-hide-text
+	      end
+	      (if (search-forward "\n\n" nil t)
+		  (match-end 0)
+		(point-max))
+	      props))
+	;; hide the trailer as well
+	(and (search-forward "\n-----END PRIVACY-ENHANCED MESSAGE-----\n"
+			     nil
+			     t)
+	     (gnus-hide-text (match-beginning 0) (match-end 0) props))))))
 
 (defun gnus-article-hide-signature (&optional arg)
   "Hide the signature in the current article.

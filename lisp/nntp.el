@@ -92,12 +92,24 @@ does an rlogin on the remote system, and then does a telnet to the
 NNTP server available there (see nntp-rlogin-parameters).")
 
 (defvoo nntp-rlogin-parameters '("telnet" "${NNTPSERVER:=localhost}" "nntp")
-  "*Parameters to `nntp-open-login'.
+  "*Parameters to `nntp-open-rlogin'.
 That function may be used as `nntp-open-server-function'.  In that
 case, this list will be used as the parameter list given to rsh.")
 
 (defvoo nntp-rlogin-user-name nil
   "*User name on remote system when using the rlogin connect method.")
+
+(defvoo nntp-telnet-parameters '("exec" "telnet" "${NNTPSERVER:=localhost}" "nntp")
+  "*Parameters to `nntp-open-telnet'.
+That function may be used as `nntp-open-server-function'.  In that
+case, this list will be executed as a command after logging in
+via telnet.")
+
+(defvoo nntp-telnet-user-name nil
+  "User name to log in via telnet with.")
+
+(defvoo nntp-telnet-passwd nil
+  "Password to use to log in via telnet with.")
 
 (defvoo nntp-address nil
   "*The name of the NNTP server.")
@@ -1088,7 +1100,8 @@ If SERVICE, this this as the port number."
 		   (condition-case nil
 		       (nntp-wait-for-response "^[23].*\r?\n" 'slow)
 		     (error nil)
-		     (quit nil)))
+		     ;(quit nil)
+		     ))
 	     (unless status
 	       (nntp-close-server-internal server)
 	       (nnheader-report 
@@ -1105,8 +1118,7 @@ If SERVICE, this this as the port number."
 	    ((null server)
 	     (nnheader-report 'nntp "NNTP server is not specified."))
 	    (t				; We couldn't open the server.
-	     (nnheader-report 
-	      'nntp (buffer-substring (point-min) (point-max)))))
+	     (nnheader-report 'nntp (buffer-string))))
       (when timer 
 	(nnheader-cancel-timer timer))
       (message "")
@@ -1186,23 +1198,52 @@ If SERVICE, this this as the port number."
 			    nntp-rlogin-parameters " ")))))
     proc))
 
-(defun nntp-telnet-to-machine ()
-  (let (b)
-    (telnet "localhost")
+(defun nntp-wait-for-string (regexp)
+  "Wait until string arrives in the buffer."
+  (let ((buf (current-buffer)))
     (goto-char (point-min))
-    (while (not (re-search-forward "^login: *" nil t))
+    (while (not (re-search-forward regexp nil t))
+      (accept-process-output)
       (sit-for 1)
-      (goto-char (point-min)))
-    (goto-char (point-max))
-    (insert "larsi")
-    (telnet-send-input)
-    (setq b (point))
-    (while (not (re-search-forward ">" nil t))
-      (sit-for 1)
-      (goto-char b))
-    (goto-char (point-max))
-    (insert "ls")
-    (telnet-send-input)))
+      (set-buffer buf)
+      (goto-char (point-min)))))
+
+(defun nntp-open-telnet (server)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (erase-buffer)
+    (let ((proc (start-process
+		 "nntpd" nntp-server-buffer "telnet"))
+	  (case-fold-search t))
+      (when (memq (process-status proc) '(open run))
+	(process-send-string proc "set escape \^X\n")
+	(process-send-string proc (concat "open " server "\n"))
+	(nntp-wait-for-string "^\r*login:")
+	(process-send-string
+	 proc (concat
+	       (or nntp-telnet-user-name
+		   (setq nntp-telnet-user-name (read-string "login: ")))
+	       "\n"))
+	(nntp-wait-for-string "^\r*password:")
+	(process-send-string
+	 proc (concat
+	       (or nntp-telnet-passwd
+		   (setq nntp-telnet-passwd
+			 (nnmail-read-passwd "Password: ")))
+	       "\n"))
+	(erase-buffer)
+	(nntp-wait-for-string "bash\\|\$ *\r?$\\|> *\r?")
+	(process-send-string
+	 proc (concat (mapconcat 'identity nntp-telnet-parameters " ") "\n"))
+	(nntp-wait-for-string "^\r*200")
+	(beginning-of-line)
+	(delete-region (point-min) (point))
+	(process-send-string proc "\^]")
+	(process-send-string proc "mode character\n")
+	(sit-for 2)
+	(forward-line 1)
+	(delete-region (point) (point-max)))
+      proc)))
 
 (defun nntp-close-server-internal (&optional server)
   "Close connection to news server."
@@ -1210,7 +1251,8 @@ If SERVICE, this this as the port number."
   (if nntp-server-process
       (delete-process nntp-server-process))
   (setq nntp-server-process nil)
-  (setq nntp-address ""))
+  ;(setq nntp-address "")
+  )
 
 (defun nntp-accept-response ()
   "Read response of server.

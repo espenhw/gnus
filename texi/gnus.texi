@@ -5051,6 +5051,12 @@ Hide signature (@code{gnus-article-hide-signature}).
 @findex gnus-article-hide-pgp
 Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}). 
 
+@item W W P
+@kindex W W P (Summary)
+@findex gnus-article-hide-pem
+Hide @sc{pem} (privacy enhavnced hessages) gruft
+(@code{gnus-article-hide-pem}).
+
 @item W W c
 @kindex W W c (Summary)
 @findex gnus-article-hide-citation
@@ -5168,7 +5174,9 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @item W w
 @kindex W w (Summary)
 @findex gnus-article-fill-cited-article
-Do word wrap (@code{gnus-article-fill-cited-article}).
+Do word wrap (@code{gnus-article-fill-cited-article}).  If you use this
+function in @code{gnus-article-display-hook}, it should be run fairly
+late and certainly after any highlighting.
 
 @item W c
 @kindex W c (Summary)
@@ -9586,8 +9594,7 @@ your own article.
 
 @vindex gnus-inews-article-hook
 These two functions are both primarily meant to be used in hooks like
-@code{gnus-inews-article-hook}.  
-
+@code{message-send-hook}.  
 
 @node Scoring Tips
 @section Scoring Tips

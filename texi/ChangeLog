@@ -1,3 +1,11 @@
+Thu Jul  4 05:45:32 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.texi (Article Hiding): Addition.
+
+Wed Jul  3 03:07:08 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.texi (Followups To Yourself): Deletia.
+
 Wed Jun 19 16:30:55 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
 
 	* gnus.texi (Censorship): Removed.

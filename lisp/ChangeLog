@@ -1,3 +1,50 @@
+Thu Jul  4 06:08:11 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nntp.el (nntp-open-telnet): Working function.
+	(nntp-telnet-parameters, (nntp-telnet-user-name,
+	nntp-telnet-passwd): New variables.
+
+	* gnus.el (gnus-summary-prepare-threads): Would infloop.
+	(gnus-summary-isearch-article): Don't go to the start of the
+	article. 
+
+Thu Jul  4 05:44:22 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus.el (gnus-article-hide-pem): New command and keystroke.
+
+Thu Jul  4 05:00:58 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-local-variables): Init reffed to 0.
+	(gnus-set-global-variables): Set reffed.
+
+Wed Jul  3 06:15:28 1996  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-reffed-article-number): Make buffer-local.
+
+Wed Jul  3 03:17:42 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-article-setup-buffer): Make the original buffer go
+	away on exit.
+
+	* message.el (message-reply): Insert proper number of commas. 
+	(message-tokenize-header): Tokenize properly.
+
+Wed Jul  3 03:01:59 1996  Joe Wells  <jbw@cs.bu.edu>
+
+	* gnus.el (gnus-check-new-newsgroups): Doc fix.
+
+Wed Jul  3 02:58:09 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.33 is released.
+
+Wed Jul  3 00:27:35 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nnheader.el (nnheader-re-read-dir): Prefer efs over ange-ftp.
+
+Sun Jun 30 23:19:38 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.32 is released.
+
 Sun Jun 30 21:57:31 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.el (gnus-check-bogus-groups-hook): New hook.
