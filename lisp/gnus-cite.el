@@ -659,22 +659,24 @@ See also the documentation for `gnus-article-highlight-citation'."
 	       (gnus-article-search-signature)
 	       (point)))
 	(prefix-regexp (concat "^\\(" message-cite-prefix-regexp "\\)"))
-	alist entry start begin end numbers prefix)
+	alist entry start begin end numbers prefix guess-limit)
     ;; Get all potential prefixes in `alist'.
     (while (< (point) max)
       ;; Each line.
       (setq begin (point)
+	    guess-limit (progn (skip-chars-forward "^> \t\r\n") (point))
 	    end (progn (beginning-of-line 2) (point))
 	    start end)
       (goto-char begin)
       ;; Ignore standard Supercite attribution prefix.
-      (when (looking-at gnus-supercite-regexp)
+      (when (and (< guess-limit (+ begin gnus-cite-max-prefix))
+		 (looking-at gnus-supercite-regexp))
 	(if (match-end 1)
 	    (setq end (1+ (match-end 1)))
 	  (setq end (1+ begin))))
       ;; Ignore very long prefixes.
-      (when (> end (+ (point) gnus-cite-max-prefix))
-	(setq end (+ (point) gnus-cite-max-prefix)))
+      (when (> end (+ begin gnus-cite-max-prefix))
+	(setq end (+ begin gnus-cite-max-prefix)))
       (while (re-search-forward prefix-regexp (1- end) t)
 	;; Each prefix.
 	(setq end (match-end 0)

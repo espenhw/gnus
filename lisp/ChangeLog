@@ -1,3 +1,7 @@
+2000-11-22 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cite.el (gnus-cite-parse): Guess citation length.
+
 2000-11-22 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ml.el (gnus-mailing-list-insinuate): New function.
