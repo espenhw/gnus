@@ -138,7 +138,6 @@
 
 (eval-when-compile (require 'cl))
 (eval-and-compile
-  (autoload 'open-ssl-stream "ssl")
   (autoload 'base64-decode-string "base64")
   (autoload 'base64-encode-string "base64")
   (autoload 'starttls-open-stream "starttls")
@@ -601,24 +600,23 @@ If ARGS, PROMPT is used as an argument to `format'."
   (let ((cmds (if (listp imap-ssl-program) imap-ssl-program
 		(list imap-ssl-program)))
 	cmd done)
-    (condition-case ()
-	(require 'ssl)
-      (error))
     (while (and (not done) (setq cmd (pop cmds)))
       (message "imap: Opening SSL connection with `%s'..." cmd)
       (let* ((port (or port imap-default-ssl-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
-	     (ssl-program-name shell-file-name)
-	     (ssl-program-arguments
-	      (list shell-command-switch
-		    (format-spec cmd (format-spec-make
-				      ?s server
-				      ?p (number-to-string port)))))
+	     (process-connection-type nil)
 	     process)
-	(when (setq process (condition-case ()
-				(open-ssl-stream name buffer server port)
-			      (error)))
+	(when (progn
+		(setq process (start-process 
+			       name buffer shell-file-name
+			       shell-command-switch
+			       (format-spec cmd 
+					    (format-spec-make
+					     ?s server
+					     ?p (number-to-string port)))))
+		(process-kill-without-query process)
+		process)
 	  (with-current-buffer buffer
 	    (goto-char (point-min))
 	    (while (and (memq (process-status process) '(open run))

@@ -254,9 +254,15 @@ noticing asynchronous data.")
 (defvar nntp-async-timer nil)
 (defvar nntp-async-process-list nil)
 
+(defvar nntp-ssl-program 
+  "openssl s_client -quiet -ssl3 -connect %s:%p"
+"A string containing commands for SSL connections.
+Within a string, %s is replaced with the server address and %p with
+port number on server.  The program should accept IMAP commands on
+stdin and return responses to stdout.")
+
 (eval-and-compile
-  (autoload 'mail-source-read-passwd "mail-source")
-  (autoload 'open-ssl-stream "ssl"))
+  (autoload 'mail-source-read-passwd "mail-source"))
 
 
 
@@ -1148,7 +1154,15 @@ password contained in '~/.nntp-authinfo'."
   (open-network-stream "nntpd" buffer nntp-address nntp-port-number))
 
 (defun nntp-open-ssl-stream (buffer)
-  (let ((proc (open-ssl-stream "nntpd" buffer nntp-address nntp-port-number)))
+  (let* ((process-connection-type nil)
+	 (proc (start-process "nntpd" buffer 
+			      shell-file-name
+			      shell-command-switch
+			      (format-spec nntp-ssl-program 
+					   (format-spec-make
+					    ?s nntp-address
+					    ?p nntp-port-number)))))
+    (process-kill-without-query proc)
     (save-excursion
       (set-buffer buffer)
       (nntp-wait-for-string "^\r*20[01]")

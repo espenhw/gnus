@@ -1,3 +1,8 @@
+2003-02-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* imap.el (imap-ssl-open): Don't depend on ssl.el.
+	* nntp.el (nntp-open-ssl-stream): Don't depend on ssl.el.
+
 2003-02-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: add spam-stat-load to gnus-get-new-news-hook
