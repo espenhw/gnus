@@ -1,3 +1,11 @@
+2001-10-12  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	Suggested by Oliver Scholz <epameinondas@gmx.de>.
+	
+	* message.el (message-do-auto-fill): New function.  Like
+	`do-auto-fill' but don't fill when in the message header.
+	(message-setup-1): Put a text property on the message header.
+	(message-setup-fill-variables): Use `message-do-auto-fill'.
+
 2001-10-10 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially): Insert an empty line
