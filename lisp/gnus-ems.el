@@ -31,6 +31,7 @@
   "Non-nil if running under XEmacs.")
 
 (defvar gnus-mouse-2 [mouse-2])
+(defvar gnus-down-mouse-2 [down-mouse-2])
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")

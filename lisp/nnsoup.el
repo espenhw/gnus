@@ -448,7 +448,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-index-buffer (prefix &optional message)
   (let* ((file (concat prefix (if message ".MSG" ".IDX")))
 	 (buffer-name (concat " *nnsoup " file "*")))
-    (or (get-buffer buffer-name)	; File aready loaded.
+    (or (get-buffer buffer-name)	; File already loaded.
 	(when (file-exists-p (concat nnsoup-directory file))
 	  (save-excursion		; Load the file.
 	    (set-buffer (get-buffer-create buffer-name))

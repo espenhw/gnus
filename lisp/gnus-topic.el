@@ -295,7 +295,7 @@ with some simple extensions.
     (setcar (nthcdr 3 (cadr top)) parameters)))
 
 (defun gnus-group-topic-parameters (group)
-  "Compute the group parameters for GROUP taking into account inheretance from topics."
+  "Compute the group parameters for GROUP taking into account inheritance from topics."
   (let ((params-list (list (gnus-group-get-parameter group)))
 	topics params param out)
     (save-excursion
@@ -307,7 +307,7 @@ with some simple extensions.
       ;; we remove them.  Probably faster than doing this "properly".
       (setq params-list (delq nil params-list))
       ;; Now we have all the parameters, so we go through them
-      ;; and do inheretance in the obvious way.
+      ;; and do inheritance in the obvious way.
       (while (setq params (pop params-list))
 	(while (setq param (pop params))
 	  (when (atom param)
@@ -318,7 +318,7 @@ with some simple extensions.
       ;; Return the resulting parameter list.
       out)))
 
-;;; General utility funtions
+;;; General utility functions
 
 (defun gnus-topic-enter-dribble ()
   (gnus-dribble-enter
@@ -956,7 +956,7 @@ If performed over a topic line, toggle folding the topic."
     (gnus-current-topic)))
   ;; Check whether this topic already exists.
   (when (gnus-topic-find-topology topic)
-    (error "Topic aleady exists"))
+    (error "Topic already exists"))
   (unless parent
     (setq parent (caar gnus-topic-topology)))
   (let ((top (cdr (gnus-topic-find-topology parent)))

@@ -470,7 +470,7 @@ your mail without bothering with the server at all, you can use the
 @code{gnus-no-server} command to start Gnus.  That might come in handy
 if you're in a hurry as well.  This command will not attempt to contact
 your primary server---instead, it will just activate all groups on level
-1 and 2.  (You should preferrably keep no native groups on those two
+1 and 2.  (You should preferably keep no native groups on those two
 levels.) 
 
 
@@ -1281,7 +1281,7 @@ read articles (@code{gnus-group-clear-data}).
 @item M-x gnus-group-clear-data-on-native-groups
 @kindex M-x gnus-group-clear-data-on-native-groups
 @findex gnus-group-clear-data-on-native-groups
-If you have switced from one @sc{nntp} server to another, all your marks
+If you have switched from one @sc{nntp} server to another, all your marks
 and read ranges have become worthless.  You can use this command to
 clear out all data that you have on your native groups.  Use with
 caution. 
@@ -2450,7 +2450,7 @@ Edit the topic parameters (@code{gnus-topic-edit-parameters}).
 @subsection Topic Sorting
 @cindex topic sorting
 
-You can sort the groups in each topic individially with the following
+You can sort the groups in each topic individually with the following
 commands: 
 
 
@@ -2548,7 +2548,7 @@ parameters (@pxref{Group Parameters}).
 
 Group parameters (of course) override topic parameters, and topic
 parameters in sub-topics override topic parameters in super-topics.  You
-know.  Normal inheretance rules.  (@dfn{Rules} is here a noun, not a
+know.  Normal inheritance rules.  (@dfn{Rules} is here a noun, not a
 verb, although you may feel free to disagree with me here.)
 
 @example
@@ -5442,7 +5442,7 @@ Hide @sc{pgp} signatures (@code{gnus-article-hide-pgp}).
 @item W W P
 @kindex W W P (Summary)
 @findex gnus-article-hide-pem
-Hide @sc{pem} (privacy enhavnced hessages) gruft
+Hide @sc{pem} (privacy enhanced messages) gruft
 (@code{gnus-article-hide-pem}).
 
 @item W W c
@@ -5705,7 +5705,7 @@ default values of the variables above.
 
 @item gnus-article-button-face
 @vindex gnus-article-button-face
-Face used on bottons.
+Face used on buttons.
 
 @item gnus-article-mouse-face
 @vindex gnus-article-mouse-face
@@ -6610,7 +6610,7 @@ For an alternative approach, @xref{Duplicate Suppression}.
 @section Duplicate Suppression
 
 By default, Gnus tries to make sure that you don't have to read the same
-article more than once by utilizing the crossposing mechanism
+article more than once by utilizing the crossposting mechanism
 (@pxref{Crosspost Handling}).  However, that simple and efficient
 approach may not work satisfactorily for some users for various
 reasons.  
@@ -6641,7 +6641,7 @@ will remember the @code{Message-ID}s of all articles you have read or
 otherwise marked as read, and then, as if by magic, mark them as read
 all subsequent times you see them---in @emph{all} groups.  Using this
 mechanism is quite likely to be somewhat inefficient, but not overly
-so.  It's certainly preferrable to reading the same articles more than
+so.  It's certainly preferable to reading the same articles more than
 once.
 
 Duplicate suppression is not a very subtle instrument.  It's more like a
@@ -9302,7 +9302,7 @@ digests:
 We see that all text before a 70-width line of dashes is ignored; all
 text after a line that starts with that @samp{^End of} is also ignored;
 each article begins with a 30-width line of dashes; the line separating
-the head from the body may contain a single spcae; and that the body is
+the head from the body may contain a single space; and that the body is
 run through @code{nndoc-unquote-dashes} before being delivered.
 
 To hook your own document definition into @code{nndoc}, use the
@@ -9946,7 +9946,7 @@ Edit a score file and make this score file the current one
 @item V F
 @kindex V F (Summary)
 @findex gnus-score-flush-cache
-Flush the score cahe (@code{gnus-score-flush-cache}).  This is useful
+Flush the score cache (@code{gnus-score-flush-cache}).  This is useful
 after editing score files.
 
 @item V C
@@ -10670,7 +10670,7 @@ will be ignored.  If you wish to add more words to be ignored, use the
 @vindex gnus-adaptive-word-syntax-table
 When the scoring is done, @code{gnus-adaptive-word-syntax-table} is the
 syntax table in effect.  It is similar to the standard syntax table, but
-it considers numbers to be non-word-consituant characters.
+it considers numbers to be non-word-constituent characters.
 
 After using this scheme for a while, it might be nice to write a
 @code{gnus-psychoanalyze-user} command to go through the rules and see
@@ -10763,7 +10763,7 @@ In addition to using @code{gnus-home-score-file} and
 @code{gnus-home-adapt-file}, you can also use group parameters
 (@pxref{Group Parameters}) and topic parameters (@pxref{Topic
 Parameters}) to achieve much the same.  Group and topic parameters take
-presedence over this variable.
+precedence over this variable.
 
 
 @node Followups To Yourself
@@ -11096,7 +11096,7 @@ all the relevant GroupLens functions.
 
 @item grouplens-pseudonym
 @vindex grouplens-pseudonym
-This variable should be set to the pseudonum you got when registering
+This variable should be set to the pseudonym you got when registering
 with the Better Bit Bureau.
 
 @item grouplens-newsgroups
@@ -11302,7 +11302,7 @@ inverse of the value of its argument.
 @end table
 
 There is an @dfn{indirection operator} that will make its arguments
-apply to the ancenstors of the current article being scored.  For
+apply to the ancestors of the current article being scored.  For
 instance, @code{1-} will make score rules apply to the parent of the
 current article.  @code{2-} will make score fules apply to the
 grandparent of the current article.  Alternatively, you can write
@@ -11458,7 +11458,7 @@ Scores between -3 and 3 will be set to 0 when this function is called.
 Scores with magnitudes between 3 and 60 will be shrunk by 3.
 
 @item
-Scores with magnutudes greater than 60 will be shrunk by 5% of the
+Scores with magnitudes greater than 60 will be shrunk by 5% of the
 score.
 @end enumerate
 
@@ -11687,8 +11687,8 @@ Ignoring is done first; then cutting; then maxing; and then as the very
 last operation, padding.  
 
 If you use lots of these advanced thingies, you'll find that Gnus gets
-quite slow.  This can be helped enourmously by running @kbd{M-x
-gnus-compile} when you are setisfied with the look of your lines.
+quite slow.  This can be helped enormously by running @kbd{M-x
+gnus-compile} when you are satisfied with the look of your lines.
 @xref{Compilation}. 
 
 
@@ -11943,7 +11943,7 @@ Here's a list of all possible keys for
 
 Note that the @code{message} key is used for both
 @code{gnus-group-mail} and @code{gnus-summary-mail-other-window}.  If
-it is desireable to distinguish between the two, something like this
+it is desirable to distinguish between the two, something like this
 might be used:
 
 @lisp
@@ -12601,7 +12601,7 @@ articles that weren't approved by you, you can cancel them with the
 To use moderation mode in these two groups, say:
 
 @lisp
-(setq gnus-moderatated-groups 
+(setq gnus-moderated-list
       "^nnml:rec.zoofle$\\|^rec.zoofle$")
 @end lisp
 
@@ -12652,7 +12652,7 @@ The toolbar in the summary buffer of mail groups.
 
 @item gnus-xmas-modeline-glyph
 @vindex gnus-xmas-modeline-glyph
-A glyph dislayed in all Gnus mode lines.  It is a tiny gnu head by
+A glyph displayed in all Gnus mode lines.  It is a tiny gnu head by
 default. 
 
 @end table
@@ -13316,7 +13316,7 @@ foreign, but they mostly act like they are native.
 
 @item article
 @cindex article
-A nessage that has been posted as news.
+A message that has been posted as news.
 
 @item mail message
 @cindex mail message
@@ -14464,7 +14464,7 @@ using it a lot and have elaborated on it greatly.
 
 The question is simple: If you have a large amount of objects that are
 identified by numbers (say, articles, to take a @emph{wild} example)
-that you want to callify as being ``included'', a normal sequence isn't
+that you want to qualify as being ``included'', a normal sequence isn't
 very useful.  (A 200,000 length sequence is a bit long-winded.)
 
 The solution is as simple as the question: You just collapse the

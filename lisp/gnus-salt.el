@@ -73,7 +73,8 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
    "b" gnus-uu-mark-buffer
    "B" gnus-uu-unmark-buffer
    "." gnus-pick-article
-   gnus-mouse-2 gnus-pick-mouse-pick
+   gnus-down-mouse-2 gnus-pick-mouse-pick-region
+   ;;gnus-mouse-2 gnus-pick-mouse-pick
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
@@ -167,6 +168,97 @@ If ARG, pick the article on that line instead."
   (save-excursion
     (gnus-summary-mark-as-processable 1)))
 
+(defun gnus-pick-mouse-pick-region (start-event)
+  "Pick articles that the mouse is dragged over.
+This must be bound to a button-down mouse event."
+  (interactive "e")
+  (mouse-minibuffer-check start-event)
+  (let* ((echo-keystrokes 0)
+	 (start-posn (event-start start-event))
+	 (start-point (posn-point start-posn))
+         (start-line (1+ (count-lines 1 start-point)))
+	 (start-window (posn-window start-posn))
+	 (start-frame (window-frame start-window))
+	 (bounds (window-edges start-window))
+	 (top (nth 1 bounds))
+	 (bottom (if (window-minibuffer-p start-window)
+		     (nth 3 bounds)
+		   ;; Don't count the mode line.
+		   (1- (nth 3 bounds))))
+	 (click-count (1- (event-click-count start-event))))
+    (setq mouse-selection-click-count click-count)
+    (setq mouse-selection-click-count-buffer (current-buffer))
+    (mouse-set-point start-event)
+    ;; In case the down click is in the middle of some intangible text,
+    ;; use the end of that text, and put it in START-POINT.
+    (if (< (point) start-point)
+	(goto-char start-point))
+    (gnus-pick-article)
+    (setq start-point (point))
+    ;; end-of-range is used only in the single-click case.
+    ;; It is the place where the drag has reached so far
+    ;; (but not outside the window where the drag started).
+    (let (event end end-point last-end-point (end-of-range (point)))
+      (track-mouse
+	(while (progn
+		 (setq event (read-event))
+		 (or (mouse-movement-p event)
+		     (eq (car-safe event) 'switch-frame)))
+	  (if (eq (car-safe event) 'switch-frame)
+	      nil
+	    (setq end (event-end event)
+		  end-point (posn-point end))
+	    (if end-point
+		(setq last-end-point end-point))
+
+	    (cond
+	     ;; Are we moving within the original window?
+	     ((and (eq (posn-window end) start-window)
+		   (integer-or-marker-p end-point))
+	      ;; Go to START-POINT first, so that when we move to END-POINT,
+	      ;; if it's in the middle of intangible text,
+	      ;; point jumps in the direction away from START-POINT.
+	      (goto-char start-point)
+	      (goto-char end-point)
+              (gnus-pick-article)
+              ;; In case the user moved his mouse really fast, pick
+              ;; articles on the line between this one and the last one.
+              (let* ((this-line (1+ (count-lines 1 end-point)))
+                     (min-line (min this-line start-line))
+                     (max-line (max this-line start-line)))
+                (while (< min-line max-line)
+                  (goto-line min-line)
+                  (gnus-pick-article)
+                  (setq min-line (1+ min-line)))
+                (setq start-line this-line))
+	      (if (zerop (% click-count 3))
+		  (setq end-of-range (point))))
+             (t
+	      (let ((mouse-row (cdr (cdr (mouse-position)))))
+		(cond
+		 ((null mouse-row))
+		 ((< mouse-row top)
+		  (mouse-scroll-subr start-window (- mouse-row top)))
+		 ((>= mouse-row bottom)
+		  (mouse-scroll-subr start-window
+                                     (1+ (- mouse-row bottom)))))))))))
+      (if (consp event)
+	  (let ((fun (key-binding (vector (car event)))))
+	    ;; Run the binding of the terminating up-event, if possible.
+	    ;; In the case of a multiple click, it gives the wrong results,
+	    ;; because it would fail to set up a region.
+	    (if nil ;; (and (= (mod mouse-selection-click-count 3) 0) (fboundp fun))
+		;; In this case, we can just let the up-event execute normally.
+		(let ((end (event-end event)))
+		  ;; Set the position in the event before we replay it,
+		  ;; because otherwise it may have a position in the wrong
+		  ;; buffer.
+		  (setcar (cdr end) end-of-range)
+		  ;; Delete the overlay before calling the function,
+		  ;; because delete-overlay increases buffer-modified-tick.
+		  (setq unread-command-events
+			(cons event unread-command-events)))))))))
+
 (defun gnus-pick-next-page ()
   "Go to the next page.  If at the end of the buffer, start reading articles."
   (interactive)
@@ -179,7 +271,7 @@ If ARG, pick the article on that line instead."
 ;;;
 
 (defvar gnus-binary-mode nil
-  "Minor mode for provind a binary group interface in Gnus summary buffers.")
+  "Minor mode for providing a binary group interface in Gnus summary buffers.")
 
 (defvar gnus-binary-mode-hook nil
   "Hook run in summary binary mode buffers.")
@@ -257,7 +349,7 @@ lines.")
   "Brackets used in tree nodes.")
 
 (defvar gnus-tree-parent-child-edges '(?- ?\\ ?|)
-  "Charaters used to connect parents with children.")
+  "Characters used to connect parents with children.")
 
 (defvar gnus-tree-mode-line-format "Gnus: %%b %S %Z"
   "*The format specification for the tree mode line.")

@@ -53,7 +53,7 @@ If that variable is nil, however, all headers that match this regexp
 will be kept while the rest will be deleted before saving.")
 
 (defvar gnus-default-article-saver 'gnus-summary-save-in-rmail
-  "*A function to save articles in your favorite format.
+  "*A function to save articles in your favourite format.
 The function must be interactively callable (in other words, it must
 be an Emacs command).
 
@@ -202,7 +202,7 @@ If you want to run a special decoding program like nkf, use this hook.")
 (defun gnus-article-save (save-buffer file &optional num)
   "Save the currently selected article."
   (unless gnus-save-all-headers
-    ;; Remove headers accoring to `gnus-saved-headers'.
+    ;; Remove headers according to `gnus-saved-headers'.
     (let ((gnus-visible-headers
 	   (or gnus-saved-headers gnus-visible-headers))
 	  (gnus-article-buffer save-buffer))

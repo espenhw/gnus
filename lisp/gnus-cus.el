@@ -290,7 +290,7 @@ Hide all cited text.
 	     (default . gnus-article-hide-citation))
 	    ((tag . "Add Buttons")
 	     (doc . "\
-Make URL's into clickable buttons.
+Make URLs into clickable buttons.
 ")
 	     (type . const)
 	     (default . gnus-article-add-buttons))

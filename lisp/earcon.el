@@ -34,7 +34,7 @@
 (eval-when-compile (require 'cl))
 
 (defvar earcon-auto-play nil
-  "When True, automatially play sounds as well as buttonize them.")
+  "When True, automatically play sounds as well as buttonize them.")
 
 (defvar earcon-prefix "**"
   "The start of an earcon")

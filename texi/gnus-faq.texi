@@ -183,7 +183,7 @@ need to download the sources and recompile.
 @item
 Q1.10  Mailcrypt 3.4 doesn't work
 
-This problem is verified to still exist in Gnus 5.0.9 and MailCrypt 3.4.
+This problem is verified to still exist in Gnus 5.0.9 and Mailcrypt 3.4.
 The answer comes from Peter Arius
 <arius@@immd2.informatik.uni-erlangen.de>.
 

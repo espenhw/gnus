@@ -1,4 +1,4 @@
-;;; gnus-int.el --- backend inteface functions for Gnus
+;;; gnus-int.el --- backend interface functions for Gnus
 ;; Copyright (C) 1996 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

@@ -124,7 +124,7 @@ It is called with one parameter -- the score to be decayed.")
   "*Decay all \"big\" scores with this factor.")
 
 (defvar gnus-home-score-file nil
-  "Variable to control where interative score entries are to go.
+  "Variable to control where interactive score entries are to go.
 It can be:
 
  * A string
@@ -271,6 +271,7 @@ If nil, the user will be asked for a duration.")
 	(numbers '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)))
     (while numbers
       (modify-syntax-entry (pop numbers) " " table))
+    (modify-syntax-entry ?' "w")
     table)
   "Syntax table used when doing adaptive word scoring.")
 
@@ -441,7 +442,7 @@ used as score."
 	    (if mimic (error "%c %c" prefix hchar) (error "")))
 
 	  (when (/= (downcase hchar) hchar)
-	    ;; This was a majuscle, so we end reading and set the defaults.
+	    ;; This was a majuscule, so we end reading and set the defaults.
 	    (if mimic (message "%c %c" prefix hchar) (message ""))
 	    (setq tchar (or tchar ?s)
 		  pchar (or pchar ?t)))
@@ -478,7 +479,7 @@ used as score."
 	    (if mimic (error "%c %c" prefix hchar) (error "")))
 
 	  (when (/= (downcase tchar) tchar)
-	    ;; It was a majuscle, so we end reading and use the default.
+	    ;; It was a majuscule, so we end reading and use the default.
 	    (if mimic (message "%c %c %c" prefix hchar tchar)
 	      (message ""))
 	    (setq pchar (or pchar ?p)))
@@ -2329,7 +2330,7 @@ GROUP using BNews sys file syntax."
 			 "[/:" (if trans (char-to-string trans) "") "]")))
 	    (while (re-search-forward regexp nil t)
 	      (replace-match "." t t)))
-	  ;; Cludge to get rid of "nntp+" problems.
+	  ;; Kludge to get rid of "nntp+" problems.
 	  (goto-char (point-min))
 	  (and (looking-at "nn[a-z]+\\+")
 	       (progn

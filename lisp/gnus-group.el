@@ -194,6 +194,21 @@ The default function `gnus-group-highlight-line' will
 highlight the line according to the `gnus-group-highlight'
 variable.")
 
+(defvar gnus-useful-groups
+  `(("emacs.ding"
+     (nntp "sunsite.auc.dk"
+			(nntp-address "sunsite.auc.dk")))
+    ("gnus-help"
+     (nndoc "gnus-help"
+	    (nndoc-article-type mbox)
+	    (eval `(nndoc-address 
+		    ,(let ((file (nnheader-find-etc-directory
+				  "gnus-tut.txt" t)))
+		       (unless file
+			 (error "Couldn't find doc group"))
+		       file))))))
+  "Alist of useful group-server pairs.")
+
 ;;; Internal variables
 
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
@@ -341,6 +356,7 @@ variable.")
   (gnus-define-keys (gnus-group-group-map "G" gnus-group-mode-map)
     "d" gnus-group-make-directory-group
     "h" gnus-group-make-help-group
+    "u" gnus-group-make-useful-group
     "a" gnus-group-make-archive-group
     "k" gnus-group-make-kiboze-group
     "m" gnus-group-make-group
@@ -532,7 +548,7 @@ variable.")
 	["Previous unread" gnus-group-prev-unread-group t]
 	["Next unread same level" gnus-group-next-unread-group-same-level t]
 	["Previous unread same level"
-	 gnus-group-previous-unread-group-same-level t]
+	 gnus-group-prev-unread-group-same-level t]
 	["Jump to group" gnus-group-jump-to-group t]
 	["First unread group" gnus-group-first-unread-group t]
 	["Best unread group" gnus-group-best-unread-group t])
@@ -1200,7 +1216,7 @@ Return nil if the group isn't displayed."
     (setq gnus-group-marked (cons group (delete group gnus-group-marked)))))
 
 (defun gnus-group-universal-argument (arg &optional groups func)
-  "Perform any command on all groups accoring to the process/prefix convention."
+  "Perform any command on all groups according to the process/prefix convention."
   (interactive "P")
   (let ((groups (or groups (gnus-group-process-prefix arg)))
 	func)
@@ -1738,6 +1754,18 @@ and NEW-NAME will be prompted for."
     (gnus-group-update-group (or new-group group))
     (gnus-group-position-point)))
 
+(defun gnus-group-make-useful-group (group method)
+  (interactive
+   (let ((entry (assoc (completing-read "Create group: " gnus-useful-groups
+					nil t)
+		       gnus-useful-groups)))
+     (list (car entry) (cadr entry))))
+  (setq method (gnus-copy-sequence method))
+  (let (entry)
+    (while (setq entry (memq (assq 'eval method) method))
+      (setcar entry (eval (cadar entry)))))
+  (gnus-group-make-group group method))
+
 (defun gnus-group-make-help-group ()
   "Create the Gnus documentation group."
   (interactive)
@@ -2236,7 +2264,7 @@ or nil if no action could be taken."
 	     expirable
 	     (gnus-compress-sequence
 	      (if expiry-wait
-		  ;; We set the expiry variables to the groupp
+		  ;; We set the expiry variables to the group
 		  ;; parameter. 
 		  (let ((nnmail-expiry-wait-function nil)
 			(nnmail-expiry-wait expiry-wait))

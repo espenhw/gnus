@@ -33,7 +33,7 @@
 
 (defvar gnus-advanced-headers nil)
 
-;; To avoid having 8-bit charaters in the source file.
+;; To avoid having 8-bit characters in the source file.
 (defvar gnus-advanced-not (intern (format "%c" 172)))
 
 (defconst gnus-advanced-index

@@ -297,7 +297,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	    'group)
 	;; We have read active entries, so we just delete the
-	;; superfluos gunk.
+	;; superfluous gunk.
 	(goto-char (point-min))
 	(while (re-search-forward "^[.2-5]" nil t)
 	  (delete-region (match-beginning 0) 
@@ -592,7 +592,7 @@ It will prompt for a password."
   (setq nntp-server-type (buffer-string))
   (let ((alist nntp-server-action-alist)
 	entry)
-    ;; Run server-specific commmands.
+    ;; Run server-specific commands.
     (while alist
       (setq entry (pop alist))
       (when (string-match (car entry) nntp-server-type)

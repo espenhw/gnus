@@ -61,7 +61,7 @@ from that group.")
 ;;; Utility functions.
 
 (defun gnus-group-asynchronous-p (group)
-  "Say whether GROUP is fetched from a server that supports asynchronocity."
+  "Say whether GROUP is fetched from a server that supports asynchronicity."
   (gnus-asynchronous-p (gnus-find-method-for-group group)))
 
 ;;; Somewhat bogus semaphores.

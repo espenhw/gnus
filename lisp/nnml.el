@@ -164,13 +164,13 @@ all.  This may very well take some time.")
 	 path gpath group-num)
     (if (stringp id)
 	(when (and (setq group-num (nnml-find-group-number id))
-		   (setq file (cdr
-			       (assq (cdr group-num) 
-				     (nnheader-article-to-file-alist
-				      (setq gpath
-					    (nnmail-group-pathname
-					     (car group-num) 
-					     nnml-directory)))))))
+		   (cdr
+		    (assq (cdr group-num) 
+			  (nnheader-article-to-file-alist
+			   (setq gpath
+				 (nnmail-group-pathname
+				  (car group-num) 
+				  nnml-directory))))))
 	  (setq path (concat gpath (int-to-string (cdr group-num)))))
       (setq path (nnml-article-to-file id)))
     (cond 
@@ -348,8 +348,8 @@ all.  This may very well take some time.")
 		(progn
 		  (nnmail-write-region 
 		   (point-min) (point-max)
-		   (setq file (concat nnml-current-directory
-				      (int-to-string article)))
+		   (concat nnml-current-directory
+			   (int-to-string article))
 		   nil (if (nnheader-be-verbose 5) nil 'nomesg))
 		  t)
 	      (error nil))

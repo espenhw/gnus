@@ -833,7 +833,7 @@ function and want to see what the date was before converting."
       (article-unhide-text (point-min) (point-max)))))
 
 (defun article-emphasize (&optional arg)
-  "Empasize text according to `gnus-emphasis-alist'."
+  "Emphasize text according to `gnus-emphasis-alist'."
   (interactive (article-hidden-arg))
   (unless (article-check-hidden-text 'emphasis arg)
     (save-excursion

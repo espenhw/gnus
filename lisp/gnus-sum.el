@@ -332,7 +332,7 @@ the primary sort function should be the last.  You should probably
 always include `gnus-thread-sort-by-number' in the list of sorting
 functions -- preferably first.
 
-Ready-mady functions include `gnus-thread-sort-by-number',
+Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
 `gnus-thread-sort-by-date', `gnus-thread-sort-by-score' and
 `gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').")
@@ -732,7 +732,7 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	  (replace-match "" t t))))))
 
 (defun gnus-simplify-subject-fuzzy (subject)
-  "Siplify a subject string fuzzily."
+  "Simplify a subject string fuzzily."
   (save-excursion
     (gnus-set-work-buffer)
     (let ((case-fold-search t))
@@ -1121,7 +1121,7 @@ increase the score of each group you read."
 	 ["Edit current score file" gnus-score-edit-current-scores t]
 	 ["Edit score file" gnus-score-edit-file t]
 	 ["Trace score" gnus-score-find-trace t]
-	 ["Find words" gnus-score-find-favuorite-words t]
+	 ["Find words" gnus-score-find-favourite-words t]
 	 ["Rescore buffer" gnus-summary-rescore t]
 	 ["Increase score..." gnus-summary-increase-score t]
 	 ["Lower score..." gnus-summary-lower-score t]))))
@@ -1144,7 +1144,7 @@ increase the score of each group you read."
 	(gnus-score-set-default 'gnus-score-default-header 'h)
 	:style radio 
 	:selected (eq gnus-score-default-header 'h )]
-       ["Message-Id" (gnus-score-set-default 'gnus-score-default-header 'i)
+       ["Message-ID" (gnus-score-set-default 'gnus-score-default-header 'i)
 	:style radio 
 	:selected (eq gnus-score-default-header 'i )]
        ["Thread" (gnus-score-set-default 'gnus-score-default-header 't)
@@ -1293,7 +1293,7 @@ increase the score of each group you read."
 	 (gnus-check-backend-function
 	  'request-replace-article gnus-newsgroup-name)]
 	["Import file..." gnus-summary-import-article t]
-	["Chek if posted" gnus-summary-article-posted-p t]
+	["Check if posted" gnus-summary-article-posted-p t]
 	["Edit article" gnus-summary-edit-article
 	 (not (gnus-group-read-only-p))]
 	["Delete article" gnus-summary-delete-article
@@ -1978,7 +1978,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."
   (if (not (setq article (or article (gnus-summary-article-number))))
-      t					; All non-existant numbers are the last article.  :-)
+      t					; All non-existent numbers are the last article.  :-)
     (not (cdr (gnus-data-find-list article)))))
 
 (defun gnus-make-thread-indent-array ()
@@ -2297,7 +2297,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(when kill-buffer
 	  (gnus-kill-or-deaden-summary kill-buffer))
 	(when (get-buffer-window gnus-group-buffer t)
-	  ;; Gotta use windows, because recenter does wierd stuff if
+	  ;; Gotta use windows, because recenter does weird stuff if
 	  ;; the current buffer ain't the displayed window.
 	  (let ((owin (selected-window)))
 	    (select-window (get-buffer-window gnus-group-buffer t))
@@ -2459,7 +2459,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	header references generation relations 
 	cthread subject child end pthread relation)
     ;; First we create an alist of generations/relations, where 
-    ;; generations is how much we trust the ralation, and the relation
+    ;; generations is how much we trust the relation, and the relation
     ;; is parent/child.
     (gnus-message 7 "Making sparse threads...")
     (save-excursion
@@ -5629,7 +5629,7 @@ to guess what the document format is."
       (unwind-protect
 	  (let ((gnus-current-window-configuration
 		 (if (and (boundp 'gnus-pick-mode)
-			  (symbol-value "gnus-pick-mode"))
+			  (symbol-value (intern "gnus-pick-mode")))
 		     'pick 'summary)))
 	    (if (gnus-group-read-ephemeral-group
 		 name `(nndoc ,name (nndoc-address ,(get-buffer dig))
@@ -6028,7 +6028,7 @@ and `request-accept' functions."
 	((eq action 'move)
 	 (gnus-request-move-article
 	  article			; Article to move
-	  gnus-newsgroup-name		; From newsgrouo
+	  gnus-newsgroup-name		; From newsgroup
 	  (nth 1 (gnus-find-method-for-group
 		  gnus-newsgroup-name)) ; Server
 	  (list 'gnus-request-accept-article
@@ -6782,7 +6782,8 @@ marked."
   (let ((forward (cdr (assq type gnus-summary-mark-positions)))
         (buffer-read-only nil))
     (re-search-backward "[\n\r]" (gnus-point-at-bol) 'move-to-limit)
-    (and (looking-at "\r") (setq forward (1+ forward)))
+    (when (looking-at "\r") 
+      (incf forward))
     (when (and forward
                (<= (+ forward (point)) (point-max)))
       ;; Go to the right position on the line.

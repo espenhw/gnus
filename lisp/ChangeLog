@@ -1,3 +1,34 @@
+Mon Sep  9 21:16:11 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-refresh-before-display): New
+	variable.
+	(gnus-picons-insert-face-if-exists): Put bar back in.
+
+Mon Sep  9 20:31:56 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Use the newsgroup name.
+
+Mon Sep  9 20:04:35 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-salt.el (gnus-pick-mouse-pick-region): New function.
+
+Mon Sep  9 18:37:07 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Bugged.
+
+	* gnus-score.el (gnus-adaptive-word-syntax-table): Make ' a
+	word-constituant character.
+
+Sun Sep  8 14:46:01 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-make-useful-group): New command and
+	keystroke. 
+	(gnus-useful-groups): New variable.
+
+Sun Sep  8 14:46:01 1996  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.30 is released.
+
 Sun Sep  8 13:26:36 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
 
 	* nndoc.el (nndoc-article-begin-function): Defvarred.
@@ -247,7 +278,7 @@ Wed Sep  4 06:35:05 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 Wed Sep  4 05:19:58 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* nnmail.el (nnmail-move-inbox): Refuse to move if
-	gnnmai-crash-bux can't be written.
+	nnmail-crash-box can't be written.
 
 	* gnus-art.el (gnus-button-url-regexp): Include : and ; in
 	regexp. 
@@ -690,7 +721,7 @@ Sun Aug 25 00:16:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Sat Aug 24 23:53:32 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* nnmail.el (nnmail-get-new-mail): Tried calling nonexistsing
+	* nnmail.el (nnmail-get-new-mail): Tried calling nonexisting
 	functions. 
 
 Sat Aug 24 23:30:07 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
@@ -755,7 +786,7 @@ Thu Aug 22 16:49:35 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 Wed Aug 21 15:06:47 1996    <Wesley.Hardaker@sphys.unil.ch>
 
-	* smiley.el (smiley-buffer): Added some additinal extent parameters.
+	* smiley.el (smiley-buffer): Added some additional extent parameters.
 	(smiley-toggle-extent): rewrote to use above.
 
 Mon Aug 19 20:19:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
@@ -835,8 +866,8 @@ Sun Aug 18 14:53:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Tue Aug 20 17:30:00 1996    <Wesley.Hardaker@sphys.unil.ch>
 
-	* smiley.el (smiley-map): New keymap for smiley's.
-	(smiley-toggle-extent): New function to toggle smiley invisiblity.
+	* smiley.el (smiley-map): New keymap for smileys.
+	(smiley-toggle-extent): New function to toggle smiley invisibility.
 	(smiley-buffer): Use them.
 
 Sun Aug 18 12:46:12 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
@@ -1117,7 +1148,7 @@ Sat Aug 10 00:11:52 1996  François Pinard  <pinard@progiciels-bpi.ca>
 
 Sat Aug 10 00:08:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
-	* gnus-util.el (gnus-date-iso8601): Protect agains buggy Dates. 
+	* gnus-util.el (gnus-date-iso8601): Protect against buggy Dates. 
 
 Fri Aug  9 06:39:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
@@ -1201,7 +1232,7 @@ Tue Aug  6 21:58:26 1996  Jan Vroonhof  <vroonhof@math.ethz.ch (Jan Vroonhof)>
 
 	* nndoc.el (nndoc-generate-lanl-gov-head): New function
 	(nndoc-transform-lanl-gov-announce): New function
-	(nndoc-lanl-gov-announce-type-p): New funtion
+	(nndoc-lanl-gov-announce-type-p): New function
 	(nndoc-type-alist): Added support for preprint announcements
 	(nndoc-type-alist): Only use 'slack-digests' if forced to.
 
@@ -1295,7 +1326,7 @@ Wed Aug  7 00:28:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 Tue Aug  6 23:00:01 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
-	* gnus-score.el (gnus-score-string): Wiwnd't do word and fuzzy
+	* gnus-score.el (gnus-score-string): Wouldn't do word and fuzzy
 	matching properly.
 
 Mon Aug  5 22:23:03 1996  Raja R. Harinath  <harinath@cs.umn.edu>
@@ -1423,7 +1454,7 @@ Fri Aug  2 22:36:40 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Wed Jul 31 15:23:54 1996  Ken Olstad  <ken@mn.cheyenne.com>
 
-	* gnus-xmas.el (gnus-xmas-redefine): Disbale XFace when running
+	* gnus-xmas.el (gnus-xmas-redefine): Disable XFace when running
 	under tty.
 
 Wed Jul 31 14:21:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
@@ -1497,8 +1528,8 @@ Fri Aug  2 00:14:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 	* gnus-async.el (gnus-use-header-prefetch): New variable.
 	(gnus-async-set-article-buffer): Removed.
 	(gnus-async-prefetch-headers): New function.
-	(gnus-asynch-retrieve-fetched-headers): New function.
-	(gnus-async-prefetch-header-buffer): New variable.
+	(gnus-async-retrieve-fetched-headers): New function.
+	(gnus-async-prefetch-headers-buffer): New variable.
 
 	* gnus-salt.el (gnus-summary-pick-line-format): New variable.
 	(gnus-pick-mode): Use it.

@@ -793,7 +793,7 @@ optional: which corresponds to a `?', and isn't implemented yet."
   (funcall (custom-property custom 'find) custom tag))
 
 (defun custom-travel-path (custom path)
-  "Find decedent of CUSTOM by looking through PATH."
+  "Find descendent of CUSTOM by looking through PATH."
   (if (null path)
       custom
     (custom-travel-path (custom-find custom (car path)) (cdr path))))

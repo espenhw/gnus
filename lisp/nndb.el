@@ -136,7 +136,7 @@
 (deffoo nndb-request-expire-articles
   (articles &optional group server force)
   "Expires ARTICLES from GROUP on SERVER.
-If FORCE, delete regardless of exiration date, otherwise use normal
+If FORCE, delete regardless of expiration date, otherwise use normal
 expiry mechanism."
   (let (msg art)
     (nntp-possibly-change-group group server) ;;-

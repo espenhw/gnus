@@ -757,7 +757,7 @@ If YANK is non-nil, include the original article."
        (kill-buffer "*Gnus Help Bug*")))
 
 (defun gnus-debug ()
-  "Attemps to go through the Gnus source file and report what variables have been changed.
+  "Attempts to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
   (let ((files '("gnus-load.el" "gnus-sum.el" "gnus-group.el"

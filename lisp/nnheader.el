@@ -551,7 +551,7 @@ The first string in ARGS can be a format string."
     (error (message ""))))
 
 (defun nnheader-insert (format &rest args)
-  "Clear the communicaton buffer and insert FORMAT and ARGS into the buffer.
+  "Clear the communication buffer and insert FORMAT and ARGS into the buffer.
 If FORMAT isn't a format string, it and all ARGS will be inserted
 without formatting."
   (save-excursion

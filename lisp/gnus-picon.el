@@ -23,55 +23,6 @@
 
 ;;; Commentary:
 
-;; Usage:
-;;     - You must have XEmacs (19.12 or above I think) to use this.
-;;     - Read the variable descriptions below.
-;;
-;;     - chose a setup:
-;;
-;;       1) display the icons in its own buffer:
-;;
-;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
-;;          (setq gnus-picons-display-where 'picons)
-;;
-;;          Then add the picons buffer to your display configuration:
-;;          The picons buffer needs to be at least 48 pixels high,
-;;          which for me is 5 lines:
-;;
-;;          (gnus-add-configuration
-;;           '(article (vertical 1.0 
-;;                             (group 6)
-;;                             (picons 5)
-;;                             (summary .25 point)
-;;                             (article 1.0))))
-;;
-;;          (gnus-add-configuration
-;;           '(summary (vertical 1.0 (group 6)
-;;                      (picons 5)
-;;                      (summary 1.0 point))))
-;;
-;;       2) display the icons in the summary buffer
-;;
-;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
-;;          (setq gnus-picons-display-where 'summary)
-;;
-;;       3) display the icons in the article buffer
-;;
-;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;          (add-hook 'gnus-article-prepare-hook 'gnus-group-display-picons t)
-;;          (setq gnus-picons-display-where 'article)
-;;
-;;
-;; Warnings:
-;;     - I'm not even close to being a lisp expert.
-;;     - The 't' (append) flag MUST be in the add-hook line
-;;
-;; TODO:
-;;     - Remove the TODO section in the headers.
-;;
-
 ;;; Code:
 
 (require 'gnus-load)
@@ -102,6 +53,9 @@ see http://www.cs.indiana.edu/picons/ftp/index.html" )
 Some people may want to add \"unknown\" to this list."
 )
 
+(defvar gnus-picons-refresh-before-display nil
+  "If non-nil, display the article buffer before computing the picons.")
+
 (defvar gnus-picons-x-face-file-name 
   (format "/tmp/picon-xface.%s.xbm" (user-login-name))
   "The name of the file in which to store the converted X-face header.")
@@ -128,7 +82,7 @@ Some people may want to add \"unknown\" to this list."
 This has only an effect if `gnus-picons-display-where' hs value article.")
 
 (defvar gnus-picons-map (make-sparse-keymap "gnus-picons-keys")
- "keymap to hide/show picon glpyhs")
+ "keymap to hide/show picon glyphs")
 
 (define-key gnus-picons-map [(button2)] 'gnus-picons-toggle-extent)
 
@@ -143,8 +97,7 @@ This has only an effect if `gnus-picons-display-where' hs value article.")
     (while (setq listitem (car plist))
       (if (annotationp listitem)
           (delete-annotation listitem))
-      (setq plist (cdr plist))))
-  )
+      (setq plist (cdr plist)))))
 
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
@@ -156,8 +109,7 @@ This has only an effect if `gnus-picons-display-where' hs value article.")
         gnus-group-annotations nil
 	gnus-x-face-annotations nil)
   (if (bufferp gnus-picons-buffer)
-      (kill-buffer gnus-picons-buffer))
-  )
+      (kill-buffer gnus-picons-buffer)))
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
@@ -216,14 +168,16 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   "Display faces for an author and his/her domain in gnus-picons-display-where."
   (interactive)
   ;; let drawing catch up
-  (sit-for 0)
-  (let (from at-idx databases)
+  (when gnus-picons-refresh-before-display
+    (sit-for 0))
+  (let ((first t)
+	from at-idx databases)
     (when (and (featurep 'xpm) 
 	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
-	       (setq from (downcase (or (cadr (mail-extract-address-components
-					       from))
-					"")))
+	       (setq from (downcase 
+			   (or (cadr (mail-extract-address-components from))
+			       "")))
 	       (or (setq at-idx (string-match "@" from))
 		   (setq at-idx (length from))))
       (save-excursion
@@ -257,7 +211,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		  (nconc (gnus-picons-insert-face-if-exists
 			  (car databases)
 			  addrs
-			  "unknown" t)
+			  "unknown" gnus-article-annotations t)
 			 gnus-article-annotations))
 	    (setq databases (cdr databases)))
 
@@ -274,11 +228,10 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	    (setq username (downcase username))
 	    (while databases
 	      (setq found
-		    (nconc  (gnus-picons-insert-face-if-exists
-			     (car databases)
-			     addrs
-			     username)
-			    found))
+		    (nconc (gnus-picons-insert-face-if-exists
+			    (car databases) addrs username 
+			    gnus-picons-display-as-address )
+			   found))
 	      (setq databases (cdr databases)))
 	    ;; add their name if no face exists
 	    (when (and gnus-picons-display-as-address (not found))
@@ -294,7 +247,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   "Display icons for the group in the gnus-picons-display-where buffer." 
   (interactive)
   ;; let display catch up so far
-  (sit-for 0)
+  (when gnus-picons-refresh-before-display
+    (sit-for 0))
   (when (and (featurep 'xpm) 
 	     (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
     (save-excursion
@@ -334,10 +288,10 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     f))
 
 (defun gnus-picons-insert-face-if-exists (database addrs filename &optional
-						   nobar-p)
+						   nobar-p dots)
   "Inserts a face at point if I can find one"
   ;; '(gnus-picons-insert-face-if-exists
-					;     "Database" '("edu" "indiana" "cs") "Name")
+  ;;    "Database" '("edu" "indiana" "cs") "Name")
   ;; looks for:
   ;;  1. edu/indiana/cs/Name 
   ;;  2. edu/indiana/Name 
@@ -348,14 +302,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   ;;  1. MISC/Name
   ;; The special treatment of MISC doesn't conform with the conventions for
   ;; picon databases, but otherwise we would always see the MISC/unknown face.
-  (let ((bar (and (not gnus-picons-display-as-address)
-		  (not nobar-p)
+  (let ((bar (and (not nobar-p)
 		  (annotations-in-region 
 		   (point) (min (point-max) (1+ (point)))
 		   (current-buffer))))
 	(path (concat (file-name-as-directory gnus-picons-database)
 		      database "/"))
-	(domainp (and gnus-picons-display-as-address nobar-p))
+	(domainp (and gnus-picons-display-as-address dots))
 	picons found bar-ann cur first)
     (if (string-match "/MISC" database)
 	(setq addrs '("")))
@@ -373,8 +326,9 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		(setq picons (nconc picons bar-ann))
 		(setq bar nil)))
 	    (setq picons (nconc (when (and domainp first)
-				  (list (make-annotation "." (point) 'text 
-							 nil nil nil t) picons))
+				  (list (make-annotation
+					 "." (point) 'text 
+					 nil nil nil t) picons))
 				(gnus-picons-try-to-find-face 
 				 found nil (if domainp cur filename))
 				picons)))
@@ -393,7 +347,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 (defvar gnus-picons-glyph-alist nil)
       
 (defun gnus-picons-try-to-find-face (path &optional xface-p part)
-  "If PATH exists, display it as a bitmap.  Returns t if succedded."
+  "If PATH exists, display it as a bitmap.  Returns t if succeeded."
   (let ((glyph (and (not xface-p)
 		    (cdr (assoc path gnus-picons-glyph-alist)))))
     (when (or glyph (file-exists-p path))

@@ -154,7 +154,7 @@ isn't bound, the message will be used unconditionally.")
   (widen)
   (if (fboundp gnus-nocem-verifyer)
       (funcall gnus-nocem-verifyer)
-    ;; If we don't have MailCrypt, then we use the message anyway.
+    ;; If we don't have Mailcrypt, then we use the message anyway.
     t))
 
 (defun gnus-nocem-enter-article ()

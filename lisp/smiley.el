@@ -42,7 +42,7 @@
 (defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
   "Location of the smiley faces files.")
 
-;; Notice the subtle differences in the regular expessions in the two alists below
+;; Notice the subtle differences in the regular expressions in the two alists below
 
 (defvar smiley-deformed-regexp-alist
   '(("\\(:-*[<«]+\\)\\W" 1 "FaceAngry.xpm")
@@ -84,8 +84,8 @@
 (defvar smiley-regexp-alist smiley-deformed-regexp-alist
   "A list of regexps to map smilies to real images.
 Defaults to the content of smiley-deformed-regexp-alist.
-An alternative smiley-nose-regexp-alist that
-matches less aggresively is available.
+An alternative smiley-nosey-regexp-alist that
+matches less aggressively is available.
 If this is a symbol, take its value.")
 
 (defvar smiley-flesh-color "yellow"

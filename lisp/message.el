@@ -412,7 +412,7 @@ Defaults to `text-mode-abbrev-table'.")
 			"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
 			"[>|}].*")
 		'font-lock-reference-face)
-	  '("^\\(X-[A-Za-z0-9-]+\\|In-reply-to\\):.*"
+	  '("^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):.*"
 	    . font-lock-string-face)))
   "Additional expressions to highlight in Message mode.")
 
@@ -773,7 +773,7 @@ Return the number of headers removed."
     ["To" message-goto-to t]
     ["Subject" message-goto-subject t]
     ["Cc" message-goto-cc t]
-    ["Reply-to" message-goto-reply-to t]
+    ["Reply-To" message-goto-reply-to t]
     ["Summary" message-goto-summary t]
     ["Keywords" message-goto-keywords t]
     ["Newsgroups" message-goto-newsgroups t]
@@ -817,7 +817,7 @@ C-c C-i  message-goto-signature (move to the beginning of the signature).
 C-c C-w  message-insert-signature (insert `message-signature-file' file).
 C-c C-y  message-yank-original (insert current message, if any).
 C-c C-q  message-fill-yanked-message (fill what was yanked).
-C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
+C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (interactive)
   (kill-all-local-variables)
   (make-local-variable 'message-reply-buffer)
@@ -1473,7 +1473,7 @@ to find out how to use this."
        ;; reading a formatted (i. e., at least a To: or Resent-To header)
        ;; message from stdin.
        ;;
-       ;; qmail also has the advantage of not having being raped by
+       ;; qmail also has the advantage of not having been raped by
        ;; various vendors, so we don't have to allow for that, either --
        ;; compare this with message-send-mail-with-sendmail and weep 
        ;; for sendmail's lost innocence.
@@ -1555,7 +1555,7 @@ to find out how to use this."
 	    (or (= (preceding-char) ?\n)
 		(insert ?\n))
 	    (let ((case-fold-search t))
-	      ;; Remove the delimeter.
+	      ;; Remove the delimiter.
 	      (goto-char (point-min))
 	      (re-search-forward
 	       (concat "^" (regexp-quote mail-header-separator) "\n"))
@@ -1656,7 +1656,7 @@ to find out how to use this."
 		  (y-or-n-p
 		   "The article contains an Approved header.  Really post? ")
 		t)))
-	;; Check the Message-Id header.
+	;; Check the Message-ID header.
 	(or (message-check-element 'message-id)
 	    (save-excursion
 	      (let* ((case-fold-search t)
@@ -2709,7 +2709,7 @@ used to direct the following discussion to one newsgroup only,
 because discussions that are spread over several newsgroup tend to
 be fragmented and very difficult to follow.
 
-Also, some source/announcment newsgroups are not indented for discussion;
+Also, some source/announcement newsgroups are not indented for discussion;
 responses here are directed to other newsgroups."))
 		  (cons 'Newsgroups followup-to)
 		(cons 'Newsgroups newsgroups))))))
@@ -2822,7 +2822,8 @@ header line with the old Message-ID."
 
 (defun message-make-forward-subject ()
   "Return a Subject header suitable for the message in the current buffer."
-  (concat "[" (or (message-fetch-field (if (message-news-p) "newsgroups" "from"))
+  (concat "[" (or (message-fetch-field 
+		   (if (message-news-p) "newsgroups" "from"))
 		  "(nowhere)")
 	  "] " (or (message-fetch-field "Subject") "")))
 

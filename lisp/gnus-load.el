@@ -135,7 +135,7 @@ write in another group, you could say something like:
             \"misc-mail\")))
 
 Normally the group names returned by this variable should be
-unprefixed -- which implictly means \"store on the archive server\".
+unprefixed -- which implicitly means \"store on the archive server\".
 However, you may wish to store the message on some other server.  In
 that case, just return a fully prefixed name of the group --
 \"nnml+private:mail.misc\", for instance.")

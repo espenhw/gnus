@@ -244,7 +244,7 @@ Example:
 
 \(setq nnmail-split-methods 'nnmail-split-fancy
       nnmail-split-fancy
-      ;; Messages from the mailer deamon are not crossposted to any of
+      ;; Messages from the mailer daemon are not crossposted to any of
       ;; the ordinary groups.  Warnings are put in a separate group
       ;; from real errors.
       '(| (\"from\" mail (| (\"subject\" \"warn.*\" \"mail.warning\")
@@ -1022,7 +1022,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			     (> (nnheader-file-size
 				 (file-truename nnmail-crash-box)) 0))
 		    (list nnmail-crash-box))))
-      ;; Remove any directories that inadvertantly match the procmail
+      ;; Remove any directories that inadvertently match the procmail
       ;; suffix, which might happen if the suffix is "". 
       (while p
 	(when (file-directory-p (car p))
@@ -1214,7 +1214,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(setq spool (pop spools))
 	;; We read each spool file if either the spool is a POP-mail
 	;; spool, or the file exists.  We can't check for the
-	;; existance of POPped mail.
+	;; existence of POPped mail.
 	(when (or (string-match "^po:" spool)
 		  (and (file-exists-p spool)
 		       (> (nnheader-file-size (file-truename spool)) 0)))
@@ -1297,7 +1297,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (save-restriction
     (message-narrow-to-head)
     (let ((case-fold-search t))
-      (unless (re-search-forward "^Message-Id:" nil t)
+      (unless (re-search-forward "^Message-ID:" nil t)
 	(insert "Message-ID: " (nnmail-message-id) "\n")))))
 
 (defun nnmail-write-region (start end filename &optional append visit lockname)

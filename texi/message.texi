@@ -810,7 +810,7 @@ Check whether the newsgroups mentioned in the Newsgroups and
 Followup-To headers exist.
 @item valid-newsgroups
 Check whether the @code{Newsgroups} and @code{Followup-To} headers
-are valid syntactially.
+are valid syntactically.
 @end table
 
 All these conditions are checked by default.

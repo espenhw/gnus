@@ -69,7 +69,7 @@
 ;; How do I Rate an article??
 ;;   Before you type n to go to the next article, hit a number from 1-5
 ;;   Type r in the summary buffer and you will be prompted.
-;;   Note that when you're in grouplens-minor-mode 'r' maskes the
+;;   Note that when you're in grouplens-minor-mode 'r' masks the
 ;;   usual reply binding for 'r'
 ;;
 ;; What if, Gasp, I find a bug???
@@ -77,7 +77,7 @@
 ;; mail buffer with the  state of variables and buffers that will help
 ;; me debug the problem.  A short description up front would help too!
 ;; 
-;; How do I display the prediction for an aritcle:
+;; How do I display the prediction for an article:
 ;;  If you set the gnus-summary-line-format as shown above, the score
 ;;  (prediction) will be shown automatically.
 ;;
@@ -176,7 +176,7 @@ GroupLens predictions with scores calculated by other score methods.")
 The scale factor is applied after the offset.")
 
 (defvar gnus-grouplens-override-scoring 'override
-  "Tell Grouplens to override the normal Gnus scoring mechanism.  
+  "Tell GroupLens to override the normal Gnus scoring mechanism.  
 GroupLens scores can be combined with gnus scores in one of three ways.
 'override -- just use grouplens predictions for grouplens groups
 'combine  -- combine grouplens scores with gnus scores
@@ -300,7 +300,7 @@ If this times out we give up and assume that something has died..." )
 				(concat "login " grouplens-pseudonym))
 	      (if (bbb-read-response bbb-process)
 		  (setq grouplens-bbb-token (bbb-extract-token-number))
-		(gnus-message 3 "Error: Grouplens login failed")))))
+		(gnus-message 3 "Error: GroupLens login failed")))))
     (gnus-message 3 "Error: you must set a pseudonym"))
   grouplens-bbb-token)
 
