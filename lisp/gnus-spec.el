@@ -281,7 +281,7 @@
 	  wstart seek)
     ;; Find the end position.
     (while (and (< seek length)
-		(< wend end))
+		(<= wend end))
       (incf wend (gnus-char-width (aref string seek)))
       (incf seek))
     (setq wend seek)

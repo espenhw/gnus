@@ -7783,15 +7783,20 @@ to save in."
   "Force re-fetching of the current article.
 If ARG (the prefix) is a number, show the article with the charset
 defined in `gnus-summary-show-article-charset-alist', or the charset
-inputed.
+input.
 If ARG (the prefix) is non-nil and not a number, show the raw article
 without any article massaging functions being run."
   (interactive "P")
   (cond
    ((numberp arg)
+    (gnus-summary-show-article t)
     (let ((gnus-newsgroup-charset
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
-	       (mm-read-coding-system "Charset: ")))
+	       (mm-read-coding-system
+		"View as charset: "
+		(save-excursion
+		  (set-buffer gnus-article-buffer)
+		  (detect-coding-region (point) (point-max) t)))))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
       (gnus-summary-select-article nil 'force)
       (let ((deps gnus-newsgroup-dependencies)
@@ -7813,9 +7818,8 @@ without any article massaging functions being run."
 	 header)
 	(gnus-summary-update-article-line
 	 (cdr gnus-article-current) header)
-	(if (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
-	    (gnus-summary-update-secondary-mark
-	     (cdr gnus-article-current))))))
+	(when (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
+	  (gnus-summary-update-secondary-mark (cdr gnus-article-current))))))
    ((not arg)
     ;; Select the article the normal way.
     (gnus-summary-select-article nil 'force))
