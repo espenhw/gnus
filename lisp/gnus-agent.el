@@ -1,5 +1,5 @@
 ;;; gnus-agent.el --- unplugged support for Gnus
-;; Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -59,12 +59,14 @@
   :group 'gnus-agent
   :type 'integer)
 
-(defcustom gnus-agent-expire-days 7
+(defcustom gnus-agent-expire-days nil
   "Read articles older than this will be expired.
-This can also be a list of regexp/day pairs.  The regexps will
-be matched against group names."
+This can also be a list of regexp/day pairs.  The regexps will be
+matched against group names.  If nil, articles in the agent cache are
+never expired."
   :group 'gnus-agent
-  :type 'integer)
+  :type '(choice (number :tag "days")
+		 (const :tag "never" nil)))
 
 (defcustom gnus-agent-expire-all nil
   "If non-nil, also expire unread, ticked and dormant articles.
@@ -2124,8 +2126,11 @@ Setting GROUP will limit expiration to that group.
 FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
   (interactive)
 
-  (if (or (not (eq articles t))
-          (yes-or-no-p (concat "Are you sure that you want to expire all articles in " (if group group "every agentized group") ".")))
+  (if (and (not gnus-agent-expire-days)
+	   (or (not (eq articles t))
+	       (yes-or-no-p (concat "Are you sure that you want to expire all "
+				    "articles in " (if group group
+						     "every agentized group") "."))))
       (let ((methods (if group
                          (list (gnus-find-method-for-group group))
                        gnus-agent-covered-methods))
