@@ -1,3 +1,10 @@
+2000-11-17 14:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-setup-fill-variables): Use
+	message-cite-prefix-regexp.
+	(message-newline-and-reformat): Check the end of citation, leading
+	WSP, break in the cite prefix.
+
 2000-11-17 13:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el: Shut up.

@@ -1521,9 +1521,9 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (let ((quote-prefix-regexp
          (concat
           "[ \t]*"                      ; possible initial space
-          "\\(\\(" (regexp-quote message-yank-prefix) "\\|" ; user's prefix
-          "\\(\\w\\|[-_.]\\)+>\\|"      ; supercite-style prefix
-          "[|:>]"                       ; standard prefix
+          "\\(\\(" 
+          message-cite-prefix-regexp    "\\|" ; various citation prefix
+	  (regexp-quote message-yank-prefix)  ; user's prefix
           "\\)[ \t]*\\)+")))            ; possible space after each prefix
     (setq paragraph-start
           (concat
@@ -1714,21 +1714,37 @@ With the prefix argument FORCE, insert the header anyway."
 (defun message-newline-and-reformat ()
   "Insert four newlines, and then reformat if inside quoted text."
   (interactive)
-  (let (quoted point)
-    (unless (bolp)
-      (save-excursion
-	(beginning-of-line)
-	(when (looking-at (concat message-cite-prefix-regexp "[ \t]*"))
-	  (setq quoted (match-string 0))))
-      (insert "\n"))
-    (setq point (point))
-    (insert "\n\n\n")
-    (delete-region (point) (re-search-forward "[ \t]*"))
-    (when quoted
-      (insert quoted))
-    (fill-paragraph nil)
-    (goto-char point)
-    (forward-line 1)))
+  (let (quoted point end leading-space)
+    (save-excursion
+      (beginning-of-line)
+      (while (and (not end) (looking-at message-cite-prefix-regexp))
+	(if quoted
+	    (unless (equal quoted (match-string 0))
+	      (setq end (point)))
+	  (setq quoted (match-string 0)))
+	(unless end
+	  (goto-char (match-end 0))
+	  (looking-at "[ \t]*")
+	  (if (or (not leading-space) 
+		  (> (length leading-space) (length (match-string 0))))
+	      (setq leading-space (match-string 0))))
+	(forward-line 1)))
+    (if (< (- (point) (gnus-point-at-bol)) (length quoted))
+	;; break in the cite prefix.
+	(setq quoted nil
+	      end nil))
+    (save-restriction
+      (if end
+	  (narrow-to-region (point) end))
+      (insert "\n")
+      (setq point (point))
+      (insert "\n\n\n")
+      (delete-region (point) (re-search-forward "[ \t]*"))
+      (when quoted
+	(insert quoted (or leading-space "")))
+      (fill-paragraph nil)
+      (goto-char point)
+      (forward-line 1))))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."
