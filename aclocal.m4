@@ -177,3 +177,100 @@ fi
    AC_SUBST(URL)
    AC_MSG_RESULT("${URL}")
 ])
+
+dnl
+dnl Perform checking commercial fonts: Adobe Bembo and Adobe Futura
+dnl
+AC_DEFUN(GNUS_CHECK_FONTS, [
+test "$LATEX" = t && LATEX=
+test "$LATEX" || AC_PATH_PROGS(LATEX, latex, no)
+AC_MSG_CHECKING(for commercial fonts)
+AC_ARG_WITH(fonts,[  --with-fonts            Use commercial fonts],[USE_FONTS="$withval"])
+if test -z "${WITH_FONTS}"; then
+  if test "${LATEX}" = no; then
+    WITH_FONTS_bembo='%'
+    WITHOUT_FONTS_bembo=
+    WITH_FONTS_pfu='%'
+    WITHOUT_FONTS_pfu=
+    WITH_FONTS_bcr='%'
+    WITHOUT_FONTS_bcr=
+  else
+    OUTPUT=./conftest-$$
+    echo '\nonstopmode\documentclass{article}\usepackage{bembo}\begin{document}\end{document}' > ${OUTPUT}
+    if ${LATEX} ${OUTPUT}>& AC_FD_CC 2>&1  ; then  
+      if test -z "${USE_FONTS}"; then
+	USE_FONTS="Adobe Bembo"
+      else
+	USE_FONTS="${USE_FONTS}, Adobe Bembo"
+      fi
+      WITH_FONTS_bembo=
+      WITHOUT_FONTS_bembo='%'
+    else 
+      WITH_FONTS_bembo='%'
+      WITHOUT_FONTS_bembo=
+    fi
+    echo '\nonstopmode\documentclass{article}\begin{document}{\fontfamily{pfu}\fontsize{10pt}{10}\selectfont test}\end{document}' > ${OUTPUT}
+    if ${LATEX} ${OUTPUT} 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
+      WITH_FONTS_pfu='%'
+      WITHOUT_FONTS_pfu=
+    else
+      if test -z "${USE_FONTS}"; then
+	USE_FONTS="Adobe Futura"
+      else
+	USE_FONTS="${USE_FONTS}, Adobe Futura"
+      fi
+      WITH_FONTS_pfu=
+      WITHOUT_FONTS_pfu='%'
+    fi
+    echo '\nonstopmode\documentclass{article}\begin{document}{\fontfamily{bcr}\fontsize{10pt}{10}\selectfont test}\end{document}' > ${OUTPUT}
+    if ${LATEX} ${OUTPUT} 2>& AC_FD_CC | grep 'Some font shapes were not available' >& AC_FD_CC 2>&1  ; then  
+      WITH_FONTS_bcr='%'
+      WITHOUT_FONTS_bcr=
+    else
+      if test -z "${USE_FONTS}"; then
+	USE_FONTS="Adobe Futura"
+      else
+	USE_FONTS="${USE_FONTS}, Bitstream Courier"
+      fi
+      WITH_FONTS_bcr=
+      WITHOUT_FONTS_bcr='%'
+    fi
+    rm -f ${OUTPUT} ${OUTPUT}.aux ${OUTPUT}.log ${OUTPUT}.dvi
+  fi
+else
+  if test "${USE_FONTS}" = yes ; then
+    WITH_FONTS_bembo=
+    WITHOUT_FONTS_bembo='%'
+    WITH_FONTS_pfu=
+    WITHOUT_FONTS_pfu='%'
+    WITH_FONTS_bcr=
+    WITHOUT_FONTS_bcr='%'
+  else
+    WITH_FONTS_bembo='%'
+    WITHOUT_FONTS_bembo=
+    WITH_FONTS_pfu='%'
+    WITHOUT_FONTS_pfu=
+    WITH_FONTS_bcr='%'
+    WITHOUT_FONTS_bcr=
+  fi
+fi
+AC_SUBST(WITH_FONTS_bembo)
+AC_SUBST(WITHOUT_FONTS_bembo)
+AC_SUBST(WITH_FONTS_pfu)
+AC_SUBST(WITHOUT_FONTS_pfu)
+AC_SUBST(WITH_FONTS_bcr)
+AC_SUBST(WITHOUT_FONTS_bcr)
+if test -z "${USE_FONTS}" ; then
+  USE_FONTS=no
+fi
+USE_FONTS=`echo "${USE_FONTS}" | sed 's/,\([^,]*\)$/ and\1/'`
+AC_MSG_RESULT("${USE_FONTS}")
+if test "${USE_FONTS}" = yes ; then
+  USE_FONTS='Set in Adobe Bembo, Adobe Futura and Bitstream Courier.'
+elif test "${USE_FONTS}" = no ; then
+  USE_FONTS=''
+else
+  USE_FONTS="Set in ${USE_FONTS}."
+fi
+AC_SUBST(USE_FONTS)
+])

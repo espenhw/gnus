@@ -22,5 +22,6 @@ AC_PATH_LISPDIR
 AC_PATH_ETCDIR
 AC_CHECK_URL
 AC_CHECK_W3
+GNUS_CHECK_FONTS
 
-AC_OUTPUT(Makefile lisp/Makefile texi/Makefile etc/Makefile texi/ps/Makefile)
+AC_OUTPUT(Makefile etc/Makefile lisp/Makefile texi/Makefile texi/gnusconfig.tex texi/ps/Makefile)

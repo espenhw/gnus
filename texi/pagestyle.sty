@@ -1,14 +1,13 @@
-\def\verbatim@font{\fontencoding{OT1}\fontfamily{pcr}\fontsize{10pt}{10}\selectfont}
 
 \catcode `\÷ = \active
 \def ÷{\penalty10000\hskip0.001pt-\penalty\hyphenpenalty\hskip0.001pt\relax}
 
 \def \newpagestyle#1#2#3{\@namedef{ps@#1}{\def\@oddhead{#2}\def\@oddfoot{#3}%
-	\let\@evenhead\@oddhead \let\@evenfoot\@oddfoot}}
+        \let\@evenhead\@oddhead \let\@evenfoot\@oddfoot}}
 \def \newdoublepagestyle#1#2#3#4#5{\@namedef{ps@#1}{\def\@evenhead{#2}%
-	\def\@oddhead{#3}%
-	\def\@evenfoot{#4}%
-	\def\@oddfoot{#5}}}
+        \def\@oddhead{#3}%
+        \def\@evenfoot{#4}%
+        \def\@oddfoot{#5}}}
 
 \newlength{\headtextwidth}
 \setlength{\headtextwidth}{\textwidth}
@@ -44,17 +43,17 @@
       \ifodd\c@page
          \dp\@tempboxa \z@
          \box\@tempboxa \mbox{} \\
-	 \ifx \@oddhead\@empty\else
+         \ifx \@oddhead\@empty\else
    %      \rule{\headotextwidth}{0.5pt}
          \fi
       \else
-	 \hskip -2.2cm
+         \hskip -2.2cm
          \dp\@tempboxa \z@
          \box\@tempboxa \mbox{}
-	\\\mbox{}
-	 \vskip 2pt
-	 \hskip -2.0cm 
-	 \ifx \@oddhead\@empty\else
+        \\\mbox{}
+         \vskip 2pt
+         \hskip -2.0cm 
+         \ifx \@oddhead\@empty\else
     %     \rule{\headetextwidth}{0.5pt}
          \fi
       \fi  
@@ -82,4 +81,3 @@
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
-\def\verbatim@font{\fontfamily{bcr}\fontsize{10pt}{10}\selectfont}

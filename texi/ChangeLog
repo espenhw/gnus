@@ -1,3 +1,13 @@
+2001-09-27 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnusconfig.tex.in: New.
+	* gnus.texi: Use it.
+	* pagestyle.sty: Don't set verbatim font.
+	* postamble.tex: Set in ...
+	* bembo.sty: Removed.
+	* Makefile.in (gnusconfig.tex): Check gnusconfig.tex.in.
+	(LATEX): Use configure.
+
 2001-09-26 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Limiting): Addition.
