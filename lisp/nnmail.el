@@ -125,7 +125,7 @@ If nil, the first match found will be used."
 
 (defcustom nnmail-cache-ignore-groups nil
   "Regexp that matches group names to be ignored when inserting message
-ids into the cache (`nnmail-cache-insert'). This can also be a list
+ids into the cache (`nnmail-cache-insert').  This can also be a list
 of regexps."
   :group 'nnmail-split
   :type '(choice (const :tag "none" nil)
