@@ -7236,8 +7236,11 @@ If ARG is a negative number, hide the unwanted header lines."
 	  (if  hidden
 	      (let ((gnus-treat-hide-headers nil)
 		    (gnus-treat-hide-boring-headers nil))
+		(setq gnus-article-wash-types
+		      (delq 'headers gnus-article-wash-types))
 		(gnus-treat-article 'head))
-	    (gnus-treat-article 'head)))))))
+	    (gnus-treat-article 'head)))
+	(gnus-set-mode-line 'article)))))
 
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
@@ -9044,12 +9047,12 @@ save those articles instead."
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
 
-(defun gnus-summary-save-parts (type dir n reverse)
+(defun gnus-summary-save-parts (type dir n &optional reverse)
   "Save parts matching TYPE to DIR.
 If REVERSE, save parts that do not match TYPE."
   (interactive
    (list (read-string "Save parts of type: " "image/.*")
-	 (read-file-name "Save to directory: " t nil t)
+	 (read-file-name "Save to directory: " nil nil t)
 	 current-prefix-arg))
   (gnus-summary-iterate n
     (let ((gnus-display-mime-function nil)

@@ -482,31 +482,35 @@ parameter.  It should return nil, `warn' or `delete'."
 (defun nnmail-get-active ()
   "Returns an assoc of group names and active ranges.
 nn*-request-list should have been called before calling this function."
-  (let (group-assoc)
-    ;; Go through all groups from the active list.
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (goto-char (point-min))
-      (unless (re-search-forward "[\\\"]" nil t)
-	(goto-char (point-max))
-	(while (re-search-backward "[][';?()#]" nil t)
-	  (insert ?\\)))
-      (goto-char (point-min))
-      (let (group max min)
-	(while (not (eobp))
-	  (condition-case err
-	      (progn
-		(narrow-to-region (point) (gnus-point-at-eol))
-		(setq group (read nntp-server-buffer))
-		(unless (stringp group)
-		  (setq group (symbol-name group)))
-		(if (and (numberp (setq max (read nntp-server-buffer)))
-			 (numberp (setq min (read nntp-server-buffer))))
-		    (push (list group (cons min max))
-			  group-assoc)))
-	    (error nil))
-	  (widen)
-	  (forward-line 1))))
+  ;; Go through all groups from the active list.
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (nnmail-parse-active)))
+
+(defun nnmail-parse-active ()
+  "Parse the active file in the current buffer and return an alist."
+  (goto-char (point-min))
+  (unless (re-search-forward "[\\\"]" nil t)
+    (goto-char (point-max))
+    (while (re-search-backward "[][';?()#]" nil t)
+      (insert ?\\)))
+  (goto-char (point-min))
+  (let ((buffer (current-buffer))
+	group-assoc group max min)
+    (while (not (eobp))
+      (condition-case err
+	  (progn
+	    (narrow-to-region (point) (gnus-point-at-eol))
+	    (setq group (read buffer))
+	    (unless (stringp group)
+	      (setq group (symbol-name group)))
+	    (if (and (numberp (setq max (read nntp-server-buffer)))
+		     (numberp (setq min (read nntp-server-buffer))))
+		(push (list group (cons min max))
+		      group-assoc)))
+	(error nil))
+      (widen)
+      (forward-line 1))
     group-assoc))
 
 (defvar nnmail-active-file-coding-system 'raw-text

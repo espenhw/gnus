@@ -105,33 +105,31 @@ Valid encodings are nil, `Q' and `B'.")
   "Encode the message header according to `rfc2047-header-encoding-alist'.
 Should be called narrowed to the head of the message."
   (interactive "*")
-  (when (featurep 'mule)
-    (save-excursion
-      (goto-char (point-min))
-      (let ((alist rfc2047-header-encoding-alist)
-	    elem method)
-	(while (not (eobp))
-	  (save-restriction
-	    (rfc2047-narrow-to-field)
-	    (when (rfc2047-encodable-p)
-	      ;; We found something that may perhaps be encoded.
-	      (while (setq elem (pop alist))
-		(when (or (and (stringp (car elem))
-			       (looking-at (car elem)))
-			  (eq (car elem) t))
-		  (setq alist nil
-			method (cdr elem))))
-	      (when method
-		(cond
-		 ((eq method 'mime)
-		  (rfc2047-encode-region (point-min) (point-max))
-		  (rfc2047-fold-region (point-min) (point-max)))
-		 ;; Hm.
-		 (t))))
-	    (goto-char (point-max)))))
-      (when mail-parse-charset
-	(encode-coding-region (point-min) (point-max)
-			      mail-parse-charset)))))
+  (save-excursion
+    (goto-char (point-min))
+    (let ((alist rfc2047-header-encoding-alist)
+	  elem method)
+      (while (not (eobp))
+	(save-restriction
+	  (rfc2047-narrow-to-field)
+	  (when (rfc2047-encodable-p)
+	    ;; We found something that may perhaps be encoded.
+	    (while (setq elem (pop alist))
+	      (when (or (and (stringp (car elem))
+			     (looking-at (car elem)))
+			(eq (car elem) t))
+		(setq alist nil
+		      method (cdr elem))))
+	    (cond
+	     ((eq method 'mime)
+	      (rfc2047-encode-region (point-min) (point-max))
+	      (rfc2047-fold-region (point-min) (point-max)))
+	     ;; Hm.
+	     (t)))
+	  (goto-char (point-max)))))
+    (when mail-parse-charset
+      (encode-coding-region
+       (point-min) (point-max) mail-parse-charset))))
 
 (defun rfc2047-encodable-p (&optional header)
   "Say whether the current (narrowed) buffer contains characters that need encoding in headers."

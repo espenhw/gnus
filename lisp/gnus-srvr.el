@@ -296,6 +296,18 @@ The following commands are available:
   (push (assoc server gnus-server-alist) gnus-server-killed-servers)
   (setq gnus-server-alist (delq (car gnus-server-killed-servers)
 				gnus-server-alist))
+  (let ((groups (gnus-groups-from-server server)))
+    (when (and groups
+	       (gnus-yes-or-no-p
+		(format "Kill all %s groups from this server? "
+			(length groups))))
+      (dolist (group groups)
+	(setq gnus-newsrc-alist
+	      (delq (assoc group gnus-newsrc-alist)
+		    gnus-newsrc-alist))
+	(when gnus-group-change-level-function
+	  (funcall gnus-group-change-level-function
+		   group gnus-level-killed 3)))))
   (gnus-server-position-point))
 
 (defun gnus-server-yank-server ()

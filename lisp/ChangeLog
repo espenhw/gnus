@@ -1,5 +1,23 @@
 2000-03-13 13:51:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-srvr.el (gnus-server-kill-server): Offer to kill all the
+	groups from the server.
+
+	* gnus-sum.el (gnus-summary-save-parts): Fix interactive spec. 
+	(gnus-summary-toggle-header): Update the wash status.
+
+	* gnus-uu.el ((gnus-uu-extract-map "X" gnus-summary-mode-map)):
+	Moved here.
+
+	* gnus-agent.el (gnus-agent-save-group-info): Respect old
+	setting. 
+
+	* nnmail.el (nnmail-get-active): Use it.
+	(nnmail-parse-active): New function.
+
+	* mm-view.el (mm-inline-text): Support the new version of
+	vcard.el. 
+
 	* gnus-sum.el (gnus-summary-move-article): Only delete article
 	when moving junk.
 	(gnus-deaden-summary): Bury the buffer.
@@ -7,6 +25,11 @@
 	* nnmail.el (nnmail-group-pathname): Ditto.
 
 	* nnheader.el (nnheader-group-pathname): Use expand-file-name.
+
+2000-03-13 20:23:06  Christoph Rohland  <hans-christoph.rohland@sap.com>
+
+	* rfc2047.el (rfc2047-encode-message-header): Encode no matter
+	whether Mule.
 
 2000-03-10 14:57:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -41,11 +41,11 @@
   "Spool directory for the nnml mail backend.")
 
 (defvoo nnml-active-file
-    (concat (file-name-as-directory nnml-directory) "active")
+    (expand-file-name "active" nnml-directory)
   "Mail active file.")
 
 (defvoo nnml-newsgroups-file
-    (concat (file-name-as-directory nnml-directory) "newsgroups")
+    (expand-file-name "newsgroups" nnml-directory)
   "Mail newsgroups description file.")
 
 (defvoo nnml-get-new-mail t
@@ -372,8 +372,8 @@ all.  This may very well take some time.")
 	      (nnmail-write-region
 	       (point-min) (point-max)
 	       (or (nnml-article-to-file article)
-		   (concat nnml-current-directory
-			   (int-to-string article)))
+		   (expand-file-name (int-to-string article)
+				     nnml-current-directory))
 	       nil (if (nnheader-be-verbose 5) nil 'nomesg))
 	      t)
 	(setq headers (nnml-parse-head chars article))
@@ -477,7 +477,7 @@ all.  This may very well take some time.")
   (nnml-update-file-alist)
   (let (file)
     (if (setq file (cdr (assq article nnml-article-file-alist)))
-	(concat nnml-current-directory file)
+	(expand-file-name file nnml-current-directory)
       ;; Just to make sure nothing went wrong when reading over NFS --
       ;; check once more.
       (when (file-exists-p
@@ -518,8 +518,8 @@ all.  This may very well take some time.")
 
 (defun nnml-find-id (group id)
   (erase-buffer)
-  (let ((nov (concat (nnmail-group-pathname group nnml-directory)
-		     nnml-nov-file-name))
+  (let ((nov (expand-file-name nnml-nov-file-name
+			       (nnmail-group-pathname group nnml-directory)))
 	number found)
     (when (file-exists-p nov)
       (nnheader-insert-file-contents nov)
@@ -539,7 +539,7 @@ all.  This may very well take some time.")
 (defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnml-nov-is-evil)
       nil
-    (let ((nov (concat nnml-current-directory nnml-nov-file-name)))
+    (let ((nov (expand-file-name nnml-nov-file-name nnml-current-directory)))
       (when (file-exists-p nov)
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
@@ -635,8 +635,8 @@ all.  This may very well take some time.")
       (push (list group active) nnml-group-alist))
     (setcdr active (1+ (cdr active)))
     (while (file-exists-p
-	    (concat (nnmail-group-pathname group nnml-directory)
-		    (int-to-string (cdr active))))
+	    (expand-file-name (int-to-string (cdr active))
+			      (nnmail-group-pathname group nnml-directory)))
       (setcdr active (1+ (cdr active))))
     (cdr active)))
 
@@ -676,8 +676,9 @@ all.  This may very well take some time.")
 	(save-excursion
 	  (set-buffer buffer)
 	  (set (make-local-variable 'nnml-nov-buffer-file-name)
-	       (concat (nnmail-group-pathname group nnml-directory)
-		       nnml-nov-file-name))
+	       (expand-file-name
+		nnml-nov-file-name
+		(nnmail-group-pathname group nnml-directory)))
 	  (erase-buffer)
 	  (when (file-exists-p nnml-nov-buffer-file-name)
 	    (nnheader-insert-file-contents nnml-nov-buffer-file-name)))

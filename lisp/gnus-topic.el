@@ -594,7 +594,8 @@ articles in the topic and its subtopics."
   (let* ((topic (gnus-group-topic group))
 	 (groups (cdr (assoc topic gnus-topic-alist)))
 	 (g (cdr (member group groups)))
-	 (unfound t))
+	 (unfound t)
+	 entry)
     ;; Try to jump to a visible group.
     (while (and g (not (gnus-group-goto-group (car g) t)))
       (pop g))
@@ -632,7 +633,7 @@ articles in the topic and its subtopics."
 	   (tp (reverse (cddr top))))
       (if (not top)
 	  (gnus-topic-insert-topic-line
-	   topic t t (car (gnus-topic-find-topology topic)) nil unread)
+	   topic t t (car (gnus-topic-find-topology topic)) nil 0)
 	(while (not (equal (caaar tp) topic))
 	  (setq tp (cdr tp)))
 	(pop tp)

@@ -41,7 +41,8 @@
 		     rmail-summary-exists rmail-select-summary
 		     rmail-update-summary url-retrieve
 		     temp-directory babel-fetch babel-wash
-		     find-coding-systems-for-charsets sc-cite-regexp))
+		     find-coding-systems-for-charsets sc-cite-regexp
+		     vcard-pretty-print))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
@@ -57,7 +58,8 @@
 		    url-current-callback-func url-current-callback-data
 		    url-be-asynchronous temporary-file-directory
 		    babel-translations babel-history
-		    display-time-mail-function)))
+		    display-time-mail-function imap-password
+		    )))
   (maybe-bind '(mail-mode-hook
 		enable-multibyte-characters browse-url-browser-function
 		adaptive-fill-first-line-regexp adaptive-fill-regexp
@@ -65,7 +67,7 @@
 		w3-meta-content-type-charset-regexp
 		w3-meta-charset-content-type-regexp
 		babel-translations babel-history
-		display-time-mail-function))
+		display-time-mail-function imap-password))
   (maybe-fbind '(color-instance-rgb-components
 		 temp-directory
 		 glyph-width annotation-glyph window-pixel-width glyph-height
@@ -91,7 +93,8 @@
 		 w3-coding-system-for-mime-charset 
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
 		 url-generic-parse-url valid-image-instantiator-format-p
-		 babel-fetch babel-wash babel-as-string sc-cite-regexp)))
+		 babel-fetch babel-wash babel-as-string sc-cite-regexp
+		 vcard-pretty-print)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

@@ -369,12 +369,11 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   "k" gnus-summary-kill-process-mark
   "y" gnus-summary-yank-process-mark
   "w" gnus-summary-save-process-mark
-  "i" gnus-uu-invert-processable
-  "m" gnus-summary-save-parts)
+  "i" gnus-uu-invert-processable)
 
 (gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
   ;;"x" gnus-uu-extract-any
-  ;;"m" gnus-uu-extract-mime
+  "m" gnus-summary-save-parts
   "u" gnus-uu-decode-uu
   "U" gnus-uu-decode-uu-and-save
   "s" gnus-uu-decode-unshar

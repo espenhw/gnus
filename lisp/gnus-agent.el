@@ -621,7 +621,8 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-save-group-info (method group active)
   (when (gnus-agent-method-p method)
     (let* ((gnus-command-method method)
-	   (file (gnus-agent-lib-file "active")))
+	   (file (gnus-agent-lib-file "active"))
+	   oactive)
       (gnus-make-directory (file-name-directory file))
       (with-temp-file file
 	(when (file-exists-p file)
@@ -629,9 +630,17 @@ the actual number of articles toggled is returned."
 	(goto-char (point-min))
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
+	  (save-excursion
+	    (save-restriction
+	      (narrow-to-region (match-beginning 0)
+				(progn
+				  (forward-line 1)
+				  (point)))
+	      (setq oactive (car (nnmail-parse-active)))))
 	  (gnus-delete-line))
-	(insert (format "%S %d %d y\n" (intern group) (cdr active)
-			(car active)))
+	(insert (format "%S %d %d y\n" (intern group)
+			(cdr active)
+			(or (car oactive) (car active))))
 	(goto-char (point-max))
 	(while (search-backward "\\." nil t)
 	  (delete-char 1))))))

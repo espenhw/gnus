@@ -127,9 +127,11 @@
       (mm-insert-inline
        handle
        (concat "\n-- \n"
-	       (vcard-format-string
-		(vcard-parse-string (mm-get-part handle)
-				    'vcard-standard-filter)))))
+	       (if (fboundp 'vcard-pretty-print)
+		   (vcard-pretty-print (mm-get-part handle))
+		 (vcard-format-string
+		  (vcard-parse-string (mm-get-part handle)
+				      'vcard-standard-filter))))))
      (t
       (setq text (mm-get-part handle))
       (let ((b (point))
