@@ -2838,6 +2838,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(gnus-set-global-variables)
 		(setq gnus-have-all-headers
 		      (or all-headers gnus-show-all-headers))))
+	    (save-excursion
+	      (gnus-configure-windows 'article))
 	    (when (or (numberp article)
 		      (stringp article))
 	      (gnus-article-prepare-display)
@@ -2852,7 +2854,6 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (gnus-set-mode-line 'article))
 	    (article-goto-body)
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
-	    (gnus-configure-windows 'article)
 	    t))))))
 
 ;;;###autoload

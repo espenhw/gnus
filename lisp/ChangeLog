@@ -1,3 +1,9 @@
+2000-10-04 15:24:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-prepare): Configure windows before
+	gnus-article-prepare-display is called.  Otherwise, BBDB's popup
+	window might be overrided.
+
 2000-10-04  Dave Love  <fx@gnu.org>
 
 	* gnus-ems.el (gnus-article-display-xface)
