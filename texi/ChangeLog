@@ -1,3 +1,7 @@
+2003-01-26  Simon Josefsson  <jas@extundo.com>
+
+	* sieve.texi (Installation): Extension .sv is also used.
+
 2003-01-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Article Backlog): Update.
