@@ -2344,20 +2344,21 @@ be removed from the server, even when it's empty."
   (unless (gnus-check-backend-function 'request-delete-group group)
     (error "This back end does not support group deletion"))
   (prog1
-      (if (and (not no-prompt)
-	       (not (gnus-yes-or-no-p
-		     (format
-		      "Do you really want to delete %s%s? "
-		      group (if force " and all its contents" "")))))
-	  ()				; Whew!
-	(gnus-message 6 "Deleting group %s..." group)
-	(if (not (gnus-request-delete-group group force))
-	    (gnus-error 3 "Couldn't delete group %s" group)
-	  (gnus-message 6 "Deleting group %s...done" group)
-	  (gnus-group-goto-group group)
-	  (gnus-group-kill-group 1 t)
-	  (gnus-set-active group nil)
-	  t))
+      (let ((group-decoded (gnus-group-decoded-name group)))
+	(if (and (not no-prompt)
+		 (not (gnus-yes-or-no-p
+		       (format
+			"Do you really want to delete %s%s? "
+			group-decoded (if force " and all its contents" "")))))
+	    ()				; Whew!
+	  (gnus-message 6 "Deleting group %s..." group-decoded)
+	  (if (not (gnus-request-delete-group group force))
+	      (gnus-error 3 "Couldn't delete group %s" group-decoded)
+	    (gnus-message 6 "Deleting group %s...done" group-decoded)
+	    (gnus-group-goto-group group)
+	    (gnus-group-kill-group 1 t)
+	    (gnus-set-active group nil)
+	    t)))
     (gnus-group-position-point)))
 
 (defun gnus-group-rename-group (group new-name)
@@ -2634,7 +2635,10 @@ If there is, use Gnus to create an nnrss group"
 	      (href (cdr (assoc 'href feedinfo))))
 	  (push (list title href desc)
 		nnrss-group-alist)
-	  (gnus-group-make-group title '(nnrss ""))
+	  (gnus-group-make-group (if (mm-coding-system-p 'utf-8)
+				     (mm-encode-coding-string title 'utf-8)
+				   title)
+				 '(nnrss ""))
 	  (nnrss-save-server-data nil))
       (error "No feeds found for %s" url))))
 
@@ -3137,7 +3141,7 @@ up is returned."
 		   "Do you really want to mark all articles in %s as read? "
 		 "Mark all unread articles in %s as read? ")
 	       (if (= (length groups) 1)
-		   (car groups)
+		   (gnus-group-decoded-name (car groups))
 		 (format "these %d groups" (length groups)))))))
 	n
       (while (setq group (pop groups))
@@ -3424,7 +3428,7 @@ of groups killed."
 		  gnus-list-of-killed-groups))
 	  (gnus-group-change-level
 	   (if entry entry group) gnus-level-killed (if entry nil level))
-	  (message "Killed group %s" group))
+	  (message "Killed group %s" (gnus-group-decoded-name group)))
       ;; If there are lots and lots of groups to be killed, we use
       ;; this thing instead.
       (dolist (group (nreverse groups))
