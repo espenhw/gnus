@@ -1,3 +1,8 @@
+2002-10-11  Ted Zlatanov <tzz@lifelogs.com>
+
+	* spam.el (spam-check-ifile): added ifile as a spam checking
+	backend, and spam-use-ifle as the variable to toggle that check.
+
 2002-10-12  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-beginning-of-line): New variable.
