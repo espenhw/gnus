@@ -1,3 +1,7 @@
+2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-prepare-threads): Add comment.
+
 2003-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cache.el (gnus-cache-braid-nov): Revoke last change.

@@ -4819,6 +4819,8 @@ or a straight list of headers."
 	       (substring gnus-tmp-from
 			  (1+ (match-beginning 0)) (1- (match-end 0))))
 	      (t gnus-tmp-from))
+
+	     ;; Do the %B string
 	     gnus-tmp-thread-tree-header-string
 	     (cond
 	      ((not gnus-show-threads) "")
