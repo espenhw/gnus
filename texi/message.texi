@@ -323,6 +323,7 @@ will be removed before popping up the buffer.  The default is
 * Movement::            Moving around in message buffers.
 * Insertion::           Inserting things into message buffers.
 * MIME::                @sc{mime} considerations.
+* Security::            Signing and encrypting messages.
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
 * Mail Aliases::        How to use mail aliases.
@@ -557,6 +558,135 @@ You can also create arbitrarily complex multiparts using the MML
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
 Manual}).
 
+@node Security
+@section Security
+@cindex Security
+@cindex S/MIME
+@cindex PGP/MIME
+@cindex sign
+@cindex encrypt
+
+Using the MML language, Message is able to create digitally signed and
+digitally encrypted messages.  Message (or rather MML) currently support
+PGP/MIME and S/MIME.  Instructing MML to perform security operations on
+a MIME part is done using the @code{M-m s} key map for signing and the
+@code{M-m c} key map for encryption, as follows.
+
+@table @kbd
+
+@item M-m s s
+@kindex M-m s s
+@findex mml-secure-sign-smime
+
+Digitally sign current MIME part using S/MIME.
+
+@item M-m s p
+@kindex M-m s p
+@findex mml-secure-sign-pgp
+
+Digitally sign current MIME part using PGP/MIME.
+
+@item M-m c s
+@kindex M-m c s
+@findex mml-secure-encrypt-smime
+
+Digitally encrypt current MIME part using S/MIME.
+
+@item M-m c p
+@kindex M-m c p
+@findex mml-secure-encrypt-pgpmime
+
+Digitally encrypt current MIME part using PGP/MIME.
+
+@end table
+
+These commands do not immediately sign or encrypt the message, they
+merely insert proper MML tags to instruct the MML engine to perform that
+operation when the message is actually sent.  They may perform other
+operations too, such as locating and retrieving a S/MIME certificate of
+the person you wish to send encrypted mail to.
+
+Since signing and especially encryption often is used when sensitive
+information is sent, you may want to have some way to ensure that your
+mail is actually signed or encrypted.  After invoking the above
+sign/encrypt commands, it is possible to preview the raw article by
+using @code{C-u M-m P} (@code{mml-preview}).  Then you can verify that
+your long rant about what your ex-significant other or whomever actually
+did with that funny looking person at that strange party the other
+night, actually will be sent encrypted.
+
+@emph{Note!}  Neither PGP/MIME nor S/MIME encrypt/signs RFC822 headers.
+They only operate on the MIME object.  Keep this in mind before sending
+mail with a sensitive Subject line.
+
+Actually using the security commands above is not very difficult.  At
+least not compared with making sure all involved programs talk with each
+other properly.  Thus, we now describe what external libraries or
+programs are required to make things work, and some small general hints.
+
+@subsection Using S/MIME
+
+@emph{Note!}  This section assume you have a basic familiarity with
+modern cryptography, S/MIME, various PKCS standards, OpenSSL and so on.
+
+The S/MIME support in Message (and MML) require OpenSSL.  OpenSSL
+perform the actual S/MIME sign/encrypt operations.  OpenSSL can be found
+at @code{http://www.openssl.org/}.  OpenSSL 0.9.5a and later should
+work.  However, version 0.9.5a insert a spurious CR character into MIME
+separators so you may wish to avoid it if you would like to avoid being
+regarded as someone who send strange mail. (Although by sending S/MIME
+messages you've probably already lost that contest.)
+
+To be able to send encrypted mail, a personal certificate is not
+required.  Message (MML) need a certificate for the person to whom you
+wish to communicate with though.  You're asked for this when you type
+@code{M-m c s}.  Currently there are two ways to retrieve this
+certificate, from a local file or from DNS.  If you chose a local file,
+it need to contain a X.509 certificate in PEM format.  If you chose DNS,
+you're asked for the domain name where the certificate is stored, the
+default is a good guess.  To my belief, Message (MML) is the first mail
+agent in the world to support retrieving S/MIME certificates from DNS,
+so you're not likely to find very many certificates out there.  At least
+there should be one, stored at the domain @code{simon.josefsson.org}.
+LDAP is a more popular method of distributing certificates, support for
+it is planned.  (Meanwhile, you can use @code{ldapsearch} from the
+command line to retrieve a certificate into a file and use it.)
+
+As for signing messages, OpenSSL can't perform signing operations
+without some kind of configuration.  Especially, you need to tell it
+where your private key and your certificate is stored.  MML uses an
+Emacs interface to OpenSSL, aptly named @code{smime.el}, and it contain
+a @code{custom} group used for this configuration.  So, try @code{M-x
+customize-group RET smime RET} and look around.
+
+Currently there is no support for talking to a CA (or RA) to create your
+own certificate.  None is planned either.  You need to do this manually
+with OpenSSL or using some other program.  I used Netscape and got a
+free S/MIME certificate from one of the big CA's on the net.  Netscape
+is able to export your private key and certificate in PKCS #12 format.
+Use OpenSSL to convert this into a plain X.509 certificate in PEM format
+as follows.
+
+@example
+$ openssl pkcs12 -in ns.p12 -clcerts -nodes > key+cert.pem
+@end example
+
+The @code{key+cert.pem} file should be pointed to from the
+@code{smime-keys} variable.  You should now be able to send signed mail.
+
+@emph{Note!}  Your private key is store unencrypted in the file, so take
+care in handling it.
+
+@subsection Using PGP/MIME
+
+PGP/MIME require an external PGP implementation, such as GNU Privacy
+Gaurd (@code{http://www.gnupg.org/}.  It also require a Emacs interface
+to it, such as Mailcrypt (available from
+@code{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
+Florian Weimer's @code{gpg.el}.
+
+Creating your own PGP key is described in detail in various PGP
+documentation, so we refer to it.
 
 @node Various Commands
 @section Various Commands

@@ -1,5 +1,7 @@
 2000-11-11  Simon Josefsson  <sj@extundo.com>
 
+	* message.texi (Security): Add.
+
 	* emacs-mime.texi (MML Definition): Add sign, encrypt, keyfile and
 	certfile.
 
