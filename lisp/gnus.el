@@ -217,8 +217,8 @@ This will most commonly be on a remote machine, and the file will be
 fetched by ange-ftp.
 
 This variable can also be a list of directories.  In that case, the
-first element in the list will be used by default, and the others will
-be used as backup sites.
+first element in the list will be used by default.  The others can
+be used when being prompted for a site.
 
 Note that Gnus uses an aol machine as the default directory.  If this
 feels fundamentally unclean, just think of it as a way to finally get
@@ -1750,7 +1750,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.29"
+(defconst gnus-version-number "5.2.30"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -6445,7 +6445,9 @@ is returned."
 	   (alist (cdr prev)))
       (while alist
 	(if (= (gnus-info-level (car alist)) level)
-	    (setcdr prev (cdr alist))
+	    (progn
+	      (push (gnus-info-group (car alist)) gnus-killed-list)
+	      (setcdr prev (cdr alist)))
 	  (setq prev alist))
 	(setq alist (cdr alist)))
       (gnus-make-hashtable-from-newsrc-alist)
@@ -6601,18 +6603,17 @@ If N is negative, this group and the N-1 previous groups will be checked."
 (defun gnus-group-describe-group (force &optional group)
   "Display a description of the current newsgroup."
   (interactive (list current-prefix-arg (gnus-group-group-name)))
-  (when (and force
-	     gnus-description-hashtb)
-    (gnus-sethash group nil gnus-description-hashtb))
-  (let ((method (gnus-find-method-for-group group))
-	desc)
+  (let* ((method (gnus-find-method-for-group group))
+	 (mname (gnus-group-prefixed-name "" method))
+	 desc)
+    (when (and force
+	       gnus-description-hashtb)
+      (gnus-sethash mname nil gnus-description-hashtb))
     (or group (error "No group name given"))
     (and (or (and gnus-description-hashtb
 		  ;; We check whether this group's method has been
 		  ;; queried for a description file.
-		  (gnus-gethash
-		   (gnus-group-prefixed-name "" method)
-		   gnus-description-hashtb))
+		  (gnus-gethash mname gnus-description-hashtb))
 	     (setq desc (gnus-group-get-description group))
 	     (gnus-read-descriptions-file method))
 	 (gnus-message 1
@@ -7242,6 +7243,8 @@ The following commands are available:
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
+  (gnus-make-local-hook 'post-command-hook)
+  (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (run-hooks 'gnus-summary-mode-hook))
 
 (defun gnus-summary-make-local-variables ()
@@ -8603,7 +8606,8 @@ or a straight list of headers."
 	   ;; If the article lies outside the current limit,
 	   ;; then we do not display it.
 	   ((and (not (memq number gnus-newsgroup-limit))
-		 (not gnus-tmp-dummy-line))
+		 ;(not gnus-tmp-dummy-line)
+		 )
 	    (setq gnus-tmp-gathered
 		  (nconc (mapcar
 			  (lambda (h) (mail-header-number (car h)))
@@ -10919,6 +10923,7 @@ If ALL, mark even excluded ticked and dormants as read."
   (setq gnus-newsgroup-limit articles)
   (let ((total (length gnus-newsgroup-data))
 	(data (gnus-data-find-list (gnus-summary-article-number)))
+	(gnus-summary-mark-below nil)	; Inhibit this.
 	found)
     ;; This will do all the work of generating the new summary buffer
     ;; according to the new limit.
@@ -13530,6 +13535,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
     "\M-\t" gnus-article-prev-button
     "<" beginning-of-buffer
     ">" end-of-buffer
+    "\C-c\C-i" gnus-info-find-node
     "\C-c\C-b" gnus-bug)
 
   (substitute-key-definition
@@ -14778,7 +14784,7 @@ Argument LINES specifies lines to be scrolled down."
   "Describe article mode commands briefly."
   (interactive)
   (gnus-message 6
-		(substitute-command-keys "\\<gnus-article-mode-map>\\[gnus-article-next-page]:Next page	 \\[gnus-article-prev-page]:Prev page  \\[gnus-article-show-summary]:Show summary  \\[gnus-info-find-node]:Run Info  \\[gnus-article-describe-briefly]:This help")))
+		(substitute-command-keys "\\<gnus-article-mode-map>\\[gnus-article-goto-next-page]:Next page	 \\[gnus-article-goto-prev-page]:Prev page  \\[gnus-article-show-summary]:Show summary  \\[gnus-info-find-node]:Run Info  \\[gnus-article-describe-briefly]:This help")))
 
 (defun gnus-article-summary-command ()
   "Execute the last keystroke in the summary buffer."
@@ -14808,6 +14814,8 @@ Argument LINES specifies lines to be scrolled down."
 	 '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"	"a" "f" "F"
 	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
 	   "=" "^" "\M-^" "|"))
+	(nosave-but-article
+	 '("A\r"))
 	keys)
     (save-excursion
       (set-buffer gnus-summary-buffer)
@@ -14815,12 +14823,18 @@ Argument LINES specifies lines to be scrolled down."
       (setq keys (read-key-sequence nil)))
     (message "")
 
-    (if (member keys nosaves)
+    (if (or (member keys nosaves)
+	    (member keys nosave-but-article))
 	(let (func)
-	  (pop-to-buffer gnus-summary-buffer 'norecord)
-	  (if (setq func (lookup-key (current-local-map) keys))
-	      (call-interactively func)
-	    (ding)))
+	  (save-window-excursion
+	    (pop-to-buffer gnus-summary-buffer 'norecord)
+	    (setq func (lookup-key (current-local-map) keys)))
+	  (if (not func)
+	      (ding)
+	    (set-buffer gnus-summary-buffer)
+	    (call-interactively func))
+	  (when (member keys nosave-but-article)
+	    (pop-to-buffer gnus-article-buffer 'norecord)))
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
 	    (opoint (point))

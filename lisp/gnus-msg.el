@@ -654,10 +654,9 @@ If YANK is non-nil, include the original article."
 	  (save-excursion (re-search-backward "[ \t\n]" nil t) (1+ (point)))
 	  (save-excursion (re-search-forward "[ \t\n]" nil t) (1- (point))))))
     (when address
-      (switch-to-buffer gnus-summary-buffer)
       (message-reply address)
       (when yank
-	(gnus-inews-yank-articles yank)))))
+	(gnus-inews-yank-articles (list (cdr gnus-article-current)))))))
 
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."

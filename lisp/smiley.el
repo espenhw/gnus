@@ -66,7 +66,7 @@
   "Tongue color.")
 
 (defvar smiley-circle-color "black"
-  "Tongue color.")
+  "Circle color.")
 
 (defvar smiley-glyph-cache nil)
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))

@@ -551,7 +551,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	((eq type 'f)
 	 (setq match (gnus-simplify-subject-fuzzy match))))
   (let ((score (gnus-score-default score))
-	(header (downcase header))
+	(header (format "%s" (downcase header)))
 	new)
     (and prompt (setq match (read-string 
 			     (format "Match %s on %s, %s: " 
@@ -565,6 +565,9 @@ If optional argument `SILENT' is nil, show effect of score entry."
 			     (if (numberp match)
 				 (int-to-string match)
 			       match))))
+
+    ;; Get rid of string props.
+    (setq match (format "%s" match))
 
     ;; If this is an integer comparison, we transform from string to int. 
     (and (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)

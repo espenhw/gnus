@@ -1,3 +1,49 @@
+Sat Jun 29 00:23:44 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-article-read-summary-keys): Deal with message
+	composition more gracefully.
+
+Fri Jun 28 23:58:37 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-group-describe-group): Re-read when given a
+	prefix. 
+
+Fri Jun 28 23:34:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-group-kill-level): Put groups on killed list.
+
+	* nnfolder.el (nnfolder-read-folder): Would bug out when group not
+	in active file.
+
+Fri Jun 28 22:42:49 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-score.el (gnus-summary-score-entry): Get rid of text
+	props. 
+
+	* gnus.el (gnus-article-read-summary-keys): Allow `A RET' to work
+	properly. 
+	(gnus-summary-limit): Inhibit marking low-scored articles as
+	read. 
+
+	* gnus-msg.el (gnus-article-mail): Reply from the right address.
+	(gnus-article-mail): Yank properly.
+
+	* gnus.el (gnus-article-mode-map): Entry for info find node.
+	(gnus-summary-describe-briefly): Display proper message.
+
+	* smiley.el (smiley-circle-color): Doc fix.
+
+	* gnus.el (gnus-summary-prepare-threads): Would display expunged
+	articles after a dummy line.
+	(gnus-group-faq-directory): Doc fix.
+	(gnus-summary-mode): Clear moved inboxes.
+
+Fri Jun 28 21:48:27 1996  Steven L. Baur  <steve@miranova.com>
+
+	* earcon.el: New file.
+
+	* gnus-sound.el: New file.
+
 Fri Jun 28 04:02:25 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.29 is released.
