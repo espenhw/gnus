@@ -163,6 +163,7 @@ variable to \"^nnml\".")
 			      (or (mail-header-lines headers) "")
 			      (or (mail-header-xref headers) "")))
 	      ;; Update the active info.
+	      (set-buffer gnus-summary-buffer)
 	      (gnus-cache-update-active group number)
 	      (push number gnus-newsgroup-cached))
 	    t))))))
@@ -498,13 +499,14 @@ If LOW, update the lower bound instead."
 	 (directory (expand-file-name (or directory gnus-cache-directory)))
 	 (files (directory-files directory 'full))
 	 (group 
-	  (progn
+	  (if top
+	      ""
 	    (string-match 
 	     (concat "^" (file-name-as-directory
 			  (expand-file-name gnus-cache-directory)))
-	     (file-name-as-directory directory))
+	     (directory-file-name directory))
 	    (gnus-replace-chars-in-string 
-	     (substring (file-name-as-directory directory) (match-end 0))
+	     (substring (directory-file-name directory) (match-end 0))
 	     ?/ ?.)))
 	 nums alphs)
     (when top

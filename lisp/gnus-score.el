@@ -111,6 +111,13 @@ score alists.")
     (gnus-del-mark (from -2) (subject -15)))
 "*Alist of marks and scores.")
 
+(defvar gnus-file-name-translation-table nil
+  "*Table for translating characters in file names.
+
+Under OS/2 you'd typically set this variable to 
+
+  '(\?: \?_)")
+
 (defvar gnus-score-mimic-keymap nil
   "*Have the score entry functions pretend that they are a keymap.")
 
@@ -1735,7 +1742,8 @@ This mode is an extended emacs-lisp mode.
   "Redo the entire scoring process in the current summary."
   (interactive)
   (setq gnus-newsgroup-scored nil)
-  (gnus-score-flush-cache)
+  (setq gnus-score-cache nil)
+  (setq gnus-newsgroup-scored nil)
   (gnus-possibly-score-headers)
   (gnus-score-update-lines))
   
@@ -1872,6 +1880,7 @@ GROUP using BNews sys file syntax."
 		    (expand-file-name gnus-kill-files-directory)))
 	 (klen (length kill-dir))
 	 (score-regexp (gnus-score-file-regexp))
+	 (trans (cdr (memq ?: gnus-file-name-translation-table)))
 	 ofiles not-match regexp)
     (save-excursion
       (set-buffer (get-buffer-create "*gnus score files*"))
@@ -1895,8 +1904,10 @@ GROUP using BNews sys file syntax."
 	    (delete-region (1+ (point)) (point-min)))
 	  ;; If short file names were used, we have to translate slashes.
 	  (goto-char (point-min))
-	  (while (re-search-forward "[/:]" nil t)
-	    (replace-match "." t t))
+	  (let ((regexp (concat
+			 "[/:" (if trans (char-to-string trans) "") "]")))
+	    (while (re-search-forward regexp nil t)
+	      (replace-match "." t t)))
 	  ;; Cludge to get rid of "nntp+" problems.
 	  (goto-char (point-min))
 	  (and (looking-at "nn[a-z]+\\+")
@@ -2016,22 +2027,25 @@ The list is determined from the variable gnus-score-file-alist."
 (defun gnus-score-file-name (newsgroup &optional suffix)
   "Return the name of a score file for NEWSGROUP."
   (let ((suffix (or suffix gnus-score-file-suffix)))
-    (cond 
-     ((or (null newsgroup)
-	  (string-equal newsgroup ""))
-      ;; The global score file is placed at top of the directory.
-      (expand-file-name 
-       suffix (or gnus-kill-files-directory "~/News")))
-     ((gnus-use-long-file-name 'not-score)
-      ;; Append ".SCORE" to newsgroup name.
-      (expand-file-name (concat (gnus-newsgroup-saveable-name newsgroup)
-				"." suffix)
-			(or gnus-kill-files-directory "~/News")))
-     (t
-      ;; Place "SCORE" under the hierarchical directory.
-      (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
-				"/" suffix)
-			(or gnus-kill-files-directory "~/News"))))))
+    (apply 
+     'gnus-replace-chars-in-string
+     (cond
+      ((or (null newsgroup)
+	   (string-equal newsgroup ""))
+       ;; The global score file is placed at top of the directory.
+       (expand-file-name 
+	suffix (or gnus-kill-files-directory "~/News")))
+      ((gnus-use-long-file-name 'not-score)
+       ;; Append ".SCORE" to newsgroup name.
+       (expand-file-name (concat (gnus-newsgroup-saveable-name newsgroup)
+				 "." suffix)
+			 (or gnus-kill-files-directory "~/News")))
+      (t
+       ;; Place "SCORE" under the hierarchical directory.
+       (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
+				 "/" suffix)
+			 (or gnus-kill-files-directory "~/News"))))
+     gnus-file-name-translation-table)))
 
 (defun gnus-score-search-global-directories (files)
   "Scan all global score directories for score files."

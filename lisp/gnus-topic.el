@@ -123,7 +123,6 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	;; gotten here, which can be rather random.
 	(unless gnus-topic-alist
 	  (gnus-topic-init-alist))
-	(gnus-topic-check-topology)
 
 	(if list-topic
 	    (let ((top (gnus-topic-find-topology list-topic)))
@@ -435,6 +434,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	      'gnus-group-prepare-topics
 	    'gnus-group-prepare-flat))
     (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
+    ;; We check the topology.
+    (gnus-topic-check-topology)
     (when redisplay
       (gnus-group-list-groups))))
     

@@ -44,6 +44,11 @@ into another language, under the above conditions for modified versions.
 
 @iftex
 
+@tex
+
+
+@end tex
+
 @titlepage
 @title September Gnus Manual
 
@@ -353,6 +358,8 @@ by Per Abrahamsen.
 Innumerable bug fixes were written by Sudish Joseph.
 @item 
 @code{gnus-topic} was written by Ilja Weis.
+@item 
+Lots and lots of bugs were found and fixed by Steven L. Baur. 
 @item
 The refcard was written by Vladimir Alexiev.
 @item
@@ -689,7 +696,7 @@ variables.
 @vindex gnus-select-method
 The @code{gnus-select-method} variable controls how Gnus finds news.
 This variable should be a list where the first element says @dfn{how}
-and the second element says @dfn{where}.  This method is is your native
+and the second element says @dfn{where}.  This method is your native
 method.  All groups that are not fetched with this method are foreign
 groups.
 

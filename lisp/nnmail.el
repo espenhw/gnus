@@ -748,7 +748,7 @@ Return the number of characters in the body."
 	(save-excursion
 	  (when (re-search-backward "^Lines: " nil t)
 	    (delete-region (point) (progn (forward-line 1) (point)))))
-	(insert (format "Lines: %d\n" lines))
+	(insert (format "Lines: %d\n" (max lines 0)))
 	chars))))
 
 (defun nnmail-insert-xref (group-alist)

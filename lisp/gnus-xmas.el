@@ -227,7 +227,8 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-read-event-char ()
   "Get the next event."
   (let ((event (next-event)))
-    (while (timeout-event-p event)
+    ;; We junk all non-key events.  Is this naughty?
+    (while (not (key-press-even-p event))
       (setq event (next-event)))
     (cons (and (key-press-event-p event) 
 	       (numberp (event-key event))
@@ -368,6 +369,7 @@ pounce directly on the real variables themselves.")
 		    (file-name-as-directory gnus-xmas-glyph-directory)
 		    "gnus.xpm"))))
     (if (and (featurep 'xpm)
+	     (not (equal (device-type) 'tty))
 	     file (file-exists-p file))
 	(progn
 	  (set-glyph-property gnus-xmas-logo 'image file)

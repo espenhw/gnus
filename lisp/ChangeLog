@@ -1,4 +1,61 @@
+Thu Dec 21 02:57:06 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-summary-walk-group-buffer): Would skip every other
+	group. 
+
+Wed Dec 20 10:18:18 1995  Hideki Ono  <ono@tamaru.kuee.kyoto-u.ac.jp>
+ 
+ 	* gnus.el (gnus-update-marks): Compressed list shouldn't be sort.
+ 
+Wed Dec 20 00:02:44 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-number-of-articles-in-thread): Would
+	return 0.
+	(gnus-parse-simple-format): Would mangle some simple mode lines.
+	(gnus-group-line-format-alist): Wrong spec.
+
+	* gnus-score.el (gnus-file-name-translation-table): New variable.
+	(gnus-score-find-bnews): Use it.
+	(gnus-score-file-name): Ditto.
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Show the TTY
+	startup screen on a TTY.
+
+	* gnus.el (gnus-save-killed-list): Doc fix.
+	(gnus-simplify-mode-line): Leave a bit of space after the id.
+	(gnus-max-width-function): Would never chop off anything.
+	(gnus-update-format): Didn't update spec list.
+
+	* nnmail.el (nnmail-insert-lines): Never insert negative Lineses
+	headers. 
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Didn't enter
+	articles into the `gnus-newsgroup-cached' list.
+
+	* gnus-topic.el (gnus-group-prepare-topics): Don't check the
+	topology quite so often.
+
+	* gnus.el (gnus-group-remove-mark): Didn't remove mark from
+	undisplayed groups.
+
+	* nnspool.el (nnspool-request-head): Didn't return the artgroup. 
+
+	* gnus.el (gnus-summary-update-line): Update tertiary mark as
+	well. 
+
+Tue Dec 19 22:47:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-read-event-char): Junk all non-key
+	events. 
+
+	* gnus.el (gnus-group-line-format-alist): %t should be a string. 
+
+	* gnus-cache.el (gnus-cache-generate-active): Would create bogus
+	active files. 
+
 Tue Dec 19 18:13:49 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el: 0.25 is released.
 
 	* gnus-msg.el (gnus-cancel-news): Insert the usual user name, not
 	the "real" one.

@@ -228,13 +228,14 @@ there.")
 (defun nnspool-request-head (id &optional group server)
   "Select article head by message ID (or number)."
   (nnspool-possibly-change-directory group)
-  (if (nnspool-request-article id)
+  (let ((res (nnspool-request-article id)))
+    (when res
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
-	(if (search-forward "\n\n" nil t)
-	    (delete-region (1- (point)) (point-max)))
-	t)))
+	(when (search-forward "\n\n" nil t)
+	  (delete-region (1- (point)) (point-max)))))
+    res))
 
 (defun nnspool-request-group (group &optional server dont-check)
   "Select news GROUP."
