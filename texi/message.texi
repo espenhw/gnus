@@ -421,6 +421,8 @@ is a list address you are subscribed to.  If none of them is a list
 address, then no MFT is generated; otherwise, a MFT is added to the
 other headers and set to the value of all addresses in To: and Cc:
 
+@kindex C-c C-f C-m
+@findex message-goto-mail-followup-to
 Hm. ``So'', you ask, ``what if I send an email to a list I am not
 subscribed to?  I want my MFT to say that I want an extra copy.''  (This
 is supposed to be interpreted by others the same way as if there were no
@@ -428,7 +430,7 @@ MFT, but you can use an explicit MFT to override someone else's
 to-address group parameter.)  Well, the kind folks at Gnus Towers are
 working on a database of all known mailing list addresses that can be
 used for this purpose.  Till then, you could, like, insert a MFT header
-manually, with the help of @kbd{C-c C-f C-m} !!
+manually, with the help of @kbd{C-c C-f C-m} (@code{message-goto-mail-followup-to})!!
 
 @c @node Honoring an MFT post
 @subsection Honoring an MFT post
@@ -734,6 +736,11 @@ Digitally encrypt current message using PGP.
 @findex mml-secure-message-encrypt-pgpmime
 
 Digitally encrypt current message using @sc{pgp/mime}.
+
+@item C-c C-m C-n
+@kindex C-c C-m C-n
+@findex mml-unsecure-message
+Remove security related MML tags from message.
 
 @end table
 

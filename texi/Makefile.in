@@ -60,6 +60,25 @@ refcard.pdf: refcard.tex gnuslogo-refcard.eps gnusref.tex
 	epstopdf $(srcdir)/gnuslogo-refcard.eps --outfile=gnuslogo-refcard.pdf
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) refcard.tex
 
+booklet.dvi: booklet.tex gnuslogo-refcard.eps gnusref.tex
+	if [ "$(PAPERTYPE)" == a4 ]; then \
+		TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) bk-a4.tex && \
+		mv bk-a4.dvi booklet.dvi ;\
+	else \
+		TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) bk-lt.tex && \
+		mv bk-lt.dvi booklet.dvi;\
+	fi
+
+booklet.pdf: booklet.tex gnuslogo-refcard.eps gnusref.tex
+	epstopdf $(srcdir)/gnuslogo-booklet.eps --outfile=gnuslogo-booklet.pdf
+	if [ "$(PAPERTYPE)" == a4 ]; then \
+		TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) bk-a4.tex &&\
+		mv bk-a4.pdf booklet.pdf ;\
+	else \
+		TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) bk-lt.tex &&\
+		mv bk-lt.pdf booklet.pdf ;\
+	fi
+
 clean:
 	rm -f *.[cgk]idx *.aux *.cp *.cps *.dvi *.dvi-x *.fn *.ky	\
 	*.kys *.latexi *.log *.orig *.pdf *.pdf-x *.pg *.rej		\

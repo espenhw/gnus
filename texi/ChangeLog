@@ -1,3 +1,41 @@
+2002-03-24  Raymond Scholz <rscholz@zonix.de>
+
+	* gnus.texi (Summary Buffer Lines): Fix doc.
+	
+2002-03-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (booklet.dvi, booklet.pdf): Support booklet.
+
+2002-03-24  Felix Natter <fnatter@gmx.net>
+
+	* booklet.tex, bk-at.tex, bk-lt.tex, gnuslog-booklet.eps: New file.
+	* gnusref.tex, refcard.tex: Support booklet.
+	
+2002-03-24  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnusref.tex: Addition.
+
+	* gnus.texi: Don't use @sc in headings.
+	(Article Display): Fix.
+	(Signing and encrypting): Add mml-unsecure-message.
+	(IMAP): Remove @. to make texi2latex work.
+	(Thread Commands): Fix.
+	(Unavailable Servers): Add gnus-server-offline-server.
+	(Topic Sorting): Add gnus-topic-sort-groups.
+	(Limiting): Fix.
+	(Article Washing): Fix gnus-article-strip-headers-in-body, add
+	gnus-article-outlook-deuglify-article.
+	(Article Header):  Add gnus-article-remove-leading-whitespace.
+	(Customizing Articles): Add gnus-treat-leading-whitespace.
+	(Summary Score Commands): Add gnus-score-find-favourite-words.
+	(Mailing List): Index gnus-mailing-list-insinuate.
+	(Mail Group Commands): Add gnus-article-encrypt-body,
+	gnus-summary-create-article.  Don't use @var if not
+	metasyntactic. Index gnus-summary-edit-article-done.
+
+	* message.texi (Security): Add mml-unsecure-message.
+	(Mailing Lists): Index message-goto-mail-followup-to.
+
 2002-03-23  Jesper Harder <harder@ifa.au.dk>
 
 	* gnusref.tex, refcard.tex: Addition. 

@@ -1,4 +1,9 @@
 %% include file for the Gnus refcard and booklet
+
+\def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
+\def\date{Oct 13th, 2001}
+\def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
+
 %%
 \newlength{\keycolwidth}
 \newenvironment{keys}[1]% #1 is the widest key
@@ -1075,6 +1080,7 @@
       C-c C-m s s & Sign message using \textbf{S/MIME}.\\
       C-c C-m s o & Sign message using PGP.\\
       C-c C-m s p & Sign message using \textbf{PGP/MIME}.\\
+      C-c C-m C-n & Remove security related MML tags from message.\\
                                 % TODO: narrow headers (C-c C-m n) ?
     \end{keys}
     }

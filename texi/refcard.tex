@@ -5,21 +5,25 @@
 
 \def\Guide{Card}\def\guide{card}
 \def\logoscale{0.25}
+\newlength{\logowidth} \setlength{\logowidth}{6.861in}
+\newlength{\logoheight} \setlength{\logoheight}{7.013in}
+
+\raggedbottom\raggedright
+
+\usepackage{epsfig}
+
 \setlength{\textwidth}{7.26in} \setlength{\textheight}{10in}
 \setlength{\topmargin}{-1.0in}
 % the same settings work for A4, although there is a bit of space at the
 % top and bottom of the page. 
 \setlength{\oddsidemargin}{-0.5in} \setlength{\evensidemargin}{-0.5in}
 
-\usepackage{epsfig}
 
-% README:
-% *** purpose
-% this was originally thought of as a reference card (but as it is now 5+
-% pages long, it may not be more useful than the online-help). It helps
-% to get an overview for the Gnus-functionality.
+% README (for refcard + booklet)
+% This is a 5+ page reference card. In addition there is a booklet
+% (bk-a4.tex for A4 and bk-lt.tex for Letter).
 %
-% *** files
+% *** files for the refcard
 % refcard.tex (this file), gnusref.tex ("include"-file) and
 % gnuslogo-refcard.eps (Gnus logo).
 %
@@ -33,45 +37,25 @@
 % $xdvi refcard.dvi [C-c C-v]
 % and print using something like
 % $dvips refcard.dvi 
-% which creates refcard.ps (print using 'lpr refcard.ps')
+%
+% If you want to print the booklet, you need to use `pstops' from the
+% `psutils' package (TODO: somebody write a howto ?)
 %
 % *** customization:
+
 % the part following \begin{document} in this file consists of a macro for
 % each section and section-headers (\section*{..}). It should be easy to
 % reorder things and/or remove sections (put '%' at the beginning of the line).
-% (i.e. you might want to omit \notes in the printed version ?)
+% (i.e. you might want to omit \notes in the printed version)
+% The same goes for the booklet: Its contents are defined in booklet.tex.
 % If you think that the order is not logical and you have ideas for
 % improvements, please send mail to the current maintainer.
-%
-% *** ChangeLog:
-% 2000-03-26  Felix Natter  <fnatter@gmx.net>:
-% refcard updated for Gnus 5.8.x: please send corrections or suggestions
-% to the above email-address
-% changes since 2000-03-26:
-% o Create/Edit Foreign Groups: remove S b and S B (not available in 5.8.3)
-% o Send/Reply etc.: remove w and W (the only bindings are S w and S W)
-% Mon Apr  3 18:41:09 2000:
-% o added C-c C-n and C-c C-t (Article)
-% o C-c C-a as alias for M-m f (Article) + some other M-m *-bindings
-% o added section for ``jumping'' in article-mode
-% o now there's a difference between ``reading'' and ``composition''
-% (article-modes)
-% Apr 24th, 2000:
-% o added D s, D S and D t for nndraft
-% o group-mode: i.e. C-u RET does not actually fetch fewer articles; also ,=>;
-% Fri Jul 14 23:15:43 2000:
-% o added README-section
-% Thu Jul 27 20:51:01 2000:
-% o added Unplugged-commands
-%
+
 % *** TODO:
-% o (LaTeX) how can you get 'tabular' to wrap around pages ?
 % o some things might not be updated: scoring and server modes, maybe more
 % o Gnus Unplugged category-buffer commands need to be written
 
 \begin{document}
-\newlength{\logowidth} \setlength{\logowidth}{6.861in}
-\newlength{\logoheight} \setlength{\logoheight}{7.013in}
 
 \def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
 \def\date{Mar 23rd, 2002}
@@ -79,7 +63,7 @@
 \raggedbottom\raggedright
 
 \twocolumn
-% use \tiny to shrink it to 4 pages (needs a high-resaoultion printer, though)
+% use \tiny to shrink it to 4 pages (needs a high-resolution printer though)
 %\tiny
 \scriptsize
 \pagestyle{plain}

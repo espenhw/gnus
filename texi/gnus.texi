@@ -3761,9 +3761,18 @@ Sort the current topic alphabetically by back end name
 Sort the current topic alphabetically by server name
 (@code{gnus-topic-sort-groups-by-server}).
 
+@item T S s
+@kindex T S s
+@findex gnus-topic-sort-groups
+Sort the current topic according to the function(s) given by the
+@code{gnus-group-sort-function} variable
+(@code{gnus-topic-sort-groups}).
+
 @end table
 
-@xref{Sorting Groups}, for more information about group sorting.
+When given a prefix argument, all these commands will sort in reverse
+order.  @xref{Sorting Groups}, for more information about group
+sorting.
 
 
 @node Topic Topology
@@ -4349,7 +4358,7 @@ possible to change this.  Just write a new function
 @code{gnus-goto-colon} which does whatever you like with the cursor.)
 @xref{Positioning Point}.
 
-The default string is @samp{%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n}.
+The default string is @samp{%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n}.
 
 The following format specification characters and extended format
 specification(s) are understood:
@@ -5997,10 +6006,10 @@ score (@code{gnus-summary-limit-to-score}).
 
 @item / p
 @kindex / p (Summary)
-@findex gnus-summary-limit-to-display-parameter
+@findex gnus-summary-limit-to-display-predicate
 Limit the summary buffer to articles that satisfy the @code{display}
 group parameter predicate
-(@code{gnus-summary-limit-to-display-parameter}).  See @pxref{Group
+(@code{gnus-summary-limit-to-display-predicate}).  See @pxref{Group
 Parameters} for more on this predicate.
 
 @item / E
@@ -6561,7 +6570,7 @@ understand the numeric prefix.
 
 @item T n
 @kindex T n (Summary)
-@itemx C-M-n
+@itemx C-M-f
 @kindex C-M-n (Summary)
 @itemx M-down
 @kindex M-down (Summary)
@@ -6570,7 +6579,7 @@ Go to the next thread (@code{gnus-summary-next-thread}).
 
 @item T p
 @kindex T p (Summary)
-@itemx C-M-p
+@itemx C-M-b
 @kindex C-M-p (Summary)
 @itemx M-up
 @kindex M-up (Summary)
@@ -8085,6 +8094,13 @@ an attempt to provide more quoting characters.  If you see something
 like @code{\222} or @code{\264} where you're expecting some kind of
 apostrophe or quotation mark, then try this wash.
 
+@item W k
+@kindex W k (Summary)
+@findex gnus-article-outlook-deuglify-article
+@cindex Outlook Express
+Deuglify broken Outlook (Express) articles and redisplay
+(@code{gnus-article-outlook-deuglify-article}).
+
 @item W w
 @kindex W w (Summary)
 @findex gnus-article-fill-cited-article
@@ -8203,11 +8219,11 @@ message.@footnote{PGP keys for many hierarchies are available at
 Verify a signed (PGP, @sc{pgp/mime} or @sc{s/mime}) message
 (@code{gnus-summary-force-verify-and-decrypt}). @xref{Security}.
 
-@item W W H
-@kindex W W H (Summary)
-@findex gnus-article-strip-headers-from-body
+@item W a
+@kindex W a (Summary)
+@findex gnus-article-strip-headers-in-body
 Strip headers like the @code{X-No-Archive} header from the beginning of
-article bodies (@code{gnus-article-strip-headers-from-body}).
+article bodies (@code{gnus-article-strip-headers-in-body}).
 
 @item W E l
 @kindex W E l (Summary)
@@ -8280,6 +8296,12 @@ Fold the @code{Newsgroups} and @code{Followup-To} headers
 @findex gnus-article-treat-fold-header
 Fold all the message headers
 (@code{gnus-article-treat-fold-headers}).
+
+@item W E w
+@kindex W E w
+@findex gnus-article-remove-leading-whitespace
+Remove excessive whitespace from all headers
+(@code{gnus-article-remove-leading-whitespace}).
 
 @end table
 
@@ -8488,7 +8510,7 @@ Display an @code{X-Face} in the @code{From} header.
 
 @item W D s
 @kindex W D s (Summary)
-@findex gnus-smiley-smiley
+@findex gnus-treat-smiley
 Display smileys (@code{gnus-treat-smiley}).
 
 @item W D f
@@ -8506,7 +8528,7 @@ Piconify all mail headers (i. e., @code{Cc}, @code{To})
 @kindex W D n (Summary)
 @findex gnus-treat-newsgroups-picon
 Piconify all news headers (i. e., @code{Newsgroups} and
-@code{Followup-To}) (@code{gnus-treat-from-picon}).
+@code{Followup-To}) (@code{gnus-treat-newsgroups-picon}).
 
 @item W D D
 @kindex W D D (Summary)
@@ -8594,7 +8616,7 @@ Translate the article from one language to another
 
 
 @node MIME Commands
-@section @sc{mime} Commands
+@section MIME Commands
 @cindex MIME decoding
 @cindex attachments
 @cindex viewing attachments
@@ -9353,7 +9375,7 @@ disk forever and ever, never to return again.'' Use with caution.
 @vindex gnus-preserve-marks
 Move the article from one mail group to another
 (@code{gnus-summary-move-article}).  Marks will be preserved if
-@var{gnus-preserve-marks} is non-@code{nil} (which is the default).
+@code{gnus-preserve-marks} is non-@code{nil} (which is the default).
 
 @item B c
 @kindex B c (Summary)
@@ -9362,7 +9384,7 @@ Move the article from one mail group to another
 @c @icon{gnus-summary-mail-copy}
 Copy the article from one group (mail group or not) to a mail group
 (@code{gnus-summary-copy-article}).  Marks will be preserved if
-@var{gnus-preserve-marks} is non-@code{nil} (which is the default).
+@code{gnus-preserve-marks} is non-@code{nil} (which is the default).
 
 @item B B
 @kindex B B (Summary)
@@ -9380,6 +9402,13 @@ Import an arbitrary file into the current mail newsgroup
 (@code{gnus-summary-import-article}).  You will be prompted for a file
 name, a @code{From} header and a @code{Subject} header.
 
+@item B I
+@kindex B I (Summary)
+@findex gnus-summary-create-article
+Create an empty article in the current mail newsgroups
+(@code{gnus-summary-create-article}).  You will be prompted for a
+@code{From} header and a @code{Subject} header.
+
 @item B r
 @kindex B r (Summary)
 @findex gnus-summary-respool-article
@@ -9387,7 +9416,7 @@ Respool the mail article (@code{gnus-summary-respool-article}).
 @code{gnus-summary-respool-default-method} will be used as the default
 select method when respooling.  This variable is @code{nil} by default,
 which means that the current group select method will be used instead.
-Marks will be preserved if @var{gnus-preserve-marks} is non-@code{nil}
+Marks will be preserved if @code{gnus-preserve-marks} is non-@code{nil}
 (which is the default).
 
 @item B w
@@ -9396,9 +9425,10 @@ Marks will be preserved if @var{gnus-preserve-marks} is non-@code{nil}
 @kindex e (Summary)
 @findex gnus-summary-edit-article
 @kindex C-c C-c (Article)
+@findex gnus-summary-edit-article-done
 Edit the current article (@code{gnus-summary-edit-article}).  To finish
 editing and make the changes permanent, type @kbd{C-c C-c}
-(@kbd{gnus-summary-edit-article-done}).  If you give a prefix to the
+(@code{gnus-summary-edit-article-done}).  If you give a prefix to the
 @kbd{C-c C-c} command, Gnus won't re-highlight the article.
 
 @item B q
@@ -9427,6 +9457,14 @@ report back whether it found the article or not.  Even if it says that
 it didn't find the article, it may have been posted anyway---mail
 propagation is much faster than news propagation, and the news copy may
 just not have arrived yet.
+
+@item K E
+@kindex K E (Summary)
+@findex gnus-article-encrypt-body
+@vindex gnus-article-encrypt-protocol
+Encrypt the body of an article (@code{gnus-article-encrypt-body}).
+The body is encrypted with the encryption protocol specified by the
+variable @code{gnus-article-encrypt-protocol}.
 
 @end table
 
@@ -9971,9 +10009,12 @@ protocols. Otherwise, ask user.
 @node Mailing List
 @section Mailing List
 
+@kindex A M (summary)
+@findex gnus-mailing-list-insinuate
 Gnus understands some mailing list fields of RFC 2369.  To enable it,
 either add a `to-list' group parameter (@pxref{Group Parameters}),
-possibly using @kbd{A M} in the summary buffer, or say:
+possibly using @kbd{A M} (@code{gnus-mailing-list-insinuate}) in the
+summary buffer, or say:
 
 @lisp
 (add-hook 'gnus-summary-mode-hook 'turn-on-gnus-mailing-list-mode)
@@ -10434,7 +10475,9 @@ is controlled by @code{gnus-body-boundary-delimiter}.
 @item gnus-treat-unfold-headers (head)
 @item gnus-treat-fold-headers (head)
 @item gnus-treat-fold-newsgroups (head)
+@item gnus-treat-leading-whitespace (head)
 
+@xref{Article Header}.
 
 
 @end table
@@ -11200,6 +11243,11 @@ Digitally encrypt current @sc{mime} part using PGP.
 
 Digitally encrypt current @sc{mime} part using @sc{pgp/mime}.
 
+@item C-c C-m C-n
+@kindex C-c C-m C-n
+@findex mml-unsecure-message
+Remove security related MML tags from message.
+
 @end table
 
 Also @xref{Security, ,Security, message, Message Manual}.
@@ -11620,6 +11668,11 @@ Close the connections to all servers in the buffer
 Remove all marks to whether Gnus was denied connection from any servers
 (@code{gnus-server-remove-denials}).
 
+@item L
+@kindex L (Server)
+@findex gnus-server-offline-server
+Set server status to offline (@code{gnus-server-offline-server}).
+
 @end table
 
 
@@ -11639,7 +11692,7 @@ or it can read from a local spool.
 
 
 @node NNTP
-@subsection @sc{nntp}
+@subsection NNTP
 @cindex nntp
 
 Subscribing to a foreign group from an @sc{nntp} server is rather easy.
@@ -14605,7 +14658,7 @@ follow the link.
 
 
 @node IMAP
-@section @sc{imap}
+@section IMAP
 @cindex nnimap
 @cindex @sc{imap}
 
@@ -14725,10 +14778,10 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 @dfn{kerberos4:} Connect with Kerberos 4. Requires the @samp{imtest} program.
 @item
 @dfn{starttls:} Connect via the STARTTLS extension (similar to
-SSL)@. Requires the external library @samp{starttls.el} and program
+SSL).  Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
 @item
-@dfn{ssl:} Connect through SSL@. Requires OpenSSL (the program
+@dfn{ssl:} Connect through SSL.  Requires OpenSSL (the program
 @samp{openssl}) or SSLeay (@samp{s_client}) as well as the external
 library @samp{ssl.el}.
 @item
@@ -14887,7 +14940,7 @@ variable @code{nntp-authinfo-file} for exact syntax; also see
 
 
 @node Splitting in IMAP
-@subsection Splitting in @sc{imap}
+@subsection Splitting in IMAP
 @cindex splitting imap mail
 
 Splitting is something Gnus users has loved and used for years, and now
@@ -15042,7 +15095,7 @@ Nnmail equivalent: @code{nnmail-split-fancy}.
 @end table
 
 @node Editing IMAP ACLs
-@subsection Editing @sc{imap} ACLs
+@subsection Editing IMAP ACLs
 @cindex editing imap acls
 @cindex Access Control Lists
 @cindex Editing @sc{imap} ACLs
@@ -15633,7 +15686,7 @@ Regular expression matching @sc{soup} reply packets in
 
 
 @node SOUP Groups
-@subsubsection @sc{soup} Groups
+@subsubsection SOUP Groups
 @cindex nnsoup
 
 @code{nnsoup} is the back end for reading @sc{soup} packets.  It will
@@ -16929,6 +16982,11 @@ Display the score of the current article
 @findex gnus-score-find-trace
 Display all score rules that have been used on the current article
 (@code{gnus-score-find-trace}).
+
+@item V w
+@kindex V w (Summary)
+@findex gnus-score-find-favourite-words
+List words used in scoring (@code{gnus-score-find-favourite-words}).
 
 @item V R
 @kindex V R (Summary)
@@ -22448,7 +22506,7 @@ for some quite common situations.
 
 
 @node Slow/Expensive Connection
-@subsection Slow/Expensive @sc{nntp} Connection
+@subsection Slow/Expensive NNTP Connection
 
 If you run Emacs on a machine locally, and get your news from a machine
 over some very thin strings, you want to cut down on the amount of data
