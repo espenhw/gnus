@@ -656,12 +656,14 @@ Return WORD if it is not not an encoded word or if the charset isn't
 decodable."
   (if (not (string-match rfc2047-encoded-word-regexp word))
       word
-    (condition-case nil
-	(rfc2047-decode
-	 (match-string 1 word)
-	 (upcase (match-string 2 word))
-	 (match-string 3 word))
-      (error word))))
+    (or
+     (condition-case nil
+	 (rfc2047-decode
+	  (match-string 1 word)
+	  (upcase (match-string 2 word))
+	  (match-string 3 word))
+       (error word))
+     word)))				; un-decodable
 
 (defun rfc2047-pad-base64 (string)
   "Pad STRING to quartets."
