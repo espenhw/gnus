@@ -321,7 +321,7 @@
 
 ;;      id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
 ;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
-(defvar mm-pkcs7-signed-magic 
+(defvar mm-pkcs7-signed-magic
   (mm-string-as-unibyte
    (apply 'concat
 	  (mapcar 'char-to-string
@@ -330,7 +330,7 @@
   
 ;;      id-envelopedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
 ;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 3 }
-(defvar mm-pkcs7-enveloped-magic 
+(defvar mm-pkcs7-enveloped-magic
   (mm-string-as-unibyte
    (apply 'concat
 	  (mapcar 'char-to-string
@@ -353,23 +353,29 @@
     (otherwise (error "Unknown or unimplemented PKCS#7 type"))))
 
 (defun mm-view-pkcs7-decrypt (handle)
-  (let (res)
-    (with-temp-buffer
-      (insert-buffer (mm-handle-buffer handle))
-      (goto-char (point-min))
-      (insert "MIME-Version: 1.0\n")
-      (mm-insert-headers "application/pkcs7-mime" "base64" "smime.p7m")
-      (smime-decrypt-region
-       (point-min) (point-max)
-       (if (= (length smime-keys) 1)
-	   (cadar smime-keys)
-	 (smime-get-key-by-email
-	  (completing-read "Decrypt this part with which key? "
-			   smime-keys nil nil
-			   (and (listp (car-safe smime-keys))
-				(caar smime-keys))))))
-      (setq res (buffer-string)))
-    (mm-insert-inline handle res)))
+  (if (cond
+       ((eq mm-decrypt-option 'never) nil)
+       ((eq mm-decrypt-option 'always) t)
+       ((eq mm-decrypt-option 'known) t)
+       (t (y-or-n-p
+	   (format "Decrypt (S/MIME) part? "))))
+      (let (res)
+	(with-temp-buffer
+	  (insert-buffer (mm-handle-buffer handle))
+	  (goto-char (point-min))
+	  (insert "MIME-Version: 1.0\n")
+	  (mm-insert-headers "application/pkcs7-mime" "base64" "smime.p7m")
+	  (smime-decrypt-region
+	   (point-min) (point-max)
+	   (if (= (length smime-keys) 1)
+	       (cadar smime-keys)
+	     (smime-get-key-by-email
+	      (completing-read "Decrypt this part with which key? "
+			       smime-keys nil nil
+			       (and (listp (car-safe smime-keys))
+				    (caar smime-keys))))))
+	  (setq res (buffer-string)))
+	(mm-insert-inline handle res))))
 
 (provide 'mm-view)
 

@@ -1,5 +1,7 @@
 2001-07-29  Simon Josefsson  <jas@extundo.com>
 
+	* mm-view.el (mm-view-pkcs7-decrypt): Adhere to `mm-decrypt-option'.
+
 	Support S/MIME decryption.
 
 	* mm-decode.el (mm-inline-media-tests): 
