@@ -2091,7 +2091,7 @@ it is invalid to have these specs after a variable-length spec.	 Well,
 you might not be arrested, but your summary buffer will look strange,
 which is bad enough.
 
-The smart choice is to have these specs as for to the left as
+The smart choice is to have these specs as far to the left as
 possible.
 
 This restriction may disappear in later versions of Gnus."
