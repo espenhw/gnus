@@ -1,5 +1,10 @@
 2003-04-20  Simon Josefsson  <jas@extundo.com>
 
+	* mml-sec.el: Fix license template.
+
+	* gnus-sieve.el, sieve.el, sieve-manage.el, sieve-mode.el: Fix
+	license template.
+
 	* pgg-def.el, pgg.el, pgg-gpg.el, pgg-parse.el, pgg-pgp5.el,
 	pgg-pgp.el: Fix license template.
 
