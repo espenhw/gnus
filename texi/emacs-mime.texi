@@ -93,7 +93,7 @@ read at least RFC2045 and RFC2047.
 
 @menu
 * Decoding and Viewing::  A framework for decoding and viewing.
-* Composing::             MML; a language for describing @acronym{MIME} parts.
+* Composing::             @acronym{MML}; a language for describing @acronym{MIME} parts.
 * Interface Functions::   An abstraction over the basic functions.
 * Basic Functions::       Utility and basic parsing functions.
 * Standards::             A summary of RFCs and working documents used.
@@ -508,9 +508,10 @@ tell it to insert, but it also sets things up so that the text can be
 @cindex MML
 @cindex MIME Meta Language
 
-Creating a @acronym{MIME} message is boring and non-trivial.  Therefore, a
-library called @code{mml} has been defined that parses a language called
-MML (@acronym{MIME} Meta Language) and generates @acronym{MIME} messages.
+Creating a @acronym{MIME} message is boring and non-trivial.  Therefore,
+a library called @code{mml} has been defined that parses a language
+called @acronym{MML} (@acronym{MIME} Meta Language) and generates
+@acronym{MIME} messages.
 
 @findex mml-generate-mime
 The main interface function is @code{mml-generate-mime}.  It will
@@ -518,12 +519,12 @@ examine the contents of the current (narrowed-to) buffer and return a
 string containing the @acronym{MIME} message.
 
 @menu
-* Simple MML Example::             An example MML document.
-* MML Definition::                 All valid MML elements.
-* Advanced MML Example::           Another example MML document.
+* Simple MML Example::             An example @acronym{MML} document.
+* MML Definition::                 All valid @acronym{MML} elements.
+* Advanced MML Example::           Another example @acronym{MML} document.
 * Encoding Customization::         Variables that affect encoding.
 * Charset Translation::            How charsets are mapped from @sc{mule} to @acronym{MIME}.
-* Conversion::                     Going from @acronym{MIME} to MML and vice versa.
+* Conversion::                     Going from @acronym{MIME} to @acronym{MML} and vice versa.
 * Flowed text::                    Soft and hard newlines.
 @end menu
 
@@ -565,10 +566,10 @@ Content-Type: text/enriched
 @node MML Definition
 @section MML Definition
 
-The MML language is very simple.  It looks a bit like an SGML
+The @acronym{MML} language is very simple.  It looks a bit like an SGML
 application, but it's not.
 
-The main concept of MML is the @dfn{part}.  Each part can be of a
+The main concept of @acronym{MML} is the @dfn{part}.  Each part can be of a
 different type or use a different charset.  The way to delineate a part
 is with a @samp{<#part ...>} tag.  Multipart parts can be introduced
 with the @samp{<#multipart ...>} tag.  Parts are ended by the
@@ -583,8 +584,8 @@ Each tag can contain zero or more parameters on the form
 but that's not necessary unless the value contains white space.  So
 @samp{filename=/home/user/#hello$^yes} is perfectly valid.
 
-The following parameters have meaning in MML; parameters that have no
-meaning are ignored.  The MML parameter names are the same as the
+The following parameters have meaning in @acronym{MML}; parameters that have no
+meaning are ignored.  The @acronym{MML} parameter names are the same as the
 @acronym{MIME} parameter names; the things in the parentheses say which
 header it will be used in.
 
@@ -637,11 +638,11 @@ default key used.
 The size (in octets) of the part (@code{Content-Disposition}).
 
 @item sign
-What technology to sign this MML part with (@code{smime}, @code{pgp}
+What technology to sign this @acronym{MML} part with (@code{smime}, @code{pgp}
 or @code{pgpmime})
 
 @item encrypt
-What technology to encrypt this MML part with (@code{smime},
+What technology to encrypt this @acronym{MML} part with (@code{smime},
 @code{pgp} or @code{pgpmime})
 
 @end table
@@ -813,7 +814,7 @@ default is
 As an example, if you do not want to have ISO-8859-1 characters
 quoted-printable encoded, you may add @code{(iso-8859-1 . 8bit)} to
 this variable.  You can override this setting on a per-message basis
-by using the @code{encoding} MML tag (@pxref{MML Definition}).
+by using the @code{encoding} @acronym{MML} tag (@pxref{MML Definition}).
 
 @item mm-coding-system-priorities
 @vindex mm-coding-system-priorities
@@ -825,7 +826,7 @@ an alias in this variable).  For example, if you have configured Emacs
 to prefer UTF-8, but wish that outgoing messages should be sent in
 ISO-8859-1 if possible, you can set this variable to
 @code{(iso-latin-1)}.  You can override this setting on a per-message
-basis by using the @code{charset} MML tag (@pxref{MML Definition}).
+basis by using the @code{charset} @acronym{MML} tag (@pxref{MML Definition}).
 
 @item mm-content-transfer-encoding-defaults
 @vindex mm-content-transfer-encoding-defaults
@@ -835,7 +836,7 @@ used except, e.g., when other requirements force a safer encoding
 @acronym{MIME} encodings, @code{qp-or-base64} may be used to indicate that for
 each case the most efficient of quoted-printable and base64 should be
 used.  You can override this setting on a per-message basis by using
-the @code{encoding} MML tag (@pxref{MML Definition}).
+the @code{encoding} @acronym{MML} tag (@pxref{MML Definition}).
 
 @item mm-use-ultra-safe-encoding
 @vindex mm-use-ultra-safe-encoding
@@ -853,8 +854,9 @@ encoding messages that are to be digitally signed).
 @section Charset Translation
 @cindex charsets
 
-During translation from MML to @acronym{MIME}, for each @acronym{MIME} part which
-has been composed inside Emacs, an appropriate charset has to be chosen.
+During translation from @acronym{MML} to @acronym{MIME}, for each
+@acronym{MIME} part which has been composed inside Emacs, an appropriate
+charset has to be chosen.
 
 @vindex mail-parse-charset
 If you are running a non-@sc{mule} Emacs, this process is simple: If the
@@ -895,7 +897,7 @@ messages.  You can modify this by altering the
 Customization}).
 
 The charset to be used can be overridden by setting the @code{charset}
-MML tag (@pxref{MML Definition}) when composing the message.
+@acronym{MML} tag (@pxref{MML Definition}) when composing the message.
 
 The encoding of characters (quoted-printable, 8bit etc) is orthogonal
 to the discussion here, and is controlled by the variables
@@ -907,15 +909,15 @@ Customization}).
 @section Conversion
 
 @findex mime-to-mml
-A (multipart) @acronym{MIME} message can be converted to MML with the
-@code{mime-to-mml} function.  It works on the message in the current
-buffer, and substitutes MML markup for @acronym{MIME} boundaries.
-Non-textual parts do not have their contents in the buffer, but instead
-have the contents in separate buffers that are referred to from the MML
-tags.
+A (multipart) @acronym{MIME} message can be converted to @acronym{MML}
+with the @code{mime-to-mml} function.  It works on the message in the
+current buffer, and substitutes @acronym{MML} markup for @acronym{MIME}
+boundaries.  Non-textual parts do not have their contents in the buffer,
+but instead have the contents in separate buffers that are referred to
+from the @acronym{MML} tags.
 
 @findex mml-to-mime
-An MML message can be converted back to @acronym{MIME} by the
+An @acronym{MML} message can be converted back to @acronym{MIME} by the
 @code{mml-to-mime} function.
 
 These functions are in certain senses ``lossy''---you will not get back

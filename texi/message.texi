@@ -831,7 +831,7 @@ The most typical thing users want to use the multipart things in
 be done with the @kbd{C-c C-a} command, which will prompt for a file
 name and a @acronym{MIME} type.
 
-You can also create arbitrarily complex multiparts using the MML
+You can also create arbitrarily complex multiparts using the @acronym{MML}
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
 Manual}).
 
@@ -877,12 +877,13 @@ Libidn} installed in order to use this functionality.
 @cindex encrypt
 @cindex secure
 
-Using the MML language, Message is able to create digitally signed and
-digitally encrypted messages.  Message (or rather MML) currently
-support @acronym{PGP} (RFC 1991), @acronym{PGP/MIME} (RFC 2015/3156) and @acronym{S/MIME}.
-Instructing MML to perform security operations on a @acronym{MIME} part is
-done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
-C-m c} key map for encryption, as follows.
+Using the @acronym{MML} language, Message is able to create digitally
+signed and digitally encrypted messages.  Message (or rather
+@acronym{MML}) currently support @acronym{PGP} (RFC 1991),
+@acronym{PGP/MIME} (RFC 2015/3156) and @acronym{S/MIME}.  Instructing
+@acronym{MML} to perform security operations on a @acronym{MIME} part is
+done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c C-m
+c} key map for encryption, as follows.
 
 @table @kbd
 
@@ -925,21 +926,22 @@ Digitally encrypt current message using @acronym{PGP/MIME}.
 @item C-c C-m C-n
 @kindex C-c C-m C-n
 @findex mml-unsecure-message
-Remove security related MML tags from message.
+Remove security related @acronym{MML} tags from message.
 
 @end table
 
 These commands do not immediately sign or encrypt the message, they
-merely insert the proper MML secure tag to instruct the MML engine to
-perform that operation when the message is actually sent.  They may
-perform other operations too, such as locating and retrieving a
-@acronym{S/MIME} certificate of the person you wish to send encrypted mail
-to.  When the mml parsing engine converts your MML into a properly
-encoded @acronym{MIME} message, the secure tag will be replaced with either
-a part or a multipart tag.  If your message contains other mml parts,
-a multipart tag will be used; if no other parts are present in your
-message a single part tag will be used.  This way, message mode will
-do the Right Thing (TM) with signed/encrypted multipart messages.
+merely insert the proper @acronym{MML} secure tag to instruct the
+@acronym{MML} engine to perform that operation when the message is
+actually sent.  They may perform other operations too, such as locating
+and retrieving a @acronym{S/MIME} certificate of the person you wish to
+send encrypted mail to.  When the mml parsing engine converts your
+@acronym{MML} into a properly encoded @acronym{MIME} message, the secure
+tag will be replaced with either a part or a multipart tag.  If your
+message contains other mml parts, a multipart tag will be used; if no
+other parts are present in your message a single part tag will be used.
+This way, message mode will do the Right Thing (TM) with
+signed/encrypted multipart messages.
 
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
@@ -971,24 +973,25 @@ programs are required to make things work, and some small general hints.
 modern cryptography, @acronym{S/MIME}, various PKCS standards, OpenSSL and
 so on.
 
-The @acronym{S/MIME} support in Message (and MML) require OpenSSL.  OpenSSL
-performs the actual @acronym{S/MIME} sign/encrypt operations.  OpenSSL can
-be found at @uref{http://www.openssl.org/}.  OpenSSL 0.9.6 and later
-should work.  Version 0.9.5a cannot extract mail addresses from
-certificates, and it insert a spurious CR character into @acronym{MIME}
-separators so you may wish to avoid it if you would like to avoid
-being regarded as someone who send strange mail.  (Although by sending
-@acronym{S/MIME} messages you've probably already lost that contest.)
+The @acronym{S/MIME} support in Message (and @acronym{MML}) require
+OpenSSL.  OpenSSL performs the actual @acronym{S/MIME} sign/encrypt
+operations.  OpenSSL can be found at @uref{http://www.openssl.org/}.
+OpenSSL 0.9.6 and later should work.  Version 0.9.5a cannot extract mail
+addresses from certificates, and it insert a spurious CR character into
+@acronym{MIME} separators so you may wish to avoid it if you would like
+to avoid being regarded as someone who send strange mail.  (Although by
+sending @acronym{S/MIME} messages you've probably already lost that
+contest.)
 
 To be able to send encrypted mail, a personal certificate is not
-required.  Message (MML) need a certificate for the person to whom you
+required.  Message (@acronym{MML}) need a certificate for the person to whom you
 wish to communicate with though.  You're asked for this when you type
 @kbd{C-c C-m c s}.  Currently there are two ways to retrieve this
 certificate, from a local file or from DNS.  If you chose a local
 file, it need to contain a X.509 certificate in @acronym{PEM} format.
 If you chose DNS, you're asked for the domain name where the
 certificate is stored, the default is a good guess.  To my belief,
-Message (MML) is the first mail agent in the world to support
+Message (@acronym{MML}) is the first mail agent in the world to support
 retrieving @acronym{S/MIME} certificates from DNS, so you're not
 likely to find very many certificates out there.  At least there
 should be one, stored at the domain @code{simon.josefsson.org}.  LDAP
@@ -998,8 +1001,8 @@ command line to retrieve a certificate into a file and use it.)
 
 As for signing messages, OpenSSL can't perform signing operations
 without some kind of configuration.  Especially, you need to tell it
-where your private key and your certificate is stored.  MML uses an
-Emacs interface to OpenSSL, aptly named @code{smime.el}, and it
+where your private key and your certificate is stored.  @acronym{MML}
+uses an Emacs interface to OpenSSL, aptly named @code{smime.el}, and it
 contain a @code{custom} group used for this configuration.  So, try
 @kbd{M-x customize-group RET smime RET} and look around.
 

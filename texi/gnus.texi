@@ -11929,9 +11929,9 @@ are in reply to encrypted messages.  Gnus offers
 @code{gnus-message-replysignencrypted} (on by default) will sign
 automatically encrypted messages.
 
-Instructing MML to perform security operations on a @acronym{MIME} part is
-done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
-C-m c} key map for encryption, as follows.
+Instructing @acronym{MML} to perform security operations on a
+@acronym{MIME} part is done using the @kbd{C-c C-m s} key map for
+signing and the @kbd{C-c C-m c} key map for encryption, as follows.
 
 @table @kbd
 
@@ -11974,7 +11974,7 @@ Digitally encrypt current message using @acronym{PGP/MIME}.
 @item C-c C-m C-n
 @kindex C-c C-m C-n
 @findex mml-unsecure-message
-Remove security related MML tags from message.
+Remove security related @acronym{MML} tags from message.
 
 @end table
 
@@ -25553,12 +25553,12 @@ This change was made to avoid conflict with the standard binding of
 @code{back-to-indentation}, which is also useful in message mode.
 
 @item
-The default for message-forward-show-mml changed to symbol @code{best}.
+The default for @code{message-forward-show-mml} changed to symbol @code{best}.
 
-The behaviour for the @code{best} value is to show MML (i.e., convert MIME
-to MML) when appropriate.  MML will not be used when forwarding signed
-or encrypted messages, as the conversion invalidate the digital
-signature.
+The behaviour for the @code{best} value is to show @acronym{MML} (i.e.,
+convert to @acronym{MIME}) when appropriate.  @acronym{MML} will not be
+used when forwarding signed or encrypted messages, as the conversion
+invalidate the digital signature.
 @end itemize
 
 @iftex
