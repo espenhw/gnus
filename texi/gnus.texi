@@ -16023,6 +16023,13 @@ A file containing credentials used to log in on servers.  The format is
 variable @code{nntp-authinfo-file} for exact syntax; also see
 @ref{NNTP}.
 
+@item nnimap-need-unselect-to-notice-new-mail
+@vindex nnimap-need-unselect-to-notice-new-mail
+
+Unselect mailboxes before looking for new mail in them.  Some servers
+seem to need this under some circumstances; it was reported that
+Courier 1.7.1 did.
+
 @end table
 
 @menu

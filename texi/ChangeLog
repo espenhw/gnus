@@ -1,3 +1,7 @@
+2003-05-01  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (IMAP): Document nnimap-need-unselect-to-notice-new-mail.
+
 2003-05-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Wide Characters): Proportional -> fixed width.
