@@ -1,3 +1,10 @@
+2003-07-09  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+	From Gaute B Strokkenes <gs234@cam.ac.uk> (tiny patch).
+
+	* imap.el (imap-wait-for-tag): Clarify comment.  Use timeout zero
+	for second, after-process-has-died, accept-process-output.
+	(imap-arrival-filter): If PROC has no buffer, do nothing.
+
 2003-07-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* flow-fill.el: Docstring and message fixes.
@@ -52,7 +59,7 @@
 
 	* imap.el (imap-wait-for-tag): After the process has died, look
 	for more output still pending.  From Gaute B Strokkenes
-	<gs234@cam.ac.uk>.
+	<gs234@cam.ac.uk> (tiny patch).
 
 2003-07-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
