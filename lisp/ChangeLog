@@ -1,3 +1,8 @@
+1999-12-12 12:50:30  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el: Revoke last Dave Love's patch, because of
+	incompatibility of XEmacs.
+
 1999-12-12 12:27:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el: Change headers.
