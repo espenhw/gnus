@@ -57,6 +57,11 @@
   :group 'gnus-agent
   :type 'hook)
 
+(defcustom gnus-agent-fetched-hook nil
+  "Hook run when finished fetching articles."
+  :group 'gnus-agent
+  :type 'hook)
+
 (defcustom gnus-agent-handle-level gnus-level-subscribed
   "Groups on levels higher than this variable will be ignored by the Agent."
   :group 'gnus-agent
@@ -1013,9 +1018,7 @@ This can be added to `gnus-select-article-hook' or
 	     (list gnus-current-article))
 	(setq gnus-newsgroup-undownloaded
 	      (delq gnus-current-article gnus-newsgroup-undownloaded))
-	(gnus-summary-update-article-line
-	 gnus-current-article
-	 (gnus-summary-article-header gnus-current-article))))))
+	(gnus-summary-update-line gnus-current-article)))))
 
 ;;;
 ;;; Internal functions
@@ -1397,7 +1400,8 @@ variables.  Returns the first non-nil value found."
            (agent-high-score . gnus-agent-high-score)
            (agent-days-until-old . gnus-agent-expire-days)
            (agent-enable-expiration
-            . gnus-agent-enable-expiration)))))))
+            . gnus-agent-enable-expiration)
+           (agent-predicate . gnus-agent-predicate)))))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
   "Fetch interesting headers into the agent.  The group's overview
@@ -1752,7 +1756,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 		       (signal 'quit
 			       "Cannot fetch articles into the Gnus agent")))))))))
 	(pop methods))
-      (run-hooks 'gnus-agent-fetch-hook)
+      (gnus-run-hooks 'gnus-agent-fetched-hook)
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)
@@ -1820,8 +1824,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 
           (setq predicate
                 (gnus-get-predicate
-                 (or (gnus-agent-find-parameter group 'agent-predicate)
-                     'false)))
+                 (gnus-agent-find-parameter group 'agent-predicate)))
 
           ;; If the selection predicate requires scoring, score each header
           (unless (memq predicate '(gnus-agent-true gnus-agent-false))
@@ -1961,6 +1964,9 @@ General format specifiers can also be used.  See Info node
 
 (defvar gnus-category-mode-line-format "Gnus: %%b"
   "The format specification for the category mode line.")
+
+(defvar gnus-agent-predicate 'false
+  "The selection predicate used when no other source is available.")
 
 (defvar gnus-agent-short-article 100
   "Articles that have fewer lines than this are short.")
@@ -2416,6 +2422,10 @@ FORCE is equivalent to setting the expiration predicates to true."
             (kill-buffer overview))))
     (gnus-message 4 "Expiry...done")))
 
+(defmacro gnus-agent-message (level &rest args)
+  `(if (<= ,level gnus-verbose)
+       (message ,@args)))
+
 (defun gnus-agent-expire-group-1 (group overview active articles force)
   ;; Internal function - requires caller to have set
   ;; gnus-command-method, initialized overview buffer, and to have
@@ -2530,6 +2540,7 @@ FORCE is equivalent to setting the expiration predicates to true."
 
       (set-buffer overview)
       (erase-buffer)
+      (buffer-disable-undo)
       (when (file-exists-p nov-file)
         (gnus-message 7 "gnus-agent-expire: Loading overview...")
         (nnheader-insert-file-contents nov-file)
@@ -2608,7 +2619,7 @@ line." (point) nov-file)))
                                                len)))))
             (when (> new-completed completed)
               (setq completed new-completed)
-              (gnus-message 9 "%3d%% completed..."  completed)))
+              (gnus-message 7 "%3d%% completed..."  completed)))
           (let* ((entry          (car dlist))
                  (article-number (nth 0 entry))
                  (fetch-date     (nth 1 entry))
@@ -2618,7 +2629,7 @@ line." (point) nov-file)))
             (cond
              ;; Kept articles are unread, marked, or special.
              (keep
-              (gnus-message 10
+              (gnus-agent-message 10
                             "gnus-agent-expire: Article %d: Kept %s article."
                             article-number keep)
               (when fetch-date
@@ -2626,7 +2637,7 @@ line." (point) nov-file)))
                          (concat dir (number-to-string
                                       article-number)))
                   (setf (nth 1 entry) nil)
-                  (gnus-message 3 "gnus-agent-expire cleared \
+                  (gnus-agent-message 3 "gnus-agent-expire cleared \
 download flag on article %d as the cached article file is missing."
                                 (caar dlist)))
                 (unless marker
@@ -2686,11 +2697,11 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
                   (push (format "Removed %s article number from \
 article alist" type) actions))
 
-                (gnus-message 7 "gnus-agent-expire: Article %d: %s"
+                (gnus-agent-message 8 "gnus-agent-expire: Article %d: %s"
                               article-number
                               (mapconcat 'identity actions ", "))))
              (t
-              (gnus-message
+              (gnus-agent-message
                10 "gnus-agent-expire: Article %d: Article kept as \
 expiration tests failed." article-number)
               (gnus-agent-append-to-list

@@ -1,3 +1,27 @@
+2003-03-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-fetched-hook): New variable.  Just
+	fixing the code to match the documentation.
+	(gnus-agent-fetch-selected-article): Replaced
+	gnus-summary-update-article-line with gnus-summary-update-line as
+	the former did not correctly recalculate the thread indentation.
+	(gnus-agent-find-parameter): The agent-predicate, if not found
+	anywhere else, defaults to the value of gnus-agent-predicate.
+	(gnus-agent-fetch-session): Fixed typo; now executes
+	gnus-agent-fetched-hook rather than the undocumented
+	gnus-agent-fetch-hook.
+	(gnus-agent-fetch-group-1): Removed part of 2003-03-06 fix.  The
+	default agent predicate is now provided by
+	gnus-agent-find-parameter.
+	(gnus-agent-message): New macro.  This macro avoids potentially
+	costly parameter evaluation when the message's level is too high
+	to display.
+	(gnus-agent-expire-group-1): Disabled undo tracking in temp
+	overview buffer. Uses new gnus-agent-message macro to reduce
+	overhead of optional messages. Reversed message levels to
+	emphasize percent completion messages.  Detailed messages of
+	little use except when debugging code.
+	
 2003-03-08  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-move-routine): use
