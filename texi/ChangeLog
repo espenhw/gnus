@@ -1,3 +1,14 @@
+2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Expiring in IMAP): backend -> back end.
+	(Wide Characters): The default value of
+	gnus-use-correct-string-widths under Emacs is nil.
+	(Filtering Spam Using spam.el): backend -> back end.
+	(Extending spam.el): backend -> back end.
+	(Filtering Spam Using Statistics (spam-stat.el)): Fix typo.
+	(Creating a spam-stat dictionary): Fix typo.
+	(Creating a spam-stat dictionary): backend -> back end.
+
 2002-11-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Extending spam.el): fixed typos and wrong @items

@@ -15398,7 +15398,7 @@ Nnmail equivalent: @code{nnmail-split-fancy}.
 @subsection Expiring in IMAP
 @cindex expiring imap mail
 
-Even though @sc{nnimap} is not a proper @sc{nnmail} derived backend,
+Even though @sc{nnimap} is not a proper @sc{nnmail} derived back end,
 it supports most features in regular expiring (@pxref{Expiring Mail}).
 Unlike splitting in IMAP (@pxref{Splitting in IMAP}) it do not clone
 the @sc{nnmail} variables (i.e., creating @var{nnimap-expiry-wait})
@@ -16490,7 +16490,7 @@ back end, it would probably be nonsensical to have it covered by the
 Agent.  Go to the server buffer (@kbd{^} in the group buffer) and press
 @kbd{J a} on the server (or servers) that you wish to have covered by the
 Agent (@pxref{Server Agent Commands}), or @kbd{J r} on automatically
-added servers you do not wish to have covered by the Agent.  By default, 
+added servers you do not wish to have covered by the Agent.  By default,
 all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
 @code{gnus-secondary-select-methods} are agentized.
 
@@ -19596,8 +19596,8 @@ these coutries, that's not true.
 @vindex gnus-use-correct-string-widths
 To help fix this, you can set @code{gnus-use-correct-string-widths} to
 @code{t}.  This makes buffer generation slower, but the results will be
-prettieer.  The default value is @code{t}.
-
+prettieer.  The default value under XEmacs is @code{t} but @code{nil}
+for Emacs.
 
 
 @node Window Layout
@@ -21383,7 +21383,7 @@ must add the following to your fancy split list
 
 Note that the fancy split may be called @code{nnmail-split-fancy} or
 @code{nnimap-split-fancy}, depending on whether you use the nnmail or
-nnimap backends to retrieve your mail.
+nnimap back ends to retrieve your mail.
 
 The @code{spam-split} function will process incoming mail and send the mail
 considered to be spam into the group name given by the variable
@@ -21515,7 +21515,7 @@ yet, but you can use @code{ifile-gnus.el} on its own if you like.
 @cindex spam.el, extending
 @cindex extending spam.el
 
-Say you want to add a new backend called blackbox.  Provide the following:
+Say you want to add a new back end called blackbox.  Provide the following:
 
 @enumerate
 @item
@@ -21551,15 +21551,15 @@ Write the @code{spam-check-blackbox} function.  It should return
 @cindex Bayesian spam filtering, naive
 @cindex spam filtering, naive Bayesian
 
-Paul Graham has written an excellent essay about spam filterung using
-statisticts: @uref{http://www.paulgraham.com/spam.html,A Plan for
+Paul Graham has written an excellent essay about spam filtering using
+statistics: @uref{http://www.paulgraham.com/spam.html,A Plan for
 Spam}.  In it he describes the inherent deficiency of rule-based
 filtering as used by SpamAssassin, for example: Somebody has to write
 the rules, and everybody else has to install these rules.  You are
 always late.  It would be much better, he argues, to filter mail based
-on wether it somehow resembles spam or non-spam.  One way to measure
+on whether it somehow resembles spam or non-spam.  One way to measure
 this is word distribution.  He then goes on to describe a solution
-that checks wether a new mail resembles any of your other spam mails
+that checks whether a new mail resembles any of your other spam mails
 or not.
 
 The basic idea is this:  Create a two collections of your mail, one
@@ -21589,12 +21589,12 @@ this dictionary in your fancy mail splitting rules.
 Before you can begin to filter spam based on statistics, you must
 create these statistics based on two mail collections, one with spam,
 one with non-spam.  These statistics are then stored in a dictionary
-for later use.  In order for these statistics to be meaningfull, you
+for later use.  In order for these statistics to be meaningful, you
 need several hundred emails in both collections.
 
-Gnus currently supports only the nnml backend for automated dictionary
-creation.  The nnml backend stores all mails in a directory, one file
-per mail.  Use the following 
+Gnus currently supports only the nnml back end for automated dictionary
+creation.  The nnml back end stores all mails in a directory, one file
+per mail.  Use the following:
 
 @defun spam-stat-process-spam-directory
 Create spam statistics for every file in this directory.  Every file
