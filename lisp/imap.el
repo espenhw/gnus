@@ -567,6 +567,7 @@ If ARGS, PROMPT is used as an argument to `format'."
   (let ((cmds (if (listp imap-ssl-program) imap-ssl-program
 		(list imap-ssl-program)))
 	cmd done)
+    (ignore-errors (require 'ssl))
     (while (and (not done) (setq cmd (pop cmds)))
       (message "imap: Opening SSL connection with `%s'..." cmd)
       (let* ((port (or port imap-default-ssl-port))

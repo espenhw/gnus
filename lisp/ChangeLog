@@ -1,3 +1,9 @@
+2001-06-03  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-ssl-open): Require ssl. (Otherwise ssl.el is
+	autoloaded incorrectly below because ssl-program-* is bound.)
+	Thanks to Amos Gouaux for report.
+
 2001-06-02  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-kerberos4-open): 
