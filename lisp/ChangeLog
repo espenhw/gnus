@@ -1,4 +1,46 @@
+Fri Oct 13 05:58:15 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-parse-format): Would totally bug out.
+
+Fri Oct 13 01:38:43 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-toggle-header): Run
+	`gnus-article-display-hook' after unhiding headers.
+
+	* gnus-vis.el (gnus-summary-highlight-line): Would sometimes boug
+	out on nil marks.
+
+	* gnus-msg.el (gnus-new-news): Have `C-c C-d' work in new
+	*post-news* buffers.
+	(gnus-post-prepare-function): Not used.
+	(gnus-post-prepare-hook): Ditto.
+
+	* gnus-soup.el (gnus-soup-write-replies): Create dir if it doesn't
+	exist.
+
+	* gnus-msg.el (gnus-prepare-article-hook): Don't insert
+	signature. 
+
+	* gnus-score.el (gnus-score-adaptive): Would bug out an pseudos. 
+
+	* nnfolder.el (nnfolder-request-create-group): Would create bogus
+	active entries.
+
+Thu Oct 12 09:47:37 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-pipe-output): Raise the *Shell* window. 
+	(gnus-group-sort-groups): Would peel off the first group.
+
+	* gnus-msg.el (gnus-mail-forward): Would create two headers.
+
+	* nndoc.el (nndoc-type-to-regexp): Allow reading of forwarded
+	article. 
+
+	* gnus-msg.el (gnus-mail-setup): Changed params.
+
 Thu Oct 12 03:20:42 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: 0.7 is released.
 
 	* gnus-xmas.el (gnus-xmas-setup-group-toolbar): Would bug out when
 	there was no etc dir.

@@ -201,7 +201,7 @@
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
-	(setq dir (file-name-as-directory nnmh-directory))))
+	(setq dir (file-truename (file-name-as-directory nnmh-directory)))))
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)

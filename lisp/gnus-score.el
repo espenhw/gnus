@@ -789,6 +789,7 @@ SCORE is the score to add."
   (let (scores)
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
+    (setq gnus-scores-articles nil)
     ;; Load the score files.
     (while score-files
       (if (stringp (car score-files))
@@ -1521,26 +1522,27 @@ SCORE is the score to add."
 	(if (or (not elem)
 		(get-text-property (point) 'gnus-pseudo))
 	    ()
-	  (setq headers (gnus-summary-article-header))
-	  (while (and elem headers)
-	    (setq match (funcall (car (car elem)) headers))
-	    (gnus-summary-score-entry 
-	     (nth 1 (car elem)) match
-	     (cond
-	      ((numberp match)
-	       '=)
-	      ((equal (nth 1 (car elem)) "date")
-	       'a)
-	      (t
-	       ;; Whether we use substring or exact matches are controlled
-	       ;; here.  
-	       (if (or (not gnus-score-exact-adapt-limit)
-		       (< (length match) gnus-score-exact-adapt-limit))
-		   'e 
-		 (if (equal (nth 1 (car elem)) "subject")
-		     'f 's))))
-	     (nth 2 (car elem)) date nil t)
-	    (setq elem (cdr elem))))
+	  (when (and (setq headers (gnus-summary-article-header))
+		     (vectorp headers))
+	    (while elem 
+	      (setq match (funcall (car (car elem)) headers))
+	      (gnus-summary-score-entry 
+	       (nth 1 (car elem)) match
+	       (cond
+		((numberp match)
+		 '=)
+		((equal (nth 1 (car elem)) "date")
+		 'a)
+		(t
+		 ;; Whether we use substring or exact matches are controlled
+		 ;; here.  
+		 (if (or (not gnus-score-exact-adapt-limit)
+			 (< (length match) gnus-score-exact-adapt-limit))
+		     'e 
+		   (if (equal (nth 1 (car elem)) "subject")
+		       'f 's))))
+	       (nth 2 (car elem)) date nil t)
+	      (setq elem (cdr elem)))))
 	(forward-line 1)))))
 
 (defun gnus-score-remove-lines-adaptive (marks)

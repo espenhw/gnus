@@ -819,6 +819,9 @@ beginning of a line.")
     (mail-bounce ([article 0.5]
 		  [mail 1.0 point]))
     (draft ([draft 1.0 point]))
+    (pipe ([summary 0.25 point] 
+	   (if gnus-carpal [summary-carpal 4]) 
+	   ["*Shell Command Output*" 1.0]))
     (followup ([article 0.5]
 	       [post 1.0 point]))
     (followup-yank ([post 1.0 point])))
@@ -1473,7 +1476,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.7"
+(defconst gnus-version "September Gnus v0.8"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2247,7 +2250,7 @@ Thank you for your help in stamping out bugs.
 			(substring format (match-beginning 3) (match-end 3)))
 		spec-alist))
 	   (gnus-parse-simple-format format spec-alist))))
-    (if insert (cons insert result) result)))
+    (if insert (list 'insert result) result)))
 
 (defun gnus-parse-simple-format (format spec-alist)
   ;; This function parses the FORMAT string with the help of the
@@ -3413,7 +3416,7 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "\C-c\C-d" 'gnus-group-describe-group)
   (define-key gnus-group-mode-map "\M-d" 'gnus-group-describe-all-groups)
   (define-key gnus-group-mode-map "\C-c\C-a" 'gnus-group-apropos)
-  (define-key gnus-group-mode-map "\C-c\M-C-a" 'gnus-group-description-apropos)
+  (define-key gnus-group-mode-map "\C-c\M-\C-a" 'gnus-group-description-apropos)
   (define-key gnus-group-mode-map "a" 'gnus-group-post-news)
   (define-key gnus-group-mode-map "\ek" 'gnus-group-edit-local-kill)
   (define-key gnus-group-mode-map "\eK" 'gnus-group-edit-global-kill)
@@ -4911,7 +4914,7 @@ score file entries for articles to include in the group."
     ;; Do the sorting.
     (while funcs
       (setq gnus-newsrc-alist 
-	    (sort (cdr gnus-newsrc-alist) (car funcs)))
+	    (sort gnus-newsrc-alist (car funcs)))
       (setq funcs (cdr funcs))))
   (gnus-make-hashtable-from-newsrc-alist)
   (gnus-group-list-groups))
@@ -6960,9 +6963,9 @@ Returns how many articles were removed."
 (defun gnus-thread-sort-by-subject (h1 h2)
   "Sort threads by root subject."
   (string-lessp
-   (downcase (gnus-simplify-subject 
+   (downcase (gnus-simplify-subject-re
 	      (mail-header-subject (gnus-thread-header h1))))
-   (downcase (gnus-simplify-subject 
+   (downcase (gnus-simplify-subject-re 
 	      (mail-header-subject (gnus-thread-header h2))))))
 
 (defun gnus-thread-sort-by-date (h1 h2)
@@ -7904,7 +7907,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 
     ;; overview: [num subject from date id refs chars lines misc]
     (narrow-to-region (point) eol)
-    (forward-char)
+    (or (eobp) (forward-char))
 
     (condition-case nil
 	(setq header
@@ -9452,6 +9455,10 @@ If ARG is a negative number, hide the unwanted header lines."
 	(goto-char (point-min))
 	(setq e (1- (search-forward "\n\n"))))
       (insert-buffer-substring gnus-original-article-buffer 1 e)
+      (let ((hook (delete 'gnus-article-hide-headers-if-wanted
+			  (delete 'gnus-article-hide-headers
+				  gnus-article-display-hook))))
+	(run-hooks 'hook))
       (if (or (not hidden) (and (numberp arg) (< arg 0)))
 	  (gnus-article-hide-headers)))))
 
@@ -11020,7 +11027,8 @@ pipe those articles instead."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-pipe))
-    (gnus-summary-save-article arg)))
+    (gnus-summary-save-article arg))
+  (gnus-configure-windows 'pipe))
 
 (defun gnus-summary-save-article-mail (&optional arg)
   "Append the current article to an mail file.
@@ -12222,7 +12230,6 @@ Intended to be used with gnus-article-prepare-hook."
 	    (insert
 	     (timezone-make-date-arpa-standard 
 	      date nil (current-time-zone))))))))
-
 
 ;; Article mode commands
 

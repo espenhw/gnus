@@ -1,4 +1,4 @@
-;;; gnus-xmal.el --- Gnus functions for XEmacs
+;;; gnus-xmas.el --- Gnus functions for XEmacs
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -84,7 +84,8 @@ automatically.")
 (defvar standard-display-table)
 
 (defun gnus-xmas-install-mouse-tracker ()
-  (add-hook 'mode-motion-hook 'mode-motion-highlight-line))
+  (or (featurep 'mode-motion+)
+      (add-hook 'mode-motion-hook 'mode-motion-highlight-line)))
 
 (defun gnus-xmas-set-text-properties (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
@@ -304,7 +305,8 @@ See also `gnus-display-type'.
 
 This is a meta-variable that will affect what default values other
 variables get.  You would normally not change this variable, but
-pounce directly on the real variables themselves."))
+pounce directly on the real variables themselves.")
+  )
 
 
 
@@ -325,16 +327,14 @@ pounce directly on the real variables themselves."))
 
   (or (fboundp 'appt-select-lowest-window)
       (fset 'appt-select-lowest-window 
-	    'gnus-xnas-appt-select-lowest-window))
+	    'gnus-xmas-appt-select-lowest-window))
 
-  (add-hook 'gnus-group-menu-hook 'gnus-xmas-group-menu-add)
-  (add-hook 'gnus-summary-menu-hook 'gnus-xmas-summary-menu-add)
-  (add-hook 'gnus-article-menu-hook 'gnus-xmas-article-menu-add)
+  (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
+  (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
-
-  )
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar))
 
 
 ;;; XEmacs logo and toolbar.
@@ -420,7 +420,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
     [gnus-group-kill-group-icon gnus-group-kill-group t "Kill group"]
     [gnus-group-get-new-news-icon gnus-group-get-new-news t "Get new news"]
     [gnus-group-get-new-news-this-group-icon 
-     gnus-group-get-new-news-this-group t "Get new new in this group"]
+     gnus-group-get-new-news-this-group t "Get new news in this group"]
     [gnus-group-catchup-current-icon 
      gnus-group-catchup-current t "Catchup group"]
     [gnus-group-describe-group-icon 
@@ -456,22 +456,23 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 (defun gnus-xmas-setup-toolbar (bar &optional force)
   (let ((dir (file-name-as-directory (gnus-xmas-find-glyph-directory)))
 	icon up down disabled name)
-    (if (or (not dir)
-	    (and (not force)
-		 (boundp (aref (car bar) 0))))
+    (if (not dir)
 	()
-      (while bar
-	(setq icon (aref (car bar) 0)
-	      name (symbol-name icon)
-	      bar (cdr bar))
-	(setq up (concat dir name "-up.xpm"))
-	(setq down (concat dir name "-down.xpm"))
-	(setq disabled (concat dir name "-disabled.xpm"))
-	(if (not (file-exists-p up))
-	    (set icon nil)
-	  (set icon (toolbar-make-button-list
-		     up (and (file-exists-p down) down)
-		     (and (file-exists-p disabled) disabled))))
+      (if (and (not force)
+	       (boundp (aref (car bar) 0)))
+	  dir
+	(while bar
+	  (setq icon (aref (car bar) 0)
+		name (symbol-name icon)
+		bar (cdr bar))
+	  (setq up (concat dir name "-up.xpm"))
+	  (setq down (concat dir name "-down.xpm"))
+	  (setq disabled (concat dir name "-disabled.xpm"))
+	  (if (not (file-exists-p up))
+	      (set icon nil)
+	    (set icon (toolbar-make-button-list
+		       up (and (file-exists-p down) down)
+		       (and (file-exists-p disabled) disabled)))))
 	dir))))
 
 (defun gnus-xmas-setup-group-toolbar ()

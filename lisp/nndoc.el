@@ -30,7 +30,7 @@
 (require 'nnmail)
 
 (defvar nndoc-article-type 'mbox
-  "*Type of the file - one of `mbox', `babyl' or `digest'.")
+  "*Type of the file - one of `mbox', `babyl', `digest', or `forward'.")
 
 (defvar nndoc-digest-type 'traditional
   "Type of the last digest.  Auto-detected from the article header.
@@ -40,19 +40,25 @@ Possible values:
   `rfc1341' -- RFC 1341 digest (MIME, unique boundary, no quoting).")
 
 (defconst nndoc-type-to-regexp
-  (list (list 'mbox 
-	      (concat "^" rmail-unix-mail-delimiter)
-	      (concat "^" rmail-unix-mail-delimiter)
-	      nil "^$" nil nil nil)
-	(list 'babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
-	      "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
-	(list 'digest
-	      "^------------------------------*[\n \t]+"
-	      "^------------------------------*[\n \t]+"
-	      nil "^ ?$"   
-	      "^------------------------------*[\n \t]+"
-	      "^End of" nil))
-  "Regular expressions for articles of the various types.")
+  (` ((mbox 
+       (, (concat "^" rmail-unix-mail-delimiter))
+       (, (concat "^" rmail-unix-mail-delimiter))
+       nil "^$" nil nil nil)
+      (babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
+	     "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
+      (digest
+       "^------------------------------*[\n \t]+"
+       "^------------------------------*[\n \t]+"
+       nil "^ ?$"   
+       "^------------------------------*[\n \t]+"
+       "^End of" nil)
+      (forward
+       "^-+ Start of forwarded message -+\n+"
+       "^-+ End of forwarded message -+\n"
+       nil "^ ?$" nil nil nil)))
+  "Regular expressions for articles of the various types.
+article-begin, article-end, head-begin, head-end, 
+first-article, end-of-file, body-begin.")
 
 
 

@@ -23,10 +23,6 @@
 
 ;;; Commentary:
 
-;; Is this really the only way to set the load path? Seems awfully
-;; kludgy to load this file just to do something as simple as
-;; that... Anyways, it won't be in the production code, so who cares?
-
 ;;; Code:
 
 (setq load-path (cons "." load-path))
@@ -53,6 +49,7 @@
 	   (byte-compile-file file)))))
 
 (defun dgnushack-recompile ()
+  (require 'gnus)
   (byte-recompile-directory "." 0))
 
 ;;; dgnushack.el ends here  

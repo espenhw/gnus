@@ -28,15 +28,12 @@
 (require 'gnus)
 (require 'sendmail)
 (require 'gnus-ems)
-(require 'rmail)
 
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
 
-(defvar gnus-prepare-article-hook (list 'gnus-inews-insert-signature)
-  "*A hook called after preparing body, but before preparing header headers.
-The default hook (`gnus-inews-insert-signature') inserts a signature
-file specified by the variable `gnus-signature-file'.")
+(defvar gnus-prepare-article-hook nil
+  "*A hook called after preparing body, but before preparing header headers.")
 
 (defvar gnus-post-prepare-function nil
   "*Function that is run after a post buffer has been prepared.
@@ -202,7 +199,7 @@ list, then those elements in that list will be checked.")
 (defvar gnus-delete-supersedes-headers
   "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
-It's best to delete old Path and Date headers before psoting to avoid
+It's best to delete old Path and Date headers before posting to avoid
 any confusion.")
 
 (defvar gnus-auto-mail-to-author nil
@@ -276,7 +273,8 @@ headers.")
 (eval-and-compile
   (autoload 'gnus-uu-post-news "gnus-uu" nil t)
   (autoload 'news-setup "rnewspost")
-  (autoload 'news-reply-mode "rnewspost"))
+  (autoload 'news-reply-mode "rnewspost")
+  (autoload 'rmail-output "rmailout"))
 
 
 ;;;
@@ -1482,7 +1480,7 @@ mailer."
 (defun gnus-new-mail (&optional to)
   (pop-to-buffer gnus-mail-buffer)
   (erase-buffer)
-  (gnus-mail-setup to nil nil nil nil nil)
+  (gnus-mail-setup 'new to)
   (gnus-inews-modify-mail-mode-map))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
@@ -1559,12 +1557,13 @@ mailer."
 	      (setq follow-to (delq elt follow-to))))
 
 	(gnus-mail-setup 
+	 (if followup 'followup 'reply)
 	 (or to-address 
 	     (if (and follow-to (not (stringp follow-to))) sendto
 	       (or follow-to reply-to from sender "")))
 	 subject nil
 	 (if (zerop (length new-cc)) nil new-cc)
-	 gnus-article-copy nil)
+	 gnus-article-copy)
 
 	(make-local-variable 'gnus-article-reply)
 	(setq gnus-article-reply cur)
@@ -1637,8 +1636,14 @@ mailer."
     (news-reply-mode)
     (news-setup nil subject nil group nil)
     (gnus-inews-insert-signature)
+    (and gnus-post-prepare-function
+	 (symbolp gnus-post-prepare-function)
+	 (fboundp gnus-post-prepare-function)
+	 (funcall gnus-post-prepare-function group))
+    (run-hooks 'gnus-post-prepare-hook)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
+    (gnus-inews-modify-mail-mode-map)
     (local-set-key "\C-c\C-c" 'gnus-inews-news)))
 
 (defun gnus-news-followup (&optional yank group)
@@ -1725,6 +1730,12 @@ mailer."
 	  (setq gnus-in-reply-to message-of)
 
 	  (gnus-inews-insert-signature)
+
+	  (and gnus-post-prepare-function
+	       (symbolp gnus-post-prepare-function)
+	       (fboundp gnus-post-prepare-function)
+	       (funcall gnus-post-prepare-function group))
+	  (run-hooks 'gnus-post-prepare-hook)
 
 	  (auto-save-mode auto-save-default)
 	  (gnus-inews-modify-mail-mode-map)
@@ -1938,23 +1949,28 @@ mailer."
 
 (defun gnus-mail-forward (&optional buffer)
   "Forward the current message to another user using mail."
-  ;; This is almost a carbon copy of rmail-forward in rmail.el.
   (let* ((forward-buffer (or buffer (current-buffer)))
 	 (winconf (current-window-configuration))
 	 (subject (gnus-forward-make-subject forward-buffer)))
-    (set-buffer forward-buffer)
-    (gnus-mail-setup nil subject nil nil nil nil 'forward)
-    (mail nil nil subject)
-    (gnus-inews-modify-mail-mode-map)
-    (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf)
-    (gnus-forward-insert-buffer forward-buffer)
-    (goto-char (point-min))
-    (re-search-forward "^To: " nil t)
-    (gnus-configure-windows 'mail-forward 'force)
-    ;; You have a chance to arrange the message.
-    (run-hooks 'gnus-mail-forward-hook)
-    (run-hooks 'gnus-mail-hook)))
+    (set-buffer (get-buffer-create gnus-mail-buffer))
+    (mail-mode)
+    (if (and (buffer-modified-p)
+	     (> (buffer-size) 0)
+	     (not (gnus-y-or-n-p 
+		   "Unsent message being composed; erase it? ")))
+	()
+      (erase-buffer)
+      (gnus-mail-setup 'forward nil subject)
+      (gnus-inews-modify-mail-mode-map)
+      (make-local-variable 'gnus-prev-winconf)
+      (setq gnus-prev-winconf winconf)
+      (gnus-forward-insert-buffer forward-buffer)
+      (goto-char (point-min))
+      (re-search-forward "^To: " nil t)
+      (gnus-configure-windows 'mail-forward 'force)
+      ;; You have a chance to arrange the message.
+      (run-hooks 'gnus-mail-forward-hook)
+      (run-hooks 'gnus-mail-hook))))
 
 (defun gnus-forward-using-post (&optional buffer)
   (save-excursion
@@ -2002,7 +2018,7 @@ If YANK is non-nil, include the original article."
     (pop-to-buffer "*Gnus Bug*")
     (erase-buffer)
     (mail-mode)
-    (mail-setup gnus-maintainer nil nil nil nil nil)
+    (mail-setup 'new gnus-maintainer)
     (auto-save-mode auto-save-default)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
@@ -2165,8 +2181,8 @@ Headers will be generated before sending."
   (local-set-key "\C-c\C-p" 'gnus-put-message)
   (local-set-key "\C-c\C-d" 'gnus-enter-into-draft-group))
 
-(defun gnus-mail-setup (to subject in-reply-to cc replybuffer actions
-			   &optional type)
+(defun gnus-mail-setup (type &optional to subject in-reply-to cc
+			     replybuffer actions)
   (funcall
    (cond
     ((or 

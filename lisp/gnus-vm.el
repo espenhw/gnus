@@ -88,10 +88,10 @@ save those articles instead."
   (let ((default-name
 	  (funcall gnus-mail-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-mail)))
-    (setq filename
-	  (cond ((eq filename 'default)
+    (setq folder
+	  (cond ((eq folder 'default)
 		 default-name)
-		(filename filename)
+		(folder folder)
 		(t (read-file-name 
 		    (concat "Save article in VM folder: (default "
 			    (file-name-nondirectory default-name) ") ")

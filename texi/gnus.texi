@@ -3050,7 +3050,7 @@ by the @var{show} parameter.   It makes perfect sense, really.
 @vindex gnus-group-topic-face
 Topics are shown with @code{gnus-group-topic-face}.
 
-@vindex{gnus-topic-unique}
+@vindex gnus-topic-unique
 If @code{gnus-topic-unique} is non-@code{nil}, each group will be member
 of (tops) one topic each.  If this is @code{nil}, each group might end
 up being a member of several topics.
@@ -3992,8 +3992,8 @@ This function is called with the name of the current group after the
 post buffer has been initialized, and can be used for inserting a
 signature.  Nice if you use different signatures in different groups.
 
-@item gnus-post-prepapare-hook
-@vindex gnus-post-prepapare-hook
+@item gnus-post-prepare-hook
+@vindex gnus-post-prepare-hook
 This hook is called after a post buffer has been prepared. If you want
 to insert a signature at this point, you could put
 @code{gnus-inews-insert-signature} into this hook.
@@ -4026,8 +4026,7 @@ would suggest this hook instead:
 
 @item gnus-prepare-article-hook
 @vindex gnus-prepare-article-hook
-This hook is called before the headers have been prepared.  By default
-it inserts the signature specified by @code{gnus-signature-file}.
+This hook is called before the headers have been prepared.  
 
 @item gnus-inews-article-function
 @vindex gnus-inews-article-function
@@ -7412,7 +7411,7 @@ the @code{Xref} header.
 If you want to lower the score of articles that have been crossposted to
 more than, say, 3 groups:
 @lisp
-("xref" (" +[^ ]+:[0-9]+ +[^ ]+:[0-9]+ +[^ ]+:[0-9]+" -1000 nil r))
+("xref" ("[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+ +[^:\n]+:[0-9]+" -1000 nil r))
 @end lisp
 @item Matching on the body
 This is generally not a very good idea---it takes a very long time.

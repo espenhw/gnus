@@ -292,7 +292,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	(setq nnfolder-group-alist 
 	      (cons (list group (setq active (cons 1 0)))
 		    nnfolder-group-alist))
-	(nnfolder-possibly-change-group group)
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
 
@@ -678,7 +677,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 					       (match-end 0)))))
 		(setq activenumber (max activenumber newnum))
 		(setq activemin (min activemin newnum))))
-	    (setcar active (min activemin activenumber))
+	    (setcar active (max 1 (min activemin activenumber)))
 	    (setcdr active (max activenumber (cdr active)))
 	    (goto-char (point-min))))
 

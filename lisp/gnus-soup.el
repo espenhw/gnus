@@ -326,6 +326,8 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 			   (string-to-int (gnus-soup-unique-prefix dir))
 			   files)))
 	 (dir (expand-file-name dir)))
+    (or (file-directory-p dir)
+	(gnus-make-directory dir))
     (setq gnus-soup-areas nil)
     (message "Packing %s..." packer)
     (if (zerop (call-process "sh" nil nil nil "-c" 
@@ -424,6 +426,8 @@ file. The vector contain three strings, [prefix name encoding]."
       (kill-buffer (current-buffer)))))
 
 (defun gnus-soup-write-replies (dir areas)
+  (or (file-directory-p dir)
+      (gnus-make-directory dir))
   (save-excursion
     (set-buffer (find-file-noselect (concat dir "REPLIES")))
     (erase-buffer)

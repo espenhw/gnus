@@ -839,16 +839,14 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (setq incomings (cons incoming incomings)))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
-      (if incoming 
-	  (progn
-	    (nnmail-save-active 
-	     (nnmail-get-value "%s-group-alist" method)
-	     (nnmail-get-value "%s-active-file" method))
-	    (and exit-func
-		 (funcall exit-func))
-	    (run-hooks 'nnmail-read-incoming-hook)
-	    (and gnus-verbose-backends
-		 (message "%s: Reading incoming mail...done" method))))
+      (when incomings
+	(nnmail-save-active 
+	 (nnmail-get-value "%s-group-alist" method)
+	 (nnmail-get-value "%s-active-file" method))
+	(and exit-func (funcall exit-func))
+	(run-hooks 'nnmail-read-incoming-hook)
+	(and gnus-verbose-backends
+	     (message "%s: Reading incoming mail...done" method)))
       (while incomings
 	(setq incoming (car incomings))
 	(and nnmail-delete-incoming
