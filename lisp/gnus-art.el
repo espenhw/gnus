@@ -1812,6 +1812,9 @@ unfolded."
 		(when xpm
 		  (setq image (gnus-create-image xpm 'xpm t))
 		  (gnus-article-goto-header "from")
+		  (when (bobp) 
+		    (insert "From: \n")
+		    (forward-char -2))
 		  (gnus-add-wash-type 'xface)
 		  (gnus-add-image 'xface image)
 		  (gnus-put-image image)))

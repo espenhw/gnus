@@ -8218,7 +8218,9 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
     ;; `gnus-read-move-group-name' an opportunity to suggest an
     ;; appropriate default.
     (unless (gnus-buffer-live-p gnus-original-article-buffer)
-      (gnus-summary-select-article nil nil nil (car articles)))
+      (let ((gnus-display-mime-function nil)
+	    (gnus-article-prepare-hook nil))
+	(gnus-summary-select-article nil nil nil (car articles))))
     ;; Read the newsgroup name.
     (when (and (not to-newsgroup)
 	       (not select-method))

@@ -1,5 +1,18 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (article-display-x-face): Insert From:.
+
+	* gnus-sum.el (gnus-summary-move-article): Don't draw the
+	article. Bind gnus-display-mime-function and
+	gnus-article-prepare-hook.
+
+	* gnus-agent.el (gnus-agent-retrieve-headers): Load agentview.
+	(gnus-agent-toggle-plugged): Use gnus-agent-go-online. Move 
+	gnus-agent-possibly-synchronize-flags to the last.
+	(gnus-agent-go-online): New function. New variable.
+
+2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* gnus-agent.el (gnus-agent-regenerate-group): Add clean option.
 	(gnus-agent-regenerate): Ditto.
 

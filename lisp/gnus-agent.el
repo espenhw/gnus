@@ -118,6 +118,15 @@ If this is `ask' the hook will query the user."
 		 (const :tag "Ask" ask))
   :group 'gnus-agent)
 
+(defcustom gnus-agent-go-online 'ask
+  "Indicate if offline servers go online when you plug in.
+If this is `ask' the hook will query the user."
+  :version "21.1"
+  :type '(choice (const :tag "Always" t)
+		 (const :tag "Never" nil)
+		 (const :tag "Ask" ask))
+  :group 'gnus-agent)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -331,12 +340,13 @@ If this is `ask' the hook will query the user."
   (if plugged
       (progn
 	(setq gnus-plugged plugged)
-	(gnus-agent-possibly-synchronize-flags)
 	(gnus-run-hooks 'gnus-agent-plugged-hook)
 	(setcar (cdr gnus-agent-mode-status) 
 		(gnus-agent-make-mode-line-string " Plugged"
 						  'mouse-2
-						  'gnus-agent-toggle-plugged)))
+						  'gnus-agent-toggle-plugged))
+	(gnus-agent-go-online gnus-agent-go-online)
+	(gnus-agent-possibly-synchronize-flags))
     (gnus-agent-close-connections)
     (setq gnus-plugged plugged)
     (gnus-run-hooks 'gnus-agent-unplugged-hook)
@@ -1819,6 +1829,7 @@ The following commands are available:
 	(let ((coding-system-for-write
 	       gnus-agent-file-coding-system))
 	  (write-region (point-min) (point-max) file nil 'silent))
+	(gnus-agent-load-alist group)
 	(gnus-agent-save-alist group uncached-articles nil)
 	(gnus-agent-open-history)
 	(setq gnus-agent-current-history (gnus-agent-history-buffer))
@@ -2049,6 +2060,17 @@ If CLEAN, don't read existing active and agentview files."
 	(let ((coding-system-for-write gnus-agent-file-coding-system))
 	  (gnus-write-active-file active-file active-hashtb)))))
   (message "Regenerating Gnus agent files...done"))
+
+(defun gnus-agent-go-online (&optional force)
+  "Bring servers online."
+  (interactive (list t))
+  (dolist (server gnus-opened-servers)
+    (when (eq (nth 1 server) 'offline)
+      (if (if (eq force 'ask) 
+	      (gnus-y-or-n-p 
+	       (format "Bring %s:%s online? " (caar server) (cadar server)))
+	    force)
+	  (setcar (nthcdr 1 server) 'close)))))
 
 (provide 'gnus-agent)
 
