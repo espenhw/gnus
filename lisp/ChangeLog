@@ -1,3 +1,18 @@
+2003-07-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-regex-body, spam-regex-body-spam) 
+	(spam-regex-body-ham): new variables, default to nil/empty/empty
+	(spam-install-hooks): added spam-use-regex-body to list or
+	pre-install conditions
+	(spam-list-of-checks): added spam-use-regex-body and
+	spam-check-regex-body to list of checks
+	(spam-list-of-statistical-checks): added spam-use-regex-body to
+	list of statistical checks
+	(spam-check-regex-body): invokes spam-check-regex-headers with
+	appropriate variable masking
+	(spam-check-regex-headers): changes to print "body" or "header"
+	where appropriate
+
 2003-07-25  Jesper Harder  <harder@ifa.au.dk>
 
 	* smime.el (smime-ask-passphrase): Use read-passwd rather than

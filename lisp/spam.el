@@ -158,6 +158,12 @@ Also see the variables `spam-regex-headers-spam' and `spam-regex-headers-ham'."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-regex-body nil
+  "Whether a body regular expression match should be used by spam-split.
+Also see the variables `spam-regex-body-spam' and `spam-regex-body-ham'."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-use-bogofilter-headers nil
   "Whether bogofilter headers should be used by spam-split.
 Enable this if you pre-process messages with Bogofilter BEFORE Gnus sees them."
@@ -205,6 +211,7 @@ considered spam."
 			       spam-use-blackholes 
 			       spam-use-hashcash 
 			       spam-use-regex-headers 
+			       spam-use-regex-body 
 			       spam-use-bogofilter-headers 
 			       spam-use-bogofilter 
 			       spam-use-BBDB 
@@ -253,6 +260,16 @@ All unmarked article in such group receive the spam mark on group entry."
 (defcustom spam-regex-headers-ham '("^X-Spam-Flag: NO")
   "Regular expression for positive header ham matches"
   :type '(repeat (regexp :tag "Regular expression to match ham header"))
+  :group 'spam)
+
+(defcustom spam-regex-body-spam '()
+  "Regular expression for positive body spam matches"
+  :type '(repeat (regexp :tag "Regular expression to match spam body"))
+  :group 'spam)
+
+(defcustom spam-regex-body-ham '()
+  "Regular expression for positive body ham matches"
+  :type '(repeat (regexp :tag "Regular expression to match ham body"))
   :group 'spam)
 
 (defgroup spam-ifile nil
@@ -651,6 +668,7 @@ spamoracle database."
 (defvar spam-list-of-checks
   '((spam-use-blacklist  		. 	spam-check-blacklist)
     (spam-use-regex-headers  		. 	spam-check-regex-headers)
+    (spam-use-regex-body  		. 	spam-check-regex-body)
     (spam-use-whitelist  		. 	spam-check-whitelist)
     (spam-use-BBDB	 		. 	spam-check-BBDB)
     (spam-use-ifile	 		. 	spam-check-ifile)
@@ -673,10 +691,11 @@ name is the value of `spam-split-group', meaning that the message is
 definitely a spam.")
 
 (defvar spam-list-of-statistical-checks
-  '(spam-use-ifile spam-use-stat spam-use-bogofilter spam-use-spamoracle)
+  '(spam-use-ifile spam-use-regex-body spam-use-stat spam-use-bogofilter spam-use-spamoracle)
 "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.")
 
+;;;TODO: modify to invoke self with each specific check if invoked without specific checks
 (defun spam-split (&rest specific-checks)
   "Split this message into the `spam' group if it is spam.
 This function can be used as an entry in `nnmail-split-fancy', for
@@ -712,21 +731,30 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (setq nnimap-split-download-body-default t))))
 
 
+;;;; Regex body
+
+(defun spam-check-regex-body ()
+  (let ((spam-regex-headers-ham spam-regex-body-ham)
+	(spam-regex-headers-spam spam-regex-body-spam))
+    (spam-check-regex-headers t)))
+
+
 ;;;; Regex headers
 
-(defun spam-check-regex-headers ()
-  (let (ret found)
+(defun spam-check-regex-headers (&optional body)
+  (let ((type (if body "body" "header"))
+	 ret found)
     (dolist (h-regex spam-regex-headers-ham)
       (unless found
 	(goto-char (point-min))
 	(when (re-search-forward h-regex nil t)
-	  (message "Ham regex header search positive.")
+	  (message "Ham regex %s search positive." type)
 	  (setq found t))))
     (dolist (s-regex spam-regex-headers-spam)
       (unless found
 	(goto-char (point-min))
 	(when (re-search-forward s-regex nil t)
-	  (message "Spam regex header search positive." (match-string 1))
+	  (message "Spam regex %s search positive." type)
 	  (setq found t)
 	  (setq ret spam-split-group))))
     ret))
