@@ -16133,10 +16133,10 @@ the syntax of this variable have been extended along the lines of:
 @lisp
 (setq nnimap-split-rule
       '(("my1server"    (".*" (("ding"    "ding@@gnus.org")
-                               ("junk"    "From:.*Simon")))
+                               ("junk"    "From:.*Simon"))))
         ("my2server"    ("INBOX" nnimap-split-fancy))
         ("my[34]server" (".*" (("private" "To:.*Simon")
-                               ("junk"    my-junk-func)))))
+                               ("junk"    my-junk-func))))))
 @end lisp
 
 The virtual server name is in fact a regexp, so that the same rules
