@@ -105,9 +105,8 @@
 (defvoo nnwarchive-directory (nnheader-concat gnus-directory "warchive/")
   "Where nnwarchive will save its files.")
 
-(eval-and-compile
-  (defvoo nnwarchive-type nil
-    "The type of nnwarchive."))
+(defvoo nnwarchive-type nil
+    "The type of nnwarchive.")
 
 (defvoo nnwarchive-address ""
   "The address of nnwarchive.")
@@ -470,8 +469,7 @@
 	(setq articles (string-to-number (match-string 1)))) 
       (if (setq elem (assoc group nnwarchive-groups))
 	  (setcar (cdr elem) articles)
-	(push (list group articles description) nnwarchive-groups)))
-    (nnwarchive-egroups-list-groups (mapcar 'identity nnwarchive-groups)))
+	(push (list group articles description) nnwarchive-groups))))
   t)
 
 (defun nnwarchive-egroups-xover (group)
