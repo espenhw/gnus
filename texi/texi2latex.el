@@ -278,7 +278,8 @@
 	    (latexi-exchange-command (concat "gnus" command) arg))
 	   ((member command '("sc" "file" "dfn" "emph" "kbd" "key" "uref"
 			      "code" "samp" "var" "strong" "i"
-			      "result" "email" "env" "r" "command"))
+			      "result" "email" "env" "r" "command" "asis"
+			      "url"))
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\gnus"))
