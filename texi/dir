@@ -19,3 +19,4 @@ File: dir	Node: Top	This is the Gnus Info tree
 * Gnus: (gnus).			The news reader Gnus.
 * Message: (message).		The Message sending thingamabob.
 * Emacs MIME: (emacs-mime).	Libraries for handling MIME.
+* Sieve: (sieve).	        Managing Sieve scripts in Emacs.

@@ -1,3 +1,9 @@
+2001-11-02  Simon Josefsson  <jas@extundo.com>
+
+	* dir (File): Add Sieve.
+
+	* gnus.texi (Sieve Commands): Add crossposting.
+
 2001-11-01 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* texi2latex.el (latexi-translate): Typo.

@@ -4103,11 +4103,29 @@ script that can be transfered to the server somehow.
 @vindex gnus-sieve-region-start
 @vindex gnus-sieve-region-end
 The generated Sieve script is placed in @code{gnus-sieve-file} (by
-default @file{~/.sieve}).  The code Gnus generates is placed between
-two delimiters, @code{gnus-sieve-region-start} and
+default @file{~/.sieve}).  The Sieve code that Gnus generate is placed
+between two delimiters, @code{gnus-sieve-region-start} and
 @code{gnus-sieve-region-end}, so you may write additional Sieve code
 outside these delimiters that will not be removed the next time you
 regenerate the Sieve script.
+
+@vindex gnus-sieve-crosspost
+The variable @code{gnus-sieve-crosspost} controls how the Sieve script
+is generated.  If it is non-nil (the default) articles is placed in
+all groups that have matching rules, otherwise the article is only
+placed in the group with the first matching rule.  For example, the
+group parameter @samp{(sieve address "sender"
+"owner-ding@@hpc.uh.edu")} will generate the following piece of Sieve
+code if @code{gnus-sieve-crosspost} is nil. (When
+@code{gnus-sieve-crosspost} is non-nil, it looks the same except that
+the line containing the call to @code{stop} is removed.)
+
+@example
+if address "sender" "owner-ding@@hpc.uh.edu" @{
+	fileinto "INBOX.ding";
+	stop;
+@}
+@end example
 
 @xref{Top, ,Top, sieve, Emacs Sieve}.
 
