@@ -1,3 +1,10 @@
+2000-09-13 16:59:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-sort): Sort loose threads too.
+	(gnus-sort-threads-1): New function. Sort threads recursively.
+	(gnus-sort-threads): Use it.
+	(gnus-sort-gathered-threads): Doc fix.
+
 2000-09-13  Dave Love  <fx@gnu.org>
 
 	* gnus-salt.el (gnus-binary-mode): Fix call to gnus-add-minor-mode.
