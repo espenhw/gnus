@@ -1,5 +1,11 @@
 2002-02-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-soup.el (gnus-soup-send-packet): Via ... using ...
+	* message.el (message-send-news): Ditto.
+
+	* gnus.el (gnus-select-method): Fix doc.
+	(gnus-server-string): Use 'using nntp'.
+
 	* gnus-agent.el (gnus-slave-unplugged): New command.
 	From: Felix Natter <fnatter@gmx.net>
 

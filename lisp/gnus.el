@@ -1085,8 +1085,8 @@ used to 899, you would say something along these lines:
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.
 
-For instance, if you want to get your news via NNTP from
-\"flab.flab.edu\", you could say:
+For instance, if you want to get your news via \"flab.flab.edu\" using
+NNTP, you could say:
 
 \(setq gnus-select-method '(nntp \"flab.flab.edu\"))
 
@@ -3190,7 +3190,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	 (address (nth 1 server)))
     (if (and address
 	     (not (zerop (length address))))
-	(format "%s via %s" address (car server))
+	(format "%s using %s" address (car server))
       (format "%s" (car server)))))
 
 (defun gnus-find-method-for-group (group &optional info)
