@@ -17,6 +17,10 @@
 	gnus-agent-consider-all-articles, maybe get all articles.
 	(gnus-category-predicate-alist, gnus-agent-read-p): New predicate
 	`read'.
+	(gnus-predicate-imples-unread): New function.
+	(gnus-agent-fetch-headers): Optimize to call
+	gnus-list-of-unread-articles if that is sufficient.
+	Check unseen and recent instead of seen and recent.
 
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
