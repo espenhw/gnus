@@ -1,3 +1,7 @@
+2003-04-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* nndb.el, mml1991.el: Fix license template.
+
 2003-04-20  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-split-articles): Don't download body unless
