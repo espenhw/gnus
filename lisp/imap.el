@@ -1754,6 +1754,15 @@ on failure."
 				 (truncate (* (- imap-read-timeout
 						 (truncate imap-read-timeout))
 					      1000)))))
+      ;; Maybe the process has died, but the remote end wants to send
+      ;; some more stuff.
+      (when (and (null imap-continuation)
+		 (< imap-reached-tag tag))
+	(accept-process-output imap-process
+			       (truncate imap-read-timeout)
+			       (truncate (* (- imap-read-timeout
+					       (truncate imap-read-timeout))
+					    1000))))
       (when imap-have-messaged
 	(message ""))
       (and (memq (process-status imap-process) '(open run))

@@ -1,3 +1,9 @@
+2003-07-07  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* imap.el (imap-wait-for-tag): After the process has died, look
+	for more output still pending.  From Gaute B Strokkenes
+	<gs234@cam.ac.uk>.
+
 2003-07-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-bogofilter-score): redisplay article normally
