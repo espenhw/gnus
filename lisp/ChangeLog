@@ -1,8 +1,15 @@
 2003-05-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-unregistered-group-regex):
+	removed in favor of the group/topic/global variables
+	(gnus-registry-register-message-ids): fixed test to omit
+	gnus-registry-unregistered-group-regex
+
 	* gnus.el (gnus-variable-list): removed gnus-registry-alist and
 	gnus-registry-headers-alist from the list
 	(gnus-registry-headers-alist): removed
+	(registry-ignore): new parameter, with accompanying
+	gnus-registry-ignored-groups global variable
 
 	* gnus-start.el (gnus-clear-system): no need to clear the
 	registry, we can do it ourselves

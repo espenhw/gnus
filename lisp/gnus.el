@@ -1751,6 +1751,26 @@ articles to list when the group is a large newsgroup (see
 `gnus-large-newsgroup').  If it is nil, the default value is the
 total number of articles in the group.")
 
+;; The Gnus registry's ignored groups
+(gnus-define-group-parameter
+ registry-ignore
+ :type list
+ :function-document
+ "Whether this group should be ignored by the registry."
+ :variable gnus-registry-ignored-groups
+ :variable-default nil
+ :variable-document
+ "*Groups in which the registry should be turned off."
+ :variable-group gnus-registry
+ :variable-type '(repeat
+		  (list
+		   (regexp :tag "Group Name Regular Expression")
+		   (boolean :tag "Ignored")))
+ 
+ :parameter-type '(boolean :tag "Group Ignored by the Registry")
+ :parameter-document
+ "Whether the Gnus Registry should ignore this group.")
+
 ;; group parameters for spam processing added by Ted Zlatanov <tzz@lifelogs.com>
 (defcustom gnus-install-group-spam-parameters t
   "*Disable the group parameters for spam detection.  
