@@ -276,6 +276,11 @@ them."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-crm114 nil
+  "Whether the CRM114 Mailfilter should be used by `spam-split'."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-install-hooks (or
 			       spam-use-dig
 			       spam-use-gmane-xref
@@ -296,7 +301,8 @@ them."
 			       spam-use-BBDB-exclusive
 			       spam-use-ifile
 			       spam-use-stat
-			       spam-use-spamoracle)
+			       spam-use-spamoracle
+			       spam-use-crm114)
   "Whether the spam hooks should be installed.
 Default to t if one of the spam-use-* variables is set."
   :group 'spam
@@ -577,6 +583,53 @@ order for SpamAssassin to recognize the new registered spam."
   :type 'string
   :group 'spam-spamassassin)
 
+(defgroup spam-crm114 nil
+  "Spam CRM114 Mailfilter configuration."
+  :group 'spam)
+
+(defcustom spam-crm114-program (executable-find "mailfilter.crm")
+  "File path of the CRM114 Mailfilter executable program."
+  :type '(choice (file :tag "Location of CRM114 Mailfilter")
+	 (const :tag "CRM114 Mailfilter is not installed"))
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-header "X-CRM114-Status"
+  "The header that CRM114 Mailfilter inserts in messages."
+  :type 'string
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-spam-switch "--learnspam"
+  "The switch that CRM114 Mailfilter uses to register spam messages."
+  :type 'string
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-ham-switch "--learnnonspam"
+  "The switch that CRM114 Mailfilter uses to register ham messages."
+  :type 'string
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-spam-strong-switch "--UNKNOWN"
+  "The switch that CRM114 Mailfilter uses to unregister ham messages."
+  :type 'string
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-ham-strong-switch "--UNKNOWN"
+  "The switch that CRM114 Mailfilter uses to unregister spam messages."
+  :type 'string
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-positive-spam-header "^SPAM"
+  "The regex on `spam-crm114-header' for positive spam identification."
+  :type 'regexp
+  :group 'spam-crm114)
+
+(defcustom spam-crm114-database-directory nil
+  "Directory path of the CRM114 Mailfilter databases."
+  :type '(choice (directory
+	  :tag "Location of the CRM114 Mailfilter database directory")
+	 (const :tag "Use the default"))
+  :group 'spam-crm114)
+
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
@@ -660,7 +713,7 @@ finds ham or spam.")
     nil))
 
 (defvar spam-list-of-processors
-  ;; note the resend and gmane processors are not defined in gnus.el
+  ;; note the CRM114, resend and gmane processors are not defined in gnus.el
   '((gnus-group-spam-exit-processor-report-gmane spam spam-use-gmane)
     (gnus-group-spam-exit-processor-report-resend spam spam-use-resend)
     (gnus-group-spam-exit-processor-bogofilter   spam spam-use-bogofilter)
@@ -669,6 +722,7 @@ finds ham or spam.")
     (gnus-group-spam-exit-processor-ifile        spam spam-use-ifile)
     (gnus-group-spam-exit-processor-stat         spam spam-use-stat)
     (gnus-group-spam-exit-processor-spamoracle   spam spam-use-spamoracle)
+    (gnus-group-spam-exit-processor-crm114       spam spam-use-crm114)
     (gnus-group-spam-exit-processor-spamassassin spam spam-use-spamassassin)
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
@@ -678,7 +732,8 @@ finds ham or spam.")
     (gnus-group-ham-exit-processor-BBDB          ham spam-use-BBDB)
     (gnus-group-ham-exit-processor-copy          ham spam-use-ham-copy)
     (gnus-group-ham-exit-processor-spamassassin  ham spam-use-spamassassin)
-    (gnus-group-ham-exit-processor-spamoracle    ham spam-use-spamoracle))
+    (gnus-group-ham-exit-processor-spamoracle    ham spam-use-spamoracle)
+    (gnus-group-ham-exit-processor-crm114        ham spam-use-crm114))
   "The `spam-list-of-processors' list.
 This list contains pairs associating a ham/spam exit processor
 variable with a classification and a spam-use-* variable.")
@@ -726,6 +781,9 @@ variable with a classification and a spam-use-* variable.")
 (defun spam-group-spam-processor-spamoracle-p (group)
   (spam-group-processor-p group 'gnus-group-spam-exit-processor-spamoracle))
 
+(defun spam-group-spam-processor-crm114-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-crm114))
+
 (defun spam-group-ham-processor-bogofilter-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-bogofilter))
 
@@ -746,6 +804,9 @@ variable with a classification and a spam-use-* variable.")
 
 (defun spam-group-ham-processor-spamoracle-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-spamoracle))
+
+(defun spam-group-ham-processor-crm114-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-crm114))
 
 (defun spam-report-articles-gmane (n)
   "Report the current message as spam via Gmane.
@@ -797,6 +858,9 @@ Respects the process/prefix convention.  Also see
 	(string-to-number (gnus-replace-in-string
 			   (gnus-extra-header header headers)
 			   ".*hits=" "")))
+       ;; for CRM checking, it's probably faster to just do the string match
+       ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header))
+	(match-string 1 header))
        (t nil))
     nil))
 
@@ -823,6 +887,8 @@ Will not return a nil score."
     (spam-spamassassin-score recheck))
    ((or spam-use-bsfilter spam-use-bsfilter-headers)
     (spam-bsfilter-score recheck))
+   (spam-use-crm114
+    (spam-crm114-score))
    (t (spam-bogofilter-score recheck))))
 
 ;;; Summary entry and exit processing.
@@ -1150,7 +1216,8 @@ When either list is nil, the other is returned."
     (spam-use-bogofilter-headers 	. 	spam-check-bogofilter-headers)
     (spam-use-bogofilter 	 	. 	spam-check-bogofilter)
     (spam-use-bsfilter-headers		.	spam-check-bsfilter-headers)
-    (spam-use-bsfilter			.	spam-check-bsfilter))
+    (spam-use-bsfilter			.	spam-check-bsfilter)
+    (spam-use-crm114			.	spam-check-crm114))
   "The spam-list-of-checks list contains pairs associating a
 parameter variable with a spam checking function.  If the
 parameter variable is true, then the checking function is called,
@@ -1173,7 +1240,8 @@ definitely a spam.")
     spam-use-bsfilter
     spam-use-blackholes
     spam-use-spamassassin
-    spam-use-spamoracle)
+    spam-use-spamoracle
+    spam-use-crm114)
   "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.
 Note that you should fetch extra headers if you don't like this,
@@ -1362,7 +1430,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (spam-use-bsfilter	 spam-bsfilter-register-ham-routine
 			 spam-bsfilter-register-spam-routine
 			 spam-bsfilter-unregister-ham-routine
-			 spam-bsfilter-unregister-spam-routine))
+			 spam-bsfilter-unregister-spam-routine)
+    (spam-use-crm114 spam-crm114-register-ham-routine
+		     spam-crm114-register-spam-routine
+		     ;; does CRM114 Mailfilter support unregistration?
+		     nil
+		     nil))
   "The spam-registration-functions list contains pairs
 associating a parameter variable with the ham and spam
 registration functions, and the ham and spam unregistration
@@ -2406,6 +2479,89 @@ REMOVE not nil, remove the ADDRESSES."
 
 (defun spam-bsfilter-unregister-ham-routine (articles)
   (spam-bsfilter-register-ham-routine articles t))
+
+
+;;;; CRM114 Mailfilter
+(defun spam-check-crm114-headers (&optional score)
+  (let ((header (message-fetch-field spam-crm114-header))
+	(spam-split-group (if spam-split-symbolic-return
+			      'spam
+			    spam-split-group)))
+    (when header			; return nil when no header
+      (if score				; scoring mode
+	  (if (string-match "( pR: \\([0-9.-]+\\)" header)
+	      (match-string 1 header)
+	    "0")
+	;; spam detection mode
+	(when (string-match spam-crm114-positive-spam-header
+			    header)
+	  spam-split-group)))))
+
+;; return something sensible if the score can't be determined
+(defun spam-crm114-score ()
+  "Get the CRM114 Mailfilter pR"
+  (interactive)
+  (save-window-excursion
+    (gnus-summary-show-article t)
+    (set-buffer gnus-article-buffer)
+    (let ((score (or (spam-check-crm114-headers t)
+		     (spam-check-crm114 t))))
+      (gnus-summary-show-article)
+      (message "pR: %s" score)
+      (or score "0"))))
+
+(defun spam-check-crm114 (&optional score)
+  "Check the CRM114 Mailfilter backend for the classification of this message"
+  (let ((article-buffer-name (buffer-name))
+	(db spam-crm114-database-directory)
+	return)
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (apply 'call-process-region
+		 (point-min) (point-max)
+		 spam-crm114-program
+		 nil temp-buffer-name nil
+                 (when db (list (concat "--fileprefix=" db)))))
+	(setq return (spam-check-crm114-headers score))))
+    return))
+
+(defun spam-crm114-register-with-crm114 (articles
+					 spam
+					 &optional unregister)
+  "Register an article, given as a string, as spam or non-spam."
+  (dolist (article articles)
+    (let ((article-string (spam-get-article-as-string article))
+	  (db spam-crm114-database-directory)
+	  (switch (if unregister
+		      (if spam
+			  spam-crm114-spam-strong-switch
+			spam-crm114-ham-strong-switch)
+		    (if spam
+			spam-crm114-spam-switch
+		      spam-crm114-ham-switch))))
+      (when (stringp article-string)
+	(with-temp-buffer
+	  (insert article-string)
+
+	  (apply 'call-process-region
+		 (point-min) (point-max)
+		 spam-crm114-program
+		 nil nil nil
+                 (when db (list switch (concat "--fileprefix=" db)))))))))
+
+(defun spam-crm114-register-spam-routine (articles &optional unregister)
+  (spam-crm114-register-with-crm114 articles t unregister))
+
+(defun spam-crm114-unregister-spam-routine (articles)
+  (spam-crm114-register-spam-routine articles t))
+
+(defun spam-crm114-register-ham-routine (articles &optional unregister)
+  (spam-crm114-register-with-crm114 articles nil unregister))
+
+(defun spam-crm114-unregister-ham-routine (articles)
+  (spam-crm114-register-ham-routine articles t))
 
 
 ;;;; Hooks

@@ -1,5 +1,24 @@
 2004-05-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam.el (spam-use-crm114, spam-crm114, spam-crm114-program)
+	(spam-crm114-header, spam-crm114-spam-switch)
+	(spam-crm114-spam-strong-switch, spam-crm114-ham-strong-switch)
+	(spam-crm114-positive-spam-header)
+	(spam-crm114-database-directory, spam-list-of-processors)
+	(spam-group-spam-processor-crm114-p)
+	(spam-group-ham-processor-crm114-p, spam-extra-header-to-number)
+	(spam-generic-score, spam-list-of-checks)
+	(spam-list-of-statistical-checks, spam-registration-functions)
+	(spam-check-crm114-headers, spam-crm114-score)
+	(spam-check-crm114, spam-crm114-register-with-crm114)
+	(spam-crm114-register-spam-routine)
+	(spam-crm114-unregister-spam-routine)
+	(spam-crm114-register-ham-routine)
+	(spam-crm114-unregister-ham-routine): add CRM114 support.  From
+	asjo@koldfront.dk (Adam Sj,Ax(Bgren).
+
+	* gnus.el: added spam-use-crm114
+
 	* spam.el (spam-list-of-processors, spam-registration-functions):
 	add spam-use-resend
 	(spam-group-spam-processor-report-resend-p): utility wrapper
