@@ -176,7 +176,7 @@ If it is down, start it up (again)."
     (setq method (gnus-server-to-method method)))
   ;; Check cache of constructed names.
   (let* ((method-sym (if gnus-agent
-			 (gnus-agent-get-function method)
+			 (inline (gnus-agent-get-function method))
 		       (car method)))
 	 (method-fns (get method-sym 'gnus-method-functions))
 	 (func (let ((method-fnlist-elt (assq function method-fns)))

@@ -1857,8 +1857,9 @@ FILE and places the combined headers into `nntp-server-buffer'."
               (mapcar
                (lambda (comp-list)
                  (let ((state (car comp-list))
-                       (sequence (gnus-uncompress-sequence
-                                  (cdr comp-list))))
+                       (sequence (inline
+				   (gnus-uncompress-range
+				    (cdr comp-list)))))
                    (mapcar (lambda (article-id)
                              (setq uncomp (cons (cons article-id state) uncomp)))
                            sequence)))
