@@ -151,6 +151,7 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-history-buffers nil)
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil)
+(defvar gnus-agent-fetched-headers nil)
 (defvar gnus-agent-group-alist nil)
 (defvar gnus-category-alist nil)
 (defvar gnus-agent-current-history nil)
@@ -162,6 +163,7 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-send-mail-function nil)
 (defvar gnus-agent-file-coding-system 'raw-text)
 (defvar gnus-agent-file-loading-cache nil)
+(defvar gnus-agent-file-header-cache nil)
 
 (defvar gnus-agent-auto-agentize-methods '(nntp nnimap)
   "Initially, all servers from these methods are agentized.
@@ -1106,11 +1108,21 @@ This can be added to `gnus-select-article-hook' or
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group))
 	gnus-agent-cache)
-    ;; Add article with marks to list of article headers we want to fetch.
+    ;; Add article with marks to list of article headers we want to
+    ;; fetch.  We don't want to fetch all the seen articles, and we
+    ;; don't want do fetch the recent ones, though.
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
-      (unless (memq (car arts) '(unseen recent))
+      (unless (memq (car arts) '(seen recent))
 	(setq articles (gnus-range-add articles (cdr arts)))))
     (setq articles (sort (gnus-uncompress-sequence articles) '<))
+    ;; Note which headers are fetched, and don't fetch those again.
+    (gnus-agent-load-fetched-headers group)
+    (let ((new-fetched (gnus-range-add gnus-agent-fetched-headers
+				       articles))
+	  (new-articles (gnus-list-range-difference
+			 articles gnus-agent-fetched-headers)))
+      (gnus-agent-save-fetched-headers group new-fetched)
+      (setq articles new-articles))
     ;; Remove known articles.
     (when (gnus-agent-load-alist group)
       ;; Remove articles marked as downloaded.
@@ -1239,6 +1251,24 @@ This can be added to `gnus-select-article-hook' or
 			(expand-file-name ".agentview" dir)
 		      (gnus-agent-article-name ".agentview" group))
       (princ gnus-agent-article-alist (current-buffer))
+      (insert "\n"))))
+
+(defun gnus-agent-load-fetched-headers (group)
+  "Load ranges of fetched headers for GROUP."
+  (setq gnus-agent-fetched-headers
+	(gnus-cache-file-contents
+	 (gnus-agent-article-name ".fetched" group)
+	 'gnus-agent-file-header-cache
+	 'gnus-agent-read-file)))
+
+(defun gnus-agent-save-fetched-headers (group range)
+  "Save ranges of fetched headers for GROUP.
+This range includes nonexisting articles."
+  (let ((file-name-coding-system nnmail-pathname-coding-system)
+	print-level print-length)
+    (setq gnus-agent-fetched-headers range)
+    (with-temp-file (gnus-agent-article-name ".fetched" group)
+      (princ gnus-agent-fetched-headers (current-buffer))
       (insert "\n"))))
 
 (defun gnus-agent-article-name (article group)
