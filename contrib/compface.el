@@ -745,4 +745,5 @@ If the optional RAW is non-nil, return a raw bitmap as a vector."
 ;; eval: (put 'uncompface-loop 'lisp-indent-hook 0)
 ;; End:
 
+;; arch-tag: a8e3f4a0-e375-4f1d-a426-c7da30e16c18
 ;;; compface.el ends here
