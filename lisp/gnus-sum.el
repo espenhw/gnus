@@ -3632,7 +3632,7 @@ entered.
 Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   (let* ((id (mail-header-id header))
 	 (id-dep (and id (intern id dependencies)))
-	 ref ref-dep ref-header replaced)
+	 parent-id ref ref-dep ref-header replaced)
     ;; Enter this `header' in the `dependencies' table.
     (cond
      ((not id-dep)
@@ -3675,7 +3675,8 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
     (when (and header (not replaced))
       ;; First check that we are not creating a References loop.
-      (setq ref (gnus-parent-id (mail-header-references header)))
+      (setq parent-id (gnus-parent-id (mail-header-references header)))
+      (setq ref parent-id)
       (while (and ref
 		  (setq ref-dep (intern-soft ref dependencies))
 		  (boundp ref-dep)
@@ -3685,10 +3686,10 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	    ;; root article.
 	    (progn
 	      (mail-header-set-references (car (symbol-value id-dep)) "none")
-	      (setq ref nil))
+	      (setq ref nil)
+	      (setq parent-id nil))
 	  (setq ref (gnus-parent-id (mail-header-references ref-header)))))
-      (setq ref (gnus-parent-id (mail-header-references header)))
-      (setq ref-dep (intern (or ref "none") dependencies))
+      (setq ref-dep (intern (or parent-id "none") dependencies))
       (if (boundp ref-dep)
 	  (setcdr (symbol-value ref-dep)
 		  (nconc (cdr (symbol-value ref-dep))
@@ -4389,7 +4390,7 @@ or a straight list of headers."
 	(default-score (or gnus-summary-default-score 0))
 	(gnus-visual-p (gnus-visual-p 'summary-highlight 'highlight))
 	thread number subject stack state gnus-tmp-gathered beg-match
-	new-roots gnus-tmp-new-adopts thread-end
+	new-roots gnus-tmp-new-adopts thread-end simp-subject
 	gnus-tmp-header gnus-tmp-unread
 	gnus-tmp-replied gnus-tmp-subject-or-nil
 	gnus-tmp-dummy gnus-tmp-indentation gnus-tmp-lines gnus-tmp-score
@@ -4478,7 +4479,8 @@ or a straight list of headers."
 	      (setq gnus-tmp-level -1)))
 
 	  (setq number (mail-header-number gnus-tmp-header)
-		subject (mail-header-subject gnus-tmp-header))
+		subject (mail-header-subject gnus-tmp-header)
+		simp-subject (gnus-simplify-subject-fully subject))
 
 	  (cond
 	   ;; If the thread has changed subject, we might want to make
@@ -4486,8 +4488,7 @@ or a straight list of headers."
 	   ((and (null gnus-thread-ignore-subject)
 		 (not (zerop gnus-tmp-level))
 		 gnus-tmp-prev-subject
-		 (not (inline
-			(gnus-subject-equal gnus-tmp-prev-subject subject))))
+		 (not (string= gnus-tmp-prev-subject simp-subject)))
 	    (setq new-roots (nconc new-roots (list (car thread)))
 		  thread-end t
 		  gnus-tmp-header nil))
@@ -4548,15 +4549,13 @@ or a straight list of headers."
 	     (cond
 	      ((and gnus-thread-ignore-subject
 		    gnus-tmp-prev-subject
-		    (not (inline (gnus-subject-equal
-				  gnus-tmp-prev-subject subject))))
+		    (not (string= gnus-tmp-prev-subject simp-subject)))
 	       subject)
 	      ((zerop gnus-tmp-level)
 	       (if (and (eq gnus-summary-make-false-root 'empty)
 			(memq number gnus-tmp-gathered)
 			gnus-tmp-prev-subject
-			(inline (gnus-subject-equal
-				 gnus-tmp-prev-subject subject)))
+			(string= gnus-tmp-prev-subject simp-subject))
 		   gnus-summary-same-subject
 		 subject))
 	      (t gnus-summary-same-subject)))
@@ -4641,7 +4640,7 @@ or a straight list of headers."
 	      (gnus-run-hooks 'gnus-summary-update-hook)
 	      (forward-line 1))
 
-	    (setq gnus-tmp-prev-subject subject)))
+	    (setq gnus-tmp-prev-subject simp-subject)))
 
 	(when (nth 1 thread)
 	  (push (list (max 0 gnus-tmp-level)

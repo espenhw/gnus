@@ -1,3 +1,10 @@
+2002-05-18  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-dependencies-add-header): Avoid one unecessary
+	call to gnus-parent-id when we check for References loops.
+	(gnus-summary-prepare-threads): Avoid simplifying every Subject
+	twice by saving the simplified subject string in simp-subject.
+
 2002-05-23  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Typo.  Trivial
