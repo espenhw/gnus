@@ -1200,7 +1200,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.43"
+(defconst gnus-version "(ding) Gnus v0.44"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2472,7 +2472,8 @@ Note: LIST has to be sorted over `<'."
 (defun gnus-add-to-range-old (ranges list)
   "Return a list of ranges that has all articles from both RANGES and LIST.
 Note: LIST has to be sorted over `<'."
-  (let* ((ranges (if (and ranges (atom (car ranges))) (list ranges) ranges))
+  (let* ((ranges (if (and ranges (not (listp (cdr ranges))))
+		     (list ranges) ranges))
 	 (inrange ranges)
 	 did-one
 	 range nranges first last)
@@ -6168,7 +6169,7 @@ displayed, no centering will be performed."
       ;; If the range of read articles is a single range, then the
       ;; first unread article is the article after the last read
       ;; article. Sounds logical, doesn't it?
-      (if (atom (car read))
+      (if (not (listp (cdr read)))
 	  (setq first (1+ (cdr read)))
 	;; `read' is a list of ranges.
 	(while read
@@ -12079,7 +12080,7 @@ newsgroup."
 	   (setq num 0))
 	  ((not range)
 	   (setq num (- (1+ (cdr active)) (car active))))
-	  ((atom (car range))
+	  ((not (listp (cdr range)))
 	   ;; Fix a single (num . num) range according to the
 	   ;; active hash table.
 	   (and (< (cdr range) (car active)) (setcdr range (car active)))
@@ -12096,7 +12097,15 @@ newsgroup."
 		       (>= (car active) 
 			   (or (and (atom (car (cdr range))) (car (cdr range)))
 			       (car (car (cdr range))))))
-	     (setcdr (car range) (cdr (car (cdr range))))
+	     (if (numberp (car range))
+		 (setcar range 
+			 (cons (car range) 
+			       (or (and (numberp (car (cdr range)))
+					(car (cdr range))) 
+				   (cdr (car (cdr range))))))
+	       (setcdr (car range) 
+		       (or (and (numberp (nth 1 range)) (nth 1 range))
+			   (cdr (car (cdr range))))))
 	     (setcdr range (cdr (cdr range))))
 	   ;; Adjust the first element to be the same as the lower limit. 
 	   (if (and (not (atom (car range))) 
