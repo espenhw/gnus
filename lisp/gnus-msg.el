@@ -497,6 +497,8 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 If given a prefix, and the group is a foreign group, this function
 will attempt to use the foreign server to post the article."
   (interactive "P")
+  (or gnus-current-select-method
+      (setq gnus-current-select-method gnus-select-method))
   (let* ((case-fold-search nil)
 	 (server-running (gnus-server-opened gnus-current-select-method))
 	 (reply gnus-article-reply)
@@ -580,9 +582,9 @@ will attempt to use the foreign server to post the article."
 		   (member "cc" types))
 	       (progn
 		(goto-char (point-max))
-		(insert "X-Courtesy-Message: " 
-			(mail-fetch-field "newsgroups"))))
-
+		(insert "Posted-To: " 
+			(mail-fetch-field "newsgroups") "\n")))
+	  
 	  (widen)
 	  
 	  (if (and gnus-mail-courtesy-message
@@ -1570,7 +1572,7 @@ mailer."
 	 (or to-address 
 	     (if (and follow-to (not (stringp follow-to))) sendto
 	       (or follow-to reply-to from sender "")))
-	 subject nil
+	 subject message-of
 	 (if (zerop (length new-cc)) nil new-cc)
 	 gnus-article-copy)
 
@@ -1645,7 +1647,7 @@ mailer."
     (news-reply-mode)
     ;; Let posting styles be configured.
     (gnus-configure-posting-styles)
-    (news-setup nil subject nil group nil)
+    (news-setup nil subject nil (gnus-group-real-name group) nil)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
 	 (symbolp gnus-post-prepare-function)
@@ -2223,7 +2225,7 @@ Headers will be generated before sending."
 
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
   (mail-mode)
-  (mail-setup to subject in-reply-to cc replybuffer actions))
+  (mail-setup to subject nil cc replybuffer actions))
   
 ;;; Gcc handling.
 

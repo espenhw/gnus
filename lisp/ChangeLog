@@ -1,4 +1,54 @@
+Thu Oct 19 10:08:24 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-send-mail-copy): Changed X-Courtesy-Copy
+	to Posted-To.
+
+Mon Oct 16 11:57:14 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-foreign-p): New definition.  Secondary
+	groups aren't foreign.
+	(gnus-group-native-p): New function.
+	(gnus-group-secondary-p): New function.
+
+	* gnus-msg.el (gnus-inews-news): Would bug out when called from a
+	"non-running" Gnus.
+
+	* gnus-mh.el (gnus-mh-mail-setup): Bugged out.
+
+Wed Oct  4 23:08:30 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+ 
+ 	* gnus.el (gnus-server-yank-server): Couldn't add new servers coz
+	  this bugged out when gnus-server-alist was empty.
+ 	  (gnus-server-prepare): Bugged out.
+ 
+Mon Oct 16 10:59:47 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-rebuild-thread): Rebuild complete gathered
+	threads. 
+
+Sun Oct 15 07:57:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-new-news): Would insert prefixed group name. 
+
+	* gnus.el (gnus-update-format-specifications): Allow the format
+	strings to be forms.
+
+	* gnus-topic.el (gnus-group-add-to-topic): New command and
+	keystroke. 
+
+	* gnus.el (gnus-article-hide-pgp): Decode the "^- " stuff.
+
+	* gnus-msg.el (gnus-inews-send-mail-copy): WOuld screw things up
+	when inserting courtesy message.
+
+	* gnus.el (gnus-group-set-current-level): Do better prompting.
+	(gnus-group-set-current-level): Didn't heed the process mark.
+	(gnus-select-newsgroup): Would do odd things when selecting a
+	group with a numerical prefix with some ticked articles.
+
 Sun Oct 15 03:16:03 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el: 0.10 is released.
 
 	* gnus.el (gnus-summary-limit-to-marks): Don't do any adaptive
 	thingies. 

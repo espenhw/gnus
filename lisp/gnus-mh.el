@@ -84,7 +84,7 @@ Optional argument FOLDER specifies folder name."
     (mh-find-path)
     (mh-send-sub (or to "") (or cc "") (or subject "(None)") config)
     (goto-char (point-min))
-    (insert "In-Reply-To: " in-reply-to "\n")
+    (and in-reply-to (insert "In-Reply-To: " in-reply-to "\n"))
     (setq mh-sent-from-folder gnus-article-copy)
     (setq mh-sent-from-msg 1)
     (setq mh-previous-window-config config)))

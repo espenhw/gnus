@@ -29,8 +29,7 @@
 (require 'gnus-ems)
 
 (eval-and-compile
-  (autoload 'gnus-article-add-button "gnus-vis")
-  )
+  (autoload 'gnus-article-add-button "gnus-vis"))
 
 ;;; Customization:
 

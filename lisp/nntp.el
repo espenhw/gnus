@@ -951,7 +951,14 @@ It will prompt for a password."
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
-	    (and (looking-at "[23]") (setq nntp-server-xover (car commands))))
+	    (and (looking-at "[23]") ; No error message.
+		 ;; We also have to look at the lines.  Some buggy
+		 ;; servers give back simple lines with just the
+		 ;; article number.  How... helpful.
+		 (progn
+		   (forward-line 1)
+		   (looking-at "[0-9]+\t...")) ; More text after number.
+		 (setq nntp-server-xover (car commands))))
 	  (setq commands (cdr commands)))
 	;; If none of the commands worked, we disable XOVER.
 	(if (eq nntp-server-xover 'try)
@@ -1152,10 +1159,14 @@ defining this function as macro."
   (car list))
 
 (defun nntp-possibly-change-server (newsgroup server)
-  ;; We see whether it is necessary to change newsgroup.
-  (and newsgroup 
-       (not (equal newsgroup nntp-current-group))
-       (nntp-request-group newsgroup server)))
+  ;; We see whether it is necessary to change the newsgroup.
+  (and newsgroup
+       (progn
+	 (not (equal newsgroup nntp-current-group))
+	 (nntp-request-group newsgroup server)))
+  (and server
+       (or (nntp-server-opened server)
+	   (nntp-open-server server))))
 
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)

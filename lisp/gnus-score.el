@@ -615,7 +615,8 @@ SCORE is the score to add."
 					(gnus-score-load-file file)) 
 				      files))))
       (and eval (not global) (eval eval))
-      (setq gnus-scores-exclude-files exclude-files)
+      (setq gnus-scores-exclude-files 
+	    (append exclude-files gnus-scores-exclude-files))
       (if (not local)
 	  ()
 	(save-excursion
@@ -790,6 +791,7 @@ SCORE is the score to add."
     ;; PLM: probably this is not the best place to clear orphan-score
     (setq gnus-orphan-score nil)
     (setq gnus-scores-articles nil)
+    (setq gnus-scores-exclude-files nil)
     ;; Load the score files.
     (while score-files
       (if (stringp (car score-files))

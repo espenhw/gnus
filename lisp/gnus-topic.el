@@ -44,6 +44,9 @@ If SHOW is nil, newsgroups will be inserted according to
 the groups are always shown if SHOW is true or never if SHOW is a
 number.")
 
+(defvar gnus-topic-names nil
+  "A list of all topic names.")
+
 (defvar gnus-group-topic-topics-only nil
   "*If non-nil, only the topics will be shown when typing `l' or `L'.")
 
@@ -73,20 +76,23 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
     (or topic (erase-buffer))
     
     ;; List dead groups?
-    (and (>= level 8) (<= lowest 8)
+    (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
          (gnus-group-prepare-flat-list-dead 
-          (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 8 ?Z
+          (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 
+	  gnus-level-zombie ?Z
           regexp))
     
-    (and (>= level 9) (<= lowest 9)
+    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)
          (gnus-group-prepare-flat-list-dead 
-          (setq gnus-killed-list (sort gnus-killed-list 'string<)) 9 ?K
+          (setq gnus-killed-list (sort gnus-killed-list 'string<))
+	  gnus-level-killed ?K
           regexp))
     
     ;; Use topics
-    (if (< lowest 8)
+    (if (< lowest gnus-level-zombie)
         (let ((topics (gnus-topic-find-groups topic))
               topic how)
+	  (setq gnus-topic-names topics)
           (erase-buffer)
           (while topics
             (setq topic (car (car topics))
@@ -144,7 +150,7 @@ If TOPIC, just find the groups in that topic."
             unread (car (gnus-gethash group gnus-newsrc-hashtb)))
       (and 
        unread				; nil means that the group is dead.
-       (<= (setq clevel (car (cdr info))) level) 
+       (setq clevel (car (cdr info)))
        (>= clevel lowest)		; Is inside the level we want.
        (or all
 	   (eq unread t)
@@ -204,5 +210,16 @@ If TOPIC, just find the groups in that topic."
 	  ;; If not, we insert it.
 	  (forward-line 1)
 	  (gnus-topic-insert-topic topic))))))
+
+;; Written by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
+(defun gnus-group-add-to-topic (n topic)
+  "Add the current group to a topic."
+  (interactive
+   (list current-prefix-arg
+	 (completing-read "Add to topic: " gnus-topic-names)))
+  (let ((groups (gnus-group-process-prefix n)))
+    (mapcar (lambda (g) (gnus-group-add-parameter g (cons 'topic topic)))
+	    groups)
+    (gnus-group-position-point)))
 
 ;;; gnus-topic.el ends here

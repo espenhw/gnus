@@ -978,7 +978,8 @@ The headers will be included in the sequence they are matched.")
 	      subj mark d)
 	  (while data
 	    (setq d (pop data))
-	    (and (or (not only-unread)
+	    (and (not (gnus-data-pseudo-p d))
+		 (or (not only-unread)
 		     (= (setq mark (gnus-data-mark d))
 			gnus-unread-mark)
 		     (= mark gnus-ticked-mark)
@@ -986,7 +987,7 @@ The headers will be included in the sequence they are matched.")
 		 (setq subj (mail-header-subject (gnus-data-header d)))
 		 (string-match subject subj)
 		 (setq list-of-subjects 
-		       (cons (cons subj (gnus-summary-article-number))
+		       (cons (cons subj (gnus-data-number d))
 			     list-of-subjects)))))
 
 	;; Expand numbers, sort, and return the list of article
