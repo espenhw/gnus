@@ -1,3 +1,8 @@
+2002-11-27  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-sum.el (gnus-summary-insert-old-articles): No longer passes
+	compressed range to gnus-summary-insert-articles.
+
 2002-11-26  Kevin Ryde <user42@zip.com.au>
 	
 	* gnus-art.el (gnus-mime-copy-part): Look for filename
