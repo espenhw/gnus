@@ -1,3 +1,8 @@
+2002-10-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-agent.el (gnus-agent-fetch-articles): More debugging
+	output.
+
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-send-mail): Make it possible to perform

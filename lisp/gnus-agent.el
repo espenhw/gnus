@@ -991,6 +991,8 @@ This can be added to `gnus-select-article-hook' or
 	  (with-temp-buffer
 	    (let (article)
 	      (while (setq article (pop articles))
+		(gnus-message 10 "Fetching article %s for %s..."
+			      article group)
 		(when (or
 		       (gnus-backlog-request-article group article
 						     nntp-server-buffer)
