@@ -1,4 +1,4 @@
-;;; gnus-cache --- cache interface for Gnus
+;;; gnus-cache.el --- cache interface for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

@@ -53,6 +53,9 @@ the `nnml-generate-nov-databases' command. The function will go
 through all nnml directories and generate nov databases for them
 all. This may very well take some time.")
 
+(defvar nnml-prepare-save-mail-hook nil
+  "Hook run narrowed to an article before saving.")
+
 
 
 (defconst nnml-version "nnml 0.2"
@@ -185,7 +188,7 @@ all. This may very well take some time.")
 	nil)
     (if dont-check 
 	t
-      (nnml-get-new-mail)
+      (nnml-get-new-mail group)
       (let ((timestamp (nth 5 (file-attributes nnml-active-file))))
 	(if (or (not nnml-active-timestamp)
 		(> (nth 0 timestamp) (nth 0 nnml-active-timestamp))
@@ -423,6 +426,7 @@ all. This may very well take some time.")
 	chars nov-line)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
+    (run-hooks 'nnml-prepare-save-mail-hook)
     (goto-char (point-min))
     (while (looking-at "From ")
       (replace-match "X-From-Line: ")
@@ -470,10 +474,9 @@ all. This may very well take some time.")
 	(setcdr active (1+ (cdr active)))))
     (cdr active)))
 
-(defun nnml-get-new-mail ()
+(defun nnml-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
-		  (list nnmail-spool-file)))
+  (let ((spools (nnmail-get-spool-files group))
 	incoming incomings)
     (if (or (not nnml-get-new-mail) (not nnmail-spool-file))
 	()

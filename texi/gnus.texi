@@ -718,9 +718,10 @@ server.
 @vindex gnus-ignored-newsgroups
 Before examining the active file, Gnus deletes all lines that match the
 regexp @code{gnus-ignored-newsgroups}.  This is done primarily to reject
-any groups with bogus names (eg. groups containing characters like
-@samp{'[]"} and so on), but you can use this variable to make Gnus
-ignore hierarchies you aren't ever interested in.
+any groups with bogus names, but you can use this variable to make Gnus
+ignore hierarchies you aren't ever interested in.  This variable is
+@code{nil} by default, and will slow down active file handling somewhat
+if you set it to anything else.
 
 @vindex gnus-read-active-file
 The active file can be rather Huge, so if you have a slow network, you
@@ -1401,6 +1402,19 @@ List of strings that are used as commands to fetch @sc{nov} lines from a
 server.  The default value of this variable is @code{("XOVER"
 "XOVERVIEW")}. 
 
+@item nntp-nov-gap
+@vindex nntp-nov-gap
+@code{nntp} normally sends just one big request for @sc{nov} lines to
+the server.  The server responds with one huge list of lines.  However,
+if you have read articles 2-5000 in the group, and only want to read
+article 1 and 5001, that means that @code{nntp} will fetch 4999 @sc{nov}
+lines that you do not want, and will not use.  This variable says how
+big a gap between two consecutive articles is allowed to be before the
+@code{XOVER} request is split into several request.  Note that if your
+network is fast, setting this variable to a really small number means
+that fetching will probably be slower.  If this variable is @code{nil},
+@code{nntp} will never split requests.
+
 @item nntp-prepare-server-hook
 @vindex nntp-prepare-server-hook
 A hook run before attempting to connect to an @sc{nntp} server.
@@ -1638,6 +1652,7 @@ course.
 
 @menu
 * Creating Mail Groups::         How to create mail groups.
+* Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
 * Mail & Procmail::              Reading mail groups that procmail create.
 * Expiring Old Mail Articles::   Getting rid of unwanted mail.
 * Not Reading Mail::             Using mail backends for reading other files.
@@ -1666,6 +1681,12 @@ variable is @code{nil}, the mail backends will never attempt to fetch
 mail by themselves.  It is quite likely that Gnus supports POP-mail.
 Set this variable to begin with the string @samp{po:}, and everything
 should go smoothly, even though I have never tested this.
+
+If this variable is @code{procmail}, the mail backends will look in
+@code{nnmail-procmail-directory} for incoming mail.  All the files in
+that directory that have names ending in @code{gnus-procmail-suffix}
+will be considered incoming mailboxes, and will be searched for new
+mail. 
 
 @vindex nnmail-prepare-incoming-hook
 @code{nnmail-prepare-incoming-hook} is run in a buffer that holds all
@@ -1737,13 +1758,79 @@ The mail backends all support cross-posting.  If several regexps match,
 the mail will be "cross-posted" to all those groups.
 @code{nnmail-crosspost} says whether to use this mechanism or not.
 
+@node Fancy Mail Splitting
+@subsubsection Fancy Mail Splitting
+@cindex mail splitting
+@cindex fancy mail splitting
+
+@vindex nnmail-split-fancy
+@findex nnmail-split-fancy
+If the rather simple, standard method for specifying how to split mail
+doesn't allow you to do what you want, you can set
+@code{nnmail-split-methods} to @code{nnmail-split-fancy}.  Then you can
+play with the @code{nnmail-split-methods} variable. 
+
+Let's look at an example value of this variable first:
+
+@lisp
+;; Messages from the mailer deamon are not crossposted to any of
+;; the ordinary groups.  Warnings are put in a separate group
+;; from real errors.
+(| ("from" mail (| ("subject" "warn.*" "mail.warning")
+		   "mail.misc"))
+   ;; Non-error messages are crossposted to all relevant
+   ;; groups, but we don't crosspost between the group for the
+   ;; (ding) list and the group for other (ding) related mail.
+   (& (| (any "ding@@ifi\\.uio\\.no" "ding.list")
+	 ("subject" "ding" "ding.misc"))
+      ;; Other mailing lists...
+      (any "procmail@@informatik\\.rwth-aachen\\.de" "procmail.list")
+      (any "SmartList@@informatik\\.rwth-aachen\\.de" "SmartList.list")
+      ;; People...
+      (any "larsi@@ifi\\.uio\\.no" "people.Lars Magne Ingebrigtsen"))
+   ;; Unmatched mail goes to the catch all group.
+   "misc.misc"))")
+@end lisp
+
+This variable has the format of a @dfn{split}.  A split is a (possibly)
+recursive structure where each split may contain other splits.  Here are
+the four possible split syntaxes:
+
+@table @dfn
+@item GROUP 
+If the split is a string, that will be taken as a group name. 
+@item (FIELD VALUE SPLIT)
+If the split is a list, and the first element is a string, then that
+means that if header FIELD (a regexp) contains VALUE (also a regexp),
+then store the message as specified by SPLIT.
+@item (| SPLIT...)
+If the split is a list, and the first element is @code{|} (vertical
+bar), then process each SPLIT until one of them matches.  A SPLIT is
+said to match if it will cause the mail message to be stored in one or
+more groups.
+@item (& SPLIT...)
+If the split is a list, and the first element is @code{&}, then process
+all SPLITs in the list.
+@end table
+
+In these splits, FIELD must match a complete field name.  VALUE must
+match a complete word according to the fundamental mode syntax table.
+You can use @code{.*} in the regexps to match partial field names or
+words.
+
+@vindex nnmail-split-abbrev-alist
+FIELD and VALUE can also be lisp symbols, in that case they are expanded
+as specified by the variable @code{nnmail-split-abbrev-alist}.  This is
+an alist of cons cells, where the car of the cells contains the key, and
+the cdr contains a string.
+
 @node Mail & Procmail
 @subsubsection Mail & Procmail
 @cindex procmail
 
 Many people use @code{procmail} to split incoming mail into groups.  If
-you do that, you should set @code{nnmail-spool-file} to @code{nil} to
-make sure that the mail backends never ever try to fetch mail by
+you do that, you should set @code{nnmail-spool-file} to @code{procmail}
+to ensure that the mail backends never ever try to fetch mail by
 themselves.
 
 This also means that you probably don't want to set
@@ -1760,20 +1847,28 @@ a basis for a newsgroup and what is just a plain old file or directory.)
 This means that you have to tell Gnus (and the backends) what groups
 exist by hand.
 
-Let's take the @code{nnfolder} backend as an example.  (This backend
-uses one file as the basis of each group.)
+Let's take the @code{nnmh} backend as an example. 
 
-The folders are located in @code{nnfolder-directory}, say,
-@file{~/Mail/}.  There are three folders, @file{foo}, @file{bar} and
-@file{mail.baz}.
+The folders are located in @code{nnmh-directory}, say, @file{~/Mail/}.
+There are three folders, @file{foo}, @file{bar} and @file{mail.baz}.
 
 Go to the group buffer and type @kbd{G m}.  When prompted, answer
-@samp{foo} for the name and @samp{nnfolder} for the method.  Repeat
+@samp{foo} for the name and @samp{nnmh} for the method.  Repeat
 twice for the two other groups, @samp{bar} and @samp{mail.baz}.  Be sure
 to include all your mail groups.
 
 That's it.  You are now set to read your mail.  An active file for this
 method will be created automatically.
+
+@vindex nnmail-procmail-suffix
+@vindex nnmail-procmail-directory
+If you use @code{nnfolder} or any other backend that store more than a
+single article in each file, you should never have procmail add mails to
+the file that Gnus sees.  Instead, procmail should put all incoming mail
+in @code{nnmail-procmail-directory}.  To arrive at the file name to put
+the incoming mail in, append @code{nnmail-procmail-suffix} to the group
+name.  The mail backends will read the mail from these files.
+
 
 @node Expiring Old Mail Articles
 @subsubsection Expiring Old Mail Articles
@@ -1871,6 +1966,10 @@ file you have stashed away with @code{nnbabyl}.  All backends have
 variables called backend-@code{get-new-mail}.  If you want to disable
 the @code{nnbabyl} mail reading, you edit the virtual server for the
 group to have a setting where @code{nnbabyl-get-new-mail} to @code{nil}.
+
+All the mail backends will call @code{nn}*@code{-prepare-save-mail-hook}
+narrowed to the article to be saved before saving it when reading
+incoming mail.
 
 @node nnmbox
 @subsubsection nnmbox
@@ -3144,7 +3243,32 @@ insert additional headers, or just change headers in some way or other.
 @item gnus-check-before-posting
 @vindex gnus-check-before-posting
 If non-@code{nil}, Gnus will attempt to check the legality of the
-headers, as well as some other stuff, before posting.
+headers, as well as some other stuff, before posting.  You can control
+the granularity of the check by adding or removing elements from this
+list.  Legal elemetents are:
+
+@table @code
+@item subject-cmsg 
+Check the subject for commands.
+@item multiple-headers 
+Check for the existance of multiple equal headers.
+@item sendsys 
+Check for the existance of version and sendsys commands.
+@item message-id
+Check whether the @code{Message-ID} looks ok.
+@item from
+Check whether the @code{From} header seems nice.
+@item long-lines 
+Check for too long lines.
+@item control-chars
+Check for illegal characters.
+@item size
+Check for excessive size.
+@item new-text
+Check whether there is any new text in the messages.
+@item signature
+Check the length of the signature
+@end table
 
 @end table
 
@@ -3181,10 +3305,13 @@ posting:
 If @code{gnus-signature-file} is non-@code{nil}, it should be the name
 of a file containing a signature (@samp{~/.signature} by default).  This
 signature will be appended to all outgoing post.  Most people find it
-more convenient to use @code{mail-signature}, which does the same, but
-inserts the signature into the buffer before you start editing the post
-(or mail).  So - if you have both of these variables set, you will get
-two signatures.
+more convenient to use @code{mail-signature}, which (sort of) does the
+same, but inserts the signature into the buffer before you start editing
+the post (or mail).  So - if you have both of these variables set, you
+will get two signatures.  Note that @code{mail-signature} does not work
+the same way as @code{gnus-signature-file}, which is a bit confusing.
+If @code{mail-signature} is @code{t}, it will insert
+@file{~/.signature}.  If it is a string, this string will be inserted. 
 
 Note that RFC1036 says that a signature should be preceded by the three
 characters @samp{-- } on a line by themselves.  This is to make it
@@ -4561,12 +4688,15 @@ Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
 @kindex W f (Summary)
 @findex gnus-article-display-x-face
 @findex gnus-article-x-face-command
+@vindex gnus-article-x-face-command
+@vindex gnus-article-x-face-too-ugly
 Look for and display any X-Face headers
-(@code{gnus-article-display-x-face}).  The command executed by this
-function is given by the @code{gnus-article-x-face-command} variable.
-If this variable is a string, this string will be executed in a
-sub-shell.  If it is a function, this function will be called with the
-face as the argument.
+(@code{gnus-article-display-x-face}). The command executed by this
+function is given by the @code{gnus-article-x-face-command} variable. If
+this variable is a string, this string will be executed in a sub-shell.
+If it is a function, this function will be called with the face as the
+argument. If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
+matches the @code{From} header, the face will not be shown.
 @end table
 
 @node Summary Sorting
@@ -4700,6 +4830,16 @@ General score commands that don't actually change the score file:
 @kindex V S s (Summary)
 @findex gnus-summary-set-score
 Set the score of the current article (@code{gnus-summary-set-score}).  
+@item V S S
+@kindex V S S (Summary)
+@findex gnus-summary-current-score
+Display the score of the current article
+(@code{gnus-summary-current-score}).   
+@item V S a
+@kindex V S a (Summary)
+@findex gnus-summary-score-entry
+Add a new score entry, and allow specifying all elements 
+(@code{gnus-summary-score-entry}).
 @item V S c
 @kindex V S c (Summary)
 @findex gnus-score-change-score-file
@@ -4743,227 +4883,74 @@ Expunge all articles with a score below the default score (or the
 numeric prefix) (@code{gnus-score-set-expunge-below}).
 @end table
 
-Commands for increasing the score:
+The keystrokes for actually making score entries follow a very regular
+pattern, so there's no need to list all the commands.  (Hundreds of
+them.)  
 
+@enumerate
+@item
+The first key is either @kbd{I} (upper case i) for increasing the score
+or @kbd{L} for lowering the score. 
+@item
+The second key says what header you want to score on.  The following
+keys are available:
 @table @kbd
-@item I s t
-@kindex I s t (Summary)
-@findex gnus-summary-temporarily-raise-by-subject
-Increase the current subject temporarily
-(@code{gnus-summary-temporarily-raise-by-subject}).
-@item I s p
-@kindex I s p (Summary)
-@findex gnus-summary-raise-by-subject
-Increase the current subject permanently
-(@code{gnus-summary-raise-by-subject}).
-@item I s i 
-@kindex I s i  (Summary)
-@findex gnus-summary-immediately-raise-by-subject
-Increase the current subject immediately
-(@code{gnus-summary-immediately-raise-by-subject}).
-@item I a t
-@kindex I a t (Summary)
-@findex gnus-summary-temporarily-raise-by-author
-Increase the current author temporarily
-(@code{gnus-summary-temporarily-raise-by-author}).
-@item I a p
-@kindex I a p (Summary)
-@findex gnus-summary-raise-by-author
-Increase the current author permanently
-(@code{gnus-summary-raise-by-author}).
-@item I a i 
-@kindex I a i  (Summary)
-@findex gnus-summary-immediately-raise-by-author
-Increase the current author immediately
-(@code{gnus-summary-immediately-raise-by-author}).
-@item I b t
-@kindex I b t (Summary)
-@findex gnus-summary-temporarily-raise-by-body
-Increase based on a match on the body of an article temporarily
-(@code{gnus-summary-temporarily-raise-by-body}).  This is a very slow
-operation. 
-@item I b p
-@kindex I b p (Summary)
-@findex gnus-summary-raise-by-body
-Increase based on a match on the body of an article
-(@code{gnus-summary-raise-by-body}). This is a very slow operation
-@item I b i 
-@kindex I b i  (Summary)
-@findex gnus-summary-immediately-raise-by-body
-Increase based on a match on the body of an article
-(@code{gnus-summary-immediately-raise-by-body}). This is a very slow operation
-@item I i t
-@kindex I i t (Summary)
-@findex gnus-summary-temporarily-raise-by-id
-Increase the current message-id temporarily
-(@code{gnus-summary-temporarily-raise-by-id}).
-@item I i p
-@kindex I i p (Summary)
-@findex gnus-summary-raise-by-id
-Increase the current message-id permanently
-(@code{gnus-summary-raise-by-id}).
-@item I i i 
-@kindex I i i  (Summary)
-@findex gnus-summary-immediately-raise-by-id
-Increase the current message-id immediately
-(@code{gnus-summary-immediately-raise-by-id}).
-@item I t t
-@kindex I t t (Summary)
-@findex gnus-summary-temporarily-raise-by-thread
-Increase the current thread temporarily
-(@code{gnus-summary-temporarily-raise-by-thread}).
-@item I t p
-@kindex I t p (Summary)
-@findex gnus-summary-raise-by-thread
-Increase the current thread permanently
-(@code{gnus-summary-raise-by-thread}).
-@item I t i 
-@kindex I t i  (Summary)
-@findex gnus-summary-immediately-raise-by-thread
-Increase the current thread immediately
-(@code{gnus-summary-immediately-raise-by-thread}).
-@item I x t
-@kindex I x t (Summary)
-@findex gnus-summary-temporarily-raise-by-xref
-Increase the current xref temporarily
-(@code{gnus-summary-temporarily-raise-by-xref}).
-@item I x p
-@kindex I x p (Summary)
-@findex gnus-summary-raise-by-xref
-Increase the current xref permanently
-(@code{gnus-summary-raise-by-xref}).
-@item I x i 
-@kindex I x i  (Summary)
-@findex gnus-summary-immediately-raise-by-xref
-Increase the current xref immediately
-(@code{gnus-summary-immediately-raise-by-xref}).
-@item I f t
-@kindex I f t (Summary)
-@findex gnus-summary-temporarily-raise-followups-to-author
-Increase followups to the current author temporarily
-(@code{gnus-summary-temporarily-raise-followups-to-author}).
-@item I f p
-@kindex I f p (Summary)
-@findex gnus-summary-raise-followups-to-author
-Increase followups to the current author permanently
-(@code{gnus-summary-raise-followups-to-author}).
-@item I f i 
-@kindex I f i  (Summary)
-@findex gnus-summary-immediately-raise-followups-to-author
-Increase followups to the current author immediately
-(@code{gnus-summary-immediately-raise-followups-to-author}).
+@item a
+Score on the author name.
+@item s
+Score on the subject line.
+@item x
+Score on the Xref line - ie. the cross-posting line.
+@item t
+Score on thread - the References line.
+@item d
+Score on the date.
+@item l
+Score on the number of lines.
+@item b
+Score on the body.
+@item h
+Score on the head.
 @end table
 
-Commands for lowering the score:
-
+@item
+The third key is the match type.
 @table @kbd
-@item L s t
-@kindex L s t (Summary)
-@findex gnus-summary-temporarily-lower-by-subject
-Lower the current subject temporarily
-(@code{gnus-summary-temporarily-lower-by-subject}).
-@item L s p
-@kindex L s p (Summary)
-@findex gnus-summary-lower-by-subject
-Lower the current subject permanently
-(@code{gnus-summary-lower-by-subject}).
-@item L s i 
-@kindex L s i  (Summary)
-@findex gnus-summary-immediately-lower-by-subject
-Lower the current subject immediately
-(@code{gnus-summary-immediately-lower-by-subject}).
-@item L a t
-@kindex L a t (Summary)
-@findex gnus-summary-temporarily-lower-by-author
-Lower the current author temporarily
-(@code{gnus-summary-temporarily-lower-by-author}).
-@item L a p
-@kindex L a p (Summary)
-@findex gnus-summary-lower-by-author
-Lower the current author permanently
-(@code{gnus-summary-lower-by-author}).
-@item L a i 
-@kindex L a i  (Summary)
-@findex gnus-summary-immediately-lower-by-author
-Lower the current author immediately
-(@code{gnus-summary-immediately-lower-by-author}).
-@item L b t
-@kindex L b t (Summary)
-@findex gnus-summary-temporarily-lower-by-body
-Lower based on a match on the article body
-(@code{gnus-summary-temporarily-lower-by-body}).  This is a very slow
-operation. 
-@item L b p
-@kindex L b p (Summary)
-@findex gnus-summary-lower-by-body
-Lower based on a match on the article body
-(@code{gnus-summary-lower-by-body}).  This is a very slow operation.
-@item L b i 
-@kindex L b i  (Summary)
-@findex gnus-summary-immediately-lower-by-body
-Lower based on a match on the article body
-(@code{gnus-summary-immediately-lower-by-body}).  This is a very slow operation.
-@item L i t
-@kindex L i t (Summary)
-@findex gnus-summary-temporarily-lower-by-id
-Lower the current message-id temporarily
-(@code{gnus-summary-temporarily-lower-by-id}).
-@item L i p
-@kindex L i p (Summary)
-@findex gnus-summary-lower-by-id
-Lower the current message-id permanently
-(@code{gnus-summary-lower-by-id}).
-@item L i i 
-@kindex L i i  (Summary)
-@findex gnus-summary-immediately-lower-by-id
-Lower the current message-id immediately
-(@code{gnus-summary-immediately-lower-by-id}).
-@item L t t
-@kindex L t t (Summary)
-@findex gnus-summary-temporarily-lower-by-thread
-Lower the current thread temporarily
-(@code{gnus-summary-temporarily-lower-by-thread}).
-@item L t p
-@kindex L t p (Summary)
-@findex gnus-summary-lower-by-thread
-Lower the current thread permanently
-(@code{gnus-summary-lower-by-thread}).
-@item L t i 
-@kindex L t i  (Summary)
-@findex gnus-summary-immediately-lower-by-thread
-Lower the current thread immediately
-(@code{gnus-summary-immediately-lower-by-thread}).
-@item L x t
-@kindex L x t (Summary)
-@findex gnus-summary-temporarily-lower-by-xref
-Lower the current xref temporarily
-(@code{gnus-summary-temporarily-lower-by-xref}).
-@item L x p
-@kindex L x p (Summary)
-@findex gnus-summary-lower-by-xref
-Lower the current xref permanently
-(@code{gnus-summary-lower-by-xref}).
-@item L x i 
-@kindex L x i  (Summary)
-@findex gnus-summary-immediately-lower-by-xref
-Lower the current xref immediately
-(@code{gnus-summary-immediately-lower-by-xref}).
-@item L f t
-@kindex L f t (Summary)
-@findex gnus-summary-temporarily-lower-followups-to-author
-Lower followups to the current author temporarily
-(@code{gnus-summary-temporarily-lower-followups-to-author}).
-@item L f p
-@kindex L f p (Summary)
-@findex gnus-summary-lower-followups-to-author
-Lower followups to the current author permanently
-(@code{gnus-summary-lower-followups-to-author}).
-@item L f i 
-@kindex L f i  (Summary)
-@findex gnus-summary-immediately-lower-followups-to-author
-Lower followups to the current author immediately
-(@code{gnus-summary-immediately-lower-followups-to-author}).
+@item e
+Exact matching.
+@item s
+Substring matching.
+@item f
+Fuzzy matching.
+@item r
+Regexp matching
 @end table
+
+@item 
+The fourth and final key says whether this is a temporary (ie. expiring)
+score entry, or a permanent (ie. non-expiring) score entry, or whether
+it is to be done immediately, without adding to the score file.
+@table @kbd
+@item t
+Temporary score entry.
+@item p
+Permanent score entry.
+@item i
+Immediately scoring.
+@end table
+
+@end enumerate
+
+So, let's say you want to increase the score on the current author with
+exact matching permanently: @kbd{I a e p}.  If you want to lower the
+score based on the subject line, using substring matching, and make a
+temporary score entry: @kbd{L s s t}.  Pretty easy.
+
+To make things a bit more complicated, there are shortcuts.  If you use
+a capital letter on either the second or third keys, Gnus will use
+defaults for the remaining one or two keystrokes.  The defaults are
+"substring" and "temporary".  So @kbd{I A} is the same as @kbd{I a s t},
+and @kbd{I a R} is the same as @kbd{I a r t}.
 
 @node Score Variables
 @subsection Score Variables
@@ -5270,6 +5257,14 @@ let you use different rules in different groups.
 The adaptive score entries will be put into a file where the name is the
 group name with @code{gnus-adaptive-file-suffix} appended.
 
+@vindex gnus-score-exact-adapt-limit
+When doing adaptive scoring, one normally uses substring matching.
+However, if the header one matches is short, the possibility for false
+positives is great, so if the length of the match is less than
+@code{gnus-score-exact-adapt-limit}, exact matching will be used.
+If this variable is @code{nil}, which it is by default, exact matching
+will always be used.
+
 @node Scoring Tips
 @subsection Scoring Tips
 @cindex scoring tips
@@ -5489,6 +5484,11 @@ Respool the mail article (@code{gnus-summary-move-article}).
 Edit the current article (@code{gnus-summary-edit-article}).  To finish
 editing and make the changes permanent, type @kbd{C-c C-c}
 (@kbd{gnus-summary-edit-article-done}).
+@item B q
+@kindex B q (Summary)
+@findex gnus-summary-fancy-query
+If you are using fancy splitting, this command will tell you where an
+article would go (@code{gnus-summary-fancy-query}). 
 @end table
 
 @node Various Summary Stuff
@@ -5711,16 +5711,24 @@ treatment of the article before it is displayed.  By default it contains
 @findex gnus-article-subcite
 @findex gnus-article-hide-signature
 @findex gnus-article-hide-citation
-Other useful functions you might add to this hook is
-@code{gnus-article-hide-citation} (which hides all cited text);
-@code{gnus-article-hide-signature} (which, umn, hides the signature);
-@code{gnus-article-subcite} (which tries to clean up the mess supercite
-makes in The Hands Of The Mad); @code{gnus-article-treat-overstrike}
-(which treats @samp{^H_} in a reasonable manner);
-@code{gnus-article-remove-cr} (which removes trailing carriage returns);
-@code{gnus-article-de-quoted-unreadable} (which does a naive decoding of
-articles encoded with Quoted-Printable); and
-@code{gnus-article-display-x-face} (which displays any X-Face headers).
+Other useful functions you might add to this hook is:
+
+@table @code
+@item gnus-article-hide-citation
+Hide all cited text.
+@item gnus-article-hide-signature
+Umn, hides the signature.
+@item gnus-article-treat-overstrike
+Treat @samp{^H_} in a reasonable manner.
+@item gnus-article-maybe-highlight
+Do fancy article highlighting.
+@item gnus-article-remove-cr
+Removes trailing carriage returns.
+@item gnus-article-de-quoted-unreadable
+Do naive decoding of articles encoded with Quoted-Printable.
+@item gnus-article-display-x-face
+Displays any X-Face headers.
+@end table
 
 You can, of course, write your own functions.  The functions are called
 from the article buffer, and you can do anything you like, pretty much.

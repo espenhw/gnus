@@ -41,6 +41,9 @@
 (defvar nnmbox-get-new-mail t
   "If non-nil, nnmbox will check the incoming mail file and split the mail.")
 
+(defvar nnmbox-prepare-save-mail-hook nil
+  "Hook run narrowed to an article before saving.")
+
 
 
 (defconst nnmbox-version "nnmbox 0.1"
@@ -183,7 +186,7 @@
     (if (nnmbox-possibly-change-newsgroup group)
 	(if dont-check
 	    t
-	  (nnmbox-get-new-mail)
+	  (nnmbox-get-new-mail group)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
@@ -381,6 +384,7 @@
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (nnmbox-insert-newsgroup-line group-art)
+    (run-hooks 'nnml-prepare-save-mail-hook)
     group-art))
 
 (defun nnmbox-insert-newsgroup-line (group-art)
@@ -438,10 +442,9 @@
 		  (nnmbox-save-mail))))
 	  (goto-char end))))))
 
-(defun nnmbox-get-new-mail ()
+(defun nnmbox-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
-		  (list nnmail-spool-file)))
+  (let ((spools (nnmail-get-spool-files group))
 	incoming incomings)
     (nnmbox-read-mbox)
     (if (or (not nnmbox-get-new-mail) (not nnmail-spool-file))

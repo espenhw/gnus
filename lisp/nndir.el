@@ -29,6 +29,9 @@
 (require 'nnmh)
 (require 'nnml)
 
+(eval-and-compile
+  (autoload 'mail-send-and-exit "sendmail"))
+
 
 
 (defconst nndir-version "nndir 0.0")

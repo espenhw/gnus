@@ -122,7 +122,8 @@ Newsgroup must be selected before calling this function."
 	   file beg article)
       (if (not (nnspool-possibly-change-directory newsgroup))
 	  ()
-	(if (nnspool-retrieve-headers-with-nov sequence)
+	(if (and (numberp (car sequence))
+		 (nnspool-retrieve-headers-with-nov sequence))
 	    'nov
 	  (while sequence
 	    (setq article (car sequence))

@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'gnus)
+(require 'gnus-msg)
 
 (eval-and-compile
   (autoload 'gnus-article-add-button "gnus-vis")

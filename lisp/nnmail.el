@@ -27,10 +27,11 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'timezone)
+(require 'sendmail)
 
 (defvar nnmail-split-methods
   '(("mail.misc" ""))
-  "Incoming mail will be split according to this variable.
+  "*Incoming mail will be split according to this variable.
 
 If you'd like, for instance, one mail group for mail from the
 \"4ad-l\" mailing list, one group for junk mail and one for everything
@@ -56,20 +57,20 @@ The last element should always have \"\" as the regexp.")
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-crosspost t
-  "If non-nil, do crossposting if several split methods match the mail.
+  "*If non-nil, do crossposting if several split methods match the mail.
 If nil, the first match found will be used.")
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defvar nnmail-keep-last-article nil
-  "If non-nil, nnmail will never delete the last expired article in a
+  "*If non-nil, nnmail will never delete the last expired article in a
 directory.  You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired.")
 
 (defvar nnmail-expiry-wait 7
-  "Articles that are older than `nnmail-expiry-wait' days will be expired.")
+  "*Articles that are older than `nnmail-expiry-wait' days will be expired.")
 
 (defvar nnmail-expiry-wait-function nil
-  "Variable that holds funtion to specify how old articles should be before they are expired.
+  "*Variable that holds funtion to specify how old articles should be before they are expired.
   The function will be called with the name of the group that the
 expiry is to be performed in, and it should return an integer that
 says how many days an article can be stored before it is considered
@@ -88,10 +89,19 @@ Eg.:
       (concat "/usr/spool/mail/" (user-login-name)))
   "Where the mail backends will look for incoming mail.
 This variable is \"/usr/spool/mail/$user\" by default.
-If this variable is nil, no mail backends will read incoming mail.")
+If this variable is nil, no mail backends will read incoming mail.
+If this variable is `procmail', the mail backends will look in
+`nnmail-procmail-directory' for spool files.")
+
+(defvar nnmail-procmail-directory "~/incoming/"
+  "*When using procmail (and the like), incoming mail is put in this directory.
+The Gnus mail backends will read the mail from this directory.")
+
+(defvar nnmail-procmail-suffix ".spool"
+  "*Suffix of files created by procmail (and the like).")
 
 (defvar nnmail-read-incoming-hook nil
-  "Hook that will be run after the incoming mail has been transferred.
+  "*Hook that will be run after the incoming mail has been transferred.
 The incoming mail is moved from `nnmail-spool-file' (which normally is
 something like \"/usr/spool/mail/$user\") to the user's home
 directory. This hook is called after the incoming mail box has been
@@ -107,17 +117,69 @@ Eg.
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-prepare-incoming-hook nil
-  "Hook called before treating incoming mail.
+  "*Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail.")
 
 ;; Suggested by Mejia Pablo J <pjm9806@usl.edu>.
 (defvar nnmail-tmp-directory nil
-  "If non-nil, use this directory for temporary storage when reading incoming mail.")
+  "*If non-nil, use this directory for temporary storage when reading incoming mail.")
 
 (defvar nnmail-large-newsgroup 50
-  "The number of the articles which indicates a large newsgroup.
+  "*The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
+
+(defvar nnmail-split-fancy "mail.misc"
+  "*Incoming mail can be split according to this fancy variable.
+To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
+
+The format is this variable is SPLIT, where SPLIT can be one of
+the following:
+
+GROUP: Mail will be stored in GROUP (a string).
+
+\(FIELD VALUE SPLIT): If the message field FIELD (a regexp) contains
+  VALUE (a regexp), store the messages as specified by SPLIT.
+
+\(| SPLIT...): Process each SPLIT expression until one of them matches.
+  A SPLIT expression is said to match if it will cause the mail
+  message to be stored in one or more groups.  
+
+\(& SPLIT...): Process each SPLIT expression.
+
+FIELD must match a complete field name.  VALUE must match a complete
+word according to the fundamental mode syntax table.  You can use .*
+in the regexps to match partial field names or words.
+
+FIELD and VALUE can also be lisp symbols, in that case they are expanded
+as specified in `nnmail-split-abbrev-alist'.
+
+Example:
+
+\(setq nnmail-split-methods 'nnmail-split-fancy
+      nnmail-split-fancy
+      ;; Messages from the mailer deamon are not crossposted to any of
+      ;; the ordinary groups.  Warnings are put in a separate group
+      ;; from real errors.
+      '(| (\"from\" mail (| (\"subject\" \"warn.*\" \"mail.warning\")
+			  \"mail.misc\"))
+	  ;; Non-error messages are crossposted to all relevant
+	  ;; groups, but we don't crosspost between the group for the
+	  ;; (ding) list and the group for other (ding) related mail.
+	  (& (| (any \"ding@ifi\\\\.uio\\\\.no\" \"ding.list\")
+		(\"subject\" \"ding\" \"ding.misc\"))
+	     ;; Other mailing lists...
+	     (any \"procmail@informatik\\\\.rwth-aachen\\\\.de\" \"procmail.list\")
+	     (any \"SmartList@informatik\\\\.rwth-aachen\\\\.de\" \"SmartList.list\")
+	     ;; People...
+	     (any \"larsi@ifi\\\\.uio\\\\.no\" \"people.Lars Magne Ingebrigtsen\"))
+	  ;; Unmatched mail goes to the catch all group.
+	  \"misc.misc\"))")
+
+(defvar nnmail-split-abbrev-alist
+  '((any . "from\\|to\\|cc\\|sender\\|apparently-to")
+    (mail . "mailer-daemon\\|postmaster"))
+  "*Alist of abbrevations allowed in `nnmail-split-fancy'.")
 
 
 
@@ -504,6 +566,74 @@ FUNC will be called with the group name to determine the article number."
       (setq newname (make-temp-name newprefix)))
     newname))
 
+;; Written by Per Abrahamsen <amanda@iesd.auc.dk>.
+
+(defun nnmail-split-fancy ()
+  "Fancy splitting method.
+See the documentation for the variable `nnmail-split-fancy' for documentation."
+  (nnmail-split-it nnmail-split-fancy))
+
+(defvar nnmail-split-cache nil)
+;; Alist of split expresions their equivalent regexps.
+
+(defun nnmail-split-it (split)
+  ;; Return a list of groups matching SPLIT.
+  (cond ((stringp split)
+	 ;; A group.
+	 (list split))
+	((eq (car split) '&)
+	 (apply 'nconc (mapcar 'nnmail-split-it (cdr split))))
+	((eq (car split) '|)
+	 (let (done)
+	   (while (and (not done) (cdr split))
+	     (setq split (cdr split)
+		   done (nnmail-split-it (car split))))
+	   done))	((assq split nnmail-split-cache)
+	 ;; A compiled match expression.
+	 (goto-char (point-max))
+	 (if (re-search-backward (cdr (assq split nnmail-split-cache)) nil t)
+	     (nnmail-split-it (nth 2 split))))
+	(t
+	 ;; An uncompiled match.
+	 (let* ((field (nth 0 split))
+		(value (nth 1 split))
+		(regexp (concat "^\\(" 
+				 (if (symbolp field)
+				     (cdr (assq field 
+						nnmail-split-abbrev-alist))
+				   field)
+				 "\\):.*\\<\\("
+				 (if (symbolp value)
+				     (cdr (assq value
+						nnmail-split-abbrev-alist))
+				   value)
+				 "\\>\\)")))
+	   (setq nnmail-split-cache 
+		 (cons (cons split regexp) nnmail-split-cache))
+	   (goto-char (point-max))
+	   (if (re-search-backward regexp nil t)
+	       (nnmail-split-it (nth 2 split)))))))
+
+;; Get a list of spool files to read.
+(defun nnmail-get-spool-files (&optional group)
+  (if (null nnmail-spool-file)
+      ;; No spool file whatsoever.
+      nil)
+  (let ((procmails 
+	 ;; If procmail is used to get incoming mail, the files
+	 ;; are stored in this directory.
+	 (and (file-exists-p nnmail-procmail-directory)
+	      (directory-files 
+	       nnmail-procmail-directory 
+	       t (concat (if group group "")
+			 nnmail-procmail-suffix "$") t))))
+    (cond ((listp nnmail-spool-file)
+	   (append nnmail-spool-file procmails))
+	  ((stringp nnmail-spool-file)
+	   (cons nnmail-spool-file procmails))
+	  (t
+	   procmails))))
+					    
 (provide 'nnmail)
 
 ;;; nnml.el ends here

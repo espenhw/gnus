@@ -26,6 +26,9 @@
 
 (require 'nnheader)
 
+(eval-and-compile
+  (autoload 'mail-send-and-exit "sendmail"))
+
 
 
 (defconst nndigest-version "nndigest 0.0"

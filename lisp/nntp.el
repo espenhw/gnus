@@ -1,4 +1,4 @@
-;;; nntp.el --- NNTP (RFC977) Interface for GNU Emacs
+;;; nntp.el --- nntp access for Gnus
 ;; Copyright (C) 1987,88,89,90,92,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -35,7 +35,8 @@
   (autoload 'nnmail-request-post-buffer "nnmail")
   (autoload 'cancel-timer "timer")
   (autoload 'telnet "telnet")
-  (autoload 'telnet-send-input "telnet"))
+  (autoload 'telnet-send-input "telnet")
+  (autoload 'timezone-parse-date "timezone"))
 
 (defvar nntp-server-hook nil
   "*Hooks for the NNTP server.
@@ -115,6 +116,11 @@ If it is a number, dots are displayed per the number.")
 The strings are tried in turn until a positive response is gotten. If
 none of the commands are successful, nntp will just grab headers one
 by one.")
+
+(defvar nntp-nov-gap 20
+  "*Maximum allowed gap between two articles.
+If the gap between two consecutive articles is bigger than this
+variable, split the XOVER request into two requests.")
 
 (defvar nntp-connection-timeout nil
   "*Number of seconds to wait before an nntp connection times out.
@@ -842,33 +848,103 @@ It will prompt for a password."
 	    t)))))
 
 
+
 ;;;
 ;;; Low-Level Interface to NNTP Server.
 ;;; 
 
 (defun nntp-retrieve-headers-with-xover (sequence)
-  (if (not nntp-server-xover)
-      ()
-    (let ((range (format "%d-%d" (car sequence)
-			 (nntp-last-element sequence))))
-      (prog1
-	  (if (stringp nntp-server-xover)
-	      (nntp-send-command "^\\.\r?$" nntp-server-xover range)
-	    (let ((commands nntp-xover-commands))
-	      (while (and commands (eq nntp-server-xover 'try))
-		(nntp-send-command "^\\.\r?$" (car commands) range)
-		(save-excursion
-		  (set-buffer nntp-server-buffer)
-		  (goto-char (point-min))
-		  (if (looking-at "[23]") 
-		      (setq nntp-server-xover (car commands))))
-		(setq commands (cdr commands)))
-	      (if (eq nntp-server-xover 'try)
-		  (setq nntp-server-xover nil))
-	      nntp-server-xover))
-	(if nntp-server-xover
-	    (nntp-decode-text)
-	  (erase-buffer))))))
+  (erase-buffer)
+  (cond 
+
+   ;; This server does not talk NOV.
+   ((not nntp-server-xover)
+    nil)
+
+   ;; We don't care about gaps.
+   ((not nntp-nov-gap)
+    (nntp-send-xover-command (car sequence) (nntp-last-element sequence)))
+
+   ;; We do it the hard way.  For each gap, an XOVER command is sent
+   ;; to the server.  We do not wait for a reply from the server, we
+   ;; just send them off as fast as we can.  That means that we have
+   ;; to count the number of responses we get back to find out when we
+   ;; have gotten all we asked for.
+   ((numberp nntp-nov-gap)
+    (let ((count 0)
+	  (received 0)
+	  (last-point (point-min))
+	  first)
+      ;; We have to check `nntp-server-xover'.  If it gets set to nil,
+      ;; that means that the server does not understand XOVER, but we
+      ;; won't know that until we try.
+      (while (and nntp-server-xover sequence)
+	(setq first (car sequence))
+	;; Search forward until we find a gap, or until we run out of
+	;; articles. 
+	(while (and (cdr sequence) 
+		    (< (- (nth 1 sequence) (car sequence)) nntp-nov-gap))
+	  (setq sequence (cdr sequence)))
+
+	  (nntp-send-xover-command first (car sequence))
+	  (setq sequence (cdr sequence)
+		count (1+ count))
+
+	  ;; Every 400 requests we have to read the stream in
+	  ;; order to avoid deadlocks.
+	  (if (or (null sequence)       ;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	      (progn
+		(accept-process-output)
+		(while (progn
+			 (goto-char last-point)
+			 ;; Count replies.
+			 (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
+			   (setq received (1+ received)))
+			 (setq last-point (point))
+			 (< received count))
+		  (nntp-accept-response)))))
+
+      (if (not nntp-server-xover)
+	  ()
+	;; Wait for the reply from the final command.
+	(goto-char (point-max))
+	(re-search-backward "^[0-9][0-9][0-9] " nil t)
+	(if (looking-at "^[23]")
+	    (while (progn
+		     (goto-char (- (point-max) 3))
+		     (not (looking-at "^\\.\r?$")))
+	      (nntp-accept-response)))
+	
+	;; We remove any "." lines and status lines.
+	(goto-char (point-min))
+	(while (search-forward "\r" nil t)
+	  (delete-char -1))
+	(goto-char (point-min))
+	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] "))
+
+      nntp-server-xover))))
+
+(defun nntp-send-xover-command (beg end)
+  (let ((range (format "%d-%d" beg end)))
+    (if (stringp nntp-server-xover)
+	;; If `nntp-server-xover' is a string, then we just send this
+	;; command. We do not wait for the reply.
+	(nntp-send-strings-to-server nntp-server-xover range)
+      (let ((commands nntp-xover-commands))
+	;; `nntp-xover-commands' is a list of possible XOVER commands.
+	;; We try them all until we get at positive response. 
+	(while (and commands (eq nntp-server-xover 'try))
+	  (nntp-send-command "^\\.\r?$" (car commands) range)
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (goto-char (point-min))
+	    (and (looking-at "[23]") (setq nntp-server-xover (car commands))))
+	  (setq commands (cdr commands)))
+	;; If none of the commands worked, we disable XOVER.
+	(if (eq nntp-server-xover 'try)
+	    (setq nntp-server-xover nil))
+	nntp-server-xover))))
 
 (defun nntp-send-strings-to-server (&rest strings)
   "Send list of STRINGS to news server as command and its arguments."

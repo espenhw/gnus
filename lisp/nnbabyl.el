@@ -1,4 +1,4 @@
-;;; nnbabyl.el --- mail mbox access for Gnus
+;;; nnbabyl.el --- rmail mbox access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -40,6 +40,9 @@
 
 (defvar nnbabyl-get-new-mail t
   "If non-nil, nnbabyl will check the incoming mail file and split the mail.")
+
+(defvar nnbabyl-prepare-save-mail-hook nil
+  "Hook run narrowed to an article before saving.")
 
 
 
@@ -185,7 +188,7 @@
     (if (nnbabyl-possibly-change-newsgroup group)
 	(if dont-check
 	    t
-	  (nnbabyl-get-new-mail)
+	  (nnbabyl-get-new-mail group)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
@@ -379,7 +382,9 @@
   (let ((group-art (nreverse (nnmail-article-group 'nnbabyl-active-number))))
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
-    (nnbabyl-insert-newsgroup-line group-art)))
+    (nnbabyl-insert-newsgroup-line group-art)
+    (run-hooks 'nnbabyl-prepare-save-mail-hook)
+    group-art))
 
 (defun nnbabyl-insert-newsgroup-line (group-art)
   (save-excursion
@@ -460,10 +465,9 @@
 	(and (buffer-modified-p (current-buffer)) (save-buffer))
 	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))))
 
-(defun nnbabyl-get-new-mail ()
+(defun nnbabyl-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
-		  (list nnmail-spool-file)))
+  (let ((spools (nnmail-get-spool-files group))
 	incoming incomings)
     (nnbabyl-read-mbox)
     (if (or (not nnbabyl-get-new-mail) (not nnmail-spool-file))

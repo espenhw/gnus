@@ -1,4 +1,4 @@
-;;; gnus-vm: vm interface for Gnus
+;;; gnus-vm.el --- vm interface for Gnus
 ;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Per Persson <pp@solace.mh.se>
@@ -27,6 +27,12 @@
 ;; Some code stolen from: 
 ;;	Rick Sladkey <jrs@world.std.com>
 
+;;; Code:
+
+(require 'sendmail)
+(require 'gnus)
+(require 'gnus-msg)
+
 (eval-when-compile
   (autoload 'vm-mode "vm")
   (autoload 'vm-save-message "vm")
@@ -46,8 +52,6 @@ Has to be set before gnus-vm is loaded.")
 
 (if (not (featurep 'vm))
     (load "vm"))
-
-(require 'gnus)
 
 (defun gnus-vm-make-folder (&optional buffer)
   (let ((article (or buffer (current-buffer)))

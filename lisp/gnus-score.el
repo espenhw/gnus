@@ -1,4 +1,4 @@
-;;; gnus-score --- scoring code for Gnus
+;;; gnus-score.el --- scoring code for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
@@ -66,6 +66,16 @@ score alists.")
     (gnus-catchup-mark (from -1) (subject -1)))
   "*Alist of marks and scores.")
 
+(defvar gnus-score-exact-adapt-limit nil
+  "*Number that says how long a match has to be before using substring matching.
+When doing adaptive scoring, one normally uses substring matching.
+However, if the header one matches is short, the possibility for false
+positives is great, so if the length of the match is less than this
+variable, exact matching will be used.
+
+If this variable is nil, which it is by default, exact matching will
+always be used.")
+
 
 
 ;; Internal variables.
@@ -102,199 +112,104 @@ of the last succesful match.")
 ;;; Summary mode score maps.
 
 (defvar gnus-summary-score-map nil)
-(defvar gnus-summary-increase-map nil)
-(defvar gnus-summary-inc-subject-map nil)
-(defvar gnus-summary-inc-fuzzy-map nil)
-(defvar gnus-summary-inc-author-map nil)
-(defvar gnus-summary-inc-body-map nil)
-(defvar gnus-summary-inc-id-map nil)
-(defvar gnus-summary-inc-xref-map nil)
-(defvar gnus-summary-inc-thread-map nil)
-(defvar gnus-summary-inc-fol-map nil)
-(defvar gnus-summary-lower-map nil)
-(defvar gnus-summary-low-subject-map nil)
-(defvar gnus-summary-low-fuzzy-map nil)
-(defvar gnus-summary-low-author-map nil)
-(defvar gnus-summary-low-body-map nil)
-(defvar gnus-summary-low-id-map nil)
-(defvar gnus-summary-low-xref-map nil)
-(defvar gnus-summary-low-thread-map nil)
-(defvar gnus-summary-low-fol-map nil)
 
-  (define-prefix-command 'gnus-summary-score-map)
-  (define-key gnus-summary-various-map "S" 'gnus-summary-score-map)
-  (define-key gnus-summary-score-map "s" 'gnus-summary-set-score)
-  (define-key gnus-summary-score-map "c" 'gnus-score-change-score-file)
-  (define-key gnus-summary-score-map "m" 'gnus-score-set-mark-below)
-  (define-key gnus-summary-score-map "x" 'gnus-score-set-expunge-below)
-  (define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
-  (define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
+(define-prefix-command 'gnus-summary-score-map)
+(define-key gnus-summary-various-map "S" 'gnus-summary-score-map)
+(define-key gnus-summary-score-map "s" 'gnus-summary-set-score)
+(define-key gnus-summary-score-map "a" 'gnus-summary-score-entry)
+(define-key gnus-summary-score-map "S" 'gnus-summary-current-score)
+(define-key gnus-summary-score-map "c" 'gnus-score-change-score-file)
+(define-key gnus-summary-score-map "m" 'gnus-score-set-mark-below)
+(define-key gnus-summary-score-map "x" 'gnus-score-set-expunge-below)
+(define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
+(define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
 
-
-  (define-prefix-command 'gnus-summary-increase-map)
-  (define-key gnus-summary-mode-map "I" gnus-summary-increase-map)
-
-  (define-key gnus-summary-increase-map "i" 'gnus-summary-raise-same-subject-and-select)
-  (define-key gnus-summary-increase-map "I" 'gnus-summary-raise-same-subject)
-  (define-key gnus-summary-increase-map "\C-i" 'gnus-summary-raise-score)
-
-  (define-prefix-command 'gnus-summary-inc-subject-map)
-  (define-key gnus-summary-increase-map "s" gnus-summary-inc-subject-map)
-  (define-key gnus-summary-increase-map "S" 'gnus-summary-temporarily-raise-by-subject)
-  (define-key gnus-summary-inc-subject-map "s" 'gnus-summary-temporarily-raise-by-subject)
-  (define-key gnus-summary-inc-subject-map "S" 'gnus-summary-raise-by-subject)
-  (define-key gnus-summary-inc-subject-map "i" 'gnus-summary-immediately-raise-by-subject)
-  (define-key gnus-summary-inc-subject-map "t" 'gnus-summary-temporarily-raise-by-subject)
-  (define-key gnus-summary-inc-subject-map "p" 'gnus-summary-raise-by-subject)
-
-  (define-prefix-command 'gnus-summary-inc-fuzzy-map)
-  (define-key gnus-summary-increase-map "z" gnus-summary-inc-fuzzy-map)
-  (define-key gnus-summary-increase-map "Z" 'gnus-summary-temporarily-raise-by-fuzzy)
-  (define-key gnus-summary-inc-fuzzy-map "z" 'gnus-summary-temporarily-raise-by-fuzzy)
-  (define-key gnus-summary-inc-fuzzy-map "Z" 'gnus-summary-raise-by-fuzzy)
-  (define-key gnus-summary-inc-fuzzy-map "i" 'gnus-summary-immediately-raise-by-fuzzy)
-  (define-key gnus-summary-inc-fuzzy-map "t" 'gnus-summary-temporarily-raise-by-fuzzy)
-  (define-key gnus-summary-inc-fuzzy-map "p" 'gnus-summary-raise-by-fuzzy)
-
-  (define-prefix-command 'gnus-summary-inc-author-map)
-  (define-key gnus-summary-increase-map "a" 'gnus-summary-inc-author-map)
-  (define-key gnus-summary-increase-map "A" 'gnus-summary-temporarily-raise-by-author)
-  (define-key gnus-summary-inc-author-map "a" 'gnus-summary-temporarily-raise-by-author)
-  (define-key gnus-summary-inc-author-map "A" 'gnus-summary-raise-by-author)
-  (define-key gnus-summary-inc-author-map "i" 'gnus-summary-immediately-raise-by-author)
-  (define-key gnus-summary-inc-author-map "t" 'gnus-summary-temporarily-raise-by-author)
-  (define-key gnus-summary-inc-author-map "p" 'gnus-summary-raise-by-author)
-
-  (define-prefix-command 'gnus-summary-inc-body-map)
-  (define-key gnus-summary-increase-map "b" 'gnus-summary-inc-body-map)
-  (define-key gnus-summary-increase-map "B" 'gnus-summary-temporarily-raise-by-body)
-  (define-key gnus-summary-inc-body-map "b" 'gnus-summary-temporarily-raise-by-body)
-  (define-key gnus-summary-inc-body-map "B" 'gnus-summary-raise-by-body)
-  (define-key gnus-summary-inc-body-map "i" 'gnus-summary-immediately-raise-by-body)
-  (define-key gnus-summary-inc-body-map "t" 'gnus-summary-temporarily-raise-by-body)
-  (define-key gnus-summary-inc-body-map "p" 'gnus-summary-raise-by-body)
-
-  (define-prefix-command 'gnus-summary-inc-id-map)
-  (define-key gnus-summary-increase-map "i" 'gnus-summary-inc-id-map)
-  (define-key gnus-summary-increase-map "I" 'gnus-summary-temporarily-raise-by-id)
-  (define-key gnus-summary-inc-id-map "i" 'gnus-summary-temporarily-raise-by-id)
-  (define-key gnus-summary-inc-id-map "I" 'gnus-summary-raise-by-id)
-  (define-key gnus-summary-inc-id-map "i" 'gnus-summary-immediately-raise-by-id)
-  (define-key gnus-summary-inc-id-map "t" 'gnus-summary-temporarily-raise-by-id)
-  (define-key gnus-summary-inc-id-map "p" 'gnus-summary-raise-by-id)
-
-  (define-prefix-command 'gnus-summary-inc-thread-map)
-  (define-key gnus-summary-increase-map "t" 'gnus-summary-inc-thread-map)
-  (define-key gnus-summary-increase-map "T" 'gnus-summary-temporarily-raise-by-thread)
-  (define-key gnus-summary-inc-thread-map "t" 'gnus-summary-temporarily-raise-by-thread)
-  (define-key gnus-summary-inc-thread-map "T" 'gnus-summary-raise-by-thread)
-  (define-key gnus-summary-inc-thread-map "i" 'gnus-summary-immediately-raise-by-thread)
-  (define-key gnus-summary-inc-thread-map "t" 'gnus-summary-temporarily-raise-by-thread)
-  (define-key gnus-summary-inc-thread-map "p" 'gnus-summary-raise-by-thread)
-
-  (define-prefix-command 'gnus-summary-inc-xref-map)
-  (define-key gnus-summary-increase-map "x" 'gnus-summary-inc-xref-map)
-  (define-key gnus-summary-increase-map "X" 'gnus-summary-temporarily-raise-by-xref)
-  (define-key gnus-summary-inc-xref-map "x" 'gnus-summary-temporarily-raise-by-xref)
-  (define-key gnus-summary-inc-xref-map "X" 'gnus-summary-raise-by-xref)
-  (define-key gnus-summary-inc-xref-map "i" 'gnus-summary-immediately-raise-by-xref)
-  (define-key gnus-summary-inc-xref-map "t" 'gnus-summary-temporarily-raise-by-xref)
-  (define-key gnus-summary-inc-xref-map "p" 'gnus-summary-raise-by-xref)
-
-  (define-prefix-command 'gnus-summary-inc-fol-map)
-  (define-key gnus-summary-increase-map "f" 'gnus-summary-inc-fol-map)
-  (define-key gnus-summary-increase-map "F" 'gnus-summary-temporarily-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "f" 'gnus-summary-temporarily-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "F" 'gnus-summary-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "i" 'gnus-summary-immediately-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "t" 'gnus-summary-temporarily-raise-followups-to-author)
-  (define-key gnus-summary-inc-fol-map "p" 'gnus-summary-raise-followups-to-author)
-
-
-  (define-prefix-command 'gnus-summary-lower-map)
-  (define-key gnus-summary-mode-map "L" 'gnus-summary-lower-map)
-
-  (define-key gnus-summary-lower-map "l" 'gnus-summary-lower-same-subject-and-select)
-  (define-key gnus-summary-lower-map "L" 'gnus-summary-lower-same-subject)
-  (define-key gnus-summary-lower-map "\C-l" 'gnus-summary-lower-score)
-
-  (define-prefix-command 'gnus-summary-low-subject-map)
-  (define-key gnus-summary-lower-map "s" 'gnus-summary-low-subject-map)
-  (define-key gnus-summary-lower-map "S" 'gnus-summary-temporarily-lower-by-subject)
-  (define-key gnus-summary-low-subject-map "s" 'gnus-summary-temporarily-lower-by-subject)
-  (define-key gnus-summary-low-subject-map "S" 'gnus-summary-lower-by-subject)
-  (define-key gnus-summary-low-subject-map "i" 'gnus-summary-immediately-lower-by-subject)
-  (define-key gnus-summary-low-subject-map "t" 'gnus-summary-temporarily-lower-by-subject)
-  (define-key gnus-summary-low-subject-map "p" 'gnus-summary-lower-by-subject)
-
-  (define-prefix-command 'gnus-summary-low-fuzzy-map)
-  (define-key gnus-summary-lower-map "z" 'gnus-summary-low-fuzzy-map)
-  (define-key gnus-summary-lower-map "Z" 'gnus-summary-temporarily-lower-by-fuzzy)
-  (define-key gnus-summary-low-fuzzy-map "z" 'gnus-summary-temporarily-lower-by-fuzzy)
-  (define-key gnus-summary-low-fuzzy-map "Z" 'gnus-summary-lower-by-fuzzy)
-  (define-key gnus-summary-low-fuzzy-map "i" 'gnus-summary-immediately-lower-by-fuzzy)
-  (define-key gnus-summary-low-fuzzy-map "t" 'gnus-summary-temporarily-lower-by-fuzzy)
-  (define-key gnus-summary-low-fuzzy-map "p" 'gnus-summary-lower-by-fuzzy)
-
-  (define-prefix-command 'gnus-summary-low-body-map)
-  (define-key gnus-summary-lower-map "b" 'gnus-summary-low-body-map)
-  (define-key gnus-summary-lower-map "B" 'gnus-summary-temporarily-lower-by-body)
-  (define-key gnus-summary-low-body-map "b" 'gnus-summary-temporarily-lower-by-body)
-  (define-key gnus-summary-low-body-map "B" 'gnus-summary-lower-by-body)
-  (define-key gnus-summary-low-body-map "i" 'gnus-summary-immediately-lower-by-body)
-  (define-key gnus-summary-low-body-map "t" 'gnus-summary-temporarily-lower-by-body)
-  (define-key gnus-summary-low-body-map "p" 'gnus-summary-lower-by-body)
-
-  (define-prefix-command 'gnus-summary-low-author-map)
-  (define-key gnus-summary-lower-map "a" 'gnus-summary-low-author-map)
-  (define-key gnus-summary-lower-map "A" 'gnus-summary-temporarily-lower-by-author)
-  (define-key gnus-summary-low-author-map "a" 'gnus-summary-temporarily-lower-by-author)
-  (define-key gnus-summary-low-author-map "A" 'gnus-summary-lower-by-author)
-  (define-key gnus-summary-low-author-map "i" 'gnus-summary-immediately-lower-by-author)
-  (define-key gnus-summary-low-author-map "t" 'gnus-summary-temporarily-lower-by-author)
-  (define-key gnus-summary-low-author-map "p" 'gnus-summary-lower-by-author)
-
-  (define-prefix-command 'gnus-summary-low-id-map)
-  (define-key gnus-summary-lower-map "i" 'gnus-summary-low-id-map)
-  (define-key gnus-summary-lower-map "I" 'gnus-summary-temporarily-lower-by-id)
-  (define-key gnus-summary-low-id-map "i" 'gnus-summary-temporarily-lower-by-id)
-  (define-key gnus-summary-low-id-map "I" 'gnus-summary-lower-by-id)
-  (define-key gnus-summary-low-id-map "i" 'gnus-summary-immediately-lower-by-id)
-  (define-key gnus-summary-low-id-map "t" 'gnus-summary-temporarily-lower-by-id)
-  (define-key gnus-summary-low-id-map "p" 'gnus-summary-lower-by-id)
-
-  (define-prefix-command 'gnus-summary-low-thread-map)
-  (define-key gnus-summary-lower-map "t" 'gnus-summary-low-thread-map)
-  (define-key gnus-summary-lower-map "T" 'gnus-summary-temporarily-lower-by-thread)
-  (define-key gnus-summary-low-thread-map "t" 'gnus-summary-temporarily-lower-by-thread)
-  (define-key gnus-summary-low-thread-map "T" 'gnus-summary-lower-by-thread)
-  (define-key gnus-summary-low-thread-map "i" 'gnus-summary-immediately-lower-by-thread)
-  (define-key gnus-summary-low-thread-map "t" 'gnus-summary-temporarily-lower-by-thread)
-  (define-key gnus-summary-low-thread-map "p" 'gnus-summary-lower-by-thread)
-
-  (define-prefix-command 'gnus-summary-low-xref-map)
-  (define-key gnus-summary-lower-map "x" 'gnus-summary-low-xref-map)
-  (define-key gnus-summary-lower-map "X" 'gnus-summary-temporarily-lower-by-xref)
-  (define-key gnus-summary-low-xref-map "x" 'gnus-summary-temporarily-lower-by-xref)
-  (define-key gnus-summary-low-xref-map "X" 'gnus-summary-lower-by-xref)
-  (define-key gnus-summary-low-xref-map "i" 'gnus-summary-immediately-lower-by-xref)
-  (define-key gnus-summary-low-xref-map "t" 'gnus-summary-temporarily-lower-by-xref)
-  (define-key gnus-summary-low-xref-map "p" 'gnus-summary-lower-by-xref)
-
-  (define-prefix-command 'gnus-summary-low-fol-map)
-  (define-key gnus-summary-lower-map "f" 'gnus-summary-low-fol-map)
-  (define-key gnus-summary-lower-map "F" 'gnus-summary-temporarily-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "f" 'gnus-summary-temporarily-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "F" 'gnus-summary-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "i" 'gnus-summary-immediately-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "t" 'gnus-summary-temporarily-lower-followups-to-author)
-  (define-key gnus-summary-low-fol-map "p" 'gnus-summary-lower-followups-to-author)
 
 
 ;; Summary score file commands
 
 ;; Much modification of the kill (ahem, score) code and lots of the
 ;; functions are written by Per Abrahamsen <amanda@iesd.auc.dk>.
+
+(defun gnus-summary-lower-score (score)
+  (interactive "P")
+  (gnus-summary-increase-score (- (gnus-score-default score))))
+
+(defun gnus-summary-increase-score (score)
+  (interactive "P")
+  (let* ((score (gnus-score-default score))
+	 (prefix (if (< score 0) ?L ?I))
+	 (char-to-header 
+	  '((?a "from")
+	    (?s "subject")
+	    (?b "body" "")
+	    (?h "head" "")
+	    (?i "message-id" nil t)
+	    (?t "references" "message-id" t)
+	    (?x "xref")
+	    (?l "lines")
+	    (?d "date")
+	    (?f "followup")))
+	 (char-to-type
+	  '((?e 'e)
+	    (?f 'f)
+	    (?s 's)
+	    (?r 'r)
+	    (?b 'before)
+	    (?a 'at)
+	    (?n 'now)
+	    (?< '<)
+	    (?> '>)
+	    (?= '=)))
+	 hchar entry temporary tchar pchar end type)
+    ;; First we read the header to score.
+    (message "%c-" prefix)
+    (setq hchar (read-char))
+    (or (setq entry (assq (downcase hchar) char-to-header))
+	(progn
+	  (ding)
+	  (setq end t)
+	  (message "%c %c" prefix hchar)))
+    (if (or end (/= (downcase hchar) hchar))
+	(progn
+	  ;; This was a majuscle, so we end reading and set the defaults.
+	  (message "%c %c" prefix hchar)
+	  (setq type 's
+		temporary t))
+      ;; We continue reading - the type.
+      (message "%c %c-" prefix hchar)
+      (setq tchar (read-char))
+      (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
+	  (progn
+	    (ding)
+	    (message "%c %c" prefix hchar)
+	    (setq end t)))
+      (if (or end (/= (downcase tchar) tchar))
+	  (progn
+	    ;; It was a majuscle, so we end reading and the the default.
+	    (message "%c %c %c" prefix hchar tchar)
+	    (setq temporary t))
+	;; We continue reading.
+	(message "%c %c %c-" prefix hchar tchar)
+	(setq pchar (read-char))
+	(message "%c %c %c" prefix hchar tchar pchar)
+	(cond ((= pchar ?t)
+	       (setq temporary t))
+	      ((/= pchar ?p)
+	       (ding)
+	       (setq end t)
+	       (message "%c %c %c %c" prefix hchar tchar pchar)))))
+    ;; We have all the data, so we enter this score.
+    (if end
+	()
+      (gnus-summary-score-entry
+       (nth 1 entry)			; Header
+       (gnus-summary-header (or (nth 2 entry) (nth 1 entry))) ; Match
+       type				; Type
+       (gnus-score-default score)		; Score
+       (and temporary (current-time-string)) ; Temp
+       (not (nth 3 entry)))		; Prompt
+      )))
 
 (defun gnus-summary-header (header)
   ;; Return HEADER for current articles, or error.
@@ -320,8 +235,9 @@ If optional argument `SILENT' is nil, show effect of score entry."
 			  (lambda (x) (fboundp (nth 2 x)))
 			  t)
 	 (read-string "Match: ")
-	 (y-or-n-p "Use regexp match? ")
-	 (prefix-numeric-value current-prefix-arg)
+	 (if (y-or-n-p "Use regexp match? ") 'r 's)
+	 (and current-prefix-arg
+	     (prefix-numeric-value current-prefix-arg))
 	 (cond ((not (y-or-n-p "Add to SCORE file? "))
 		'now)
 	       ((y-or-n-p "Expire kill? ")
@@ -424,342 +340,6 @@ SCORE is the score to add."
 		 gnus-newsgroup-name))
 	   (gnus-summary-score-entry
 	    "xref" (concat " " group ":") nil score date t)))))
-
-(defun gnus-summary-immediately-lower-by-subject (level)
-  "Immediately lower score by LEVEL for current subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil (- (gnus-score-default level)) 'now t))
-
-(defun gnus-summary-immediately-lower-by-fuzzy (level)
-  "Immediately lower score by LEVEL for current fuzzy subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   'f (- (gnus-score-default level)) 'now))
-
-(defun gnus-summary-immediately-lower-by-author (level)
-  "Immediately lower score by LEVEL for current author.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil (- (gnus-score-default level)) 
-   'now t))
-
-(defun gnus-summary-immediately-lower-by-body (level)
-  "Immediately lower score by LEVEL for a match on the body of the article.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (error "Not yet implemented")
-  (gnus-summary-score-entry 
-   "body" "" nil (- (gnus-score-default level)) 'now t))
-
-(defun gnus-summary-immediately-lower-by-id (level)
-  "Immediately lower score by LEVEL for current message-id.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") 
-   nil (- (gnus-score-default level)) 'now))
-
-(defun gnus-summary-immediately-lower-by-xref (level)
-  "Immediately lower score by LEVEL for current xref.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-crossposting (- (gnus-score-default level)) 'now))
-
-(defun gnus-summary-immediately-lower-by-thread (level)
-  "Immediately lower score by LEVEL for current thread.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "references" (gnus-summary-header "message-id")
-   nil (- (gnus-score-default level)) 'now))
-
-(defun gnus-summary-immediately-lower-followups-to-author (level)
-  "Lower score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (error "Not yet implemented")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from") 
-   nil (- (gnus-score-default level)) 'now t t))
-
-(defun gnus-summary-temporarily-lower-by-subject (level)
-  "Temporarily lower score by LEVEL for current subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil (- (gnus-score-default level))
-   (current-time-string) t))
-
-(defun gnus-summary-temporarily-lower-by-fuzzy (level)
-  "Temporarily lower score by LEVEL for current fuzzy subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   'f (- (gnus-score-default level))
-   (current-time-string)))
-
-(defun gnus-summary-temporarily-lower-by-author (level)
-  "Temporarily lower score by LEVEL for current author.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil (- (gnus-score-default level)) 
-   (current-time-string) t))
-
-(defun gnus-summary-temporarily-lower-by-body (level)
-  "Temporarily lower score by LEVEL for a match on the body of the article.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "body" "" nil (- (gnus-score-default level)) (current-time-string) t))
-
-(defun gnus-summary-temporarily-lower-by-id (level)
-  "Temporarily lower score by LEVEL for current message-id.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") 
-   nil (- (gnus-score-default level)) 
-   (current-time-string)))
-
-(defun gnus-summary-temporarily-lower-by-xref (level)
-  "Temporarily lower score by LEVEL for current xref.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-crossposting 
-   (- (gnus-score-default level)) (current-time-string)))
-
-(defun gnus-summary-temporarily-lower-by-thread (level)
-  "Temporarily lower score by LEVEL for current thread.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "references" (gnus-summary-header "message-id")
-   nil (- (gnus-score-default level)) (current-time-string)))
-
-(defun gnus-summary-temporarily-lower-followups-to-author (level)
-  "Lower score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from")
-   nil (- (gnus-score-default level)) (current-time-string) t t))
-
-(defun gnus-summary-lower-by-subject (level)
-  "Lower score by LEVEL for current subject."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil (- (gnus-score-default level)) 
-   nil t))
-
-(defun gnus-summary-lower-by-fuzzy (level)
-  "Lower score by LEVEL for current fuzzy subject."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   'f (- (gnus-score-default level)) 
-   nil))
-
-(defun gnus-summary-lower-by-author (level)
-  "Lower score by LEVEL for current author."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil 
-   (- (gnus-score-default level)) nil t))
-
-(defun gnus-summary-lower-by-body (level)
-  "Lower score by LEVEL for a match on the body of the article."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "body" "" nil (- (gnus-score-default level)) nil t))
-
-(defun gnus-summary-lower-by-id (level)
-  "Lower score by LEVEL for current message-id."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") nil 
-   (- (gnus-score-default level)) nil))
-
-(defun gnus-summary-lower-by-xref (level)
-  "Lower score by LEVEL for current xref."
-  (interactive "P")
-  (gnus-summary-score-crossposting (- (gnus-score-default level)) nil))
-
-(defun gnus-summary-lower-followups-to-author (level)
-  "Lower score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from")
-   nil (- (gnus-score-default level)) nil t t))
-
-(defun gnus-summary-immediately-raise-by-subject (level)
-  "Immediately raise score by LEVEL for current subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil level 'now t))
-
-(defun gnus-summary-immediately-raise-by-fuzzy (level)
-  "Immediately raise score by LEVEL for current fuzzy subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   'f level 'now))
-
-(defun gnus-summary-immediately-raise-by-author (level)
-  "Immediately raise score by LEVEL for current author.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil level 'now t))
-
-(defun gnus-summary-immediately-raise-by-body (level)
-  "Immediately raise score by LEVEL for a match on the body of the article.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (error "Not yet implemented")
-  (gnus-summary-score-entry "body" "" nil level 'now t))
-
-(defun gnus-summary-immediately-raise-by-id (level)
-  "Immediately raise score by LEVEL for current message-id.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") 
-   nil level 'now))
-
-(defun gnus-summary-immediately-raise-by-xref (level)
-  "Immediately raise score by LEVEL for current xref.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-crossposting level 'now))
-
-(defun gnus-summary-immediately-raise-by-thread (level)
-  "Immediately raise score by LEVEL for current thread.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "references" (gnus-summary-header "message-id")
-   nil level 'now))
-
-(defun gnus-summary-immediately-raise-followups-to-author (level)
-  "Raise score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (error "Not yet implemented")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from")
-   nil (gnus-score-default level) 'now t t))
-
-(defun gnus-summary-temporarily-raise-by-subject (level)
-  "Temporarily raise score by LEVEL for current subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil level (current-time-string) t))
-
-(defun gnus-summary-temporarily-raise-by-fuzzy (level)
-  "Temporarily raise score by LEVEL for current fuzzy subject.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   'f level (current-time-string)))
-
-(defun gnus-summary-temporarily-raise-by-author (level)
-  "Temporarily raise score by LEVEL for current author.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil level (current-time-string) t))
-
-(defun gnus-summary-temporarily-raise-by-body (level)
-  "Temporarily raise score by LEVEL for a match on the body of the article.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry "body" "" nil level (current-time-string) t))
-
-(defun gnus-summary-temporarily-raise-by-id (level)
-  "Temporarily raise score by LEVEL for current message-id.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") 
-   nil level (current-time-string)))
-
-(defun gnus-summary-temporarily-raise-by-xref (level)
-  "Temporarily raise score by LEVEL for current xref.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-crossposting level (current-time-string)))
-
-(defun gnus-summary-temporarily-raise-by-thread (level)
-  "Temporarily raise score by LEVEL for current thread.
-See `gnus-score-expiry-days'."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "references" (gnus-summary-header "message-id")
-   nil level (current-time-string)))
-
-(defun gnus-summary-temporarily-raise-followups-to-author (level)
-  "Raise score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from")
-   nil (gnus-score-default level) (current-time-string) t t))
-
-(defun gnus-summary-raise-by-subject (level)
-  "Raise score by LEVEL for current subject."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-simplify-subject-re (gnus-summary-header "subject"))
-   nil level nil t))
-
-(defun gnus-summary-raise-by-fuzzy (level)
-  "Raise score by LEVEL for current fuzzy subject."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "subject" (gnus-summary-header "subject")
-   nil level nil))
-
-(defun gnus-summary-raise-by-author (level)
-  "Raise score by LEVEL for current author."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "from" (gnus-summary-header "from") nil level nil t))
-
-(defun gnus-summary-raise-by-body (level)
-  "Raise score by LEVEL for a match on the body of the article."
-  (interactive "P")
-  (gnus-summary-score-entry "body" "" nil level nil t))
-
-(defun gnus-summary-raise-by-id (level)
-  "Raise score by LEVEL for current message-id."
-  (interactive "P")
-  (gnus-summary-score-entry
-   "message-id" (gnus-summary-header "message-id") nil level nil))
-
-(defun gnus-summary-raise-by-xref (level)
-  "Raise score by LEVEL for current xref."
-  (interactive "P")
-  (gnus-summary-score-crossposting level nil))
-
-(defun gnus-summary-raise-followups-to-author (level)
-  "Raise score by LEVEL for all followups to the current author."
-  (interactive "P")
-  (gnus-summary-score-entry 
-   "followup" (gnus-summary-header "from")
-   nil (gnus-score-default level) nil t t))
-
 
 
 ;;;
@@ -1042,7 +622,7 @@ See `gnus-score-expiry-days'."
 	    (setq score (setcdr entry (delq (assq 'touched score) score)))
 	    (erase-buffer)
 	    (let (emacs-lisp-mode-hook)
-	      (if (string-match (concat gnus-adaptive-file-suffix) file)
+	      (if (string-match (concat gnus-adaptive-file-suffix "$") file)
 		  ;; This is an adaptive score file, so we do not run
 		  ;; it through `pp'.  These files can get huge, and
 		  ;; are not meant to be edited by human hands.
@@ -1682,7 +1262,7 @@ See `gnus-score-expiry-days'."
     (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	   (alist malist)
 	   (date (current-time-string)) 
-	   elem headers)
+	   elem headers match)
       ;; First we transform the adaptive rule alist into something
       ;; that's faster to process.
       (while malist
@@ -1712,9 +1292,15 @@ See `gnus-score-expiry-days'."
 	  (setq headers (gnus-get-header-by-number 
 			 (gnus-summary-article-number)))
 	  (while elem
+	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
-	     (nth 1 (car elem)) (funcall (car (car elem)) headers)
-	     's (nth 2 (car elem)) date nil t)
+	     (nth 1 (car elem)) match
+	     ;; Whether we use regexp or exact matches are controlled
+	     ;; here.  
+	     (if (or (not gnus-score-exact-adapt-limit)
+		     (< (length match) gnus-score-exact-adapt-limit))
+		 'e 's) 
+	     (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
 	(forward-line 1)))))
 
@@ -1723,7 +1309,7 @@ See `gnus-score-expiry-days'."
     (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	   (alist malist)
 	   (date (current-time-string)) 
-	   elem headers)
+	   elem headers match)
       ;; First we transform the adaptive rule alist into something
       ;; that's faster to process.
       (while malist
@@ -1754,9 +1340,13 @@ See `gnus-score-expiry-days'."
 	  (setq headers (gnus-get-header-by-number 
 			 (gnus-summary-article-number)))
 	  (while elem
+	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
-	     (nth 1 (car elem)) (funcall (car (car elem)) headers)
-	     'e (nth 2 (car elem)) date nil t)
+	     (nth 1 (car elem)) match
+	     (if (or (not gnus-score-exact-adapt-limit)
+		     (< (length match) gnus-score-exact-adapt-limit))
+		 'e 's) 
+	     (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
 	(delete-region (point) (progn (forward-line 1) (point)))))))
 

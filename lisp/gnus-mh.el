@@ -1,4 +1,4 @@
-;;; gnus-mh: mh-e interface for Gnus
+;;; gnus-mh.el --- mh-e interface for Gnus
 ;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -35,6 +35,7 @@
 (require 'mh-e)
 (require 'mh-comp)
 (require 'gnus)
+(require 'gnus-msg)
 
 (defun gnus-summary-save-in-folder (&optional folder)
   "Save this article to MH folder (using `rcvstore' in MH library).

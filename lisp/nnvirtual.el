@@ -1,4 +1,4 @@
-;;;; nnvirtual.el --- virtual newsgroups access for (ding) Gnus
+;;; nnvirtual.el --- virtual newsgroups access for (ding) Gnus
 ;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>

@@ -1,4 +1,4 @@
-;;; gnus-kill --- kill commands for Gnus
+;;; gnus-kill.el --- kill commands for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>

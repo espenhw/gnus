@@ -1,4 +1,4 @@
-;;;; nnkiboze.el --- select virtual news access for (ding) Gnus
+;;; nnkiboze.el --- select virtual news access for (ding) Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -120,21 +120,24 @@ If the stream is opened, return T, otherwise return NIL."
   (nnkiboze-possibly-change-newsgroups group)
   (if dont-check
       ()
-    (let (beg end total)
+    (let ((nov-file (nnkiboze-nov-file-name))
+	  beg end total)
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
-	(insert-file-contents (nnkiboze-nov-file-name))
-	(if (zerop (buffer-size))
+	(if (not (file-exists-p nov-file))
 	    (insert (format "211 0 0 0 %s\n" group))
-	  (goto-char (point-min))
-	  (and (looking-at "[0-9]+") (setq beg (read (current-buffer))))
-	  (goto-char (point-max))
-	  (and (re-search-backward "^[0-9]" nil t)
-	       (setq end (read (current-buffer))))
-	  (setq total (count-lines (point-min) (point-max)))
-	  (erase-buffer)
-	  (insert (format "211 %d %d %d %s\n" total beg end group))))))
+	  (insert-file-contents nov-file)
+	  (if (zerop (buffer-size))
+	      (insert (format "211 0 0 0 %s\n" group))
+	    (goto-char (point-min))
+	    (and (looking-at "[0-9]+") (setq beg (read (current-buffer))))
+	    (goto-char (point-max))
+	    (and (re-search-backward "^[0-9]" nil t)
+		 (setq end (read (current-buffer))))
+	    (setq total (count-lines (point-min) (point-max)))
+	    (erase-buffer)
+	    (insert (format "211 %d %d %d %s\n" total beg end group)))))))
   t)
 
 (defun nnkiboze-close-group (group &optional server)
@@ -312,7 +315,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	  (if first
 	      ;; The first xref has to be the group this article
 	      ;; really came for - this is the article nnkiboze
-	      ;; will to request when it is asked for the article.
+	      ;; will request when it is asked for the article.
 	      (save-excursion
 		(goto-char (match-beginning 0))
 		(insert prefix group ":" 

@@ -38,7 +38,7 @@
 (defvar nnfolder-directory (expand-file-name "~/Mail/")
   "The name of the mail box file in the users home directory.")
 
-(defvar nnfolder-active-file (concat nnfolder-directory  "active")
+(defvar nnfolder-active-file (concat nnfolder-directory "active")
   "The name of the active file.")
 
 ;; I renamed this variable to somehting more in keeping with the general GNU
@@ -65,6 +65,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defvar nnfolder-get-new-mail t
   "If non-nil, nnml will check the incoming mail file and split the mail.")
+
+(defvar nnfolder-prepare-save-mail-hook nil
+  "Hook run narrowed to an article before saving.")
 
 
 
@@ -215,7 +218,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	 (progn
 	   (if dont-check
 	       t
-	     (nnfolder-get-new-mail))
+	     (nnfolder-get-new-mail group))
 	   (let* ((active (assoc group nnfolder-group-alist))
 		  (group (car active))
 		  (range (car (cdr active)))
@@ -411,10 +414,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-possibly-change-group (group)
   (or (file-exists-p nnfolder-directory)
       (make-directory (directory-file-name nnfolder-directory)))
-  (if (not nnfolder-group-alist)
-      (progn
-	(nnfolder-request-list)
-	(setq nnfolder-group-alist (nnmail-get-active))))
+  (nnfolder-possibly-activate-groups nil)
   (or (assoc group nnfolder-group-alist)
       (not (file-exists-p (concat nnfolder-directory group)))
       (progn
@@ -467,6 +467,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
+    (run-hooks 'nnfolder-prepare-save-mail-hook)
 
     ;; Insert the mail into each of the destination groups.
     (while group-art-list
@@ -503,15 +504,23 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	  (insert (format (concat nnfolder-article-marker "%d   %s\n")
 			  (cdr group-art) (current-time-string)))))))
 
-(defun nnfolder-active-number (group)
-  (if (not nnfolder-group-alist)
-      (save-excursion
-	(nnfolder-request-list)
-	(setq nnfolder-group-alist (nnmail-get-active))))
-  (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
-    (setcdr active (1+ (cdr active)))
-    (cdr active)))
+(defun nnfolder-possibly-activate-groups (&optional group)
+  (save-excursion
+    ;; If we're looking for the activation of a specific group, find out
+    ;; it's real name and switch to it.
+    (if group (nnfolder-possibly-change-group (gnus-group-real-name group)))
+    ;; If the group alist isn't active, activate it now.
+    (if (not nnfolder-group-alist)
+	(progn
+	  (nnfolder-request-list)
+	  (setq nnfolder-group-alist (nnmail-get-active))))))
 
+(defun nnfolder-active-number (group)
+  (save-excursion 
+    (nnfolder-possibly-activate-groups group)
+    (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
+      (setcdr active (1+ (cdr active)))
+      (cdr active))))
 
 ;; This method has a problem if you've accidentally let the active list get
 ;; out of sync with the files.  This could happen, say, if you've
@@ -530,10 +539,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-read-folder (file)
   (save-excursion
-    (if (not nnfolder-group-alist)
-	(progn
-	  (nnfolder-request-list)
-	  (setq nnfolder-group-alist (nnmail-get-active))))
+    (nnfolder-possibly-activate-groups nil)
     ;; We should be paranoid here and make sure the group is in the alist,
     ;; and add it if it isn't.
     ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
@@ -598,16 +604,14 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (current-buffer))))
 
-(defun nnfolder-get-new-mail ()
+(defun nnfolder-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
-		   (list nnmail-spool-file)))
+  (let ((spools (nnmail-get-spool-files group))
 	incomings incoming)
     (if (or (not nnfolder-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
-      (nnfolder-request-list)
-      (setq nnfolder-group-alist (nnmail-get-active))
+      (nnfolder-possibly-activate-groups nil)
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

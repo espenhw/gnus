@@ -1,4 +1,4 @@
-;;; gnus-ems --- functions for making Gnus work under different Emacsii
+;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -48,12 +48,6 @@
 	      (put-text-property start end (car props) (cadr props) buffer)
 	    (remove-text-properties start end ()))))
   
-    (setq ad-activate-on-definition t)
-    (ad-start-advice)
-    (ad-activate-defined-function)
-    (defadvice gnus-set-mouse-face (around gnus-xemacs-set-mouse-face preact)
-      string)
-
     (if (not gnus-visual)
 	()
       (setq gnus-group-mode-hook
@@ -87,6 +81,14 @@
     (defun gnus-install-mouse-tracker ()
       (require 'mode-motion)
       (setq mode-motion-hook 'mode-motion-highlight-line)))
+   ))
+
+(defun gnus-ems-redefine ()
+  (cond 
+   ((string-match "XEmacs\\|Lucid" emacs-version)
+    ;; XEmacs definitions.
+    (fset 'gnus-set-mouse-face (lambda (string) string)))
+
    ))
 
 (provide 'gnus-ems)

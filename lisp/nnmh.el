@@ -1,4 +1,4 @@
-;;; nnmh.el --- mail spool access for Gnus (mhspool)
+;;; nnmh.el --- mhspool access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -39,6 +39,9 @@
 
 (defvar nnmh-get-new-mail t
   "If non-nil, nnmh will check the incoming mail file and split the mail.")
+
+(defvar nnmh-prepare-save-mail-hook nil
+  "Hook run narrowed to an article before saving.")
 
 
 
@@ -153,7 +156,7 @@
 	  (nnmail-find-file file)))))
 
 (defun nnmh-request-group (group &optional server dont-check)
-  (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail)))
+  (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail group)))
   (let ((pathname (nnmh-article-pathname group nnmh-directory))
 	dir)
     (if (file-directory-p pathname)
@@ -336,6 +339,7 @@
 	chars nov-line lines hbeg hend)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
+    (run-hooks 'nnmh-prepare-save-mail-hook)
     (goto-char (point-min))
     (while (looking-at "From ")
       (replace-match "X-From-Line: ")
@@ -376,10 +380,9 @@
 	(concat mail-dir group "/")
       (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
 
-(defun nnmh-get-new-mail ()
+(defun nnmh-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (if (listp nnmail-spool-file) nnmail-spool-file
-		  (list nnmail-spool-file)))
+  (let ((spools (nnmail-get-spool-files group))
 	incoming incomings)
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
 	()

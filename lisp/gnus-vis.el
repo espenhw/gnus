@@ -1,4 +1,4 @@
-;;; gnus-vis --- display-oriented parts of Gnus
+;;; gnus-vis.el --- display-oriented parts of Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -271,8 +271,10 @@ highlight-headers-follow-url-netscape:
       ["Set bookmark" gnus-summary-set-bookmark t]
       ["Remove bookmark" gnus-summary-remove-bookmark t])
      ("Score"
+      ["Enter score" gnus-summary-score-entry t]
       ["Raise score" gnus-summary-raise-score t]
       ["Lower score" gnus-summary-lower-score t]
+      ["Current score" gnus-summary-current-score t]
       ["Set score" gnus-summary-set-score t])
      ("Display"
       ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
