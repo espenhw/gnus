@@ -371,6 +371,12 @@ Server  : " server ":" (or port "2000") "
 	    (message (concat "Sieve upload done.  Use `C-c RET' to manage scripts."))
 	  (message "Sieve upload failed: %s" (nth 2 err)))))))
 
+;;;###autoload
+(defun sieve-upload-and-bury (&optional name)
+  (interactive)
+  (sieve-upload name)
+  (bury-buffer))
+
 (provide 'sieve)
 
 ;; sieve.el ends here

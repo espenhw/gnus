@@ -1,3 +1,11 @@
+2003-01-12  Simon Josefsson  <jas@extundo.com>
+
+	* sieve.el (sieve-upload-and-bury): New.  Suggested by
+	kai.grossjohann@uni-duisburg.de (Kai Gro,A_(Bjohann).
+
+	* sieve-mode.el (sieve-mode-map): Bind s-u-a-b to C-c C-c.
+	Suggested by kai.grossjohann@uni-duisburg.de (Kai Gro,A_(Bjohann).
+
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-ignored-headers): Don't include the ^ and :
