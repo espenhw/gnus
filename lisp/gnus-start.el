@@ -615,8 +615,7 @@ the first newsgroup."
     ;; We subscribe the group by changing its level to `subscribed'.
     (gnus-group-change-level
      newsgroup gnus-level-default-subscribed
-     gnus-level-killed (gnus-gethash (or next "dummy.group")
-				     gnus-newsrc-hashtb))
+     gnus-level-killed (gnus-group-entry (or next "dummy.group")))
     (gnus-message 5 "Subscribe newsgroup: %s" newsgroup)
     (run-hook-with-args 'gnus-subscribe-newsgroup-hooks newsgroup)
     t))
@@ -790,7 +789,7 @@ prompt the user for the name of an NNTP server to use."
 (defun gnus-start-draft-setup ()
   "Make sure the draft group exists."
   (gnus-request-create-group "drafts" '(nndraft ""))
-  (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
+  (unless (gnus-group-entry "nndraft:drafts")
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
     (gnus-group-set-parameter
@@ -1295,16 +1294,16 @@ for new groups, and subscribe the new groups as zombies."
     (when (and (stringp entry)
 	       oldlevel
 	       (< oldlevel gnus-level-zombie))
-      (setq entry (gnus-gethash entry gnus-newsrc-hashtb)))
+      (setq entry (gnus-group-entry entry)))
     (if (and (not oldlevel)
 	     (consp entry))
 	(setq oldlevel (gnus-info-level (nth 2 entry)))
       (setq oldlevel (or oldlevel gnus-level-killed)))
     (when (stringp previous)
-      (setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
+      (setq previous (gnus-group-entry previous)))
 
     (if (and (>= oldlevel gnus-level-zombie)
-	     (gnus-gethash group gnus-newsrc-hashtb))
+	     (gnus-group-entry group))
 	;; We are trying to subscribe a group that is already
 	;; subscribed.
 	()				; Do nothing.
@@ -1328,8 +1327,7 @@ for new groups, and subscribe the new groups as zombies."
 		   entry)
 	  (gnus-sethash (car (nth 2 entry)) nil gnus-newsrc-hashtb)
 	  (when (nth 3 entry)
-	    (setcdr (gnus-gethash (car (nth 3 entry))
-				  gnus-newsrc-hashtb)
+	    (setcdr (gnus-group-entry (car (nth 3 entry)))
 		    (cdr entry)))
 	  (setcdr (cdr entry) (cdddr entry)))))
 
@@ -1389,7 +1387,7 @@ for new groups, and subscribe the new groups as zombies."
 	    (gnus-sethash group (cons num previous)
 			  gnus-newsrc-hashtb))
 	  (when (cdr entry)
-	    (setcdr (gnus-gethash (caadr entry) gnus-newsrc-hashtb) entry))
+	    (setcdr (gnus-group-entry (caadr entry)) entry))
 	  (gnus-dribble-enter
 	   (format
 	    "(gnus-group-set-info '%S)" info)))))
@@ -1400,7 +1398,7 @@ for new groups, and subscribe the new groups as zombies."
 (defun gnus-kill-newsgroup (newsgroup)
   "Obsolete function.  Kills a newsgroup."
   (gnus-group-change-level
-   (gnus-gethash newsgroup gnus-newsrc-hashtb) gnus-level-killed))
+   (gnus-group-entry newsgroup) gnus-level-killed))
 
 (defun gnus-check-bogus-newsgroups (&optional confirm)
   "Remove bogus newsgroups.
@@ -1428,14 +1426,14 @@ newsgroup."
 	   (lambda (group)
 	     ;; Remove all bogus subscribed groups by first killing them, and
 	     ;; then removing them from the list of killed groups.
-	     (when (setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	     (when (setq entry (gnus-group-entry group))
 	       (gnus-group-change-level entry gnus-level-killed)
 	       (setq gnus-killed-list (delete group gnus-killed-list))))
 	   bogus '("group" "groups" "remove"))
 	(while (setq group (pop bogus))
 	  ;; Remove all bogus subscribed groups by first killing them, and
 	  ;; then removing them from the list of killed groups.
-	  (when (setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	  (when (setq entry (gnus-group-entry group))
 	    (gnus-group-change-level entry gnus-level-killed)
 	    (setq gnus-killed-list (delete group gnus-killed-list)))))
       ;; Then we remove all bogus groups from the list of killed and
@@ -1601,8 +1599,8 @@ newsgroup."
 	(setq num (max 0 (- (cdr active) num)))))
       ;; Set the number of unread articles.
       (when (and info
-		 (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb))
-	(setcar (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb) num))
+		 (gnus-group-entry (gnus-info-group info)))
+	(setcar (gnus-group-entry (gnus-info-group info)) num))
       num)))
 
 ;; Go though `gnus-newsrc-alist' and compare with `gnus-active-hashtb'
@@ -1718,7 +1716,7 @@ newsgroup."
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
-	(let ((tmp (gnus-gethash group gnus-newsrc-hashtb)))
+	(let ((tmp (gnus-group-entry group)))
 	  (when tmp
 	    (setcar tmp t))))))
 
@@ -1743,7 +1741,7 @@ newsgroup."
 	      ;; The group couldn't be reached, so we nix out the number of
 	      ;; unread articles and stuff.
 	      (gnus-set-active group nil)
-	      (setcar (gnus-gethash group gnus-newsrc-hashtb) t)))))))
+	      (setcar (gnus-group-entry group) t)))))))
 
     (gnus-message 6 "Checking new news...done")))
 
@@ -1795,9 +1793,9 @@ newsgroup."
 
 (defun gnus-make-articles-unread (group articles)
   "Mark ARTICLES in GROUP as unread."
-  (let* ((info (nth 2 (or (gnus-gethash group gnus-newsrc-hashtb)
-			  (gnus-gethash (gnus-group-real-name group)
-					gnus-newsrc-hashtb))))
+  (let* ((info (nth 2 (or (gnus-group-entry group)
+			  (gnus-group-entry
+			   (gnus-group-real-name group)))))
 	 (ranges (gnus-info-read info))
 	 news article)
     (while articles
@@ -1817,9 +1815,8 @@ newsgroup."
 
 (defun gnus-make-ascending-articles-unread (group articles)
   "Mark ascending ARTICLES in GROUP as unread."
-  (let* ((entry (or (gnus-gethash group gnus-newsrc-hashtb)
-                    (gnus-gethash (gnus-group-real-name group)
-                                  gnus-newsrc-hashtb)))
+  (let* ((entry (or (gnus-group-entry group)
+                    (gnus-group-entry (gnus-group-real-name group))))
          (info (nth 2 entry))
 	 (ranges (gnus-info-read info))
          (r ranges)

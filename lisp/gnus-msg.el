@@ -1377,7 +1377,7 @@ The current group name will be inserted at \"%s\".")
 		 (not (gnus-group-read-only-p group)))
       (setq group (read-string "Put in group: " nil (gnus-writable-groups))))
 
-    (when (gnus-gethash group gnus-newsrc-hashtb)
+    (when (gnus-group-entry group)
       (error "No such group: %s" group))
     (save-excursion
       (save-restriction

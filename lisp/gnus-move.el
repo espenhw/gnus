@@ -176,8 +176,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	   (new-name (gnus-group-prefixed-name
 		      (gnus-group-real-name group) to-server)))
       (gnus-info-set-group info new-name)
-      (gnus-sethash new-name (gnus-gethash group gnus-newsrc-hashtb)
-		    gnus-newsrc-hashtb)
+      (gnus-sethash new-name (gnus-group-entry group) gnus-newsrc-hashtb)
       (gnus-sethash group nil gnus-newsrc-hashtb))))
 
 (provide 'gnus-move)

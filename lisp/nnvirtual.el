@@ -340,7 +340,7 @@ component group will show up when you enter the virtual group.")
       ;; Make sure all groups are activated.
       (mapcar
        (lambda (g)
-	 (when (not (numberp (car (gnus-gethash g gnus-newsrc-hashtb))))
+	 (when (not (numberp (gnus-group-unread g)))
 	   (gnus-activate-group g)))
        nnvirtual-component-groups)
       (save-excursion

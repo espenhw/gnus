@@ -5006,7 +5006,7 @@ or a straight list of headers."
   "Select newsgroup GROUP.
 If READ-ALL is non-nil, all articles in the group are selected.
 If SELECT-ARTICLES, only select those articles from GROUP."
-  (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
+  (let* ((entry (gnus-group-entry group))
 	 ;;!!! Dirty hack; should be removed.
 	 (gnus-summary-ignore-duplicates
 	  (if (eq (car (gnus-find-method-for-group group)) 'nnvirtual)
@@ -5600,7 +5600,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defun gnus-mark-xrefs-as-read (from-newsgroup headers unreads)
   "Look through all the headers and mark the Xrefs as read."
   (let ((virtual (gnus-virtual-group-p from-newsgroup))
-	name entry info xref-hashtb idlist method nth4)
+	name info xref-hashtb idlist method nth4)
     (save-excursion
       (set-buffer gnus-group-buffer)
       (when (setq xref-hashtb
@@ -5611,8 +5611,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (setq idlist (symbol-value group))
 	     ;; Dead groups are not updated.
 	     (and (prog1
-		      (setq entry (gnus-gethash name gnus-newsrc-hashtb)
-			    info (nth 2 entry))
+		      (setq info (gnus-get-info name))
 		    (when (stringp (setq nth4 (gnus-info-method info)))
 		      (setq nth4 (gnus-server-to-method nth4))))
 		  ;; Only do the xrefs if the group has the same
@@ -5634,7 +5633,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 xref-hashtb)))))
 
 (defun gnus-compute-read-articles (group articles)
-  (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
+  (let* ((entry (gnus-group-entry group))
 	 (info (nth 2 entry))
 	 (active (gnus-active group))
 	 ninfo)
@@ -5671,14 +5670,13 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defun gnus-group-make-articles-read (group articles)
   "Update the info of GROUP to say that ARTICLES are read."
   (let* ((num 0)
-	 (entry (gnus-gethash group gnus-newsrc-hashtb))
+	 (entry (gnus-group-entry group))
 	 (info (nth 2 entry))
 	 (active (gnus-active group))
 	 range)
     (when entry
       (setq range (gnus-compute-read-articles group articles))
-      (save-excursion
-	(set-buffer gnus-group-buffer)
+      (with-current-buffer gnus-group-buffer
 	(gnus-undo-register
 	  `(progn
 	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
@@ -7142,7 +7140,7 @@ If BACKWARD, the previous article is selected instead of the next."
 		      (not (gnus-ephemeral-group-p gnus-newsgroup-name)))
 		 (format " (Type %s for %s [%s])"
 			 (single-key-description cmd) group
-			 (car (gnus-gethash group gnus-newsrc-hashtb)))
+			 (gnus-group-unread group))
 	       (format " (Type %s to exit %s)"
 		       (single-key-description cmd)
 		       gnus-newsgroup-name))))
@@ -8952,9 +8950,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
        (t
 	(let* ((pto-group (gnus-group-prefixed-name
 			   (car art-group) to-method))
-	       (entry
-		(gnus-gethash pto-group gnus-newsrc-hashtb))
-	       (info (nth 2 entry))
+	       (info (gnus-get-info pto-group))
 	       (to-group (gnus-info-group info))
 	       to-marks)
 	  ;; Update the group that has been moved to.
@@ -11301,11 +11297,10 @@ If REVERSE, save parts that do not match TYPE."
 (defun gnus-update-read-articles (group unread &optional compute)
   "Update the list of read articles in GROUP.
 UNREAD is a sorted list."
-  (let* ((active (or gnus-newsgroup-active (gnus-active group)))
-	 (entry (gnus-gethash group gnus-newsrc-hashtb))
-	 (info (nth 2 entry))
-	 (prev 1)
-	 read)
+  (let ((active (or gnus-newsgroup-active (gnus-active group)))
+	(info (gnus-get-info group))
+	(prev 1)
+	read)
     (if (or (not info) (not active))
 	;; There is no info on this group if it was, in fact,
 	;; killed.  Gnus stores no information on killed groups, so

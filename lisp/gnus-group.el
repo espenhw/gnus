@@ -1156,7 +1156,7 @@ Also see the `gnus-group-use-permanent-levels' variable."
 		     (point-min) (point-max)
 		     'gnus-group (gnus-intern-safe
 				  group gnus-active-hashtb))))
-	  (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
+	  (let ((newsrc (cdddr (gnus-group-entry group))))
 	    (while (and newsrc
 			(not (gnus-goto-char
 			      (text-property-any
@@ -1211,7 +1211,7 @@ if it is a string, only list groups matching REGEXP."
 	      group (gnus-info-group info)
 	      params (gnus-info-params info)
 	      newsrc (cdr newsrc)
-	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
+	      unread (gnus-group-unread group))
 	(when not-in-list
 	  (setq not-in-list (delete group not-in-list)))
 	(when (gnus-group-prepare-logic
@@ -1311,7 +1311,7 @@ if it is a string, only list groups matching REGEXP."
   "Update the current line in the group buffer."
   (let* ((buffer-read-only nil)
 	 (group (gnus-group-group-name))
-	 (entry (and group (gnus-gethash group gnus-newsrc-hashtb)))
+	 (entry (and group (gnus-group-entry group)))
 	 gnus-group-indentation)
     (when group
       (and entry
@@ -1328,7 +1328,7 @@ if it is a string, only list groups matching REGEXP."
 
 (defun gnus-group-insert-group-line-info (group)
   "Insert GROUP on the current line."
-  (let ((entry (gnus-gethash group gnus-newsrc-hashtb))
+  (let ((entry (gnus-group-entry group))
 	(gnus-group-indentation (gnus-group-group-indentation))
 	active info)
     (if entry
@@ -1508,7 +1508,7 @@ already."
 	    (loc (point-min))
 	    found buffer-read-only)
 	;; Enter the current status into the dribble buffer.
-	(let ((entry (gnus-gethash group gnus-newsrc-hashtb)))
+	(let ((entry (gnus-group-entry group)))
 	  (when (and entry
 		     (not (gnus-ephemeral-group-p group)))
 	    (gnus-dribble-enter
@@ -1533,7 +1533,7 @@ already."
 	  ;; go, and insert it there (or at the end of the buffer).
 	  (if gnus-goto-missing-group-function
 	      (funcall gnus-goto-missing-group-function group)
-	    (let ((entry (cddr (gnus-gethash group gnus-newsrc-hashtb))))
+	    (let ((entry (cddr (gnus-group-entry group))))
 	      (while (and entry (car entry)
 			  (not
 			   (gnus-goto-char
@@ -1861,8 +1861,7 @@ group."
     (unless group
       (error "No group on current line"))
     (setq marked (gnus-info-marks
-		  (nth 2 (setq entry (gnus-gethash
-				      group gnus-newsrc-hashtb)))))
+		  (nth 2 (setq entry (gnus-group-entry group)))))
     ;; This group might be a dead group.  In that case we have to get
     ;; the number of unread articles from `gnus-active-hashtb'.
     (setq number
@@ -2233,15 +2232,14 @@ ADDRESS."
 		    method))))
 	 (nname (if method (gnus-group-prefixed-name name meth) name))
 	 backend info)
-    (when (gnus-gethash nname gnus-newsrc-hashtb)
+    (when (gnus-group-entry nname)
       (error "Group %s already exists" nname))
     ;; Subscribe to the new group.
     (gnus-group-change-level
      (setq info (list t nname gnus-level-default-subscribed nil nil meth))
      gnus-level-default-subscribed gnus-level-killed
      (and (gnus-group-group-name)
-	  (gnus-gethash (gnus-group-group-name)
-			gnus-newsrc-hashtb))
+	  (gnus-group-entry (gnus-group-group-name)))
      t)
     ;; Make it active.
     (gnus-set-active nname (cons 1 0))
@@ -2309,7 +2307,7 @@ be removed from the server, even when it's empty."
 	  (gnus-message 6 "Deleting group %s...done" group)
 	  (gnus-group-goto-group group)
 	  (gnus-group-kill-group 1 t)
-	  (gnus-sethash group nil gnus-active-hashtb)
+	  (gnus-set-active group nil)
 	  (if (boundp 'gnus-cache-active-hashtb)
 	      (when gnus-cache-active-hashtb
 		(gnus-sethash group nil gnus-cache-active-hashtb)
@@ -2480,7 +2478,7 @@ group already exists:
   (interactive)
   (let ((name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
 	(file (nnheader-find-etc-directory "gnus-tut.txt" t)))
-    (if (gnus-gethash name gnus-newsrc-hashtb)
+    (if (gnus-group-entry name)
 	(cond ((eq noerror nil)
 	       (error "Documentation group already exists"))
 	      ((eq noerror t)
@@ -2638,7 +2636,7 @@ Given a prefix, create a full group."
   (interactive "P")
   (let ((group (gnus-group-prefixed-name
 		(if all "ding.archives" "ding.recent") '(nndir ""))))
-    (when (gnus-gethash group gnus-newsrc-hashtb)
+    (when (gnus-group-entry group)
       (error "Archive group already exists"))
     (gnus-group-make-group
      (gnus-group-real-name group)
@@ -2662,7 +2660,7 @@ mail messages or news articles in files that have numeric names."
   (let ((ext "")
 	(i 0)
 	group)
-    (while (or (not group) (gnus-gethash group gnus-newsrc-hashtb))
+    (while (or (not group) (gnus-group-entry group))
       (setq group
 	    (gnus-group-prefixed-name
 	     (expand-file-name ext dir)
@@ -2732,7 +2730,7 @@ score file entries for articles to include in the group."
   (let* ((method (list 'nnvirtual "^$"))
 	 (pgroup (gnus-group-prefixed-name group method)))
     ;; Check whether it exists already.
-    (when (gnus-gethash pgroup gnus-newsrc-hashtb)
+    (when (gnus-group-entry pgroup)
       (error "Group %s already exists" pgroup))
     ;; Subscribe the new group after the group on the current line.
     (gnus-subscribe-group pgroup (gnus-group-group-name) method)
@@ -2904,7 +2902,7 @@ If REVERSE, sort in reverse order."
   (let (entries infos)
     ;; First find all the group entries for these groups.
     (while groups
-      (push (nthcdr 2 (gnus-gethash (pop groups) gnus-newsrc-hashtb))
+      (push (nthcdr 2 (gnus-group-entry (pop groups)))
 	    entries))
     ;; Then sort the infos.
     (setq infos
@@ -2985,8 +2983,8 @@ sort in reverse order."
 
 (defun gnus-group-sort-by-unread (info1 info2)
   "Sort by number of unread articles."
-  (let ((n1 (car (gnus-gethash (gnus-info-group info1) gnus-newsrc-hashtb)))
-	(n2 (car (gnus-gethash (gnus-info-group info2) gnus-newsrc-hashtb))))
+  (let ((n1 (gnus-group-unread (gnus-info-group info1)))
+	(n2 (gnus-group-unread (gnus-info-group info1))))
     (< (or (and (numberp n1) n1) 0)
        (or (and (numberp n2) n2) 0))))
 
@@ -3126,9 +3124,9 @@ Cross references (Xref: header) of articles are ignored."
 If ALL is non-nil, all articles are marked as read.
 The return value is the number of articles that were marked as read,
 or nil if no action could be taken."
-  (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
+  (let* ((entry (gnus-group-entry group))
 	 (num (car entry))
-	 (marks (nth 3 (nth 2 entry)))
+	 (marks (gnus-info-marks (nth 2 entry)))
 	 (unread (gnus-list-of-unread-articles group)))
     ;; Remove entries for this group.
     (nnmail-purge-split-history (gnus-group-real-name group))
@@ -3284,7 +3282,7 @@ group line."
 	  (gnus-read-active-file-p)
 	  nil
 	  'gnus-group-history)))
-  (let ((newsrc (gnus-gethash group gnus-newsrc-hashtb)))
+  (let ((newsrc (gnus-group-entry group)))
     (cond
      ((string-match "^[ \t]*$" group)
       (error "Empty group name"))
@@ -3308,7 +3306,7 @@ group line."
 		gnus-level-zombie)
 	   gnus-level-killed)
        (when (gnus-group-group-name)
-	 (gnus-gethash (gnus-group-group-name) gnus-newsrc-hashtb)))
+	 (gnus-group-entry (gnus-group-group-name))))
       (unless silent
 	(gnus-group-update-group group)))
      (t (error "No such newsgroup: %s" group)))
@@ -3376,7 +3374,7 @@ of groups killed."
 	  (setq level (gnus-group-group-level))
 	  (gnus-delete-line)
 	  (when (and (not discard)
-		     (setq entry (gnus-gethash group gnus-newsrc-hashtb)))
+		     (setq entry (gnus-group-entry group)))
 	    (gnus-undo-register
 	      `(progn
 		 (gnus-group-goto-group ,(gnus-group-group-name))
@@ -3399,7 +3397,7 @@ of groups killed."
 	  (funcall gnus-group-change-level-function
 		   group gnus-level-killed 3))
 	(cond
-	 ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
+	 ((setq entry (gnus-group-entry group))
 	  (push (cons (car entry) (nth 2 entry))
 		gnus-list-of-killed-groups)
 	  (setcdr (cdr entry) (cdddr entry)))
@@ -3432,7 +3430,7 @@ yanked) a list of yanked groups is returned."
       (setq prev (gnus-group-group-name))
       (gnus-group-change-level
        info (gnus-info-level (cdr info)) gnus-level-killed
-       (and prev (gnus-gethash prev gnus-newsrc-hashtb))
+       (and prev (gnus-group-entry prev))
        t)
       (gnus-group-insert-group-line-info group)
       (gnus-undo-register
@@ -4018,9 +4016,8 @@ and the second element is the address."
 
 (defun gnus-group-set-info (info &optional method-only-group part)
   (when (or info part)
-    (let* ((entry (gnus-gethash
-		   (or method-only-group (gnus-info-group info))
-		   gnus-newsrc-hashtb))
+    (let* ((entry (gnus-group-entry
+		   (or method-only-group (gnus-info-group info))))
 	   (part-info info)
 	   (info (if method-only-group (nth 2 entry) info))
 	   method)
@@ -4058,10 +4055,9 @@ and the second element is the address."
 	      (gnus-group-make-group (gnus-info-group info))))
 	  (gnus-message 6 "Note: New group created")
 	  (setq entry
-		(gnus-gethash (gnus-group-prefixed-name
-			       (gnus-group-real-name (gnus-info-group info))
-			       (or (gnus-info-method info) gnus-select-method))
-			      gnus-newsrc-hashtb))))
+		(gnus-group-entry (gnus-group-prefixed-name
+				   (gnus-group-real-name (gnus-info-group info))
+				   (or (gnus-info-method info) gnus-select-method))))))
       ;; Whether it was a new group or not, we now have the entry, so we
       ;; can do the update.
       (if entry

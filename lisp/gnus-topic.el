@@ -209,7 +209,7 @@ If RECURSIVE is t, return groups in its subtopics too."
     ;; We go through the newsrc to look for matches.
     (while groups
       (when (setq group (pop groups))
-	(setq entry (gnus-gethash group gnus-newsrc-hashtb)
+	(setq entry (gnus-group-entry group)
 	      info (nth 2 entry)
 	      params (gnus-info-params info)
 	      active (gnus-active group)
@@ -464,7 +464,7 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	  (gnus-make-hashtable-from-killed))
 	(gnus-group-prepare-flat-list-dead
 	 (gnus-remove-if (lambda (group)
-			   (or (gnus-gethash group gnus-newsrc-hashtb)
+			   (or (gnus-group-entry group)
 			       (gnus-gethash group gnus-killed-hashtb)))
 			 not-in-list)
 	 gnus-level-killed ?K regexp)))
@@ -857,7 +857,7 @@ articles in the topic and its subtopics."
     (while (setq topic (pop alist))
       (while (cdr topic)
 	(if (and (cadr topic)
-		 (gnus-gethash (cadr topic) gnus-newsrc-hashtb))
+		 (gnus-group-entry (cadr topic)))
 	    (setq topic (cdr topic))
 	  (setcdr topic (cddr topic)))))))
 
@@ -887,7 +887,7 @@ articles in the topic and its subtopics."
       (let ((topic-name (pop topic))
 	    group filtered-topic)
 	(while (setq group (pop topic))
-	  (when (and (or (gnus-gethash group gnus-active-hashtb)
+	  (when (and (or (gnus-active group)
 			 (gnus-info-method (gnus-get-info group)))
 		     (not (gnus-gethash group gnus-killed-hashtb)))
 	    (push group filtered-topic)))

@@ -690,7 +690,7 @@ Usage: emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score"
 	 (mail-sources nil)
 	 (gnus-use-dribble-file nil)
 	 (gnus-batch-mode t)
-	 info group newsrc entry
+	 info group newsrc unread
 	 ;; Disable verbose message.
 	 gnus-novice-user gnus-large-newsgroup
 	 gnus-options-subscribe gnus-auto-subscribed-groups
@@ -702,11 +702,11 @@ Usage: emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score"
     (setq newsrc (cdr gnus-newsrc-alist))
     (while (setq info (pop newsrc))
       (setq group (gnus-info-group info)
-	    entry (gnus-gethash group gnus-newsrc-hashtb))
+	    unread (gnus-group-unread group))
       (when (and (<= (gnus-info-level info) gnus-level-subscribed)
-		 (and (car entry)
-		      (or (eq (car entry) t)
-			  (not (zerop (car entry))))))
+		 (and unread
+		      (or (eq unread t)
+			  (not (zerop unread)))))
 	(ignore-errors
 	  (gnus-summary-read-group group nil t nil t))
 	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))

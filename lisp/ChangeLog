@@ -1,3 +1,51 @@
+2004-01-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-start.el (gnus-subscribe-newsgroup, gnus-start-draft-setup)
+	(gnus-group-change-level, gnus-kill-newsgroup)
+	(gnus-check-bogus-newsgroups, gnus-get-unread-articles-in-group)
+	(gnus-get-unread-articles, gnus-make-articles-unread)
+	(gnus-make-ascending-articles-unread): Use accessor
+	macros (gnus-group-entry, gnus-group-unread, gnus-info-marks etc.)
+	to get group information for improved readability.
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): do.
+
+	* gnus-soup.el (gnus-soup-group-brew): do.
+
+	* gnus-msg.el (gnus-put-message): do.
+
+	* gnus-move.el (gnus-group-move-group-to-server): do.
+
+	* gnus-kill.el (gnus-batch-score): do.
+
+	* gnus-group.el (gnus-group-prepare-flat, gnus-group-delete-group)
+	(gnus-group-update-group-line, gnus-group-insert-group-line-info)
+	(gnus-group-update-group, gnus-group-read-group)
+	(gnus-group-make-group, gnus-group-make-help-group)
+	(gnus-group-make-archive-group, gnus-group-make-directory-group)
+	(gnus-group-make-empty-virtual, gnus-group-sort-selected-flat)
+	(gnus-group-sort-by-unread, gnus-group-catchup)
+	(gnus-group-unsubscribe-group, gnus-group-kill-group)
+	(gnus-group-yank-group, gnus-group-set-info)
+	(gnus-group-list-groups): do.
+
+	* gnus.el (gnus-generate-new-group-name): do.
+
+	* gnus-delay.el (gnus-delay-send-queue): do.
+
+	* nnvirtual.el (nnvirtual-catchup-group): do.
+
+	* nnkiboze.el (nnkiboze-generate-group, nnkiboze-generate-group):
+	do.
+
+	* gnus-topic.el (gnus-topic-find-groups, gnus-topic-clean-alist)
+	(gnus-group-prepare-topics, gnus-topic-check-topology): do.
+	
+	* gnus-sum.el (gnus-update-read-articles, gnus-select-newsgroup)
+	(gnus-mark-xrefs-as-read, gnus-compute-read-articles)
+	(gnus-summary-walk-group-buffer, gnus-summary-move-article)
+	(gnus-group-make-articles-read): do.
+	
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (article-decode-mime-words, article-babel)

@@ -3216,7 +3216,7 @@ that that variable is buffer-local to the summary buffers."
 (defun gnus-generate-new-group-name (leaf)
   (let ((name leaf)
 	(num 0))
-    (while (gnus-gethash name gnus-newsrc-hashtb)
+    (while (gnus-group-entry name)
       (setq name (concat leaf "<" (int-to-string (setq num (1+ num))) ">")))
     name))
 
