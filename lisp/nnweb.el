@@ -187,7 +187,7 @@ and `altavista'.")
 	  (funcall (nnweb-definition 'article))
 	  (nnweb-decode-entities))
 	(nnheader-report 'nnweb "Fetched article %s" article)
-	t))))
+	(cons group (and (numberp article) article))))))
 
 (deffoo nnweb-close-server (&optional server)
   (when (and (nnweb-server-opened server)

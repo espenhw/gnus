@@ -1,3 +1,7 @@
+1999-12-10 16:22:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-request-article): Return cons.
+
 1999-12-10 16:06:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-setup-default-charset): Typo.
