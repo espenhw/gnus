@@ -8,6 +8,14 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Support for non-ASCII domain names
+
+Message supports non-ASCII domain names in From:, To: and Cc: and will
+query you whether to perform encoding when you try to send a message.
+The variable `message-use-idna' controls this.  Gnus will also decode
+non-ASCII domain names in From:, To: and Cc: when you view a message.
+The variable `gnus-use-idna' controls this.
+
 ** Better handling of Microsoft citation styles
 
 Gnus now tries to recognize the mangled header block that some Microsoft
