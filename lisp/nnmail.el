@@ -181,7 +181,8 @@ The return value should be `delete' or a group name (a string)."
 		   string))
 
 (defcustom nnmail-cache-accepted-message-ids nil
-  "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
+  "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache.
+If non-nil, also update the cache when copy or move articles."
   :group 'nnmail
   :type 'boolean)
 

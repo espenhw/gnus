@@ -1,3 +1,7 @@
+2000-11-29 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-cache-accepted-message-ids): Add doc.
+
 2000-11-28 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-shoot-gnksa-feet): New variable.
