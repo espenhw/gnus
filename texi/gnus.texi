@@ -2994,6 +2994,13 @@ if address \"sender\" \"sieve-admin@@extundo.com\" @{
 The Sieve language is described in RFC 3028.  @xref{Top, Emacs Sieve,
 Top, sieve, Emacs Sieve}.
 
+@item (agent parameters)
+If the agent has been enabled, you can set any of the its parameters
+to control the behavior of the agent in individual groups. See Agent
+Parameters in @ref{Category Syntax}.  Most users will choose to set
+agent parameters in either an agent category or group topic to
+minimize the configuration effort.
+
 @item (@var{variable} @var{form})
 You can use the group parameters to set variables local to the group you
 are entering.  If you want to turn threading off in @samp{news.answers},
@@ -3954,9 +3961,11 @@ allowed---@code{visible} and @code{invisible}.
 @subsection Topic Parameters
 @cindex topic parameters
 
-All groups in a topic will inherit group parameters from the parent (and
-ancestor) topic parameters.  All valid group parameters are valid topic
-parameters (@pxref{Group Parameters}).
+All groups in a topic will inherit group parameters from the parent
+(and ancestor) topic parameters.  All valid group parameters are valid
+topic parameters (@pxref{Group Parameters}).  When the agent is
+enabled, all agent parameters (See Agent Parameters in @ref{Category
+Syntax}) are also valid topic parameters.
 
 In addition, the following parameters are only valid as topic
 parameters:
@@ -17556,6 +17565,7 @@ category, and a number of optional parameters that override the
 customizable variables.  The complete list of agent parameters are
 listed below.
 
+@cindex Agent Parameters
 @table @code
 @item gnus-agent-cat-name
 The name of the category.
@@ -17594,6 +17604,12 @@ an integer that overrides the value of
 
 @item gnus-agent-cat-length-when-long
 an integer that overrides the value of @code{gnus-agent-long-article}.
+
+@item gnus-agent-cat-disable-undownloaded-faces
+a symbol indicating whether the summary buffer should @emph{not} display
+undownloaded articles using the gnus-summary-*-undownloaded-face
+faces.  The symbol nil will enable the use of undownloaded faces while
+all other symbols disable them.
 @end table
 
 The name of a category can not be changed once the category has been

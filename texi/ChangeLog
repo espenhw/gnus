@@ -1,3 +1,9 @@
+2003-12-11  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.texi (Agent Parameters): Added references in Topic and
+	Group Parameters.  Added gnus-agent-cat-disable-undownloaded-faces
+	to the list of documented agent parameters.
+
 2003-12-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi (Mailing Lists): Fix typo.
