@@ -35,6 +35,9 @@
   (defvar gnus-list-identifiers))	; gnus-sum is required where necessary
 (require 'mailheader)
 (require 'nnheader)
+;; This is apparently necessary even though things are autoloaded:
+(if (featurep 'xemacs)
+    (require 'mail-abbrevs))
 (require 'mail-parse)
 (require 'mml)
 
