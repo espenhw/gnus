@@ -294,7 +294,8 @@ Thank you for your help in stamping out bugs.
 (gnus-define-keys (gnus-send-bounce-map "D" gnus-summary-send-map)
   "b" gnus-summary-resend-bounced-mail
   ;; "c" gnus-summary-send-draft
-  "r" gnus-summary-resend-message)
+  "r" gnus-summary-resend-message
+  "e" gnus-summary-resend-message-edit)
 
 ;;; Internal functions.
 
@@ -1110,6 +1111,34 @@ For the `inline' alternatives, also see the variable
 	(set-buffer gnus-original-article-buffer)
 	(message-resend address))
       (gnus-summary-mark-article-as-forwarded article))))
+
+;; From: Matthieu Moy <Matthieu.Moy@imag.fr>
+(defun gnus-summary-resend-message-edit ()
+  "Resend an article that has already been sent.
+A new buffer will be created to allow the user to modify body and
+contents of the message, and then, everything will happen as when
+composing a new message."
+  (interactive)
+  (let ((article (gnus-summary-article-number)))
+    (gnus-setup-message 'reply-yank
+      (gnus-summary-select-article t)
+      (set-buffer gnus-original-article-buffer)
+      (let ((cur (current-buffer))
+	    (to (message-fetch-field "to")))
+	;; Get a normal message buffer.
+	(message-pop-to-buffer (message-buffer-name "Resend" to))
+	(insert-buffer-substring cur)
+	(mime-to-mml)
+	(message-narrow-to-head-1)
+	;; Gnus will generate a new one when sending.
+	(message-remove-header "Message-ID")
+	;; Remove unwanted headers.
+	(goto-char (point-max))
+	(insert mail-header-separator)
+	(goto-char (point-min))
+	(re-search-forward "^To:\\|^Newsgroups:" nil 'move)
+	(forward-char 1)
+	(widen)))))
 
 (defun gnus-summary-post-forward (&optional arg)
   "Forward the current article to a newsgroup.
