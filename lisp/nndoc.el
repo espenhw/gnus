@@ -73,10 +73,6 @@ from the document.")
      (body-end . "\^_")
      (body-begin-function . nndoc-babyl-body-begin)
      (head-begin-function . nndoc-babyl-head-begin))
-    (forward
-     (article-begin . "^-+ \\(Start of \\)?forwarded message.*\n+")
-     (body-end . "^-+ End \\(of \\)?forwarded message.*$")
-     (prepare-body-function . nndoc-unquote-dashes))
     (rfc934
      (article-begin . "^--.*\n+")
      (body-end . "^--.*$")
@@ -139,6 +135,10 @@ from the document.")
      (dissection-function . nndoc-oe-dbx-dissection)
      (generate-head-function . nndoc-oe-dbx-generate-head)
      (generate-article-function . nndoc-oe-dbx-generate-article))
+    (forward
+     (article-begin . "^-+ \\(Start of \\)?forwarded message.*\n+")
+     (body-end . "^-+ End \\(of \\)?forwarded message.*$")
+     (prepare-body-function . nndoc-unquote-dashes))
     (guess
      (guess . t)
      (subtype nil))
