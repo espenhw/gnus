@@ -12600,8 +12600,12 @@ That is, mail from the file @file{foo.bar.spool} will be put in the
 group @code{foo.bar}.  (You can change the suffix to be used instead
 of @code{.spool}.)  Setting
 @code{nnmail-scan-directory-mail-source-once} to non-nil forces Gnus
-to scan the mail source only once. This is particularly useful if you
+to scan the mail source only once.  This is particularly useful if you
 want to scan mail groups at a specified level.
+
+There is also the variable @code{nnmail-resplit-incoming}, if you set
+that to a non-nil value, then the normal splitting process is applied
+to all the files from the directory.
 
 Keywords:
 
