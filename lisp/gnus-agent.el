@@ -1209,9 +1209,16 @@ This can be added to `gnus-select-article-hook' or
 (defun gnus-agent-synchronize-group-flags (group actions server)
 "Update a plugged group by performing the indicated actions."
   (let* ((gnus-command-method (gnus-server-to-method server))
-	 (info (or (gnus-get-info group)
-		   (gnus-get-info (gnus-group-full-name 
-				   group gnus-command-method)))))
+	 (info
+	  ;; This initializer is required as gnus-request-set-mark
+	  ;; calls gnus-group-real-name to strip off the host name
+	  ;; before calling the backend.  Now that the backend is
+	  ;; trying to call gnus-request-set-mark, I have to
+	  ;; reconstruct the original group name.
+	  (or (gnus-get-info group)
+	      (gnus-get-info 
+	       (setq group (gnus-group-full-name 
+			    group gnus-command-method))))))
     (gnus-request-set-mark group actions)
 
     (when info
