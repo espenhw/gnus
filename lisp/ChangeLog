@@ -1,3 +1,8 @@
+2002-06-12  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* message.el (message-send-mail-with-sendmail): Kill errbuf even
+	if sending failed.
+
 2002-06-11  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus-start.el (gnus-dribble-enter): Don't call set-window-point anymore
