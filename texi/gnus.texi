@@ -5130,7 +5130,7 @@ answered) will be marked with an @samp{A} in the second column
 (@code{gnus-replied-mark}).
 
 @vindex gnus-forwarded-mark
-All articles that you have forwarded will be marked with an @samp{O} in
+All articles that you have forwarded will be marked with an @samp{F} in
 the second column (@code{gnus-forwarded-mark}).
 
 @vindex gnus-recent-mark
@@ -15523,6 +15523,12 @@ Toggle whether to download the article (@code{gnus-agent-toggle-mark}).
 @kindex J c (Agent Summary)
 @findex gnus-agent-catchup
 Mark all undownloaded articles as read (@code{gnus-agent-catchup}).
+
+@item J u
+@kindex J u (Agent Summary)
+@findex gnus-agent-summary-fetch-group
+Download all downloadable articles in the current group
+(@code{gnus-agent-summary-fetch-group}). 
 
 @end table
 
