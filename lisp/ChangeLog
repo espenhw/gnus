@@ -1,14 +1,17 @@
 2002-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-sum.el (gnus-summary-highlight): Protect against non-
-	existent of the variable `downloaded'.
+	* gnus-sum.el (gnus-tmp-downloaded): New internal variable.
+	(gnus-summary-highlight): Use it instead of `downloaded'.
+	(gnus-summary-highlight-line): Ditto.
+
+	* gnus-agent.el (gnus-agent-regenerate-group): Ditto.
 
 2002-12-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-variable-list): Add gnus-agent-covered-methods.
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Remove debug
-	calls. 
+	calls.
 
 	* gnus-sum.el (gnus-summary-highlight-line): Don't set the
 	downloaded variable if we're in an uncovered group.

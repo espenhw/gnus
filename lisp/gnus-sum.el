@@ -846,6 +846,8 @@ automatically when it is selected."
   :group 'gnus-summary-visual
   :type 'face)
 
+(defvar gnus-tmp-downloaded nil)
+
 (defcustom gnus-summary-highlight
   '(((eq mark gnus-canceled-mark)
      . gnus-summary-cancelled-face)
@@ -866,7 +868,7 @@ automatically when it is selected."
      . gnus-summary-low-ancient-face)
     ((eq mark gnus-ancient-mark)
      . gnus-summary-normal-ancient-face)
-    ((and (boundp 'downloaded) downloaded)
+    (gnus-tmp-downloaded
      . gnus-agent-downloaded-article-face)
     ((and (> score default-high) (eq mark gnus-unread-mark))
      . gnus-summary-high-unread-face)
@@ -10893,7 +10895,7 @@ If REVERSE, save parts that do not match TYPE."
        (default gnus-summary-default-score)
        (default-high gnus-summary-default-high-score)
        (default-low gnus-summary-default-low-score)
-       (downloaded
+       (gnus-tmp-downloaded
 	(and
 	 (boundp 'gnus-agent-article-alist)
 	 gnus-agent-article-alist
