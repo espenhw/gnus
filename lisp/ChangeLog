@@ -1,6 +1,6 @@
 2002-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-group.el: Don't require mm-url in the toplevel.
+	* gnus-group.el: Require mm-url only when compiling.
 	(gnus-group-fetch-charter): Require mm-url.
 
 	* spam-stat.el: Require cl for the functions gethash,

@@ -39,6 +39,8 @@
 (require 'time-date)
 (require 'gnus-ems)
 
+(eval-when-compile (require 'mm-url))
+
 (defcustom gnus-group-archive-directory
   "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
   "*The address of the (ding) archives."
