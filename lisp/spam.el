@@ -869,9 +869,9 @@ Will not return a nil score."
 
     ;; now we redo spam-mark-spam-as-expired-and-move-routine to only
     ;; expire spam, in case the above did not expire them
-    (when (< 0 (spam-list-articles
-		gnus-newsgroup-articles
-		'spam))
+    (when (< 0 (length (spam-list-articles
+			gnus-newsgroup-articles
+			'spam)))
       (gnus-message 6 "Marking spam as expired without moving it")
       (spam-mark-spam-as-expired-and-move-routine nil))
 
