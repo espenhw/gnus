@@ -1,5 +1,11 @@
 2000-01-06  Dave Love  <fx@gnu.org>
 
+	* time-date.el: Add keywords.
+	(date-to-time): Add autoload cookie.  Canonicalize with
+	timezone-make-date-arpa-standard.
+	(time-to-seconds): Avoid caddr.
+	(safe-date-to-time): Add autoload cookie.
+
 	* base64.el: Require cl when compiling.
 
 2000-01-05 17:31:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
