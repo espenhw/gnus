@@ -6,7 +6,7 @@ Please send Gnus bug reports to bugs@gnus.org.
 For older news, see Gnus info node "New Features".
 
 
-* Changes in No Gnus (test)
+* Changes in No Gnus
 
 ** Gnus includes an Emacs Lisp SASL library.
 
