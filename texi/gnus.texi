@@ -16476,6 +16476,10 @@ Hook run when connecting to the network.
 @vindex gnus-agent-unplugged-hook
 Hook run when disconnecting from the network.
 
+@item gnus-agent-fetched-hook
+@vindex gnus-agent-fetched-hook
+Hook run when after finishing fetching articles.
+
 @end table
 
 
