@@ -104,7 +104,8 @@
       (let ((case-fold-search t))
 	(erase-buffer)
 	(when (= start 1)
-	  (nnweb-insert (format nnslashdot-article-url sid) t)
+	  (nnweb-insert (format nnslashdot-article-url
+				(nnslashdot-sid-strip sid)) t)
 	  (goto-char (point-min))
 	  (search-forward "Posted by ")
 	  (when (looking-at "<a[^>]+>\\([^<]+\\)")
@@ -116,19 +117,22 @@
 	  (setq lines (count-lines
 		       (point)
 		       (search-forward
-			"A href=http://slashdot.org/article" nil t)))
+			"A href=\"/article" nil t)))
 	  (push
 	   (cons
 	    1
 	    (make-full-mail-header
-	     1 group from date (concat "<" sid "%1@slashdot>")
+	     1 group from date
+	     (concat "<" (nnslashdot-sid-strip sid) "%1@slashdot>")
 	     "" 0 lines nil nil))
 	   headers))
 	(while (and (setq start (pop startats))
 		    (< start last))
 	  (setq point (goto-char (point-max)))
 	  (nnweb-insert
-	   (format nnslashdot-comments-url sid nnslashdot-threshold 0 start)
+	   (format nnslashdot-comments-url
+		   (nnslashdot-sid-strip sid)
+		   nnslashdot-threshold 0 start)
 	   t)
 	  (when first-comments
 	    (setq first-comments nil)
@@ -176,11 +180,11 @@
 	       (1+ article)
 	       (concat subject " (" score ")")
 	       from date
-	       (concat "<" sid "%"
+	       (concat "<" (nnslashdot-sid-strip sid) "%"
 		       (number-to-string (1+ article)) 
 		       "@slashdot>")
 	       (if parent
-		   (concat "<" sid "%"
+		   (concat "<" (nnslashdot-sid-strip sid) "%"
 			   (number-to-string (1+ (string-to-number parent)))
 			   "@slashdot>")
 		 "")
@@ -204,7 +208,8 @@
       (set-buffer nnslashdot-buffer)
       (erase-buffer)
       (when (= start 1)
-	(nnweb-insert (format nnslashdot-article-url sid) t)
+	(nnweb-insert (format nnslashdot-article-url
+			      (nnslashdot-sid-strip sid)) t)
 	(goto-char (point-min))
 	(search-forward "Posted by ")
 	(when (looking-at "<a[^>]+>\\([^<]+\\)")
@@ -215,12 +220,13 @@
 	(forward-line 2)
 	(setq lines (count-lines (point)
 				 (search-forward
-				  "A href=http://slashdot.org/article")))
+				  "A href=\"/article")))
 	(push
 	 (cons
 	  1
 	  (make-full-mail-header
-	   1 group from date (concat "<" sid "%1@slashdot>")
+	   1 group from date (concat "<" (nnslashdot-sid-strip sid)
+				     "%1@slashdot>")
 	   "" 0 lines nil nil))
 	 headers))
       (while (or (not article)
@@ -230,7 +236,8 @@
 	  (setq start (1+ article)))
 	(setq point (goto-char (point-max)))
 	(nnweb-insert
-	 (format nnslashdot-comments-url sid nnslashdot-threshold 4 start)
+	 (format nnslashdot-comments-url (nnslashdot-sid-strip sid)
+		 nnslashdot-threshold 4 start)
 	 t)
 	(goto-char point)
 	(while (re-search-forward
@@ -269,11 +276,11 @@
 	    (make-full-mail-header
 	     (1+ article) (concat subject " (" score ")")
 	     from date
-	     (concat "<" sid "%"
+	     (concat "<" (nnslashdot-sid-strip sid) "%"
 		     (number-to-string (1+ article)) 
 		     "@slashdot>")
 	     (if parent
-		 (concat "<" sid "%"
+		 (concat "<" (nnslashdot-sid-strip sid) "%"
 			 (number-to-string (1+ (string-to-number parent)))
 			 "@slashdot>")
 	       "")
@@ -329,7 +336,7 @@
 			   (point)
 			   (progn
 			     (re-search-forward
-			      "<p>.*A href=http://slashdot\\.org/article")
+			      "<p>.*A href=\"/article")
 			     (match-beginning 0)))))
 		(search-forward (format "<a name=\"%d\">" (1- article)))
 		(setq contents
@@ -423,7 +430,7 @@
 
 (deffoo nnslashdot-request-post (&optional server)
   (nnslashdot-possibly-change-server nil server)
-  (let ((sid (message-fetch-field "newsgroups"))
+  (let ((sid (nnslashdot-sid-strip (message-fetch-field "newsgroups")))
 	(subject (message-fetch-field "subject"))
 	(references (car (last (split-string
 				(message-fetch-field "references")))))
@@ -531,6 +538,11 @@
 
 (defun nnslashdot-lose (why)
   (error "Slashdot HTML has changed; please get a new version of nnslashdot"))
+
+(defun nnslashdot-sid-strip (sid)
+  (if (string-match "^00/" sid)
+      (substring sid (match-end 0))
+    sid))
 
 (provide 'nnslashdot)
 
