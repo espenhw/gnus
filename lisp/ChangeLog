@@ -1,5 +1,8 @@
 2002-03-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-abbrevs-loaded): Remove.
+	(mailabbrev): Require it.
+
 	* nnslashdot.el (nnslashdot-request-article): Remove IFRAME.
 
 2002-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>

@@ -23,6 +23,7 @@
 	       image-type-from-file-header
 	       make-symbolic-link
 	       make-temp-file message-xmas-redefine
+	       mail-abbrev-in-expansion-header-p
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements

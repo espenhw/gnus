@@ -36,9 +36,12 @@
 (require 'canlock)
 (require 'mailheader)
 (require 'nnheader)
-;; This is apparently necessary even though things are autoloaded:
+;; This is apparently necessary even though things are autoloaded.
+;; Because we dynamically bind mail-abbrev-mode-regexp, we'd better
+;; require mailabbrev here.
 (if (featurep 'xemacs)
-    (require 'mail-abbrevs))
+    (require 'mail-abbrevs)
+  (require 'mailabbrev))
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
@@ -645,8 +648,6 @@ point and mark around the citation text as modified."
   :type 'function
   :group 'message-insertion)
 
-(defvar message-abbrevs-loaded nil)
-
 ;;;###autoload
 (defcustom message-signature t
   "*String to be inserted at the end of the message buffer.
@@ -1215,7 +1216,6 @@ no, only reply back to the author."
   (autoload 'gnus-point-at-bol "gnus-util")
   (autoload 'gnus-output-to-rmail "gnus-util")
   (autoload 'gnus-output-to-mail "gnus-util")
-  (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev")
   (autoload 'nndraft-request-associate-buffer "nndraft")
   (autoload 'nndraft-request-expire-articles "nndraft")
   (autoload 'gnus-open-server "gnus-int")
