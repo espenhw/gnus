@@ -1,3 +1,7 @@
+2003-01-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Picons): Update.
+
 2003-01-22  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.texi (Agent Expiry, Agent Variables): Don't use @pxref for

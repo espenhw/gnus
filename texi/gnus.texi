@@ -847,14 +847,6 @@ Image Enhancements
 * Toolbar::                     Click'n'drool.
 * XVarious::                    Other XEmacsy Gnusey variables.
 
-Picons
-
-* Picon Basics::                What are picons and How do I get them.
-* Picon Requirements::          Don't go further if you aren't using XEmacs.
-* Easy Picons::                 Displaying Picons---the easy way.
-* Hard Picons::                 The way you should do it.  You'll learn something.
-* Picon Useless Configuration::  Other variables you can trash/tweak/munge/play with.
-
 Thwarting Email Spam
 
 * The problem of spam::         Some background, and some solutions
@@ -20722,18 +20714,6 @@ So@dots{}  You want to slow down your news reader even more!  This is a
 good way to do so.  Its also a great way to impress people staring
 over your shoulder as you read news.
 
-@menu
-* Picon Basics::                What are picons and How do I get them.
-* Picon Requirements::          Don't go further if you aren't using XEmacs.
-* Easy Picons::                 Displaying Picons---the easy way.
-* Hard Picons::                 The way you should do it.  You'll learn something.
-* Picon Useless Configuration::  Other variables you can trash/tweak/munge/play with.
-@end menu
-
-
-@node Picon Basics
-@subsubsection Picon Basics
-
 What are Picons?  To quote directly from the Picons Web site:
 
 @iftex
@@ -20752,228 +20732,49 @@ in either monochrome @code{XBM} format or color @code{XPM} and
 @code{GIF} formats.
 @end quotation
 
-@vindex gnus-picons-piconsearch-url
-If you have a permanent connection to the Internet you can use Steve
-Kinzler's Picons Search engine by setting
-@code{gnus-picons-piconsearch-url} to the string @*
-@uref{http://www.cs.indiana.edu/picons/search.html}.
-
-@vindex gnus-picons-database
-Otherwise you need a local copy of his database.  For instructions on
-obtaining and installing the picons databases, point your Web browser at @*
-@uref{http://www.cs.indiana.edu/picons/ftp/index.html}.  Gnus expects
-picons to be installed into a location pointed to by
-@code{gnus-picons-database}.
+@vindex gnus-picon-databases
+For instructions on obtaining and installing the picons databases,
+point your Web browser at
+@uref{http://www.cs.indiana.edu/picons/ftp/index.html}.
 
 If you are using Debian GNU/Linux, saying @samp{apt-get install
 picons.*} will install the picons where Gnus can find them.
 
+To enable displaying picons, simply make sure that
+@code{gnus-picon-databases} points to the directory containing the
+Picons databases.
 
-@node Picon Requirements
-@subsubsection Picon Requirements
-
-To have Gnus display Picons for you, you must have @code{x} support
-compiled into XEmacs.  To display color picons which are much nicer
-than the black & white one, you also need one of @code{xpm} or
-@code{gif} compiled into XEmacs.
-
-@vindex gnus-picons-convert-x-face
-If you want to display faces from @code{X-Face} headers, you should have
-the @code{xface} support compiled into XEmacs.  Otherwise you must have
-the @code{netpbm} utilities installed, or munge the
-@code{gnus-picons-convert-x-face} variable to use something else.
-(NOTE: @code{x-face} is used in the variable name, not @code{xface})
-
-@node Easy Picons
-@subsubsection Easy Picons
-
-To enable displaying picons, simply put the following line in your
-@file{~/.gnus} file and start Gnus.
-
-@lisp
-(setq gnus-use-picons t)
-(setq gnus-treat-display-picons t)
-@end lisp
-
-and make sure @code{gnus-picons-database} points to the directory
-containing the Picons databases.
-
-Alternatively if you want to use the web piconsearch engine add this:
-
-@lisp
-(setq gnus-picons-piconsearch-url
-      "http://www.cs.indiana.edu:800/piconsearch")
-@end lisp
-
-
-@node Hard Picons
-@subsubsection Hard Picons
-
-@iftex
-@iflatex
-\margindex{}
-@end iflatex
-@end iftex
-
-Gnus can display picons for you as you enter and leave groups and
-articles.  It knows how to interact with three sections of the picons
-database.  Namely, it can display the picons newsgroup pictures,
-author's face picture(s), and the authors domain.  To enable this
-feature, you need to select where to get the picons from, and where to
-display them.
+The following variables offer control over where things are located.
 
 @table @code
 
-@item gnus-picons-database
-@vindex gnus-picons-database
-The location of the picons database.  Should point to a directory
+@item gnus-picon-databases
+@vindex gnus-picon-databases
+The location of the picons database.  This is a list of directories
 containing the @file{news}, @file{domains}, @file{users} (and so on)
-subdirectories.  This is only useful if
-@code{gnus-picons-piconsearch-url} is @code{nil}.  Defaults to
-@file{/usr/local/faces/}.
+subdirectories.  Defaults to @code{("/usr/lib/picon"
+"/usr/local/faces")}.
 
-@item gnus-picons-piconsearch-url
-@vindex gnus-picons-piconsearch-url
-The URL for the web picons search engine.  The only currently known
-engine is @uref{http://www.cs.indiana.edu:800/piconsearch}.  To
-workaround network delays, icons will be fetched in the background.  If
-this is @code{nil} 'the default), then picons are fetched from local
-database indicated by @code{gnus-picons-database}.
-
-@item gnus-picons-display-where
-@vindex gnus-picons-display-where
-Where the picon images should be displayed.  It is @code{picons} by
-default (which by default maps to the buffer @samp{*Picons*}).  Other
-valid places could be @code{article}, @code{summary}, or
-@samp{*scratch*} for all I care.  Just make sure that you've made the
-buffer visible using the standard Gnus window configuration
-routines---@pxref{Window Layout}.
-
-@item gnus-picons-group-excluded-groups
-@vindex gnus-picons-group-excluded-groups
-Groups that are matched by this regexp won't have their group icons
-displayed.
-
-@end table
-
-Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
-window configuration for you to include the @code{picons} buffer.
-
-Now that you've made those decision, you need to add the following
-functions to the appropriate hooks so these pictures will get displayed
-at the right time.
-
-@vindex gnus-picons-display-where
-@table @code
-@item gnus-article-display-picons
-@findex gnus-article-display-picons
-Looks up and displays the picons for the author and the author's domain
-in the @code{gnus-picons-display-where} buffer.
-
-@item gnus-picons-article-display-x-face
-@findex gnus-picons-article-display-x-face
-Decodes and displays the X-Face header if present.
-(NOTE: @code{x-face} is used in the function name, not @code{xface})
-
-@end table
-
-
-
-@node Picon Useless Configuration
-@subsubsection Picon Useless Configuration
-
-@iftex
-@iflatex
-\margindex{}
-@end iflatex
-@end iftex
-
-The following variables offer further control over how things are
-done, where things are located, and other useless stuff you really
-don't need to worry about.
-
-@table @code
-
-@item gnus-picons-news-directories
-@vindex gnus-picons-news-directories
-List of subdirectories to search in @code{gnus-picons-database} for
+@item gnus-picon-news-directories
+@vindex gnus-picon-news-directories
+List of subdirectories to search in @code{gnus-picon-databases} for
 newsgroups faces.  @code{("news")} is the default.
 
-@item gnus-picons-user-directories
-@vindex gnus-picons-user-directories
-List of subdirectories to search in @code{gnus-picons-database} for user
-faces.  @code{("local" "users" "usenix" "misc")} is the default.
+@item gnus-picon-user-directories
+@vindex gnus-picon-user-directories
+List of subdirectories to search in @code{gnus-picon-databases} for user
+faces.  @code{("users" "usenix" "local" "misc")} is the default.
 
-@item gnus-picons-domain-directories
-@vindex gnus-picons-domain-directories
-List of subdirectories to search in @code{gnus-picons-database} for
+@item gnus-picon-domain-directories
+@vindex gnus-picon-domain-directories
+List of subdirectories to search in @code{gnus-picon-databases} for
 domain name faces.  Defaults to @code{("domains")}.  Some people may
 want to add @samp{"unknown"} to this list.
 
-@item gnus-picons-convert-x-face
-@vindex gnus-picons-convert-x-face
-If you don't have @code{xface} support builtin XEmacs, this is the
-command to use to convert the @code{X-Face} header to an X bitmap
-(@code{xbm}).  Defaults to @code{(format "@{ echo '/* Width=48,
-Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s"
-gnus-picons-x-face-file-name)}
-(NOTE: @code{x-face} is used in the variable name, not @code{xface})
-
-@item gnus-picons-x-face-file-name
-@vindex gnus-picons-x-face-file-name
-Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
-to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
-(NOTE: @code{x-face} is used in the variable name, not @code{xface})
-
-@item gnus-picons-has-modeline-p
-@vindex gnus-picons-has-modeline-p
-If you have set @code{gnus-picons-display-where} to @code{picons}, your
-XEmacs frame will become really cluttered.  To alleviate this a bit you
-can set @code{gnus-picons-has-modeline-p} to @code{nil}; this will
-remove the mode line from the Picons buffer.  This is only useful if
-@code{gnus-picons-display-where} is @code{picons}.
-
-@item gnus-picons-refresh-before-display
-@vindex gnus-picons-refresh-before-display
-If non-nil, display the article buffer before computing the picons.
-Defaults to @code{nil}.
-
-@item gnus-picons-display-as-address
-@vindex gnus-picons-display-as-address
-If @code{t} display textual email addresses along with pictures.
-Defaults to @code{t}.
-
-@item gnus-picons-file-suffixes
-@vindex gnus-picons-file-suffixes
+@item gnus-picon-file-types
+@vindex gnus-picon-file-types
 Ordered list of suffixes on picon file names to try.  Defaults to
-@code{("xpm" "gif" "xbm")} minus those not builtin your XEmacs.
-
-@item gnus-picons-setup-hook
-@vindex gnus-picons-setup-hook
-Hook run in the picon buffer, if that is displayed.
-
-@item gnus-picons-display-article-move-p
-@vindex gnus-picons-display-article-move-p
-Whether to move point to first empty line when displaying picons.  This
-has only an effect if `gnus-picons-display-where' has value `article'.
-
-If @code{nil}, display the picons in the @code{From} and
-@code{Newsgroups} lines.  This is the default.
-
-@item gnus-picons-clear-cache-on-shutdown
-@vindex gnus-picons-clear-cache-on-shutdown
-Whether to clear the picons cache when exiting gnus.  Gnus caches every
-picons it finds while it is running.  This saves some time in the search
-process but eats some memory.  If this variable is set to @code{nil},
-Gnus will never clear the cache itself; you will have to manually call
-@code{gnus-picons-clear-cache} to clear it.  Otherwise the cache will be
-cleared every time you exit Gnus.  Defaults to @code{t}.
-
-@iftex
-@iflatex
-\margindex{}
-@end iflatex
-@end iftex
+@code{("xpm" "gif" "xbm")} minus those not builtin your Emacs.
 
 @end table
 
