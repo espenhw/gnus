@@ -1,3 +1,8 @@
+2003-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Make sure the obsolete variable
+	gnus-inews-mark-gcc-as-read exists.
+
 2003-04-23  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sieve.el (gnus-sieve-generate): Rewrite regexp search so it

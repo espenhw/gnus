@@ -1694,7 +1694,9 @@ this is a reply."
 			 ;; Gnus is not running?
 			 (gnus-alive-p)
 			 (or gnus-gcc-mark-as-read
-			     gnus-inews-mark-gcc-as-read))
+			     (and
+			      (boundp 'gnus-inews-mark-gcc-as-read)
+			      (symbol-value 'gnus-inews-mark-gcc-as-read))))
 		(gnus-group-mark-article-read group (cdr group-art)))
 	      (kill-buffer (current-buffer)))))))))
 
