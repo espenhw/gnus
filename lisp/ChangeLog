@@ -1,3 +1,9 @@
+1999-12-07 15:04:18  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-confirmation-function): New variable.
+	(gnus-agent-batch-fetch): Use it.
+	(gnus-agent-fetch-session): Use it.
+
 1999-12-07 12:32:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-find-mime-charset-region): Delete nil.

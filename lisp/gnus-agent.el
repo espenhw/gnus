@@ -77,6 +77,11 @@ If nil, only read articles will be expired."
   :group 'gnus-agent
   :type 'hook)
 
+(defcustom gnus-agent-confirmation-function 'y-or-n-p
+  "Function to confirm when error happens."
+  :group 'gnus-agent
+  :type 'function)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -947,12 +952,18 @@ the actual number of articles toggled is returned."
   (concat (gnus-agent-directory) (gnus-agent-group-path group) "/"
 	  (if (stringp article) article (string-to-number article))))
 
+(defun gnus-agent-batch-confirmation (msg)
+  "Show error message and return t."
+  (gnus-message 1 msg)
+  t)
+
 ;;;###autoload
 (defun gnus-agent-batch-fetch ()
   "Start Gnus and fetch session."
   (interactive)
   (gnus)
-  (gnus-agent-fetch-session)
+  (let ((gnus-agent-confirmation-function 'gnus-agent-batch-confirmation))
+    (gnus-agent-fetch-session))
   (gnus-group-exit))
 
 (defun gnus-agent-fetch-session ()
@@ -966,14 +977,20 @@ the actual number of articles toggled is returned."
 	groups group gnus-command-method)
     (save-excursion
       (while methods
-	(setq gnus-command-method (car methods))
-	(when (or (gnus-server-opened gnus-command-method)
-		  (gnus-open-server gnus-command-method))
-	  (setq groups (gnus-groups-from-server (car methods)))
-	  (gnus-agent-with-fetch
-	    (while (setq group (pop groups))
-	      (when (<= (gnus-group-level group) gnus-agent-handle-level)
-		(gnus-agent-fetch-group-1 group gnus-command-method)))))
+	(condition-case err
+	    (progn
+	      (setq gnus-command-method (car methods))
+	      (when (or (gnus-server-opened gnus-command-method)
+			(gnus-open-server gnus-command-method))
+		(setq groups (gnus-groups-from-server (car methods)))
+		(gnus-agent-with-fetch
+		  (while (setq group (pop groups))
+		    (when (<= (gnus-group-level group) gnus-agent-handle-level)
+		      (gnus-agent-fetch-group-1 group gnus-command-method))))))
+	  (error 
+	   (unless (funcall gnus-agent-confirmation-function
+			    (format "Error (%s).  Continue? " err))
+	     (error "Cannot fetch articles into the Gnus agent."))))
 	(pop methods))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
