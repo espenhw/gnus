@@ -138,7 +138,7 @@
 ;; It's harmless, though, so the main purpose of this alias is to shut
 ;; up the byte compiler.
 (defalias 'gnus-make-local-hook
-  (if (eq (get 'make-local-hook 'byte-compile) 
+  (if (eq (get 'make-local-hook 'byte-compile)
 	  'byte-compile-obsolete)
       'ignore				; Emacs
     'make-local-hook))			; XEmacs
@@ -342,18 +342,18 @@ is slower."
 ;; the full date if it's older)
 
 (defun gnus-seconds-today ()
-  "Returns the number of seconds passed today"
+  "Return the number of seconds passed today."
   (let ((now (decode-time (current-time))))
     (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600))))
 
 (defun gnus-seconds-month ()
-  "Returns the number of seconds passed this month"
+  "Return the number of seconds passed this month."
   (let ((now (decode-time (current-time))))
     (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600)
        (* (- (car (nthcdr 3 now)) 1) 3600 24))))
 
 (defun gnus-seconds-year ()
-  "Returns the number of seconds passed this year"
+  "Return the number of seconds passed this year."
   (let ((now (decode-time (current-time)))
 	(days (format-time-string "%j" (current-time))))
     (+ (car now) (* (car (cdr now)) 60) (* (car (nthcdr 2 now)) 3600)
@@ -384,7 +384,7 @@ seconds passed since the start of today, of this month, of this year,
 respectively.")
 
 (defun gnus-user-date (messy-date)
-  "Format the messy-date acording to gnus-user-date-format-alist.
+  "Format the messy-date according to gnus-user-date-format-alist.
 Returns \"  ?  \" if there's bad input or if an other error occurs.
 Input should look like this: \"Sun, 14 Oct 2001 13:34:39 +0200\"."
   (condition-case ()
@@ -584,7 +584,7 @@ If N, return the Nth ancestor instead."
        gname)))
 
 (defun gnus-make-sort-function (funs)
-  "Return a composite sort condition based on the functions in FUNC."
+  "Return a composite sort condition based on the functions in FUNS."
   (cond
    ;; Just a simple function.
    ((functionp funs) funs)
@@ -601,7 +601,7 @@ If N, return the Nth ancestor instead."
     (car funs))))
 
 (defun gnus-make-sort-function-1 (funs)
-  "Return a composite sort condition based on the functions in FUNC."
+  "Return a composite sort condition based on the functions in FUNS."
   (let ((function (car funs))
 	(first 't1)
 	(last 't2))
@@ -931,7 +931,7 @@ with potentially long computations."
     (insert "\^_")))
 
 (defun gnus-map-function (funs arg)
-  "Applies the result of the first function in FUNS to the second, and so on.
+  "Apply the result of the first function in FUNS to the second, and so on.
 ARG is passed to the first function."
   (while funs
     (setq arg (funcall (pop funs) arg)))
@@ -988,7 +988,7 @@ Return the modified alist."
     `(setq ,alist (delq (,fun ,key ,alist) ,alist))))
 
 (defun gnus-globalify-regexp (re)
-  "Returns a regexp that matches a whole line, iff RE matches a part of it."
+  "Return a regexp that matches a whole line, iff RE matches a part of it."
   (concat (unless (string-match "^\\^" re) "^.*")
 	  re
 	  (unless (string-match "\\$$" re) ".*$")))
@@ -1232,8 +1232,8 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
    (t
     (list 'local-map map))))
 
-(defmacro gnus-completing-read-maybe-default (prompt table &optional predicate 
-					      require-match initial-contents 
+(defmacro gnus-completing-read-maybe-default (prompt table &optional predicate
+					      require-match initial-contents
 					      history default)
   "Like `completing-read', allowing for non-existent 7th arg in older XEmacsen."
   `(completing-read ,prompt ,table ,predicate ,require-match

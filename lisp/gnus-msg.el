@@ -248,7 +248,7 @@ See also the `mml-default-encrypt-method' variable."
 
 (defcustom gnus-message-replysignencrypted
   t
-  "Setting this causes automatically encryped messages to also be signed."
+  "Setting this causes automatically encrypted messages to also be signed."
   :group 'gnus-message
   :type 'boolean)
 
@@ -587,7 +587,7 @@ If ARG is 1, prompt for group name to post to.
 
 This function prepares a news even when using mail groups.  This is useful
 for posting messages to mail groups without actually sending them over the
-network.  The corresponding backend must have a 'request-post method."
+network.  The corresponding back end must have a 'request-post method."
   (interactive "P")
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
@@ -666,7 +666,7 @@ If ARG, don't do that.  If ARG is 1, prompt for group name to post to.
 
 This function prepares a news even when using mail groups.  This is useful
 for posting messages to mail groups without actually sending them over the
-network.  The corresponding backend must have a 'request-post method."
+network.  The corresponding back end must have a 'request-post method."
   (interactive "P")
   ;; We can't `let' gnus-newsgroup-name here, since that leads
   ;; to local variables leaking.
@@ -1108,7 +1108,7 @@ If VERY-WIDE, make a very wide reply."
 	      (gnus-summary-work-articles 1))))
   ;; Allow user to require confirmation before replying by mail to the
   ;; author of a news article (or mail message).
-  (when (or 
+  (when (or
 	    (not (or (gnus-news-group-p gnus-newsgroup-name)
 		     gnus-confirm-treat-mail-like-news))
 	    (not (cond ((stringp gnus-confirm-mail-reply-to-news)
@@ -1418,7 +1418,7 @@ The current group name will be inserted at \"%s\".")
       ;; This mail group doesn't have a `to-list', so we add one
       ;; here.  Magic!
       (when (gnus-y-or-n-p
-	     (format "Do you want to add this as `to-list': %s " to-address))
+	     (format "Do you want to add this as `to-list': %s? " to-address))
 	(gnus-group-add-parameter group (cons 'to-list to-address))))))
 
 (defun gnus-put-message ()

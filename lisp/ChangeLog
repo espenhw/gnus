@@ -1,5 +1,27 @@
 2003-07-09  Jesper Harder  <harder@ifa.au.dk>
 
+	* flow-fill.el: Docstring and message fixes.
+
+	* deuglify.el: do.
+
+	* gnus-int.el: do.
+
+	* gnus-msg.el: do.
+
+	* gnus-util.el: do.
+
+	* gnus-draft.el: do.
+
+	* gnus-start.el: do.
+
+	* gnus.el: do.
+
+	* gnus-group.el: do.
+
+	* gnus-art.el: do.
+
+	* gnus-sum.el: do.
+
 	* mail-source.el (mail-source-movemail): Handle non-numerical
 	return values.
 

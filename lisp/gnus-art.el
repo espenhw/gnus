@@ -5954,7 +5954,7 @@ Calls `describe-variable' or `describe-function'."
   "*Integer that says how many TeX-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
 positives are possible.  Note that you can set this variable local to
-specifific groups.  Setting it higher in TeX groups is probably a good idea.
+specific groups.  Setting it higher in TeX groups is probably a good idea.
 See Info node `(gnus)Group Parameters' and the variable `gnus-parameters' on
 how to set variables in specific groups."
   :group 'gnus-article-buttons
@@ -5965,7 +5965,7 @@ how to set variables in specific groups."
   "*Integer that says how many man-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
 positives are possible.  Note that you can set this variable local to
-specifific groups.  Setting it higher in Unix groups is probably a good idea.
+specific groups.  Setting it higher in Unix groups is probably a good idea.
 See Info node `(gnus)Group Parameters' and the variable `gnus-parameters' on
 how to set variables in specific groups."
   :group 'gnus-article-buttons
@@ -5976,7 +5976,7 @@ how to set variables in specific groups."
   "*Integer that says how many emacs-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
 positives are possible.  Note that you can set this variable local to
-specifific groups.  Setting it higher in Emacs or Gnus related groups is
+specific groups.  Setting it higher in Emacs or Gnus related groups is
 probably a good idea.  See Info node `(gnus)Group Parameters' and the variable
 `gnus-parameters' on how to set variables in specific groups."
   :group 'gnus-article-buttons
@@ -6102,9 +6102,9 @@ positives are possible."
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
 REGEXP: is the string (case insensitive) matching text around the button (can
-also be lisp expression evaluating to a string),
+also be Lisp expression evaluating to a string),
 BUTTON: is the number of the regexp grouping actually matching the button,
-FORM: is a lisp expression which must eval to true for the button to
+FORM: is a Lisp expression which must eval to true for the button to
 be added,
 CALLBACK: is the function to call when the user push this button, and each
 PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
@@ -6677,7 +6677,7 @@ specified by `gnus-button-alist'."
 
 This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item
 is FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
-\(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
+\(REGEXP . FUNCTION), FUNCTION will be only apply to the newsgroups
 whose names match REGEXP.
 
 For example:

@@ -281,8 +281,8 @@ claim them."
 		(repeat function)))
 
 (defcustom gnus-subscribe-newsgroup-hooks nil
-  "*Hooks run after you subscribe to a new group. The hooks will be called
-with new group's name as argument."
+  "*Hooks run after you subscribe to a new group.
+The hooks will be called with new group's name as argument."
   :group 'gnus-group-new
   :type 'hook)
 
@@ -381,7 +381,7 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-setup-news-hook 
+(defcustom gnus-setup-news-hook
   '(gnus-fixup-nnimap-unread-after-getting-new-news)
   "A hook after reading the .newsrc file, but before generating the buffer."
   :group 'gnus-start
@@ -398,7 +398,7 @@ This hook is called as the first thing when Gnus is started."
   :type 'hook)
 
 (defcustom gnus-after-getting-new-news-hook
-  '(gnus-display-time-event-handler 
+  '(gnus-display-time-event-handler
     gnus-fixup-nnimap-unread-after-getting-new-news)
   "*A hook run after Gnus checks for new news when Gnus is already running."
   :group 'gnus-group-new
@@ -552,7 +552,7 @@ Can be used to turn version control on or off."
   (gnus-subscribe-newsgroup newsgroup))
 
 (defun gnus-subscribe-alphabetically (newgroup)
-  "Subscribe new NEWSGROUP and insert it in alphabetical order."
+  "Subscribe new NEWGROUP and insert it in alphabetical order."
   (let ((groups (cdr gnus-newsrc-alist))
 	before)
     (while (and (not before) groups)
@@ -562,7 +562,7 @@ Can be used to turn version control on or off."
     (gnus-subscribe-newsgroup newgroup before)))
 
 (defun gnus-subscribe-hierarchically (newgroup)
-  "Subscribe new NEWSGROUP and insert it in hierarchical newsgroup order."
+  "Subscribe new NEWGROUP and insert it in hierarchical newsgroup order."
   ;; Basic ideas by mike-w@cs.aukuni.ac.nz (Mike Williams)
   (save-excursion
     (set-buffer (nnheader-find-file-noselect gnus-current-startup-file))
@@ -1242,7 +1242,7 @@ for new groups, and subscribe the new groups as zombies."
 	  (gnus-message 7 "`A k' to list killed groups"))))))
 
 (defun gnus-subscribe-group (group &optional previous method)
-  "Subcribe GROUP and put it after PREVIOUS."
+  "Subscribe GROUP and put it after PREVIOUS."
   (gnus-group-change-level
    (if method
        (list t group gnus-level-default-subscribed nil nil method)
@@ -1958,7 +1958,7 @@ newsgroup."
 	  (gnus-message 5 "%sdone" mesg)))))))
 
 (defun gnus-read-active-file-2 (groups method)
-  "Read an active file for GROUPS in METHOD using gnus-retrieve-groups."
+  "Read an active file for GROUPS in METHOD using `gnus-retrieve-groups'."
   (when groups
     (save-excursion
       (set-buffer nntp-server-buffer)
@@ -2632,7 +2632,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(gnus-group-set-mode-line)))))
 
 (defun gnus-gnus-to-quick-newsrc-format (&optional minimal name &rest specific-variables)
-  "Print Gnus variables such as gnus-newsrc-alist in lisp format."
+  "Print Gnus variables such as `gnus-newsrc-alist' in Lisp format."
     (princ ";; -*- emacs-lisp -*-\n")
     (if name
 	(princ (format ";; %s\n" name))
@@ -2658,7 +2658,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		     (stringp gnus-save-killed-list))
 		(gnus-strip-killed-list)
 	      gnus-killed-list))
-	   (variables 
+	   (variables
 	    (or specific-variables
 		(if gnus-save-killed-list gnus-variable-list
 		  ;; Remove the `gnus-killed-list' from the list of variables
@@ -2909,7 +2909,7 @@ If FORCE is non-nil, the .newsrc file is read."
 
 ;;;###autoload
 (defun gnus-declare-backend (name &rest abilities)
-  "Declare backend NAME with ABILITIES as a Gnus backend."
+  "Declare back end NAME with ABILITIES as a Gnus back end."
   (setq gnus-valid-select-methods
 	(nconc gnus-valid-select-methods
 	       (list (apply 'list name abilities))))
@@ -2925,7 +2925,7 @@ If this variable is nil, don't do anything."
 	  default-directory)))
 
 (eval-and-compile
-(defalias 'gnus-display-time-event-handler 
+(defalias 'gnus-display-time-event-handler
   (if (gnus-boundp 'display-time-timer)
       'display-time-event-handler
     (lambda () "Does nothing as `display-time-timer' is not bound.

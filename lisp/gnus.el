@@ -1295,7 +1295,7 @@ If the default site is too slow, try one of these:
     ("dk" . (concat "http://www.usenet.dk/grupper.pl?get=" name))
     ("england" . (concat "http://england.news-admin.org/charters/" name))
     ("fr" . (concat "http://www.usenet-fr.net/fur/chartes/" name ".html"))
-    ("europa" . (concat "http://www.europa.usenet.eu.org/chartas/charta-en-" 
+    ("europa" . (concat "http://www.europa.usenet.eu.org/chartas/charta-en-"
 			(gnus-replace-in-string name "europa\\." "") ".html"))
     ("nl" . (concat "http://www.xs4all.nl/~sister/usenet/charters/" name))
     ("aus" . (concat "http://aus.news-admin.org/groupinfo.php/" name))
@@ -1305,12 +1305,12 @@ If the default site is too slow, try one of these:
     ("uk" . (concat "http://www.usenet.org.uk/" name ".html"))
     ("wales" . (concat "http://www.wales-usenet.org/english/groups/" name ".html"))
     ("dfw" . (concat "http://www.cirr.com/dfw/charters/" name ".html"))
-    ("se" . (concat "http://www.usenet-se.net/Reglementen/" 
+    ("se" . (concat "http://www.usenet-se.net/Reglementen/"
 		    (gnus-replace-in-string name "\\." "_") ".html"))
-    ("milw" . (concat "http://usenet.mil.wi.us/" 
+    ("milw" . (concat "http://usenet.mil.wi.us/"
 		      (gnus-replace-in-string name "milw\\." "") "-charter"))
     ("ca" . (concat "http://www.sbay.org/ca/charter-" name ".html"))
-    ("netins" . (concat "http://www.netins.net/usenet/charter/" 
+    ("netins" . (concat "http://www.netins.net/usenet/charter/"
 			(gnus-replace-in-string name "\\." "-") "-charter.html")))
   "*An alist of (HIERARCHY . FORM) pairs used to construct the URL of a charter.
 When FORM is evaluated `name' is bound to the name of the group."
@@ -1447,7 +1447,7 @@ It calls `gnus-summary-expire-articles' by default."
   :type 'hook)
 
 (defcustom gnus-novice-user t
-  "*Non-nil means that you are a usenet novice.
+  "*Non-nil means that you are a Usenet novice.
 If non-nil, verbose messages may be displayed and confirmations may be
 required."
   :group 'gnus-meta
@@ -1577,7 +1577,7 @@ If this variable is nil, screen refresh may be quicker."
 (defcustom gnus-mode-non-string-length nil
   "*Max length of mode-line non-string contents.
 If this is nil, Gnus will take space as is needed, leaving the rest
-of the modeline intact.  Note that the default of nil is unlikely
+of the mode line intact.  Note that the default of nil is unlikely
 to be desirable; see the manual for further details."
   :group 'gnus-various
   :type '(choice (const nil)
@@ -1775,7 +1775,7 @@ total number of articles in the group.")
 
 ;; group parameters for spam processing added by Ted Zlatanov <tzz@lifelogs.com>
 (defcustom gnus-install-group-spam-parameters t
-  "*Disable the group parameters for spam detection.  
+  "*Disable the group parameters for spam detection.
 Enable if `G c' in XEmacs is giving you trouble, and make sure to submit a bug report."
   :type 'boolean
   :group 'gnus-start)
@@ -1810,7 +1810,7 @@ regexps that should match all groups in which to do automatic spam
 tagging, associated with a classification (spam, ham, or neither).
 This only makes sense for mail groups."
    :variable-group spam
-   :variable-type '(repeat 
+   :variable-type '(repeat
 		    (list :tag "Group contents spam/ham classification"
 			  (regexp :tag "Group")
 			  (choice
@@ -1871,7 +1871,7 @@ Only applicable to non-spam (unclassified and ham) groups.")
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (defvar gnus-group-ham-exit-processor-spamoracle "spamoracle-ham"
-    "The spamoracle summary exit ham processor. 
+    "The spamoracle summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
   (gnus-define-group-parameter
@@ -1880,7 +1880,7 @@ Only applicable to non-spam (unclassified and ham) groups.")
    :parameter-type '(choice :tag "Spam Summary Exit Processor"
 			    :value nil
 			    (list :tag "Spam Summary Exit Processor Choices"
-				  (set 
+				  (set
 				   (variable-item gnus-group-spam-exit-processor-ifile)
 				   (variable-item gnus-group-spam-exit-processor-stat)
 				   (variable-item gnus-group-spam-exit-processor-bogofilter)
@@ -1904,9 +1904,9 @@ a backend on summary exit.  If non-nil, this should be a list of group
 name regexps that should match all groups in which to do automatic
 spam processing, associated with the appropriate processor."
    :variable-group spam
-   :variable-type '(repeat :tag "Spam/Ham Processors" 
+   :variable-type '(repeat :tag "Spam/Ham Processors"
 			   (list :tag "Spam Summary Exit Processor Choices"
-				 (regexp :tag "Group Regexp") 
+				 (regexp :tag "Group Regexp")
 				 (set :tag "Spam/Ham Summary Exit Processor"
 				      (variable-item gnus-group-spam-exit-processor-ifile)
 				      (variable-item gnus-group-spam-exit-processor-stat)
@@ -1939,11 +1939,11 @@ to do spam-processed article moving, associated with the destination
 group or nil for explicit expiration.  This only makes sense for
 mail groups."
    :variable-group spam
-   :variable-type '(repeat 
-		    :tag "Spam-processed articles destination" 
+   :variable-type '(repeat
+		    :tag "Spam-processed articles destination"
 		    (list
-		     (regexp :tag "Group Regexp") 
-		     (choice 
+		     (regexp :tag "Group Regexp")
+		     (choice
 		      :tag "Destination for spam-processed articles at summary exit"
 		      (string :tag "Move to a group")
 		      (const :tag "Expire" nil))))
@@ -1952,7 +1952,7 @@ mail groups."
 
   (gnus-define-group-parameter
    ham-process-destination
-   :parameter-type '(choice 
+   :parameter-type '(choice
 		     :tag "Destination for ham articles at summary exit from a spam group"
 		     (string :tag "Move to a group")
 		     (const :tag "Do nothing" nil))
@@ -1968,22 +1968,22 @@ to do ham article moving, associated with the destination
 group or nil for explicit ignoring.  This only makes sense for
 mail groups, and only works in spam groups."
    :variable-group spam
-   :variable-type '(repeat 
-		    :tag "Ham articles destination" 
+   :variable-type '(repeat
+		    :tag "Ham articles destination"
 		    (list
-		     (regexp :tag "Group Regexp") 
-		     (choice 
+		     (regexp :tag "Group Regexp")
+		     (choice
 		      :tag "Destination for ham articles at summary exit from spam group"
 		      (string :tag "Move to a group")
 		      (const :tag "Expire" nil))))
    :parameter-document
    "Where ham articles will go at summary exit from a spam group.")
 
-  (gnus-define-group-parameter 
+  (gnus-define-group-parameter
    ham-marks
    :type 'list
    :parameter-type '(list :tag "Ham mark choices"
-			  (set 
+			  (set
 			   (variable-item gnus-del-mark)
 			   (variable-item gnus-read-mark)
 			   (variable-item gnus-killed-mark)
@@ -1994,20 +1994,20 @@ mail groups, and only works in spam groups."
    "Marks considered ham (positively not spam).  Such articles will be
 processed as ham (non-spam) on group exit.  When nil, the global
 spam-ham-marks variable takes precedence."
-   :variable-default '((".*" ((gnus-del-mark 
+   :variable-default '((".*" ((gnus-del-mark
 			       gnus-read-mark
-			       gnus-killed-mark 
+			       gnus-killed-mark
 			       gnus-kill-file-mark
 			       gnus-low-score-mark))))
    :variable-group spam
    :variable-document
    "*Groups in which to explicitly set the ham marks to some value.")
 
-  (gnus-define-group-parameter 
+  (gnus-define-group-parameter
    spam-marks
    :type 'list
    :parameter-type '(list :tag "Spam mark choices"
-			  (set 
+			  (set
 			   (variable-item gnus-spam-mark)
 			   (variable-item gnus-killed-mark)
 			   (variable-item gnus-kill-file-mark)
@@ -2167,8 +2167,8 @@ covered by that variable."
   "Whether we want to use the Gnus agent or not.
 
 You may customize gnus-agent to disable its use.  However, some
-backends have started to use the agent as a client-side cache.
-Disabling the agent may result in noticable loss of performance."
+back ends have started to use the agent as a client-side cache.
+Disabling the agent may result in noticeable loss of performance."
   :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
@@ -2326,20 +2326,20 @@ such as a mark that says whether an article is stored in the cache
 
 (defvar gnus-newsrc-alist nil
   "Assoc list of read articles.
-gnus-newsrc-hashtb should be kept so that both hold the same information.")
+`gnus-newsrc-hashtb' should be kept so that both hold the same information.")
 
 (defvar gnus-registry-alist nil
   "Assoc list of registry data.
 gnus-registry.el will populate this if it's loaded.")
 
 (defvar gnus-newsrc-hashtb nil
-  "Hashtable of gnus-newsrc-alist.")
+  "Hashtable of `gnus-newsrc-alist'.")
 
 (defvar gnus-killed-list nil
   "List of killed newsgroups.")
 
 (defvar gnus-killed-hashtb nil
-  "Hash table equivalent of gnus-killed-list.")
+  "Hash table equivalent of `gnus-killed-list'.")
 
 (defvar gnus-zombie-list nil
   "List of almost dead newsgroups.")
@@ -3230,8 +3230,7 @@ server is native)."
 			       group)))
 
 (defun gnus-group-full-name (group method)
-  "Return the full name from GROUP and METHOD, even if the method is
-native."
+  "Return the full name from GROUP and METHOD, even if the method is native."
   (gnus-group-prefixed-name group method t))
 
 (defun gnus-group-guess-full-name (group)

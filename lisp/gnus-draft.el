@@ -218,7 +218,7 @@
 	  (dolist (group '("nndraft:drafts" "nndraft:queue"))
 	    (setq active (gnus-activate-group group))
 	    (if (and active (>= (cdr active) (car active)))
-		(if (y-or-n-p "There are unsent drafts. Confirm to exit?")
+		(if (y-or-n-p "There are unsent drafts.  Confirm to exit? ")
 		    (throw 'continue t)
 		  (error "Stop!"))))))))
 
