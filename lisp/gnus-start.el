@@ -1553,7 +1553,8 @@ newsgroup."
 	  (setq range (cdr range)))
 	(setq num (max 0 (- (cdr active) num)))))
       ;; Set the number of unread articles.
-      (when info
+      (when (and info
+		 (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb))
 	(setcar (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb) num))
       num)))
 

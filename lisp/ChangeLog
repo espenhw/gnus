@@ -1,3 +1,8 @@
+2003-02-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-get-unread-articles-in-group): Make sure
+	the entry for the group exists before we alter it.
+
 2003-02-22  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-get-undownloaded-list): Sort
