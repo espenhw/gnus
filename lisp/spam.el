@@ -95,7 +95,7 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
-(defcustom spam-use-blacklist t
+(defcustom spam-use-blacklist nil
   "Whether the blacklist should be used by spam-split."
   :type 'boolean
   :group 'spam)

@@ -7,6 +7,7 @@
 	(spam-fetch-field-from-fast): fast fetching of the "from" field
 	from (gnus-data-list)
 	(spam-summary-prepare-exit): works completely now
+	(spam-use-blacklist): oops, should be nil by default
 
 2003-01-03  Jesper Harder  <harder@ifa.au.dk>
 
