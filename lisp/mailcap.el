@@ -147,7 +147,11 @@
       (viewer . "ps2ascii %s")
       (type . "application/postscript")
       (test . (not (getenv "DISPLAY")))
-      ("copiousoutput")))
+      ("copiousoutput"))
+     ("sieve"
+      (viewer . sieve-mode)
+      (test   . (fboundp 'sieve-mode))
+      (type   . "application/sieve")))
     ("audio"
      ("x-mpeg"
       (viewer . "maplay %s")
@@ -811,6 +815,7 @@ this type is returned."
     (".rtx"   . "text/richtext")
     (".sh"    . "application/x-sh")
     (".sit"   . "application/x-stuffit")
+    (".siv"   . "application/sieve")
     (".snd"   . "audio/basic")
     (".src"   . "application/x-wais-source")
     (".tar"   . "archive/tar")
@@ -828,6 +833,7 @@ this type is returned."
     (".vox"   . "audio/basic")
     (".vrml"  . "x-world/x-vrml")
     (".wav"   . "audio/x-wav")
+    (".xls"   . "application/vnd.ms-excel")
     (".wrl"   . "x-world/x-vrml")
     (".xbm"   . "image/xbm")
     (".xpm"   . "image/xpm")

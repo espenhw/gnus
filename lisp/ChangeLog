@@ -1,3 +1,8 @@
+2001-03-11  Simon Josefsson  <simon@josefsson.org>
+
+	* mailcap.el (mailcap-mime-data): Add application/sieve.
+	(mailcap-mime-extensions): Add .siv, .xls.
+
 2001-03-14 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Christoph Conrad <christoph.conrad@gmx.de>
 
