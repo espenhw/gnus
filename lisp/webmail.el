@@ -144,7 +144,7 @@
     (my-deja
      (paranoid cookie post)
      (address . "www.my-deja.com")
-     (open-url "http://www.my-deja.com/")
+     (open-url "http://www.deja.com/my/pr.xp")
      (open-snarf . webmail-my-deja-open)
      (login-url
       content 

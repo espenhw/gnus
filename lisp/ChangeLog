@@ -1,3 +1,7 @@
+2000-10-06 08:56:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-type-definition): Fix my-deja open url.
+
 2000-10-06 Emerick Rogul <emerick@csa.bu.edu>
 
 	* message.el (message-setup-fill-variables): New variable.
