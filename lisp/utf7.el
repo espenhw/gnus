@@ -1,7 +1,7 @@
 ;;; utf7.el --- UTF-7 encoding/decoding for Emacs
 ;; Copyright (C) 1999 Free Software Foundation, Inc.
 
-;; Author: Jon K Hellan <hellan@item.ntnu.no>
+;; Author: Jon K Hellan <hellan@acm.org>
 ;; Keywords: mail
 
 ;; This file is part of GNU Emacs, but the same permissions apply
