@@ -165,7 +165,14 @@ Otherwise, most addresses look like `angles', but they look like
 		 (const default))
   :group 'message-headers)
 
-(defcustom message-syntax-checks nil
+(defcustom message-insert-canlock t
+  "Whether to insert a Cancel-Lock header in news postings."
+  :version "21.3"
+  :group 'message-headers
+  :type 'boolean)
+
+(defcustom message-syntax-checks 
+  (if message-insert-canlock '((sender . disabled)) nil)
   ;; Guess this one shouldn't be easy to customize...
   "*Controls what syntax checks should not be performed on outgoing posts.
 To disable checking of long signatures, for instance, add
@@ -821,8 +828,9 @@ feet of Good Net-Keeping Seal of Approval. The following are foot
 candidates:
 `empty-article'     Allow you to post an empty article;
 `quoted-text-only'  Allow you to post quoted text only;
-`multiple-copies'   Allow you to post multiple copies.")
-;; `cancel-messages'   Allow you to cancel or supersede others' messages.
+`multiple-copies'   Allow you to post multiple copies;
+`cancel-messages'   Allow you to cancel or supersede messages from 
+                    your other email addresses.")
 
 (defsubst message-gnksa-enable-p (feature)
   (or (not (listp message-shoot-gnksa-feet))
@@ -1087,11 +1095,7 @@ If this variable is non-nil, pose the question \"Reply to all
 recipients?\" before a wide reply to multiple recipients.  If the user
 answers yes, reply to all recipients as usual.  If the user answers
 no, only reply back to the author."
-  :group 'message-headers
-  :type 'boolean)
-
-(defcustom message-insert-canlock t
-  "Whether to insert a Cancel-Lock header in news postings."
+  :version "21.3"
   :group 'message-headers
   :type 'boolean)
 

@@ -1,5 +1,9 @@
 2002-03-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-syntax-checks): Because canlock is
+	supported, we disable sender syntax check.
+	(message-shoot-gnksa-feet): Add cancel-messages option doc.
+
 	* gnus-draft.el (gnus-draft-send): If interactive, use its default
 	value of message-syntax-checks.
 
