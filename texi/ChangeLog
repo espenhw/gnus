@@ -1,3 +1,7 @@
+2004-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Posting Styles): Addition.
+
 2004-08-06  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-news.el (gnus-news-header-disclaimer): Fix.

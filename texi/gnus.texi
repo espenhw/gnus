@@ -11906,8 +11906,13 @@ any case, if this returns a non-@code{nil} value, then the style is
 said to @dfn{match}.
 
 Each style may contain an arbitrary amount of @dfn{attributes}.  Each
-attribute consists of a @code{(@var{name} @var{value})} pair.  The
-attribute name can be one of:
+attribute consists of a @code{(@var{name} @var{value})} pair.  In
+addition, you can also use the @code{(@var{name} :file @var{value})}
+form or the @code{(@var{name} :value @var{value})} form.  Where
+@code{:file} signifies @var{value} represents a file name and its
+contents should be used as the attribute value, @code{:value} signifies
+@var{value} does not represent a file name explicitly.  The attribute
+name can be one of:
 
 @itemize @bullet
 @item @code{signature}
