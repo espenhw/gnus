@@ -1,3 +1,8 @@
+2002-01-03  Steve Youngs  <youngs@xemacs.org>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): XEmacs doesn't
+	understand ':keys', wrap it in an featurep 'xemacs.
+
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ems.el (gnus-article-display-xface): Show xface in the

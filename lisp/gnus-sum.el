@@ -2013,7 +2013,9 @@ increase the score of each group you read."
 	     ["Fetch article with id..." gnus-summary-refer-article t]
 	     ["Setup Mailing List Params" gnus-mailing-list-insinuate t]
 	     ["Redisplay" gnus-summary-show-article t]
-	     ["Raw article" gnus-summary-show-raw-article t :keys "C-u g"])))
+	     ["Raw article" gnus-summary-show-raw-article 
+	      ,@(if (featurep 'xemacs) '(t) 
+		  '(:keys "C-u g"))])))
       (easy-menu-define
 	gnus-summary-article-menu gnus-summary-mode-map ""
 	(cons "Article" innards))
