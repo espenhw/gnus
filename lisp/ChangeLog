@@ -1,5 +1,9 @@
 2001-02-23 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-article-edit-done): Don't use
+	gnus-article-edit-exit.
+	(gnus-article-edit-exit): Confirm and insert original-article-buffer.
+
 	* gnus.el (gnus-parameters): New.
 	(gnus-parameters-get-parameter): New.
 	(gnus-group-find-parameter): Use it.
