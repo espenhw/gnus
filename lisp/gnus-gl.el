@@ -59,35 +59,11 @@
 ;; As of version 2.5, grouplens now works as a minor mode of 
 ;; gnus-summary-mode.  To get make that work you just need a couple of
 ;; hooks.
-;; In addition, there are a few gnus-*-hooks that need to be set:
-;; (add-hook 'gnus-startup-hook 'bbb-login)
-;; (add-hook 'gnus-summary-mode-hook 'gnus-grouplens-mode)
-;;
-;; If you want to see grouplens scores using our format you might want to
-;; add a %uG to the gnus-summary-line-format.  For example, I use:
-;; (setq gnus-summary-line-format "%U%R%uG%I%(%[%4L: %-20,20uB%]%) %s\n")
-;; The above format also assumes that you are using gnus-bbdb  You can
-;; just as easily ad %uG to whatever format string you use.  Or add
-;; a %i to just see a simple numeric version of the predictions that
-;; uses less space on the summary line.  If you use %uG you have several
-;; choices for how things look.  See the doc string for the
-;; grouplens-prediction-display variable.
-;; (setq grouplens-prediction-display 'prediction-bar)
-;;
-;; If you use %uI on your group-line-format you will get (GroupLens Enhanced)
-;; after the names of newsgroups supported by GroupLens.
-;; (setq gnus-group-line-format "%M%S%p%5y: %(%g%) %uI\n")
+;; (setq gnus-use-grouplens t)
+;; (setq grouplens-pseudonym "")
+;; (setq grouplens-bbb-host "grouplens.cs.umn.edu")
 ;;
 ;; (setq gnus-summary-default-score 0)
-;;
-;; In addition there are some GroupLens user variables to set
-;; (setq grouplens-pseudonym "foobar")
-;; If you are using a bbb other than twain.cs.umn.edu you will need to
-;; set the grouplens-bbb-host variable, and possibly the
-;; grouplens-bbb-port variable. 
-;;
-;;(setq grouplens-newsgroups '("comp.lang.c++" "rec.humor" "rec.food.recipes"))
-;; This sets up the groups for which you will get predictions and ratings.
 ;;
 ;;                              USING GROUPLENS
 ;; How do I Rate an article??
@@ -776,7 +752,7 @@ recommend using both scores and grouplens predictions together."
 ;;          BUG REPORTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst gnus-gl-version "gnus-gl.el 2.10")
+(defconst gnus-gl-version "gnus-gl.el 2.11")
 (defconst gnus-gl-maintainer-address "grouplens-bug@cs.umn.edu")
 (defun gnus-gl-submit-bug-report ()
   "Submit via mail a bug report on gnus-gl"
@@ -860,7 +836,7 @@ recommend using both scores and grouplens predictions together."
                   '(lambda() 
                      (bbb-build-mid-scores-alist gnus-newsgroup-name))))
       (make-local-variable 'gnus-summary-line-format)
-      (if gnus-grouplens-override-scoring
+      (if (null gnus-grouplens-override-scoring)
 	
 	  (setq gnus-summary-line-format gnus-summary-grouplens-lab-line-format))
       (make-local-variable 'gnus-summary-line-format-spec)

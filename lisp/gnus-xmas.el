@@ -424,6 +424,7 @@ pounce directly on the real variables themselves.")
 	'gnus-xmas-appt-select-lowest-window)
   (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
   (fset 'gnus-make-local-hook 'make-local-variable)
+  (fset 'gnus-character-to-event 'character-to-event)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)

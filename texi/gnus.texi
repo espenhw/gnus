@@ -10429,6 +10429,8 @@ A hook called in kill-file mode buffers.
 * Buttons::                    Get tendonitis in ten easy steps!
 * Daemons::                    Gnus can do things behind your back.
 * NoCeM::                      How to avoid spam and other fatty foods.
+* Picons Pictures::            How to display pictures of what your reading.
+* GroupLens::                  Getting predictions on what you like to read.
 * Various Various::            Things that are really various.
 @end menu
 
@@ -11190,6 +11192,269 @@ The default is 15.  If you make it shorter Gnus will be faster, but you
 might then see old spam.
 
 @end table
+
+
+@node Picons Pictures
+@section Picons Pictures
+
+So...  You want to slow down your news reader even more!  This is a
+good way to do so.  Its also a great way to impress people staring
+over your shoulder as you read news.
+
+@menu
+* Picons::                 What are Picons and How do I get them.
+* Picons Requirements::    Don't go further if you aren't using XEmacs.
+* Picons Easy::            Displaying Picons -- the easy way.
+* Picons Hard::            The way you should do it.  You'll learn something.
+* Picons Configuration::   Other variables you can trash/tweak/munge/play with.
+@end menu
+
+
+@node Picons
+@subsection Picons
+
+What are Picons?  To quote directly from the Picons Web site
+(@samp{http://www.cs.indiana.edu/picons/ftp/index.html}):
+
+@quotation 
+@dfn{Picons} is short for ``personal icons''.  They're small,
+constrained images used to represent users and domains on the net,
+organized into databases so that the appropriate image for a given
+e-mail address can be found.  Besides users and domains, there are
+picons databases for Usenet newsgroups and weather forecasts. The picons
+are in either monochrome XBM format or color XPM and GIF formats.
+@end quotation
+
+Please see the above mentioned web site for instructions on obtaining
+and installing the picons databases, or the following ftp site:
+@samp{http://www.cs.indiana.edu/picons/ftp/index.html}.
+
+@vindex gnus-picons-database
+Gnus expects picons to be installed into a location pointed to by
+@code{gnus-picons-database}.
+
+
+@node Picons Requirements
+@subsection Picons Requirements
+
+To use have gnus display Picons for you, you must be running XEmacs
+19.13 or greater since all other versions of Emacs aren't yet able to
+display images.
+
+Additionally, you must have xpm support compiled into XEmacs.  
+
+If you want to display faces from X-Face: headers, you must have the
+netpbm utilities installed, or munge the
+@code{gnus-picons-convert-x-face} variable to use something else.
+
+
+@node Picons Easy 
+@subsection Picons Easy 
+
+To enable the displaying of picons, simply put the followings line in
+your @file{~/.gnus} file and start gnus.
+
+@lisp
+(setq gnus-use-picons t)
+(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+(add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
+(add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
+@end lisp
+
+
+@node Picons Hard 
+@subsection Picons Hard 
+
+Gnus can display "Picons" for you as you enter and leave groups
+and articles.  It knows how to interact with three sections of the
+picons database.  Namely, it can display the picons newsgroup
+pictures, author's face picture(s), and the authors domain.  To enable
+this feature, you need to first decide where to display them.
+
+@table @code 
+@item gnus-picons-display-where 
+@vindex gnus-picons-display-where 
+Where the Picons images should be displayed.  It is @code{'picons} by
+default (which by default maps to the buffer "*Picons*").  Other valid
+places could be @code{'article}, @code{'summary}, or @code{"*scratch*"}
+for all I care.  Just make sure that you've made the buffer visible
+using the @xref{Windows Configuration} routines.
+
+@end table
+
+Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
+windows configuration for you to include the @code{picons} buffer.
+
+Now that you've made that decision, you need to add the following
+functions to the appropriate hooks so these pictures will get
+displayed at the right time.
+
+@table @code
+@item gnus-article-display-picons
+@findex gnus-article-display-picons
+Looks up and display the picons for the author and the author's domain
+in the @code{gnus-picons-display-where} buffer.  Should be added to
+the @code{gnus-article-display-hook}.
+
+@item gnus-group-display-picons
+@findex gnus-article-display-picons
+Displays picons representing the current group.  This function should
+be added to the @code{gnus-summary-prepare-hook} or to the
+@code{gnus-article-display-hook} if @code{gnus-picons-display-where}
+is set to @code{'article}.
+
+@item gnus-picons-article-display-x-face
+@findex gnus-article-display-picons
+Decodes and displays the X-Face header if present.  This function
+should be added to @code{gnus-article-display-hook}.
+
+@end table
+
+Note:  You must append them to the hook, so make sure to specify 't'
+to the append flag of @code{add-hook}:
+
+@lisp
+(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+@end lisp
+
+@node Picons Configuration
+@subsection Picons Configuration
+
+The following variables offer further control over how things are
+done, where things are located, and other useless stuff you really
+don't need to worry about.
+
+@table @code
+@item gnus-picons-database
+@vindex gnus-picons-database
+The location of the picons database.  Should point to a directory
+containing the "news", "domains", "users", etc... subdirectories.
+Defaults to "/usr/local/faces".
+
+@item gnus-picons-news-directory
+@vindex gnus-picons-news-directory
+Sub-directory of the faces database containing the icons for
+newsgroups.
+
+@item gnus-picons-user-directories
+@vindex gnus-picons-user-directories
+List of subdirectories to search in @code{gnus-picons-database} for
+user faces.  Defaults to @code{'("local" "users" "usenix"
+"misc/MISC")}.
+
+@item gnus-picons-domain-directories
+@vindex gnus-picons-domain-directories
+List of subdirectories to search in @code{gnus-picons-database} for
+domain name faces.  Defaults to @code{'("domains")}.  Some people may
+want to add @code{"unknown"} to this list.
+
+@item gnus-picons-convert-x-face
+@vindex gnus-picons-convert-x-face
+The command to use to convert the x-face header to a X bitmap (xbm).
+Defaults to @code{(format "@{ echo '/* Width=48, Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)}
+
+@item gnus-picons-x-face-file-name
+@vindex gnus-picons-x-face-file-name
+Names a temporary file to store the x-face bitmap in.  Defaults to
+@code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
+
+@item gnus-picons-buffer
+@vindex gnus-picons-buffer
+The name of the buffer that @code{'picons} points to.  Defaults to
+"*Icon Buffer*".
+
+@end table
+
+
+@node GroupLens
+@section GroupLens
+@cindex GroupLens
+GroupLens is a collaborative filtering system that helps you work
+together with other people to find the quality news articles out of the
+huge volume of news articles generated every day.
+
+To accomplish this the GroupLens system combines your opinions about
+articles you have already read with the opinions of others who have
+done likewise and gives you a personalized prediction for each unread
+news article.  Think of GroupLens as a matchmaker.  GroupLens watches
+how you rate articles, and finds other people that rate articles the
+same way. Once it has found for you some people you agree with it tells
+you, in the form of a prediction, what they thought of the article.
+You can use this prediction to help you decide whether or not you want
+to read the article. 
+
+@section Configuring gnus to use GroupLens
+
+To use GroupLens you must register a pseudonym with your local Better
+Bit Bureau (BBB).  At the moment the only better bit in town is at
+@code{http://www.cs.umn.edu/Research/GroupLens/bbb.html}.
+Once you have registered you'll need to set a couple of variables 
+@lisp
+(setq gnus-use-grouplens t)
+(setq grouplens-pseudonym my-pseudonym)
+(setq grouplens-newsgroups "comp.lang.c++" "rec.humor")
+@end lisp
+
+Thats the minimum of what you need to get up and running with
+GroupLens.  Once you've registered, GroupLens will start giving you
+scores for articles based on the average of what other people think.
+But, to get the real benefit of grouplens you need to start rating
+articles yourself.  Then the scores GroupLens gives you will be
+personalized for you, based on how the people you usually agree with
+have already rated.
+
+@section Rating Articles in GroupLens
+In GroupLens, an article is rated on a scale from 1..5.  Where 1 means
+something like this article is a waste of bandwidth.  and 5 means that
+the article was really good.  The basic question to ask yourself is, "on
+a scale from 1 to 5 would I like to see more articles like this one?"
+There are four ways to enter a rating for an article in GroupLens.
+@table @kbd
+
+@item r
+@findex bbb-summary-rate-article
+This function will prompt you for a rating on a scale of one-to five
+
+@item N n
+@findex grouplens-next-unread-article
+Rate the article and go to the next unread article.
+
+@item N n
+@findex grouplens-best-unread-article
+Rate the article and go to the next unread article with the highest score
+
+@item k
+@findex grouplens-score-thread
+This function will prompt you for a rating, and rate all the articles in
+the thread.  This is really useful for some of those long running giant
+threads in rec.humor.
+
+@end table
+
+@section Displaying predictions in grouplens
+There are two ways to display predictions in grouplens.  One is to have
+the grouplens scores contribute to, or override the regular gnus scoring
+mechanism.  This behavior is the default; however, some people prefer to
+see the gnus scores plus the grouplens scores.  To get the separate
+scoring behavior you need to set 
+@code{(setq gnus-grouplens-override-scoring nil)}
+
+In either case, GroupLens gives you a few choices for how you would like
+to see your predictions displayed.  The display of predictions is
+controlled by the variable @code{grouplens-prediction-display}
+
+ prediction-spot -- an * corresponding to the prediction between 1 and 5, 
+ confidence-interval -- a numeric confidence interval
+ prediction-bar --  |#####     | the longer the bar, the better the article,
+ confidence-bar --  |  -----   | the prediction is in the middle of the bar,
+ confidence-spot -- |  *       | the spot gets bigger with more confidence,
+ prediction-num  --   plain-old numeric value,
+ confidence-plus-minus  -- prediction +/i confidence")
+
+----------------------------------------------------------------
+In particular, I'm pretty sure these last few lines will not look very
+pretty without some additional texinfo magic, magic that is beyond me at
+this time of the day.
 
 
 @node Various Various

@@ -267,7 +267,7 @@ virtual group.")
 	(if (cdadr mr)
 	    (setq mr (cdr mr))
 	  (setcdr mr (cddr mr))))
-      
+
       ;; Enter these new marks into the info of the group.
       (if (nthcdr 3 info)
 	  (setcar (nthcdr 3 info) marks)
@@ -325,6 +325,14 @@ virtual group.")
   (let ((inf t))
     (when (or (not (equal group nnvirtual-current-group))
 	      check)
+      (setq inf (assoc group nnvirtual-group-alist))
+      (when nnvirtual-current-group
+	;; Push the old group variables onto the alist.
+	(setq nnvirtual-group-alist
+	      (cons (list nnvirtual-current-group
+			  nnvirtual-component-groups
+			  nnvirtual-mapping)
+		    (delq inf nnvirtual-group-alist))))
       (if check
 	  ;; We nix out the variables.
 	  (setq nnvirtual-current-group nil
@@ -333,14 +341,6 @@ virtual group.")
 		nnvirtual-group-alist
 		(delq (assoc group nnvirtual-group-alist)
 		      nnvirtual-group-alist))
-	(setq inf (assoc group nnvirtual-group-alist))
-	(when nnvirtual-current-group
-	  ;; Push the old group variables onto the alist.
-	  (setq nnvirtual-group-alist
-		(cons (list nnvirtual-current-group
-			    nnvirtual-component-groups
-			    nnvirtual-mapping)
-		      (delq inf nnvirtual-group-alist))))
 	(setq nnvirtual-current-group nil
 	      nnvirtual-component-groups nil
 	      nnvirtual-mapping nil)
@@ -420,7 +420,8 @@ virtual group.")
 		'nconc
 		(mapcar
 		 (lambda (g)
-		   (when (setq active (gnus-activate-group g))
+		   (when (and (setq active (gnus-activate-group g))
+			      (> (cdr active) (car active)))
 		     (setq unreads (gnus-list-of-unread-articles g)
 			   marks (gnus-uncompress-marks
 				  (gnus-info-marks (gnus-get-info g))))

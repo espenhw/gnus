@@ -161,7 +161,8 @@
 (if gnus-use-sc
     (progn
       (add-hook 'mail-citation-hook 'sc-cite-original)
-      (setq message-cite-function 'sc-cite-original)))
+      (setq message-cite-function 'sc-cite-original)
+      (autoload 'sc-cite-original "supercite")))
 
 ;;;### (autoloads (gnus-batch-score gnus-fetch-group gnus gnus-slave gnus-no-server gnus-update-format) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el

@@ -41,6 +41,7 @@
 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
 (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
 (defalias 'gnus-make-local-hook 'make-local-hook)
+(defalias 'gnus-character-to-event 'identity)
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")
@@ -51,21 +52,6 @@
     (fset 'mail-file-babyl-p 'rmail-file-p))
 
 ;;; Mule functions.
-
-(defun gnus-mule-truncate-string (str width)
-  (let ((w (string-width str))
-	(col 0) (idx 0) (p-idx 0) chr)
-    (if (<= w width)
-	str
-      (while (< col width)
-	(setq chr (aref str idx)
-	      col (+ col (char-width chr))
-	      p-idx idx
-	      idx (+ idx (char-bytes chr))
-	      ))
-      (substring str 0 (if (= col width)
-			   idx
-			 p-idx)))))
 
 (defun gnus-mule-cite-add-face (number prefix face)
   ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
@@ -89,7 +75,7 @@
 	    (valstr (if (numberp val)
 			(int-to-string val) val)))
        (if (> (length valstr) (, max-width))
-	   (gnus-truncate-string valstr (, max-width))
+	   (truncate-string valstr (, max-width))
 	 valstr))))
 
 (eval-and-compile
@@ -205,9 +191,7 @@ pounce directly on the real variables themselves."))
 
    ((boundp 'MULE)
     ;; Mule definitions
-    (defalias 'gnus-truncate-string
-      (if (fboundp 'truncate-string)
-	  'truncate-string 'gnus-mule-truncate-string))
+    (defalias 'gnus-truncate-string 'truncate-string)
 
     (fset 'gnus-summary-make-display-table (lambda () nil))
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
@@ -229,7 +213,7 @@ pounce directly on the real variables themselves."))
 	  (format "%4d: %-20s" 
 		  gnus-tmp-lines 
 		  (if (> (length gnus-tmp-name) 20) 
-		      (gnus-truncate-string gnus-tmp-name 20) 
+		      (truncate-string gnus-tmp-name 20) 
 		    gnus-tmp-name))
 	  gnus-tmp-closing-bracket)
 	 (point))

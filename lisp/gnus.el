@@ -1695,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.67"
+(defconst gnus-version "September Gnus v0.68"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -14283,12 +14283,12 @@ If given a numerical ARG, move forward ARG pages."
   "Show the next page of the article."
   (interactive)
   (when (gnus-article-next-page)
-    (gnus-article-read-summary-keys nil ?n)))
+    (gnus-article-read-summary-keys nil (gnus-character-to-event ?n))))
 
 (defun gnus-article-goto-prev-page ()
   "Show the next page of the article."
   (interactive)
-  (if (bobp) (gnus-article-read-summary-keys nil ?n)
+  (if (bobp) (gnus-article-read-summary-keys nil (gnus-character-to-event ?n))
     (gnus-article-prev-page nil)))
 
 (defun gnus-article-next-page (&optional lines)
@@ -15610,7 +15610,7 @@ newsgroup."
 		   info active
 		   (and method
 			(fboundp (intern (concat (symbol-name (car method))
-						 "-request-scan"))))))
+						 "-request-update-info"))))))
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)

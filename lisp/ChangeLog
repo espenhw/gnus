@@ -1,4 +1,49 @@
+Tue Apr  9 00:15:43 1996  Brad Miller  <bmiller@cs.umn.edu>
+
+	* gnus-gl.el: New version.
+
+Mon Apr  8 23:55:19 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-create-mapping): Would include `(0 . 0)'
+	groups.
+
+Tue Apr  9 01:40:56 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-article-goto-next-page): Would bug out under
+	XEmacs. 
+	(gnus-get-unread-articles): Wouldn't update virtual groups.
+
+	* gnus-ems.el ('gnus-character-to-event): New alias.
+	* gnus-xmas.el (gnus-xmas-redefine): Redefine.
+
+Mon Apr  8 21:55:15 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-user-mail-address): New function.
+	(message-make-address): Use it.
+
+Mon Apr  8 19:18:14 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-make-fqdm): mail-host-address may be
+	unbound. 
+
+	* nndoc.el (nndoc-type-alist): Unquote dashes in forwards.
+
+Mon Apr  8 19:14:05 1996  ISO-2022-JP  <morioka@jaist.ac.jp>
+
+	* gnus-ems.el (gnus-mule-max-width-function): Use
+	`truncate-string'. 
+
+Sat Apr  6 15:03:39 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-setup.el (gnus-use-sc): Arrange for autoload of supercite
+	if necessary.
+
+	* nnml.el (nnml-server-variables): Obey user preferences for
+	nnml-prepare-save-mail-hook.
+
 Sun Apr  7 20:14:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: September Gnus v0.67 is released.
 
 	* gnus.el (gnus-group-get-new-news-this-group): Would update
 	groups twice.

@@ -63,7 +63,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (head-begin . "^[0-9].*\n"))
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
-     (body-end . "^-+ End of forwarded message -+\n"))
+     (body-end . "^-+ End of forwarded message -+\n")
+     (prepare-body . nndoc-unquote-dashes))
     (clari-briefs
      (article-begin . "^ \\*")
      (body-end . "^\t------*[ \t]^*\n^ \\*")
@@ -77,7 +78,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (body-end-function . nndoc-digest-body-end)
      (body-begin . "^ ?$")
      (file-end . "^End of")
-     (prepare-body . nndoc-prepare-digest-body))
+     (prepare-body . nndoc-unquote-dashes))
     (mime-digest
      (article-begin . "")
      (head-end . "^ ?$")
@@ -86,7 +87,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (standard-digest
      (first-article . ,(concat "^" (make-string 70 ?-) "\n\n+"))
      (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n+"))
-     (prepare-body . nndoc-prepare-digest-body)
+     (prepare-body . nndoc-unquote-dashes)
      (body-end-function . nndoc-digest-body-end)
      (head-end . "^ ?$")
      (body-begin . "^ ?\n")
@@ -438,7 +439,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		      (count-lines body-begin body-end))
 		nndoc-dissection-alist))))))
 
-(defun nndoc-prepare-digest-body ()
+(defun nndoc-unquote-dashes ()
   "Unquote quoted non-separators in digests."
   (while (re-search-forward "^- -"nil t)
     (replace-match "-" t t)))

@@ -62,8 +62,9 @@ If `parens', they look like:
 	king@grassland.com (Elvis Parsley)
 If `angles', they look like:
 	Elvis Parsley <king@grassland.com>
-Otherwise, most addresses look like `angles', but they look like `parens'
-	if `angles' would need quoting and `parens' would not.")
+
+Otherwise, most addresses look like `angles', but they look like
+`parens' if `angles' would need quoting and `parens' would not.")
 
 ;;;###autoload
 (defvar message-syntax-checks
@@ -1635,8 +1636,15 @@ give as trustworthy answer as possible."
 
 (defun message-make-address ()
   "Make the address of the user."
-  (or user-mail-address
+  (or (message-user-mail-address)
       (concat (user-login-name) "@" (message-make-domain))))
+
+(defun message-user-mail-address ()
+  "Return the pertinent part of `user-mail-address'."
+  (when (string-match
+	 "\\(\\`\\|[ \t]\\)\\([^ \t@]+@[^ \t]+\\)\\(\\'\\|[ \t]\\)" 
+	 user-mail-address)
+    (match-string 2 user-mail-address)))
 
 (defun message-make-fqdm ()
   "Return user's fully qualified domain name."
@@ -1649,7 +1657,9 @@ give as trustworthy answer as possible."
      ((string-match "@\\([^\\s-]+\\)\\(\\'\\|\\W\\)" user-mail-address)
       (match-string 1 user-mail-address))
      ;; Try `mail-host-address'.
-     (mail-host-address mail-host-address)
+     ((and (boundp 'mail-host-address)
+	   mail-host-address)
+      mail-host-address)
      ;; Default to this bogus thing.
      (t
       (concat system-name ".i-have-a-misconfigured-system-so-shoot-me")))))
