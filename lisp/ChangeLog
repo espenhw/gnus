@@ -1,5 +1,8 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-field-value): New function.
+	(message-insert-disposition-notification-to): Use Reply-To, too.
+
 	* imap.el (imap-mailbox-status): Upcase STATUS commands. 
 
 	* gnus-sum.el (gnus-remove-odd-characters): New function.
