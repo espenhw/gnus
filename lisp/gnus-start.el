@@ -262,6 +262,12 @@ claim them."
 		function
 		(repeat function)))
 
+(defcustom gnus-subscribe-newsgroup-hooks nil
+  "*Hooks run after you subscribe to a new group. The hooks will be called
+with new group's name as argument."
+  :group 'gnus-group-new
+  :type 'hook)
+
 (defcustom gnus-subscribe-options-newsgroup-method
   'gnus-subscribe-alphabetically
   "*Function(s) called to subscribe newsgroups mentioned on \"options -n\" lines.
@@ -575,6 +581,7 @@ the first newsgroup."
      gnus-level-killed (gnus-gethash (or next "dummy.group")
 				     gnus-newsrc-hashtb))
     (gnus-message 5 "Subscribe newsgroup: %s" newsgroup)
+    (run-hook-with-args 'gnus-subscribe-newsgroup-hooks newsgroup)
     t))
 
 (defun gnus-read-active-file-p ()

@@ -1,14 +1,21 @@
+2001-03-21  Didier Verna  <didier@lrde.epita.fr>
+
+	* gnus-start.el:
+	* gnus-start.el (gnus-subscribe-newsgroup-hooks): New.
+	* gnus-start.el (gnus-subscribe-newsgroup): use it.
+
+
 2001-03-15 09:47:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Understand
 	long-form month names.
 
 2001-03-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* gnus-sum.el (gnus-summary-show-all-headers):
 	gnus-article-show-all-headers is broken. Use
 	gnus-summary-toggle-header instead.
-	
+
 	* mml2015.el (mml2015-gpg-extract-from): No error.
 
 2001-03-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -64,7 +71,7 @@
 	(message-forward-subject-author-subject): Use it.
 	(message-make-forward-subject): Use it.
 	(message-forward): Use it.
-	
+
 	* gnus-uu.el (gnus-uu-digest-mail-forward): Use it.
 
 	* mm-util.el, message.el, rfc2047.el, gnus-sum.el, gnus-score.el:
@@ -103,7 +110,7 @@
 
 	* rfc2047.el (rfc2047-unfold-region): Fix arg of
 	`skip-chars-forward'.
-	
+
 2001-03-07 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndraft.el (nndraft-request-group): Restore auto save files if
@@ -137,7 +144,7 @@
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Make
 	gnus-article-post-menu here.
-	
+
 	* gnus-art.el (gnus-article-make-menu-bar): Make summary-menu bar
 	if it has not been made.
 
@@ -152,9 +159,9 @@
 
 2001-03-01 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Katsumi Yamaoka <yamaoka@jpl.org>.
-	
+
 	* dgnushack.el (coerce, merge, subseq): defmacro.
-	
+
 2001-03-01 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el (nndraft-request-group): Move it here from nndraft.el.
@@ -189,7 +196,7 @@
 	* nnml.el (nnml-generate-active-info): Fix the case when there is
 	no file.
 
-	* gnus-sum.el (gnus-summary-import-article): Display it. Enable edit. 
+	* gnus-sum.el (gnus-summary-import-article): Display it. Enable edit.
 	(gnus-summary-create-article): New.
 
 	* gnus-group.el (gnus-group-mark-article-read): New.
@@ -204,7 +211,7 @@
 	gnus-article-edit-exit.
 	(gnus-article-edit-exit): Confirm and insert original-article-buffer.
 
-	* gnus.el (gnus-parameters): New. 
+	* gnus.el (gnus-parameters): New.
 	Suggested by NAGY Andras <nagya@inf.elte.hu>.
 	(gnus-parameters-get-parameter): New.
 	(gnus-group-find-parameter): Use it.
@@ -255,7 +262,7 @@
 	New.
 	(gnus-mime-display-multipart-related-as-mixed): New.
 	(gnus-mime-display-part): Use them.
-	 	
+
 2001-02-20 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-setup-news): Allow gnus-group-line-format to be
@@ -277,7 +284,7 @@
 	* gnus-sum.el (gnus-thread-sort-functions): Doc fix.  Refer to
 	gnus-article-sort-functions.
 	(gnus-article-sort-functions): Doc fix.  Refer to
-	gnus-thread-sort-functions. 
+	gnus-thread-sort-functions.
 
 2001-02-18 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Paul Jarc <prj@po.cwru.edu>.
@@ -343,7 +350,7 @@
 	(gnus-summary-setup-default-charset): Use them.
 
 	* gnus-start.el (gnus-read-descriptions-file): Use them.
-	
+
 	* gnus-cus.el (gnus-group-parameters): Remove them.
 
 2001-02-14 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -352,7 +359,7 @@
 
 2001-02-13 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-sum.el (gnus-summary-read-group-1): Remove 
+	* gnus-sum.el (gnus-summary-read-group-1): Remove
 	gnus-summary-set-local-parameters.
 	(gnus-summary-setup-buffer): Put it here.
 
@@ -427,7 +434,7 @@
 2001-02-09 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el : Add URLDIR.
-	
+
 	* Makefile.in (EMACS_COMP): Ditto.
 
 2001-02-09 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -440,7 +447,7 @@
 
 	* mm-view.el (mm-inline-message): Use it.
 	(mm-view-message): Ditto.
-	
+
 	* mm-partial.el (mm-inline-partial): Ditto.
 
 	* mm-extern.el (mm-inline-external-body): Ditto.
@@ -455,7 +462,7 @@
 	* message.el (message-cancel-news): Allow to shoot foot.
 	(message-supersede): Ditto.
 
-2001-02-08  Tommi Vainikainen <thv@iki.fi> 
+2001-02-08  Tommi Vainikainen <thv@iki.fi>
 
 	* gnus-sum.el (gnus-simplify-subject-re): Use
 	message-subject-re-regexp.
@@ -474,7 +481,7 @@
 	between 00 and FF.  Don't check charset.
 
 	* mm-encode.el (mm-encode-content-transfer-encoding): Use unibyte
-	in Emacs 20.  
+	in Emacs 20.
 	* rfc2047.el (rfc2047-q-encode-region): Ditto.
 
 2001-02-07 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -551,9 +558,9 @@
 	* gnus-sum.el (gnus-summary-make-menu-bar): Use t if XEmacs.
 
 	* gnus-group.el (gnus-group-make-menu-bar): Ditto.
-	
+
 	* message.el (message-mode-menu): Ditto.
-	
+
 	* gnus-art.el (defvar): eval-when-compile.
 
 2001-02-02 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -582,7 +589,7 @@
 2001-01-26  Dave Love  <fx@gnu.org>
 
 	* mm-util.el (mm-multibyte-string-p): New.
-	
+
 ;;	* qp.el: Remove un-logged bogus changes from 2000-12-20.
 ;;	(quoted-printable-encode-region): Doc fix.  Don't call
 ;;	string-as-multibyte on class.  Clarify line-folding.
@@ -624,7 +631,7 @@
 2001-01-30 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-string-equal): New function.
-	
+
 	* gnus-art.el (article-hide-boring-headers): Use it.
 
 2001-01-27  Karl Kleinpaste <karl@charcoal.com>
@@ -660,7 +667,7 @@
 	(gnus-server-insert-server-line): Use it.
 
 2001-01-24 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* mm-util.el (mm-mime-mule-charset-alist): Preferred MIME names
 	GB2312 and Big5.
 
@@ -681,7 +688,7 @@
 
 2001-01-11 11:49:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-int.el (gnus-check-server): Allow breaking the opening. 
+	* gnus-int.el (gnus-check-server): Allow breaking the opening.
 
 2001-01-23 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -701,7 +708,7 @@
 	* gnus.el: Fix copyright. Remove trailing spaces.
 
 	* message.el (message-forward): Use mule4.
-	
+
 2001-01-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-string-as-unibyte): New.
@@ -813,7 +820,7 @@
 	verify certificate.  Default is changed to only check integrity.
 	Improved security status texts.  If a certificate doesn't contain
 	a email address, don't fail.
-	
+
 	* smime.el (smime-noverify-region):
 	(smime-noverify-buffer): New functions.  Verifies integrity only.
 
