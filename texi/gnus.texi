@@ -18409,7 +18409,7 @@ downloaded or not, for all articles.  When @code{nil}, the default,
 the agent will only let the predicate decide whether unread articles
 are downloaded or not.  If you enable this, you may also want to look
 into the agent expiry settings (@pxref{Category Variables}), so that
-the agent doesn't download article which the agent will later expire,
+the agent doesn't download articles which the agent will later expire,
 over and over again.
 
 @item gnus-agent-max-fetch-size
