@@ -1495,9 +1495,9 @@ header in the current article."
 	(when (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
 	  (push 'pgp gnus-article-wash-types)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  ;; PGP 5 and GNU PG add a `Hash: <>' comment, hide that too
-	  (when (looking-at "Hash:.*$")
-	    (delete-region (point) (1+ (gnus-point-at-eol))))
+	  ;; Remove armor headers (rfc2440 6.2)
+	  (delete-region (point) (or (re-search-forward "^[ \t]*\n" nil t)
+				     (point)))
 	  (setq beg (point))
 	  ;; Hide the actual signature.
 	  (and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
