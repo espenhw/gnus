@@ -1,9 +1,59 @@
+1999-12-01 21:59:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-mode-map): Changed keystroke for
+	message-yank-buffer. 
+
+1999-11-26  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* message.el (message-shorten-references): Cut references to 31
+	elements, then either fold them or shorten them to 988 characters.
+	(message-shorten-1): New function.
+	(message-cater-to-broken-inn): New variable.
+
+1999-12-01 21:47:10  Eric Marsden  <emarsden@mail.dotcom.fr>
+
+	* nnslashdot.el (nnslashdot-lose): New function.
+
+1999-12-01 21:08:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-message): Not the right type of charset is 
+	being fetched here.  Let the group charset rule.
+	(mm-inline-message): Ignore us-ascii.
+
+1999-11-24  Carsten Leonhardt  <leo@arioch.oche.de>
+
+	* mail-source.el (mail-source-fetch-maildir): work around the
+	ommitted "file-regular-p" in efs/ange-ftp
+
+1999-12-01 19:59:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-generate-mime-1): Don't insert extra empty line.
+	(mml-generate-mime-1): Use the encoding param.
+
+	* gnus-sum.el (gnus-summary-show-article): Don't bind gnus-visual.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Require
+	gnus-art before binding its variables.
+
+	* gnus-art.el (gnus-article-prepare-display): Run the prepare
+	after the MIME.
+
+1999-12-01 19:48:14  Rupa Schomaker  <rupa-list@rupa.com>
+
+	* message.el (message-clone-locals): Use it.
+
+	* gnus-msg.el (gnus-configure-posting-styles): Make
+	user-mail-address local.
+
 1999-11-20  Simon Josefsson  <jas@pdc.kth.se>
 
         * gnus-start.el (gnus-get-unread-articles): Scan each method only
 	once.
 
 1999-12-01 17:37:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-generate-new-buffer-clone-locals): Use varstr.
+	(message-clone-locals): Ditto.
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): Have the digest
 	group inherit reply-to or from.

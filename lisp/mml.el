@@ -241,7 +241,8 @@ called for this message.")
 		  (delete-region (+ (match-beginning 0) 2)
 				 (+ (match-beginning 0) 3))))))
 	    (setq charset (mm-encode-body))
-	    (setq encoding (mm-body-encoding charset))
+	    (setq encoding (mm-body-encoding charset 
+					     (cdr (assq 'encoding cont))))
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
 	  (cond
@@ -300,7 +301,6 @@ called for this message.")
         (let ((mml-boundary (mml-compute-boundary cont)))
           (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
                           type mml-boundary))
-          (insert "\n")
           (setq cont (cddr cont))
           (while cont
             (insert "\n--" mml-boundary "\n")

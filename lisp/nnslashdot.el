@@ -90,10 +90,12 @@
 
 (deffoo nnslashdot-retrieve-headers (articles &optional group server fetch-old)
   (nnslashdot-possibly-change-server group server)
-  (unless gnus-nov-is-evil
-    (if nnslashdot-threaded
-	(nnslashdot-threaded-retrieve-headers articles group)
-      (nnslashdot-sane-retrieve-headers articles group))))
+  (condition-case why
+      (unless gnus-nov-is-evil
+        (if nnslashdot-threaded
+            (nnslashdot-threaded-retrieve-headers articles group)
+          (nnslashdot-sane-retrieve-headers articles group)))
+    (search-failed (nnslashdot-lose why))))
   
 (deffoo nnslashdot-threaded-retrieve-headers (articles group)
   (let ((last (car (last articles)))
@@ -310,46 +312,49 @@
 (deffoo nnslashdot-request-article (article &optional group server buffer)
   (nnslashdot-possibly-change-server group server)
   (let (contents)
-    (save-excursion
-      (set-buffer nnslashdot-buffer)
-      (let ((case-fold-search t))
-	(goto-char (point-min))
-	(when (and (stringp article)
-		   (string-match "%\\([0-9]+\\)@" article))
-	  (setq article (string-to-number (match-string 1 article))))
-	(when (numberp article)
-	  (if (= article 1)
-	      (progn
-		(re-search-forward "Posted by .* on ")
-		(forward-line 1)
+    (condition-case why
+	(save-excursion
+	  (set-buffer nnslashdot-buffer)
+	  (let ((case-fold-search t))
+	    (goto-char (point-min))
+	    (when (and (stringp article)
+		       (string-match "%\\([0-9]+\\)@" article))
+	      (setq article (string-to-number (match-string 1 article))))
+	    (when (numberp article)
+	      (if (= article 1)
+		  (progn
+		    (re-search-forward "Posted by .* on ")
+		    (forward-line 1)
+		    (setq contents
+			  (buffer-substring
+			   (point)
+			   (progn
+			     (re-search-forward
+			      "<p>.*A href=http://slashdot.org/article.pl")
+			     (match-beginning 0)))))
+		(search-forward (format "<a name=\"%d\">" (1- article)))
 		(setq contents
 		      (buffer-substring
-		       (point)
-		       (progn
-			 (re-search-forward
-			  "<p>.*A href=http://slashdot.org/article.pl")
-			 (match-beginning 0)))))
-	    (search-forward (format "<a name=\"%d\">" (1- article)))
-	    (setq contents
-		  (buffer-substring
-		   (re-search-forward "<td[^>]+>")
-		   (search-forward "</td>")))))))
-    (when contents
-      (save-excursion
-	(set-buffer (or buffer nntp-server-buffer))
-	(erase-buffer)
-	(insert contents)
-	(goto-char (point-min))
-	(while (search-forward "<br><br>" nil t)
-	  (replace-match "<p>" t t))
-	(goto-char (point-min))
-	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
-	(insert "Newsgroups: " (caddr (assoc group nnslashdot-groups))
-		"\n")
-	(let ((header (cdr (assq article nnslashdot-headers))))
-	  (nnheader-insert-header header))
-	(nnheader-report 'nnslashdot "Fetched article %s" article)
-	(cons group article)))))
+		       (re-search-forward "<td[^>]+>")
+		       (search-forward "</td>")))))))
+      (search-failed (nnslashdot-lose why))))
+
+  (when contents
+    (save-excursion
+      (set-buffer (or buffer nntp-server-buffer))
+      (erase-buffer)
+      (insert contents)
+      (goto-char (point-min))
+      (while (search-forward "<br><br>" nil t)
+	(replace-match "<p>" t t))
+      (goto-char (point-min))
+      (insert "Content-Type: text/html\nMIME-Version: 1.0\n")
+      (insert "Newsgroups: " (caddr (assoc group nnslashdot-groups))
+	      "\n")
+      (let ((header (cdr (assq article nnslashdot-headers))))
+	(nnheader-insert-header header))
+      (nnheader-report 'nnslashdot "Fetched article %s" article)
+      (cons group article)))))
 
 (deffoo nnslashdot-close-server (&optional server)
   (when (and (nnslashdot-server-opened server)
@@ -363,49 +368,51 @@
   (nnslashdot-possibly-change-server nil server)
   (let ((number 0)
 	sid elem description articles gname)
-    ;; First we do the Ultramode to get info on all the latest groups.
-    (with-temp-buffer
-      (nnweb-insert "http://slashdot.org/slashdot.xml")
-      (goto-char (point-min))
-      (while (search-forward "<story>" nil t)
-	(narrow-to-region (point) (search-forward "</story>"))
-	(goto-char (point-min))
-	(re-search-forward "<title>\\([^<]+\\)</title>")
-	(setq description (match-string 1))
-	(re-search-forward "<url>\\([^<]+\\)</url>")
-	(setq sid (match-string 1))
-	(string-match "/\\([0-9/]+\\).shtml" sid)
-	(setq sid (match-string 1 sid))
-	(re-search-forward "<comments>\\([^<]+\\)</comments>")
-	(setq articles (string-to-number (match-string 1)))
-	(setq gname (concat description " (" sid ")"))
-	(if (setq elem (assoc gname nnslashdot-groups))
-	    (setcar (cdr elem) articles)
-	  (push (list gname articles sid) nnslashdot-groups))
-	(goto-char (point-max))
-	(widen)))
-    ;; Then do the older groups.
-    (while (> (- nnslashdot-group-number number) 0)
-      (with-temp-buffer
-	(let ((case-fold-search t))
-	  (nnweb-insert (format nnslashdot-active-url number))
-	  (goto-char (point-min))
-	  (while (re-search-forward
-		  "article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
-	    (setq sid (match-string 1)
-		  description (match-string 2))
-	    (forward-line 1)
-	    (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
-	      (setq articles (string-to-number (match-string 1))))
-	    (setq gname (concat description " (" sid ")"))
-	    (if (setq elem (assoc gname nnslashdot-groups))
-		(setcar (cdr elem) articles)
-	      (push (list gname articles sid) nnslashdot-groups)))))
-      (incf number 30))
+    (condition-case why
+        ;; First we do the Ultramode to get info on all the latest groups.
+        (with-temp-buffer
+          (nnweb-insert "http://slashdot.org/slashdot.xml")
+          (goto-char (point-min))
+          (while (search-forward "<story>" nil t)
+            (narrow-to-region (point) (search-forward "</story>"))
+            (goto-char (point-min))
+            (re-search-forward "<title>\\([^<]+\\)</title>")
+            (setq description (match-string 1))
+            (re-search-forward "<url>\\([^<]+\\)</url>")
+            (setq sid (match-string 1))
+            (string-match "/\\([0-9/]+\\).shtml" sid)
+            (setq sid (match-string 1 sid))
+            (re-search-forward "<comments>\\([^<]+\\)</comments>")
+            (setq articles (string-to-number (match-string 1)))
+            (setq gname (concat description " (" sid ")"))
+            (if (setq elem (assoc gname nnslashdot-groups))
+                (setcar (cdr elem) articles)
+              (push (list gname articles sid) nnslashdot-groups))
+            (goto-char (point-max))
+            (widen)))
+      ;; Then do the older groups.
+      (while (> (- nnslashdot-group-number number) 0)
+        (with-temp-buffer
+          (let ((case-fold-search t))
+            (nnweb-insert (format nnslashdot-active-url number))
+            (goto-char (point-min))
+            (while (re-search-forward
+                    "article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
+              (setq sid (match-string 1)
+                    description (match-string 2))
+              (forward-line 1)
+              (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
+                (setq articles (string-to-number (match-string 1))))
+              (setq gname (concat description " (" sid ")"))
+              (if (setq elem (assoc gname nnslashdot-groups))
+                  (setcar (cdr elem) articles)
+                (push (list gname articles sid) nnslashdot-groups)))))
+        (incf number 30))
+      (search-failed (nnslashdot-lose why)))
     (nnslashdot-write-groups)
     (nnslashdot-generate-active)
     t))
-
+  
 (deffoo nnslashdot-request-newgroups (date &optional server)
   (nnslashdot-possibly-change-server nil server)
   (nnslashdot-generate-active)
@@ -507,6 +514,9 @@
     (dolist (elem nnslashdot-groups)
       (insert (prin1-to-string (car elem))
 	      " " (number-to-string (cadr elem)) " 1 y\n"))))
+
+(defun nnslashdot-lose (why)
+  (error "Slashdot HTML has changed; please get a new version of nnslashdot"))
 
 (provide 'nnslashdot)
 

@@ -7153,8 +7153,7 @@ without any article massaging functions being run."
 	  gnus-article-prepare-hook
 	  gnus-article-decode-hook
 	  gnus-display-mime-function
-	  gnus-break-pages
-	  gnus-visual)
+	  gnus-break-pages)
       ;; Destroy any MIME parts.
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion

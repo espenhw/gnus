@@ -407,6 +407,11 @@ might set this variable to '(\"-f\" \"you@some.where\")."
   :group 'message-sending
   :type '(repeat string))
 
+(defvar message-cater-to-broken-inn t
+  "Non-nil means Gnus should not fold the `References' header.
+Folding `References' makes ancient versions of INN create incorrect
+NOV lines.")
+
 (defvar gnus-post-method)
 (defvar gnus-select-method)
 (defcustom message-post-method
@@ -1300,7 +1305,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
-  (define-key message-mode-map "\C-c\C-Y" 'message-yank-buffer)
+  (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)
   (define-key message-mode-map "\C-c\C-q" 'message-fill-yanked-message)
   (define-key message-mode-map "\C-c\C-w" 'message-insert-signature)
   (define-key message-mode-map "\C-c\M-h" 'message-insert-headers)
@@ -2173,7 +2178,7 @@ the user from the mailer."
 (defun message-send-mail-with-sendmail ()
   "Send off the prepared buffer with sendmail."
   (let ((errbuf (if message-interactive
-		    (generate-new-buffer " sendmail errors")
+		    (message-generate-new-buffer-clone-locals " sendmail errors")
 		  0))
 	resend-to-addresses delimline)
     (let ((case-fold-search t))
@@ -2210,7 +2215,11 @@ the user from the mailer."
 		     ;; But some systems are more broken with -f, so
 		     ;; we'll let users override this.
 		     (if (null message-sendmail-f-is-evil)
-			 (list "-f" (user-login-name)))
+			 (list "-f"
+			       (if (null user-mail-address)
+				   (user-login-name)
+				 (user-mail-address))
+			       ))
 		     ;; These mean "report errors by mail"
 		     ;; and "deliver in background".
 		     (if (null message-interactive) '("-oem" "-odb"))
@@ -3175,7 +3184,7 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-fill-header (header value)
   (let ((begin (point))
-	(fill-column 990)
+	(fill-column 78)
 	(fill-prefix "\t"))
     (insert (capitalize (symbol-name header))
 	    ": "
@@ -3194,23 +3203,60 @@ Headers already prepared in the buffer are not modified."
 	(replace-match " " t t))
       (goto-char (point-max)))))
 
+(defun message-shorten-1 (list cut surplus)
+  ;; Cut SURPLUS elements out of LIST, beginning with CUTth one.
+  (setcdr (nthcdr (- cut 2) refs)
+	  (nthcdr (+ (- cut 2) surplus 1) refs)))
+
 (defun message-shorten-references (header references)
-  "Limit REFERENCES to be shorter than 988 characters."
-  (let ((max 988)
-	(cut 4)
+  "Trim REFERENCES to be less than 31 Message-ID long, and fold them.
+If folding is disallowed, also check that the REFERENCES are less
+than 988 characters long, and if they are not, trim them until they are."
+  (let ((maxcount 31)
+	(count 0)
+	(cut 6)
 	refs)
     (with-temp-buffer
       (insert references)
       (goto-char (point-min))
+      ;; Cons a list of valid references.
       (while (re-search-forward "<[^>]+>" nil t)
 	(push (match-string 0) refs))
-      (setq refs (nreverse refs))
-      (while (> (length (mapconcat 'identity refs " ")) max)
-	(when (< (length refs) (1+ cut))
-	  (decf cut))
-	(setcdr (nthcdr cut refs) (cddr (nthcdr cut refs)))))
-    (insert (capitalize (symbol-name header)) ": "
-	    (mapconcat 'identity refs " ") "\n")))
+      (setq refs (nreverse refs)
+	    count (length refs)))
+
+    ;; If the list has more than MAXCOUNT elements, trim it by
+    ;; removing the CUTth element and the required number of
+    ;; elements that follow.
+    (when (> count maxcount)
+      (let ((surplus (- count maxcount)))
+	(message-shorten-1 refs cut surplus)
+	(decf count surplus)))
+
+    ;; If folding is disallowed, make sure the total length (including
+    ;; the spaces between) will be less than MAXSIZE characters.
+    (when message-cater-to-broken-inn
+      (let ((maxsize 988)
+	    (totalsize (+ (apply #'+ (mapcar #'length refs))
+			  (1- count)))
+	    (surplus 0)
+	    (ptr (nthcdr (1- cut) refs)))
+	;; Decide how many elements to cut off...
+	(while (> totalsize maxsize)
+	  (decf totalsize (1+ (length (car ptr))))
+	  (incf surplus)
+	  (setq ptr (cdr ptr)))
+	;; ...and do it.
+	(when (> surplus 0)
+	  (message-shorten-1 refs cut surplus))))
+
+    ;; Finally, collect the references back into a string and insert
+    ;; it into the buffer.
+    (let ((refstring (mapconcat #'identity refs " ")))
+      (if message-cater-to-broken-inn
+	  (insert (capitalize (symbol-name header)) ": "
+		  refstring "\n")
+	(message-fill-header header refstring)))))
 
 (defun message-position-point ()
   "Move point to where the user probably wants to find it."
@@ -4138,20 +4184,22 @@ regexp varstr."
   (let ((oldbuf (current-buffer)))
     (save-excursion
       (set-buffer (generate-new-buffer name))
-      (message-clone-locals oldbuf)
+      (message-clone-locals oldbuf varstr)
       (current-buffer))))
 
-(defun message-clone-locals (buffer)
+(defun message-clone-locals (buffer &optional varstr)
   "Clone the local variables from BUFFER to the current buffer."
   (let ((locals (save-excursion
 		  (set-buffer buffer)
 		  (buffer-local-variables)))
-	(regexp "^gnus\\|^nn\\|^message"))
+	(regexp "^gnus\\|^nn\\|^message\\|^user-mail-address"))
     (mapcar
      (lambda (local)
        (when (and (consp local)
 		  (car local)
-		  (string-match regexp (symbol-name (car local))))
+		  (string-match regexp (symbol-name (car local)))
+		  (or (null varstr)
+		      (string-match varstr (symbol-name (car local)))))
 	 (ignore-errors
 	   (set (make-local-variable (car local))
 		(cdr local)))))
@@ -4197,7 +4245,7 @@ regexp varstr."
 		(delete-char 1)
 	      (search-forward "\n\n")
 	      (setq lines (buffer-substring (point-min) (1- (point))))
-	      (delete-region (point-min)  (point))))))
+	      (delete-region (point-min) (point))))))
       (save-restriction
 	(message-narrow-to-headers-or-head)
 	(message-remove-header "Mime-Version")

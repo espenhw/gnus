@@ -439,7 +439,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (let ((found 0)
 	  (mail-source-string (format "maildir:%s" path)))
       (dolist (file (directory-files path t))
-	(when (and (file-regular-p file)
+	(when (and (not (file-directory-p file))
 		   (not (if function
 			    (funcall function file mail-source-crash-box)
 			  (rename-file file mail-source-crash-box))))

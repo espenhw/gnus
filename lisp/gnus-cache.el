@@ -175,6 +175,7 @@ it's not cached."
 	    t				; The article already is saved.
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
+	    (require 'gnus-art)
 	    (let ((gnus-use-cache nil)
 		  (gnus-article-decode-hook nil))
 	      (gnus-request-article-this-buffer number group))

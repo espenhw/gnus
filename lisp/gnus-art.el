@@ -2724,9 +2724,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (setq buffer-read-only nil
 	  gnus-article-wash-types nil)
     (gnus-run-hooks 'gnus-tmp-internal-hook)
-    (gnus-run-hooks 'gnus-article-prepare-hook)
     (when gnus-display-mime-function
-      (funcall gnus-display-mime-function))))
+      (funcall gnus-display-mime-function))
+    (gnus-run-hooks 'gnus-article-prepare-hook)))
 
 ;;;
 ;;; Gnus MIME viewing functions

@@ -1216,6 +1216,8 @@ this is a reply."
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()
+ 		     (set (make-local-variable 'user-mail-address)
+ 			  ,(or (cdr address) user-mail-address))
 		     (let ((user-full-name ,(or (cdr name) (user-full-name)))
 			   (user-mail-address
 			    ,(or (cdr address) user-mail-address)))

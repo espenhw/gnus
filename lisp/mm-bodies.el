@@ -95,7 +95,7 @@ If no encoding was done, nil is returned."
 		(setq start nil)))
 	    charset)))))))
 
-(defun mm-body-encoding (charset)
+(defun mm-body-encoding (charset &optional encoding)
   "Do Content-Transfer-Encoding and return the encoding of the current buffer."
   (let ((bits (mm-body-7-or-8)))
     (cond
@@ -104,7 +104,8 @@ If no encoding was done, nil is returned."
      ((eq charset mail-parse-charset)
       bits)
      (t
-      (let ((encoding (or (cdr (assq charset mm-body-charset-encoding-alist))
+      (let ((encoding (or encoding
+			  (cdr (assq charset mm-body-charset-encoding-alist))
 			  (mm-qp-or-base64))))
 	(mm-encode-content-transfer-encoding encoding "text/plain")
 	encoding)))))
