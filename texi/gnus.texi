@@ -10563,7 +10563,10 @@ message/external-body @sc{mime} type.
 @item c (Article)
 @kindex c (Article)
 Copy the @sc{mime} object to a fresh buffer and display this buffer
-(@code{gnus-mime-copy-part}).
+(@code{gnus-mime-copy-part}).  Compressed files like @file{.gz} and
+@file{.bz2} are automatically decompressed if
+@code{auto-compression-mode} is enabled (@pxref{Compressed Files,,
+Accessing Compressed Files, emacs, The Emacs Editor}).
 
 @findex gnus-mime-print-part
 @item p (Article)
