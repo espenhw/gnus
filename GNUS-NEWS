@@ -8,6 +8,15 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Extended format specs.
+
+Format spec "%&user-date;" is added into
+gnus-summary-line-format-alist.  Also, user defined extended format
+specs are supported.  The extended format specs look like "%u&foo;",
+which invokes function gnus-user-format-function-foo.  Because "&" is
+used as the escape character, old user defined format "%u&" is no
+longer supported.
+
 ** `/ *' (gnus-summary-limit-include-cached) is rewritten.
 
 It was aliased to `Y c' (gnus-summary-insert-cached-articles). The new
