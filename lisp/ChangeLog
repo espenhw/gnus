@@ -1,5 +1,7 @@
 2002-05-25  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.el (gnus-large-newsgroup): Fix :type.
+
 	* nnimap.el (nnimap-nov-is-evil): Change default to t (because the
 	Agent cache NOV's by default now).
 	(nnimap-nov-is-evil): Make it default to `gnus-agent' instead.
