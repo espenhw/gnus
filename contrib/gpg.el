@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.8 2000/12/15 05:26:35 zsh Exp $
+;; $Id: gpg.el,v 1.9 2000/12/20 03:05:26 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -550,7 +550,7 @@ it are replaced by SUBSTITUTIONS.
 SUBSTITIONS is a list of (SYMBOL . SEXP) pairs, where SEXP is either a
 string (which is inserted literally), a list of strings (which are
 inserted as well), or nil, which means to insert nothing."
-  (let ((arglist (copy-list gpg-command-all-arglist)))
+  (let ((arglist (copy-sequence gpg-command-all-arglist)))
     (while template
       (let* ((templ (pop template))
 	     (repl (assoc templ substitutions))
