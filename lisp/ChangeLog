@@ -1,3 +1,13 @@
+2000-12-30 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (autoload): Autoload gnus-sorted-intersection.
+
+	* nnml.el (autoload): Move to nnheader.el.
+
+	* nnfolder.el (nnfolder-existing-articles): Reversed.
+	(nnfolder-request-expire-articles): Use gnus-sorted-intersection.
+	(nnfolder-retrieve-headers): Use intersection.
+
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (article-make-date-line): Get the hours right.

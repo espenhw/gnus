@@ -34,6 +34,7 @@
 (require 'mail-utils)
 (require 'mm-util)
 (eval-and-compile
+  (autoload 'gnus-sorted-intersection "gnus-range")
   (autoload 'gnus-intersection "gnus-range")
   (autoload 'gnus-sorted-complement "gnus-range"))
 

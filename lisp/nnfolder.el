@@ -37,6 +37,9 @@
 (require 'gnus-util)
 (require 'gnus-range)
 
+(eval-and-compile
+  (autoload 'gnus-intersection "gnus-range"))
+
 (nnoo-declare nnfolder)
 
 (defvoo nnfolder-directory (expand-file-name message-directory)
@@ -141,6 +144,10 @@ all.  This may very well take some time.")
 	    'headers
 	  (if (nnfolder-retrieve-headers-with-nov articles fetch-old)
 	      'nov
+	    (setq articles (gnus-sorted-intersection 
+			    ;; Is ARTICLES sorted?
+			    (sort articles)
+			    (nnfolder-existing-articles)))
 	    (while (setq article (pop articles))
 	      (set-buffer nnfolder-current-buffer)
 	      (when (nnfolder-goto-article article)
@@ -337,13 +344,13 @@ all.  This may very well take some time.")
       (let ((marker (concat "\n" nnfolder-article-marker))
 	    (number "[0-9]+")
 	    numbers)
-      
 	(while (and (search-forward marker nil t)
 		    (re-search-forward number nil t))
 	  (let ((newnum (string-to-number (match-string 0))))
 	    (if (nnmail-within-headers-p)
 		(push newnum numbers))))
-	numbers))))
+	;; The article numbers are increasing, so this result is sorted.
+	(nreverse numbers)))))
 
 (deffoo nnfolder-request-expire-articles
     (articles newsgroup &optional server force)
@@ -354,7 +361,7 @@ all.  This may very well take some time.")
 	 ;; The articles that really exist and will
 	 ;; be expired if they are old enough.
 	 (maybe-expirable
-	  (gnus-intersection articles (nnfolder-existing-articles))))
+	  (gnus-sorted-intersection articles (nnfolder-existing-articles))))
     (nnmail-activate 'nnfolder)
 
     (save-excursion
