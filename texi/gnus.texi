@@ -16305,13 +16305,14 @@ can't have score files like @file{all.SCORE}, but you can have
 server.
 
 @end table
-This variable can also be a list of functions.  In that case, all these
-functions will be called with the group name as argument, and all the
-returned lists of score files will be applied.  These functions can also
-return lists of score alists directly.  In that case, the functions that
-return these non-file score alists should probably be placed before the
-``real'' score file functions, to ensure that the last score file
-returned is the local score file.  Phu.
+This variable can also be a list of functions.  In that case, all
+these functions will be called with the group name as argument, and
+all the returned lists of score files will be applied.  These
+functions can also return lists of lists of score alists directly.  In
+that case, the functions that return these non-file score alists
+should probably be placed before the ``real'' score file functions, to
+ensure that the last score file returned is the local score file.
+Phu.
 
 For example, to do hierarchical scoring but use a non-server-specific
 overall score file, you could use the value
