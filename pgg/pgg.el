@@ -250,10 +250,6 @@
   `(with-current-buffer pgg-output-buffer
      (if (zerop (buffer-size)) nil ,@body t)))
 
-(defalias pgg-set-buffer-multibyte (if (fboundp 'set-buffer-multibyte)
-				       'set-buffer-multibyte
-				     'identity))
-
 ;;; @ interface functions
 ;;;
 
@@ -319,7 +315,8 @@ signer's public key from `pgg-default-keyserver-address'."
 	  (if (null signature) nil
 	    (with-temp-buffer
 	      (buffer-disable-undo)
-	      (pgg-set-buffer-multibyte nil)
+	      (if (fboundp 'set-buffer-multibyte)
+		  (set-buffer-multibyte nil))
 	      (insert-file-contents signature)
 	      (cdr (assq 2 (pgg-decode-armor-region
 			    (point-min)(point-max)))))))
