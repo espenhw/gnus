@@ -1,3 +1,9 @@
+Fri Jun 14 04:51:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi: Changed name.
+
+	* gnus.texi: Changed name.
+
 Wed Jun 12 22:44:25 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* message.texi (Message Buffers): Addition.

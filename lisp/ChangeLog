@@ -1,3 +1,56 @@
+Fri Jun 14 06:24:02 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.17 is released.
+
+Fri Jun 14 05:16:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-call-region): New function.
+
+	* nnheaderxm.el (nnheader-xmas-find-file-noselect): Simplify. 
+
+Fri Jun 14 04:30:30 1996  Steven L. Baur  <steve@miranova.com>
+
+	* messagexmas.el (message-xmas-exchange-point-and-mark): New
+	function. 
+	(message-xmas-dont-activate-region): New variable.
+
+Fri Jun 14 02:59:30 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-next-article): Check for nil cmd.
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Use xbm if that
+	is required.
+
+	* messagexmas.el (message-xmas-setup-toolbar): Make sure all
+	buttons are defined.
+
+	* gnus-xmas.el (gnus-summary-mail-toolbar): Add other icons.
+	(gnus-summary-toolbar): Add next/prev/catchup icons.
+
+	* gnus-xmas.el: Use more native functions.
+
+Thu Jun 13 23:40:45 1996  Steven L. Baur  <steve@miranova.com>
+
+	* messagexmas.el (message-use-toolbar): Check for toolbar
+	support. 
+
+Thu Jun 13 22:35:43 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-newsgroup-score-alist): New function.
+
+	* gnus.el (gnus-simplify-buffer-fuzzy): Use folded search. 
+
+	* message.el (message-tokenize-header): Respect quotes.
+
+	* gnus.el (gnus-group-kill-group): Mass killing didn't work.
+
+	* gnus-demon.el (gnus-demon-scan-mail): Make sure the server is
+	openable. 
+
+Thu Jun 13 02:41:11 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.16 is released.
+
 Thu Jun 13 02:28:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnheader.el (nnheader-insert-nov): Fudge a message-id if

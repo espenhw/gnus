@@ -6,14 +6,14 @@ LATEX=latex
 DVIPS=dvips
 PERL=perl
 
-all: gnus.info message.info 
+all: gnus message
 
 most: texi2latexi.elc latex latexps
 
-gnus.info: gnus.texi
+gnus: gnus.texi
 	$(MAKEINFO) gnus.texi $(INFOSWI)
 
-message.info: message.texi
+message: message.texi
 	$(MAKEINFO) message.texi $(INFOSWI)
 
 dvi: gnus.texi
@@ -29,8 +29,8 @@ clean:
 	gnus.cind gnus.ilg gnus.ind gnus.kidx gnus.kind gnus.idx 
 
 makeinfo: 
-	makeinfo -o gnus.info gnus.texi	
-	makeinfo -o message.info message.texi	
+	makeinfo -o gnus gnus.texi	
+	makeinfo -o message message.texi	
 
 texi2latexi.elc:
 	$(EMACS) -batch -l bytecomp -f batch-byte-recompile-directory

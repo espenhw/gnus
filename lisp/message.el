@@ -516,17 +516,24 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defun message-tokenize-header (header &optional separator)
   "Split HEADER into a list of header elements.
 \",\" is used as the separator."
-  (let* ((beg 0)
-	 (separator (or separator ","))
-	 (regexp
-	  (format "[ \t]*\\([^%s]+\\)?\\([%s]+\\|\\'\\)" separator separator))
-	 elems)
-    (while (and (string-match regexp header beg)
-		(< beg (length header)))
-      (when (match-beginning 1)
-	(push (match-string 1 header) elems))
-      (setq beg (match-end 0)))
-    (nreverse elems)))
+  (let ((regexp (format "[%s]+" (or separator ",")))
+	(beg 1)
+	quoted elems)
+    (save-excursion
+      (message-set-work-buffer)
+      (insert header)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(forward-char 1)
+	(cond ((or (eobp)
+		   (and (looking-at regexp)
+			(> (point) beg)
+			(not quoted)))
+	       (push (buffer-substring beg (point)) elems)
+	       (setq beg (match-end 0)))
+	      ((= (following-char) ?\")
+	       (setq quoted (not quoted)))))
+      (nreverse elems))))
 
 (defun message-fetch-field (header)
   "The same as `mail-fetch-field', only remove all newlines."
@@ -1085,7 +1092,7 @@ prefix, and don't delete any headers."
       (delete-windows-on message-reply-buffer t)
       (insert-buffer message-reply-buffer)
       (funcall message-cite-function)
-      (exchange-point-and-mark)
+      (gnus-exchange-point-and-mark)
       (unless (bolp)
 	(insert ?\n))
       (unless modified
@@ -1599,7 +1606,6 @@ the user from the mailer."
 		      (car headers) header)))))
 	;; Check the From header.
 	(or 
-	 (message-check-element 'from)
 	 (save-excursion
 	   (let* ((case-fold-search t)
 		  (from (message-fetch-field "from")))
@@ -2879,6 +2885,8 @@ which specify the range to operate on."
      (while (re-search-forward "\b" end1 t)
        (if (eq (following-char) (char-after (- (point) 2)))
 	   (delete-char -2))))))
+
+(fset 'gnus-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)

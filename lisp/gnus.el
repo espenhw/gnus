@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.16"
+(defconst gnus-version-number "5.2.17"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3113,49 +3113,50 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 ;; all whitespace.
 ;; Written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
 (defun gnus-simplify-buffer-fuzzy ()
-  (goto-char (point-min))
-  (while (search-forward "\t" nil t)
-    (replace-match " " t t))
-  (goto-char (point-min))
-  (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *" nil t)
-  (goto-char (match-beginning 0))
-  (while (or
-	  (looking-at "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *")
-	  (looking-at "^[[].*: .*[]]$"))
+  (let ((case-fold-search t))
     (goto-char (point-min))
-    (while (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *"
-			      nil t)
+    (while (search-forward "\t" nil t)
+      (replace-match " " t t))
+    (goto-char (point-min))
+    (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *" nil t)
+    (goto-char (match-beginning 0))
+    (while (or
+	    (looking-at "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *")
+	    (looking-at "^[[].*: .*[]]$"))
+      (goto-char (point-min))
+      (while (re-search-forward "^ *\\(re\\|fwd\\)[[{(^0-9]*[])}]?[:;] *"
+				nil t)
+	(replace-match "" t t))
+      (goto-char (point-min))
+      (while (re-search-forward "^[[].*: .*[]]$" nil t)
+	(goto-char (match-end 0))
+	(delete-char -1)
+	(delete-region
+	 (progn (goto-char (match-beginning 0)))
+	 (re-search-forward ":"))))
+    (goto-char (point-min))
+    (while (re-search-forward " *[[{(][^()\n]*[]})] *$" nil t)
       (replace-match "" t t))
     (goto-char (point-min))
-    (while (re-search-forward "^[[].*: .*[]]$" nil t)
-      (goto-char (match-end 0))
-      (delete-char -1)
-      (delete-region
-       (progn (goto-char (match-beginning 0)))
-       (re-search-forward ":"))))
-  (goto-char (point-min))
-  (while (re-search-forward " *[[{(][^()\n]*[]})] *$" nil t)
-    (replace-match "" t t))
-  (goto-char (point-min))
-  (while (re-search-forward "  +" nil t)
-    (replace-match " " t t))
-  (goto-char (point-min))
-  (while (re-search-forward " $" nil t)
-    (replace-match "" t t))
-  (goto-char (point-min))
-  (while (re-search-forward "^ +" nil t)
-    (replace-match "" t t))
-  (goto-char (point-min))
-  (when gnus-simplify-subject-fuzzy-regexp
-    (if (listp gnus-simplify-subject-fuzzy-regexp)
-	(let ((list gnus-simplify-subject-fuzzy-regexp))
-	  (while list
-	    (goto-char (point-min))
-	    (while (re-search-forward (car list) nil t)
-	      (replace-match "" t t))
-	    (setq list (cdr list))))
-      (while (re-search-forward gnus-simplify-subject-fuzzy-regexp nil t)
-	(replace-match "" t t)))))
+    (while (re-search-forward "  +" nil t)
+      (replace-match " " t t))
+    (goto-char (point-min))
+    (while (re-search-forward " $" nil t)
+      (replace-match "" t t))
+    (goto-char (point-min))
+    (while (re-search-forward "^ +" nil t)
+      (replace-match "" t t))
+    (goto-char (point-min))
+    (when gnus-simplify-subject-fuzzy-regexp
+      (if (listp gnus-simplify-subject-fuzzy-regexp)
+	  (let ((list gnus-simplify-subject-fuzzy-regexp))
+	    (while list
+	      (goto-char (point-min))
+	      (while (re-search-forward (car list) nil t)
+		(replace-match "" t t))
+	      (setq list (cdr list))))
+	(while (re-search-forward gnus-simplify-subject-fuzzy-regexp nil t)
+	  (replace-match "" t t))))))
 
 (defun gnus-simplify-subject-fuzzy (subject)
   "Siplify a subject string fuzzily."
@@ -6324,6 +6325,12 @@ of groups killed."
 	(while groups
 	  (gnus-group-remove-mark (setq group (pop groups)))
 	  (gnus-delete-line)
+	  (push group gnus-killed-list)
+	  (setq gnus-newsrc-alist
+		(delq (assoc group gnus-newsrc-alist)
+		      gnus-newsrc-alist))
+	  (when gnus-group-change-level-function
+	    (funcall gnus-group-change-level-function group 9 3))
 	  (cond
 	   ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
 	    (push (cons (car entry) (nth 2 entry))
@@ -10398,7 +10405,8 @@ If BACKWARD, the previous article is selected instead of the next."
       (select-window (get-buffer-window (current-buffer)))
       ;; Select next unread newsgroup automagically.
       (cond
-       ((not gnus-auto-select-next)
+       ((or (not gnus-auto-select-next)
+	    (not cmd))
 	(gnus-message 7 "No more%s articles" (if unread " unread" "")))
        ((or (eq gnus-auto-select-next 'quietly)
 	    (and (eq gnus-auto-select-next 'slightly-quietly)
@@ -14275,10 +14283,11 @@ always hide."
   (if (and (boundp 'mime::preview/content-list)
 	   mime::preview/content-list)
       (let ((pcinfo (car (last mime::preview/content-list))))
-	(narrow-to-region
-	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
-	 (point-max))
-	t))
+	(condition-case ()
+	    (narrow-to-region
+	     (funcall (intern "mime::preview-content-info/point-min") pcinfo)
+	     (point-max))
+	  (error nil))))
   (goto-char (point-max))
   (when (re-search-backward gnus-signature-separator nil t)
     (forward-line 1)

@@ -75,9 +75,7 @@ The buffer is not selected, just returned to the caller."
 	   (number (nthcdr 10 (file-attributes truename)))
 	   ;; Find any buffer for a file which has same truename.
 	   (other (and (not buf) 
-		       (if (fboundp 'find-buffer-visiting)
-			   (find-buffer-visiting filename)
-			 (get-file-buffer filename))))
+		       (get-file-buffer filename)))
 	   error)
       ;; Let user know if there is a buffer with the same truename.
       (if other

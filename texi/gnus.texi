@@ -1,6 +1,6 @@
 \input texinfo                  @c -*-texinfo-*-
 
-@setfilename gnus.info
+@setfilename gnus
 @settitle Gnus 5.2 Manual
 @synindex fn cp
 @synindex vr cp

@@ -25,12 +25,17 @@
 
 ;;; Code:
 
+(defvar message-xmas-dont-activate-region nil
+  "If t, don't activate region after yanking.")
+
 (defvar message-xmas-glyph-directory nil
   "*Directory where Message logos and icons are located.
 If this variable is nil, Message will try to locate the directory
 automatically.")
 
-(defvar message-use-toolbar 'default-toolbar
+(defvar message-use-toolbar (if (featurep 'toolbar)
+				'default-toolbar
+			      nil)
   "*If nil, do not use a toolbar.
 If it is non-nil, it must be a toolbar.  The five legal values are
 `default-toolbar', `top-toolbar', `bottom-toolbar',
@@ -71,13 +76,12 @@ If it is non-nil, it must be a toolbar.  The five legal values are
     (unless package
       (setq message-xmas-glyph-directory dir))
     (when dir
-      (if (and (not force)
-	       (boundp (aref (car bar) 0)))
-	  dir
-	(while bar
-	  (setq icon (aref (car bar) 0)
-		name (symbol-name icon)
-		bar (cdr bar))
+      (while bar
+	(setq icon (aref (car bar) 0)
+	      name (symbol-name icon)
+	      bar (cdr bar))
+	(when (or force
+		  (not (boundp icon)))
 	  (setq up (concat dir name "-up." xpm))
 	  (setq down (concat dir name "-down." xpm))
 	  (setq disabled (concat dir name "-disabled." xpm))
@@ -85,14 +89,18 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	      (set icon nil)
 	    (set icon (toolbar-make-button-list
 		       up (and (file-exists-p down) down)
-		       (and (file-exists-p disabled) disabled)))))
-	dir))))
+		       (and (file-exists-p disabled) disabled)))))))
+    dir))
 
 (defun message-setup-toolbar ()
   (and message-use-toolbar
        (message-xmas-setup-toolbar message-toolbar)
        (set-specifier (symbol-value message-use-toolbar)
 		      (cons (current-buffer) message-toolbar))))
+
+(defun message-xmas-exchange-point-and-mark ()
+  "Exchange point and mark, but allow for XEmacs' optional argument."
+  (exchange-point-and-mark message-dont-activate-region))
 
 (provide 'messagexmas)
 

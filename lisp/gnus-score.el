@@ -488,15 +488,22 @@ used as score."
 	  (error "No article on current line")
 	nil))))
 
+(defun gnus-newsgroup-score-alist ()
+  (or
+   (let ((param-file (gnus-group-get-parameter 
+		      gnus-newsgroup-name 'score-file)))
+     (when param-file
+       (gnus-score-load param-file)))
+   (gnus-score-load
+    (gnus-score-file-name gnus-newsgroup-name)))
+  gnus-score-alist)
+
 (defsubst gnus-score-get (symbol &optional alist)
   ;; Get SYMBOL's definition in ALIST.
   (cdr (assoc symbol 
 	      (or alist 
 		  gnus-score-alist
-		  (progn
-		    (gnus-score-load 
-		     (gnus-score-file-name gnus-newsgroup-name))
-		    gnus-score-alist)))))
+		  (gnus-newsgroup-score-alist)))))
 
 (defun gnus-summary-score-entry 
   (header match type score date &optional prompt silent)
@@ -728,9 +735,7 @@ SCORE is the score to add."
   (let* ((alist 
 	  (or alist 
 	      gnus-score-alist
-	      (progn
-		(gnus-score-load (gnus-score-file-name gnus-newsgroup-name))
-		gnus-score-alist)))
+	      (gnus-newsgroup-score-alist)))
 	 (entry (assoc symbol alist)))
     (cond ((gnus-score-get 'read-only alist)
 	   ;; This is a read-only score file, so we do nothing.

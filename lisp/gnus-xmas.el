@@ -27,7 +27,7 @@
 
 (require 'text-props)
 (eval-when-compile (require 'cl))
-(defvar menu-bar-mode t)
+(defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 
 (defvar gnus-xmas-glyph-directory nil
@@ -113,6 +113,7 @@ asynchronously.	 The compressed face will be piped to this command.")
 (defvar gnus-article-treatment-menu)
 (defvar gnus-mouse-2)
 (defvar standard-display-table)
+(defvar gnus-tree-minimize-window)
 
 (defun gnus-xmas-set-text-properties (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
@@ -380,7 +381,7 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
 
-  (or (memq 'underline (list-faces))
+  (or (memq 'underline (face-list))
       (and (fboundp 'make-face)
 	   (funcall (intern "make-face") 'underline)))
   ;; Must avoid calling set-face-underline-p directly, because it
@@ -418,7 +419,7 @@ call it with the value of the `gnus-data' text property."
   (defun gnus-byte-code (func)
     "Return a form that can be `eval'ed based on FUNC."
     (let ((fval (symbol-function func)))
-      (if (byte-code-function-p fval)
+      (if (compiled-function-p fval)
 	  (list 'funcall fval)
 	(cons 'progn (cdr (cdr fval))))))
       
@@ -528,7 +529,8 @@ pounce directly on the real variables themselves.")
   (let ((logo (and gnus-xmas-glyph-directory
 		   (concat 
 		    (file-name-as-directory gnus-xmas-glyph-directory)
-		    "gnus.xpm")))
+		    "gnus."
+		    (if (featurep 'xpm) "xpm" "xbm"))))
 	(xpm-color-symbols 
 	 (and (featurep 'xpm)
 	      (append `(("thing" ,(car gnus-xmas-logo-colors))
@@ -590,14 +592,16 @@ pounce directly on the real variables themselves.")
 	 (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
     (goto-char (point-min))
     (let* ((mode-string (gnus-group-set-mode-line)))
-      (setq mode-line-buffer-identification 
+      (setq modeline-buffer-identification 
 	    (list (concat gnus-version (substring (car mode-string) 4))))
       (set-buffer-modified-p t))))
 
 
 ;;; The toolbar.
 
-(defvar gnus-use-toolbar 'default-toolbar
+(defvar gnus-use-toolbar (if (featurep 'toolbar)
+			     'default-toolbar
+			   nil)
   "*If nil, do not use a toolbar.
 If it is non-nil, it must be a toolbar.  The five legal values are
 `default-toolbar', `top-toolbar', `bottom-toolbar',
@@ -619,6 +623,10 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 (defvar gnus-summary-toolbar 
   '(
+    [gnus-summary-prev-unread 
+     gnus-summary-prev-unread-article t "Prev unread article"]
+    [gnus-summary-next-unread 
+     gnus-summary-next-unread-article t "Next unread article"]
     [gnus-summary-post-news 
      gnus-summary-post-news t "Post an article"]
     [gnus-summary-followup-with-original
@@ -642,19 +650,36 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-uu-post-news t "Post an uuencoded article"]
     [gnus-summary-cancel-article
      gnus-summary-cancel-article t "Cancel article"]
+    [gnus-summary-catchup-and-exit
+     gnus-summary-catchup-and-exit t "Catchup and exit"]
     )
   "The summary buffer toolbar.")
 
 (defvar gnus-summary-mail-toolbar
-  '([gnus-summary-mail-reply gnus-summary-reply t "Reply"]
+  '(
+    [gnus-summary-prev-unread 
+     gnus-summary-prev-unread-article t "Prev unread article"]
+    [gnus-summary-next-unread 
+     gnus-summary-next-unread-article t "Next unread article"]
+    [gnus-summary-mail-reply gnus-summary-reply t "Reply"]
     [gnus-summary-mail-get gnus-mail-get t "Message get"]
     [gnus-summary-mail-originate gnus-summary-post-news t "Originate"]
     [gnus-summary-mail-save gnus-summary-save-article t "Save"]
     [gnus-summary-mail-copy gnus-summary-copy-article t "Copy message"]
-    [gnus-summary-mail-delete gnus-summary-delete-article t "Delete message"]
+;    [gnus-summary-mail-delete gnus-summary-delete-article t "Delete message"]
     [gnus-summary-mail-forward gnus-summary-mail-forward t "Forward message"]
 ;    [gnus-summary-mail-spell gnus-mail-spell t "Spell"]
 ;    [gnus-summary-mail-help gnus-mail-help  t "Message help"]
+    [gnus-summary-caesar-message
+     gnus-summary-caesar-message t "Rot 13"]
+    [gnus-uu-decode-uu
+     gnus-uu-decode-uu t "Decode uuencoded articles"]
+    [gnus-summary-save-article-file
+     gnus-summary-save-article-file t "Save article in file"]
+    [gnus-summary-save-article
+     gnus-summary-save-article t "Save article"]
+    [gnus-summary-catchup-and-exit
+     gnus-summary-catchup-and-exit t "Catchup and exit"]
     )
   "The summary buffer mail toolbar.")
 
@@ -683,19 +708,36 @@ XEmacs compatibility workaround."
       nil
     (mail-strip-quoted-names address)))
 
+(defun gnus-xmas-call-region (command &rest args)
+  (apply
+   'call-process-region (point-min) (point-max) command t '(t nil) nil
+   args))
+
 (defun gnus-xmas-article-display-xface (beg end)
   "Display any XFace headers in the current article."
   (save-excursion
     (let (xface-glyph)
-      (when (featurep 'xface)
-	(setq xface-glyph
-	      (make-glyph (vector 'xface :data 
-				  (setq my (concat "X-Face: "
-					  (buffer-substring beg end))))))
-	(goto-char (point-min))
-	(re-search-forward "^From:" nil t)
-	(beginning-of-line)
-	(set-extent-begin-glyph 
-	 (make-extent (point) (point)) xface-glyph)))))
+      (if (featurep 'xface)
+	  (setq xface-glyph
+		(make-glyph (vector 'xface :data 
+				    (concat "X-Face: "
+					    (buffer-substring beg end)))))
+	(let ((cur (current-buffer)))
+	  (save-excursion
+	    (gnus-set-work-buffer)
+	    (insert (format "%s" (buffer-substring beg end cur)))
+	    (gnus-xmas-call-region "uncompface")
+	    (goto-char (point-min))
+	    (insert "/* Width=48, Height=48 */\n")
+	    (gnus-xmas-call-region "icontopbm")
+	    (gnus-xmas-call-region "ppmtoxpm")
+	    (setq xface-glyph
+		  (make-glyph
+		   (vector 'xpm :data (buffer-string )))))))
+      (goto-char (point-min))
+      (re-search-forward "^From:" nil t)
+      (beginning-of-line)
+      (set-extent-begin-glyph 
+       (make-extent (point) (point)) xface-glyph))))
 
 ;;; gnus-xmas.el ends here

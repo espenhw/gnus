@@ -211,9 +211,10 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 (defun gnus-demon-scan-mail ()
   (let ((servers gnus-opened-servers)
 	server)
-    (while servers
-      (setq server (car (pop servers)))
+    (while (setq server (car (pop servers)))
       (and (gnus-check-backend-function 'request-scan (car server))
+	   (or (gnus-server-opened server)
+	       (gnus-open-server server))
 	   (gnus-request-scan nil server)))))
 
 (provide 'gnus-demon)
