@@ -4238,19 +4238,24 @@ are decompressed."
   (unless handle
     (setq handle (get-text-property (point) 'gnus-data)))
   (when handle
-    (let* ((filename (or (mail-content-type-get (mm-handle-disposition handle)
-						'name)
-			 (mail-content-type-get (mm-handle-disposition handle)
-						'filename)))
-	   (contents (mm-with-unibyte-buffer
-		       (mm-insert-part handle)
-		       (or (mm-decompress-buffer filename)
+    (let ((filename (or (mail-content-type-get (mm-handle-disposition handle)
+					       'name)
+			(mail-content-type-get (mm-handle-disposition handle)
+					       'filename)))
+	  contents dont-decode charset coding-system)
+      (mm-with-unibyte-buffer
+	(mm-insert-part handle)
+	(setq contents (or (condition-case nil
+			       (mm-decompress-buffer filename nil 'sig)
+			     (error
+			      (setq dont-decode t)
+			      nil))
 			   (buffer-string))))
-	   charset coding-system)
-      (setq filename (if filename
-			 (file-name-nondirectory filename)
-		       "*decoded*"))
+      (setq filename (cond (filename (file-name-nondirectory filename))
+			   (dont-decode "*raw data*")
+			   (t "*decoded*")))
       (cond
+       (dont-decode)
        ((not arg)
 	(unless (setq charset (mail-content-type-get
 			       (mm-handle-type handle) 'charset))

@@ -1,7 +1,12 @@
 2005-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-mime-copy-part): Don't decode compressed parts.
+
 	* mm-util.el (mm-coding-system-to-mime-charset): Make it work with
 	non-Mule XEmacs as well.
+	(mm-decompress-buffer): Signal an error intentionally if it does
+	not decompress compressed data because auto-compression-mode is
+	disabled.
 
 2005-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
 

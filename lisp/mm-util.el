@@ -957,11 +957,13 @@ To make this function work with XEmacs, the APEL package is required."
 
 (defun mm-decompress-buffer (filename &optional inplace force)
   "Decompress buffer's contents, depending on jka-compr.
-Only when FORCE is non-nil or `auto-compression-mode' is enabled and
-FILENAME agrees with `jka-compr-compression-info-list', decompression
-is done.  If INPLACE is nil, return decompressed data or nil without
-modifying the buffer.  Otherwise, replace the buffer's contents with
-the decompressed data.  The buffer's multibyteness must be turned off."
+Only when FORCE is t or `auto-compression-mode' is enabled and FILENAME
+agrees with `jka-compr-compression-info-list', decompression is done.
+Signal an error if FORCE is neither nil nor t and compressed data are
+not decompressed because `auto-compression-mode' is disabled.
+If INPLACE is nil, return decompressed data or nil without modifying
+the buffer.  Otherwise, replace the buffer's contents with the
+decompressed data.  The buffer's multibyteness must be turned off."
   (when (and filename
 	     (if force
 		 (prog1 t (require 'jka-compr))
@@ -969,6 +971,9 @@ the decompressed data.  The buffer's multibyteness must be turned off."
 		    (jka-compr-installed-p))))
     (let ((info (jka-compr-get-compression-info filename)))
       (when info
+	(unless (or (memq force (list nil t))
+		    (jka-compr-installed-p))
+	  (error ""))
 	(let ((prog (jka-compr-info-uncompress-program info))
 	      (args (jka-compr-info-uncompress-args info))
 	      (msg (format "%s %s..."
