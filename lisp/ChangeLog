@@ -1,5 +1,8 @@
 2002-10-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
+	* gnus-agent.el (gnus-agent-save-alist, gnus-agent-load-alist):
+	Remove unused optional arg DIR and corresponding code.
+
 	* nnimap.el (nnimap-request-article-part): Include group name in
 	debugging output.
 

@@ -1219,18 +1219,15 @@ This can be added to `gnus-select-article-hook' or
 	(set-buffer nntp-server-buffer))
       (insert-buffer-substring gnus-agent-overview-buffer start))))
 
-(defun gnus-agent-load-alist (group &optional dir)
+(defun gnus-agent-load-alist (group)
   "Load the article-state alist for GROUP."
-  (let ((file ))
   (setq gnus-agent-article-alist
 	(gnus-cache-file-contents
-	 (if dir
-		  (expand-file-name ".agentview" dir)
-		(gnus-agent-article-name ".agentview" group))
+	 (gnus-agent-article-name ".agentview" group)
 	 'gnus-agent-file-loading-cache
 	 'gnus-agent-read-file))))
 
-(defun gnus-agent-save-alist (group &optional articles state dir)
+(defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
   (let* ((file-name-coding-system nnmail-pathname-coding-system)
 	 (prev (cons nil gnus-agent-article-alist))
@@ -1249,9 +1246,7 @@ This can be added to `gnus-select-article-hook' or
 	(setcdr (cadr prev) state)))
       (setq prev (cdr prev)))
     (setq gnus-agent-article-alist (cdr all))
-    (with-temp-file (if dir
-			(expand-file-name ".agentview" dir)
-		      (gnus-agent-article-name ".agentview" group))
+    (with-temp-file (gnus-agent-article-name ".agentview" group)
       (princ gnus-agent-article-alist (current-buffer))
       (insert "\n"))))
 
