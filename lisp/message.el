@@ -5252,6 +5252,10 @@ are not included."
     (when message-default-mail-headers
       (insert message-default-mail-headers)
       (or (bolp) (insert ?\n)))
+    (save-restriction
+      (message-narrow-to-headers)
+      (if message-alternative-emails
+	  (message-use-alternative-email-as-from)))
     (when message-generate-headers-first
       (message-generate-headers
        (message-headers-to-generate
@@ -5263,8 +5267,6 @@ are not included."
   (message-insert-signature)
   (save-restriction
     (message-narrow-to-headers)
-    (if message-alternative-emails
-	(message-use-alternative-email-as-from))
     (run-hooks 'message-header-setup-hook))
   (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)

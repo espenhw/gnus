@@ -1,3 +1,8 @@
+2003-05-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-setup-1): Setup alternative email before
+	generate-headers.
+
 2003-05-07  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-encode-region): Skip \n as whitespace.
