@@ -1,3 +1,8 @@
+2003-07-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-start.el (gnus-clear-system): Revert change from
+	2003-06-19.
+
 2003-07-04  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-q-encode-region): Exclude especials from

@@ -685,6 +685,7 @@ the first newsgroup."
   ;; Kill global KILL file buffer.
   (when (get-file-buffer (gnus-newsgroup-kill-file nil))
     (kill-buffer (get-file-buffer (gnus-newsgroup-kill-file nil))))
+  (gnus-kill-buffer nntp-server-buffer)
   ;; Kill Gnus buffers.
   (dolist (buffer (gnus-buffers))
     (gnus-kill-buffer buffer))
