@@ -38,6 +38,7 @@
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
 
+;;;###autoload
 (defun mml2015-decrypt (handle)
   (let (child)
     (cond 
@@ -92,6 +93,7 @@
 
 (defvar mml2015-mailcrypt-prefix 0)
 
+;;;###autoload
 (defun mml2015-mailcrypt-sign (cont)
   (mailcrypt-sign mml2015-mailcrypt-prefix)
   (let ((boundary 
@@ -129,6 +131,7 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
+;;;###autoload
 (defun mml2015-mailcrypt-encrypt (cont)
   ;; FIXME:
   ;; You have to input the receiptant.
@@ -148,39 +151,13 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
-;; The following code might be moved into mml.el or gnus-art.el.
-
-(defvar mml-postprocess-alist
-  '(("pgp-sign" . mml2015-mailcrypt-sign)
-    ("pgp-encrypt" . mml2015-mailcrypt-encrypt))
-  "Alist of postprocess functions.")
-
-(defun mml-postprocess (cont)
-  (let ((pp (cdr (or (assq 'postprocess cont)
-		     (assq 'pp cont))))
-	item)
-    (if (and pp (setq item (assoc pp mml-postprocess-alist)))
-	(funcall (cdr item) cont))))
-
+;;;###autoload
 (defun mml2015-setup ()
   (setq mml-generate-mime-postprocess-function 'mml-postprocess)
 ;  (push '("multipart/signed" . mml2015-verify)
 ;  	gnus-mime-multipart-functions)
   (push '("multipart/encrypted" . mml2015-decrypt)
 	gnus-mime-multipart-functions))
-
-;; The following code might be moved into mm-decode.el.
-
-(defun mm-find-part-by-type (handles type &optional notp) 
-  (let (handle)
-    (while handles
-      (if (if notp
-	      (not (equal (mm-handle-media-type (car handles)) type))
-	    (equal (mm-handle-media-type (car handles)) type))
-	  (setq handle (car handles)
-		handles nil))
-      (setq handles (cdr handles)))
-    handle))
 
 (provide 'mml2015)
 

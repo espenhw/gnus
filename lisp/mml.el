@@ -81,6 +81,13 @@ generated.")
   "A function called after generating a mime part.
 The function is called with one parameter, which is the generated part.")
 
+(defvar mml-postprocess-alist
+  '(("pgp-sign" . mml2015-mailcrypt-sign)
+    ("pgp-encrypt" . mml2015-mailcrypt-encrypt)
+    ("smime-sign" . mml-smime-sign)
+    ("smime-encrypt" . mml-smime-encrypt))
+  "Alist of postprocess functions.")
+
 (defvar mml-generate-default-type "text/plain")
 
 (defvar mml-buffer-list nil)
@@ -848,6 +855,13 @@ If RAW, don't highlight the article."
   "Validate the current MML document."
   (interactive)
   (mml-parse))
+
+(defun mml-postprocess (cont)
+  (let ((pp (cdr (or (assq 'postprocess cont)
+		     (assq 'pp cont))))
+	item)
+    (if (and pp (setq item (assoc pp mml-postprocess-alist)))
+	(funcall (cdr item) cont))))
 
 (provide 'mml)
 

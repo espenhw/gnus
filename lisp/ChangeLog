@@ -1,3 +1,9 @@
+2000-10-28 03:43:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-find-part-by-type): Move it here.
+	* mml.el (mml-postprocess): Move it here.
+	(mml-postprocess-alist): Move it here. Merge them.
+
 2000-10-28 03:38:39  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Make sure no

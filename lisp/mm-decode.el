@@ -841,6 +841,17 @@ external if displayed external."
   (and (mm-valid-image-format-p format)
        (mm-image-fit-p handle)))
 
+(defun mm-find-part-by-type (handles type &optional notp) 
+  (let (handle)
+    (while handles
+      (if (if notp
+	      (not (equal (mm-handle-media-type (car handles)) type))
+	    (equal (mm-handle-media-type (car handles)) type))
+	  (setq handle (car handles)
+		handles nil))
+      (setq handles (cdr handles)))
+    handle))
+
 (provide 'mm-decode)
 
 ;;; mm-decode.el ends here

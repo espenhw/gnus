@@ -37,6 +37,7 @@
 
 (require 'smime)
 
+;;;###autoload
 (defun mml-smime-sign (cont)
   ;; FIXME: You have to input the sender.
   (when (null smime-keys)
@@ -48,6 +49,7 @@
     (delete-region (point-min) (point)))
   (goto-char (point-max)))
   
+;;;###autoload
 (defun mml-smime-encrypt (cont)
   ;; FIXME: You have to input the receiptant.
   ;; FIXME: Should encrypt to myself so I can read it??
@@ -58,20 +60,7 @@
     (delete-region (point-min) (point)))
   (goto-char (point-max)))
 
-;; The following code might be moved into mml.el or gnus-art.el.
-
-(defvar mml-postprocess-alist
-  '(("smime-sign" . mml-smime-sign)
-    ("smime-encrypt" . mml-smime-encrypt))
-  "Alist of postprocess functions.")
-
-(defun mml-postprocess (cont)
-  (let ((pp (cdr (or (assq 'postprocess cont)
-		     (assq 'pp cont))))
-	item)
-    (if (and pp (setq item (assoc pp mml-postprocess-alist)))
-	(funcall (cdr item) cont))))
-
+;;;###autoload
 (defun mml-smime-setup ()
   (setq mml-generate-mime-postprocess-function 'mml-postprocess))
 
