@@ -1,5 +1,9 @@
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-article-next-page): Use
+	gnus-article-over-scroll.
+	(gnus-article-over-scroll): New variable.
+
 	* message.el (message-newline-and-reformat): Place a boundary
 	before filling.
 	(message-make-forward-subject-function): Changed default to

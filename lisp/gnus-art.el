@@ -1332,6 +1332,11 @@ This requires GNU Libidn, and by default only enabled if it is found."
   :group 'gnus-article-headers
   :type 'boolean)
 
+(defcustom gnus-article-over-scroll nil
+  "If non-nil, allow scrolling the article buffer even when there no more text."
+  :group 'gnus-article
+  :type 'boolean)
+
 ;;; Internal variables
 
 (defvar gnus-english-month-names
@@ -4890,10 +4895,11 @@ If end of article, return non-nil.  Otherwise return nil.
 Argument LINES specifies lines to be scrolled up."
   (interactive "p")
   (move-to-window-line -1)
-  (if (save-excursion
-	(end-of-line)
-	(and (pos-visible-in-window-p)	;Not continuation line.
-	     (>= (1+ (point)) (point-max)))) ;Allow for trailing newline.
+  (if (and (not gnus-article-over-scroll)
+	   (save-excursion
+	     (end-of-line)
+	     (and (pos-visible-in-window-p)	;Not continuation line.
+		  (>= (1+ (point)) (point-max))))) ;Allow for trailing newline.
       ;; Nothing in this page.
       (if (or (not gnus-page-broken)
 	      (save-excursion
