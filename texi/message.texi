@@ -572,8 +572,9 @@ many places to rotate the text.  The default is 13.
 @kindex C-c C-e
 @findex message-elide-region
 Elide the text between point and mark (@code{message-elide-region}).
-The text is killed and an ellipsis (@samp{[...]}) will be inserted in
-its place.
+The text is killed and replaced with the contents of the variable
+@code{message-elide-ellipsis}. The default value is to use an ellipsis
+(@samp{[...]}).
 
 @item C-c C-z
 @kindex C-c C-x
