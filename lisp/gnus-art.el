@@ -2082,7 +2082,10 @@ If READ-CHARSET, ask for a coding system."
       (goto-char (point-min))
       (while (re-search-forward
 	      "^\\(\\(https?\\|ftp\\)://\\S-+\\) *\n\\(\\S-+\\)" nil t)
-	(replace-match "\\1\\3" t)))))
+	(replace-match "\\1\\3" t)))
+    (when gnus-display-mime-function
+      (funcall gnus-display-mime-function))))
+
 
 (defun article-wash-html (&optional read-charset)
   "Format an html article.
