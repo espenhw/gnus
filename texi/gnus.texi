@@ -14873,7 +14873,9 @@ summary buffer.
                      (assq (gnus-summary-article-number)
                            gnus-newsgroup-data))))))
     (if url
-        (browse-url (cdr url))
+        (progn
+          (browse-url (cdr url))
+          (gnus-summary-mark-as-read-forward 1))
       (gnus-summary-scroll-up arg))))
 
 (eval-after-load "gnus"
