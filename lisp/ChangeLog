@@ -1,3 +1,7 @@
+2000-09-13 09:14:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-get-new-mail): Don't test nnmail-spool-file.
+
 2000-09-12  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-sum.el (gnus-update-read-articles): Undo
