@@ -1,5 +1,9 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-header-synonyms): Defcustom.
+	(message-get-reply-headers): Catch `Original-To'.
+	(message-carefully-insert-headers): Added comment.
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Improved "Washing" menu.
 
 2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>

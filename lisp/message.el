@@ -2673,17 +2673,23 @@ prefix FORCE is given."
 		   (message-get-reply-headers t))))
     (message-carefully-insert-headers headers)))
 
-(defvar message-header-synonyms
+(defcustom message-header-synonyms
   '((To Cc Bcc))
   "List of lists of header synonyms.
 E.g., if this list contains a member list with elements `Cc' and `To',
 then `message-carefully-insert-headers' will not insert a `To' header
-when the message is already `Cc'ed to the recipient.")
+when the message is already `Cc'ed to the recipient."
+  :group 'message-headers
+  :link '(custom-manual "(message)Message Headers")
+  :type '(repeat sexp))
 
 (defun message-carefully-insert-headers (headers)
   "Insert the HEADERS, an alist, into the message buffer.
 Does not insert the headers when they are already present there
 or in the synonym headers, defined by `message-header-synonyms'."
+  ;; FIXME: Should compare only the address and not the full name.  Comparison
+  ;; should be done case-folded (and with `string=' rather than
+  ;; `string-match').
   (dolist (header headers)
     (let* ((header-name (symbol-name (car header)))
            (new-header (cdr header))
@@ -5584,7 +5590,13 @@ OTHER-HEADERS is an alist of header/value pairs."
     ;; Find all relevant headers we need.
     (save-restriction
       (message-narrow-to-headers-or-head)
-      (setq to (message-fetch-field "to")
+      ;; Gmane renames "To".  Look at "Original-To", too, if it is present in
+      ;; message-header-synonyms.
+      (setq to (or (message-fetch-field "to")
+		   (and (loop for synonym in message-header-synonyms
+			      when (memq 'Original-To synonym)
+			      return t)
+			(message-fetch-field "original-to")))
 	    cc (message-fetch-field "cc")
 	    mct (message-fetch-field "mail-copies-to")
 	    author (or (message-fetch-field "mail-reply-to")
