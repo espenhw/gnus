@@ -48,15 +48,13 @@
 	       mml2015-mailcrypt-verify
 	       mml2015-mailcrypt-decrypt
 	       mml2015-mailcrypt-clear-verify
-	       mml2015-mailcrypt-clear-decrypt
-	       mml2015-mailcrypt-clear-snarf)
+	       mml2015-mailcrypt-clear-decrypt) 
     (gpg mml2015-gpg-sign
 	 mml2015-gpg-encrypt
 	 mml2015-gpg-verify
 	 mml2015-gpg-decrypt
 	 nil
-	 mml2015-gpg-clear-decrypt
-	 nil))
+	 mml2015-gpg-clear-decrypt))
   "Alist of PGP/MIME functions.")
 
 (defvar mml2015-result-buffer nil)
@@ -69,8 +67,7 @@
   (autoload 'mc-pgp-always-sign "mailcrypt")
   (autoload 'mc-encrypt-generic "mc-toplev")
   (autoload 'mc-cleanup-recipient-headers "mc-toplev")
-  (autoload 'mc-sign-generic "mc-toplev")
-  (autoload 'mc-snarf-keys "mc-toplev"))
+  (autoload 'mc-sign-generic "mc-toplev"))
 
 (eval-when-compile
   (defvar mc-default-scheme)
@@ -78,7 +75,6 @@
 
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
-(defvar mml2015-snarf-function 'mc-snarf-keys)
 
 (defun mml2015-mailcrypt-decrypt (handle ctl)
   (let (child handles result)
@@ -135,9 +131,6 @@
 (defun mml2015-mailcrypt-clear-verify ()
   (unless (funcall mml2015-verify-function)
     (error "Verify error.")))
-
-(defun mml2015-mailcrypt-clear-snarf ()
-  (funcall mml2015-snarf-function))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -343,9 +336,6 @@
     (setq mml2015-result-buffer
 	  (gnus-get-buffer-create "*MML2015 Result*"))
     nil))
-
-(defsubst mml2015-clear-snarf-function ()
-  (nth 7 (assq mml2015-use mml2015-function-alist)))
 
 (defsubst mml2015-clear-decrypt-function ()
   (nth 6 (assq mml2015-use mml2015-function-alist)))

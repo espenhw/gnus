@@ -57,10 +57,10 @@ decoder, such as hexbin."
 		 (item :tag "external" binhex-decode-region-external))
   :group 'gnus-article-mime) 
 
-(defvar mm-uu-pgp-begin-signature
+(defvar mm-uu-pgp-beginning-signature
      "^-----BEGIN PGP SIGNATURE-----")
 
-(defvar mm-uu-begin-line nil)
+(defvar mm-uu-beginning-regexp nil)
 
 (defvar mm-dissect-disposition "inline"
   "The default disposition of uu parts.
@@ -115,8 +115,8 @@ This can be either \"inline\" or \"attachment\".")
      "^-----BEGIN PGP PUBLIC KEY BLOCK-----"
      "^-----END PGP PUBLIC KEY BLOCK-----"
      mm-uu-pgp-key-extract
-     nil
-     mm-uu-pgp-key-test)))
+     mm-uu-gpg-key-skip-to-last
+     nil)))
 
 (defcustom mm-uu-configure-list nil
   "A list of mm-uu configuration.
@@ -136,7 +136,7 @@ To disable dissecting shar codes, for instance, add
 (defsubst mm-uu-type (entry)
   (car entry))
 
-(defsubst mm-uu-begin-regexp (entry)
+(defsubst mm-uu-beginning-regexp (entry)
   (nth 1 entry))
 
 (defsubst mm-uu-end-regexp (entry)
@@ -164,14 +164,14 @@ To disable dissecting shar codes, for instance, add
 
 (defun mm-uu-configure (&optional symbol value)
   (if symbol (set-default symbol value))
-  (setq mm-uu-begin-line nil)
+  (setq mm-uu-beginning-regexp nil)
   (mapcar (lambda (entry)
 	     (if (mm-uu-configure-p (mm-uu-type entry) 'disabled) 
 		 nil
-	       (setq mm-uu-begin-line
-		     (concat mm-uu-begin-line
-			     (if mm-uu-begin-line "\\|")
-			     (mm-uu-begin-regexp entry)))))
+	       (setq mm-uu-beginning-regexp
+		     (concat mm-uu-beginning-regexp
+			     (if mm-uu-beginning-regexp "\\|")
+			     (mm-uu-beginning-regexp entry)))))
 	  mm-uu-type-alist))
 
 (mm-uu-configure)
@@ -270,7 +270,7 @@ To disable dissecting shar codes, for instance, add
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))
-      (if (re-search-forward mm-uu-pgp-begin-signature nil t)
+      (if (re-search-forward mm-uu-pgp-beginning-signature nil t)
 	  (delete-region (match-beginning 0) (point-max))))
     (mm-make-handle buf
 		    '("text/plain"  (charset . gnus-decoded)))))
@@ -299,22 +299,22 @@ To disable dissecting shar codes, for instance, add
     (mm-make-handle buf
 		    '("text/plain"  (charset . gnus-decoded)))))
 
-(defun mm-uu-pgp-key-test ()
-  (and
-   mml2015-use
-   (mml2015-clear-snarf-function)
-   (cond
-    ((eq mm-snarf-option 'never) nil)
-    ((eq mm-snarf-option 'always) t)
-    ((eq mm-snarf-option 'known) t)
-    (t (y-or-n-p "Snarf pgp signed part?")))))
+(defun mm-uu-gpg-key-skip-to-last ()
+  (let ((point (point))
+	(end-regexp (mm-uu-end-regexp entry))
+	(beginning-regexp (mm-uu-beginning-regexp entry)))
+    (when (and end-regexp
+	       (not (mm-uu-configure-p (mm-uu-type entry) 'disabled)))
+      (while (re-search-forward end-regexp nil t)
+	(skip-chars-forward " \t\n\r")
+	(if (looking-at beginning-regexp)
+	    (setq point (match-end 0)))))
+    (goto-char point)))
 
 (defun mm-uu-pgp-key-extract ()
   (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
-    (with-current-buffer buf
-      (funcall (mml2015-clear-snarf-function)))
     (mm-make-handle buf
-		    '("application/x-pgp-key"))))
+		    '("application/pgp-keys"))))
 
 ;;;### autoload
 (defun mm-uu-dissect ()
@@ -334,23 +334,24 @@ To disable dissecting shar codes, for instance, add
       ;;; decoding.
       (setq text-start (point)
 	    text-plain-type '("text/plain"  (charset . gnus-decoded)))
-      (while (re-search-forward mm-uu-begin-line nil t)
+      (while (re-search-forward mm-uu-beginning-regexp nil t)
 	(setq start-point (match-beginning 0))
 	(let ((alist mm-uu-type-alist)
-	      (begin-line (match-string 0)))
+	      (beginning-regexp (match-string 0)))
 	  (while (not entry)
-	    (if (string-match (mm-uu-begin-regexp (car alist)) begin-line)
+	    (if (string-match (mm-uu-beginning-regexp (car alist)) 
+			      beginning-regexp)
 		(setq entry (car alist))
 	      (pop alist))))
 	(if (setq func (mm-uu-function-1 entry))
 	    (funcall func))
 	(forward-line);; in case of failure
 	(when (and (not (mm-uu-configure-p (mm-uu-type entry) 'disabled))
-                   (let ((end-line (mm-uu-end-regexp entry)))
-		     (if (not end-line)
+                   (let ((end-regexp (mm-uu-end-regexp entry)))
+		     (if (not end-regexp)
 			 (or (setq end-point (point-max)) t)
 		       (prog1
-			   (re-search-forward end-line nil t)
+			   (re-search-forward end-regexp nil t)
 			 (forward-line)
 			 (setq end-point (point)))))
 		   (or (not (setq func (mm-uu-function-2 entry)))

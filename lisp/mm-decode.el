@@ -271,16 +271,6 @@ to:
 		 (item :tag "ask" nil))
   :group 'mime-security)
 
-(defcustom mm-snarf-option nil
-  "Option of snarfing PGP key.
-`never', not snarf; `always', always snarf; 
-`known', only snarf known protocols. Otherwise, ask user."
-  :type '(choice (item always)
-		 (item never)
-		 (item :tag "only known protocols" known)
-		 (item :tag "ask" nil))
-  :group 'mime-security)
-
 (defvar mm-viewer-completion-map
   (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
     (set-keymap-parent map minibuffer-local-completion-map)
