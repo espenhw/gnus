@@ -2046,10 +2046,12 @@ and NEW-NAME will be prompted for."
 
   (gnus-message 6 "Renaming group %s to %s..." group new-name)
   (prog1
-      (if (not (gnus-request-rename-group group new-name))
+      (if (progn
+	    (gnus-group-goto-group group)
+	    (not (when (< (gnus-group-group-level) gnus-level-zombie)
+		   (gnus-request-rename-group group new-name))))
 	  (gnus-error 3 "Couldn't rename group %s to %s" group new-name)
 	;; We rename the group internally by killing it...
-	(gnus-group-goto-group group)
 	(gnus-group-kill-group)
 	;; ... changing its name ...
 	(setcar (cdar gnus-list-of-killed-groups) new-name)
