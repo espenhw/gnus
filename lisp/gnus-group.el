@@ -1,5 +1,5 @@
 ;;; gnus-group.el --- group mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1953,11 +1953,12 @@ Return the name of the group if selection was successful."
 (defun gnus-group-jump-to-group (group)
   "Jump to newsgroup GROUP."
   (interactive
-   (list (completing-read
-	  "Group: " gnus-active-hashtb nil
-	  (gnus-read-active-file-p)
-	  gnus-group-jump-to-group-prompt
-	  'gnus-group-history)))
+   (list (mm-string-make-unibyte
+	  (completing-read
+	   "Group: " gnus-active-hashtb nil
+	   (gnus-read-active-file-p)
+	   gnus-group-jump-to-group-prompt
+	   'gnus-group-history))))
 
   (when (equal group "")
     (error "Empty group name"))

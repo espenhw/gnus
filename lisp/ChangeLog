@@ -1,3 +1,10 @@
+2003-01-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-util.el: Add mm-string-make-unibyte.
+
+	* gnus-group.el (gnus-group-jump-to-group): Make it work for
+	UTF-8 groups.
+
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-variable-list): Write gnus-format-specs last. 

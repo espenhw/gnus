@@ -1,5 +1,5 @@
 ;;; mm-util.el --- Utility functions for Mule and low level things
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -68,6 +68,7 @@
 	      (setq idx (1+ idx)))
 	    string)))
      (string-as-unibyte . identity)
+     (string-make-unibyte . identity)
      (string-as-multibyte . identity)
      (multibyte-string-p . ignore))))
 
