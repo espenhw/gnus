@@ -854,6 +854,10 @@ used except, e.g., when other requirements force a safer encoding
 each case the most efficient of quoted-printable and base64 should be
 used.
 
+@code{qp-or-base64} has another effect.  It will fold long lines so that
+MIME parts may not be broken by MTA.  So do @code{quoted-printable} and
+@code{base64}.
+
 Note that it affects body encoding only when a part is a raw forwarded
 message (which will be made by @code{gnus-summary-mail-forward} with the
 arg 2 for example) or is neither the @samp{text/*} type nor the

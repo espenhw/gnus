@@ -1,3 +1,7 @@
+2004-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Encoding Customization): Addition.
+
 2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Encoding Customization): Add a note to the
