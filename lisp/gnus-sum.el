@@ -1137,12 +1137,12 @@ that were fetched.  Say, for nnultimate groups."
   :group 'gnus-summary
   :type 'string)
 
-(defcustom gnus-article-loose-mime nil
+(defcustom gnus-article-loose-mime t
   "If non-nil, don't require MIME-Version header.
 Some brain-damaged MUA/MTA, e.g. Lotus Domino 5.0.6 clients, does not
 supply the MIME-Version header or deliberately strip it From the mail.
-Set it to non-nil, Gnus will treat some articles as MIME even if
-the MIME-Version header is missed."
+If non-nil (the default), Gnus will treat some articles as MIME
+even if the MIME-Version header is missing."
   :version "21.3"
   :type 'boolean
   :group 'gnus-article-mime)
