@@ -310,12 +310,18 @@
 (defun nnrss-no-cache (url)
   "")
 
+;; TODO:: disable cache.
+;;
+;; (defun nnrss-insert-w3 (url)
+;;   (require 'url)
+;;   (require 'url-cache)
+;;   (let ((url-cache-creation-function 'nnrss-no-cache))
+;;     (mm-with-unibyte-current-buffer
+;;       (nnweb-insert url))))
+
 (defun nnrss-insert-w3 (url)
-  (require 'url)
-  (require 'url-cache)
-  (let ((url-cache-creation-function 'nnrss-no-cache))
-    (mm-with-unibyte-current-buffer
-      (nnweb-insert url))))
+  (mm-with-unibyte-current-buffer
+    (nnweb-insert url)))
 
 (defun nnrss-decode-entities-unibyte-string (string)
   (mm-with-unibyte-buffer
