@@ -54,7 +54,7 @@
 (defvoo nnrss-group-max 0)
 (defvoo nnrss-group-min 1)
 (defvoo nnrss-group nil)
-(defvoo nnrss-group-hashtb nil)
+(defvoo nnrss-group-hashtb (make-hash-table :test 'equal))
 (defvoo nnrss-status-string "")
 
 (defconst nnrss-version "nnrss 1.0")
@@ -232,14 +232,8 @@ ARTICLE is the article number of the current headline.")
   (setq nnrss-server-data
 	(delq (assoc group nnrss-server-data) nnrss-server-data))
   (nnrss-save-server-data server)
-  (let ((file (expand-file-name
-	       (nnrss-translate-file-chars
-		(concat group (and server
-				   (not (equal server ""))
-				   "-")
-			server ".el")) nnrss-directory)))
-    (ignore-errors
-      (delete-file file)))
+  (ignore-errors
+    (delete-file (nnrss-make-filename group server)))
   t)
 
 (deffoo nnrss-request-list-newsgroups (&optional server)
@@ -312,85 +306,51 @@ ARTICLE is the article number of the current headline.")
 
 (defun nnrss-read-server-data (server)
   (setq nnrss-server-data nil)
-  (let ((file (expand-file-name
-	       (nnrss-translate-file-chars
-		(concat "nnrss" (and server
-				     (not (equal server ""))
-				     "-")
-			server
-			".el"))
-	       nnrss-directory)))
+  (let ((file (nnrss-make-filename "nnrss" server)))
     (when (file-exists-p file)
-      (with-temp-buffer
-	(let ((coding-system-for-read 'binary)
-	      emacs-lisp-mode-hook)
-	  (insert-file-contents file)
-	  (emacs-lisp-mode)
-	  (goto-char (point-min))
-	  (eval-buffer))))))
+      (let ((coding-system-for-read 'binary))
+	(load file nil nil t)))))
 
 (defun nnrss-save-server-data (server)
   (gnus-make-directory nnrss-directory)
-  (let ((file (expand-file-name
-	       (nnrss-translate-file-chars
-		(concat "nnrss" (and server
-				     (not (equal server ""))
-				     "-")
-			server ".el"))
-	       nnrss-directory)))
-    (let ((coding-system-for-write 'binary)
-	  print-level print-length)
-      (with-temp-file file
-	(insert "(setq nnrss-group-alist '"
-		(prin1-to-string nnrss-group-alist)
-		")\n")
-	(insert "(setq nnrss-server-data '"
-		(prin1-to-string nnrss-server-data)
-		")\n")))))
+  (let ((coding-system-for-write 'binary))
+    (with-temp-file (nnrss-make-filename "nnrss" server)
+      (gnus-prin1 `(setq nnrss-group-alist ',nnrss-group-alist))
+      (gnus-prin1 `(setq nnrss-server-data ',nnrss-server-data)))))
 
 (defun nnrss-read-group-data (group server)
   (setq nnrss-group-data nil)
-  (setq nnrss-group-hashtb (gnus-make-hashtable))
+  (clrhash nnrss-group-hashtb)
   (let ((pair (assoc group nnrss-server-data)))
     (setq nnrss-group-max (or (cadr pair) 0))
     (setq nnrss-group-min (+ nnrss-group-max 1)))
-  (let ((file (expand-file-name
-	       (nnrss-translate-file-chars
-		(concat group (and server
-				   (not (equal server ""))
-				   "-")
-			server ".el"))
-	       nnrss-directory)))
+  (let ((file (nnrss-make-filename group server)))
     (when (file-exists-p file)
-      (with-temp-buffer
-	(let ((coding-system-for-read 'binary)
-	      emacs-lisp-mode-hook)
-	  (insert-file-contents file)
-	  (emacs-lisp-mode)
-	  (goto-char (point-min))
-	  (eval-buffer)))
+      (let ((coding-system-for-read 'binary))
+	(load file nil t t))
       (dolist (e nnrss-group-data)
-	(gnus-sethash (nth 2 e) e nnrss-group-hashtb)
-	(if (and (car e) (> nnrss-group-min (car e)))
-	    (setq nnrss-group-min (car e)))
-	(if (and (car e) (< nnrss-group-max (car e)))
-	    (setq nnrss-group-max (car e)))))))
+	(puthash (nth 2 e) e nnrss-group-hashtb)
+	(when (and (car e) (> nnrss-group-min (car e)))
+	  (setq nnrss-group-min (car e)))
+	(when (and (car e) (< nnrss-group-max (car e)))
+	  (setq nnrss-group-max (car e)))))))
 
 (defun nnrss-save-group-data (group server)
   (gnus-make-directory nnrss-directory)
-  (let ((file (expand-file-name
-	       (nnrss-translate-file-chars
-		(concat group (and server
-				   (not (equal server ""))
-				   "-")
-			server ".el"))
-	       nnrss-directory)))
-    (let ((coding-system-for-write 'binary)
-	  print-level print-length)
-      (with-temp-file file
-	(insert "(setq nnrss-group-data '"
-		(prin1-to-string nnrss-group-data)
-		")\n")))))
+  (let ((coding-system-for-write 'binary))
+    (with-temp-file (nnrss-make-filename group server)
+      (gnus-prin1 `(setq nnrss-group-data ',nnrss-group-data )))))
+
+(defun nnrss-make-filename (name server)
+  (expand-file-name
+   (nnrss-translate-file-chars
+    (concat name
+	    (and server
+		 (not (equal server ""))
+		 "-")
+	    server
+	    ".el"))
+   nnrss-directory))
 
 ;;; URL interface
 
@@ -452,7 +412,7 @@ ARTICLE is the article number of the current headline.")
 		 (eq (intern (concat rss-ns "item")) (car item))
 		 (setq url (nnrss-decode-entities-unibyte-string
 			    (nnrss-node-text rss-ns 'link (cddr item))))
-		 (not (gnus-gethash url nnrss-group-hashtb)))
+		 (not (gethash url nnrss-group-hashtb)))
 	(setq subject (nnrss-node-text rss-ns 'title item))
 	(setq extra (or (nnrss-node-text content-ns 'encoded item)
 			(nnrss-node-text rss-ns 'description item)))
@@ -472,7 +432,7 @@ ARTICLE is the article number of the current headline.")
 	  date
 	  (and extra (nnrss-decode-entities-unibyte-string extra)))
 	 nnrss-group-data)
-	(gnus-sethash url (car nnrss-group-data) nnrss-group-hashtb)
+	(puthash url (car nnrss-group-data) nnrss-group-hashtb)
 	(setq changed t)))
     (when changed
       (nnrss-save-group-data group server)
