@@ -258,6 +258,12 @@ one charsets.")
 			"<#!+/?\\(part\\|multipart\\|external\\)" nil t)
 		  (delete-region (+ (match-beginning 0) 2)
 				 (+ (match-beginning 0) 3))))))
+	    (when (string= (car (split-string type "/")) "message")
+	      ;; message/rfc822 parts have to have their heads encoded.
+	      (save-restriction
+		(message-narrow-to-head)
+		(let ((rfc2047-header-encoding-alist nil))
+		  (mail-encode-encoded-word-buffer))))
 	    (setq charset (mm-encode-body))
 	    (setq encoding (mm-body-encoding charset 
 					     (cdr (assq 'encoding cont))))

@@ -1,4 +1,18 @@
+2000-04-22 14:12:41  David Aspinwall  <aspinwall@TimesTen.com>
+
+	* gnus-art.el (gnus-button-url-regexp): New value to match naked
+	urls. 
+
 2000-04-22 01:23:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cache.el (gnus-summary-insert-cached-articles): Reverse the
+	order messages are inserted.
+
+	* mml.el (mml-generate-mime-1): rfc2047-encode the heads of
+	message/rfc822 parts.
+
+	* gnus-art.el (gnus-article-read-summary-keys): Check for
+	numerical values.
 
 	* message.el (message-get-headers): Made into own function.
 	(message-reply): Use it.

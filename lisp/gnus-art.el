@@ -3616,7 +3616,8 @@ Argument LINES specifies lines to be scrolled down."
             ;; We disable the pick minor mode commands.
             (let (gnus-pick-mode)
               (setq func (lookup-key (current-local-map) keys))))
-          (if (not func)
+          (if (or (not func)
+		  (numberp func))
               (ding)
             (unless (member keys nosave-in-article)
               (set-buffer gnus-article-current-summary))
@@ -4003,7 +4004,7 @@ groups."
 
 ;;; Internal Variables:
 
-(defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)"
+(defcustom gnus-button-url-regexp "\\b\\(\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)\\|[-a-zA-Z0-9_]+\\.[-a-zA-Z0-9_]+\\(\\.[-a-zA-Z0-9_]+[-a-zA-Z0-9_/]+\\)+"
   "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
