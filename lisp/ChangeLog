@@ -1,3 +1,8 @@
+2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnheader.el (nnheader-directory-separator-character): New
+	variable. 
+
 2003-01-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-agent-max-fetch-size)
