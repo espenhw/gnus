@@ -51,7 +51,7 @@
     ("sob\\|boohoo" 1 "cry.wav")
     ("drum[ \t]*roll" 1 "drumroll.au")
     ("blast" 1 "explosion.au")
-    ("flush" 1 "flush.au")
+    ("flush\\|plonk!*" 1 "flush.au")
     ("kiss" 1 "kiss.wav")
     ("tee[ \t]*hee" 1 "laugh.au")
     ("shoot" 1 "shotgun.wav")

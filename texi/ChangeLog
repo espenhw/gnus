@@ -1,3 +1,12 @@
+Thu Aug 29 02:09:24 1996  François Pinard  <pinard@progiciels-bpi.ca>
+
+	* gnus.texi (Web Searches): Typo.
+
+Wed Aug 28 08:21:36 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Server Commands): Addition.
+	(Really Various Summary Commands): Addition.
+
 Mon Aug 26 18:29:23 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Optional Backend Functions): Deletia.

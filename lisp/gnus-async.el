@@ -136,7 +136,7 @@ from that group.")
 	
 	  (gnus-async-release-semaphore 'gnus-async-article-semaphore))
     
-	(when article
+	(when (and do-fetch article)
 	  ;; We want to fetch some more articles.
 	  (save-excursion
 	    (set-buffer summary)

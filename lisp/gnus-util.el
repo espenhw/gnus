@@ -410,8 +410,9 @@ jabbering all the time.")
 (defun gnus-parent-id (references &optional n)
   "Return the last Message-ID in REFERENCES.
 If N, return the Nth ancestor instead."
-  (let ((ids (gnus-split-references references)))
-    (car (last ids (or n 1)))))
+  (when references
+    (let ((ids (gnus-split-references references)))
+      (car (last ids (or n 1))))))
 
 (defun gnus-split-references (references)
   "Return a list of Message-IDs in REFERENCES."

@@ -135,6 +135,18 @@ is the face used for highlighting.")
     (put-text-property (max (1- b) (point-min))
 			    b 'intangible nil)))
 
+(defun article-hide-text-of-type (type)
+  "Hide text of TYPE in the current buffer."
+  (save-excursion
+    (let ((b (point-min))
+	  (e (point-max)))
+      (while (setq b (text-property-any b e 'article-type type))
+	(add-text-properties b (incf b) gnus-hidden-properties)))))
+
+(defun article-text-type-exists-p (type)
+  "Say whether any text of type TYPE exists in the buffer."
+  (text-property-any (point-min) (point-max) 'article-type type))
+
 (defsubst article-header-rank ()
   "Give the rank of the string HEADER as given by `article-sorted-header-list'."
   (let ((list gnus-sorted-header-list)
@@ -540,7 +552,7 @@ always hide."
 	  (gnus-delete-line))))))
 
 (defun article-strip-multiple-blank-lines ()
-  "Replace consequtive blank lines with one empty line."
+  "Replace consecutive blank lines with one empty line."
   (interactive)
   (save-excursion
     (let (buffer-read-only)

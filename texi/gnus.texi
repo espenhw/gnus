@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.18 Manual
+@settitle Red Gnus 0.19 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.18 Manual
+@title Red Gnus 0.19 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1237,10 +1237,13 @@ This does the same as the command above, but tries to do it with the
 minimum amount off fuzz (@code{gnus-group-quick-select-group}).  No
 scoring/killing will be performed, there will be no highlights and no
 expunging.  This might be useful if you're in a real hurry and have to
-enter some humongous group.
+enter some humongous group.  If you give a 0 prefix to this command
+(i. e., @kbd{0 M-RET}), Gnus won't even generate the summary buffer.
+This might be useful if you want to toggle threading before entering the
+group.
 
 @item M-SPACE
-@kindex M-RET (Group)
+@kindex M-SPACE (Group)
 @findex gnus-group-visible-select-group
 This is yet one more command that does the same as the one above, but
 this one does it without expunging and hiding dormants
@@ -6305,6 +6308,12 @@ to have truncation switched off while reading articles.
 @findex gnus-summary-expand-window
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
 If given a prefix, force an @code{article} window configuration. 
+
+@item M-C-g
+@kindex M-C-g (Summary)
+@findex gnus-summary-prepare
+Regenerate the current summary buffer (@code{gnus-summary-prepare}).
+
 @end table
 
 
@@ -7445,6 +7454,13 @@ Copy the current server (@code{gnus-server-copy-server}).
 @findex gnus-server-list-servers
 List all servers (@code{gnus-server-list-servers}).
 
+@item s
+@kindex s (Server)
+@findex gnus-server-scan-server
+Request that the server scan its sources for new articles
+(@code{gnus-server-scan-server}).  This is mainly sensible with mail
+servers. 
+
 @end table
 
 
@@ -8104,7 +8120,7 @@ used for, well, anything, really.
 Hook run in the buffer where the mail headers of each message is kept
 just before the splitting based on these headers is done.  The hook is
 free to modify the buffer contents in any way it sees fit---the buffer
-is discarded after the splitting has been done, and no changes perfromed
+is discarded after the splitting has been done, and no changes performed
 in the buffer will show up in any files.  @code{article-decode-rfc1522}
 is one likely function to add to this hook.
 
@@ -9356,7 +9372,7 @@ read the group as read.
 
 If the search engine changes its output substantially, @code{nnweb}
 won't be able to parse it and will fail.  One could hardly fault the Web
-providers if they were to do this---their @emph{raison d'etre} is to
+providers if they were to do this---their @emph{raison d'être} is to
 make money off of advertisements, not to provide services to the
 community.  Since @code{nnweb} washes the ads off all the articles, one
 might think that the providers might be somewhat miffed.  We'll see.

@@ -1,3 +1,57 @@
+Thu Aug 29 02:04:35 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* nndoc.el (nndoc-babyl-body-begin): Would skip empty messages. 
+
+	* nntp.el (nntp-retrieve-groups): Would infloop on some servers.
+
+	* gnus-sum.el (gnus-nov-parse-line): Don't let messages refer back
+	to themselves.
+
+	* gnus-util.el (gnus-parent-id): Don't bug out on nil references. 
+
+	* gnus-cite.el (gnus-article-hide-citation): Hide/unhide better.
+
+	* article.el (article-hide-text-of-type): New function.
+	(article-hidden-text-type-p): New function.
+
+	* gnus-cite.el (gnus-article-hide-citation): Marked the hidden
+	text with wrong type.
+	(gnus-article-hide-citation-maybe): Ditto.
+	(gnus-article-hide-citation): Toggle.
+
+	* gnus-dup.el (gnus-dup-enter-articles): Would bug out on
+	pseudo-articles. 
+
+	* nntp.el (nntp-server-opened-hook): Send mode reader as a
+	default. 
+	(nntp-retrieve-data): Format error.
+
+Thu Aug 29 01:52:19 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-display-article): Check whether
+	`gnus-current-article' is nil.
+
+Wed Aug 28 08:44:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-async.el (gnus-async-prefetch-article): Would clobber
+	fetches in progress.
+
+	* gnus-sum.el (gnus-summary-prepare): Made into command.
+
+	* gnus-srvr.el (gnus-server-scan-server): New command and
+	keystroke. 
+
+	* gnus-group.el (gnus-group-read-group): Accept a 0 prefix to not
+	generate buffer.
+
+Sun Jul 21 14:56:28 1996  Steven L Baur  <steve@miranova.com>
+
+	* earcon.el (earcon-regexp-alist): Plonk!
+
+Wed Aug 28 04:14:36 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.18 is released.
+
 Wed Aug 28 02:09:20 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnweb.el (nnweb-dejanews-create-mapping): Would just fetch the

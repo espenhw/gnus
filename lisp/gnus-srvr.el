@@ -78,6 +78,7 @@ with some simple extensions.")
      '("Server"
        ["Add" gnus-server-add-server t]
        ["Browse" gnus-server-read-server t]
+       ["Scan" gnus-server-scan-server t]
        ["List" gnus-server-list-servers t]
        ["Kill" gnus-server-kill-server t]
        ["Yank" gnus-server-yank-server t]
@@ -119,6 +120,7 @@ with some simple extensions.")
    "c" gnus-server-copy-server
    "a" gnus-server-add-server
    "e" gnus-server-edit-server
+   "s" gnus-server-scan-server
 
    "O" gnus-server-open-server
    "\M-o" gnus-server-open-all-servers
@@ -444,6 +446,13 @@ The following commands are available:
 	(gnus-server-set-info ,server form)
 	(gnus-server-list-servers)
 	(gnus-server-position-point)))))
+
+(defun gnus-server-scan-server (server)
+  "Request a scan from the current server."
+  (interactive (list (gnus-server-server-name)))
+  (gnus-message 3 "Scanning %s...done" server)
+  (gnus-request-scan nil (gnus-server-to-method server))
+  (gnus-message 3 "Scanning %s...done" server))
 
 (defun gnus-server-read-server (server)
   "Browse a server."

@@ -41,14 +41,13 @@
 (defvoo nntp-port-number "nntp"
   "Port number on the physical nntp server.")
 
-(defvoo nntp-server-opened-hook nil
+(defvoo nntp-server-opened-hook '(nntp-send-mode-reader)
   "*Hook used for sending commands to the server at startup.  
 The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
 hook might be `nntp-send-authinfo', which will prompt for a password
 to allow posting from the server.  Note that this is only necessary to
 do on servers that use strict access control.")  
-(add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
 
 (defvoo nntp-authinfo-function 'nntp-send-authinfo
   "Function used to send AUTHINFO to the server.")
@@ -279,8 +278,10 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(re-search-backward "^[0-9]" nil t)
 	(when (looking-at "^[23]")
 	  (while (progn
-		   (goto-char (- (point-max) 3))
-		   (not (looking-at "^\\.\r?\n")))
+		   (goto-char (point-max))
+		   (if (equal command "GROUP")
+		       (not (re-search-backward "\r?\n" (- (point) 3) t))
+		     (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
 	    (nntp-accept-response))))
 
       ;; Now all replies are received. We remove CRs.
@@ -627,7 +628,7 @@ It will prompt for a password."
   (let ((process (or (nntp-find-connection buffer)
 		     (nntp-open-connection buffer))))
     (if (not process)
-	(nnheader-report 'nntp "Couldn't open connection to %a" address)
+	(nnheader-report 'nntp "Couldn't open connection to %s" address)
       (unless (or nntp-inhibit-erase nnheader-callback-function)
 	(save-excursion
 	  (set-buffer (process-buffer process))

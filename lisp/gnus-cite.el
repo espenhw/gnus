@@ -304,13 +304,19 @@ always hide."
   (setq gnus-cited-text-button-line-format-spec 
 	(gnus-parse-format gnus-cited-text-button-line-format 
 			   gnus-cited-text-button-line-format-alist t))
-  (unless (article-check-hidden-text 'cite arg)
-    (save-excursion
-      (set-buffer gnus-article-buffer)
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (cond
+     ((article-check-hidden-text 'cite arg)
+      t)
+     ((article-text-type-exists-p 'cite)
+      (let ((buffer-read-only nil))
+	(article-hide-text-of-type 'cite)))
+     (t
       (let ((buffer-read-only nil)
 	    (marks (gnus-dissect-cited-text))
 	    (inhibit-point-motion-hooks t)
-	    (props (nconc (list 'gnus-type 'cite)
+	    (props (nconc (list 'article-type 'cite)
 			  gnus-hidden-properties))
 	    beg end)
 	(while marks
@@ -340,7 +346,7 @@ always hide."
 	     (point)
 	     (progn (eval gnus-cited-text-button-line-format-spec) (point))
 	     `gnus-article-toggle-cited-text (cons beg end))
-	    (set-marker beg (point))))))))
+	    (set-marker beg (point)))))))))
 
 (defun gnus-article-toggle-cited-text (region)
   "Toggle hiding the text in REGION."
@@ -396,7 +402,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 		  (or (assq hiden gnus-cite-attribution-alist)
 		      (gnus-add-text-properties 
 		       (point) (progn (forward-line 1) (point))
-		       (nconc (list 'gnus-type 'cite)
+		       (nconc (list 'article-type 'cite)
 			      gnus-hidden-properties)))))))))))
 
 (defun gnus-article-hide-citation-in-followups ()
@@ -704,7 +710,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	      (t
 	       (gnus-add-text-properties 
 		(point) (progn (forward-line 1) (point))
-		 (nconc (list 'gnus-type 'cite)
+		 (nconc (list 'article-type 'cite)
 			gnus-hidden-properties))))))))
 
 (defun gnus-cite-find-prefix (line)

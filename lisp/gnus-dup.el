@@ -99,7 +99,8 @@ seen in the same session.")
     ;; Enter the Message-IDs of all read articles into the list
     ;; and hash table.
     (while data
-      (when (gnus-data-read-p (car data))
+      (when (and (not (gnus-data-pseudo-p data))
+		 (gnus-data-read-p (car data)))
 	(intern (car (push (mail-header-id (gnus-data-header (car data)))
 			   gnus-dup-list))
 		gnus-dup-hashtb))

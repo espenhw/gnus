@@ -1246,11 +1246,16 @@ optional argument NO-ARTICLE is non-nil, no article will be
 auto-selected upon group entry.	 If GROUP is non-nil, fetch that
 group."
   (interactive "P")
-  (let ((group (or group (gnus-group-group-name)))
+  (let ((no-display (eq all 0))
+	(group (or group (gnus-group-group-name)))
 	number active marked entry)
-    (or group (error "No group on current line"))
-    (setq marked (nth 3 (nth 2 (setq entry (gnus-gethash
-					    group gnus-newsrc-hashtb)))))
+    (when (eq all 0)
+      (setq all nil))
+    (unless group
+      (error "No group on current line"))
+    (setq marked (gnus-info-marks
+		  (nth 2 (setq entry (gnus-gethash
+				      group gnus-newsrc-hashtb)))))
     ;; This group might be a dead group.  In that case we have to get
     ;; the number of unread articles from `gnus-active-hashtb'.
     (setq number
@@ -1264,7 +1269,7 @@ group."
 					  (cdr (assq 'tick marked)))
 				  (gnus-range-length
 				   (cdr (assq 'dormant marked)))))))
-     no-article)))
+     no-article nil no-display)))
 
 (defun gnus-group-select-group (&optional all)
   "Select this newsgroup.
@@ -1276,7 +1281,9 @@ If ALL is a number, fetch this number of articles."
 
 (defun gnus-group-quick-select-group (&optional all)
   "Select the current group \"quickly\".
-This means that no highlighting or scoring will be performed."
+This means that no highlighting or scoring will be performed.
+If ALL (the prefix argument) is 0, don't even generate the summary
+buffer."
   (interactive "P")
   (let (gnus-visual
 	gnus-score-find-score-files-function

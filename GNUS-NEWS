@@ -68,14 +68,6 @@ the native server.
 
 *** A new mail-to-news backend makes it possible to post
 even when the NNTP server doesn't allow posting.
-*** Process mark sets can be pushed and popped.
-
-*** A new mail-to-news backend makes it possible to post
-even when the NNTP server doesn't allow posting.
-*** Process mark sets can be pushed and popped.
-
-*** A new mail-to-news backend makes it possible to post
-even when the NNTP server doesn't allow posting.
 
 *** A new backend for reading searches from Web search engines
 (DejaNews, Alta Vista, InReference) has been added.

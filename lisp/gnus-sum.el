@@ -892,6 +892,7 @@ increase the score of each group you read."
     "\M-*" gnus-cache-remove-article
     "\M-&" gnus-summary-universal-argument
     "\C-l" gnus-recenter
+    "\M-\C-g" gnus-summary-prepare 
     "I" gnus-summary-increase-score
     "L" gnus-summary-lower-score
 
@@ -1450,6 +1451,7 @@ increase the score of each group you read."
        ["Expire expirable articles" gnus-summary-expire-articles
 	(gnus-check-backend-function
 	 'request-expire-articles gnus-newsgroup-name)]
+       ["Regenerate buffer" gnus-summary-prepare t]
        ["Edit local kill file" gnus-summary-edit-local-kill t]
        ["Edit main kill file" gnus-summary-edit-global-kill t]
        ("Exit"
@@ -2287,6 +2289,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-summary-prepare ()
   "Generate the summary buffer."
+  (interactive)
   (let ((buffer-read-only nil))
     (erase-buffer)
     (setq gnus-newsgroup-data nil
@@ -2377,9 +2380,9 @@ If NO-DISPLAY, don't generate a summary buffer."
 	ids references id gthread gid entered)
     (while threads
       (when (setq references (mail-header-references (caar threads)))
-	(setq id (mail-header-id (caar threads)))
-	(setq ids (gnus-split-references references))
-	(setq entered nil)
+	(setq id (mail-header-id (caar threads))
+	      ids (gnus-split-references references)
+	      entered nil)
 	(while ids
 	  (if (not (setq gid (gnus-gethash (car ids) idhashtb)))
 	      (progn
@@ -3759,6 +3762,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	      (goto-char p)
 	      (and (search-forward "\nxref: " nil t)
 		   (gnus-header-value)))))
+	  (when (equal id ref)
+	    (setq ref nil))
 	  ;; We do the threading while we read the headers.  The
 	  ;; message-id and the last reference are both entered into
 	  ;; the same hash table.  Some tippy-toeing around has to be
@@ -3889,6 +3894,9 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 
     ;; We build the thread tree.
     (when header
+      (when (equal id ref)
+	;; This article refers back to itself.  Naughty, naughty.
+	(setq ref nil))
       (if (boundp (setq id-dep (intern id dependencies)))
 	  (if (and (car (symbol-value id-dep))
 		   (not force-new))
@@ -4471,8 +4479,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 
 (defvar gnus-dead-summary-mode-map nil)
 
-(if gnus-dead-summary-mode-map
-    nil
+(unless gnus-dead-summary-mode-map
   (setq gnus-dead-summary-mode-map (make-keymap))
   (suppress-keymap gnus-dead-summary-mode-map)
   (substitute-key-definition
@@ -4740,7 +4747,8 @@ Given a prefix, will force an `article' buffer configuration."
 	    (funcall gnus-summary-display-article-function article all-header)
 	  (gnus-article-prepare article all-header))
       (run-hooks 'gnus-select-article-hook)
-      (unless (zerop gnus-current-article)
+      (when (and gnus-current-article
+		 (not (zerop gnus-current-article)))
 	(gnus-summary-goto-subject gnus-current-article))
       (gnus-summary-recenter)
       (when gnus-use-trees

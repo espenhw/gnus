@@ -380,7 +380,14 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defun nndoc-babyl-body-begin ()
   (re-search-forward "^\n" nil t)
   (when (looking-at "\*\*\* EOOH \*\*\*")
-    (re-search-forward "^\n" nil t)))
+    (let ((next (or (save-excursion
+		      (re-search-forward nndoc-article-begin nil t))
+		    (point-max))))
+      (unless (re-search-forward "^\n" next t)
+	(goto-char next)
+	(forward-line -1)
+	(insert "\n")
+	(forward-line -1)))))
 
 (defun nndoc-babyl-head-begin ()
   (when (re-search-forward "^[0-9].*\n" nil t)

@@ -2280,7 +2280,8 @@ Headers already prepared in the buffer are not modified."
 	  (goto-char (point-max))
 	  (insert "Posted-To: " newsgroups "\n"))))
     (forward-line 1)
-    (insert message-courtesy-message)))
+    (when message-courtesy-message
+      (insert message-courtesy-message))))
     
 ;;;
 ;;; Setting up a message buffer
