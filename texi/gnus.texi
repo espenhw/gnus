@@ -5821,6 +5821,18 @@ Mark all excluded unread articles as read
 (@code{gnus-summary-limit-mark-excluded-as-read}).   If given a prefix,
 also mark excluded ticked and dormant articles as read.
 
+@item / N
+@kindex / N (Summary)
+@findex gnus-summary-insert-new-articles
+Insert all new articles in the summary buffer. It scans for new emails
+if @var{back-end}@code{-get-new-mail} is non-@code{nil}.
+
+@item / o
+@kindex / o (Summary)
+@findex gnus-summary-insert-old-articles
+Insert all old articles in the summary buffer. If given a numbered
+prefix, fetch this number of articles.  
+
 @end table
 
 
