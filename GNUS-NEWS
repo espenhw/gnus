@@ -32,6 +32,11 @@ otherwise the Gcc: line will be quoted incorrectly.  Note that
 returning the string "nnml:foo, nnml:bar" was incorrect earlier, it
 just didn't generate any problems since it was inserted directly.
 
+** ~/News/overview/ not used.
+
+As a result of the following change, the ~/News/overview/ directory is
+not used any more.  You can safely delete the entire hierarchy.
+
 ** gnus-agent
 
 The Gnus Agent is now enabled by default, and all nntp and nnimap
