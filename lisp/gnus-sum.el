@@ -7895,16 +7895,22 @@ without any article massaging functions being run."
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
       (gnus-summary-select-article nil 'force)
       (let ((deps gnus-newsgroup-dependencies)
-	    head header)
+	    head header lines)
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
 	  (save-restriction
 	    (message-narrow-to-head)
-	    (setq head (buffer-string)))
+	    (setq head (buffer-string))
+	    (goto-char (point-min))
+	    (unless (re-search-forward "^lines:[ \t]\\([0-9]+\\)" nil t)
+	      (goto-char (point-max))
+	      (widen)
+	      (setq lines (1- (count-lines (point) (point-max))))))
 	  (with-temp-buffer
 	    (insert (format "211 %d Article retrieved.\n"
 			    (cdr gnus-article-current)))
 	    (insert head)
+	    (if lines (insert (format "Lines: %d\n" lines)))
 	    (insert ".\n")
 	    (let ((nntp-server-buffer (current-buffer)))
 	      (setq header (car (gnus-get-newsgroup-headers deps t))))))

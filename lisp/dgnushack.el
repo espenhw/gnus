@@ -232,7 +232,7 @@ Modify to suit your needs."))
     (when (featurep 'base64)
       (setq files (delete "base64.el" files)))
     (condition-case code
-	(require 'w3-forms)
+	(require 'w3-parse)
       (error
        (message "No w3: %s %s" code (locate-library "w3-parse"))
        (dolist (file '("nnultimate.el" "webmail.el" "nnwfm.el"))

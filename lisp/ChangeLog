@@ -1,3 +1,7 @@
+2001-12-07 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-show-article): Recount lines if not exist.
+
 2001-12-07 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwfm.el (nnwfm-create-mapping): Use gnus-url-unhex-string.
