@@ -70,7 +70,8 @@ Has to be set before gnus-vm is loaded.")
     ;; insert a newline, otherwise the last line gets lost
     (goto-char (point-max))
     (insert "\n")
-    (vm-mode)
+    (let (vm-use-toolbar vm-use-menus)
+      (vm-mode))
     tmp-folder))
   
 (defun gnus-summary-save-article-vm (&optional arg)

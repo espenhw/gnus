@@ -353,7 +353,7 @@ instead call function `nntp-status-message' to get status message.")
     (setq nntp-current-server server)
     (or (nntp-server-opened server)
 	(progn
-	  (if (member server nntp-timeout-servers)
+	  (if (member nntp-address nntp-timeout-servers)
 	      nil
 	    (run-hooks 'nntp-prepare-server-hook)
 	    (nntp-open-server-semi-internal nntp-address nntp-port-number))))))
@@ -401,6 +401,7 @@ instead call function `nntp-status-message' to get status message.")
 	   (kill-buffer proc))
       (setq nntp-server-alist (cdr nntp-server-alist)))
     (setq nntp-current-server nil
+	  nntp-timeout-servers nil
 	  nntp-async-group-alist nil)))
 
 (defun nntp-server-opened (&optional server)
@@ -1038,33 +1039,37 @@ If SERVICE, this this as the port number."
 				     (lambda ()
 				       (nntp-kill-connection server))
 				     nntp-connection-timeout nil)))))))
-    (setq nntp-status-string "")
-    (message "nntp: Connecting to server on %s..." server)
-    (cond ((and server (nntp-open-server-internal server service))
-	   (setq nntp-address server)
-	   (setq status
-		 (condition-case nil
-		     (nntp-wait-for-response "^[23].*\r?\n" 'slow)
-		   (error nil)
-		   (quit nil)))
-	   (or status (nntp-close-server-internal server))
-	   (and nntp-server-process
-		(progn
-		  (set-process-sentinel 
-		   nntp-server-process 'nntp-default-sentinel)
-		  ;; You can send commands at startup like AUTHINFO here.
-		  ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
-		  (run-hooks 'nntp-server-opened-hook))))
-	  ((null server)
-	   (setq nntp-status-string "NNTP server is not specified."))
-	  (t ; We couldn't open the server.
-	   (setq nntp-timeout-servers (cons server nntp-timeout-servers))))
-    (and timer (cancel-timer timer))
-    (message "")
-    (or status
-	(setq nntp-current-server nil
-	      nntp-async-number nil))
-    status))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (setq nntp-status-string "")
+      (message "nntp: Connecting to server on %s..." server)
+      (cond ((and server (nntp-open-server-internal server service))
+	     (setq nntp-address server)
+	     (setq status
+		   (condition-case nil
+		       (nntp-wait-for-response "^[23].*\r?\n" 'slow)
+		     (error nil)
+		     (quit nil)))
+	     (or status (nntp-close-server-internal server))
+	     (and nntp-server-process
+		  (progn
+		    (set-process-sentinel 
+		     nntp-server-process 'nntp-default-sentinel)
+		    ;; You can send commands at startup like AUTHINFO here.
+		    ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
+		    (run-hooks 'nntp-server-opened-hook))))
+	    ((null server)
+	     (setq nntp-status-string "NNTP server is not specified."))
+	    (t				; We couldn't open the server.
+	     (setq nntp-status-string 
+		   (buffer-substring (point-min) (point-max)))
+	     (setq nntp-timeout-servers (cons server nntp-timeout-servers))))
+      (and timer (cancel-timer timer))
+      (message "")
+      (or status
+	  (setq nntp-current-server nil
+		nntp-async-number nil))
+      status)))
 
 (defun nntp-open-server-internal (server &optional service)
   "Open connection to news server on SERVER by SERVICE (default is nntp)."

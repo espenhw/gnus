@@ -462,9 +462,9 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  ;; Suggested by Daniel Quinlan <quinlan@best.com>.
 	  ;; Revised to respect Reply-To by Ulrik Dickow <dickow@nbi.dk>.
           (let ((to (and (not post)
-			 (if (or (and (eq gnus-auto-mail-to-author 'ask)
-				      (y-or-n-p "Also send mail to author? "))
-				 gnus-auto-mail-to-author)
+			 (if (if (eq gnus-auto-mail-to-author 'ask)
+				 (y-or-n-p "Also send mail to author? ")
+			       gnus-auto-mail-to-author)
 			     (or (save-excursion
 				   (set-buffer gnus-article-copy)
 				   (gnus-fetch-field "reply-to"))
@@ -544,7 +544,7 @@ If given a prefix, and the group is a foreign group, this function
 will attempt to use the foreign server to post the article."
   (interactive "P")
   (let* ((case-fold-search nil)
-	 (server-running (gnus-server-opened gnus-select-method))
+	 (server-running (gnus-server-opened gnus-current-select-method))
 	 (reply gnus-article-reply)
 	 error post-result)
     (save-excursion

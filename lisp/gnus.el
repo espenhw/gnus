@@ -1343,7 +1343,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.22"
+(defconst gnus-version "(ding) Gnus v0.99.23"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2684,14 +2684,18 @@ If nothing is specified, use the variable gnus-overload-functions."
 	   (load (car (cdr (cdr defs))) nil 'nomessage))
       (fset (car defs) (car (cdr defs))))))
 
-(defun gnus-replace-chars-in-string (string from to)
+(defun gnus-replace-chars-in-string (string &rest pairs)
   "Replace characters in STRING from FROM to TO."
   (let ((string (substring string 0))	;Copy string.
 	(len (length string))
-	(idx 0))
+	(idx 0)
+	sym to)
+    (or (zerop (% (length pairs) 2)) 
+	(error "Odd number of translation pairs"))
+    (setplist 'sym pairs)
     ;; Replace all occurrences of FROM with TO.
     (while (< idx len)
-      (if (= (aref string idx) from)
+      (if (setq to (get 'sym (aref string idx)))
 	  (aset string idx to))
       (setq idx (1+ idx)))
     string))
@@ -3231,6 +3235,9 @@ prompt the user for the name of an NNTP server to use."
 
     (gnus-clear-system)
 
+    (nnheader-init-server-buffer)
+    (gnus-read-init-file)
+
     (gnus-group-setup-buffer)
     (let ((buffer-read-only nil))
       (erase-buffer)
@@ -3239,9 +3246,6 @@ prompt the user for the name of an NNTP server to use."
 	    (gnus-group-startup-message)
 	    (sit-for 0))))
     
-    (nnheader-init-server-buffer)
-    (gnus-read-init-file)
-
     (let ((level (and arg (numberp arg) (> arg 0) arg))
 	  did-connect)
       (unwind-protect
@@ -3652,7 +3656,7 @@ moves the point to the colon."
 		     ?* ? ))
 	 (number (if (eq number t) "*" (+ number number-of-dormant 
 					  number-of-ticked)))
-	 (process-marked (if (member qualified-group gnus-group-marked)
+	 (process-marked (if (member group gnus-group-marked)
 			     gnus-process-mark ? ))
 	 (buffer-read-only nil)
 	 header ; passed as parameter to user-funcs.
@@ -8158,7 +8162,7 @@ If BACKWARD, the previous article is selected instead of the next."
 					    gnus-newsgroup-name)))
 		    (gnus-summary-exit)
 		  (gnus-summary-next-group nil group backward))
-	      (setq unread-command-events (list key)))))))))))
+	      (execute-kbd-macro (char-to-string key)))))))))))
 
 (defun gnus-summary-next-unread-article ()
   "Select unread article after current one."
@@ -8421,7 +8425,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	       (gnus-check-server gnus-refer-article-method))
 	  ;; Save the old article buffer.
 	  (save-excursion
-	    (set-buffer gnus-article-buffer)
+	    (set-buffer (gnus-article-setup-buffer))
 	    (gnus-kill-buffer " *temp Article*")
 	    (setq tmp-buf (rename-buffer " *temp Article*")))
 	  (prog1
@@ -10681,6 +10685,7 @@ The following commands are available:
 
 (defun gnus-article-setup-buffer ()
   "Initialize article mode buffer."
+  ;; Returns the article buffer.
   (if (get-buffer gnus-article-buffer)
       (save-excursion
 	(set-buffer gnus-article-buffer)
@@ -10688,11 +10693,13 @@ The following commands are available:
 	(setq buffer-read-only t)
 	(gnus-add-current-to-buffer-list)
 	(or (eq major-mode 'gnus-article-mode)
-	    (gnus-article-mode)))
+	    (gnus-article-mode))
+	(current-buffer))
     (save-excursion
       (set-buffer (get-buffer-create gnus-article-buffer))
       (gnus-add-current-to-buffer-list)
-      (gnus-article-mode))))
+      (gnus-article-mode)
+      (current-buffer))))
 
 ;; Set article window start at LINE, where LINE is the number of lines
 ;; from the head of the article.
@@ -11777,8 +11784,9 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
        (gnus-open-server gnus-select-method)
        (gnus-y-or-n-p
 	(format
-	 "%s server on %s can't be opened. Continue? "
-	 (car gnus-select-method) (nth 1 gnus-select-method)))
+	 "%s open error: '%s'. Continue? "
+	 (nth 1 gnus-select-method)
+	 (gnus-status-message gnus-select-method)))
        (progn
 	 (gnus-message 1 "Couldn't open server on %s" 
 		       (nth 1 gnus-select-method))
@@ -12777,44 +12785,45 @@ Returns whether the updating was successful."
 				 (concat " from " where) "")
 			     (car method))))
 	  (gnus-message 5 mesg)
-	  (gnus-check-server method)
-	  (cond 
-	   ((and (eq gnus-read-active-file 'some)
-		 (gnus-check-backend-function 'retrieve-groups (car method)))
-	    (let ((newsrc (cdr gnus-newsrc-alist))
-		  (gmethod (gnus-server-get-method nil method))
-		  groups)
-	      (while newsrc
-		(and (gnus-server-equal 
-		      (gnus-find-method-for-group 
-		       (car (car newsrc)) (car newsrc))
-		      gmethod)
-		     (setq groups (cons (gnus-group-real-name 
-					 (car (car newsrc))) groups)))
-		(setq newsrc (cdr newsrc)))
-	      (gnus-check-server method)
-	      (setq list-type (gnus-retrieve-groups groups method))
-	      (cond ((not list-type)
-		     (gnus-message 
-		      1 "Cannot read partial active file from %s server." 
-		      (car method))
-		     (ding)
-		     (sit-for 2))
-		    ((eq list-type 'active)
-		     (gnus-active-to-gnus-format method gnus-active-hashtb))
-		    (t
-		     (gnus-groups-to-gnus-format method gnus-active-hashtb)))))
-	   (t
-	    (if (not (gnus-request-list method))
-		(progn
-		  (gnus-message 1 "Cannot read active file from %s server." 
-				(car method))
-		  (ding))
-	      (gnus-active-to-gnus-format method)
-	      ;; We mark this active file as read.
-	      (setq gnus-have-read-active-file
-		    (cons method gnus-have-read-active-file))
-	      (gnus-message 5 "%sdone" mesg)))))
+	  (if (not (gnus-check-server method))
+	      ()
+	    (cond 
+	     ((and (eq gnus-read-active-file 'some)
+		   (gnus-check-backend-function 'retrieve-groups (car method)))
+	      (let ((newsrc (cdr gnus-newsrc-alist))
+		    (gmethod (gnus-server-get-method nil method))
+		    groups)
+		(while newsrc
+		  (and (gnus-server-equal 
+			(gnus-find-method-for-group 
+			 (car (car newsrc)) (car newsrc))
+			gmethod)
+		       (setq groups (cons (gnus-group-real-name 
+					   (car (car newsrc))) groups)))
+		  (setq newsrc (cdr newsrc)))
+		(gnus-check-server method)
+		(setq list-type (gnus-retrieve-groups groups method))
+		(cond ((not list-type)
+		       (gnus-message 
+			1 "Cannot read partial active file from %s server." 
+			(car method))
+		       (ding)
+		       (sit-for 2))
+		      ((eq list-type 'active)
+		       (gnus-active-to-gnus-format method gnus-active-hashtb))
+		      (t
+		       (gnus-groups-to-gnus-format method gnus-active-hashtb)))))
+	     (t
+	      (if (not (gnus-request-list method))
+		  (progn
+		    (gnus-message 1 "Cannot read active file from %s server." 
+				  (car method))
+		    (ding))
+		(gnus-active-to-gnus-format method)
+		;; We mark this active file as read.
+		(setq gnus-have-read-active-file
+		      (cons method gnus-have-read-active-file))
+		(gnus-message 5 "%sdone" mesg))))))
 	(setq methods (cdr methods))))))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
@@ -13858,6 +13867,7 @@ The following commands are available:
     (and winconf (set-window-configuration winconf))
     (set-buffer gnus-server-buffer)
     (gnus-server-update-server (gnus-server-server-name))
+    (gnus-server-list-servers)
     (gnus-server-position-cursor)))
 
 (defun gnus-server-read-server (server)
@@ -14007,7 +14017,7 @@ GROUP using BNews sys file syntax."
 		  (concat gnus-kill-files-directory group "." 
 			  gnus-score-file-suffix)
 		(concat gnus-kill-files-directory
-			(gnus-replace-chars-in-string group ?. ?/)
+			(gnus-replace-chars-in-string group ?. ?/ ?: ?/)
 			"/" gnus-score-file-suffix)))))
 	(and (member localscore ofiles)
 	     (delete localscore ofiles))

@@ -1,3 +1,59 @@
+Sat Aug 26 03:18:39 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-uu.el (gnus-uu-grab-articles): Didn't update mode line.
+
+	* gnus.el (gnus-replace-chars-in-string): Translate pairs.
+
+Sat Aug 26 02:54:16 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-next-article): `n' `SPC' etc in XEmacs
+	didn't work.
+
+Sat Aug 26 00:07:59 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nntp.el (nntp-open-server): Would try to reconnect to the same
+	dead server.
+
+	* gnus.el (gnus-group-insert-group-line): Didn't insert process
+	marks. 
+	(gnus-read-active-file): Would screw up the group info if a
+	secondary server was down.
+
+	* gnus-vm.el (gnus-vm-make-folder): Don't use toolbar.
+
+	* nnfolder.el (nnfolder-save-mail): Would delete one \n too much.
+
+	* gnus.el (gnus-start-news-server): Give better error message.
+
+	* nntp.el (nntp-open-server-semi-internal): Save the error message
+	on unsuccessful connects.
+
+	* nnfolder.el (nnfolder-request-move-article): Deleted wrong
+	article marker.
+	(nnfolder-request-accept-article): Ditto.
+
+	* gnus.el (gnus-summary-refer-article): Would bug out if the
+	article buffer didn't exist.
+
+	* gnus-cache.el (gnus-cache-braid-nov): Would skip every other
+	line. 
+
+Fri Aug 25 23:22:07 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-msg.el (gnus-inews-news): Would kill connection after
+	posting to a foreign server.
+
+	* gnus.el (gnus): Read init file before doing splash.
+
+Fri Aug 25 18:08:35 1995  Ulrik Dickow  <dickow@nbi.dk>
+
+	* gnus-msg.el (gnus-post-news): Treat `gnus-auto-mail-to-author' right.
+
+Fri Aug 25 15:04:37 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus.el (gnus-custom-import-cite-face-list): Support old
+	light and dark settings of `gnus-cite-face-list'.
+
 Fri Aug 25 06:03:51 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 	* gnus.el (gnus-modtime-botch): New variable.

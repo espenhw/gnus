@@ -288,9 +288,10 @@
 	(if (search-forward (concat "\n" (int-to-string (car cached)) "\t")
 			    nil t)
 	    (setq beg (progn (beginning-of-line) (point))
-		  end (progn (forward-line 1) (point)))
+		  end (progn (end-of-line) (point)))
 	  (setq beg nil)))
-      (and beg (insert-buffer-substring cache-buf beg end))
+      (if beg (progn (insert-buffer-substring cache-buf beg end)
+		     (insert "\n")))
       (setq cached (cdr cached)))
     (kill-buffer cache-buf)))
 

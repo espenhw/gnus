@@ -116,7 +116,6 @@ STRING should be given if the last search was by `string-match' on STRING."
 	  (substring string (match-beginning num) (match-end num))
 	(buffer-substring (match-beginning num) (match-end num))))))
 
-
 (or (fboundp 'facep)
     ;; Introduced in Emacs 19.29.
     (defun facep (x)

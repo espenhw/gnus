@@ -681,19 +681,20 @@ The headers will be included in the sequence they are matched.")
 	     (re-search-forward "\n\n")
 	     (setq body (buffer-substring (1- (point)) (point-max)))
 	     (narrow-to-region 1 (point))
-	     (setq headers gnus-uu-digest-headers)
-	     (while headers
-	       (setq headline (car headers))
-	       (setq headers (cdr headers))
-	       (goto-char (point-min))
-	       (if (re-search-forward headline nil t)
-		   (setq sorthead 
-			 (concat sorthead
-				 (buffer-substring 
-				  (match-beginning 0)
-				  (or (and (re-search-forward "^[^ \t]" nil t)
-					   (1- (point)))
-				      (progn (forward-line 1) (point))))))))
+	     (if (not (setq headers gnus-uu-digest-headers))
+		 (setq sorthead (buffer-substring (point-min) (point-max)))
+	       (while headers
+		 (setq headline (car headers))
+		 (setq headers (cdr headers))
+		 (goto-char (point-min))
+		 (if (re-search-forward headline nil t)
+		     (setq sorthead 
+			   (concat sorthead
+				   (buffer-substring 
+				    (match-beginning 0)
+				    (or (and (re-search-forward "^[^ \t]" nil t)
+					     (1- (point)))
+					(progn (forward-line 1) (point)))))))))
 	     (widen)))
 	 (insert sorthead)(goto-char (point-max))
 	 (insert body)(goto-char (point-max))
@@ -1130,7 +1131,10 @@ The headers will be included in the sequence they are matched.")
 	    (widen)
 	    (erase-buffer)
 	    (insert-buffer-substring article-buffer)
+	    (gnus-set-mode-line 'article)
 	    (goto-char (point-min)))))
+
+    (gnus-set-mode-line 'summary)
 
     (if result-files
 	()

@@ -388,6 +388,7 @@ When there are citations from multiple articles in the same message,
 Gnus will try to give each citation from each article its own face.
 This should make it easier to see who wrote what.")
 		  (name . gnus-cite-face-list)
+		  (import . gnus-custom-import-cite-face-list)
 		  (type . list)
 		  (calculate . (cond ((not (eq gnus-display-type 'color))
 				      '(italic))
@@ -520,6 +521,14 @@ mark:    The article's mark.")
 		 ;; some `complexity' attribute so we can hide it from
 		 ;; beginners. 
 		 )))))
+
+(defun gnus-custom-import-cite-face-list (custom alist)
+  ;; Backward compatible groking of light and dark.
+  (cond ((eq alist 'light)
+	 (setq alist (mapcar 'gnus-make-face gnus-face-light-name-list)))
+	((eq alist 'dark)
+	 (setq alist (mapcar 'gnus-make-face gnus-face-dark-name-list))))
+  (funcall (custom-super custom 'import) custom alist))
 
 ;(defun gnus-custom-import-swap-alist (custom alist)
 ;  ;; Swap key and value in CUSTOM ALIST.
