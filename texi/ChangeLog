@@ -1,3 +1,8 @@
+2002-03-25  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Mail Spool): Add cindex for marks.
+	(Mail Folders): Add cindex for marks.
+
 2002-03-24  Raymond Scholz <rscholz@zonix.de>
 
 	* gnus.texi (Summary Buffer Lines): Fix doc.

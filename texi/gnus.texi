@@ -13845,6 +13845,7 @@ splitting.  It has to create lots of files, and it also generates
 fastest back end when it comes to reading mail.
 
 @cindex self contained nnml servers
+@cindex marks
 When the marks file is used (which it is by default), @code{nnml}
 servers have the property that you may backup them using @code{tar} or
 similar, and later be able to restore them into Gnus (by adding the
@@ -13969,6 +13970,7 @@ will add extra headers to keep track of article numbers and arrival
 dates.
 
 @cindex self contained nnfolder servers
+@cindex marks
 When the marks file is used (which it is by default), @code{nnfolder}
 servers have the property that you may backup them using @code{tar} or
 similar, and later be able to restore them into Gnus (by adding the
