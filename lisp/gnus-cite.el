@@ -619,41 +619,44 @@ cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
   (interactive (append (gnus-article-hidden-arg) '(force)))
-  (unless (gnus-article-check-hidden-text 'cite arg)
-    (save-excursion
-      (set-buffer gnus-article-buffer)
-      (gnus-cite-parse-maybe force)
-      (article-goto-body)
-      (let ((start (point))
-	    (atts gnus-cite-attribution-alist)
-	    (buffer-read-only nil)
-	    (inhibit-point-motion-hooks t)
-	    (hidden 0)
-	    total)
-	(goto-char (point-max))
-	(gnus-article-search-signature)
-	(setq total (count-lines start (point)))
-	(while atts
-	  (setq hidden (+ hidden (length (cdr (assoc (cdar atts)
-						     gnus-cite-prefix-alist))))
-		atts (cdr atts)))
-	(when (or force
-		  (and (> (* 100 hidden) (* gnus-cite-hide-percentage total))
-		       (> hidden gnus-cite-hide-absolute)))
-	  (setq atts gnus-cite-attribution-alist)
+  (with-current-buffer gnus-article-buffer
+    (gnus-delete-wash-type 'cite)
+    (unless (gnus-article-check-hidden-text 'cite arg)
+      (save-excursion
+	(gnus-cite-parse-maybe force)
+	(article-goto-body)
+	(let ((start (point))
+	      (atts gnus-cite-attribution-alist)
+	      (buffer-read-only nil)
+	      (inhibit-point-motion-hooks t)
+	      (hidden 0)
+	      total)
+	  (goto-char (point-max))
+	  (gnus-article-search-signature)
+	  (setq total (count-lines start (point)))
 	  (while atts
-	    (setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
-		  atts (cdr atts))
-	    (while total
-	      (setq hidden (car total)
-		    total (cdr total))
-	      (goto-char (point-min))
-	      (forward-line (1- hidden))
-	      (unless (assq hidden gnus-cite-attribution-alist)
-		(gnus-add-text-properties
-		 (point) (progn (forward-line 1) (point))
-		 (nconc (list 'article-type 'cite)
-			gnus-hidden-properties))))))))))
+	    (setq hidden (+ hidden (length (cdr (assoc (cdar atts)
+						       gnus-cite-prefix-alist))))
+		  atts (cdr atts)))
+	  (when (or force
+		    (and (> (* 100 hidden) (* gnus-cite-hide-percentage total))
+			 (> hidden gnus-cite-hide-absolute)))
+	    (gnus-add-wash-type 'cite)
+	    (setq atts gnus-cite-attribution-alist)
+	    (while atts
+	      (setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
+		    atts (cdr atts))
+	      (while total
+		(setq hidden (car total)
+		      total (cdr total))
+		(goto-char (point-min))
+		(forward-line (1- hidden))
+		(unless (assq hidden gnus-cite-attribution-alist)
+		  (gnus-add-text-properties
+		   (point) (progn (forward-line 1) (point))
+		   (nconc (list 'article-type 'cite)
+			  gnus-hidden-properties)))))))))
+    (gnus-set-mode-line 'article)))
 
 (defun gnus-article-hide-citation-in-followups ()
   "Hide cited text in non-root articles."
