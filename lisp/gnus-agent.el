@@ -757,7 +757,11 @@ article's mark is toggled."
 	    (cond ((< a h)
 		   (pop alist)) ; ignore IDs in the alist that are not being displayed in the summary
 		  ((> a h)
-		   (pop headers)) ; ignore headers that are not in the alist as these should be fictious (see nnagent-retrieve-headers).
+                   ;; headers that are not in the alist should be
+                   ;; fictious (see nnagent-retrieve-headers); they
+                   ;; imply that this article isn't in the agent.
+		   (gnus-agent-append-to-list tail h)
+                   (pop headers)) 
 		  ((cdar alist)
 		   (pop alist)
 		   (pop headers)
@@ -767,6 +771,11 @@ article's mark is toggled."
 		   (pop alist)
 		   (pop headers)
 		   (gnus-agent-append-to-list tail a)))))
+
+	(while headers
+	  (let ((h (mail-header-number (car headers))))
+            (pop headers)
+            (gnus-agent-append-to-list tail h)))
 	(setq gnus-newsgroup-undownloaded (cdr undownloaded))))))
 
 (defun gnus-agent-catchup ()
