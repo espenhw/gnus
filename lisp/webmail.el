@@ -825,7 +825,7 @@
 (defun webmail-my-deja-open ()
   (webmail-refresh-redirect)
   (goto-char (point-min))
-  (if (re-search-forward "action=\"\\([^\"]+login_confirm\\.xp[^\"]+\\)\"" 
+  (if (re-search-forward "action=\"\\([^\"]+login_confirm\\.xp[^\"]*\\)\"" 
 			 nil t)
       (setq webmail-aux (match-string 1))
     (webmail-error "open@1")))

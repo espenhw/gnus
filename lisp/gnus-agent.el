@@ -611,7 +611,9 @@ the actual number of articles toggled is returned."
        new))
     (gnus-make-directory (file-name-directory file))
     (let ((coding-system-for-write gnus-agent-file-coding-system))
-      (gnus-write-active-file file orig))))
+      ;; The hashtable contains real names of groups,  no more prefix
+      ;; removing, so set `full' to `t'.
+      (gnus-write-active-file file orig t))))
 
 (defun gnus-agent-save-groups (method)
   (gnus-agent-save-active-1 method 'gnus-groups-to-gnus-format))
