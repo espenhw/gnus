@@ -1,3 +1,7 @@
+2001-04-07  Jesper Harder <harder@ifa.au.dk>
+
+	* gnus.texi (More Threading): Fix.
+
 2001-04-01 00:32:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (S): Renamed.

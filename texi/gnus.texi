@@ -5828,9 +5828,9 @@ will be hidden.
 @item gnus-thread-ignore-subject
 @vindex gnus-thread-ignore-subject
 Sometimes somebody changes the subject in the middle of a thread.  If
-this variable is non-@code{nil}, the subject change is ignored.  If it
-is @code{nil}, which is the default, a change in the subject will result
-in a new thread.
+this variable is non-@code{nil}, which is the default, the subject
+change is ignored.  If it is @code{nil}, a change in the subject will
+result in a new thread.
 
 @item gnus-thread-indent-level
 @vindex gnus-thread-indent-level
