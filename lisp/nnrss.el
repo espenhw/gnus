@@ -619,10 +619,9 @@ Export subscriptions to a buffer in OPML Format."
 	    "    <ownerName>" (user-full-name) "</ownerName>\n"
 	    "  </head>\n"
 	    "  <body>\n")
-    (mapc (lambda (sub)
-	    (insert "    <outline text=\"" (car sub) "\" xmlUrl=\""
-		    (cadr sub) "\"/>\n"))
-	  nnrss-group-alist)
+    (dolist (sub nnrss-group-alist)
+      (insert "    <outline text=\"" (car sub)
+	      "\" xmlUrl=\"" (cadr sub) "\"/>\n"))
     (insert "  </body>\n"
 	    "</opml>\n"))
   (pop-to-buffer "*OPML Export*")
@@ -696,27 +695,26 @@ It is useful when `(setq nnrss-use-local t)'."
   "Find the all matching elements in the data.
 Careful with this on large documents!"
   (when (consp data)
-    (mapc (lambda (bit)
-	    (when (car-safe bit)
-	      (when (equal tag (car bit))
-		;; Old xml.el may return a list of string.
-		(when (and (consp (caddr bit))
-			   (stringp (caaddr bit)))
-		  (setcar (cddr bit) (caaddr bit)))
-		(setq found-list
-		      (append found-list
-			      (list bit))))
-	      (if (and (consp (car-safe (caddr bit)))
-		       (not (stringp (caddr bit))))
-		  (setq found-list
-			(append found-list
-				(nnrss-find-el
-				 tag (caddr bit))))
-		(setq found-list
-		      (append found-list
-			      (nnrss-find-el
-			       tag (cddr bit)))))))
-	  data))
+    (dolist (bit data)
+      (when (car-safe bit)
+	(when (equal tag (car bit))
+	  ;; Old xml.el may return a list of string.
+	  (when (and (consp (caddr bit))
+		     (stringp (caaddr bit)))
+	    (setcar (cddr bit) (caaddr bit)))
+	  (setq found-list
+		(append found-list
+			(list bit))))
+	(if (and (consp (car-safe (caddr bit)))
+		 (not (stringp (caddr bit))))
+	    (setq found-list
+		  (append found-list
+			  (nnrss-find-el
+			   tag (caddr bit))))
+	  (setq found-list
+		(append found-list
+			(nnrss-find-el
+			 tag (cddr bit))))))))
   found-list)
 
 (defun nnrss-rsslink-p (el)
@@ -762,27 +760,26 @@ whether they are `offsite' or `onsite'."
 	rss-onsite-in   rdf-onsite-in   xml-onsite-in
 	rss-offsite-end rdf-offsite-end xml-offsite-end
 	rss-offsite-in rdf-offsite-in xml-offsite-in)
-    (mapc (lambda (href)
-	    (if (not (null href))
-		(cond ((string-match "\\.rss$" href)
-		       (nnrss-match-macro
-			base-uri href rss-onsite-end rss-offsite-end))
-		      ((string-match "\\.rdf$" href)
-		       (nnrss-match-macro
-			base-uri href rdf-onsite-end rdf-offsite-end))
-		      ((string-match "\\.xml$" href)
-		       (nnrss-match-macro
-			base-uri href xml-onsite-end xml-offsite-end))
-		      ((string-match "rss" href)
-		       (nnrss-match-macro
-			base-uri href rss-onsite-in rss-offsite-in))
-		      ((string-match "rdf" href)
-		       (nnrss-match-macro
-			base-uri href rdf-onsite-in rdf-offsite-in))
-		      ((string-match "xml" href)
-		       (nnrss-match-macro
-			base-uri href xml-onsite-in xml-offsite-in)))))
-	  hrefs)
+    (dolist (href hrefs)
+      (cond ((null href))
+	    ((string-match "\\.rss$" href)
+	     (nnrss-match-macro
+	      base-uri href rss-onsite-end rss-offsite-end))
+	    ((string-match "\\.rdf$" href)
+	     (nnrss-match-macro
+	      base-uri href rdf-onsite-end rdf-offsite-end))
+	    ((string-match "\\.xml$" href)
+	     (nnrss-match-macro
+	      base-uri href xml-onsite-end xml-offsite-end))
+	    ((string-match "rss" href)
+	     (nnrss-match-macro
+	      base-uri href rss-onsite-in rss-offsite-in))
+	    ((string-match "rdf" href)
+	     (nnrss-match-macro
+	      base-uri href rdf-onsite-in rdf-offsite-in))
+	    ((string-match "xml" href)
+	     (nnrss-match-macro
+	      base-uri href xml-onsite-in xml-offsite-in))))
     (append
      rss-onsite-end  rdf-onsite-end  xml-onsite-end
      rss-onsite-in   rdf-onsite-in   xml-onsite-in

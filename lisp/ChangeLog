@@ -36,6 +36,13 @@
 	(nnrss-get-encoding): Return a compatible encoding according to
 	nnrss-compatible-encoding-alist.
 	(nnrss-find-el): Use consp instead of listp.
+	(nnrss-opml-export, nnrss-order-hrefs, nnrss-find-el): Use dolist.
+
+2005-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* time-date.el (time-to-seconds): Don't use the #xhhhh syntax
+	which Emacs 20 doesn't support.
+	(seconds-to-time, days-to-time, time-subtract, time-add): Ditto.
 
 2005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 

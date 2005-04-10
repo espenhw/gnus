@@ -54,7 +54,8 @@
 		    mm-mime-mule-charset-alist)
 	    nil t))))
      (subst-char-in-string
-      . (lambda (from to string &optional inplace) ;; stolen (and renamed) from nnheader.el
+      . (lambda (from to string &optional inplace)
+	  ;; stolen (and renamed) from nnheader.el
 	  "Replace characters in STRING from FROM to TO.
 	  Unless optional argument INPLACE is non-nil, return a new string."
 	  (let ((string (if inplace string (copy-sequence string)))
