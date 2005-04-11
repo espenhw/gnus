@@ -1,3 +1,12 @@
+2005-04-11  Lute Kamstra  <lute@gnu.org>
+
+	* nnimap.el (nnimap-date-days-ago): Handle byte-compiler warnings
+	differently.
+
+2005-04-10  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* mm-util.el (mm-detect-coding-region): Typo.
+
 2005-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-read-summary-keys): Fix misplaced parens.
