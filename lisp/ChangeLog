@@ -1,3 +1,7 @@
+2005-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Fix misplaced parens.
+
 2005-04-06  D Goel  <deego@gnufans.org>
 
 	* spam-stat.el (spam-stat-score-buffer): Add a call to a
