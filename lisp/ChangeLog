@@ -1,3 +1,10 @@
+2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind display-time-event-handler; don't fbind
+	string-to-multibyte.
+
+	* qp.el (quoted-printable-encode-region): Use mm-string-to-multibyte.
+
 2005-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-node-text): Replace CRLFs (which might be
