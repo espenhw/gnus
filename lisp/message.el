@@ -446,6 +446,12 @@ should return the new buffer name."
   :link '(custom-manual "(message)Message Buffers")
   :type 'boolean)
 
+(defcustom message-kill-buffer-query-if-modified t
+  "*Non-nil means that killing a modified message buffer has to be confirmed.
+This is used by `message-kill-buffer'."
+  :group 'message-buffers
+  :type 'boolean)
+
 (eval-when-compile
   (defvar gnus-local-organization))
 (defcustom message-user-organization
@@ -3439,6 +3445,7 @@ Instead, just auto-save the buffer and then bury it."
   "Kill the current buffer."
   (interactive)
   (when (or (not (buffer-modified-p))
+	    (not message-kill-buffer-query-if-modified)
 	    (yes-or-no-p "Message modified; kill anyway? "))
     (let ((actions message-kill-actions)
 	  (draft-article message-draft-article)

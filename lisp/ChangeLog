@@ -1,3 +1,9 @@
+2005-04-14  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* message.el (message-kill-buffer-query-if-modified): new variable
+	so the user can kill a modified message buffer quickly
+	(message-kill-buffer): use it.
+
 2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind display-time-event-handler; don't fbind
