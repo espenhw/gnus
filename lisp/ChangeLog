@@ -1,3 +1,7 @@
+2005-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* qp.el (quoted-printable-encode-region): Save excursion.
+
 2005-04-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* message.el (message-kill-buffer-query-if-modified): new variable
