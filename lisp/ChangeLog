@@ -1,3 +1,7 @@
+2005-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el: Autoload dnd when compiling.
+
 2005-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-mode, mml-dnd-attach-file): Use dnd-* instead of

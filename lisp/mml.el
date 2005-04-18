@@ -38,8 +38,10 @@
   (autoload 'message-fetch-field "message")
   (autoload 'message-mark-active-p "message")
   (autoload 'fill-flowed-encode "flow-fill")
-  (autoload 'message-posting-charset "message")
-  (autoload 'x-dnd-get-local-file-name "x-dnd"))
+  (autoload 'message-posting-charset "message"))
+
+(eval-when-compile
+  (autoload 'dnd-get-local-file-name "dnd"))
 
 (defcustom mml-content-type-parameters
   '(name access-type expiration size permission format)
