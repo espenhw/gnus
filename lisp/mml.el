@@ -914,11 +914,11 @@ See Info node `(emacs-mime)Composing'.
 	       (> (prefix-numeric-value arg) 0)))
     (add-minor-mode 'mml-mode " MML" mml-mode-map)
     (easy-menu-add mml-menu mml-mode-map)
-    (when (boundp 'x-dnd-protocol-alist)
-      (set (make-local-variable 'x-dnd-protocol-alist)
-	   '(("^file:///" . mml-x-dnd-attach-file)
-	     ("^file://"  . x-dnd-open-file)
-	     ("^file:"    . mml-x-dnd-attach-file))))
+    (when (boundp 'dnd-protocol-alist)
+      (set (make-local-variable 'dnd-protocol-alist)
+	   '(("^file:///" . mml-dnd-attach-file)
+	     ("^file://"  . dnd-open-file)
+	     ("^file:"    . mml-dnd-attach-file))))
     (run-hooks 'mml-mode-hook)))
 
 ;;;
@@ -1034,9 +1034,9 @@ description of the attachment."
 			'disposition (or disposition "attachment")
 			'description description))
 
-(defun mml-x-dnd-attach-file (uri action)
+(defun mml-dnd-attach-file (uri action)
   "Attach a drag and drop file."
-  (let ((file (x-dnd-get-local-file-name uri t)))
+  (let ((file (dnd-get-local-file-name uri t)))
     (when (and file (file-regular-p file))
       (let* ((type (mml-minibuffer-read-type file))
 	    (description (mml-minibuffer-read-description))
