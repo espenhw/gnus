@@ -1169,7 +1169,8 @@ If RAW, don't highlight the article."
       (goto-char (point-min))))
   (if (and (boundp 'gnus-buffer-configuration)
 	   (assq 'mml-preview gnus-buffer-configuration))
-      (gnus-configure-windows 'mml-preview)
+      (let ((gnus-message-buffer (current-buffer)))
+	(gnus-configure-windows 'mml-preview))
     (pop-to-buffer mml-preview-buffer)))
 
 (defun mml-validate ()

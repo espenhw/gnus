@@ -1,3 +1,8 @@
+2005-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-preview): Bind gnus-message-buffer while setting the
+	window layout.
+
 2005-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el: Autoload dnd when compiling.
