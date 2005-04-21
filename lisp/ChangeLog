@@ -1,3 +1,8 @@
+2005-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-kill-buffer-query): Renamed from
+	`message-kill-buffer-query-if-modified'.  Added :version.
+
 2005-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-preview): Bind gnus-message-buffer while setting the
