@@ -1,3 +1,8 @@
+2005-04-22  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* nnrss.el (nnrss-check-group, nnrss-request-article): Support the
+	enclosure element of <item>.
+
 2005-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-kill-buffer-query): Renamed from
