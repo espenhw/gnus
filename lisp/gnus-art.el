@@ -2891,16 +2891,19 @@ should replace the \"Date:\" one, or should be added below it."
 						      'original-date))
 			(and (setq pos (next-single-property-change
 					(point) 'original-date))
-			     (progn
-			       (goto-char pos)
-			       (bolp))
 			     (setq date (get-text-property pos
 							   'original-date))))
 		    (not (string-equal date "")))
-	  (narrow-to-region
-	   pos
-	   (or (text-property-any pos (point-max) 'original-date nil)
-	       (point-max)))
+	  (goto-char (or (text-property-any pos (point-max)
+					    'original-date nil)
+			 (point-max)))
+	  ;; Skip Face or X-Face.
+	  (unless (bolp)
+	    (end-of-line)
+	    (goto-char (or (text-property-any pos (point-max)
+					      'original-date nil)
+			   (point-max))))
+	  (narrow-to-region pos (point))
 	  (goto-char (point-min))
 	  (when (re-search-forward tdate-regexp nil t)
 	    (setq bface (get-text-property (point-at-bol) 'face)
