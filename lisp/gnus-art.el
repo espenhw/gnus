@@ -2891,6 +2891,9 @@ should replace the \"Date:\" one, or should be added below it."
 						      'original-date))
 			(and (setq pos (next-single-property-change
 					(point) 'original-date))
+			     (progn
+			       (goto-char pos)
+			       (bolp))
 			     (setq date (get-text-property pos
 							   'original-date))))
 		    (not (string-equal date "")))
