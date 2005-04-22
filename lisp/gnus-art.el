@@ -2867,69 +2867,72 @@ lines forward."
 	  (forward-line 1)
 	(setq ended t)))))
 
-(defun article-date-ut (&optional type highlight header)
+(defun article-date-ut (&optional type highlight)
   "Convert DATE date to universal time in the current article.
 If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE.  For `lapsed', the value of
 `gnus-article-date-lapsed-new-header' says whether the \"X-Sent:\" header
 should replace the \"Date:\" one, or should be added below it."
   (interactive (list 'ut t))
-  (let* ((header (or header
-		     (message-fetch-field "date")
-		     ""))
-	 (tdate-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
-	 (date-regexp
-	  (cond
-	   ((not gnus-article-date-lapsed-new-header)
-	    tdate-regexp)
-	   ((eq type 'lapsed)
-	    "^X-Sent:[ \t]")
-	   (t
-	    "^Date:[ \t]")))
-	 (date (if (vectorp header) (mail-header-date header)
-		 header))
+  (let* ((tdate-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
+	 (date-regexp (if (and gnus-article-date-lapsed-new-header
+			       (eq type 'lapsed))
+			  "^X-Sent:[ \t]"
+			tdate-regexp))
+	 (case-fold-search t)
+	 (inhibit-read-only t)
 	 (inhibit-point-motion-hooks t)
-	 pos
-	 bface eface)
+	 pos date bface eface)
     (save-excursion
       (save-restriction
-	(article-narrow-to-head)
-	(when (re-search-forward tdate-regexp nil t)
-	  (setq bface (get-text-property (point-at-bol) 'face)
-		date (or (get-text-property (point-at-bol)
-					    'original-date)
-			 date)
-		eface (get-text-property (1- (point-at-eol)) 'face))
-	  (forward-line 1))
-	(when (and date (not (string= date "")))
+	(widen)
+	(goto-char (point-min))
+	(while (and (or (setq date (get-text-property (setq pos (point))
+						      'original-date))
+			(and (setq pos (next-single-property-change
+					(point) 'original-date))
+			     (setq date (get-text-property pos
+							   'original-date))))
+		    (not (string-equal date "")))
+	  (narrow-to-region
+	   pos
+	   (or (text-property-any pos (point-max) 'original-date nil)
+	       (point-max)))
 	  (goto-char (point-min))
-	  (let ((inhibit-read-only t))
-	    ;; Delete any old Date headers.
-	    (while (re-search-forward date-regexp nil t)
-	      (if pos
-		  (delete-region (point-at-bol)
-				 (progn (gnus-article-forward-header)
-					(point)))
-		(delete-region (point-at-bol)
-			       (progn (gnus-article-forward-header)
-				      (forward-char -1)
-				      (point)))
-		(setq pos (point))))
-	    (when (and (not pos)
-		       (re-search-forward tdate-regexp nil t))
-	      (forward-line 1))
-	    (gnus-goto-char pos)
-	    (insert (article-make-date-line date (or type 'ut)))
-	    (unless pos
-	      (insert "\n")
-	      (forward-line -1))
-	    ;; Do highlighting.
-	    (beginning-of-line)
-	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
-	      (add-text-properties (match-beginning 1) (1+ (match-end 1))
-				   (list 'original-date date 'face bface))
-	      (put-text-property (match-beginning 2) (match-end 2)
-				 'face eface))))))))
+	  (when (re-search-forward tdate-regexp nil t)
+	    (setq bface (get-text-property (point-at-bol) 'face)
+		  eface (get-text-property (1- (point-at-eol)) 'face)))
+	  (goto-char (point-min))
+	  (setq pos nil)
+	  ;; Delete any old Date headers.
+	  (while (re-search-forward date-regexp nil t)
+	    (if pos
+		(delete-region (point-at-bol) (progn
+						(gnus-article-forward-header)
+						(point)))
+	      (delete-region (point-at-bol) (progn
+					      (gnus-article-forward-header)
+					      (forward-char -1)
+					      (point)))
+	      (setq pos (point))))
+	  (when (and (not pos)
+		     (re-search-forward tdate-regexp nil t))
+	    (forward-line 1))
+	  (gnus-goto-char pos)
+	  (insert (article-make-date-line date (or type 'ut)))
+	  (unless pos
+	    (insert "\n")
+	    (forward-line -1))
+	  ;; Do highlighting.
+	  (beginning-of-line)
+	  (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
+	    (put-text-property (match-beginning 1) (1+ (match-end 1))
+			       'face bface)
+	    (put-text-property (match-beginning 2) (match-end 2)
+			       'face eface))
+	  (put-text-property (point-min) (1- (point-max)) 'original-date date)
+	  (goto-char (point-max))
+	  (widen))))))
 
 (defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
@@ -3113,6 +3116,22 @@ This format is defined by the `gnus-article-time-format' variable."
   "Convert the current article date to ISO8601."
   (interactive (list t))
   (article-date-ut 'iso8601 highlight))
+
+(defun gnus-article-save-original-date ()
+  "Save the original date as a text property."
+  ;;(goto-char (point-max))
+  (skip-chars-backward "\n")
+  (let (start
+	(end (point))
+	(case-fold-search t))
+    (goto-char (point-min))
+    (when (and (re-search-forward "^date:[\t\n ]+" nil t)
+	       (progn
+		 (setq start (match-end 0))
+		 (re-search-forward "[\t ]*\n\\(?:[^\t ]\\|\\'\\)" nil t)))
+      (put-text-property
+       (point-min) end 'original-date
+       (buffer-substring-no-properties start (match-beginning 0))))))
 
 ;; (defun article-show-all ()
 ;;   "Show all hidden text in the article buffer."
@@ -4690,6 +4709,7 @@ N is the numerical prefix."
 	    (save-restriction
 	      (article-goto-body)
 	      (narrow-to-region (point-min) (point))
+	      (gnus-article-save-original-date)
 	      (gnus-treat-article 'head))))))))
 
 (defcustom gnus-mime-display-multipart-as-mixed nil
