@@ -4677,7 +4677,7 @@ N is the numerical prefix."
 	  (set-window-point window point)))
       (let ((handles ihandles)
 	    (inhibit-read-only t)
-	    handle date)
+	    handle)
 	(cond (handles)
 	      ((setq handles (mm-dissect-buffer nil gnus-article-loose-mime))
 	       (when gnus-article-emulate-mime
