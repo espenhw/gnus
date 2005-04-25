@@ -2875,10 +2875,14 @@ how much time has lapsed since DATE.  For `lapsed', the value of
 should replace the \"Date:\" one, or should be added below it."
   (interactive (list 'ut t))
   (let* ((tdate-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
-	 (date-regexp (if (and gnus-article-date-lapsed-new-header
-			       (eq type 'lapsed))
-			  "^X-Sent:[ \t]"
-			tdate-regexp))
+	 (date-regexp (cond ((not gnus-article-date-lapsed-new-header)
+			     tdate-regexp)
+			    ((eq type 'lapsed)
+			     "^X-Sent:[ \t]")
+			    (article-lapsed-timer
+			     "^Date:[ \t]")
+			    (t
+			     tdate-regexp)))
 	 (case-fold-search t)
 	 (inhibit-read-only t)
 	 (inhibit-point-motion-hooks t)
@@ -2887,23 +2891,15 @@ should replace the \"Date:\" one, or should be added below it."
       (save-restriction
 	(widen)
 	(goto-char (point-min))
-	(while (and (or (setq date (get-text-property (setq pos (point))
-						      'original-date))
-			(and (setq pos (next-single-property-change
-					(point) 'original-date))
-			     (setq date (get-text-property pos
-							   'original-date))))
-		    (not (string-equal date "")))
-	  (goto-char (or (text-property-any pos (point-max)
-					    'original-date nil)
-			 (point-max)))
-	  ;; Skip Face or X-Face.
-	  (unless (bolp)
-	    (end-of-line)
-	    (goto-char (or (text-property-any pos (point-max)
-					      'original-date nil)
-			   (point-max))))
-	  (narrow-to-region pos (point))
+	(while (or (setq date (get-text-property (setq pos (point))
+						 'original-date))
+		   (when (setq pos (next-single-property-change
+				    (point) 'original-date))
+		     (setq date (get-text-property pos 'original-date))
+		     t))
+	  (narrow-to-region pos (or (text-property-any pos (point-max)
+						       'original-date nil)
+				    (point-max)))
 	  (goto-char (point-min))
 	  (when (re-search-forward tdate-regexp nil t)
 	    (setq bface (get-text-property (point-at-bol) 'face)
@@ -3123,21 +3119,17 @@ This format is defined by the `gnus-article-time-format' variable."
   (interactive (list t))
   (article-date-ut 'iso8601 highlight))
 
-(defun gnus-article-save-original-date ()
-  "Save the original date as a text property."
-  ;;(goto-char (point-max))
-  (skip-chars-backward "\n")
-  (let (start
-	(end (point))
-	(case-fold-search t))
-    (goto-char (point-min))
-    (when (and (re-search-forward "^date:[\t\n ]+" nil t)
-	       (progn
-		 (setq start (match-end 0))
-		 (re-search-forward "[\t ]*\n\\(?:[^\t ]\\|\\'\\)" nil t)))
-      (put-text-property
-       (point-min) end 'original-date
-       (buffer-substring-no-properties start (match-beginning 0))))))
+(defun gnus-article-date-value ()
+  "Return the value of the date header.
+The buffer is expected to be narrowed to just the header of the article."
+  (goto-char (point-min))
+  (let* ((case-fold-search t)
+	 (start (when (and (re-search-forward "^date:[\t\n ]+" nil t)
+			   (not (bolp)))
+		  (match-end 0))))
+    (when (and start
+	       (re-search-forward "[\t ]*\n\\(?:[^\t ]\\|\\'\\)" nil t))
+      (buffer-substring-no-properties start (match-beginning 0)))))
 
 ;; (defun article-show-all ()
 ;;   "Show all hidden text in the article buffer."
@@ -4676,7 +4668,7 @@ N is the numerical prefix."
 	  (set-window-point window point)))
       (let ((handles ihandles)
 	    (inhibit-read-only t)
-	    handle name type b e display)
+	    handle date)
 	(cond (handles)
 	      ((setq handles (mm-dissect-buffer nil gnus-article-loose-mime))
 	       (when gnus-article-emulate-mime
@@ -4715,8 +4707,12 @@ N is the numerical prefix."
 	    (save-restriction
 	      (article-goto-body)
 	      (narrow-to-region (point-min) (point))
-	      (gnus-article-save-original-date)
-	      (gnus-treat-article 'head))))))))
+	      (setq date (gnus-article-date-value))
+	      (gnus-treat-article 'head)
+	      (goto-char (point-max))
+	      (skip-chars-backward "\n")
+	      (put-text-property (point-min) (point)
+				 'original-date date))))))))
 
 (defcustom gnus-mime-display-multipart-as-mixed nil
   "Display \"multipart\" parts as  \"multipart/mixed\".
