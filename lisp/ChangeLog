@@ -5,7 +5,8 @@
 	skip headers in which the original date value is empty.
 	(gnus-article-date-value): New function.
 	(gnus-article-save-original-date): Abolish.
-	(gnus-display-mime): Save original date after doing all treatments.
+	(gnus-display-mime): Save original date after doing all treatments
+	as well.
 
 2005-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
