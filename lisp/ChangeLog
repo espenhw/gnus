@@ -3,10 +3,8 @@
 	* gnus-art.el (article-date-ut): Don't delete X-Sent header when
 	gnus-article-date-lapsed-new-header is t if date timer is active;
 	skip headers in which the original date value is empty.
-	(gnus-article-date-value): New function.
-	(gnus-article-save-original-date): Abolish.
-	(gnus-display-mime): Save original date after doing all treatments
-	as well.
+	(gnus-article-save-original-date): Redefine it as a macro.
+	(gnus-display-mime): Use it.
 
 2005-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
