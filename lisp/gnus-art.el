@@ -4083,6 +4083,7 @@ This function is exclusively used by `gnus-mime-save-part-and-strip'
 and `gnus-mime-delete-part', and not provided at run-time normally."
     (gnus-article-edit-article
      `(lambda ()
+	(buffer-disable-undo)
 	(erase-buffer)
 	(let ((mail-parse-charset (or gnus-article-charset
 				      ',gnus-newsgroup-charset))
