@@ -1,3 +1,7 @@
+2005-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* lpath.el (featurep): Bind show-nonbreak-escape.
+
 2005-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-edit-part): Disable undo.

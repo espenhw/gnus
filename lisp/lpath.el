@@ -59,7 +59,8 @@
 		 w3-coding-system-for-mime-charset w3-do-setup
 		 w3-prepare-buffer w3-region window-pixel-height
 		 window-pixel-width))
-  (maybe-bind '(help-echo-owns-message mail-mode-hook mm-w3m-mode-map)))
+  (maybe-bind '(help-echo-owns-message mail-mode-hook mm-w3m-mode-map
+				       show-nonbreak-escape)))
 
 (when (and (featurep 'xemacs)
 	   (not (featurep 'mule)))
