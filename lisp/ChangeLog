@@ -1,3 +1,20 @@
+2005-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el: Autoload mail-extract-address-components for XEmacs.
+
+	* gnus-art.el: Don't autoload mail-extract-address-components.
+
+	* gnus.el: Remove duplicated autoload for message-y-or-n-p; use
+	eval-and-compile to evaluate it.
+
+	* hashcash.el: Don't autoload executable-find.
+
+	* nndb.el: Don't declare the nndb back end two or more times; don't
+	autoload news-reply-mode, news-setup, cancel-timer and telnet.
+
+	* nntp.el: Autoload format-spec instead of format; use
+	eval-and-compile to evaluate autoload forms.
+
 2005-05-09  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): Fix PIN caching,

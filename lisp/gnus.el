@@ -34,7 +34,6 @@
 (require 'wid-edit)
 (require 'mm-util)
 (require 'nnheader)
-(autoload 'message-y-or-n-p "message" nil nil 'macro)
 
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
@@ -3993,7 +3992,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
       (setq valids (cdr valids)))
     outs))
 
-(eval-when-compile
+(eval-and-compile
   (autoload 'message-y-or-n-p "message" nil nil 'macro))
 
 (defun gnus-read-group (prompt &optional default)

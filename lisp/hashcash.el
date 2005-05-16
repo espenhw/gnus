@@ -49,9 +49,6 @@
 
 ;;; Code:
 
-(eval-and-compile
- (autoload 'executable-find "executable"))
-
 (defcustom hashcash-default-payment 20
   "*The default number of bits to pay to unknown users.
 If this is zero, no payment header will be generated.

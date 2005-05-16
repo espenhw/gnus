@@ -1,7 +1,8 @@
 ;;; nntp.el --- nntp access for Gnus
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993, 1994, 1995, 1996,
-;; 1997, 1998, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+;; 1997, 1998, 2000, 2001, 2002, 2003, 2004, 2005
+;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -1215,9 +1216,10 @@ password contained in '~/.nntp-authinfo'."
 (defun nntp-open-network-stream (buffer)
   (open-network-stream "nntpd" buffer nntp-address nntp-port-number))
 
-(autoload 'format-spec "format")
-(autoload 'format-spec-make "format")
-(autoload 'open-tls-stream "tls")
+(eval-and-compile
+  (autoload 'format-spec "format-spec")
+  (autoload 'format-spec-make "format-spec")
+  (autoload 'open-tls-stream "tls"))
 
 (defun nntp-open-ssl-stream (buffer)
   (let* ((process-connection-type nil)
@@ -1984,7 +1986,8 @@ Please refer to the following variables to customize the connection:
       (make-directory (directory-file-name dir) t)
       (nnheader-message 5 "Creating nntp marks directory %s" dir))))
 
-(autoload 'time-less-p "time-date")
+(eval-and-compile
+  (autoload 'time-less-p "time-date"))
 
 (defun nntp-marks-changed-p (group server)
   (let ((file (expand-file-name
