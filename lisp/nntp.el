@@ -561,7 +561,12 @@ be restored and the command retried."
    ;; a line with only a "." on it.
    ((eq (char-after) ?2)
     (if (re-search-forward "\n\\.\r?\n" nil t)
-	t
+	(progn
+	  ;; Some broken news servers add another dot at the end.
+	  ;; Protect against inflooping there.
+	  (while (looking-at "^\\.\r?\n")
+	    (forward-line 1))
+	  t)
       nil))
    ;; A result that starts with a 3xx or 4xx code is terminated
    ;; by a newline.
@@ -623,7 +628,8 @@ command whose response triggered the error."
                           (condition-case nil
 			      (progn ,@forms)
 			    (quit
-			     (nntp-close-server)
+			     (unless debug-on-quit
+			       (nntp-close-server))
                              (signal 'quit nil))))
 		  (when timer
 		    (nnheader-cancel-timer timer)))

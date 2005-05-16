@@ -1,5 +1,9 @@
 2005-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nntp.el (nntp-next-result-arrived-p): Some news servers may
+	return \n.\n.\n at the end of articles.  Protect against that.
+	(nntp-with-open-group): Allow debugging.
+
 	* nnheader.el (mail-header-set-extra): Make into a function
 	because I just could't understand how to quote the list properly. 
 
