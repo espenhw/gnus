@@ -348,6 +348,18 @@ If TCP-P, the first two bytes of the package with be the length field."
 	 ;; connection to the DNS server.
 	 (open-network-stream "dns" (current-buffer) server "domain")))))
 
+(defvar dns-cache (make-vector 4096 0))
+
+(defun query-dns-cached (name &optional type fullp reversep)
+  (let* ((key (format "%s:%s:%s:%s" name type fullp reversep))
+	 (sym (intern-soft key dns-cache)))
+    (if (and sym
+	     (boundp sym))
+	(symbol-value sym)
+      (let ((result (query-dns name type fullp reversep)))
+	(set (intern key dns-cache) result)
+	result))))
+
 (defun query-dns (name &optional type fullp reversep)
   "Query a DNS server for NAME of TYPE.
 If FULLP, return the entire record returned.

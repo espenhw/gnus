@@ -1,3 +1,7 @@
+2005-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (query-dns-cached): New function.
+
 2005-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload mail-extract-address-components for XEmacs.
