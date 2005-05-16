@@ -206,9 +206,9 @@ on your system, you could say something like:
   "Return the extra headers in HEADER."
   `(aref ,header 9))
 
-(defmacro mail-header-set-extra (header extra)
+(defun mail-header-set-extra (header extra)
   "Set the extra headers in HEADER to EXTRA."
-  `(aset ,header 9 ',extra))
+  (aset header 9 extra))
 
 (defsubst make-mail-header (&optional init)
   "Create a new mail header structure initialized with INIT."

@@ -1,5 +1,8 @@
 2005-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnheader.el (mail-header-set-extra): Make into a function
+	because I just could't understand how to quote the list properly. 
+
 	* dns.el (query-dns-cached): New function.
 
 2005-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
