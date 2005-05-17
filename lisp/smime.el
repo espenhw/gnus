@@ -125,7 +125,8 @@
 (eval-when-compile (require 'cl))
 
 (defgroup smime nil
-  "S/MIME configuration.")
+  "S/MIME configuration."
+  :group 'mime)
 
 (defcustom smime-keys nil
   "*Map mail addresses to a file containing Certificate (and private key).

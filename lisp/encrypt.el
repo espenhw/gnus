@@ -36,7 +36,8 @@
 
 (defgroup encrypt '((password-cache custom-variable)
 		    (password-cache-expiry custom-variable))
-  "File encryption configuration.")
+  "File encryption configuration."
+  :group 'applications)
 
 (defcustom encrypt-file-alist nil
   "List of file names or regexes matched with encryptions.

@@ -49,11 +49,16 @@
 
 ;;; Code:
 
+(defgroup hashcash nil
+  "Hashcash configuration."
+  :group 'mail)
+
 (defcustom hashcash-default-payment 20
   "*The default number of bits to pay to unknown users.
 If this is zero, no payment header will be generated.
 See `hashcash-payment-alist'."
-  :type 'integer)
+  :type 'integer
+  :group 'hashcash)
 
 (defcustom hashcash-payment-alist '()
   "*An association list mapping email addresses to payment amounts.
@@ -67,32 +72,39 @@ present, is the string to be hashed; if not present ADDR will be used."
 			 (list :tag "Replace hash input"
 			       (string :name "Address")
 			       (string :name "Hash input")
-			       (integer :name "Amount")))))
+			       (integer :name "Amount"))))
+  :group 'hashcash)
 
 (defcustom hashcash-default-accept-payment 20
   "*The default minimum number of bits to accept on incoming payments."
-  :type 'integer)
+  :type 'integer
+  :group 'hashcash)
 
 (defcustom hashcash-accept-resources `((,user-mail-address nil))
   "*An association list mapping hashcash resources to payment amounts.
 Resources named here are to be accepted in incoming payments.  If the
 corresponding AMOUNT is NIL, the value of `hashcash-default-accept-payment'
-is used instead.")
+is used instead."
+  :group 'hashcash)
 
 (defcustom hashcash-path (executable-find "hashcash")
-  "*The path to the hashcash binary.")
+  "*The path to the hashcash binary."
+  :group 'hashcash)
 
 (defcustom hashcash-extra-generate-parameters nil
   "*A list of parameter strings passed to `hashcash-path' when minting.
 For example, you may want to set this to '(\"-Z2\") to reduce header length."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'hashcash)
 
 (defcustom hashcash-double-spend-database "hashcash.db"
-  "*The path to the double-spending database.")
+  "*The path to the double-spending database."
+  :group 'hashcash)
 
 (defcustom hashcash-in-news nil
   "*Specifies whether or not hashcash payments should be made to newsgroups."
-  :type 'boolean)
+  :type 'boolean
+  :group 'hashcash)
 
 (defvar hashcash-process-alist nil
   "Alist of asynchronous hashcash processes and buffers.")

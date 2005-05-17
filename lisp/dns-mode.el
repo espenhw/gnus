@@ -1,5 +1,5 @@
 ;;; dns-mode.el --- a mode for viewing/editing Domain Name System master files
-;; Copyright (c) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: DNS master zone file SOA
@@ -48,7 +48,8 @@
 ;;; Code:
 
 (defgroup dns-mode nil
-  "DNS master file mode configuration.")
+  "DNS master file mode configuration."
+  :group 'comm)
 
 (defconst dns-mode-classes '("IN" "CS" "CH" "HS")
   "List of strings with known DNS classes.")

@@ -1,5 +1,5 @@
 ;;; netrc.el --- .netrc parsing functionality
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -40,7 +40,8 @@
   (autoload 'encrypt-insert-file-contents "encrypt"))
 
 (defgroup netrc nil
- "Netrc configuration.")
+ "Netrc configuration."
+ :group 'comm)
 
 (defvar netrc-services-file "/etc/services"
   "The name of the services file.")

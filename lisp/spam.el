@@ -1,5 +1,5 @@
 ;;; spam.el --- Identifying spam
-;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: network
@@ -80,7 +80,9 @@ Populated by spam-install-backend-super.")
 
 (defgroup spam nil
   "Spam configuration."
-  :version "22.1")
+  :version "22.1"
+  :group 'mail
+  :group 'news)
 
 (defcustom spam-summary-exit-behavior 'default
   "Exit behavior at the time of summary exit.
@@ -360,7 +362,8 @@ Only meaningful if you enable `spam-use-blackholes'."
     (((class color) (background light))
      (:foreground "ivory4"))
     (t :inverse-video t))
-  "Face for spam-marked articles.")
+  "Face for spam-marked articles."
+  :group 'spam)
 
 (defcustom spam-face 'spam-face
   "Face for spam-marked articles."
