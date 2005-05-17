@@ -376,7 +376,8 @@ Add an entry here when adding a new search engine.")
 ;;; User Customizable Variables:
 
 (defgroup nnir nil
-  "Search nnmh and nnml groups in Gnus with Glimpse, freeWAIS-sf, or EWS.")
+  "Search nnmh and nnml groups in Gnus with Glimpse, freeWAIS-sf, or EWS."
+  :group 'gnus)
 
 ;; Mail backend.
 
