@@ -1,5 +1,6 @@
 ;;; dgnushack.el --- a hack to set the load path for byte-compiling
-;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2003
+;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2003,
+;; 2004, 2005
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -79,7 +80,7 @@
 
 (when (and (not (featurep 'xemacs))
 	   (= emacs-major-version 21)
-	   (= emacs-minor-version 3)
+	   (>= emacs-minor-version 3)
 	   (condition-case code
 	       (let ((byte-compile-error-on-warn t))
 		 (byte-optimize-form (quote (pop x)) t)
