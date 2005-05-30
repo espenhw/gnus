@@ -3776,7 +3776,7 @@ commands:
 	show-trailing-whitespace nil)
   (set-syntax-table gnus-article-mode-syntax-table)
   (mm-enable-multibyte)
-  (gnus-run-hooks 'gnus-article-mode-hook))
+  (gnus-run-mode-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()
   "Initialize the article buffer."
