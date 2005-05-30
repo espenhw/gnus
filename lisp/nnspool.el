@@ -247,7 +247,7 @@ there.")
 	;; Yes, completely empty spool directories *are* possible.
 	;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
 	(when (setq dir (directory-files pathname nil "^[0-9]+$" t))
-	  (setq dir (sort (mapcar 'string-to-int dir) '<)))
+	  (setq dir (sort (mapcar 'string-to-number dir) '<)))
 	(if dir
 	    (nnheader-insert
 	     "211 %d %d %d %s\n" (length dir) (car dir)
@@ -432,7 +432,7 @@ there.")
       (call-process "grep" nil t nil (regexp-quote id) nnspool-history-file))
     (goto-char (point-min))
     (when (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")
-      (cons (match-string 1) (string-to-int (match-string 2))))))
+      (cons (match-string 1) (string-to-number (match-string 2))))))
 
 (defun nnspool-find-file (file)
   "Insert FILE in server buffer safely."

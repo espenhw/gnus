@@ -213,7 +213,7 @@ Format example:
 	(progn
 	  (setq new-list (reverse (split-string bs)))
 	  (dolist (x new-list)
-	    (setq x (string-to-int x))
+	    (setq x (string-to-number x))
 	    (insert (format "%c" (logxor x passphrase-sum))))))
       (buffer-substring-no-properties (point-min) (point-max)))))
 

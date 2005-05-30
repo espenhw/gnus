@@ -150,7 +150,7 @@ as unread by Gnus.")
 	 (file-exists-p file)
 	 (not (file-directory-p file))
 	 (save-excursion (nnmail-find-file file))
-	 (string-to-int (file-name-nondirectory file)))))
+	 (string-to-number (file-name-nondirectory file)))))
 
 (deffoo nnmh-request-group (group &optional server dont-check)
   (nnheader-init-server-buffer)
@@ -176,7 +176,7 @@ as unread by Gnus.")
 	(nnheader-re-read-dir pathname)
 	(setq dir
 	      (sort
-	       (mapcar 'string-to-int
+	       (mapcar 'string-to-number
 		       (directory-files pathname nil "^[0-9]+$" t))
 	       '<))
 	(cond
@@ -222,7 +222,7 @@ as unread by Gnus.")
 	(nnmh-request-list-1 rdir))))
   ;; For each directory, generate an active file line.
   (unless (string= (expand-file-name nnmh-toplev) dir)
-    (let ((files (mapcar 'string-to-int
+    (let ((files (mapcar 'string-to-number
 			 (directory-files dir nil "^[0-9]+$" t))))
       (when files
 	(save-excursion
@@ -354,7 +354,7 @@ as unread by Gnus.")
 	    nnmh-group-alist)
       (nnmh-possibly-create-directory group)
       (nnmh-possibly-change-directory group server)
-      (let ((articles (mapcar 'string-to-int
+      (let ((articles (mapcar 'string-to-number
 			      (directory-files
 			       nnmh-current-directory nil "^[0-9]+$"))))
 	(when articles
@@ -480,7 +480,7 @@ as unread by Gnus.")
 	(gnus-make-directory dir))
       ;; Find the highest number in the group.
       (let ((files (sort
-		    (mapcar 'string-to-int
+		    (mapcar 'string-to-number
 			    (directory-files dir nil "^[0-9]+$"))
 		    '>)))
 	(when files
@@ -503,7 +503,7 @@ as unread by Gnus.")
   ;; articles in this folder.  The articles that are "new" will be
   ;; marked as unread by Gnus.
   (let* ((dir nnmh-current-directory)
-	 (files (sort (mapcar 'string-to-int
+	 (files (sort (mapcar 'string-to-number
 			      (directory-files nnmh-current-directory
 					       nil "^[0-9]+$" t))
 		      '<))

@@ -490,7 +490,7 @@ Returns the list of articles removed."
 	articles)
     (when (file-exists-p dir)
       (setq articles
-	    (sort (mapcar (lambda (name) (string-to-int name))
+	    (sort (mapcar (lambda (name) (string-to-number name))
 			  (directory-files dir nil "^[0-9]+$" t))
 		  '<))
       ;; Update the cache active file, just to synch more.
@@ -682,7 +682,7 @@ If LOW, update the lower bound instead."
     ;; Separate articles from all other files and directories.
     (while files
       (if (string-match "^[0-9]+$" (file-name-nondirectory (car files)))
-	  (push (string-to-int (file-name-nondirectory (pop files))) nums)
+	  (push (string-to-number (file-name-nondirectory (pop files))) nums)
 	(push (pop files) alphs)))
     ;; If we have nums, then this is probably a valid group.
     (when (setq nums (sort nums '<))
