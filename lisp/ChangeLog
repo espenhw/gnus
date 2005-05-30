@@ -1,3 +1,8 @@
+2005-05-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam-report.el (spam-report-url-ping-mm-url): Use format instead
+	of concat.
+
 2005-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-category-mode): Use gnus-run-mode-hooks.
