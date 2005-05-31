@@ -578,9 +578,20 @@ A string or a list of strings is returned."
 				       host '("userCertificate") nil))
 	(retbuf (generate-new-buffer (format "*certificate for %s*" mail)))
 	cert)
-    (if (> (length ldapresult) 1)
+    (if (>= (length ldapresult) 1)
 	(with-current-buffer retbuf
-	  (setq cert (base64-encode-string (nth 1 (car (nth 1 ldapresult))) t))
+	  ;; Certificates on LDAP servers _should_ be in DER format,
+	  ;; but there are some servers out there that distributes the
+	  ;; certificates in PEM format (with or without
+	  ;; header/footer) so we try to handle them anyway.
+	  (if (or (string= (substring (cadaar ldapresult) 0 27)
+			   "-----BEGIN CERTIFICATE-----")
+		  (condition-case nil
+		      (base64-decode-string (cadaar ldapresult))
+		    (error nil)))
+	      (setq cert
+		    (replace-regexp-in-string "\\(\n\||\r\\|-----BEGIN CERTIFICATE-----\\|-----END CERTIFICATE-----\\)" "" (cadaar ldapresult) t))
+	    (setq cert (base64-encode-string (cadaar ldapresult) t)))
 	  (insert "-----BEGIN CERTIFICATE-----\n")
 	  (let ((i 0) (len (length cert)))
 	    (while (> (- len 64) i)

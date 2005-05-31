@@ -31,14 +31,7 @@
 ;; made to achieve compatibility with OpenLDAP v2 and to make it
 ;; possible to retrieve LDAP attributes that are tagged ie ";binary".
 
-;; When Gnus drops support for Emacs 21.x this file can be removed and
-;; smime.el changed to
-
-;;   - (require 'smime-ldap)   =>   (require 'ldap)
-;;   - (smime-ldap-search ...) =>   (ldap-search ...)
-
-;; If we are running in Emacs 22 or newer it just uses the build-in
-;; version of ldap-search.
+;; The file also adds a compatibility layer for Emacs and XEmacs.
 
 ;;; Code:
 
@@ -57,26 +50,31 @@ its distinguished name WITHDN.
 Additional search parameters can be specified through
 `ldap-host-parameters-alist', which see."
   (interactive "sFilter:")
-  (if (>= emacs-major-version 22)
-      (ldap-search filter host attributes attrsonly)
-    (or host
-	(setq host ldap-default-host)
-	(error "No LDAP host specified"))
-    (let ((host-plist (cdr (assoc host ldap-host-parameters-alist)))
-	  result)
-      (setq result (smime-ldap-search-internal
-		    (append host-plist
-			    (list 'host host
-				  'filter filter
-				  'attributes attributes
-				  'attrsonly attrsonly
-				  'withdn withdn))))
-      (if ldap-ignore-attribute-codings
-	  result
-	(mapcar (function
-		 (lambda (record)
-		   (mapcar 'ldap-decode-attribute record)))
-		result)))))
+  ;; for XEmacs
+  (if (fboundp 'ldap-search-entries)
+      (ldap-search-entries filter host attributes attrsonly)
+    ;; for Emacs 22
+    (if (>= emacs-major-version 22)
+	(cdr (ldap-search filter host attributes attrsonly))
+      ;; for Emacs 21.x
+      (or host
+	  (setq host ldap-default-host)
+	  (error "No LDAP host specified"))
+      (let ((host-plist (cdr (assoc host ldap-host-parameters-alist)))
+	    result)
+	(setq result (smime-ldap-search-internal
+		      (append host-plist
+			      (list 'host host
+				    'filter filter
+				    'attributes attributes
+				    'attrsonly attrsonly
+				    'withdn withdn))))
+	(cdr (if ldap-ignore-attribute-codings
+		 result
+	       (mapcar (function
+			(lambda (record)
+			  (mapcar 'ldap-decode-attribute record)))
+		       result)))))))
 
 (defun smime-ldap-search-internal (search-plist)
   "Perform a search on a LDAP server.
