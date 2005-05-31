@@ -590,7 +590,11 @@ A string or a list of strings is returned."
 		      (base64-decode-string (cadaar ldapresult))
 		    (error nil)))
 	      (setq cert
-		    (replace-regexp-in-string "\\(\n\||\r\\|-----BEGIN CERTIFICATE-----\\|-----END CERTIFICATE-----\\)" "" (cadaar ldapresult) t))
+		    (replace-in-string
+		     (cadaar ldapresult)
+		     (concat "\\(\n\\|\r\\|-----BEGIN CERTIFICATE-----\\|"
+			     "-----END CERTIFICATE-----\\)")
+		     "" t))
 	    (setq cert (base64-encode-string (cadaar ldapresult) t)))
 	  (insert "-----BEGIN CERTIFICATE-----\n")
 	  (let ((i 0) (len (length cert)))

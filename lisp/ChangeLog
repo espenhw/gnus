@@ -1,3 +1,9 @@
+2005-05-31  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-cert-by-ldap-1): Don't use
+	replace-regexp-in-string, tiny patch from Ulf Stegemann
+	<ulf@zeitform.de>.
+
 2005-05-31  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* smime-ldap.el (smime-ldap-search): Add compatibility for XEmacs.
