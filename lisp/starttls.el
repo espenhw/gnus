@@ -1,6 +1,7 @@
 ;;; starttls.el --- STARTTLS functions
 
-;; Copyright (C) 1999, 2000, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004, 2005
+;;        Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Author: Simon Josefsson <simon@josefsson.org>
@@ -235,6 +236,14 @@ handshake, or NIL on failure."
       (starttls-negotiate-gnutls process)
     (signal-process (process-id process) 'SIGALRM)))
 
+(defun starttls-set-process-query-on-exit-flag (process flag)
+  "Run `set-process-query-on-exit-flag' if it is available.
+Otherwise, run `process-kill-without-query'."
+  (let ((fn (if (fboundp 'set-process-query-on-exit-flag)
+		'set-process-query-on-exit-flag
+	      'process-kill-without-query)))
+    (funcall fn process flag)))
+
 (defun starttls-open-stream-gnutls (name buffer host service)
   (message "Opening STARTTLS connection to `%s'..." host)
   (let* (done
@@ -246,7 +255,7 @@ handshake, or NIL on failure."
 				  (int-to-string service)
 				service)
 			 starttls-extra-arguments)))
-    (process-kill-without-query process)
+    (starttls-set-process-query-on-exit-flag process nil)
     (while (and (processp process)
 		(eq (process-status process) 'run)
 		(save-excursion
@@ -286,7 +295,7 @@ specifying a port number to connect to."
 			   name buffer starttls-program
 			   host (format "%s" service)
 			   starttls-extra-args)))
-      (process-kill-without-query process)
+      (starttls-set-process-query-on-exit-flag process nil)
       process)))
 
 (provide 'starttls)
