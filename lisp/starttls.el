@@ -236,13 +236,11 @@ handshake, or NIL on failure."
       (starttls-negotiate-gnutls process)
     (signal-process (process-id process) 'SIGALRM)))
 
-(defun starttls-set-process-query-on-exit-flag (process flag)
-  "Run `set-process-query-on-exit-flag' if it is available.
-Otherwise, run `process-kill-without-query'."
-  (let ((fn (if (fboundp 'set-process-query-on-exit-flag)
-		'set-process-query-on-exit-flag
-	      'process-kill-without-query)))
-    (funcall fn process flag)))
+(if (fboundp 'set-process-query-on-exit-flag)
+    (defalias 'starttls-set-process-query-on-exit-flag
+      'set-process-query-on-exit-flag)
+  (defalias 'starttls-set-process-query-on-exit-flag
+    'process-kill-without-query))
 
 (defun starttls-open-stream-gnutls (name buffer host service)
   (message "Opening STARTTLS connection to `%s'..." host)
