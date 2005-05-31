@@ -124,6 +124,19 @@
 (require 'password)
 (eval-when-compile (require 'cl))
 
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'smime-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun smime-replace-in-string  (string regexp newtext &optional literal)
+      "Replace all matches for REGEXP with NEWTEXT in STRING.
+If LITERAL is non-nil, insert NEWTEXT literally.  Return a new
+string containing the replacements.
+
+This is a compatibility function for different Emacsen."
+      (replace-regexp-in-string regexp newtext string nil literal)))))
+
 (defgroup smime nil
   "S/MIME configuration."
   :group 'mime)
@@ -590,7 +603,7 @@ A string or a list of strings is returned."
 		      (base64-decode-string (cadaar ldapresult))
 		    (error nil)))
 	      (setq cert
-		    (replace-in-string
+		    (smime-replace-in-string
 		     (cadaar ldapresult)
 		     (concat "\\(\n\\|\r\\|-----BEGIN CERTIFICATE-----\\|"
 			     "-----END CERTIFICATE-----\\)")
