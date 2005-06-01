@@ -41,7 +41,7 @@
 (require 'time-date)
 (require 'gnus-ems)
 
-(eval-when-compile 
+(eval-when-compile
   (require 'mm-url)
   (let ((features (cons 'gnus-group features)))
     (require 'gnus-sum))

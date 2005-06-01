@@ -16,7 +16,8 @@
 	* gnus-art.el (article-display-x-face): Replace
 	process-kill-without-query by gnus-set-process-query-on-exit-flag.
 
-	* gnus-util.el (gnus-set-process-query-on-exit-flag): New function.
+	* gnus-util.el (gnus-set-process-query-on-exit-flag): Alias to
+	set-process-query-on-exit-flag or process-kill-without-query.
 
 	* html2text.el (html2text-fix-paragraphs): Use `while - re-search'
 	loop instead of replace-regexp.
@@ -43,8 +44,8 @@
 	(nntp-open-ssl-stream): Ditto.
 	(nntp-open-tls-stream): Ditto.
 
-	* starttls.el (starttls-set-process-query-on-exit-flag): New
-	function.
+	* starttls.el (starttls-set-process-query-on-exit-flag): Alias to
+	set-process-query-on-exit-flag or process-kill-without-query.
 	(starttls-open-stream-gnutls): Use it instead of
 	process-kill-without-query.
 	(starttls-open-stream): Ditto.
