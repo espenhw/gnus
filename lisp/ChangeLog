@@ -1,11 +1,3 @@
-2005-05-31  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* lpath.el: Fbind ldap-search-entries.
-
-	* gnus-util.el (gnus-set-process-query-on-exit-flag): Use defalias.
-
-	* starttls.el (starttls-set-process-query-on-exit-flag): Ditto.
-
 2005-05-31  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-replace-in-string): Define.
@@ -24,6 +16,8 @@
 
 	* imap.el (imap-ssl-open): Use set-process-query-on-exit-flag
 	instead of process-kill-without-query if it is available.
+
+	* lpath.el: Fbind ldap-search-entries.
 
 	* mm-util.el (mm-insert-file-contents): Bind find-file-hook
 	instead of find-file-hooks if it is available.
