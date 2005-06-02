@@ -1,3 +1,10 @@
+2005-06-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* pop3.el (pop3-apop): Run md5 in the binary mode.
+
+	* starttls.el (starttls-set-process-query-on-exit-flag): Use
+	eval-and-compile.
+
 2005-05-31  Simon Josefsson  <jas@extundo.com>
 
 	* smime.el (smime-replace-in-string): Define.
