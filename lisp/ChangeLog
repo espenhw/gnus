@@ -1,9 +1,22 @@
+2005-06-04  Luc Teirlinck  <teirllm@auburn.edu>
+
+	* gnus-art.el (article-update-date-lapsed): Use `save-match-data'.
+
+2005-06-04  Lute Kamstra  <lute@gnu.org>
+
+	* nnfolder.el (nnfolder-read-folder): Make sure that undo
+	information is never recorded.
+
+2005-06-03  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-art.el (gnus-emphasis-alist): Disable the strikethru thingy.
+
 2005-06-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* pop3.el (pop3-apop): Run md5 in the binary mode.
 
-	* starttls.el (starttls-set-process-query-on-exit-flag): Use
-	eval-and-compile.
+	* starttls.el (starttls-set-process-query-on-exit-flag):
+	Use eval-and-compile.
 
 2005-05-31  Simon Josefsson  <jas@extundo.com>
 
@@ -33,8 +46,8 @@
 
 	* mml2015.el: Bind pgg-default-user-id when compiling.
 
-	* nndraft.el (nndraft-request-associate-buffer): Use
-	write-contents-functions instead of write-contents-hooks if it is
+	* nndraft.el (nndraft-request-associate-buffer):
+	Use write-contents-functions instead of write-contents-hooks if it is
 	available.
 
 	* nnheader.el (nnheader-find-file-noselect): Bind find-file-hook
@@ -204,7 +217,7 @@
 	(gnus-summary-high-unread-face): Ditto.
 	(gnus-summary-low-unread-face): Ditto.
 	(gnus-summary-normal-unread-face): Ditto.
-	(gnus-summary-high-read-face, gnus-summary-low-read-face): Diito
+	(gnus-summary-high-read-face, gnus-summary-low-read-face): Ditto.
 	(gnus-summary-normal-read-face, gnus-splash-face): Ditto.
 
 	* hashcash.el (hashcash): New custom group.
@@ -226,7 +239,7 @@
 	(sieve-manage-server-eol, sieve-manage-client-eol): Ditto.
 	(sieve-manage-streams, sieve-manage-stream-alist): Ditto.
 	(sieve-manage-authenticators): Ditto.
-	(sieve-manage-authenticator-alist): Ditto
+	(sieve-manage-authenticator-alist): Ditto.
 	(sieve-manage-default-port): Ditto.
 
 	* sieve-mode.el (sieve-control-commands-face): Add :group.
@@ -418,11 +431,11 @@
 	* nnimap.el (nnimap-date-days-ago): Add defvars in order to
 	silence the byte compiler inside the defun
 
-	* gnus-demon.el (parse-time-string): Added autoload.
+	* gnus-demon.el (parse-time-string): Add autoload.
 
-	* gnus-delay.el (parse-time-string): Added autoload.
+	* gnus-delay.el (parse-time-string): Add autoload.
 
-	* gnus-art.el (parse-time-string): Added autoload.
+	* gnus-art.el (parse-time-string): Add autoload.
 
 	* nnultimate.el (parse-time): Require for `parse-time-string'.
 
