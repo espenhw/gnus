@@ -1062,7 +1062,12 @@ gzip, bzip2, etc. are allowed."
   (unless filename
     (setq filename buffer-file-name))
   (save-excursion
-    (let ((decomp (mm-decompress-buffer filename nil t)))
+    (let ((decomp (unless ;; No worth to examine charset of tar files.
+		      (and filename
+			   (string-match
+			    "\\.\\(?:tar\\.[^.]+\\|tbz\\|tgz\\)\\'"
+			    filename))
+		    (mm-decompress-buffer filename nil t))))
       (when decomp
 	(set-buffer (let (default-enable-multibyte-characters)
 		      (generate-new-buffer " *temp*")))
