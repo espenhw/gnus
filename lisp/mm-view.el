@@ -366,7 +366,10 @@
       (when (or (equal type "enriched")
 		(equal type "richtext"))
 	(ignore-errors
-	  (enriched-decode (point-min) (point-max))))
+	  ;; Turn off `adaptive-fill-mode' that may cause an error
+	  ;; as the case may be.
+	  (let ((adaptive-fill-mode nil))
+	    (enriched-decode (point-min) (point-max)))))
       (mm-handle-set-undisplayer
        handle
        `(lambda ()

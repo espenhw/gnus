@@ -1,3 +1,8 @@
+2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-inline-text): Turn off adaptive-fill-mode while
+	executing enriched-decode.
+
 2005-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-find-buffer-file-coding-system): Don't examine
