@@ -1,6 +1,6 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
 ;;      Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -83,13 +83,17 @@ added right to the textual representation."
 		 (const right))
   :group 'gnus-picon)
 
-(defface gnus-picon-xbm-face '((t (:foreground "black" :background "white")))
+(defface gnus-picon-xbm '((t (:foreground "black" :background "white")))
   "Face to show xbm picon in."
   :group 'gnus-picon)
+;; backward-compatibility alias
+(put 'gnus-picon-xbm-face 'face-alias 'gnus-picon-xbm)
 
-(defface gnus-picon-face '((t (:foreground "black" :background "white")))
+(defface gnus-picon '((t (:foreground "black" :background "white")))
   "Face to show picon in."
   :group 'gnus-picon)
+;; backward-compatibility alias
+(put 'gnus-picon-face 'face-alias 'gnus-picon)
 
 ;;; Internal variables:
 

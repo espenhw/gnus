@@ -352,7 +352,7 @@ Only meaningful if you enable `spam-use-blackholes'."
   :type '(radio (const nil) regexp)
   :group 'spam)
 
-(defface spam-face
+(defface spam
   '((((class color) (type tty) (background dark))
      (:foreground "gray80" :background "gray50"))
     (((class color) (type tty) (background light))
@@ -364,8 +364,10 @@ Only meaningful if you enable `spam-use-blackholes'."
     (t :inverse-video t))
   "Face for spam-marked articles."
   :group 'spam)
+;; backward-compatibility alias
+(put 'spam-face 'face-alias 'spam)
 
-(defcustom spam-face 'spam-face
+(defcustom spam-face 'spam
   "Face for spam-marked articles."
   :type 'face
   :group 'spam)
@@ -2881,8 +2883,8 @@ installed through spam-necessary-extra-headers."
     (add-to-list 'gnus-extra-headers header))
 
   (setq spam-install-hooks t)
-  ;; TODO: How do we redo this every time spam-face is customized?
-  (push '((eq mark gnus-spam-mark) . spam-face)
+  ;; TODO: How do we redo this every time the `spam' face is customized?
+  (push '((eq mark gnus-spam-mark) . spam)
 	gnus-summary-highlight)
   ;; Add hooks for loading and saving the spam stats
   (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
