@@ -1,5 +1,8 @@
 2005-06-16  Miles Bader  <miles@gnu.org>
 
+	* gnus-xmas.el (gnus-xmas-group-startup-message):
+	Use renamed gnus-splash face.
+
 	* assistant.el (assistant-field): Remove "-face" suffix from face name.
 	(assistant-field-face): New backward-compatibility alias for renamed
 	face.

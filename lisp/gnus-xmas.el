@@ -1,6 +1,6 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -517,7 +517,7 @@ call it with the value of the `gnus-data' text property."
 	   (rest (- wheight pheight)))
       (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n)))
     ;; Paint it.
-    (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)))
+    (put-text-property (point-min) (point-max) 'face 'gnus-splash)))
   (setq modeline-buffer-identification
 	(list (concat gnus-version ": *Group*")))
   (set-buffer-modified-p t))
