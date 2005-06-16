@@ -1,5 +1,10 @@
 2005-06-16  Miles Bader  <miles@gnu.org>
 
+	* assistant.el (assistant-field): Remove "-face" suffix from face name.
+	(assistant-field-face): New backward-compatibility alias for renamed
+	face.
+	(assistant-render-text): Use renamed assistant-field face.
+
 	* spam.el (spam): Remove "-face" suffix from face name.
 	(spam-face): New backward-compatibility alias for renamed face.
 	(spam-face, spam-initialize): Use renamed spam face.

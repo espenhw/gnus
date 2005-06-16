@@ -1,5 +1,5 @@
 ;;; assistant.el --- guiding users through Emacs setup
-;; Copyright (C) 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: util
@@ -38,9 +38,11 @@
     ("next" assistant-list-reader)
     ("text" assistant-text-reader)))
 
-(defface assistant-field-face '((t (:bold t)))
+(defface assistant-field '((t (:bold t)))
   "Face used for editable fields."
   :group 'gnus-article-emphasis)
+;; backward-compatibility alias
+(put 'assistant-field-face 'face-alias 'assistant-field)
 
 ;;; Internal variables
 
@@ -268,7 +270,7 @@
 	  (push 
 	   (widget-create
 	    'editable-field
-	    :value-face 'assistant-field-face
+	    :value-face 'assistant-field
 	    :assistant-variable variable
 	    (assistant-get-variable node variable))
 	   assistant-widgets)
@@ -278,7 +280,7 @@
 	  (add-text-properties start (point)
 			       (list
 				'bold t
-				'face 'assistant-field-face
+				'face 'assistant-field
 				'not-read-only t))))))))
 
 (defun assistant-render-node (node-name)
