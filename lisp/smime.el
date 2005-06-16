@@ -599,9 +599,8 @@ A string or a list of strings is returned."
 	  ;; header/footer) so we try to handle them anyway.
 	  (if (or (string= (substring (cadaar ldapresult) 0 27)
 			   "-----BEGIN CERTIFICATE-----")
-		  (condition-case nil
-		      (base64-decode-string (cadaar ldapresult))
-		    (error nil)))
+		  (string= (substring (cadaar ldapresult) 0 3)
+			   "MII"))
 	      (setq cert
 		    (smime-replace-in-string
 		     (cadaar ldapresult)
