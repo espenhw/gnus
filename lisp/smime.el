@@ -659,7 +659,8 @@ The following commands are available:
   (use-local-map smime-mode-map)
   (buffer-disable-undo)
   (setq truncate-lines t)
-  (setq buffer-read-only t))
+  (setq buffer-read-only t)
+  (gnus-run-mode-hooks 'smime-mode-hook))
 
 (defun smime-certificate-info (certfile)
   (interactive "fCertificate file: ")

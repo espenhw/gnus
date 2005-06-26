@@ -1,3 +1,10 @@
+2005-06-23  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus.texi (MIME Commands, Fancy Mail Splitting, Agent Visuals)
+	(Agent Variables):
+	* message.texi (Message Headers):
+	Texinfo usage fix.
+
 2005-03-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (gnus-booklet.dvi, gnus-booklet.pdf): Simplify.
@@ -363,7 +370,7 @@
 2004-08-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* emacs-mime.texi, gnus-faq.texi, gnus.texi, message.texi,
-	pgg.texi, sieve.texi: Use @copying and @insertcopying.
+	* pgg.texi, sieve.texi: Use @copying and @insertcopying.
 
 2004-08-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -372,8 +379,8 @@
 
 2004-08-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (IMAP): add comments about imaps synonym to imap in
-	netrc syntax
+	* gnus.texi (IMAP): Add comments about imaps synonym to imap in
+	netrc syntax.
 
 2004-08-15  Simon Josefsson  <jas@extundo.com>
 
@@ -504,9 +511,8 @@
 
 2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (Spam ELisp Package Sequence of Events): some clarifications
-	(Spam ELisp Package Global Variables)
-	(Spam ELisp Package Global Variables): more clarifications
+	* gnus.texi (Spam ELisp Package Sequence of Events): Some clarifications.
+	(Spam ELisp Package Global Variables): More clarifications.
 
 2004-03-18  Helmut Waitzmann  <Helmut.Waitzmann@web.de>  (tiny change)
 
@@ -622,7 +628,7 @@
 2004-01-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Spam ELisp Package Filtering of Incoming Mail):
-	mention spam-split does not modify incoming mail
+	Mention spam-split does not modify incoming mail.
 
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
@@ -630,7 +636,7 @@
 
 2004-01-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (Spam ELisp Package Sequence of Events): fix typo
+	* gnus.texi (Spam ELisp Package Sequence of Events): Fix typo.
 
 2004-01-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
 

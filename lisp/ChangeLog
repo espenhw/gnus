@@ -1,3 +1,26 @@
+2005-06-24  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-art.el (gnus-article-mode): Set `nobreak-char-display', not
+	`show-nonbreak-escape'.
+
+2005-06-23  Lute Kamstra  <lute@gnu.org>
+
+	* gnus-art.el (gnus-article-mode): Use kill-all-local-variables.
+
+	* dig.el (dig-mode):
+	* smime.el (smime-mode): Use gnus-run-mode-hooks.
+
+2005-06-21  Juanma Barranquero  <lekktu@gmail.com>
+
+	* nnimap.el (nnimap-split-download-body): Fix spellings.
+
+2005-06-16  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-art.el (gnus-article-encrypt-body):
+	* gnus-cus.el (gnus-score-customize):
+	* mm-extern.el (mm-extern-local-file, mm-inline-external-body):
+	* pop3.el (pop3-user): Don't use `format' on `error' arguments.
+
 2005-06-16  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* smime.el (smime-cert-by-ldap-1): Detect PEM format without
@@ -92,7 +115,7 @@
 	(gnus-server-agent): Remove "-face" suffix from face names.
 	(gnus-server-agent-face, gnus-server-opened-face)
 	(gnus-server-closed-face, gnus-server-denied-face)
-	(gnus-server-offline-face): 
+	(gnus-server-offline-face):
 	New backward-compatibility aliases for renamed faces.
 	(gnus-server-agent-face, gnus-server-opened-face)
 	(gnus-server-closed-face, gnus-server-denied-face)
@@ -110,7 +133,7 @@
 	(gnus-cite-attribution-face, gnus-cite-face-1, gnus-cite-face-2)
 	(gnus-cite-face-3, gnus-cite-face-4, gnus-cite-face-5)
 	(gnus-cite-face-6, gnus-cite-face-7, gnus-cite-face-8)
-	(gnus-cite-face-9, gnus-cite-face-10, gnus-cite-face-11): 
+	(gnus-cite-face-9, gnus-cite-face-10, gnus-cite-face-11):
 	New backward-compatibility aliases for renamed faces.
 	(gnus-cite-attribution-face, gnus-cite-face-list)
 	(gnus-article-boring-faces): Use renamed gnus faces.
@@ -120,7 +143,7 @@
 	(gnus-header-content): Remove "-face" suffix from face names.
 	(gnus-signature-face, gnus-header-from-face)
 	(gnus-header-subject-face, gnus-header-newsgroups-face)
-	(gnus-header-name-face, gnus-header-content-face): 
+	(gnus-header-name-face, gnus-header-content-face):
 	New backward-compatibility aliases for renamed faces.
 	(gnus-signature-face, gnus-header-face-alist): Use renamed gnus faces.
 
