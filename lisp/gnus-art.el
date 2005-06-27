@@ -4413,7 +4413,7 @@ Compressed files like .gz and .bz2 are decompressed."
 		 (and charset
 		      (setq coding-system
 			    (mm-charset-to-coding-system charset))
-		      (not (eq charset 'ascii))))
+		      (not (eq coding-system 'ascii))))
 	     (mm-decode-coding-string contents coding-system)
 	   (mm-string-to-multibyte contents)))
 	(goto-char b)))))

@@ -1,3 +1,8 @@
+2005-06-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-copy-part): Check whether coding-system
+	is ascii.
+
 2005-06-24  Juanma Barranquero  <lekktu@gmail.com>
 
 	* gnus-art.el (gnus-article-mode): Set `nobreak-char-display', not
