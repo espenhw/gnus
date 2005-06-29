@@ -1,6 +1,6 @@
 ;;; gnus-nocem.el --- NoCeM pseudo-cancellation treatment
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2002, 2004
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2002, 2004, 2005
 ;;        Free Software Foundation, Inc.
 
 
@@ -74,12 +74,13 @@ issuer registry."
   :group 'gnus-nocem
   :type 'integer)
 
-(defcustom gnus-nocem-verifyer 'mc-verify
+(defcustom gnus-nocem-verifyer 'pgg-verify
   "*Function called to verify that the NoCeM message is valid.
-One likely value is `mc-verify'.  If the function in this variable
+One likely value is `pgg-verify'.  If the function in this variable
 isn't bound, the message will be used unconditionally."
   :group 'gnus-nocem
-  :type '(radio (function-item mc-verify)
+  :type '(radio (function-item pgg-verify)
+		(function-item mc-verify)
 		(function :tag "other")))
 
 (defcustom gnus-nocem-liberal-fetch nil
@@ -129,11 +130,12 @@ valid issuer, which is much faster if you are selective about the issuers."
 
 (defun gnus-fill-real-hashtb ()
   "Fill up a hash table with the real-name mappings from the user's active file."
-  (setq gnus-nocem-real-group-hashtb (gnus-make-hashtable
-				      (length gnus-newsrc-alist)))
+  (if (hash-table-p gnus-nocem-real-group-hashtb)
+      (clrhash gnus-nocem-real-group-hashtb)
+    (setq gnus-nocem-real-group-hashtb (make-hash-table :test 'equal)))
   (mapcar (lambda (group)
 	    (setq group (gnus-group-real-name (car group)))
-	    (gnus-sethash group t gnus-nocem-real-group-hashtb))
+	    (puthash group t gnus-nocem-real-group-hashtb))
 	  gnus-newsrc-alist))
 
 (defun gnus-nocem-scan-groups ()
@@ -246,7 +248,7 @@ valid issuer, which is much faster if you are selective about the issuers."
 	;; We get the name of the issuer.
 	(narrow-to-region b e)
 	(setq issuer (mail-fetch-field "issuer")
-	      type (mail-fetch-field "issuer"))
+	      type (mail-fetch-field "type"))
 	(widen)
 	(if (not (gnus-nocem-message-wanted-p issuer type))
 	    (message "invalid NoCeM issuer: %s" issuer)
@@ -267,18 +269,20 @@ valid issuer, which is much faster if you are selective about the issuers."
       (while (setq condition (pop conditions))
 	(cond
 	 ((stringp condition)
-	  (setq wanted (string-match condition type)))
+	  (when (string-match condition type)
+	    (setq wanted t)))
 	 ((and (consp condition)
 	       (eq (car condition) 'not)
 	       (stringp (cadr condition)))
-	  (setq wanted (not (string-match (cadr condition) type))))
+	  (when (string-match (cadr condition) type)
+	    (setq wanted nil)))
 	 (t
 	  (error "Invalid NoCeM condition: %S" condition))))
       wanted))))
 
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
-  (if (fboundp gnus-nocem-verifyer)
+  (if (functionp gnus-nocem-verifyer)
       (ignore-errors
 	(funcall gnus-nocem-verifyer))
     ;; If we don't have Mailcrypt, then we use the message anyway.
@@ -297,31 +301,26 @@ valid issuer, which is much faster if you are selective about the issuers."
       (while (search-forward "\t" nil t)
 	(cond
 	 ((not (ignore-errors
-		 (setq group (let ((obarray gnus-nocem-real-group-hashtb))
-			       (read buf)))))
+		 (setq group (gnus-group-real-name (symbol-name (read buf))))
+		 (gethash group gnus-nocem-real-group-hashtb)))
 	  ;; An error.
 	  )
-	 ((not (symbolp group))
-	  ;; Ignore invalid entries.
-	  )
-	 ((not (boundp group))
-	  ;; Make sure all entries in the hashtb are bound.
-	  (set group nil))
 	 (t
-	  (when (gnus-gethash (gnus-group-real-name (symbol-name group))
-			      gnus-nocem-real-group-hashtb)
-	    ;; Valid group.
-	    (beginning-of-line)
-	    (while (eq (char-after) ?\t)
-	      (forward-line -1))
-	    (setq id (buffer-substring (point) (1- (search-forward "\t"))))
-	    (unless (gnus-gethash id gnus-nocem-hashtb)
-	      ;; only store if not already present
-	      (gnus-sethash id t gnus-nocem-hashtb)
-	      (push id ncm))
-	    (forward-line 1)
-	    (while (eq (char-after) ?\t)
-	      (forward-line 1))))))
+	  ;; Valid group.
+	  (beginning-of-line)
+	  (while (eq (char-after) ?\t)
+	    (forward-line -1))
+	  (setq id (buffer-substring (point) (1- (search-forward "\t"))))
+	  (unless (if (hash-table-p gnus-nocem-hashtb)
+		      (gethash id gnus-nocem-hashtb)
+		    (setq gnus-nocem-hashtb (make-hash-table :test 'equal))
+		    nil)
+	    ;; only store if not already present
+	    (puthash id t gnus-nocem-hashtb)
+	    (push id ncm))
+	  (forward-line 1)
+	  (while (eq (char-after) ?\t)
+	    (forward-line 1)))))
       (when ncm
 	(setq gnus-nocem-touched-alist t)
 	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)
@@ -359,7 +358,9 @@ valid issuer, which is much faster if you are selective about the issuers."
 	 (prev pprev)
 	 (expiry (days-to-time gnus-nocem-expiry-wait))
 	 entry)
-    (setq gnus-nocem-hashtb (gnus-make-hashtable (* (length alist) 51)))
+    (if (hash-table-p gnus-nocem-hashtb)
+	(clrhash gnus-nocem-hashtb)
+      (setq gnus-nocem-hashtb (make-hash-table :test 'equal)))
     (while (setq entry (car alist))
       (if (not (time-less-p (time-since (car entry)) expiry))
 	  ;; This entry has expired, so we remove it.
@@ -368,7 +369,7 @@ valid issuer, which is much faster if you are selective about the issuers."
 	;; This is ok, so we enter it into the hashtable.
 	(setq entry (cdr entry))
 	(while entry
-	  (gnus-sethash (car entry) t gnus-nocem-hashtb)
+	  (puthash (car entry) t gnus-nocem-hashtb)
 	  (setq entry (cdr entry))))
       (setq alist (cdr alist)))))
 
@@ -386,7 +387,7 @@ valid issuer, which is much faster if you are selective about the issuers."
 (defun gnus-nocem-unwanted-article-p (id)
   "Say whether article ID in the current group is wanted."
   (and gnus-nocem-hashtb
-       (gnus-gethash id gnus-nocem-hashtb)))
+       (gethash id gnus-nocem-hashtb)))
 
 (provide 'gnus-nocem)
 

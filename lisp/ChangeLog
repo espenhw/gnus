@@ -1,3 +1,17 @@
+2005-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-nocem.el (gnus-nocem-verifyer): Default to pgg-verify.
+	(gnus-fill-real-hashtb): Use hash table instead of obarray.
+	(gnus-nocem-check-article): Fetch the Type header.
+	(gnus-nocem-message-wanted-p): Fix the way to examine types.
+	(gnus-nocem-verify-issuer): Use functionp instead of fboundp.
+	(gnus-nocem-enter-article): Use hash tables rather than obarrays;
+	make sure gnus-nocem-hashtb is initialized.
+	(gnus-nocem-alist-to-hashtb): Use hash table instead of obarray.
+	(gnus-nocem-unwanted-article-p): Ditto.
+
+	* pgg.el (pgg-verify): Return the verification result.
+
 2005-06-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-mime-copy-part): Check whether coding-system
