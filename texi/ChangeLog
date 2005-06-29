@@ -1,3 +1,7 @@
+2005-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (NoCeM): gnus-nocem-verifyer defaults to pgg-verify.
+
 2005-06-23  Juanma Barranquero  <lekktu@gmail.com>
 
 	* gnus.texi (MIME Commands, Fancy Mail Splitting, Agent Visuals)
