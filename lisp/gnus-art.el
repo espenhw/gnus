@@ -2173,7 +2173,7 @@ unfolded."
 	    (save-restriction
 	      (mail-narrow-to-head)
 	      (while (gnus-article-goto-header "Face")
-		(setq faces (nconc faces (list (mail-header-field-value)))))))
+		(setq faces (push (mail-header-field-value) faces)))))
 	  (dolist (face faces)
 	    (let ((png (gnus-convert-face-to-png face))
 		  image)

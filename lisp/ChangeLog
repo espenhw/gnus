@@ -1,3 +1,8 @@
+2005-06-29  Didier Verna  <didier@xemacs.org>
+
+	* gnus-art.el (article-display-face): display faces in correct
+	order.
+
 2005-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-nocem.el (gnus-nocem-verifyer): Default to pgg-verify.
@@ -456,7 +461,7 @@
 	(nntp-with-open-group): Allow debugging.
 
 	* nnheader.el (mail-header-set-extra): Make into a function
-	because I just could't understand how to quote the list properly. 
+	because I just could't understand how to quote the list properly.
 
 	* dns.el (query-dns-cached): New function.
 
@@ -753,7 +758,7 @@
 	gnus-agent-synchronize-group-flags to reset read status in both
 	gnus and server.
 	(gnus-agent-update-files-total-fetched-for): Fixed initial size.
-	
+
 2005-03-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Don't autoload former message-utils variables.
@@ -1102,20 +1107,20 @@
 	XEmacs.
 	Remove `password-run-at-time' macro.
 	(password-cache-add): Use `run-at-time' instead of
-	`password-run-at-time'. 
+	`password-run-at-time'.
 
 	* nnheaderxm.el: Require timer-funcs instead of run-at-time.
 	Remove `nnheader-cancel-function-timers' alias,
-	`cancel-function-timers' exists in XEmacs in timer-funcs. 
+	`cancel-function-timers' exists in XEmacs in timer-funcs.
 
 	* mail-source.el: Require timer-funcs instead of itimer in XEmacs
-	for `run-with-idle-timer'. 
+	for `run-with-idle-timer'.
 
 	* gnus-demon.el: Require timer-funcs instead of itimer in XEmacs
 	for `run-at-time'.
 
 	* mm-url.el: Require timer-funcs at compile time when in XEmacs
-	for `with-timeout'. 
+	for `with-timeout'.
 
 	* dgnushack.el: Autoload the correct `setenv' for SXEmacs which is
 	the same as for XEmacs 21.4.
@@ -1561,7 +1566,7 @@
 
 	* dns.el (query-dns): Use sit-for to time instead of
 	accept-process-output, since that doesn't seem to work on udp
-	sockets. 
+	sockets.
 
 2004-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -1930,7 +1935,7 @@
 
 2004-10-17  Richard M. Stallman  <rms@gnu.org>
 
-	* gnus-registry.el (gnus-registry-unload-hook): 
+	* gnus-registry.el (gnus-registry-unload-hook):
 	Set as a variable with add-hook.
 
 	* nnspool.el (nnspool-spool-directory): Use news-directory instead
@@ -2133,7 +2138,7 @@
 
 	* gnus-agent.el (gnus-agent-synchronize-group-flags): When
 	necessary, pass full group name to gnus-request-set-marks.
-	
+
 2004-10-01  Simon Josefsson  <jas@extundo.com>
 
 	* mailcap.el (mailcap-mime-data): Add pdf.  Remove non-free
@@ -2143,12 +2148,12 @@
 
 	* spam-report.el (spam-report-gmane): Fix interactive.
 
-	* gnus-art.el (gnus-treat-body-boundary): Only do stuff under X. 
+	* gnus-art.el (gnus-treat-body-boundary): Only do stuff under X.
 
 	* gnus-agent.el (gnus-agent-synchronize-flags-server): Be silent
 	when writing file.
 	(gnus-agent-synchronize-flags): Don't default to being
-	interactive. 
+	interactive.
 
 2004-09-30  Simon Josefsson  <jas@extundo.com>
 
@@ -2166,7 +2171,7 @@
 	info read flags with the marks being sync'd to the backend.
 
 	*gnus-util.el (gnus-pp): Added optional stream to match pp API.
-	
+
 2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-verify-bogofilter): new function
@@ -2221,7 +2226,7 @@
 
 	* gnus-dup.el (gnus-dup-open): Use mapc.
 	(gnus-dup-enter-articles, gnus-dup-suppress-articles): Use dolist.
-	
+
 	(gnus-dup-enter-articles): Remove excess ID's from gnus-dup-hashtb.
 	Reported by Stefan Wiens <s.wi@gmx.net>.
 
@@ -2240,7 +2245,7 @@
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Fixed range of
 	deletion to remove entire duplicate line.  Fixes merged article
 	number bug.
-	
+
 2004-09-25  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-possibly-synchronize-flags): Ignore
@@ -2260,7 +2265,7 @@
 	gnus-agent-synchronize-group-flags, not backend's request-set-mark
 	method, to ensure that synchronization updates marks in the
 	backend and in the info (in memory) structure.
-	
+
 2004-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-uu.el (gnus-uu-digest-mail-forward): Obey the process/prefix
@@ -2840,7 +2845,7 @@
 
 	* flow-fill.el (fill-flowed): Remove space stuffing, and only do
 	quotes that actually start with ">" at the beginning of the
-	lines. 
+	lines.
 
 2004-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -2915,7 +2920,7 @@
 2004-07-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-uniquify-message-id): New experimental
-	variable. 
+	variable.
 	(nnheader-nov-read-message-id): Use it.
 
 	* spam-report.el (spam-report-gmane): Add interactive.
@@ -3150,7 +3155,7 @@
 
 2004-06-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* message.el (message-ignored-supersedes-headers): Add Approved. 
+	* message.el (message-ignored-supersedes-headers): Add Approved.
 
 2004-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -3162,7 +3167,7 @@
 
 	* rfc2047.el (rfc2047-encode-message-header): Disabled header
 	folding -- not all headers can be folded, and this should be done
-	by the message composition mode.  Probably.  I think. 
+	by the message composition mode.  Probably.  I think.
 
 2004-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -3216,12 +3221,12 @@
 2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-cite-articles-with-x-no-archive): New
-	variable. 
+	variable.
 	(message-cite-original): Use it.
 
 2004-06-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* message.el (message-cite-original): Respect X-No-Archive. 
+	* message.el (message-cite-original): Respect X-No-Archive.
 
 2004-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -3275,7 +3280,7 @@
 	(spam-register-routine): do registration iff any articles warrant
 	it.
 	(spam-summary-prepare-exit): changed log message for nil group
-	destinations 
+	destinations
 
 2004-05-26  Simon Josefsson  <jas@extundo.com>
 
@@ -3380,24 +3385,24 @@
 	* nnimap.el (nnimap-open-connection): Use netrc.
 
 	* gnus-util.el (gnus-netrc-get): Remove aliases.
-	
+
 	* gnus-sum.el (gnus-auto-center-summary): Change default to 2.
 
 	* assistant.el (wid-edit): Fix compilation.
 
-	* gnus-util.el (gnus-set-file-modes): Just ignore errors. 
+	* gnus-util.el (gnus-set-file-modes): Just ignore errors.
 
 2004-05-23  Paul Stodghill  <stodghil@cs.cornell.edu>
 
 	* gnus-util.el (gnus-set-file-modes): New function.  (small
-	patch). 
+	patch).
 
 2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-topic.el (gnus-topic-jump-to-topic): Goto missing topic.
 
 	* assistant.el (assistant-render-node): Fix up rendering and
-	read-only text. 
+	read-only text.
 	(assistant-render-node): Reset.
 	(assistant-make-read-only): Not sticky.
 
@@ -3509,7 +3514,7 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-inews-make-draft-meta-information): Fix quote
-	stuff. 
+	stuff.
 
 	* gnus-start.el (gnus-subscribe-hierarchical-interactive): Match
 	on real group name.
@@ -3530,17 +3535,17 @@
 	* gnus-draft.el (gnus-draft-send): Bind
 	rfc2047-encode-encoded-words.
 
-	* rfc2047.el (rfc2047-encode-region): Encode =? strings. 
+	* rfc2047.el (rfc2047-encode-region): Encode =? strings.
 	(rfc2047-encodable-p): Say that =? needs encoding.
 	(rfc2047-encode-encoded-words): New variable.
 
 	* gnus-group.el (gnus-group-select-group): Doc fix.
 
-	* gnus-draft.el (gnus-draft-setup): Mark all replied as replied. 
+	* gnus-draft.el (gnus-draft-setup): Mark all replied as replied.
 
 	* gnus-group.el (gnus-group-mode): Set show-trailing-whitespace
 	to nil.
-	
+
 	* gnus-cache.el (gnus-cache-possibly-enter-article): Use it.
 
 	* nnheader.el (nnheader-get-lines-and-char): New function.
@@ -3581,7 +3586,7 @@
 	* gnus-msg.el (gnus-inews-do-gcc): Don't use read-only-p to see
 	whether backend can accept message.
 
-	* message.el (message-idna-to-ascii-rhs-1): Don't use equalp. 
+	* message.el (message-idna-to-ascii-rhs-1): Don't use equalp.
 
 2004-05-18  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
@@ -3620,7 +3625,7 @@
 	* mail-source.el (mail-source-delete-crash-box): Refactor.
 	(mail-source-fetch): Use it.
 	(mail-source-fetch-file): Ditto.
-	(mail-source-fetch-directory): Run postscript in loop. 
+	(mail-source-fetch-directory): Run postscript in loop.
 	(mail-source-fetch-pop): Delete.
 	(mail-source-fetch-maildir): Ditto.
 	(mail-source-fetch-imap): Ditto.
@@ -3633,7 +3638,7 @@
 	(message-delete-address): Use it.
 	(message-fill-header-general): Refactor.
 	(message-fill-field-address): Rename.
-	(message-narrow-to-field): Find the start of the header. 
+	(message-narrow-to-field): Find the start of the header.
 	(message-header-format-alist): Don't pre-fill.
 	(message-fill-header): Removed.
 	(message-insert-header): New function.
@@ -3647,10 +3652,10 @@
 
 	* imap.el: Add compiler directives.
 
-	* gnus-score.el (gnus-score-edit-done): run-hook->run-hooks. 
+	* gnus-score.el (gnus-score-edit-done): run-hook->run-hooks.
 
 	* gnus-art.el (article-decode-idna-rhs): Don't use
-	message-idna-inside-rhs-p. 
+	message-idna-inside-rhs-p.
 
 2004-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -3662,21 +3667,21 @@
 
 2004-05-16  Kim Minh Kaplan  <kmkaplan-AwwS6Bc0PDVoiYX5Tdu9fQ@public.gmane.org>
 
-	* imap.el (imap-sasl-make-mechanisms): Use sasl. 
+	* imap.el (imap-sasl-make-mechanisms): Use sasl.
 
 2004-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nneething.el (nneething-file-name): Don't create spurions
-	files. 
+	files.
 
-	* gnus-msg.el (gnus-inews-do-gcc): Ignore read-only groups. 
+	* gnus-msg.el (gnus-inews-do-gcc): Ignore read-only groups.
 	(gnus-inews-do-gcc): Remove sleep.
 
 	* gnus-art.el (gnus-mime-delete-part): Error message when no MIME
 	part under point.
 
-	* gnus-agent.el (gnus-agent-synchronize-flags): Default to nil. 
-	(gnus-agent-regenerate-group): Using nil messages aren't valid. 
+	* gnus-agent.el (gnus-agent-synchronize-flags): Default to nil.
+	(gnus-agent-regenerate-group): Using nil messages aren't valid.
 
 2004-05-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -3889,7 +3894,7 @@
 	From Dan Christensen <jdc@uwo.ca>, asjo@koldfront.dk (Adam
 	Sj,Ax(Bgren), Wes Hardaker <wes@hardakers.net>, and Michael Shields
 	<shields@msrl.com>:
-	
+
 	* spam.el (spam-necessary-extra-headers): get the extra headers we
 	may need for spam sorting and scoring
 	(spam-user-format-function-S): a user format function suitable for
@@ -3936,7 +3941,7 @@
 	hasn't worked for a while.
 
 2004-04-15  Kevin Greiner  <kgreiner@xpediantsolutions.com>
-		
+
 	* gnus-agent.el (gnus-agentize):
 	gnus-agent-send-mail-real-function no longer set to current value
 	of message-send-mail-function but rather a lambda that calls
@@ -3944,7 +3949,7 @@
 	responsive to user changes to message-send-mail-function.
 
 2004-04-15  Kevin Greiner  <kgreiner@xpediantsolutions.com>
-		
+
 	* legacy-gnus-agent.el
 	(gnus-agent-convert-to-compressed-agentview): Fixed typos with
 	help from Florian Weimer <fw@deneb.enyo.de>
@@ -4033,7 +4038,7 @@
 	(gnus-agent-need-update-total-fetched-for): New variable.
 	(gnus-agent-update-files-total-fetched-for): New function.
 	(gnus-agent-update-view-total-fetched-for): New function.
-	(gnus-agent-total-fetched-for): New function.  
+	(gnus-agent-total-fetched-for): New function.
 
 	* gnus-cache.el (gnus-cache-save-buffers): Use
 	gnus-cache-update-overview-total-fetched-for to change disk space
@@ -4271,7 +4276,7 @@
 
 	* legacy-gnus-agent.el (): New. Provides converters that are only
 	loaded when gnus-convert-old-newsrc needs to call them.
-	
+
 2004-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mail-source.el (mail-source-touch-pop): Doc fix.
@@ -4288,8 +4293,8 @@
 
 2004-03-05  Per Abrahamsen  <abraham@dina.kvl.dk>
 
-	* gnus-sum.el (gnus-widget-reversible-match) 
-	(gnus-widget-reversible-to-internal) 
+	* gnus-sum.el (gnus-widget-reversible-match)
+	(gnus-widget-reversible-to-internal)
 	(gnus-widget-reversible-to-external): New functions.
 	(gnus-widget-reversible): New widget.
 	(gnus-article-sort-functions, gnus-thread-sort-functions): Use it.
@@ -4320,7 +4325,7 @@
 	articles are being added to a group.
 	(gnus-request-replace-article): Inform the agent that articles
 	need to be uncached as the cached contents are no longer valid.
-	
+
 2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* binhex.el: Don't autoload executable-find.
@@ -4477,7 +4482,7 @@
 
 	* spam-wash.el: New file.
 
-2004-02-26  Mark A. Hershberger <mah@everybody.org> 
+2004-02-26  Mark A. Hershberger <mah@everybody.org>
 
 	* nnrss.el (nnrss-opml-import, nnrss-opml-export): New functions.
 
@@ -4726,7 +4731,7 @@
 
 	* nnlistserv.el (nnlistserv-kk-wash-article): do.
 
-	* nnml.el (nnml-request-set-mark, nnml-save-marks): do.	
+	* nnml.el (nnml-request-set-mark, nnml-save-marks): do.
 
 	* mm-bodies.el (mm-7bit-chars): Don't include \r.
 
@@ -4766,7 +4771,7 @@
 2004-01-27  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus-spec.el (gnus-parse-simple-format): Fix setq value
-	omission. 
+	omission.
 	From Jerry James  <james@xemacs.org>
 
 2004-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -4921,7 +4926,7 @@
 	* gnus-sum.el (gnus-select-newgroup): Replaced inline code with
 	gnus-agent-possibly-alter-active.
 	(gnus-adjust-marked-articles): Faster handling of simple lists
-	
+
 2004-01-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam-stat.el (spam-stat-test-directory): New optional argument
@@ -4930,7 +4935,7 @@
 	(spam-stat-buffer-words-with-scores): Don't narrow and change
 	syntax table here.  Reported by Andrew Cohen <cohen@andy.bu.edu>.
 
-2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>  
+2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (gnus-summary-mode-map): make spam-generic-score the
 	default scoring function
@@ -5074,7 +5079,7 @@
 
 	* rfc2047.el (rfc2047-parse-and-decode, rfc2047-decode): Use a
 	character for the encoding to avoid consing a string.
-	
+
 	* rfc2047.el (rfc2047-decode-string): Don't cons a string
 	unnecessarily.
 
@@ -5088,7 +5093,7 @@
 	* gnus.sum.el (gnus-remove-odd-characters): Don't cons two new
 	strings.
 
-	* mm-util.el (mm-subst-char-in-string): Support inplace.	
+	* mm-util.el (mm-subst-char-in-string): Support inplace.
 
 	* gnus-sum.el (gnus-summary-remove-list-identifiers): Don't cons
 	a new string in every iteration.  Use shy groups.
@@ -5135,21 +5140,21 @@
 
 	* gnus-topic.el (gnus-topic-find-groups, gnus-topic-clean-alist)
 	(gnus-group-prepare-topics, gnus-topic-check-topology): do.
-	
+
 	* gnus-sum.el (gnus-update-read-articles, gnus-select-newsgroup)
 	(gnus-mark-xrefs-as-read, gnus-compute-read-articles)
 	(gnus-summary-walk-group-buffer, gnus-summary-move-article)
 	(gnus-group-make-articles-read): do.
-	
+
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (article-decode-mime-words, article-babel)
 	(gnus-article-highlight-signature, gnus-article-add-buttons)
 	(gnus-signature-toggle): Use gnus-with-article-buffer.
-	
+
 	* gnus-art.el (gnus-article-highlight-headers)
 	(gnus-article-add-buttons-to-head): Use gnus-with-article-headers.
-	
+
 	* gnus-art.el (gnus-mm-display-part, gnus-article-wash-status)
 	(gnus-article-set-globals, gnus-request-article-this-buffer)
 	(gnus-button-message-id, gnus-article-maybe-hide-headers)
@@ -5423,7 +5428,7 @@
 	(gnus-xmas-define): Don't alias `gnus-set-text-properties' to
 	`gnus-xmas-set-text-properties'.
 	(gnus-xmas-redefine): Don't alias `gnus-completing-read' to
-	`gnus-xmas-completing-read'. 
+	`gnus-xmas-completing-read'.
 	(gnus-xmas-completing-read): Removed.
 	(gnus-xmas-open-network-stream): Removed.
 
@@ -5652,7 +5657,7 @@
 
 	* gnus-group.el (gnus-no-groups-message): Update.
 
-	* gnus-sum.el (gnus-summary-insert-new-articles): Remove . 
+	* gnus-sum.el (gnus-summary-insert-new-articles): Remove .
 
 2003-11-09  Simon Josefsson  <jas@extundo.com>
 
