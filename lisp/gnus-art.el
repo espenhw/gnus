@@ -2162,7 +2162,8 @@ unfolded."
       ;; read-only.
       (if (and wash-face-p (memq 'face gnus-article-wash-types))
 	  (gnus-delete-images 'face)
-	(let (face faces)
+	(let ((from (gnus-article-goto-header "from"))
+	      face faces)
 	  (save-excursion
 	    (when (and wash-face-p
 		       (progn
@@ -2173,22 +2174,23 @@ unfolded."
 	    (save-restriction
 	      (mail-narrow-to-head)
 	      (while (gnus-article-goto-header "Face")
-		(setq faces (push (mail-header-field-value) faces)))))
-	  (dolist (face faces)
-	    (let ((png (gnus-convert-face-to-png face))
-		  image)
-	      (when png
-		(setq image
-		      (apply 'gnus-create-image png 'png t
-			     (cdr (assq 'png gnus-face-properties-alist))))
-		(gnus-article-goto-header "from")
-		(when (bobp)
-		  (insert "From: [no `from' set]\n")
-		  (forward-char -17))
-		(gnus-add-wash-type 'face)
-		(gnus-add-image 'face image)
-		(gnus-put-image image nil 'face))))))
-      )))
+		(push (mail-header-field-value) faces))))
+	  (when faces
+	    (unless from
+	      (insert "From:")
+	      (setq from (point))
+	      (insert "[no `from' set]\n"))
+	    (dolist (face faces)
+	      (let ((png (gnus-convert-face-to-png face))
+		    image)
+		(when png
+		  (setq image
+			(apply 'gnus-create-image png 'png t
+			       (cdr (assq 'png gnus-face-properties-alist))))
+		  (goto-char from)
+		  (gnus-add-wash-type 'face)
+		  (gnus-add-image 'face image)
+		  (gnus-put-image image nil 'face))))))))))
 
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
