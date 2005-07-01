@@ -2162,28 +2162,26 @@ unfolded."
       ;; read-only.
       (if (and wash-face-p (memq 'face gnus-article-wash-types))
 	  (gnus-delete-images 'face)
-	(let ((from (gnus-article-goto-header "from"))
-	      face faces)
-	  (save-excursion
+	(let (face faces from)
+	  (save-current-buffer
 	    (when (and wash-face-p
-		       (progn
-			 (goto-char (point-min))
-			 (not (re-search-forward "^Face:[\t ]*" nil t)))
-		       (gnus-buffer-live-p gnus-original-article-buffer))
+		       (gnus-buffer-live-p gnus-original-article-buffer)
+		       (not (re-search-forward "^Face:[\t ]*" nil t)))
 	      (set-buffer gnus-original-article-buffer))
 	    (save-restriction
 	      (mail-narrow-to-head)
 	      (while (gnus-article-goto-header "Face")
 		(push (mail-header-field-value) faces))))
 	  (when faces
-	    (unless from
-	      (insert "From:")
-	      (setq from (point))
-	      (insert "[no `from' set]\n"))
-	    (dolist (face faces)
-	      (let ((png (gnus-convert-face-to-png face))
-		    image)
-		(when png
+	    (goto-char (point-min))
+	    (let ((from (gnus-article-goto-header "from"))
+		  png image)
+	      (unless from
+		(insert "From:")
+		(setq from (point))
+		(insert "[no `from' set]\n"))
+	      (while faces
+		(when (setq png (gnus-convert-face-to-png (pop faces)))
 		  (setq image
 			(apply 'gnus-create-image png 'png t
 			       (cdr (assq 'png gnus-face-properties-alist))))
