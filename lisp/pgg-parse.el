@@ -38,7 +38,7 @@
 (eval-when-compile (require 'cl))
 
 (defgroup pgg-parse ()
-  "OpenPGP packet parsing"
+  "OpenPGP packet parsing."
   :group 'pgg)
 
 (defcustom pgg-parse-public-key-algorithm-alist

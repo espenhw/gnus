@@ -48,7 +48,7 @@
   :group 'nnmail)
 
 (defgroup nnmail-prepare nil
-  "Preparing (or mangling) new mail after retrival."
+  "Preparing (or mangling) new mail after retrieval."
   :group 'nnmail)
 
 (defgroup nnmail-duplicate nil
