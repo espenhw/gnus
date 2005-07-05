@@ -18,9 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -710,28 +710,28 @@ Translates from the iso8859 charsets and `mule-unicode-0100-24ff'.")
 	 ;; These are commented out since the current 8859-8 standard
 	 ;; does not yet define these codepoints, although there are
 	 ;; drafts which do).
-;	 (?\,H@(B . ?\x05B0) ;; HEBREW POINT SHEVA
-;	 (?\,HA(B . ?\x05B1) ;; HEBREW POINT HATAF SEGOL
-;	 (?\,HB(B . ?\x05B2) ;; HEBREW POINT HATAF PATAH
-;	 (?\,HC(B . ?\x05B3) ;; HEBREW POINT HATAF QAMATS
-;	 (?\,HD(B . ?\x05B4) ;; HEBREW POINT HIRIQ
-;	 (?\,HE(B . ?\x05B5) ;; HEBREW POINT TSERE
-;	 (?\,HF(B . ?\x05B6) ;; HEBREW POINT SEGOL
-;	 (?\,HG(B . ?\x05B7) ;; HEBREW POINT PATAH
-;	 (?\,HH(B . ?\x05B8) ;; HEBREW POINT QAMATS
-;	 (?\,HI(B . ?\x05B9) ;; HEBREW POINT HOLAM
-;	 (?\,HK(B . ?\x05BB) ;; HEBREW POINT QUBUTS
-;	 (?\,HL(B . ?\x05BC) ;; HEBREW POINT DAGESH
-;	 (?\,HM(B . ?\x05BD) ;; HEBREW POINT METEG
-;	 (?\,HN(B . ?\x05BE) ;; HEBREW POINT MAQAF
-;	 (?\,HO(B . ?\x05BF) ;; HEBREW POINT RAFE
-;	 (?\,HP(B . ?\x05C0) ;; HEBREW PUNCTUATION PASEQ
-;	 (?\,HQ(B . ?\x05C1) ;; HEBREW POINT SHIN DOT
-;	 (?\,HR(B . ?\x05C2) ;; HEBREW POINT SIN DOT
-;	 (?\,HS(B . ?\x05C3) ;; HEBREW PUNCTUATION SOF PASUQ
-	 (?\,H[(B . ?\x202D) ;; LEFT-TO-RIGHT OVERRIDE
-	 (?\,H\(B . ?\x202E) ;; RIGHT-TO-LEFT OVERRIDE
-	 (?\,H](B . ?\x202C) ;; POP DIRECTIONAL FORMATTING
+;	 (?\@ . ?\x05B0) ;; HEBREW POINT SHEVA
+;	 (?\A . ?\x05B1) ;; HEBREW POINT HATAF SEGOL
+;	 (?\B . ?\x05B2) ;; HEBREW POINT HATAF PATAH
+;	 (?\C . ?\x05B3) ;; HEBREW POINT HATAF QAMATS
+;	 (?\D . ?\x05B4) ;; HEBREW POINT HIRIQ
+;	 (?\E . ?\x05B5) ;; HEBREW POINT TSERE
+;	 (?\F . ?\x05B6) ;; HEBREW POINT SEGOL
+;	 (?\G . ?\x05B7) ;; HEBREW POINT PATAH
+;	 (?\H . ?\x05B8) ;; HEBREW POINT QAMATS
+;	 (?\I . ?\x05B9) ;; HEBREW POINT HOLAM
+;	 (?\K . ?\x05BB) ;; HEBREW POINT QUBUTS
+;	 (?\L . ?\x05BC) ;; HEBREW POINT DAGESH
+;	 (?\M . ?\x05BD) ;; HEBREW POINT METEG
+;	 (?\N . ?\x05BE) ;; HEBREW POINT MAQAF
+;	 (?\O . ?\x05BF) ;; HEBREW POINT RAFE
+;	 (?\P . ?\x05C0) ;; HEBREW PUNCTUATION PASEQ
+;	 (?\Q . ?\x05C1) ;; HEBREW POINT SHIN DOT
+;	 (?\R . ?\x05C2) ;; HEBREW POINT SIN DOT
+;	 (?\S . ?\x05C3) ;; HEBREW PUNCTUATION SOF PASUQ
+	 (?\[ . ?\x202D) ;; LEFT-TO-RIGHT OVERRIDE
+	 (?\\ . ?\x202E) ;; RIGHT-TO-LEFT OVERRIDE
+	 (?\] . ?\x202C) ;; POP DIRECTIONAL FORMATTING
 	 (?\,H_(B . ?\x2017) ;; DOUBLE LOW LINE
 	 (?\,H`(B . ?\x05D0) ;; HEBREW LETTER ALEF
 	 (?\,Ha(B . ?\x05D1) ;; HEBREW LETTER BET
@@ -760,8 +760,8 @@ Translates from the iso8859 charsets and `mule-unicode-0100-24ff'.")
 	 (?\,Hx(B . ?\x05E8) ;; HEBREW LETTER RESH
 	 (?\,Hy(B . ?\x05E9) ;; HEBREW LETTER SHIN
 	 (?\,Hz(B . ?\x05EA) ;; HEBREW LETTER TAV
-	 (?\,H{(B . ?\x202A) ;; LEFT-TO-RIGHT EMBEDDING
-	 (?\,H|(B . ?\x202B) ;; RIGHT-TO-LEFT EMBEDDING
+	 (?\{ . ?\x202A) ;; LEFT-TO-RIGHT EMBEDDING
+	 (?\| . ?\x202B) ;; RIGHT-TO-LEFT EMBEDDING
 	 (?\,H}(B . ?\x200E) ;; LEFT-TO-RIGHT MARK
 	 (?\,H~(B . ?\x200F) ;; RIGHT-TO-LEFT MARK
 	 ))
@@ -1749,12 +1749,12 @@ Interactively, prompts for a hex string giving the code."
 	 (?$(7#`(B . ?$,1GO(B)))
 
       (ipa
-       '((?,0 (B . ?i)
+       '((?i . ?i)
 	 (?,0!(B . ?$,1#j(B)
-	 (?,0"(B . ?e)
+	 (?e . ?e)
 	 (?,0#(B . ?$,1#[(B)
 	 (?,0$(B . ?,Af(B)
-	 (?,0%(B . ?a)
+	 (?a . ?a)
 	 (?,0&(B . ?$,1#h(B)
 	 (?,0'(B . ?$,1#Y(B)
 	 (?,0((B . ?$,1#P(B)
@@ -1762,50 +1762,50 @@ Interactively, prompts for a hex string giving the code."
 	 (?,0*(B . ?$,1#d(B)
 	 (?,0+(B . ?$,1$,(B)
 	 (?,0,(B . ?$,1#Q(B)
-	 (?,0-(B . ?y)
+	 (?y . ?y)
 	 (?,0.(B . ?$,1$/(B)
 	 (?,0/(B . ?,Ax(B)
 	 (?,00(B . ?$,1 s(B)
 	 (?,01(B . ?$,1#v(B)
 	 (?,02(B . ?$,1$)(B)
 	 (?,03(B . ?$,1#u(B)
-	 (?,04(B . ?u)
+	 (?u . ?u)
 	 (?,05(B . ?$,1$*(B)
-	 (?,06(B . ?o)
+	 (?o . ?o)
 	 (?,07(B . ?$,1#T(B)
 	 (?,08(B . ?$,1#R(B)
 	 (?,0:(B . ?$,1#Z(B)
-	 (?,0@(B . ?p)
-	 (?,0A(B . ?b)
-	 (?,0B(B . ?t)
-	 (?,0C(B . ?d)
-	 (?,0D(B . ?k)
-	 (?,0E(B . ?g)
-	 (?,0F(B . ?f)
-	 (?,0G(B . ?v)
+	 (?p . ?p)
+	 (?b . ?b)
+	 (?t . ?t)
+	 (?d . ?d)
+	 (?k . ?k)
+	 (?g . ?g)
+	 (?f . ?f)
+	 (?v . ?v)
 	 (?,0H(B . ?$,1'8(B)
 	 (?,0I(B . ?,Ap(B)
-	 (?,0J(B . ?s)
-	 (?,0K(B . ?z)
+	 (?s . ?s)
+	 (?z . ?z)
 	 (?,0L(B . ?$,1$#(B)
 	 (?,0M(B . ?$,1$2(B)
 	 (?,0N(B . ?,Ag(B)
-	 (?,0O(B . ?x)
+	 (?x . ?x)
 	 (?,0P(B . ?$,1$!(B)
-	 (?,0Q(B . ?h)
-	 (?,0R(B . ?m)
-	 (?,0S(B . ?n)
+	 (?h . ?h)
+	 (?m . ?m)
+	 (?n . ?n)
 	 (?,0T(B . ?$,1#r(B)
 	 (?,0U(B . ?$,1 k(B)
-	 (?,0V(B . ?r)
+	 (?r . ?r)
 	 (?,0W(B . ?$,1$ (B)
 	 (?,0X(B . ?$,1#y(B)
-	 (?,0Y(B . ?j)
-	 (?,0Z(B . ?l)
+	 (?j . ?j)
+	 (?l . ?l)
 	 (?,0[(B . ?$,1$.(B)
 	 (?,0\(B . ?$,1$?(B)
 	 (?,0](B . ?$,1#e(B)
-	 (?,0^(B . ?w)
+	 (?w . ?w)
 	 (?,0_(B . ?$,1$-(B)
 	 (?,0p(B . ?$,1$h(B)
 	 (?,0q(B . ?$,1$l(B)
