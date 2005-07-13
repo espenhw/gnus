@@ -1,3 +1,11 @@
+2005-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-salt.el (gnus-pick-mode): Remove the 5th arg of
+	add-minor-mode.
+	(gnus-binary-mode): Ditto.
+
+	* gnus-topic.el (gnus-topic-mode): Ditto.
+
 2005-07-04  Lute Kamstra  <lute@gnu.org>
 
 	Update FSF's address in GPL notices.
