@@ -1,3 +1,20 @@
+2005-07-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-next-page): Use gnus-end-of-window.
+	(gnus-article-next-page-1): Use gnus-beginning-of-window.
+	(gnus-article-prev-page): Ditto.
+
+	* gnus-util.el (gnus-beginning-of-window): New function.
+	(gnus-end-of-window): New function.
+
+	* lpath.el: Bind header-line-format and scroll-margin for XEmacs.
+
+2005-07-14  Hiroshi Fujishima  <hiroshi.fujishima@gmail.com>  (tiny change)
+
+	* gnus-score.el (gnus-score-edit-all-score): Set
+	gnus-score-edit-exit-function to gnus-score-edit-done and call
+	gnus-message.
+
 2005-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-salt.el (gnus-pick-mode): Remove the 5th arg of

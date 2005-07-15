@@ -1,6 +1,6 @@
 ;;; gnus-score.el --- scoring code for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
-;;        Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+;; 2005 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <amanda@iesd.auc.dk>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1104,7 +1104,11 @@ EXTRA is the possible non-standard header."
   "Edit the all.SCORE file."
   (interactive)
   (find-file (gnus-score-file-name "all"))
-  (gnus-score-mode))
+  (gnus-score-mode)
+  (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
+  (gnus-message
+   4 (substitute-command-keys
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits")))
 
 (defun gnus-score-edit-file (file)
   "Edit a score file."
