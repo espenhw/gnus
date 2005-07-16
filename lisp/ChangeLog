@@ -1,5 +1,11 @@
 2005-07-16  Romain Francoise  <romain@orebokech.com>
 
+	* nnfolder.el (nnfolder-save-buffer): Bind `copyright-update' to
+	nil to avoid prompting and file modification if one of the
+	messages at the top of the nnfolder file contains a copyright
+	notice.
+	Update copyright notice.
+
 	* gnus-uu.el (gnus-uu-save-article): Use `message-make-date'
 	instead of `current-time-string' as the latter creates a time
 	string that is not RFC 2822 compliant (it lacks the zone).
