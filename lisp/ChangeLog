@@ -1,3 +1,10 @@
+2005-07-16  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-uu.el (gnus-uu-save-article): Use `message-make-date'
+	instead of `current-time-string' as the latter creates a time
+	string that is not RFC 2822 compliant (it lacks the zone).
+	Update copyright notice.
+
 2005-07-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-next-page): Use gnus-end-of-window.
