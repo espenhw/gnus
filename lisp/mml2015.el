@@ -867,7 +867,7 @@ Valid packages include `pgg', `gpg' and `mailcrypt'.")
 	(erase-buffer)
 	t)
     (setq mml2015-result-buffer
-	  (gnus-get-buffer-create "*MML2015 Result*"))
+	  (gnus-get-buffer-create " *MML2015 Result*"))
     nil))
 
 (defsubst mml2015-clear-decrypt-function ()

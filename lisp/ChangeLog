@@ -1,3 +1,8 @@
+2005-07-17  Romain Francoise  <romain@orebokech.com>
+
+	* mml2015.el (mml2015-clean-buffer): Prefix buffer name with a
+	space as it's generally not especially interesting to the user.
+
 2005-07-16  Romain Francoise  <romain@orebokech.com>
 
 	* nnfolder.el (nnfolder-save-buffer): Bind `copyright-update' to
