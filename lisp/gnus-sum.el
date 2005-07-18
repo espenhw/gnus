@@ -1061,6 +1061,20 @@ which it may alter in any way."
   :group 'gnus-summary
   :type 'regexp)
 
+(defcustom gnus-summary-to-prefix "-> "
+  "*String prefixed to the To field in the summary line when
+using `gnus-ignored-from-addresses'."
+  :version "22.1"
+  :group 'gnus-summary
+  :type 'string)
+
+(defcustom gnus-summary-newsgroup-prefix "=> "
+  "*String prefixed to the Newsgroup field in the summary
+line when using `gnus-ignored-from-addresses'."
+  :version "22.1"
+  :group 'gnus-summary
+  :type 'string)
+
 (defcustom gnus-newsgroup-ignored-charsets '(unknown-8bit x-unknown)
   "List of charsets that should be ignored.
 When these charsets are used in the \"charset\" parameter, the
@@ -3375,12 +3389,12 @@ buffer that was in action when the last article was fetched."
 		newsgroups)
 	    (cond
 	     ((setq to (cdr (assq 'To extra-headers)))
-	      (concat "-> "
+	      (concat gnus-summary-to-prefix
 		      (inline
 			(gnus-summary-extract-address-component
 			 (funcall gnus-decode-encoded-word-function to)))))
 	     ((setq newsgroups (cdr (assq 'Newsgroups extra-headers)))
-	      (concat "=> " newsgroups)))))
+	      (concat gnus-summary-newsgroup-prefix newsgroups)))))
      (inline (gnus-summary-extract-address-component gnus-tmp-from)))))
 
 (defun gnus-summary-insert-line (gnus-tmp-header

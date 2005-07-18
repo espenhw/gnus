@@ -1,3 +1,9 @@
+2005-07-18  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-sum.el (gnus-summary-to-prefix,
+	gnus-summary-newsgroup-prefix): New variables.
+	(gnus-summary-from-or-to-or-newsgroups): Use them.
+
 2005-07-17  Romain Francoise  <romain@orebokech.com>
 
 	* mml2015.el (mml2015-clean-buffer): Prefix buffer name with a
