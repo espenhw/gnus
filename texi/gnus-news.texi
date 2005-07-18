@@ -109,7 +109,7 @@ See the Gnus manual, section Hashcash, for more information.  Use
 
 @item Gnus supports a new sort command in the Summary buffer:
 @kbd{C-c C-s C-t} (@code{gnus-summary-sort-by-recipient}).  @ref{Summary
-Sorting}
+Sorting}.
 
 @item The @code{nnrss} back end now supports multilingual text.
 Non-@acronym{ASCII} group names for the @code{nnrss} groups are also
@@ -127,6 +127,11 @@ This allows to decay only adaptive score files.  @ref{Score Decays}.
 
 @item @acronym{S/MIME} now feature @acronym{LDAP} user certificate searches.
 You need to configure the server in @code{smime-ldap-host-list}.
+
+@item Strings prefixed to the @code{To} and @code{Newsgroup} headers in
+summary lines when using @code{gnus-ignored-from-addresses} can be
+customized with @code{gnus-summary-to-prefix} and
+@code{gnus-summary-newsgroup-prefix}.  @ref{To From Newsgroups}.
 
 @end itemize
 @c gnus-news.texi ends here.

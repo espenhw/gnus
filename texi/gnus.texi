@@ -4755,6 +4755,13 @@ summary line spec returns the @code{To}, @code{Newsreader} or
 @code{From} header, the value of the @code{To} or @code{Newsreader}
 headers are used instead.
 
+To distinguish regular articles from those where the @code{From} field
+has been swapped, a string is prefixed to the @code{To} or
+@code{Newsgroups} header in the summary line.  By default the string is
+@samp{-> } for @code{To} and @samp{=> } for @code{Newsgroups}, you can
+customize these strings with @code{gnus-summary-to-prefix} and
+@code{gnus-summary-newsgroup-prefix}.
+
 @end enumerate
 
 @vindex nnmail-extra-headers

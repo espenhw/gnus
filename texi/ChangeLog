@@ -1,3 +1,10 @@
+2005-07-18  Romain Francoise  <romain@orebokech.com>
+
+	* gnus.texi (To From Newsgroups): Mention new variables
+	`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.
+
+	* gnus-news.texi: Ditto.
+
 2005-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NoCeM): gnus-nocem-verifyer defaults to pgg-verify.
