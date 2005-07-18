@@ -91,7 +91,7 @@ message-generate-hashcash t)' to enable.
 (`gnus-summary-limit-to-recipient').  *Note Limiting::.
 
 ** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
-(`gnus-summary-sort-by-recipient').  *Note Summary Sorting::
+(`gnus-summary-sort-by-recipient').  *Note Summary Sorting::.
 
 ** The `nnrss' back end now supports multilingual text.  Non-ASCII group
 names for the `nnrss' groups are also supported.  *Note RSS::.
@@ -108,6 +108,11 @@ allows to decay only adaptive score files.  *Note Score Decays::.
 
 ** S/MIME now feature LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
+
+** Strings prefixed to the `To' and `Newsgroup' headers in summary lines
+when using `gnus-ignored-from-addresses' can be customized with
+`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note
+To From Newsgroups::.
 
 
 * For older news, see Gnus info node "New Features".
