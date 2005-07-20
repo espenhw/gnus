@@ -1,3 +1,8 @@
+2005-07-20  Didier Verna  <didier@xemacs.org>
+
+	* gnus.texi (Email Based Diary): New. Proper documentation for the
+	nndiary back end and the gnus-diary library.
+
 2005-07-18  Romain Francoise  <romain@orebokech.com>
 
 	* gnus.texi (To From Newsgroups): Mention new variables
@@ -183,7 +188,7 @@
 
 2004-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnusref.tex: Mention `gnus-summary-limit-to-recipient' and 
+	* gnusref.tex: Mention `gnus-summary-limit-to-recipient' and
 	`gnus-summary-sort-by-recipient'.
 
 2004-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
@@ -205,7 +210,7 @@
 
 2004-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-news.texi: Mention `gnus-summary-limit-to-recipient' and 
+	* gnus-news.texi: Mention `gnus-summary-limit-to-recipient' and
 	`gnus-summary-sort-by-recipient'.
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): Index
@@ -452,7 +457,7 @@
 2004-05-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-faq.texi: Untabify.
-	([6.3]): nnir.el is in contrib directory.  
+	([6.3]): nnir.el is in contrib directory.
 
 	* message.texi (News Headers): Clarify how a unique ID is created.
 
@@ -461,7 +466,7 @@
 2004-05-19  Andre Srinivasan  <andre@e2open.com>
 
 	* gnus.texi (Group Parameters): Added more on hooks.  (Small
-	change.) 
+	change.)
 
 2004-05-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -608,7 +613,7 @@
 	characters that can not be encoded using iso-8859-1.
 	(Gnus Unplugged): Reference gnus-agent variable.
 	(Agent Variables): Added gnus-agent.
-	
+
 
 2004-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -783,7 +788,7 @@
 	(Blacklists and Whitelists, BBDB Whitelists)
 	(Gmane Spam Reporting, Bogofilter, spam-stat spam filtering)
 	(SpamOracle): mention that spam/ham processor variables are being
-	obsoleted 
+	obsoleted
 	(Extending the Spam ELisp package): add some new documentation
 	for adding a new backend to spam.el
 
@@ -807,7 +812,7 @@
 2003-12-31  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus.texi (XEmacs): Update list of Gnus XEmacs package
-	requirements. 
+	requirements.
 
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -1101,7 +1106,7 @@
 2003-06-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Summary Mail Commands): Make note of
-	Mail-Followup-To. 
+	Mail-Followup-To.
 
 2003-06-23  Jesper Harder  <harder@ifa.au.dk>
 

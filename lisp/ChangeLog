@@ -1,3 +1,11 @@
+2005-07-20  Didier Verna  <didier@xemacs.org>
+
+	* gnus-diary.el: Remove the description comment (nndiary is now
+	properly documented in the Gnus manual).
+	Fix the spelling of "Back End".
+	* nndiary.el: Ditto.
+	Fix the copyright notice.
+
 2005-07-18  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-sum.el (gnus-summary-to-prefix,
