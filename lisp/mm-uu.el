@@ -112,8 +112,8 @@ This can be either \"inline\" or \"attachment\".")
      "^exit 0$"
      mm-uu-shar-extract)
     (forward
-;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and
-;;; Peter von der Ah\'e <pahe@daimi.au.dk>
+     ;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and
+     ;; Peter von der Ah\'e <pahe@daimi.au.dk>
      "^-+ \\(Start of \\)?Forwarded message"
      "^-+ End \\(of \\)?forwarded message"
      mm-uu-forward-extract
@@ -191,13 +191,12 @@ To disable dissecting shar codes, for instance, add
 (defun mm-uu-copy-to-buffer (&optional from to)
   "Copy the contents of the current buffer to a fresh buffer.
 Return that buffer."
-  (save-excursion
-    (let ((obuf (current-buffer))
-	  (coding-system
-	   ;; Might not exist in non-MULE XEmacs
-	   (when (boundp 'buffer-file-coding-system)
-	     buffer-file-coding-system)))
-      (set-buffer (generate-new-buffer " *mm-uu*"))
+  (let ((obuf (current-buffer))
+        (coding-system
+         ;; Might not exist in non-MULE XEmacs
+         (when (boundp 'buffer-file-coding-system)
+           buffer-file-coding-system)))
+    (with-current-buffer (generate-new-buffer " *mm-uu*")
       (setq buffer-file-coding-system coding-system)
       (insert-buffer-substring obuf from to)
       (current-buffer))))
@@ -519,5 +518,5 @@ value of `mm-uu-text-plain-type'."
 
 (provide 'mm-uu)
 
-;;; arch-tag: 7db076bf-53db-4320-aa19-ca76a1d2ab2c
+;; arch-tag: 7db076bf-53db-4320-aa19-ca76a1d2ab2c
 ;;; mm-uu.el ends here
