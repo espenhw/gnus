@@ -1,3 +1,9 @@
+2005-07-25  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.el (pgg-insert-url-with-w3): Don't load w3, it is possible
+	to have the url package without w3.  Reported by Daiki Ueno
+	<ueno@unixuser.org> and Luigi Panzeri <matley@muppetslab.org>.
+
 2005-07-20  Didier Verna  <didier@xemacs.org>
 
 	* gnus-diary.el: Remove the description comment (nndiary is now
