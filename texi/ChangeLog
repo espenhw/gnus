@@ -1,3 +1,9 @@
+2005-07-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Startup Files): Fix name of gnus-site-init-file.
+	Mention that gnus-init-file is not read when Emacs is invoked with
+	--no-init-file or -q.
+
 2005-07-20  Didier Verna  <didier@xemacs.org>
 
 	* gnus.texi (Email Based Diary): New. Proper documentation for the
