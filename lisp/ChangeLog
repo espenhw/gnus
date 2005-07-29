@@ -1,3 +1,17 @@
+2005-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-generate-default-type): Add doc string.
+	(mml-generate-mime-1): Use mm-default-file-encoding or make it
+	default to application/octet-stream when determining the content
+	type if it is not specified for the part or the mml contents; add
+	a comment about mml-generate-default-type.
+
+2005-07-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mml.el (mml-generate-mime-1): Use mm-default-file-encoding or
+	make it default to application/octet-stream when determining the
+	content type if it is not specified for the external contents.
+
 2005-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2231.el (rfc2231-parse-string): Take care that not only a

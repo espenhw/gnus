@@ -126,7 +126,13 @@ unknown encoding; `use-ascii': always use ASCII for those characters
 with unknown encoding; `multipart': always send messages with more than
 one charsets.")
 
-(defvar mml-generate-default-type "text/plain")
+(defvar mml-generate-default-type "text/plain"
+  "Content type by which the Content-Type header can be omitted.
+The Content-Type header will not be put in the MIME part if the type
+equals the value and there's no parameter (e.g. charset, format, etc.)
+and `mml-insert-mime-headers-always' is nil.  The value will be bound
+to \"message/rfc822\" when encoding an article to be forwarded as a MIME
+part.  This is for the internal use, you should never modify the value.")
 
 (defvar mml-buffer-list nil)
 
@@ -404,11 +410,14 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
       (mml-tweak-part cont)
       (cond
        ((or (eq (car cont) 'part) (eq (car cont) 'mml))
-	(let ((raw (cdr (assq 'raw cont)))
-	      type charset coding filename encoding flowed coded)
-	  (setq type (or (cdr (assq 'type cont)) "text/plain")
-		charset (cdr (assq 'charset cont))
-		coding (mm-charset-to-coding-system charset))
+	(let* ((raw (cdr (assq 'raw cont)))
+	       (filename (cdr (assq 'filename cont)))
+	       (type (or (cdr (assq 'type cont))
+			 (and filename (mm-default-file-encoding filename))
+			 "application/octet-stream"))
+	       (charset (cdr (assq 'charset cont)))
+	       (coding (mm-charset-to-coding-system charset))
+	       encoding flowed coded)
 	  (cond ((eq coding 'ascii)
 		 (setq charset nil
 		       coding nil))
@@ -421,7 +430,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		  (cond
 		   ((cdr (assq 'buffer cont))
 		    (insert-buffer-substring (cdr (assq 'buffer cont))))
-		   ((and (setq filename (cdr (assq 'filename cont)))
+		   ((and filename
 			 (not (equal (cdr (assq 'nofile cont)) "yes")))
 		    (let ((coding-system-for-read coding))
 		      (mm-insert-file-contents filename)))
@@ -441,6 +450,10 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		  (cond
 		   ((eq (car cont) 'mml)
 		    (let ((mml-boundary (mml-compute-boundary cont))
+			  ;; It is necessary for the case where this
+			  ;; function is called recursively since
+			  ;; `m-g-d-t' will be bound to "message/rfc822"
+			  ;; when encoding an article to be forwarded.
 			  (mml-generate-default-type "text/plain"))
 		      (mml-to-mime))
 		    (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
@@ -482,7 +495,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		(insert (with-current-buffer (cdr (assq 'buffer cont))
 			  (mm-with-unibyte-current-buffer
 			    (buffer-string)))))
-	       ((and (setq filename (cdr (assq 'filename cont)))
+	       ((and filename
 		     (not (equal (cdr (assq 'nofile cont)) "yes")))
 		(let ((coding-system-for-read mm-binary-coding-system))
 		  (mm-insert-file-contents filename nil nil nil nil t))
@@ -527,15 +540,19 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	     "access-type=url"))
 	  (when parameters
 	    (mml-insert-parameter-string
-	     cont '(expiration size permission))))
-	(insert "\n\n")
-	(insert "Content-Type: " (cdr (assq 'type cont)) "\n")
-	(insert "Content-ID: " (message-make-message-id) "\n")
-	(insert "Content-Transfer-Encoding: "
-		(or (cdr (assq 'encoding cont)) "binary"))
-	(insert "\n\n")
-	(insert (or (cdr (assq 'contents cont))))
-	(insert "\n"))
+	     cont '(expiration size permission)))
+	  (insert "\n\n")
+	  (insert "Content-Type: "
+		  (or (cdr (assq 'type cont))
+		      (and name (mm-default-file-encoding name))
+		      "application/octet-stream")
+		  "\n")
+	  (insert "Content-ID: " (message-make-message-id) "\n")
+	  (insert "Content-Transfer-Encoding: "
+		  (or (cdr (assq 'encoding cont)) "binary"))
+	  (insert "\n\n")
+	  (insert (or (cdr (assq 'contents cont))))
+	  (insert "\n")))
        ((eq (car cont) 'multipart)
 	(let* ((type (or (cdr (assq 'type cont)) "mixed"))
 	       (mml-generate-default-type (if (equal type "digest")
