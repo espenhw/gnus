@@ -1,5 +1,8 @@
 2005-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-next-page-1): Reduce the number of
+	lines to scroll rather than to stop it.
+
 	* mml.el (mml-generate-default-type): Add doc string.
 	(mml-generate-mime-1): Use mm-default-file-encoding or make it
 	default to application/octet-stream when determining the content
