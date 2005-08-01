@@ -3,7 +3,8 @@
 	* gnus-uu.el (gnus-uu-save-article): Use insert-buffer-substring
 	instead of insert-buffer.
 
-	* message.el (message-yank-original): Ditto.
+	* message.el (message-yank-original): Ditto; set the mark at the
+	end of the yanked message.
 
 2005-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
