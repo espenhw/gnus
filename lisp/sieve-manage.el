@@ -1,5 +1,5 @@
 ;;; sieve-manage.el --- Implementation of the managesive protocol in elisp
-;; Copyright (C) 2001, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -198,8 +198,8 @@ LOGINFUNC is passed a username and a password, it should return t if
 it where sucessful authenticating itself to the server, nil otherwise.
 Returns t if login was successful, nil otherwise."
   (with-current-buffer buffer
-    (make-variable-buffer-local 'sieve-manage-username)
-    (make-variable-buffer-local 'sieve-manage-password)
+    (make-local-variable 'sieve-manage-username)
+    (make-local-variable 'sieve-manage-password)
     (let (user passwd ret reason passwd-key)
       (condition-case ()
 	  (while (or (not user) (not passwd))
@@ -442,7 +442,7 @@ Optional variable BUFFER is buffer (buffer, or string naming buffer)
 to work in."
   (setq buffer (or buffer (format " *sieve* %s:%d" server (or port 2000))))
   (with-current-buffer (get-buffer-create buffer)
-    (mapc 'make-variable-buffer-local sieve-manage-local-variables)
+    (mapc 'make-local-variable sieve-manage-local-variables)
     (sieve-manage-disable-multibyte)
     (buffer-disable-undo)
     (setq sieve-manage-server (or server sieve-manage-server))
@@ -530,8 +530,8 @@ password is remembered in the buffer."
   (with-current-buffer (or buffer (current-buffer))
     (if (not (eq sieve-manage-state 'nonauth))
 	(eq sieve-manage-state 'auth)
-      (make-variable-buffer-local 'sieve-manage-username)
-      (make-variable-buffer-local 'sieve-manage-password)
+      (make-local-variable 'sieve-manage-username)
+      (make-local-variable 'sieve-manage-password)
       (if user (setq sieve-manage-username user))
       (if passwd (setq sieve-manage-password passwd))
       (if (funcall (nth 2 (assq sieve-manage-auth

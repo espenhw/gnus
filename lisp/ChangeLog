@@ -1,5 +1,10 @@
 2005-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sieve-manage.el (sieve-manage-interactive-login): Use
+	make-local-variable rather than make-variable-buffer-local.
+	(sieve-manage-open): Ditto.
+	(sieve-manage-authenticate): Ditto.
+
 	* mml.el (mml-generate-mime-1): Make the content type default to
 	text/plain if the filename is not specified.
 
