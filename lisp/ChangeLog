@@ -1,3 +1,8 @@
+2005-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-generate-mime-1): Make the content type default to
+	text/plain if the filename is not specified.
+
 2005-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-uu.el (gnus-uu-save-article): Use insert-buffer-substring
