@@ -5932,12 +5932,11 @@ The function must take one argument, the string naming the URL."
 		 (regexp :tag "Other")))
 
 (defcustom gnus-button-ctan-directory-regexp
-  (concat
-   "\\(?:"
-   "biblio\\|digests\\|dviware\\|fonts\\|graphics\\|help\\|"
-   "indexing\\|info\\|language\\|macros\\|support\\|systems\\|"
-   "tds\\|tools\\|usergrps\\|web\\|nonfree\\|obsolete"
-   "\\)")
+  (regexp-opt
+   (list "archive-tools" "biblio" "bibliography" "digests" "documentation"
+	 "dviware" "fonts" "graphics" "help" "indexing" "info" "language"
+	 "languages" "macros" "nonfree" "obsolete" "support" "systems"
+	 "tds" "tools" "usergrps" "web") t)
   "Regular expression for ctan directories.
 It should match all directories in the top level of `gnus-ctan-url'."
   :version "22.1"

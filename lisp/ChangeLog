@@ -5,6 +5,7 @@
 	(gnus-button-mid-or-mail-regexp, gnus-button-alist): Use it.
 	(gnus-button-alist): Improve regexp for domain part of the MIDs
 	for news:localpart@domain buttons.
+	(gnus-button-ctan-directory-regexp): Update.
 
 2005-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
