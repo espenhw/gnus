@@ -5885,6 +5885,14 @@ groups."
   :group 'gnus-article-buttons
   :type 'regexp)
 
+;; Regexp suggested by Felix Wiemann in <87oeuomcz9.fsf@news2.ososo.de>
+(defcustom gnus-button-valid-localpart-regexp
+  "[a-z0-9$%(*-=?[_][^<>\")!;:,{}\n\t ]*"
+  "Regular expression that matches a localpart of mail addresses or MIDs."
+  :version "22.1"
+  :group 'gnus-article-buttons
+  :type 'regexp)
+
 (defcustom gnus-button-man-handler 'manual-entry
   "Function to use for displaying man pages.
 The function must take at least one argument with a string naming the
@@ -5937,8 +5945,7 @@ It should match all directories in the top level of `gnus-ctan-url'."
   :type 'regexp)
 
 (defcustom gnus-button-mid-or-mail-regexp
-  (concat "\\b\\(<?[a-z0-9$%(*-=?[_][^<>\")!;:,{}\n\t ]*@"
-	  ;; Felix Wiemann in <87oeuomcz9.fsf@news2.ososo.de>
+  (concat "\\b\\(<?" gnus-button-valid-localpart-regexp "@"
 	  gnus-button-valid-fqdn-regexp
 	  ">?\\)\\b")
   "Regular expression that matches a message ID or a mail address."
@@ -6253,8 +6260,9 @@ positives are possible."
 (defcustom gnus-button-alist
   '(("<\\(url:[>\n\t ]*?\\)?\\(nntp\\|news\\):[>\n\t ]*\\([^>\n\t ]*@[^>\n\t ]*\\)>"
      0 (>= gnus-button-message-level 0) gnus-button-handle-news 3)
-    ("\\b\\(nntp\\|news\\):\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t
-     gnus-button-handle-news 2)
+    ((concat "\\b\\(nntp\\|news\\):\\("
+	     gnus-button-valid-localpart-regexp "@[a-z0-9.-]+[a-z]\\)")
+     0 t gnus-button-handle-news 2)
     ("\\(\\b<\\(url:[>\n\t ]*\\)?\\(nntp\\|news\\):[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-fetch-group 5)
     ("\\b\\(nntp\\|news\\):\\(//\\)?\\([^'\">\n\t ]+\\)"
