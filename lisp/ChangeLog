@@ -1,3 +1,11 @@
+2005-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-bodies.el (mm-encode-body): Use coding system rather than
+	charset to encode text.
+
+	* mm-util.el (mm-find-mime-charset-region): Attempt to reduce the
+	number of charsets if utf-8 is available (XEmacs).
+
 2005-08-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-valid-localpart-regexp): New variable
