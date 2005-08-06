@@ -1,3 +1,7 @@
+2005-08-06  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-user-fqdn): Fix typo in docstring.
+
 2005-08-05  Daiki Ueno <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-pgg-sign): Make sure micalg is correct.
