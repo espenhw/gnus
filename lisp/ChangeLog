@@ -1,3 +1,9 @@
+2005-08-07  Jesper Harder  <harder@phys.au.dk>
+
+	* message.el (message-kill-to-signature): Don't insert newline at
+	bol.
+	(message-newline-and-reformat): Bind fill-paragraph-function to nil.
+
 2005-08-06  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-user-fqdn): Fix typo in docstring.

@@ -2888,13 +2888,14 @@ of lines before the signature intact."
 	    (end-of-line -1)))
 	(unless (= point (point))
 	  (kill-region point (point))
-	  (insert "\n"))))))
+	  (unless (bol)
+	    (insert "\n")))))))
 
 (defun message-newline-and-reformat (&optional arg not-break)
   "Insert four newlines, and then reformat if inside quoted text.
 Prefix arg means justify as well."
   (interactive (list (if current-prefix-arg 'full)))
-  (let (quoted point beg end leading-space bolp)
+  (let (quoted point beg end leading-space bolp fill-paragraph-function)
     (setq point (point))
     (beginning-of-line)
     (setq beg (point))
