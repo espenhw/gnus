@@ -1,3 +1,9 @@
+2005-08-08  Romain Francoise  <romain@orebokech.com>
+
+	* message.texi (Insertion Variables): Mention new variable
+	`message-yank-empty-prefix'.  Change `message-yank-cited-prefix'
+	documentation accordingly.
+
 2005-07-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Startup Files): Fix name of gnus-site-init-file.
