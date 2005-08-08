@@ -30,17 +30,11 @@
 (require 'pgg-def)
 (require 'pgg-parse)
 (require 'password)
+(autoload 'url-insert-file-contents "url")
 
 ;; Don't merge these two `eval-when-compile's.
 (eval-when-compile
   (require 'cl))
-;; Fixme: This would be better done with an autoload for
-;; `url-insert-file-contents', and the url stuff rationalized.
-;; (`locate-library' can say whether the url code is available.)
-(eval-when-compile
-  (ignore-errors
-    (require 'w3)
-    (require 'url)))
 
 ;;; @ utility functions
 ;;;
@@ -328,7 +322,6 @@ within the region."
 
 (defun pgg-insert-url-with-w3 (url)
   (ignore-errors
-    (require 'url)
     (let (buffer-file-name)
       (url-insert-file-contents url))))
 

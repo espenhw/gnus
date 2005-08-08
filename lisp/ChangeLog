@@ -1,3 +1,9 @@
+2005-08-08  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.el: Autoload url-insert-file-contents instead of loading
+	w3/url.
+	(pgg-insert-url-with-w3): Don't load url here.
+
 2005-08-07  Jesper Harder  <harder@phys.au.dk>
 
 	* message.el (message-kill-to-signature): Don't insert newline at
