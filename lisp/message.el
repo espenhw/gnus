@@ -3303,10 +3303,14 @@ prefix, and don't delete any headers."
 	  (push (buffer-name buffer) buffers))))
     (nreverse buffers)))
 
+;; FIXME: the following function duplicates `message-cite-original'
+;; almost in entirety, merging the two would be nice.
 (defun message-cite-original-without-signature ()
-  "Cite function in the standard Message manner."
+  "Cite function in the standard Message manner, excluding the
+signature."
   (let* ((start (point))
 	 (end (mark t))
+	 (x-no-archive nil)
 	 (functions
 	  (when message-indent-citation-function
 	    (if (listp message-indent-citation-function)
@@ -3319,6 +3323,7 @@ prefix, and don't delete any headers."
 	  (save-restriction
 	    (narrow-to-region start end)
 	    (message-narrow-to-head-1)
+	    (setq x-no-archive (message-fetch-field "x-no-archive"))
 	    (vector 0
 		    (or (message-fetch-field "subject") "none")
 		    (message-fetch-field "from")
@@ -3345,7 +3350,14 @@ prefix, and don't delete any headers."
     (when message-citation-line-function
       (unless (bolp)
 	(insert "\n"))
-      (funcall message-citation-line-function))))
+      (funcall message-citation-line-function))
+    (when (and x-no-archive
+	       (not message-cite-articles-with-x-no-archive)
+	       (string-match "yes" x-no-archive))
+      (undo-boundary)
+      (delete-region (point) (mark t))
+      (insert "> [Quoted text removed due to X-No-Archive]\n")
+      (forward-line -1))))
 
 (eval-when-compile (defvar mail-citation-hook))	;Compiler directive
 (defun message-cite-original ()

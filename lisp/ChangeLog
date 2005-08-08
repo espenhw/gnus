@@ -2,6 +2,7 @@
 
 	* message.el (message-yank-empty-prefix): New variable.
 	(message-indent-citation): Use it.
+	(message-cite-original-without-signature): Respect X-No-Archive.
 
 2005-08-08  Simon Josefsson  <jas@extundo.com>
 
