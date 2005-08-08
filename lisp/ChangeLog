@@ -1,3 +1,8 @@
+2005-08-08  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-yank-empty-prefix): New variable.
+	(message-indent-citation): Use it.
+
 2005-08-08  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.el: Autoload url-insert-file-contents instead of loading

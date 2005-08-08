@@ -877,15 +877,23 @@ configuration.  See the variable `gnus-cite-attribution-suffix'."
 (defcustom message-yank-prefix "> "
   "*Prefix inserted on the lines of yanked messages.
 Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
-See also `message-yank-cited-prefix'."
+See also `message-yank-cited-prefix' and `message-yank-empty-prefix'."
   :type 'string
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
 (defcustom message-yank-cited-prefix ">"
-  "*Prefix inserted on cited or empty lines of yanked messages.
+  "*Prefix inserted on cited lines of yanked messages.
 Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
-See also `message-yank-prefix'."
+See also `message-yank-prefix' and `message-yank-empty-prefix'."
+  :version "22.1"
+  :type 'string
+  :link '(custom-manual "(message)Insertion Variables")
+  :group 'message-insertion)
+
+(defcustom message-yank-empty-prefix ">"
+  "*Prefix inserted on empty lines of yanked messages.
+See also `message-yank-prefix' and `message-yank-cited-prefix'."
   :version "22.1"
   :type 'string
   :link '(custom-manual "(message)Insertion Variables")
@@ -3242,9 +3250,12 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
       (save-excursion
 	(goto-char start)
 	(while (< (point) (mark t))
-	  (if (or (looking-at ">") (looking-at "^$"))
-	      (insert message-yank-cited-prefix)
-	    (insert message-yank-prefix))
+	  (cond ((looking-at ">")
+		 (insert message-yank-cited-prefix))
+		((looking-at "^$")
+		 (insert message-yank-empty-prefix))
+		(t
+		 (insert message-yank-prefix)))
 	  (forward-line 1))))
     (goto-char start)))
 
