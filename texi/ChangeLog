@@ -1,3 +1,7 @@
+2005-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Charsets): Fj hierarchy uses iso-2022-jp.
+
 2005-08-08  Romain Francoise  <romain@orebokech.com>
 
 	* message.texi (Insertion Variables): Mention new variable
