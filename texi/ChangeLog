@@ -1,3 +1,7 @@
+2005-08-10  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-news.texi: Mention new variable `message-yank-empty-prefix'.
+
 2005-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Charsets): Fj hierarchy uses iso-2022-jp.

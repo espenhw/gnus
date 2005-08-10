@@ -54,6 +54,10 @@ inline @acronym{PGP} signed messages.
 
 @item You can now drag and drop attachments to the Message buffer.
 
+@item The option @code{message-yank-empty-prefix} now controls how
+empty lines are prefixed in cited text.
+@xref{(message)Insertion Variables}.
+
 @item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
 using @kbd{W A}.
 
