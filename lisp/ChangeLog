@@ -1,3 +1,9 @@
+2005-08-13  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-cite-original-1): New function.
+	(message-cite-original): Use it.
+	(message-cite-original-without-signature): Ditto.
+
 2005-08-08  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-yank-empty-prefix): New variable.
