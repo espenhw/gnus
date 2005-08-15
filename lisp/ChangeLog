@@ -1,3 +1,12 @@
+2005-08-15  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.el (url-insert-file-contents): Don't autoload it, Emacs has
+	it in url.el and XEmacs in url-handlers.el.  Reported by Luca
+	Capello and Romain Francoise.
+	(pgg-fetch-key-function): Removed, not used?
+	(pgg-insert-url-with-w3): Require url, to get
+	url-insert-file-contents regardless of where it is defined.
+
 2005-08-13  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-cite-original-1): New function.

@@ -30,7 +30,6 @@
 (require 'pgg-def)
 (require 'pgg-parse)
 (require 'password)
-(autoload 'url-insert-file-contents "url")
 
 ;; Don't merge these two `eval-when-compile's.
 (eval-when-compile
@@ -38,9 +37,6 @@
 
 ;;; @ utility functions
 ;;;
-
-(defvar pgg-fetch-key-function (if (fboundp 'url-insert-file-contents)
-				   (function pgg-fetch-key-with-w3)))
 
 (defun pgg-invoke (func scheme &rest args)
   (progn
@@ -322,6 +318,7 @@ within the region."
 
 (defun pgg-insert-url-with-w3 (url)
   (ignore-errors
+    (require 'url)
     (let (buffer-file-name)
       (url-insert-file-contents url))))
 
