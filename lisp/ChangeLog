@@ -1,7 +1,7 @@
 2005-08-15  Simon Josefsson  <jas@extundo.com>
 
 	* pgg.el (url-insert-file-contents): Don't autoload it, Emacs has
-	it in url.el and XEmacs in url-handlers.el.  Reported by Luca
+	it in url-handlers.el and XEmacs in url.el.  Reported by Luca
 	Capello and Romain Francoise.
 	(pgg-fetch-key-function): Removed, not used?
 	(pgg-insert-url-with-w3): Require url, to get
