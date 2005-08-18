@@ -1,3 +1,11 @@
+2005-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Handles): Remove duplicate item.
+	(Encoding Customization): Fix the default value for
+	mm-coding-system-priorities.
+	(Charset Translation): Emacs doesn't use mm-mime-mule-charset-alist.
+	(Basic Functions): Fix reference.
+
 2005-08-10  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-news.texi: Mention new variable `message-yank-empty-prefix'.
