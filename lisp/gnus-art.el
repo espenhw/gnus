@@ -4147,29 +4147,27 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
   (when (mm-complicated-handles gnus-article-mime-handles)
     (error "\
 The current article has a complicated MIME structure, giving up..."))
-  (when (gnus-yes-or-no-p "\
-Deleting parts may malfunction or destroy the article; continue? ")
-    (let* ((data (get-text-property (point) 'gnus-data))
-	   file param
-	   (handles gnus-article-mime-handles))
-      (setq file (and data (mm-save-part data)))
-      (when file
-	(with-current-buffer (mm-handle-buffer data)
-	  (erase-buffer)
-	  (insert "Content-Type: " (mm-handle-media-type data))
-	  (mml-insert-parameter-string (cdr (mm-handle-type data))
-				       '(charset))
-	  (insert "\n")
-	  (insert "Content-ID: " (message-make-message-id) "\n")
-	  (insert "Content-Transfer-Encoding: binary\n")
-	  (insert "\n"))
-	(setcdr data
-		(cdr (mm-make-handle nil
-				     `("message/external-body"
-				       (access-type . "LOCAL-FILE")
-				       (name . ,file)))))
-	(set-buffer gnus-summary-buffer)
-	(gnus-article-edit-part handles)))))
+  (let* ((data (get-text-property (point) 'gnus-data))
+	 file param
+	 (handles gnus-article-mime-handles))
+    (setq file (and data (mm-save-part data)))
+    (when file
+      (with-current-buffer (mm-handle-buffer data)
+	(erase-buffer)
+	(insert "Content-Type: " (mm-handle-media-type data))
+	(mml-insert-parameter-string (cdr (mm-handle-type data))
+				     '(charset))
+	(insert "\n")
+	(insert "Content-ID: " (message-make-message-id) "\n")
+	(insert "Content-Transfer-Encoding: binary\n")
+	(insert "\n"))
+      (setcdr data
+	      (cdr (mm-make-handle nil
+				   `("message/external-body"
+				     (access-type . "LOCAL-FILE")
+				     (name . ,file)))))
+      (set-buffer gnus-summary-buffer)
+      (gnus-article-edit-part handles))))
 
 (defun gnus-mime-delete-part ()
   "Delete the MIME part under point.
@@ -4181,8 +4179,9 @@ Replace it with some information about the removed part."
   (when (mm-complicated-handles gnus-article-mime-handles)
     (error "\
 The current article has a complicated MIME structure, giving up..."))
-  (when (gnus-yes-or-no-p "\
-Deleting parts may malfunction or destroy the article; continue? ")
+  (when (or gnus-expert-user
+	    (gnus-yes-or-no-p "\
+Deleting parts may malfunction or destroy the article; continue? "))
     (let* ((data (get-text-property (point) 'gnus-data))
 	   (handles gnus-article-mime-handles)
 	   (none "(none)")
