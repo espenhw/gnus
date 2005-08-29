@@ -1,3 +1,8 @@
+2005-08-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-edit-article): Added quiet argument.
+	(gnus-article-edit-part): Use it.
+
 2005-08-29  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-fun.el (gnus-convert-image-to-face-command): Fix typo in

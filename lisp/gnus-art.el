@@ -4164,7 +4164,8 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
 	(gnus-summary-edit-article-done
 	 ,(or (mail-header-references gnus-current-headers) "")
 	 ,(gnus-group-read-only-p)
-	 ,gnus-summary-buffer no-highlight)))
+	 ,gnus-summary-buffer no-highlight))
+     t)
     (gnus-article-edit-done)
     (gnus-summary-expand-window)
     (gnus-summary-show-article)
@@ -5819,7 +5820,7 @@ groups."
        ,(or (mail-header-references gnus-current-headers) "")
        ,(gnus-group-read-only-p) ,gnus-summary-buffer no-highlight))))
 
-(defun gnus-article-edit-article (start-func exit-func)
+(defun gnus-article-edit-article (start-func exit-func &optional quiet)
   "Start editing the contents of the current article buffer."
   (let ((winconf (current-window-configuration)))
     (set-buffer gnus-article-buffer)
@@ -5832,7 +5833,8 @@ groups."
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
     (setq gnus-prev-winconf winconf)
-    (gnus-message 6 "C-c C-c to end edits")))
+    (unless quiet
+      (gnus-message 6 "C-c C-c to end edits"))))
 
 (defun gnus-article-edit-done (&optional arg)
   "Update the article edits and exit."
