@@ -4111,14 +4111,17 @@ General format specifiers can also be used.  See Info node
   (interactive "P")
   (pop-to-buffer gnus-article-buffer)
   (let ((parts (length gnus-article-mime-handle-alist)))
-    (while (not (and (integerp n) (<= n parts) (>= n 1)))
-      (setq n (read-number
-	       (concat
-		(if n
-		    (format "`%s' is not a valid part.  " n)
-		  "")
-		(format	"Jump to part (2..%s): " parts))
-	       parts)))
+    (or n (setq n
+		(string-to-number
+		 (read-string ;; Emacs 21 doesn't have `read-number'.
+		  (format "Jump to part (2..%s): " parts)))))
+    (unless (and (integerp n) (<= n parts) (>= n 1))
+      (setq n
+	    (progn
+	      (gnus-message 7 "Invalid part `%s', using %s instead."
+			    n parts)
+	      parts)))
+    (gnus-message 9 "Jumping to part %s." n)
     (gnus-article-goto-part n)))
 
 (eval-when-compile

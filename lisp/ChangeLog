@@ -14,6 +14,8 @@
 	(gnus-article-edit-part, gnus-mime-save-part-and-strip)
 	(gnus-mime-delete-part): Allow selecting specified part after
 	deleting or stripping parts.
+	(gnus-article-jump-to-part): Don't use `read-number'.  Use last
+	part if argument is bogus.
 
 2005-08-22  Karl Chen  <quarl@cs.berkeley.edu>  (tiny change)
 
