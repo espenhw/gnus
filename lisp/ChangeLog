@@ -1,3 +1,9 @@
+2005-08-29  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-fun.el (gnus-convert-image-to-face-command): Fix typo in
+	docstring.
+	(gnus-face-from-file): Likewise.
+
 2005-08-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-mime-save-part-and-strip): Don't prompt.
