@@ -1,7 +1,14 @@
 2005-08-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-mime-map): Added
+	gnus-article-save-part-and-strip, gnus-article-delete-part and
+	gnus-article-jump-to-part.
+
 	* gnus-art.el (gnus-article-edit-article): Added quiet argument.
 	(gnus-article-edit-part): Use it.
+	(gnus-article-part-wrapper): Added no-handle argument.
+	(gnus-article-save-part-and-strip, gnus-article-delete-part): New
+	functions.
 
 2005-08-29  Romain Francoise  <romain@orebokech.com>
 

@@ -2072,6 +2072,9 @@ increase the score of each group you read."
   "m" gnus-summary-repair-multipart
   "v" gnus-article-view-part
   "o" gnus-article-save-part
+  "O" gnus-article-save-part-and-strip
+  "d" gnus-article-delete-part
+  "j" gnus-article-jump-to-part
   "c" gnus-article-copy-part
   "C" gnus-article-view-part-as-charset
   "e" gnus-article-view-part-externally

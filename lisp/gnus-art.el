@@ -4515,13 +4515,15 @@ If no internal viewer is available, use an external viewer."
     (if action-pair
 	(funcall (cdr action-pair)))))
 
-(defun gnus-article-part-wrapper (n function)
+(defun gnus-article-part-wrapper (n function &optional no-handle)
   (with-current-buffer gnus-article-buffer
     (when (> n (length gnus-article-mime-handle-alist))
       (error "No such part"))
     (gnus-article-goto-part n)
-    (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
-      (funcall function handle))))
+    (if no-handle
+	(funcall function)
+      (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
+	(funcall function handle)))))
 
 (defun gnus-article-pipe-part (n)
   "Pipe MIME part N, which is the numerical prefix."
@@ -4558,6 +4560,18 @@ N is the numerical prefix."
   "Inline MIME part N, which is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-inline-part))
+
+(defun gnus-article-save-part-and-strip (n)
+  "Save MIME part N and replace it with an external body.
+N is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-save-part-and-strip t))
+
+(defun gnus-article-delete-part (n)
+  "Delete MIME part N and add some information about the removed part.
+N is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-delete-part t))
 
 (defun gnus-article-mime-match-handle-first (condition)
   (if condition
