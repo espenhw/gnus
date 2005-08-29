@@ -3,6 +3,11 @@
 	* gnus-art.el (gnus-mime-save-part-and-strip): Don't prompt.
 	(gnus-mime-delete-part): Don't prompt if `gnus-expert-user' is
 	non-nil.
+	(gnus-auto-select-part): New variable.
+	(gnus-article-jump-to-part): New function.
+	(gnus-article-edit-part, gnus-mime-save-part-and-strip)
+	(gnus-mime-delete-part): Allow selecting specified part after
+	deleting or stripping parts.
 
 2005-08-22  Karl Chen  <quarl@cs.berkeley.edu>  (tiny change)
 
