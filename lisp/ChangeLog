@@ -1,3 +1,15 @@
+2005-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-save-part-and-strip): Clarify prompt.
+	Suggested by Dan Christensen <jdc@uwo.ca>.
+
+	* mm-decode.el (mm-save-part): Enable change of prompt.
+
+2005-08-29  Jari Aalto  <jari.aalto@cante.net>
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Made
+	`message-post-method' lambda parameter ARG `&optional'.
+
 2005-08-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-mime-map): Added
