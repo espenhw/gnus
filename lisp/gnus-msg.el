@@ -515,7 +515,7 @@ Gcc: header for archiving purposes."
     (gnus-make-local-hook 'message-header-hook)
     (add-hook 'message-header-hook 'gnus-agent-possibly-save-gcc nil t))
   (setq message-post-method
-	`(lambda (arg)
+	`(lambda (&optional arg)
 	   (gnus-post-method arg ,gnus-newsgroup-name)))
   (setq message-newsreader (setq message-mailer (gnus-extended-version)))
   (message-add-action
