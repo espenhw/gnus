@@ -4186,7 +4186,7 @@ The current article has a complicated MIME structure, giving up..."))
 	 (id (get-text-property (point) 'gnus-part))
 	 file param
 	 (handles gnus-article-mime-handles))
-    (setq file (and data (mm-save-part data)))
+    (setq file (and data (mm-save-part data "Delete MIME part and save to: ")))
     (when file
       (with-current-buffer (mm-handle-buffer data)
 	(erase-buffer)

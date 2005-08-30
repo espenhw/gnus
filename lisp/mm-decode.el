@@ -1092,8 +1092,9 @@ string if you do not like underscores."
   (setq filename (gnus-replace-in-string filename "[<>|]" ""))
   (gnus-replace-in-string filename "^[.-]+" ""))
 
-(defun mm-save-part (handle)
-  "Write HANDLE to a file."
+(defun mm-save-part (handle &optional prompt)
+  "Write HANDLE to a file.
+PROMPT overrides the default one used to ask user for a file name."
   (let* ((name (mail-content-type-get (mm-handle-type handle) 'name))
 	 (filename (mail-content-type-get
 		    (mm-handle-disposition handle) 'filename))
@@ -1103,7 +1104,7 @@ string if you do not like underscores."
 					(file-name-nondirectory filename))))
     (setq file
 	  (mm-with-multibyte
-	    (read-file-name "Save MIME part to: "
+	    (read-file-name (or prompt "Save MIME part to: ")
 			    (or mm-default-directory default-directory)
 			    nil nil (or filename name ""))))
     (setq mm-default-directory (file-name-directory file))
