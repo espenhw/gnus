@@ -4516,14 +4516,46 @@ If no internal viewer is available, use an external viewer."
 	(funcall (cdr action-pair)))))
 
 (defun gnus-article-part-wrapper (n function &optional no-handle)
-  (with-current-buffer gnus-article-buffer
-    (when (> n (length gnus-article-mime-handle-alist))
-      (error "No such part"))
-    (gnus-article-goto-part n)
-    (if no-handle
-	(funcall function)
-      (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
-	(funcall function handle)))))
+  (let (window)
+    ;; Check whether the article is displayed.
+    (unless (and (gnus-buffer-live-p gnus-article-buffer)
+		 (setq window (get-buffer-window gnus-article-buffer t))
+		 (frame-visible-p (window-frame window)))
+      (error "No article is displayed"))
+    (with-current-buffer gnus-article-buffer
+      ;; Check whether the article displays the right contents.
+      (unless (with-current-buffer gnus-summary-buffer
+		(eq gnus-current-article (gnus-summary-article-number)))
+	(error "You should select the right article first"))
+      ;; Check whether the specified part exists.
+      (when (> n (length gnus-article-mime-handle-alist))
+	(error "No such part")))
+    (unless
+	;; We point the cursor and the arrow at the MIME button
+	;; when the `function' prompt the user for something.
+	(save-window-excursion
+	  ;; To select the window is needed so that the cursor
+	  ;; might be visible on the MIME button.
+	  (select-window window)
+	  (when (gnus-article-goto-part n)
+	    (let ((cursor-in-non-selected-windows t) ;; Display cursor.
+		  (overlay-arrow-string "=>") ;; Display arrow.
+		  (overlay-arrow-position (point-marker)))
+	      (unwind-protect
+		  (if no-handle
+		      (funcall function)
+		    (funcall function
+			     (cdr (assq n gnus-article-mime-handle-alist))))
+		(set-marker overlay-arrow-position nil)))
+	    t))
+      (if gnus-inhibit-mime-unbuttonizing
+	  ;; This is the default though the program shouldn't reach here.
+	  (error "No such part")
+	;; The part which doesn't have the MIME button is selected.
+	;; So, we display all the buttons and redo it.
+	(let ((gnus-inhibit-mime-unbuttonizing t))
+	  (gnus-summary-show-article)
+	  (gnus-article-part-wrapper n function no-handle))))))
 
 (defun gnus-article-pipe-part (n)
   "Pipe MIME part N, which is the numerical prefix."

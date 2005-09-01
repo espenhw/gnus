@@ -1,3 +1,8 @@
+2005-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-part-wrapper): Error if there's no
+	valid article; point arrow and cursor at the MIME button.
+
 2005-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-save-part-and-strip): Clarify prompt.
