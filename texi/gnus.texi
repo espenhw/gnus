@@ -5140,10 +5140,10 @@ the server and display it in the article buffer.
 
 @item gnus-select-article-hook
 @vindex gnus-select-article-hook
-This hook is called whenever an article is selected.  By default it
-exposes any threads hidden under the selected article.  If you would
-like each article to be saved in the Agent as you read it, putting
-@code{gnus-agent-fetch-selected-article} on this hook will do so.
+This hook is called whenever an article is selected.  The default is
+@code{nil}.  If you would like each article to be saved in the Agent as
+you read it, putting @code{gnus-agent-fetch-selected-article} on this
+hook will do so.
 
 @item gnus-mark-article-hook
 @vindex gnus-mark-article-hook
@@ -5153,8 +5153,8 @@ like each article to be saved in the Agent as you read it, putting
 This hook is called whenever an article is selected.  It is intended to
 be used for marking articles as read.  The default value is
 @code{gnus-summary-mark-read-and-unread-as-read}, and will change the
-mark of almost any article you read to @code{gnus-unread-mark}.  The
-only articles not affected by this function are ticked, dormant, and
+mark of almost any article you read to @code{gnus-read-mark}.  The only
+articles not affected by this function are ticked, dormant, and
 expirable articles.  If you'd instead like to just have unread articles
 marked as read, you can use @code{gnus-summary-mark-unread-as-read}
 instead.  It will leave marks like @code{gnus-low-score-mark},
