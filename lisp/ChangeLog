@@ -1,5 +1,7 @@
 2005-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-sum.el (gnus-thread-hide-subtree): Dox fix.
+
 	* gnus-msg.el (gnus-inews-insert-gcc): Fix the mistake of using
 	list, not listp.
 
