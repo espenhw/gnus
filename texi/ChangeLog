@@ -1,3 +1,7 @@
+2005-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Choosing Variables): Fix descriptions.
+
 2005-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (time-date): Fix description of safe-date-to-time.
