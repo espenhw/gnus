@@ -1,3 +1,12 @@
+2005-09-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mm-encode.el (mm-encode-content-transfer-encoding): Likewise
+	when encoding.
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding):
+	De-canonicalize CRLF for all text content types, not just
+	text/plain.
+
 2005-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-part-wrapper): Error if there's no
