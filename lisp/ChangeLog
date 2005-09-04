@@ -1,5 +1,9 @@
 2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnweb.el (nnweb-type-definition, nnweb-google-wash-article):
+	Make fetching article by MID work again for Google Groups.  Added
+	FIXME concerning gnus-group-make-web-group.
+
 	* mml-smime.el (mml-smime-sign-query, mml-smime-get-dns-cert):
 	Don't depend on Gnus by using mail-extract-address-components if
 	gnus-extract-address-components is not bound.
