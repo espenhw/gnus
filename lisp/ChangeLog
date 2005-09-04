@@ -1,5 +1,9 @@
 2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml.el (mml-dnd-protocol-alist, mml-dnd-attach-options): New
+	variables.
+	(mml-dnd-attach-file, mml-mode): Use them.
+
 	* nnweb.el (nnweb-type-definition, nnweb-google-wash-article):
 	Make fetching article by MID work again for Google Groups.  Added
 	FIXME concerning gnus-group-make-web-group.
