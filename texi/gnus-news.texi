@@ -53,6 +53,8 @@ format=flowed messages.  Also, flowed text is disabled when sending
 inline @acronym{PGP} signed messages.
 
 @item You can now drag and drop attachments to the Message buffer.
+See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}
+@xref{MIME}.
 
 @item The option @code{message-yank-empty-prefix} now controls how
 empty lines are prefixed in cited text.

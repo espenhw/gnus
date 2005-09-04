@@ -812,8 +812,19 @@ automatically add the @code{Content-Type} and
 The most typical thing users want to use the multipart things in
 @acronym{MIME} for is to add ``attachments'' to mail they send out.
 This can be done with the @kbd{C-c C-a} command, which will prompt for
-a file name and a @acronym{MIME} type.  If your Emacs supports drag
-and drop, you can also drop the file in the Message buffer.
+a file name and a @acronym{MIME} type.
+
+@vindex mml-dnd-protocol-alist
+@vindex mml-dnd-attach-options
+If your Emacs supports drag and drop, you can also drop the file in the
+Message buffer.  The variable @code{mml-dnd-protocol-alist} specifies
+what kind of action is done when you drop a file into the Message
+buffer.  The variable @code{mml-dnd-attach-options} controls which
+@acronym{MIME} options you want to specify when dropping a file.  If it
+is a list, valid members are @code{type}, @code{description} and
+@code{disposition}.  @code{disposition} implies @code{type}.  If it is
+@code{nil}, don't ask for options.  If it is @code{t}, ask the user
+whether or not to specify options.
 
 You can also create arbitrarily complex multiparts using the @acronym{MML}
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME

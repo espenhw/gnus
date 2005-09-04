@@ -1,3 +1,10 @@
+2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.texi (MIME): Describe mml-dnd-protocol-alist and
+	mml-dnd-attach-options.
+
+	* gnus-news.texi: Added reference.
+
 2005-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Choosing Variables): Fix descriptions.
