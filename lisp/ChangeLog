@@ -1,3 +1,8 @@
+2005-09-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-security): Don't display the
+	signature, but only the signed part.
+
 2005-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-thread-hide-subtree): Doc fix.
