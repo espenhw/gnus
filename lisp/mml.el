@@ -940,7 +940,8 @@ See Info node `(emacs-mime)Composing'.
     (easy-menu-add mml-menu mml-mode-map)
     (when (boundp 'dnd-protocol-alist)
       (set (make-local-variable 'dnd-protocol-alist)
-	   (append mml-dnd-protocol-alist dnd-protocol-alist)))
+	   (append mml-dnd-protocol-alist
+		   (symbol-value 'dnd-protocol-alist))))
     (run-hooks 'mml-mode-hook)))
 
 ;;;

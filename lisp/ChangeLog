@@ -1,5 +1,7 @@
 2005-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mml.el (mml-mode): Silence the byte compiler.
+
 	* gnus-art.el (gnus-article-jump-to-part): Redisplay the article
 	using `(sit-for 0)' before moving the point to the specified part;
 	skip unbuttonized parts.
