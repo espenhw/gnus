@@ -54,7 +54,7 @@ inline @acronym{PGP} signed messages.
 
 @item You can now drag and drop attachments to the Message buffer.
 See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}
-@xref{MIME}.
+@xref{MIME, ,MIME, message, Message Manual}.
 
 @item The option @code{message-yank-empty-prefix} now controls how
 empty lines are prefixed in cited text.

@@ -1,3 +1,7 @@
+2005-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-news.texi: Fix reference.
+
 2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.texi (MIME): Describe mml-dnd-protocol-alist and
