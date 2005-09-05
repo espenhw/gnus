@@ -14014,7 +14014,8 @@ is to say where the incoming files will be stored if the variable
 Prefix for file name for storing incoming mail.  The default is
 @file{Incoming}, in which case files will end up with names like
 @file{Incoming30630D_} or @file{Incoming298602ZD}.  This is really only
-relevant if @code{mail-source-delete-incoming} is @code{nil}.
+relevant if @code{mail-source-delete-incoming} is @code{nil} or a
+number.
 
 @item mail-source-default-file-modes
 @vindex mail-source-default-file-modes

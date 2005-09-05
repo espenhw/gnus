@@ -4,6 +4,9 @@
 
 2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi (Mail Source Customization): Fix descriptions of
+	mail-source-incoming-file-prefix.
+
 	* message.texi (MIME): Describe mml-dnd-protocol-alist and
 	mml-dnd-attach-options.
 
