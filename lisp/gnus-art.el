@@ -29,7 +29,8 @@
 
 (eval-when-compile
   (require 'cl)
-  (defvar tool-bar-map))
+  (defvar tool-bar-map)
+  (defvar w3m-minor-mode-map))
 
 (require 'gnus)
 ;; Avoid the "Recursive load suspected" error in Emacs 21.1.

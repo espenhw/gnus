@@ -37,6 +37,8 @@
   (autoload 'mm-inline-external-body "mm-extern")
   (autoload 'mm-insert-inline "mm-view"))
 
+(defvar gnus-current-window-configuration)
+
 (add-hook 'gnus-exit-gnus-hook 'mm-destroy-postponed-undisplay-list)
 
 (defgroup mime-display ()
