@@ -1,3 +1,11 @@
+2005-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-jump-to-part): Redisplay the article
+	using `(sit-for 0)' before moving the point to the specified part;
+	skip unbuttonized parts.
+	(gnus-article-part-wrapper): Don't use save-window-excursion; don't
+	return to the summary window if gnus-auto-select-part is non-nil.
+
 2005-09-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-dnd-protocol-alist, mml-dnd-attach-options): New

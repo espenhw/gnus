@@ -4110,6 +4110,8 @@ General format specifiers can also be used.  See Info node
   "Jump to MIME part N."
   (interactive "P")
   (pop-to-buffer gnus-article-buffer)
+  ;; FIXME: why is it necessary?
+  (sit-for 0)
   (let ((parts (length gnus-article-mime-handle-alist)))
     (or n (setq n
 		(string-to-number
@@ -4122,7 +4124,16 @@ General format specifiers can also be used.  See Info node
 			    n parts)
 	      parts)))
     (gnus-message 9 "Jumping to part %s." n)
-    (gnus-article-goto-part n)))
+    (cond ((>= gnus-auto-select-part 1)
+	   (while (and (<= n parts)
+		       (not (gnus-article-goto-part n)))
+	     (setq n (1+ n))))
+	  ((< gnus-auto-select-part 0)
+	   (while (and (>= n 1)
+		       (not (gnus-article-goto-part n)))
+	     (setq n (1- n))))
+	  (t
+	   (gnus-article-goto-part n)))))
 
 (eval-when-compile
   (defsubst gnus-article-edit-part (handles &optional current-id)
@@ -4516,11 +4527,11 @@ If no internal viewer is available, use an external viewer."
 	(funcall (cdr action-pair)))))
 
 (defun gnus-article-part-wrapper (n function &optional no-handle)
-  (let (window)
+  (let (window frame)
     ;; Check whether the article is displayed.
     (unless (and (gnus-buffer-live-p gnus-article-buffer)
 		 (setq window (get-buffer-window gnus-article-buffer t))
-		 (frame-visible-p (window-frame window)))
+		 (frame-visible-p (setq frame (window-frame window))))
       (error "No article is displayed"))
     (with-current-buffer gnus-article-buffer
       ;; Check whether the article displays the right contents.
@@ -4531,22 +4542,32 @@ If no internal viewer is available, use an external viewer."
       (when (> n (length gnus-article-mime-handle-alist))
 	(error "No such part")))
     (unless
-	;; We point the cursor and the arrow at the MIME button
-	;; when the `function' prompt the user for something.
-	(save-window-excursion
+	(progn
 	  ;; To select the window is needed so that the cursor
 	  ;; might be visible on the MIME button.
-	  (select-window window)
+	  (select-window (prog1
+			     window
+			   (setq window (selected-window))
+			   ;; Article may be displayed in the other frame.
+			   (gnus-select-frame-set-input-focus
+			    (prog1
+				frame
+			      (setq frame (selected-frame))))))
 	  (when (gnus-article-goto-part n)
-	    (let ((cursor-in-non-selected-windows t) ;; Display cursor.
-		  (overlay-arrow-string "=>") ;; Display arrow.
+	    ;; We point the cursor and the arrow at the MIME button
+	    ;; when the `function' prompt the user for something.
+	    (let ((cursor-in-non-selected-windows t)
+		  (overlay-arrow-string "=>")
 		  (overlay-arrow-position (point-marker)))
 	      (unwind-protect
 		  (if no-handle
 		      (funcall function)
 		    (funcall function
 			     (cdr (assq n gnus-article-mime-handle-alist))))
-		(set-marker overlay-arrow-position nil)))
+		(set-marker overlay-arrow-position nil)
+		(unless gnus-auto-select-part
+		  (gnus-select-frame-set-input-focus frame)
+		  (select-window window))))
 	    t))
       (if gnus-inhibit-mime-unbuttonizing
 	  ;; This is the default though the program shouldn't reach here.
