@@ -41,7 +41,8 @@ format=flowed messages.  Also, flowed text is disabled when sending
 inline PGP signed messages.
 
 ** You can now drag and drop attachments to the Message buffer.  See
-`mml-dnd-protocol-alist' and `mml-dnd-attach-options' *Note MIME::.
+`mml-dnd-protocol-alist' and `mml-dnd-attach-options' *Note MIME:
+(message)MIME.
 
 ** The option `message-yank-empty-prefix' now controls how empty lines
 are prefixed in cited text.  *Note (message)Insertion Variables::.
@@ -53,7 +54,7 @@ articles (`gnus-article-treat-ansi-sequences').
 
 ** International host names (IDNA) can now be decoded inside article
 bodies using `W i' (`gnus-summary-idna-message').  This require that
-GNU Libidn (<http://www.gnu.org/software/libidn/>) has been installed.
+GNU Libidn (`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus includes an Emacs Lisp SASL library.
 
