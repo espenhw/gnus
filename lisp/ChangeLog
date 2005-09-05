@@ -1,3 +1,15 @@
+2005-09-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-tab-body-function): Fixed mismatched custom
+	type.
+
+	* gnus.el (gnus-group-change-level-function): Ditto.
+
+	* gnus-msg.el (gnus-outgoing-message-group):  Ditto.
+
+	* gnus-art.el (gnus-signature-limit)
+	(gnus-article-mime-part-function): Ditto.
+
 2005-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-mode): Silence the byte compiler.

@@ -2387,7 +2387,8 @@ following hook:
   "Function run when a group level is changed.
 It is called with three parameters -- GROUP, LEVEL and OLDLEVEL."
   :group 'gnus-group-levels
-  :type 'function)
+  :type '(choice (const nil)
+		 function))
 
 ;;; Face thingies.
 

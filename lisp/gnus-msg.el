@@ -67,8 +67,10 @@ message in, you can set this variable to a function that checks the
 current newsgroup name and then returns a suitable group name (or list
 of names)."
   :group 'gnus-message
-  :type '(choice (string :tag "Group")
-		 (function)))
+  :type '(choice (const nil)
+		 (function)
+		 (string :tag "Group")
+		 (repeat :tag "List of groups" (string :tag "Group"))))
 
 (defcustom gnus-mailing-list-groups nil
   "*If non-nil a regexp matching groups that are really mailing lists.
