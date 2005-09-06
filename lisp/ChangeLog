@@ -1,5 +1,7 @@
 2005-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-view.el (mm-display-inline-fontify): Disable support modes.
+
 	* lpath.el: Don't bind mc-pgp-always-sign, url-current-object,
 	url-package-name, url-package-version,
 	w3m-cid-retrieve-function-alist, w3m-current-buffer,
