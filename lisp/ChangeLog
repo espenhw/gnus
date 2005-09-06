@@ -1,3 +1,10 @@
+2005-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Don't bind mc-pgp-always-sign, url-current-object,
+	url-package-name, url-package-version,
+	w3m-cid-retrieve-function-alist, w3m-current-buffer,
+	w3m-display-inline-images, and w3m-minor-mode-map.
+
 2005-09-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-tab-body-function): Fixed mismatched custom
@@ -5,7 +12,7 @@
 
 	* gnus.el (gnus-group-change-level-function): Ditto.
 
-	* gnus-msg.el (gnus-outgoing-message-group):  Ditto.
+	* gnus-msg.el (gnus-outgoing-message-group): Ditto.
 
 	* gnus-art.el (gnus-signature-limit)
 	(gnus-article-mime-part-function): Ditto.

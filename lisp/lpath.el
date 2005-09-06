@@ -22,13 +22,9 @@
 	       vcard-pretty-print w32-focus-frame w3m-detect-meta-charset
 	       w3m-region x-focus-frame))
 (maybe-bind '(eudc-protocol
-	      filladapt-mode mc-pgp-always-sign
-	      rmail-insert-mime-forwarded-message-function url-current-object
-	      url-package-name url-package-version
+	      filladapt-mode rmail-insert-mime-forwarded-message-function
 	      w3-meta-charset-content-type-regexp
-	      w3-meta-content-type-charset-regexp
-	      w3m-cid-retrieve-function-alist w3m-current-buffer
-	      w3m-display-inline-images w3m-minor-mode-map))
+	      w3-meta-content-type-charset-regexp))
 
 (if (featurep 'xemacs)
     (progn
