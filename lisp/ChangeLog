@@ -1,5 +1,8 @@
 2005-09-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-thread-sort-by-recipient): New function to
+	make `gnus-summary-sort-by-recipient' work with threading.
+
 	* nnweb.el (nnweb-google-wash-article): Print a message if article
 	is not available.
 

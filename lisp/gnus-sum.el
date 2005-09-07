@@ -780,20 +780,21 @@ Each list item can also be a list `(not F)' where F is a
 function; this specifies reversed sort order.
 
 Ready-made functions include `gnus-thread-sort-by-number',
-`gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
-`gnus-thread-sort-by-date', `gnus-thread-sort-by-score',
-`gnus-thread-sort-by-most-recent-number',
-`gnus-thread-sort-by-most-recent-date',
-`gnus-thread-sort-by-random', and
-`gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').
+`gnus-thread-sort-by-author', `gnus-thread-sort-by-recipient'
+`gnus-thread-sort-by-subject', `gnus-thread-sort-by-date',
+`gnus-thread-sort-by-score', `gnus-thread-sort-by-most-recent-number',
+`gnus-thread-sort-by-most-recent-date', `gnus-thread-sort-by-random',
+and `gnus-thread-sort-by-total-score' (see
+`gnus-thread-score-function').
 
 When threading is turned off, the variable
 `gnus-article-sort-functions' controls how articles are sorted."
   :group 'gnus-summary-sort
-  :type '(repeat 
+  :type '(repeat
           (gnus-widget-reversible
            (choice (function-item gnus-thread-sort-by-number)
                    (function-item gnus-thread-sort-by-author)
+                   (function-item gnus-thread-sort-by-recipient)
                    (function-item gnus-thread-sort-by-subject)
                    (function-item gnus-thread-sort-by-date)
                    (function-item gnus-thread-sort-by-score)
@@ -4603,6 +4604,11 @@ using some other form will lead to serious barfage."
 		   gnus-extract-address-components
 		   (or (cdr (assq 'To (mail-header-extra h2))) ""))))
      (or (car extract) (cadr extract)))))
+
+(defun gnus-thread-sort-by-recipient (h1 h2)
+  "Sort threads by root recipient."
+  (gnus-article-sort-by-recipient
+   (gnus-thread-header h1) (gnus-thread-header h2)))
 
 (defsubst gnus-article-sort-by-subject (h1 h2)
   "Sort articles by root subject."
