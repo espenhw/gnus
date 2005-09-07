@@ -1,3 +1,8 @@
+2005-09-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnweb.el (nnweb-google-wash-article): Print a message if article
+	is not available.
+
 2005-09-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* gnus-art.el (gnus-mime-display-single): Revert 2004-10-07
