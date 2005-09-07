@@ -7011,7 +7011,7 @@ Matching}).
 @findex gnus-thread-sort-by-score
 @findex gnus-thread-sort-by-subject
 @findex gnus-thread-sort-by-author
-@c @findex gnus-thread-sort-by-recipient
+@findex gnus-thread-sort-by-recipient
 @findex gnus-thread-sort-by-number
 @findex gnus-thread-sort-by-random
 @vindex gnus-thread-sort-functions
@@ -7024,8 +7024,9 @@ function, a list of functions, or a list containing functions and
 
 By default, sorting is done on article numbers.  Ready-made sorting
 predicate functions include @code{gnus-thread-sort-by-number},
-@code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
-@code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score},
+@code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-recipient},
+@code{gnus-thread-sort-by-subject}, @code{gnus-thread-sort-by-date},
+@code{gnus-thread-sort-by-score},
 @code{gnus-thread-sort-by-most-recent-number},
 @code{gnus-thread-sort-by-most-recent-date},
 @code{gnus-thread-sort-by-random} and

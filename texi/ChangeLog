@@ -1,3 +1,8 @@
+2005-09-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Sorting the Summary Buffer): Added
+	gnus-thread-sort-by-recipient.
+
 2005-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-news.texi: Fix reference.
