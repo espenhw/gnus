@@ -1,3 +1,8 @@
+2005-09-10  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-uu.el (gnus-message-process-mark): Use gnus-message.
+	(gnus-uu-mark-series): Likewise.
+
 2005-09-10  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags): Make the default

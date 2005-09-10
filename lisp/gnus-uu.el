@@ -539,19 +539,19 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defun gnus-message-process-mark (unmarkp new-marked)
   (let ((old (- (length gnus-newsgroup-processable) (length new-marked))))
-    (message "%d mark%s %s%s"
-	     (length new-marked)
-	     (if (= (length new-marked) 1) "" "s")
-	     (if unmarkp "removed" "added")
-	     (cond
-	      ((and (zerop old)
-		    (not unmarkp))
-	       "")
-	      (unmarkp
-	       (format ", %d remain marked"
-		       (length gnus-newsgroup-processable)))
-	      (t
-	       (format ", %d already marked" old))))))
+    (gnus-message 6 "%d mark%s %s%s"
+		  (length new-marked)
+		  (if (= (length new-marked) 1) "" "s")
+		  (if unmarkp "removed" "added")
+		  (cond
+		   ((and (zerop old)
+			 (not unmarkp))
+		    "")
+		   (unmarkp
+		    (format ", %d remain marked"
+			    (length gnus-newsgroup-processable)))
+		   (t
+		    (format ", %d already marked" old))))))
 
 (defun gnus-new-processable (unmarkp articles)
   (if unmarkp
@@ -587,7 +587,7 @@ When called interactively, prompt for REGEXP."
     (while articles
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
-    (message "Marked %d articles" l))
+    (gnus-message 6 "Marked %d articles" l))
   (gnus-summary-position-point))
 
 (defun gnus-uu-mark-region (beg end &optional unmark)
