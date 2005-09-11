@@ -15126,7 +15126,15 @@ The name of the @dfn{marks} files.  The default is @file{.marks}.
 @item nnml-use-compressed-files
 @vindex nnml-use-compressed-files
 If non-@code{nil}, @code{nnml} will allow using compressed message
-files.
+files.  This variable requires @code{auto-compression-mode} to be
+enabled (@pxref{Compressed Files, ,Compressed Files, emacs, The Emacs
+Manual})
+
+@item nnml-compressed-files-size-threshold
+@vindex nnml-compressed-files-size-threshold
+Default size threshold for compressed message files.  Message files with
+bodies larger than that many characters will be automatically compressed
+if @code{nnml-use-compressed-files} is non-nil.
 
 @end table
 

@@ -1,3 +1,9 @@
+2005-09-11  Romain Francoise  <romain@orebokech.com>
+
+	* gnus.texi (Mail Spool): Mention that `nnml-use-compressed-files'
+	requires `auto-compression-mode' to be enabled.  Add new nnml
+	variable `nnml-compressed-files-size-threshold'.
+
 2005-09-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Sorting the Summary Buffer): Added
