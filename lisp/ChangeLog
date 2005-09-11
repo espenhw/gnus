@@ -1,5 +1,12 @@
 2005-09-11  Romain Francoise  <romain@orebokech.com>
 
+	* message.el (message-alternative-emails): Improve docstring.
+	(message-setup-1): Call `message-use-alternative-email-as-from'
+	after `message-setup-hook' to give it precedence over posting
+	styles, etc.
+	(message-use-alternative-email-as-from): Add docstring.  Remove
+	the original From header if present.
+
 	* nnml.el (nnml-compressed-files-size-threshold): New variable.
 	(nnml-save-mail): Use it.
 

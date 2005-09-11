@@ -1425,8 +1425,13 @@ should be sent in several parts.  If it is nil, the size is unlimited."
 		 (integer 1000000)))
 
 (defcustom message-alternative-emails nil
-  "A regexp to match the alternative email addresses.
-The first matched address (not primary one) is used in the From field."
+  "*Regexp matching alternative email addresses.
+The first address in the To, Cc or From headers of the original
+article matching this variable is used as the From field of
+outgoing messages.
+
+This variable has precedence over posting styles and anything that runs
+off `message-setup-hook'."
   :group 'message-headers
   :link '(custom-manual "(message)Message Headers")
   :type '(choice (const :tag "Always use primary" nil)
@@ -5605,10 +5610,6 @@ are not included."
     (when message-default-mail-headers
       (insert message-default-mail-headers)
       (or (bolp) (insert ?\n)))
-    (save-restriction
-      (message-narrow-to-headers)
-      (if message-alternative-emails
-	  (message-use-alternative-email-as-from)))
     (when message-generate-headers-first
       (message-generate-headers
        (message-headers-to-generate
@@ -5627,6 +5628,12 @@ are not included."
     ;; Generate hashcash headers for recipients already known
     (mail-add-payment-async))
   (run-hooks 'message-setup-hook)
+  ;; Do this last to give it precedence over posting styles, etc.
+  (when (message-mail-p)
+    (save-restriction
+      (message-narrow-to-headers)
+      (if message-alternative-emails
+	  (message-use-alternative-email-as-from))))
   (message-position-point)
   (undo-boundary))
 
@@ -6914,6 +6921,9 @@ regexp VARSTR."
       (read-string prompt initial-contents))))
 
 (defun message-use-alternative-email-as-from ()
+  "Set From field of the outgoing message to the first matching
+address in `message-alternative-emails', looking at To, Cc and
+From headers in the original article."
   (require 'mail-utils)
   (let* ((fields '("To" "Cc" "From"))
 	 (emails
@@ -6928,6 +6938,7 @@ regexp VARSTR."
 		emails nil))
       (pop emails))
     (unless (or (not email) (equal email user-mail-address))
+      (message-remove-header "From")
       (goto-char (point-max))
       (insert "From: " (let ((user-mail-address email)) (message-make-from))
 	      "\n"))))
