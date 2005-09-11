@@ -1,7 +1,10 @@
 2005-09-11  Romain Francoise  <romain@orebokech.com>
 
+	* nnml.el (nnml-compressed-files-size-threshold): New variable.
+	(nnml-save-mail): Use it.
+
 	* gnus-uu.el (gnus-uu-mark-series): Return number of marked
-	articles.  New argument `silent'.
+	articles.  Add new argument `silent'.
 	(gnus-uu-mark-all): Report the total number of marked articles.
 
 2005-09-10  Romain Francoise  <romain@orebokech.com>

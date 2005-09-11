@@ -85,6 +85,12 @@ marks file will be regenerated properly by Gnus.")
 (defvoo nnml-use-compressed-files nil
   "If non-nil, allow using compressed message files.")
 
+(defvoo nnml-compressed-files-size-threshold 1000
+  "Default size threshold for compressed message files.
+Message files with bodies larger than that many characters will
+be automatically compressed if `nnml-use-compressed-files' is
+non-nil.")
+
 
 
 (defconst nnml-version "nnml 1.0"
@@ -622,7 +628,7 @@ marks file will be regenerated properly by Gnus.")
     (setq chars (nnmail-insert-lines))
     (setq extension
          (and nnml-use-compressed-files
-              (> chars 1000)
+	      (> chars nnml-compressed-files-size-threshold)
               ".gz"))
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmail-prepare-save-mail-hook)
