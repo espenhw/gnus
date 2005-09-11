@@ -1,5 +1,8 @@
 2005-09-11  Romain Francoise  <romain@orebokech.com>
 
+	* message.texi (Message Headers): Explain what
+	`message-alternative-emails' does in more detail.
+
 	* gnus.texi (Mail Spool): Mention that `nnml-use-compressed-files'
 	requires `auto-compression-mode' to be enabled.  Add new nnml
 	variable `nnml-compressed-files-size-threshold'.
