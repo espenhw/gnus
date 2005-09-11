@@ -150,7 +150,9 @@ Reports is as ham when HAM is set."
 			 (match-string 1 field)))
 	    (setq report (match-string 2 field))
 	    (when (string-equal "permalink.gmane.org" host)
-	      (setq host "spam.gmane.org"))
+	      (setq host "spam.gmane.org")
+	      (setq report (gnus-replace-in-string
+			    report "/\\([0-9]+\\)$" ":\\1")))
 	    (setq url (format "http://%s%s" host report))
 	    (if (not (and host report url))
 		(gnus-message
