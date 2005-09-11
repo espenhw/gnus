@@ -1,3 +1,7 @@
+2005-09-11  Jari Aalto  <jari.aalto@cante.net>
+
+	* html2text.el: (html2text-replace-list): Add new entities.
+
 2005-09-11  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-alternative-emails): Improve docstring.
