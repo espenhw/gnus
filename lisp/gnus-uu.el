@@ -579,16 +579,18 @@ When called interactively, prompt for REGEXP."
   (interactive "sUnmark (regexp): ")
   (gnus-uu-mark-by-regexp regexp t))
 
-(defun gnus-uu-mark-series ()
+(defun gnus-uu-mark-series (&optional silent)
   "Mark the current series with the process mark."
   (interactive)
   (let* ((articles (gnus-uu-find-articles-matching))
-         (l (length articles)))
+	 (l (length articles)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
-    (gnus-message 6 "Marked %d articles" l))
-  (gnus-summary-position-point))
+    (unless silent
+      (gnus-message 6 "Marked %d articles" l))
+    (gnus-summary-position-point)
+    l))
 
 (defun gnus-uu-mark-region (beg end &optional unmark)
   "Set the process mark on all articles between point and mark."
@@ -696,14 +698,16 @@ When called interactively, prompt for REGEXP."
   (setq gnus-newsgroup-processable nil)
   (save-excursion
     (let ((data gnus-newsgroup-data)
+	  (count 0)
 	  number)
       (while data
 	(when (and (not (memq (setq number (gnus-data-number (car data)))
 			      gnus-newsgroup-processable))
 		   (vectorp (gnus-data-header (car data))))
 	  (gnus-summary-goto-subject number)
-	  (gnus-uu-mark-series))
-	(setq data (cdr data)))))
+	  (setq count (+ count (gnus-uu-mark-series t))))
+	(setq data (cdr data)))
+      (gnus-message 6 "Marked %d articles" count)))
   (gnus-summary-position-point))
 
 ;; All PostScript functions written by Erik Selberg <speed@cs.washington.edu>.
