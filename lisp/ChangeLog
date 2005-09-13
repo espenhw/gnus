@@ -1,3 +1,8 @@
+2005-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Remove text props
+	before parsing header.
+
 2005-09-11  Jari Aalto  <jari.aalto@cante.net>
 
 	* html2text.el: (html2text-replace-list): Add new entities.
