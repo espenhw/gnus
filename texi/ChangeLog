@@ -1,3 +1,8 @@
+2005-09-14  Jari Aalto  <jari.aalto@cante.net>
+
+	* gnus.texi (Advanced Scoring Examples): New exmples to teach how
+	to drop off non-answered articles.
+
 2005-09-11  Romain Francoise  <romain@orebokech.com>
 
 	* message.texi (Message Headers): Explain what
