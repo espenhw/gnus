@@ -1,3 +1,7 @@
+2005-09-15  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-fill-paragraph): Clarify docstring.
+
 2005-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-display-part): Protect against broken

@@ -2994,7 +2994,9 @@ Prefix arg means justify as well."
       (if point (goto-char point)))))
 
 (defun message-fill-paragraph (&optional arg)
-  "Like `fill-paragraph'."
+  "Message specific function to fill a paragraph.
+This function is used as the value of `fill-paragraph-function' in
+Message buffers and is not meant to be called directly."
   (interactive (list (if current-prefix-arg 'full)))
   (if (if (boundp 'filladapt-mode) filladapt-mode)
       nil
