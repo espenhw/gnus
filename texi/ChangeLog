@@ -1,3 +1,8 @@
+2005-09-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Finding the Parent): Fix description of how Gnus
+	finds article.
+
 2005-09-14  Jari Aalto  <jari.aalto@cante.net>
 
 	* gnus.texi (Advanced Scoring Examples): New exmples to teach how
