@@ -1,3 +1,7 @@
+2005-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-group-startup-message): Bind image-load-path.
+
 2005-09-15  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-fill-paragraph): Clarify docstring.
