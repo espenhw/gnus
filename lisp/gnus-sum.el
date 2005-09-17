@@ -4730,33 +4730,39 @@ If nil, use subject instead."
   :version "22.1"
   :type '(radio (const :format "%v  " nil) string)
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-false-root "> "
   "With %B spec, used for a false root of a thread.
 If nil, use subject instead."
   :version "22.1"
   :type '(radio (const :format "%v  " nil) string)
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-single-indent ""
   "With %B spec, used for a thread with just one message.
 If nil, use subject instead."
   :version "22.1"
   :type '(radio (const :format "%v  " nil) string)
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-vertical "| "
   "With %B spec, used for drawing a vertical line."
   :version "22.1"
   :type 'string
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-indent "  "
   "With %B spec, used for indenting."
   :version "22.1"
   :type 'string
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-leaf-with-other "+-> "
   "With %B spec, used for a leaf with brothers."
   :version "22.1"
   :type 'string
   :group 'gnus-thread)
+
 (defcustom gnus-sum-thread-tree-single-leaf "\\-> "
   "With %B spec, used for a leaf without brothers."
   :version "22.1"
