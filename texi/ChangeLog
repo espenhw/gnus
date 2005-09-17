@@ -1,3 +1,10 @@
+2005-09-17  Romain Francoise  <romain@orebokech.com>
+
+	Update all files to specify GFDL version 1.2.
+
+	* doclicense.texi (GNU Free Documentation License): Update to
+	version 1.2.
+
 2005-09-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Finding the Parent): Fix description of how Gnus
