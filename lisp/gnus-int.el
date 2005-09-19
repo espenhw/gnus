@@ -333,6 +333,23 @@ name.  The method this group uses will be queried."
   (funcall (gnus-get-function gnus-command-method 'request-regenerate)
 	   (nth 1 gnus-command-method)))
 
+(defun gnus-request-compact-group (group)
+  (let* ((method (gnus-find-method-for-group group))
+	 (gnus-command-method method)
+	 (result
+	  (funcall (gnus-get-function gnus-command-method
+				      'request-compact-group)
+		   (gnus-group-real-name group)
+		   (nth 1 gnus-command-method) t)))
+    result))
+
+(defun gnus-request-compact (gnus-command-method)
+  "Request groups compaction  from GNUS-COMMAND-METHOD."
+  (when (stringp gnus-command-method)
+    (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
+  (funcall (gnus-get-function gnus-command-method 'request-compact)
+	   (nth 1 gnus-command-method)))
+
 (defun gnus-request-group (group &optional dont-check gnus-command-method)
   "Request GROUP.  If DONT-CHECK, no information is required."
   (let ((gnus-command-method

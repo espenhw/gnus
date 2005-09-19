@@ -20,8 +20,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -387,7 +387,7 @@ ticked: The number of ticked articles."
   :type 'character)
 
 (defgroup gnus-group-icons nil
-  "Add Icons to your group buffer."
+  "Add Icons to your group buffer.  "
   :group 'gnus-group-visual)
 
 (defcustom gnus-group-icon-list
@@ -657,6 +657,7 @@ simple manner.")
   "r" gnus-group-rename-group
   "R" gnus-group-make-rss-group
   "c" gnus-group-customize
+  "z" gnus-group-compact-group
   "x" gnus-group-nnimap-expunge
   "\177" gnus-group-delete-group
   [delete] gnus-group-delete-group)
@@ -835,6 +836,8 @@ simple manner.")
 	(gnus-group-group-name)]
        ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
        ["Customize" gnus-group-customize (gnus-group-group-name)]
+       ["Compact" gnus-group-compact-group
+	:active (gnus-group-group-name)]
        ("Edit"
 	["Parameters" gnus-group-edit-group-parameters
 	 :included (not (gnus-topic-mode-p))
@@ -4338,6 +4341,32 @@ This command may read the active file."
       (when (gnus-group-auto-expirable-p group)
 	(gnus-add-marked-articles
 	 group 'expire (list article))))))
+
+
+;;;
+;;; Group compaction
+;;;
+
+(defun gnus-group-compact-group (group)
+  "Conpact the current group.
+Compaction means removing gaps between article numbers.  Hence, this
+operation is only meaningful for back ends using one file per article
+\(e.g. nnml)."
+  (interactive (list (gnus-group-group-name)))
+  (unless group
+    (error "No group to compact"))
+  (unless (gnus-check-backend-function 'request-compact-group group)
+    (error "This back end does not support group compaction"))
+  (let ((group-decoded (gnus-group-decoded-name group)))
+    (gnus-message 6 "\
+Compacting group %s... (this may take a long time)"
+		  group-decoded)
+    (prog1
+	(if (not (gnus-request-compact-group group))
+	    (gnus-error 3 "Couldn't compact group %s" group-decoded)
+	  (gnus-message 6 "Compacting group %s...done" group-decoded)
+	  t)
+      (gnus-group-update-group-line))))
 
 (provide 'gnus-group)
 

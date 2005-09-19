@@ -1,8 +1,22 @@
+2005-09-19  Didier Verna  <didier@xemacs.org>
+
+	The nnml compaction feature:
+	* nnml.el (nnml-request-compact-group): New function.
+	* nnml.el (nnml-request-compact): New function.
+	* gnus-int.el (gnus-request-compact-group): New function.
+	* gnus-int.el (gnus-request-compact): New function.
+	* gnus-group.el (gnus-group-compact-group): New function.
+	* gnus-group.el (gnus-group-group-map): Bind it to 'G z'.
+	* gnus-group.el (gnus-group-make-menu-bar): Add an entry for it.
+	* gnus-srvr.el (gnus-server-compact-server): New function.
+	* gnus-srvr.el (gnus-server-mode-map): Bind it to 'z'.
+	* gnus-srvr.el (gnus-server-make-menu-bar): Add an entry for it.
+
 2005-09-18  D Goel  <deego@gnufans.org>
 
 	* sieve.el (sieve-help): Fix `message' call: first arg should be a
 	format spec.
-	
+
 2005-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-group-startup-message): Bind image-load-path.

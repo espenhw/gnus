@@ -20,8 +20,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -116,6 +116,7 @@ If nil, a faster, but more primitive, buffer is used instead."
        ["Copy" gnus-server-copy-server t]
        ["Edit" gnus-server-edit-server t]
        ["Regenerate" gnus-server-regenerate-server t]
+       ["Compact" gnus-server-compact-server t]
        ["Exit" gnus-server-exit t]))
 
     (easy-menu-define
@@ -164,6 +165,8 @@ If nil, a faster, but more primitive, buffer is used instead."
     "p" previous-line
 
     "g" gnus-server-regenerate-server
+
+    "z" gnus-server-compact-server
 
     "\C-c\C-i" gnus-info-find-node
     "\C-c\C-b" gnus-bug))
@@ -1011,6 +1014,33 @@ If NUMBER, fetch this number of articles."
     (if (gnus-request-regenerate server)
 	(gnus-message 5 "Requesting regeneration of %s...done" server)
       (gnus-message 5 "Couldn't regenerate %s" server))))
+
+
+;;;
+;;; Server compaction
+;;;
+
+;; #### FIXME: this function currently fails to update the Group buffer's
+;; #### FIXME: appearance. -- dvl
+(defun gnus-server-compact-server ()
+  "Issue a command to the server to compact all its groups."
+  (interactive)
+  (let ((server (gnus-server-server-name)))
+    (unless server
+      (error "No server on the current line"))
+    (condition-case ()
+	(gnus-get-function (gnus-server-to-method server)
+			   'request-compact)
+      (error
+       (error "This back end doesn't support compaction")))
+    (gnus-message 5 "\
+Requesting compaction of %s... (this may take a long time)"
+		  server)
+    (unless (gnus-open-server server)
+      (error "Couldn't open server"))
+    (if (gnus-request-compact server)
+	(gnus-message 5 "Requesting compaction of %s...done" server)
+      (gnus-message 5 "Couldn't compact %s" server))))
 
 (provide 'gnus-srvr)
 

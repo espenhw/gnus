@@ -3,8 +3,9 @@
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
 ;;   2004, 2005 Free Software Foundation, Inc.
 
-;; Author: Simon Josefsson <simon@josefsson.org> (adding MARKS)
-;;      Lars Magne Ingebrigtsen <larsi@gnus.org>
+;; Authors: Didier Verna <didier@xemacs.org> (adding compaction)
+;;	Simon Josefsson <simon@josefsson.org> (adding MARKS)
+;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -376,7 +377,7 @@ non-nil.")
   (nnmail-check-syntax)
   (let (result)
     (when nnmail-cache-accepted-message-ids
-      (nnmail-cache-insert (nnmail-fetch-field "message-id") 
+      (nnmail-cache-insert (nnmail-fetch-field "message-id")
 			   group
 			   (nnmail-fetch-field "subject")
 			   (nnmail-fetch-field "from")))
@@ -1014,6 +1015,145 @@ Use the nov database for the current group if available."
 	  (setq nnml-marks (gnus-remassoc el nnml-marks)))
 	(nnml-save-marks group server)
 	(nnheader-message 7 "Bootstrapping marks for %s...done" group)))))
+
+
+;;;
+;;; Group and server compaction
+;;;
+
+(defun nnml-request-compact-group (group &optional server save)
+  (nnml-possibly-change-directory group server)
+  (unless nnml-article-file-alist
+    (setq nnml-article-file-alist
+	  (sort (nnml-current-group-article-to-file-alist)
+		'car-less-than-car)))
+  (if (not nnml-article-file-alist)
+      ;; The group is empty: do nothing but return t
+      t
+    ;; The group is not empty:
+    (let* ((group-full-name
+	    (gnus-group-prefixed-name
+	     group
+	     (gnus-server-to-method (format "nnml:%s" server))))
+	   (info (gnus-get-info group-full-name))
+	   (new-number 1)
+	   compacted)
+      (let ((articles nnml-article-file-alist)
+	    article)
+	(while (setq article (pop articles))
+	  (let ((old-number (car article)))
+	    (when (> old-number new-number)
+	      ;; There is a gap here:
+	      (setq compacted t)
+	      ;; #### NOTE: `nnml-article-to-file' calls
+	      ;; #### `nnml-update-file-alist'  (which in turn calls
+	      ;; #### `nnml-current-group-article-to-file-alist', which might
+	      ;; #### use the NOV database). This might turn out to be
+	      ;; #### inefficient. In that case, we will do the work manually.
+	      ;; 1/ Move the article to a new file:
+	      (let* ((oldfile (nnml-article-to-file old-number))
+		     (newfile
+		      (gnus-replace-in-string
+		       oldfile (concat "\\("
+				       (int-to-string old-number)
+				       "\\)\\(\\(\\.gz\\)?\\)$")
+		       (concat (int-to-string new-number) "\\2"))))
+		(with-current-buffer nntp-server-buffer
+		  (nnmail-find-file oldfile)
+		  (nnmail-write-region (point-min) (point-max) newfile))
+		(funcall nnmail-delete-file-function oldfile))
+	      ;; 2/ Update all marks for this article:
+	      ;; #### NOTE: it is possible that the new article number already
+	      ;; #### belongs to a range, whereas the corresponding article
+	      ;; #### doesn't exist (for example, if you delete an article).
+	      ;; #### For that reason, it is important to update the ranges
+	      ;; #### (meaning remove inexistant articles) before doing
+	      ;; anything on them.
+	      ;; 2 a/ read articles:
+	      (let ((read (gnus-info-read info)))
+		(setq read (gnus-remove-from-range read (list new-number)))
+		(when (gnus-member-of-range old-number read)
+		  (setq read (gnus-remove-from-range read (list old-number)))
+		  (setq read (gnus-add-to-range read (list new-number))))
+		(gnus-info-set-read info read))
+	      ;; 2 b/ marked articles:
+	      (let ((oldmarks (gnus-info-marks info))
+		    mark newmarks)
+		(while (setq mark (pop oldmarks))
+		  (setcdr mark (gnus-remove-from-range (cdr mark)
+						       (list new-number)))
+		  (when (gnus-member-of-range old-number (cdr mark))
+		    (setcdr mark (gnus-remove-from-range (cdr mark)
+							 (list old-number)))
+		    (setcdr mark (gnus-add-to-range (cdr mark)
+						    (list new-number))))
+		  (push mark newmarks))
+		(gnus-info-set-marks info newmarks))
+	      ;; 3/ Update the NOV entry for this article:
+	      (unless nnml-nov-is-evil
+		(save-excursion
+		  (set-buffer (nnml-open-nov group))
+		  (when (nnheader-find-nov-line old-number)
+		    (looking-at (int-to-string old-number))
+		    (replace-match (int-to-string new-number) nil t)))))
+	    (setq new-number (1+ new-number)))))
+      (if (not compacted)
+	  ;; No compaction had to be done:
+	  t
+	;; Some articles have actually been renamed:
+	;; 1/ Rebuild active information:
+	(let ((entry (assoc group nnml-group-alist))
+	      (active (cons 1 (1- new-number))))
+	  (setq nnml-group-alist (delq entry nnml-group-alist))
+	  (push (list group active) nnml-group-alist)
+	  ;; Update the active hashtable to let the *Group* buffer display
+	  ;; up-to-date lines. I don't think that either gnus-newsrc-hashtb or
+	  ;; gnus-newwrc-alist are out of date, since all we did is to modify
+	  ;; the info of the group internally.
+	  (gnus-set-active group-full-name active))
+	;; 1 bis/
+	;; #### NOTE: normally, we should save the overview (NOV) file
+	;; #### here, just like we save the marks file. However, there is no
+	;; #### such function as nnml-save-nov for a single group. Only for
+	;; #### all groups. Gnus inconsistency is getting worse every day...
+	;; 2/ Rebuild marks file:
+	(unless nnml-marks-is-evil
+	  ;; #### NOTE: this constant use of global variables everywhere is
+	  ;; #### truly disgusting. Gnus really needs a *major* cleanup.
+	  (setq nnml-marks (gnus-info-marks info))
+	  (push (cons 'read (gnus-info-read info)) nnml-marks)
+	  (dolist (el gnus-article-unpropagated-mark-lists)
+	    (setq nnml-marks (gnus-remassoc el nnml-marks)))
+	  (nnml-save-marks group server))
+	;; 3/ Save everything if this was not part of a bigger operation:
+	(if (not save)
+	    ;; Nothing to save (yet):
+	    t
+	  ;; Something to save:
+	  ;; a/ Save the NOV databases:
+	  ;; #### NOTE: this should be done directory per directory in 1bis
+	  ;; #### above. See comment there.
+	  (nnml-save-nov)
+	  ;; b/ Save the active file:
+	  (nnmail-save-active nnml-group-alist nnml-active-file)
+	  t)))))
+
+(defun nnml-request-compact (&optional server)
+  "Request compaction of all SERVER nnml groups."
+  (interactive (list (or (nnoo-current-server 'nnml) "")))
+  (nnmail-activate 'nnml)
+  (unless (nnml-server-opened server)
+    (nnml-open-server server))
+  (setq nnml-directory (expand-file-name nnml-directory))
+  (let* ((groups (gnus-groups-from-server
+		  (gnus-server-to-method (format "nnml:%s" server))))
+	 (first (pop groups))
+	 group)
+    (when first
+      (while (setq group (pop groups))
+	(nnml-request-compact-group (gnus-group-real-name group) server))
+      (nnml-request-compact-group (gnus-group-real-name first) server t))))
+
 
 (provide 'nnml)
 
