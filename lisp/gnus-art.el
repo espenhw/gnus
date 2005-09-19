@@ -923,6 +923,7 @@ used."
 (defcustom gnus-mime-action-alist
   '(("save to file" . gnus-mime-save-part)
     ("save and strip" . gnus-mime-save-part-and-strip)
+    ("replace with file" . gnus-mime-replace-part)
     ("delete part" . gnus-mime-delete-part)
     ("display as text" . gnus-mime-inline-part)
     ("view the part" . gnus-mime-view-part)
@@ -4051,10 +4052,11 @@ General format specifiers can also be used.  See Info node
     (gnus-mime-view-part-as-charset "C" "View As charset...")
     (gnus-mime-save-part "o" "Save...")
     (gnus-mime-save-part-and-strip "\C-o" "Save and Strip")
+    (gnus-mime-replace-part "r" "Replace part")
     (gnus-mime-delete-part "d" "Delete part")
     (gnus-mime-copy-part "c" "View As Text, In Other Buffer")
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
-    (gnus-mime-view-part-internally "E" "View Internally")
+    (gnus-mime-view-part-internally "E" "View Internally") ;; Why `E'?
     (gnus-mime-view-part-externally "e" "View Externally")
     (gnus-mime-print-part "p" "Print")
     (gnus-mime-pipe-part "|" "Pipe To Command...")
@@ -4187,8 +4189,20 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
       (gnus-article-jump-to-part
        (+ current-id gnus-auto-select-part)))))
 
-(defun gnus-mime-save-part-and-strip ()
-  "Save the MIME part under point then replace it with an external body."
+(defun gnus-mime-replace-part (file)
+  "Replace MIME part under point with an external body."
+  ;; Useful if file has already been saved to disk
+  (interactive
+   (list
+    (mm-with-multibyte
+      (read-file-name "Replace MIME part with file: "
+		      (or mm-default-directory default-directory)
+		      nil nil))))
+  (gnus-mime-save-part-and-strip file))
+
+(defun gnus-mime-save-part-and-strip (&optional file)
+  "Save the MIME part under point then replace it with an external body.
+If FILE is given, use it for the external part."
   (interactive)
   (gnus-article-check-buffer)
   (when (gnus-group-read-only-p)
@@ -4198,9 +4212,11 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
 The current article has a complicated MIME structure, giving up..."))
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (id (get-text-property (point) 'gnus-part))
-	 file param
+	 param
 	 (handles gnus-article-mime-handles))
-    (setq file (and data (mm-save-part data "Delete MIME part and save to: ")))
+    (unless file
+      (setq file
+	    (and data (mm-save-part data "Delete MIME part and save to: "))))
     (when file
       (with-current-buffer (mm-handle-buffer data)
 	(erase-buffer)
@@ -4218,6 +4234,9 @@ The current article has a complicated MIME structure, giving up..."))
 				     (name . ,file)))))
       ;; (set-buffer gnus-summary-buffer)
       (gnus-article-edit-part handles id))))
+
+;; A function like `gnus-summary-save-parts' (`X m', `<MIME> <Extract all
+;; parts...>') but with stripping would be nice.
 
 (defun gnus-mime-delete-part ()
   "Delete the MIME part under point.
@@ -4529,7 +4548,10 @@ If no internal viewer is available, use an external viewer."
     (if action-pair
 	(funcall (cdr action-pair)))))
 
-(defun gnus-article-part-wrapper (n function &optional no-handle)
+(defun gnus-article-part-wrapper (n function &optional no-handle interactive)
+  "Call FUNCTION on MIME part N.
+Unless NO-HANDLE, call FUNCTION with N-th MIME handle as it's only argument.
+If INTERACTIVE, call FUNCTION interactivly."
   (let (window frame)
     ;; Check whether the article is displayed.
     (unless (and (gnus-buffer-live-p gnus-article-buffer)
@@ -4563,10 +4585,18 @@ If no internal viewer is available, use an external viewer."
 		  (overlay-arrow-string "=>")
 		  (overlay-arrow-position (point-marker)))
 	      (unwind-protect
-		  (if no-handle
-		      (funcall function)
+		  (cond
+		   ((and no-handle interactive)
+		    (call-interactively function))
+		   (no-handle
+		    (funcall function))
+		   (interactive
+		    (call-interactively
+		     function
+		     (cdr (assq n gnus-article-mime-handle-alist))))
+		   (t
 		    (funcall function
-			     (cdr (assq n gnus-article-mime-handle-alist))))
+			     (cdr (assq n gnus-article-mime-handle-alist)))))
 		(set-marker overlay-arrow-position nil)
 		(unless gnus-auto-select-part
 		  (gnus-select-frame-set-input-focus frame)
@@ -4622,6 +4652,12 @@ N is the numerical prefix."
 N is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-save-part-and-strip t))
+
+(defun gnus-article-replace-part (n)
+  "Replace MIME part N with an external body.
+N is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-replace-part t t))
 
 (defun gnus-article-delete-part (n)
   "Delete MIME part N and add some information about the removed part.

@@ -1,3 +1,14 @@
+2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-replace-part)
+	(gnus-mime-replace-part): New functions.
+	(gnus-mime-action-alist, gnus-mime-button-commands)
+	(gnus-mime-save-part-and-strip): Added file argument.
+	(gnus-article-part-wrapper): Added interactive argument.
+
+	* gnus-sum.el (gnus-summary-mime-map): Add
+	`gnus-article-replace-part'.
+
 2005-09-19  Didier Verna  <didier@xemacs.org>
 
 	The nnml compaction feature:

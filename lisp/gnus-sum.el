@@ -2073,6 +2073,7 @@ increase the score of each group you read."
   "v" gnus-article-view-part
   "o" gnus-article-save-part
   "O" gnus-article-save-part-and-strip
+  "r" gnus-article-replace-part
   "d" gnus-article-delete-part
   "j" gnus-article-jump-to-part
   "c" gnus-article-copy-part
