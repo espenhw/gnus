@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-;; Author: Teodor Zlatanov <tzz@lifelogs.com>
-;; Keywords: network
+;; Author: Ted Zlatanov <tzz@lifelogs.com>
+;; Keywords: network, spam, mail, gmane, report
 
 ;; This file is part of GNU Emacs.
 

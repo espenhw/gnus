@@ -1529,8 +1529,8 @@ If SCAN, request a scan of that group as well."
 	   ;; command may have responded with the `(0 . 0)'.  We
 	   ;; ignore this if we already have an active entry
 	   ;; for the group.
-	   (if (and (zerop (car active))
-		    (zerop (cdr active))
+	   (if (and (zerop (or (car active) 0))
+		    (zerop (or (cdr active) 0))
 		    (gnus-active group))
 	       (gnus-active group)
 

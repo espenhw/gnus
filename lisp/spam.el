@@ -3,7 +3,8 @@
 ;; Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
-;; Keywords: network
+;; Maintainer: Ted Zlatanov <tzz@lifelogs.com>
+;; Keywords: network, spam, mail, bogofilter, BBDB, dspam, dig, whitelist, blacklist, gmane, hashcash, spamassassin, bsfilter, ifile, stat, crm114, spamoracle
 
 ;; This file is part of GNU Emacs.
 

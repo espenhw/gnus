@@ -1,3 +1,12 @@
+2005-09-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-start.el (gnus-activate-group): if the server is nil, don't
+	fail hard
+
+	* spam-report.el: better Keywords line
+
+	* spam.el: added Maintainer and better Keywords line
+
 2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-article-replace-part)
