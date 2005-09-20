@@ -5,7 +5,7 @@
 	(Using MIME): Add gnus-mime-replace-part.
 
 	* gnus-news.texi: Add gnus-mime-replace-part and
-	gnus-article-replace-part.
+	gnus-article-replace-part.  Use @xref.
 
 2005-09-20  Simon Josefsson  <jas@extundo.com>
 
