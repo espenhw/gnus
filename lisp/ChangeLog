@@ -1,3 +1,10 @@
+2005-09-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-synchronize-flags): Switch the
+	default to nil, to be able to use Gnus at all.  If the default
+	switches to something else, then the function should be fixed not
+	be exceedingly slow.
+
 2005-09-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-start.el (gnus-activate-group): if the server is nil, don't
