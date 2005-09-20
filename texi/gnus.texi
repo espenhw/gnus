@@ -9249,7 +9249,7 @@ Translate the article from one language to another
 @cindex viewing attachments
 
 The following commands all understand the numerical prefix.  For
-instance, @kbd{3 b} means ``view the third @acronym{MIME} part''.
+instance, @kbd{3 K v} means ``view the third @acronym{MIME} part''.
 
 @table @kbd
 @item b
@@ -9261,6 +9261,21 @@ View the @acronym{MIME} part.
 @item K o
 @kindex K o (Summary)
 Save the @acronym{MIME} part.
+
+@item K O
+@kindex K O (Summary)
+Prompt for a file name, then save the @acronym{MIME} part and strip it
+from the article.  The stripped @acronym{MIME} object will be referred
+via the message/external-body @acronym{MIME} type.
+
+@item K r
+@kindex K r (Summary)
+Replace the @acronym{MIME} part with an external body.
+
+@item K d
+@kindex K d (Summary)
+Delete the @acronym{MIME} part and add some information about the
+removed part.
 
 @item K c
 @kindex K c (Summary)
@@ -11034,12 +11049,21 @@ like.  The stripped @acronym{MIME} object will be referred via the
 message/external-body @acronym{MIME} type.
 (@code{gnus-mime-save-part-and-strip}).
 
+@findex gnus-mime-replace-part
+@item r (Article)
+@kindex r (Article)
+Prompt for a file name, replace the @acronym{MIME} object with an
+external body refering to the file via the message/external-body
+@acronym{MIME} type.  (@code{gnus-mime-replace-part}).
+
 @findex gnus-mime-delete-part
 @item d (Article)
 @kindex d (Article)
 Delete the @acronym{MIME} object from the article and replace it with some
 information about the removed @acronym{MIME} object
 (@code{gnus-mime-delete-part}).
+
+@c FIXME: gnus-auto-select-part should be documented here
 
 @findex gnus-mime-copy-part
 @item c (Article)

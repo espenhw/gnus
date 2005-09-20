@@ -1,3 +1,12 @@
+2005-09-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (MIME Commands): Add gnus-article-save-part-and-strip,
+	gnus-article-delete-part and gnus-article-replace-part.
+	(Using MIME): Add gnus-mime-replace-part.
+
+	* gnus-news.texi: Add gnus-mime-replace-part and
+	gnus-article-replace-part.
+
 2005-09-20  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-coding.texi: New file, from Reiner Steib

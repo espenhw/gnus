@@ -53,7 +53,7 @@ format=flowed messages.  Also, flowed text is disabled when sending
 inline @acronym{PGP} signed messages.
 
 @item You can now drag and drop attachments to the Message buffer.
-See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}
+See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}.
 @xref{MIME, ,MIME, message, Message Manual}.
 
 @item The option @code{message-yank-empty-prefix} now controls how
@@ -138,6 +138,10 @@ You need to configure the server in @code{smime-ldap-host-list}.
 summary lines when using @code{gnus-ignored-from-addresses} can be
 customized with @code{gnus-summary-to-prefix} and
 @code{gnus-summary-newsgroup-prefix}.  @ref{To From Newsgroups}.
+
+@item You can replace @acronym{MIME} parts with external bodies.
+See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
+@xref{MIME Commands}, @ref{Using MIME}.
 
 @end itemize
 @c gnus-news.texi ends here.
