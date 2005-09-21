@@ -23846,7 +23846,7 @@ spam-marked articles will be added to the blacklist.
 
 Instead of the obsolete
 @code{gnus-group-spam-exit-processor-blacklist}, it is recommended
-that you use @code{'(spam spam-use-blacklist)}.  Everything will work
+that you use @code{(spam spam-use-blacklist)}.  Everything will work
 the same way, we promise.
 
 @end defvar
@@ -23864,7 +23864,7 @@ whitelist.
 
 Instead of the obsolete
 @code{gnus-group-ham-exit-processor-whitelist}, it is recommended
-that you use @code{'(ham spam-use-whitelist)}.  Everything will work
+that you use @code{(ham spam-use-whitelist)}.  Everything will work
 the same way, we promise.
 
 @end defvar
@@ -23935,7 +23935,7 @@ BBDB.
 
 Instead of the obsolete
 @code{gnus-group-ham-exit-processor-BBDB}, it is recommended
-that you use @code{'(ham spam-use-BBDB)}.  Everything will work
+that you use @code{(ham spam-use-BBDB)}.  Everything will work
 the same way, we promise.
 
 @end defvar
@@ -23962,7 +23962,7 @@ Gmane can be found at @uref{http://gmane.org}.
 
 Instead of the obsolete
 @code{gnus-group-spam-exit-processor-report-gmane}, it is recommended
-that you use @code{'(spam spam-use-gmane)}.  Everything will work the
+that you use @code{(spam spam-use-gmane)}.  Everything will work the
 same way, we promise.
 
 @end defvar
@@ -24129,7 +24129,7 @@ will be added to the Bogofilter spam database.
 
 Instead of the obsolete
 @code{gnus-group-spam-exit-processor-bogofilter}, it is recommended
-that you use @code{'(spam spam-use-bogofilter)}.  Everything will work
+that you use @code{(spam spam-use-bogofilter)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24145,7 +24145,7 @@ of non-spam messages.
 
 Instead of the obsolete
 @code{gnus-group-ham-exit-processor-bogofilter}, it is recommended
-that you use @code{'(ham spam-use-bogofilter)}.  Everything will work
+that you use @code{(ham spam-use-bogofilter)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24285,7 +24285,7 @@ articles will be added to the spam-stat database of spam messages.
 
 Instead of the obsolete
 @code{gnus-group-spam-exit-processor-stat}, it is recommended
-that you use @code{'(spam spam-use-stat)}.  Everything will work
+that you use @code{(spam spam-use-stat)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24301,7 +24301,7 @@ of non-spam messages.
 
 Instead of the obsolete
 @code{gnus-group-ham-exit-processor-stat}, it is recommended
-that you use @code{'(ham spam-use-stat)}.  Everything will work
+that you use @code{(ham spam-use-stat)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24393,7 +24393,7 @@ sent to SpamOracle as spam samples.
 
 Instead of the obsolete
 @code{gnus-group-spam-exit-processor-spamoracle}, it is recommended
-that you use @code{'(spam spam-use-spamoracle)}.  Everything will work
+that you use @code{(spam spam-use-spamoracle)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24409,7 +24409,7 @@ messages.
 
 Instead of the obsolete
 @code{gnus-group-ham-exit-processor-spamoracle}, it is recommended
-that you use @code{'(ham spam-use-spamoracle)}.  Everything will work
+that you use @code{(ham spam-use-spamoracle)}.  Everything will work
 the same way, we promise.
 @end defvar
 
@@ -24477,8 +24477,8 @@ Note you don't have to provide a spam or a ham processor.  Only
 provide them if Blackbox supports spam or ham processing.
 
 Also, ham and spam processors are being phased out as single
-variables.  Instead the form @code{'(spam spam-use-blackbox)} or
-@code{'(ham spam-use-blackbox)} is favored.  For now, spam/ham
+variables.  Instead the form @code{(spam spam-use-blackbox)} or
+@code{(ham spam-use-blackbox)} is favored.  For now, spam/ham
 processor variables are still around but they won't be for long.
 
 @lisp
