@@ -115,52 +115,61 @@ Reports is as ham when HAM is set."
   "Report an article as ham by resending via email."
   (spam-report-resend articles t))
 
-(defun spam-report-gmane (&rest articles)
-  "Report an article as spam through Gmane."
+(defun spam-report-gmane-unspam (&rest articles)
+  "Report ARTICLES as not-spam (unregister) through Gmane."
   (interactive (gnus-summary-work-articles current-prefix-arg))
   (dolist (article articles)
-    (when (and gnus-newsgroup-name
-	       (or (null spam-report-gmane-regex)
-		   (string-match spam-report-gmane-regex gnus-newsgroup-name)))
-      (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
-      (if spam-report-gmane-use-article-number
-	  (spam-report-url-ping
-	   "spam.gmane.org"
-	   (format "/%s:%d"
-		   (gnus-group-real-name gnus-newsgroup-name)
-		   article))
-	(with-current-buffer nntp-server-buffer
-	  (gnus-request-head article gnus-newsgroup-name)
-	  (let ((case-fold-search t)
-		field host report url)
-	    ;; First check for X-Report-Spam because it's more specific to
-	    ;; spam reporting than Archived-At.  OTOH, all new articles on
-	    ;; Gmane don't have X-Report-Spam anymore (unless Lars changes his
-	    ;; mind :-)).
-	    ;;
-	    ;; There might be more than one Archived-At header so we need to
-	    ;; find (and transform) the one related to Gmane.
-	    (setq field (or (gnus-fetch-field "X-Report-Spam")
-			    (gnus-fetch-field "Archived-At")))
-	    (setq host (progn
-			 (string-match
-			  (concat "http://\\([a-z]+\\.gmane\\.org\\)"
-				  "\\(/[^:/]+[:/][0-9]+\\)")
-			  field)
-			 (match-string 1 field)))
-	    (setq report (match-string 2 field))
-	    (when (string-equal "permalink.gmane.org" host)
-	      (setq host "spam.gmane.org")
-	      (setq report (gnus-replace-in-string
-			    report "/\\([0-9]+\\)$" ":\\1")))
-	    (setq url (format "http://%s%s" host report))
-	    (if (not (and host report url))
-		(gnus-message
-		 3 "Could not find a spam report header in article %d..."
-		 article)
-	      (gnus-message 7 "Reporting spam through URL %s..." url)
-	      (spam-report-url-ping host report))))))))
+    (spam-report-gmane t article)))
 
+(defun spam-report-gmane-spam (&rest articles)
+  "Report ARTICLES as spam through Gmane."
+  (interactive (gnus-summary-work-articles current-prefix-arg))
+  (dolist (article articles)
+    (spam-report-gmane nil article)))
+
+(defun spam-report-gmane (unspam article)
+  "Report ARTICLE as spam or not-spam through Gmane, depending on UNSPAM."
+  (when (and gnus-newsgroup-name
+	     (or (null spam-report-gmane-regex)
+		 (string-match spam-report-gmane-regex gnus-newsgroup-name)))
+    (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
+    (if spam-report-gmane-use-article-number
+	(spam-report-url-ping
+	 (if unspam "unspam.gmane.org" "spam.gmane.org")
+	 (format "/%s:%d"
+		 (gnus-group-real-name gnus-newsgroup-name)
+		 article))
+      (with-current-buffer nntp-server-buffer
+	(gnus-request-head article gnus-newsgroup-name)
+	(let ((case-fold-search t)
+	      field host report url)
+	  ;; First check for X-Report-Spam because it's more specific to
+	  ;; spam reporting than Archived-At.  OTOH, all new articles on
+	  ;; Gmane don't have X-Report-Spam anymore (unless Lars changes his
+	  ;; mind :-)).
+	  ;;
+	  ;; There might be more than one Archived-At header so we need to
+	  ;; find (and transform) the one related to Gmane.
+	  (setq field (or (gnus-fetch-field "X-Report-Spam")
+			  (gnus-fetch-field "Archived-At")))
+	  (setq host (progn
+		       (string-match
+			(concat "http://\\([a-z]+\\.gmane\\.org\\)"
+				"\\(/[^:/]+[:/][0-9]+\\)")
+			field)
+		       (match-string 1 field)))
+	  (setq report (match-string 2 field))
+	  (when (string-equal "permalink.gmane.org" host)
+	    (setq host (if unspam "unspam.gmane.org" "spam.gmane.org"))
+	    (setq report (gnus-replace-in-string
+			  report "/\\([0-9]+\\)$" ":\\1")))
+	  (setq url (format "http://%s%s" host report))
+	  (if (not (and host report url))
+	      (gnus-message
+	       3 "Could not find a spam report header in article %d..."
+	       article)
+	    (gnus-message 7 "Reporting %s through URL %s..." (if unspam "unspam" "spam") url)
+	    (spam-report-url-ping host report)))))))
 
 (defun spam-report-url-ping (host report)
   "Ping a host through HTTP, addressing a specific GET resource using

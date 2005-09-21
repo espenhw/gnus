@@ -1056,11 +1056,10 @@ backends)."
 			      nil)
 
 (spam-install-nocheck-backend 'spam-use-gmane
-			      nil
+			      'spam-report-gmane-unregister-routine
 			      'spam-report-gmane-register-routine
-			      ;; does Gmane support unregistration?
-			      nil
-			      nil)
+			      'spam-report-gmane-register-routine
+			      'spam-report-gmane-unregister-routine)
 
 (spam-install-nocheck-backend 'spam-use-resend
 			      'spam-report-resend-register-ham-routine
@@ -2436,7 +2435,11 @@ REMOVE not nil, remove the ADDRESSES."
 ;;{{{ Spam-report glue (gmane and resend reporting)
 (defun spam-report-gmane-register-routine (articles)
   (when articles
-    (apply 'spam-report-gmane articles)))
+    (apply 'spam-report-gmane-spam articles)))
+
+(defun spam-report-gmane-unregister-routine (articles)
+  (when articles
+    (apply 'spam-report-gmane-unspam articles)))
 
 (defun spam-report-resend-register-ham-routine (articles)
   (spam-report-resend-register-routine articles t))

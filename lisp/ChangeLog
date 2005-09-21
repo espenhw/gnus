@@ -1,3 +1,14 @@
+2005-09-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-gmane, spam-report-gmane-register-routine)
+	(spam-report-gmane-unregister-routine): added support for gmane
+	unregistration
+
+	* spam-report.el (spam-report-gmane-unspam)
+	(spam-report-gmane-spam): new wrappers around spam-report-gmane
+	(spam-report-gmane): changed to take a single article and do
+	unspam registration
+
 2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-inline-text-html-render-with-w3m): Revert.
