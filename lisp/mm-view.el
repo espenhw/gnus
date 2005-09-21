@@ -244,7 +244,9 @@
 	    (delete-region (point-min) (point-max))
 	    (insert (mm-decode-string text charset))))
 	(let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
-	      w3m-force-redisplay)
+	      w3m-force-redisplay
+	      ;; Avoid inserting excessive newlines.
+	      w3m-treat-image-size)
 	  (w3m-region (point-min) (point-max) nil charset))
 	(when (and mm-inline-text-html-with-w3m-keymap
 		   (boundp 'w3m-minor-mode-map)
