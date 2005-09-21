@@ -155,3 +155,7 @@ Starting from No Gnus, the @file{GNUS-NEWS} is created from
 @c mode: texinfo
 @c coding: iso-8859-1
 @c End:
+
+@ignore
+   arch-tag: ab15234c-2c8a-4cbd-8111-1811bcc6f931
+@end ignore
