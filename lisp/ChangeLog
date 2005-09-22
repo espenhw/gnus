@@ -1,5 +1,8 @@
 2005-09-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-agent.el (gnus-agent-synchronize-flags): Explain why the
+	default value is nil.
+
 	* mm-uu.el (mm-uu-type-alist): Added slrn style verbatim-marks.
 	(mm-uu-verbatim-marks-extract): New function.
 	(mm-uu-extract): New face.
