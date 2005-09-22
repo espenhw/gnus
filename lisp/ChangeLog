@@ -1,5 +1,10 @@
 2005-09-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-uu.el (mm-uu-type-alist): Added slrn style verbatim-marks.
+	(mm-uu-verbatim-marks-extract): New function.
+	(mm-uu-extract): New face.
+	(mm-uu-copy-to-buffer): Use it.
+
 	* spam-report.el (spam-report-gmane-ham): Renamed from
 	`spam-report-gmane-unspam'.
 	(spam-report-gmane-internal): Renamed from `spam-report-gmane'.

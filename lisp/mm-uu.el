@@ -153,7 +153,14 @@ This can be either \"inline\" or \"attachment\".")
      nil
      mm-uu-diff-extract
      nil
-     mm-uu-diff-test)))
+     mm-uu-diff-test)
+    (verbatim-marks
+     ;; slrn-style verbatim marks, see
+     ;; http://www.slrn.org/manual/slrn-manual-6.html#ss6.81
+     "^#v\\+$"
+     "^#v\\-$"
+     mm-uu-verbatim-marks-extract
+     nil)))
 
 (defcustom mm-uu-configure-list '((shar . disabled))
   "A list of mm-uu configuration.
@@ -189,9 +196,27 @@ To disable dissecting shar codes, for instance, add
 (defsubst mm-uu-function-2 (entry)
   (nth 5 entry))
 
-(defun mm-uu-copy-to-buffer (&optional from to)
+(defface mm-uu-extract
+  '((((class color)
+      (background dark))
+     (:background "gray5"))
+    (((class color)
+      (background light))
+     (:background "gray95"))
+    (t
+     ()))
+  "Face for extracted buffers."
+  ;; See `mm-uu-verbatim-marks-extract'.
+  :version "23.0" ;; No Gnus
+  :group 'gnus-article-mime)
+
+(defun mm-uu-copy-to-buffer (&optional from to properties)
   "Copy the contents of the current buffer to a fresh buffer.
-Return that buffer."
+Return that buffer.
+
+If PROPERTIES is non-nil, PROPERTIES are applied to the buffer,
+see `set-text-properties'.  If PROPERTIES equals t, this means to
+apply the face `mm-uu-extract'."
   (let ((obuf (current-buffer))
         (coding-system
          ;; Might not exist in non-MULE XEmacs
@@ -200,6 +225,11 @@ Return that buffer."
     (with-current-buffer (generate-new-buffer " *mm-uu*")
       (setq buffer-file-coding-system coding-system)
       (insert-buffer-substring obuf from to)
+      (cond ((eq properties  t)
+	     (set-text-properties (point-min) (point-max)
+				  '(face mm-uu-extract)))
+	    (properties
+	     (set-text-properties (point-min) (point-max) properties)))
       (current-buffer))))
 
 (defun mm-uu-configure-p  (key val)
@@ -252,6 +282,14 @@ Return that buffer."
 (defun mm-uu-postscript-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
 		  '("application/postscript")))
+
+(defun mm-uu-verbatim-marks-extract ()
+  (mm-make-handle
+   (mm-uu-copy-to-buffer
+    (progn (goto-char start-point) (forward-line) (point))
+    (progn (goto-char end-point) (forward-line -1) (point))
+    t)
+   '("text/verbatim")))
 
 (defun mm-uu-emacs-sources-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
