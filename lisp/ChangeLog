@@ -1,3 +1,15 @@
+2005-09-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam-report.el (spam-report-gmane-ham): Renamed from
+	`spam-report-gmane-unspam'.
+	(spam-report-gmane-internal): Renamed from `spam-report-gmane'.
+	Simplify use of UNSPAM argument.  Fetch "X-Report-Unspam" header.
+
+	* spam.el (spam-report-gmane-spam, spam-report-gmane-ham):
+	Autoload.
+	(spam-report-gmane-unregister-routine): Renamed
+	`spam-report-gmane-unspam' to `spam-report-gmane-ham'.
+
 2005-09-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-gmane, spam-report-gmane-register-routine)

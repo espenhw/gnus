@@ -60,6 +60,8 @@
 ;; autoload spam-report
 (eval-and-compile
   (autoload 'spam-report-gmane "spam-report")
+  (autoload 'spam-report-gmane-spam "spam-report")
+  (autoload 'spam-report-gmane-ham "spam-report")
   (autoload 'spam-report-resend "spam-report"))
 
 ;; autoload gnus-registry
@@ -2439,7 +2441,7 @@ REMOVE not nil, remove the ADDRESSES."
 
 (defun spam-report-gmane-unregister-routine (articles)
   (when articles
-    (apply 'spam-report-gmane-unspam articles)))
+    (apply 'spam-report-gmane-ham articles)))
 
 (defun spam-report-resend-register-ham-routine (articles)
   (spam-report-resend-register-routine articles t))
