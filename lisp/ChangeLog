@@ -26,15 +26,6 @@
 	(spam-report-gmane): changed to take a single article and do
 	unspam registration
 
-2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* mm-view.el (mm-inline-text-html-render-with-w3m): Revert.
-
-2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* mm-view.el (mm-inline-text-html-render-with-w3m): Bind
-	w3m-treat-image-size to avoid inserting excessive newlines.
-
 2005-09-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags): Switch the
