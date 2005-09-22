@@ -8,7 +8,8 @@
 	(Blacklists and Whitelists, BBDB Whitelists)
 	(Gmane Spam Reporting, Bogofilter, spam-stat spam filtering)
 	(spam-stat spam filtering, SpamOracle)
-	(Extending the Spam ELisp package): removed extra quote symbol for clarity
+	(Extending the Spam ELisp package): Removed extra quote symbol for
+	clarity.
 
 2005-09-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
