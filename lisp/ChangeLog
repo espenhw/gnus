@@ -32,6 +32,10 @@
 	(spam-report-gmane): changed to take a single article and do
 	unspam registration
 
+2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-url.el (mm-url-decode-entities): Fix regexp.
+
 2005-09-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags): Switch the
