@@ -7812,8 +7812,8 @@ articles that are younger than AGE days."
 	   (gnus-completing-read-with-default
 	    (symbol-name (car gnus-extra-headers))
 	    (if current-prefix-arg
-		"Exclude extra header:"
-	      "Limit extra header:")
+		"Exclude extra header"
+	      "Limit extra header")
 	    (mapcar (lambda (x)
 		      (cons (symbol-name x) x))
 		    gnus-extra-headers)
@@ -9378,7 +9378,7 @@ latter case, they will be copied into the relevant groups."
 					gnus-newsgroup-name)))))
 		(method
 		 (gnus-completing-read-with-default
-		  methname "What backend do you want to use when respooling?"
+		  methname "Backend to use when respooling"
 		  methods nil t nil 'gnus-mail-method-history))
 		ms)
 	   (cond
@@ -11211,7 +11211,7 @@ save those articles instead."
   (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
 	 (minibuffer-confirm-incomplete nil) ; XEmacs
 	 (prom
-	  (format "%s %s to:"
+	  (format "%s %s to"
 		  prompt
 		  (if (> (length articles) 1)
 		      (format "these %d articles" (length articles))

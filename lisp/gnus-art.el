@@ -3309,7 +3309,7 @@ This format is defined by the `gnus-article-time-format' variable."
 		      ((null split-name)
 		       (read-file-name
 			(concat prompt " (default "
-				(file-name-nondirectory default-name) ") ")
+				(file-name-nondirectory default-name) "): ")
 			(file-name-directory default-name)
 			default-name))
 		      ;; A single group name is returned.
@@ -3319,7 +3319,7 @@ This format is defined by the `gnus-article-time-format' variable."
 				      (symbol-value variable)))
 		       (read-file-name
 			(concat prompt " (default "
-				(file-name-nondirectory default-name) ") ")
+				(file-name-nondirectory default-name) "): ")
 			(file-name-directory default-name)
 			default-name))
 		      ;; A single split name was found
@@ -3332,7 +3332,7 @@ This format is defined by the `gnus-article-time-format' variable."
 					 ((file-exists-p name) name)
 					 (t gnus-article-save-directory))))
 			 (read-file-name
-			  (concat prompt " (default " name ") ")
+			  (concat prompt " (default " name "): ")
 			  dir name)))
 		      ;; A list of splits was found.
 		      (t
@@ -3343,7 +3343,7 @@ This format is defined by the `gnus-article-time-format' variable."
 			   (setq result
 				 (expand-file-name
 				  (read-file-name
-				   (concat prompt " (`M-p' for defaults) ")
+				   (concat prompt " (`M-p' for defaults): ")
 				   gnus-article-save-directory
 				   (car split-name))
 				  gnus-article-save-directory)))
@@ -3377,7 +3377,7 @@ This format is defined by the `gnus-article-time-format' variable."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (setq filename (gnus-read-save-file-name
-		  "Save %s in rmail file:" filename
+		  "Save %s in rmail file" filename
 		  gnus-rmail-save-name gnus-newsgroup-name
 		  gnus-current-headers 'gnus-newsgroup-last-rmail))
   (gnus-eval-in-buffer-window gnus-save-article-buffer
@@ -3392,7 +3392,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (setq filename (gnus-read-save-file-name
-		  "Save %s in Unix mail file:" filename
+		  "Save %s in Unix mail file" filename
 		  gnus-mail-save-name gnus-newsgroup-name
 		  gnus-current-headers 'gnus-newsgroup-last-mail))
   (gnus-eval-in-buffer-window gnus-save-article-buffer
@@ -3411,7 +3411,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 Directory to save to is default to `gnus-article-save-directory'."
   (setq filename (gnus-read-save-file-name
-		  "Save %s in file:" filename
+		  "Save %s in file" filename
 		  gnus-file-save-name gnus-newsgroup-name
 		  gnus-current-headers 'gnus-newsgroup-last-file))
   (gnus-eval-in-buffer-window gnus-save-article-buffer
@@ -3435,7 +3435,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
   (setq filename (gnus-read-save-file-name
-		  "Save %s body in file:" filename
+		  "Save %s body in file" filename
 		  gnus-file-save-name gnus-newsgroup-name
 		  gnus-current-headers 'gnus-newsgroup-last-file))
   (gnus-eval-in-buffer-window gnus-save-article-buffer

@@ -1,3 +1,25 @@
+2005-09-25  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-agent.el (gnus-agent-expire-group, gnus-agent-expire):
+	* gnus-start.el (gnus-subscribe-interactively):
+	* gnus-uu.el (gnus-uu-grab-articles):
+	End `yes-or-no-p' and `y-or-n-p' prompts with question mark and
+	space.
+
+2005-09-24  Emilio C. Lopes  <eclig@gmx.net>
+
+	* smime.el (smime-sign-buffer, smime-decrypt-buffer):
+	* mm-view.el (mm-view-pkcs7-decrypt):
+	* gnus-sum.el (gnus-summary-limit-to-extra)
+	(gnus-summary-respool-article, gnus-read-move-group-name):
+	* gnus-score.el (gnus-summary-increase-score):
+	* gnus-util.el (gnus-completing-read-with-default):
+	* gnus-art.el (gnus-read-save-file-name)
+	(gnus-summary-save-in-rmail, gnus-summary-save-in-mail)
+	(gnus-summary-save-in-file, gnus-summary-save-body-in-file):
+	* message.el (message-check-news-header-syntax):
+	Follow convention for reading with the minibuffer.
+
 2005-09-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam-report.el (spam-report-url-ping-plain): Use
