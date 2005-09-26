@@ -1,3 +1,7 @@
+2005-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Server Buffer Format): Document the %a format spec.
+
 2005-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Mail): Fix gnus-confirm-mail-reply-to-news entry.
