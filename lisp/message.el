@@ -2088,6 +2088,14 @@ With prefix-argument just set Follow-Up, don't cross-post."
 
 ;;; End of functions adopted from `message-utils.el'.
 
+(defun message-remove-duplicates (list)
+  (let (new)
+    (while list
+      (or (member (car list) new)
+	  (setq new (cons (car list) new)))
+      (setq list (cdr list)))
+    (nreverse new)))
+
 (defun message-remove-header (header &optional is-regexp first reverse)
   "Remove HEADER in the narrowed buffer.
 If IS-REGEXP, HEADER is a regular expression.
@@ -5027,13 +5035,15 @@ subscribed address (and not the additional To and Cc header contents)."
   (let ((field (message-fetch-field header))
 	rhs ace  address)
     (when field
-      (dolist (address (mail-header-parse-addresses field))
-	(setq address (car address)
-	      rhs (downcase (or (cadr (split-string address "@")) ""))
-	      ace (downcase (idna-to-ascii rhs)))
+      (dolist (rhs 
+	       (message-remove-duplicates
+		(mapcar (lambda (rhs) (or (cadr (split-string rhs "@")) ""))
+			(mapcar 'downcase
+				(mapcar 'car (mail-header-parse-addresses field))))))
+	(setq ace (downcase (idna-to-ascii rhs)))
 	(when (and (not (equal rhs ace))
 		   (or (not (eq message-use-idna 'ask))
-		       (y-or-n-p (format "Replace %s with %s? " rhs ace))))
+		       (y-or-n-p (format "Replace %s with %s in %s:? " rhs ace header))))
 	  (goto-char (point-min))
 	  (while (re-search-forward (concat "^" header ":") nil t)
 	    (message-narrow-to-field)
@@ -5053,6 +5063,8 @@ See `message-idna-encode'."
 	(message-idna-to-ascii-rhs-1 "From")
 	(message-idna-to-ascii-rhs-1 "To")
 	(message-idna-to-ascii-rhs-1 "Reply-To")
+	(message-idna-to-ascii-rhs-1 "Mail-Reply-To")
+	(message-idna-to-ascii-rhs-1 "Mail-Followup-To")
 	(message-idna-to-ascii-rhs-1 "Cc")))))
 
 (defun message-generate-headers (headers)

@@ -1,3 +1,18 @@
+2005-09-27  Arne J,Ax(Brgensen  <arne@arnested.dk>
+
+	* message.el (message-remove-duplicates): New function.
+	Implementation borrowed from `gnus-remove-duplicates'.
+	(message-idna-to-ascii-rhs): Also encode idna addresses in
+	Reply-To:, Mail-Reply-To: and Mail-Followup-To:.
+	(message-idna-to-ascii-rhs-1): When `message-use-idna' is 'ask
+	only ask about the same idna domain once per header and also tell
+	in what header to replace the idna domain.
+
+	* gnus-art.el (article-decode-idna-rhs): Also decode idna
+	addresses in Reply-To:, Mail-Reply-To: and Mail-Followup-To:.
+	(article-decode-idna-rhs): Fix regexp so that all idna-address in
+	a header is decoded and not just the last one.
+
 2005-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-display-single): Don't modify text if it
