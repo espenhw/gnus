@@ -10,6 +10,8 @@
 	(mm-uu-type-alist): Added LaTeX documents.
 	(mm-uu-verbatim-marks-extract): Use "text/x-gnus-verbatim" instead
 	of "text/verbatim"..
+	(mm-uu-diff-groups-regexp): Fix missing quotes from previous
+	commit.
 
 	* mm-decode.el (mm-automatic-display): Use "text/x-gnus-verbatim"
 	instead of "text/verbatim".

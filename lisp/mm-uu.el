@@ -84,7 +84,7 @@ This can be either \"inline\" or \"attachment\".")
   :group 'gnus-article-mime)
 
 (defcustom mm-uu-diff-groups-regexp
-  \\(gmane\\|gnu\\)\\..*\\(diff\\|commit\\|cvs\\|bug\\|devel\\)
+  "\\(gmane\\|gnu\\)\\..*\\(diff\\|commit\\|cvs\\|bug\\|devel\\)"
   "Regexp matching diff groups."
   :version "22.1"
   :type 'regexp
