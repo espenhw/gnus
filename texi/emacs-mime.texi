@@ -176,7 +176,26 @@ Patches.  This is intended for groups where diffs of committed files
 are automatically sent to.  It only works in groups matching
 @code{mm-uu-diff-groups-regexp}.
 
+@item verbatim-marks
+@cindex verbatim-marks
+Slrn-style verbatim marks.
+
+@item LaTeX
+@cindex LaTeX
+LaTeX documents.  It only works in groups matching
+@code{mm-uu-tex-groups-regexp}.
+
 @end table
+
+@cindex text/x-gnus-verbatim
+@c Is @vindex suitable for a face?
+@vindex mm-uu-extract
+Some inlined non-@acronym{MIME} attachments are displayed using the face
+@code{mm-uu-extract}.  By default, no @acronym{MIME} button for these
+parts is displayed.  You can force displaying a button using @kbd{K b}
+(@code{gnus-summary-display-buttonized}) or add @code{text/x-gnus-verbatim} to
+@code{gnus-buttonized-mime-types}, @xref{MIME Commands, ,MIME
+Commands, gnus, Gnus Manual}.
 
 @node Handles
 @section Handles
