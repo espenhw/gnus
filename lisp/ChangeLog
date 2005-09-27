@@ -3,6 +3,8 @@
 	* mm-uu.el (mm-uu-emacs-sources-regexp): Make variable
 	customizable.  Change default value.
 	(mm-uu-diff-groups-regexp): Change default value.
+	(mm-uu-type-alist): Added doc string.
+	(mm-uu-configure): Added doc string.  Make it interactive.
 
 	* message.el (message-mark-inserted-region)
 	(message-mark-insert-file): Use slrn style marks when called with
