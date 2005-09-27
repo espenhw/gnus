@@ -8,6 +8,11 @@
 	(mm-uu-tex-groups-regexp): New variable.
 	(mm-uu-latex-extract, mm-uu-latex-test): New functions.
 	(mm-uu-type-alist): Added LaTeX documents.
+	(mm-uu-verbatim-marks-extract): Use "text/x-gnus-verbatim" instead
+	of "text/verbatim"..
+
+	* mm-decode.el (mm-automatic-display): Use "text/x-gnus-verbatim"
+	instead of "text/verbatim".
 
 	* message.el (message-mark-inserted-region)
 	(message-mark-insert-file): Use slrn style marks when called with
