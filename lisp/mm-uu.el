@@ -289,7 +289,7 @@ apply the face `mm-uu-extract'."
     (progn (goto-char start-point) (forward-line) (point))
     (progn (goto-char end-point) (forward-line -1) (point))
     t)
-   '("text/verbatim")))
+   '("text/verbatim" (charset . gnus-decoded))))
 
 (defun mm-uu-emacs-sources-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)

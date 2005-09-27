@@ -291,7 +291,7 @@ when selecting a different article."
   :group 'mime-display)
 
 (defcustom mm-automatic-display
-  '("text/plain" "text/enriched" "text/richtext" "text/html"
+  '("text/plain" "text/enriched" "text/richtext" "text/html" "text/verbatim"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
     "message/rfc822" "text/x-patch" "text/dns" "application/pgp-signature"
     "application/emacs-lisp" "application/x-emacs-lisp"
@@ -1051,10 +1051,16 @@ external if displayed external."
 
 (defun mm-insert-part (handle)
   "Insert the contents of HANDLE in the current buffer."
-  (save-excursion
-    (insert (if (mm-multibyte-p)
-		(mm-string-as-multibyte (mm-get-part handle))
-	      (mm-get-part handle)))))
+  (let ((charset (mail-content-type-get (mm-handle-type handle) 'charset)))
+    (save-excursion
+      (insert
+       (cond ((eq charset 'gnus-decoded)
+	      (with-current-buffer (mm-handle-buffer handle)
+		(buffer-string)))
+	     ((mm-multibyte-p)
+	      (mm-string-as-multibyte (mm-get-part handle)))
+	     (t
+	      (mm-get-part handle)))))))
 
 (defun mm-file-name-delete-whitespace (file-name)
   "Remove all whitespace characters from FILE-NAME."
