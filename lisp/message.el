@@ -5035,15 +5035,17 @@ subscribed address (and not the additional To and Cc header contents)."
   (let ((field (message-fetch-field header))
 	rhs ace  address)
     (when field
-      (dolist (rhs 
+      (dolist (rhs
 	       (message-remove-duplicates
 		(mapcar (lambda (rhs) (or (cadr (split-string rhs "@")) ""))
 			(mapcar 'downcase
-				(mapcar 'car (mail-header-parse-addresses field))))))
+				(mapcar
+				 'car (mail-header-parse-addresses field))))))
 	(setq ace (downcase (idna-to-ascii rhs)))
 	(when (and (not (equal rhs ace))
 		   (or (not (eq message-use-idna 'ask))
-		       (y-or-n-p (format "Replace %s with %s in %s:? " rhs ace header))))
+		       (y-or-n-p (format "Replace %s with %s in %s:? "
+					 rhs ace header))))
 	  (goto-char (point-min))
 	  (while (re-search-forward (concat "^" header ":") nil t)
 	    (message-narrow-to-field)

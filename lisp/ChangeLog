@@ -1,3 +1,7 @@
+2005-09-27  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-idna-to-ascii-rhs-1): Reformat.
+
 2005-09-27  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* message.el (message-remove-duplicates): New function.
