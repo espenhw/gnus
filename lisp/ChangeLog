@@ -1,5 +1,9 @@
 2005-09-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-uu.el (mm-uu-emacs-sources-regexp): Make variable
+	customizable.  Change default value.
+	(mm-uu-diff-groups-regexp): Change default value.
+
 	* message.el (message-mark-inserted-region)
 	(message-mark-insert-file): Use slrn style marks when called with
 	prefix argument.

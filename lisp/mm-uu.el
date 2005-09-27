@@ -77,11 +77,21 @@ decoder, such as hexbin."
   "The default disposition of uu parts.
 This can be either \"inline\" or \"attachment\".")
 
-(defvar mm-uu-emacs-sources-regexp "gnu\\.emacs\\.sources"
-  "The regexp of Emacs sources groups.")
+(defcustom mm-uu-emacs-sources-regexp "\\.emacs\\.sources"
+  "The regexp of Emacs sources groups."
+  :version "22.1"
+  :type 'regexp
+  :group 'gnus-article-mime)
 
-(defcustom mm-uu-diff-groups-regexp "gnus\\.commits"
-  "*Regexp matching diff groups."
+(defcustom mm-uu-diff-groups-regexp
+  \\(gmane\\|gnu\\)\\..*\\(diff\\|commit\\|cvs\\|bug\\|devel\\)
+  "Regexp matching diff groups."
+  :version "22.1"
+  :type 'regexp
+  :group 'gnus-article-mime)
+
+(defcustom mm-uu-tex-groups-regexp "\\.tex\\>"
+  "*Regexp matching TeX groups."
   :version "22.1"
   :type 'regexp
   :group 'gnus-article-mime)
