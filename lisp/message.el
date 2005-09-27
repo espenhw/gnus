@@ -1898,29 +1898,31 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 				    old-subject ")\n")))))))))
 
 ;;;###autoload
-(defun message-mark-inserted-region (beg end)
+(defun message-mark-inserted-region (beg end &optional verbatim)
   "Mark some region in the current article with enclosing tags.
-See `message-mark-insert-begin' and `message-mark-insert-end'."
-  (interactive "r")
+See `message-mark-insert-begin' and `message-mark-insert-end'.
+If VERBATIM, use slrn style verbatim marks (\"#v+\" and \"#v-\")."
+  (interactive "r\nP")
   (save-excursion
     ;; add to the end of the region first, otherwise end would be invalid
     (goto-char end)
-    (insert message-mark-insert-end)
+    (insert (if verbatim "#v-\n" message-mark-insert-end))
     (goto-char beg)
-    (insert message-mark-insert-begin)))
+    (insert (if verbatim "#v+\n" message-mark-insert-begin))))
 
 ;;;###autoload
-(defun message-mark-insert-file (file)
+(defun message-mark-insert-file (file &optional verbatim)
   "Insert FILE at point, marking it with enclosing tags.
-See `message-mark-insert-begin' and `message-mark-insert-end'."
-  (interactive "fFile to insert: ")
+See `message-mark-insert-begin' and `message-mark-insert-end'.
+If VERBATIM, use slrn style verbatim marks (\"#v+\" and \"#v-\")."
+  (interactive "fFile to insert: \nP")
     ;; reverse insertion to get correct result.
   (let ((p (point)))
-    (insert message-mark-insert-end)
+    (insert (if verbatim "#v-\n" message-mark-insert-end))
     (goto-char p)
     (insert-file-contents file)
     (goto-char p)
-    (insert message-mark-insert-begin)))
+    (insert (if verbatim "#v+\n" message-mark-insert-begin))))
 
 ;;;###autoload
 (defun message-add-archive-header ()

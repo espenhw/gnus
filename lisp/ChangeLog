@@ -1,3 +1,9 @@
+2005-09-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-mark-inserted-region)
+	(message-mark-insert-file): Use slrn style marks when called with
+	prefix argument.
+
 2005-09-27  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-idna-to-ascii-rhs-1): Reformat.
