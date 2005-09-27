@@ -92,7 +92,7 @@ This can be either \"inline\" or \"attachment\".")
 
 (defcustom mm-uu-tex-groups-regexp "\\.tex\\>"
   "*Regexp matching TeX groups."
-  :version "22.1"
+  :version "23.0"
   :type 'regexp
   :group 'gnus-article-mime)
 
@@ -170,7 +170,13 @@ This can be either \"inline\" or \"attachment\".")
      "^#v\\+$"
      "^#v\\-$"
      mm-uu-verbatim-marks-extract
-     nil))
+     nil)
+    (LaTeX
+     "^\\\\documentclass"
+     "^\\\\end{document}"
+     mm-uu-latex-extract
+     nil
+     mm-uu-latex-test))
   "A list of specifications for non-MIME attachments.
 Each element consist of the following entries: label,
 start-regexp, end-regexp, extract-function, test-function.
@@ -306,7 +312,13 @@ apply the face `mm-uu-extract'."
     (progn (goto-char start-point) (forward-line) (point))
     (progn (goto-char end-point) (forward-line -1) (point))
     t)
-   '("text/verbatim" (charset . gnus-decoded))))
+   '("text/x-gnus-verbatim" (charset . gnus-decoded))))
+
+(defun mm-uu-latex-extract ()
+  (mm-make-handle
+   (mm-uu-copy-to-buffer start-point end-point t)
+   ;; application/x-tex?
+   '("text/x-gnus-verbatim" (charset . gnus-decoded))))
 
 (defun mm-uu-emacs-sources-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
@@ -332,6 +344,11 @@ apply the face `mm-uu-extract'."
   (and gnus-newsgroup-name
        mm-uu-diff-groups-regexp
        (string-match mm-uu-diff-groups-regexp gnus-newsgroup-name)))
+
+(defun mm-uu-latex-test ()
+  (and gnus-newsgroup-name
+       mm-uu-tex-groups-regexp
+       (string-match mm-uu-tex-groups-regexp gnus-newsgroup-name)))
 
 (defun mm-uu-forward-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer
