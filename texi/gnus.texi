@@ -12802,35 +12802,6 @@ that says how many seconds the @code{nntp} back end should wait for a
 connection before giving up.  If it is @code{nil}, which is the default,
 no timeouts are done.
 
-@c @item nntp-command-timeout
-@c @vindex nntp-command-timeout
-@c @cindex PPP connections
-@c @cindex dynamic IP addresses
-@c If you're running Gnus on a machine that has a dynamically assigned
-@c address, Gnus may become confused.  If the address of your machine
-@c changes after connecting to the @acronym{NNTP} server, Gnus will simply sit
-@c waiting forever for replies from the server.  To help with this
-@c unfortunate problem, you can set this command to a number.  Gnus will
-@c then, if it sits waiting for a reply from the server longer than that
-@c number of seconds, shut down the connection, start a new one, and resend
-@c the command.  This should hopefully be transparent to the user.  A
-@c likely number is 30 seconds.
-@c
-@c @item nntp-retry-on-break
-@c @vindex nntp-retry-on-break
-@c If this variable is non-@code{nil}, you can also @kbd{C-g} if Gnus
-@c hangs.  This will have much the same effect as the command timeout
-@c described above.
-
-@item nntp-server-hook
-@vindex nntp-server-hook
-This hook is run as the last step when connecting to an @acronym{NNTP}
-server.
-
-@item nntp-buggy-select
-@vindex nntp-buggy-select
-Set this to non-@code{nil} if your select routine is buggy.
-
 @item nntp-nov-is-evil
 @vindex nntp-nov-is-evil
 If the @acronym{NNTP} server does not support @acronym{NOV}, you could set this
@@ -12862,11 +12833,6 @@ that fetching will probably be slower.  If this variable is @code{nil},
 @vindex nntp-prepare-server-hook
 A hook run before attempting to connect to an @acronym{NNTP} server.
 
-@item nntp-warn-about-losing-connection
-@vindex nntp-warn-about-losing-connection
-If this variable is non-@code{nil}, some noise will be made when a
-server closes connection.
-
 @item nntp-record-commands
 @vindex nntp-record-commands
 If non-@code{nil}, @code{nntp} will log all commands it sends to the
@@ -12897,14 +12863,6 @@ inhibit Gnus to add a @code{Message-ID} header, you could say:
 
 Note that not all servers support the recommended ID.  This works for
 INN versions 2.3.0 and later, for instance.
-
-@item nntp-read-timeout
-@vindex nntp-read-timeout
-How long nntp should wait between checking for the end of output.
-Shorter values mean quicker response, but is more CPU intensive.  The
-default is 0.1 seconds.  If you have a slow line to the server (and
-don't like to see Emacs eat your available CPU power), you might set
-this to, say, 1.
 
 @end table
 
