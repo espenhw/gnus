@@ -1870,7 +1870,6 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 
 ;;; Suggested by Jonas Steverud  @  www.dtek.chalmers.se/~d4jonas/
 
-;;;###autoload
 (defun message-change-subject (new-subject)
   "Ask for NEW-SUBJECT header, append (was: <Old Subject>)."
   ;; <URL:http://www.landfield.com/usefor/drafts/draft-ietf-usefor-useage--1.02.unpaged>
@@ -1902,7 +1901,6 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 				    " (was: "
 				    old-subject ")\n")))))))))
 
-;;;###autoload
 (defun message-mark-inserted-region (beg end &optional verbatim)
   "Mark some region in the current article with enclosing tags.
 See `message-mark-insert-begin' and `message-mark-insert-end'.
@@ -1915,7 +1913,6 @@ If VERBATIM, use slrn style verbatim marks (\"#v+\" and \"#v-\")."
     (goto-char beg)
     (insert (if verbatim "#v+\n" message-mark-insert-begin))))
 
-;;;###autoload
 (defun message-mark-insert-file (file &optional verbatim)
   "Insert FILE at point, marking it with enclosing tags.
 See `message-mark-insert-begin' and `message-mark-insert-end'.
@@ -1929,7 +1926,6 @@ If VERBATIM, use slrn style verbatim marks (\"#v+\" and \"#v-\")."
     (goto-char p)
     (insert (if verbatim "#v+\n" message-mark-insert-begin))))
 
-;;;###autoload
 (defun message-add-archive-header ()
   "Insert \"X-No-Archive: Yes\" in the header and a note in the body.
 The note can be customized using `message-archive-note'.  When called with a
@@ -1949,7 +1945,6 @@ body, set  `message-archive-note' to nil."
       (message-add-header message-archive-header)
       (message-sort-headers)))
 
-;;;###autoload
 (defun message-cross-post-followup-to-header (target-group)
   "Mangles FollowUp-To and Newsgroups header to point to TARGET-GROUP.
 With prefix-argument just set Follow-Up, don't cross-post."
@@ -1993,7 +1988,6 @@ With prefix-argument just set Follow-Up, don't cross-post."
       (insert (concat "\nFollowup-To: " target-group)))
   (setq message-cross-post-old-target target-group))
 
-;;;###autoload
 (defun message-cross-post-insert-note (target-group cross-post in-old
 						    old-groups)
   "Insert a in message body note about a set Followup or Crosspost.
@@ -2026,7 +2020,6 @@ been made to before the user asked for a Crosspost."
 	(insert (concat message-followup-to-note target-group "\n"))
       (insert (concat message-cross-post-note target-group "\n")))))
 
-;;;###autoload
 (defun message-cross-post-followup-to (target-group)
   "Crossposts message and set Followup-To to TARGET-GROUP.
 With prefix-argument just set Follow-Up, don't cross-post."
@@ -2068,7 +2061,6 @@ With prefix-argument just set Follow-Up, don't cross-post."
 
 ;;; Reduce To: to Cc: or Bcc: header
 
-;;;###autoload
 (defun message-reduce-to-to-cc ()
  "Replace contents of To: header with contents of Cc: or Bcc: header."
  (interactive)
