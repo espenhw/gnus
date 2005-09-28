@@ -1367,10 +1367,10 @@ starting with `not' and followed by regexps."
 (put 'message-mode 'font-lock-defaults '(message-font-lock-keywords t))
 
 (defvar message-face-alist
-  '((bold . bold-region)
+  '((bold . message-bold-region)
     (underline . underline-region)
     (default . (lambda (b e)
-		 (unbold-region b e)
+		 (message-unbold-region b e)
 		 (ununderline-region b e))))
   "Alist of mail and news faces for facemenu.
 The cdr of each entry is a function for applying the face to a region.")
@@ -6625,7 +6625,7 @@ you."
 ;; This code should be moved to underline.el (from which it is stolen).
 
 ;;;###autoload
-(defun bold-region (start end)
+(defun message-bold-region (start end)
   "Bold all nonblank characters in the region.
 Works by overstriking characters.
 Called from program, takes two arguments START and END
@@ -6641,7 +6641,7 @@ which specify the range to operate on."
 	(forward-char 1)))))
 
 ;;;###autoload
-(defun unbold-region (start end)
+(defun message-unbold-region (start end)
   "Remove all boldness (overstruck characters) in the region.
 Called from program, takes two arguments START and END
 which specify the range to operate on."

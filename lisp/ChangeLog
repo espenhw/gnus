@@ -1,3 +1,8 @@
+2005-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-bold-region, message-unbold-region): Rename
+	from `bold-region' and `unbold-region'.
+
 2005-09-28  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-use-idna): Default to t.
