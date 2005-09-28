@@ -1496,7 +1496,7 @@ no, only reply back to the author."
 				   (file-error))
 				 (mm-coding-system-p 'utf-8)
 				 (executable-find idna-program)
-				 'ask)
+				 t)
   "Whether to encode non-ASCII in domain names into ASCII according to IDNA."
   :version "22.1"
   :group 'message-headers
