@@ -13076,7 +13076,9 @@ Address of the intermediate host to connect to.
 
 The following variables affect the behavior of all, or several of the
 pre-made connection functions.  When not specified, all functions are
-affected.
+affected (the values of the following variables will be used as the
+default if each virtual @code{nntp} server doesn't specify those server
+variables individually).
 
 @table @code
 
@@ -13084,7 +13086,7 @@ affected.
 @vindex nntp-pre-command
 A command wrapper to use when connecting through a non native
 connection function (all except @code{nntp-open-network-stream},
-@code{nntp-open-tls-stream}, and @code{nntp-open-ssl-stream}.  This is
+@code{nntp-open-tls-stream}, and @code{nntp-open-ssl-stream}).  This is
 where you would put a @samp{SOCKS} wrapper for instance.
 
 @item nntp-address
@@ -13095,7 +13097,7 @@ The address of the @acronym{NNTP} server.
 @vindex nntp-port-number
 Port number to connect to the @acronym{NNTP} server.  The default is
 @samp{nntp}.  If you use @acronym{NNTP} over
-@acronym{tls}/@acronym{ssl}, you may want to use integer ports rather
+@acronym{TLS}/@acronym{SSL}, you may want to use integer ports rather
 than named ports (i.e, use @samp{563} instead of @samp{snews} or
 @samp{nntps}), because external @acronym{TLS}/@acronym{SSL} tools may
 not work with named ports.
