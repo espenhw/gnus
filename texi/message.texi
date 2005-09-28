@@ -785,14 +785,18 @@ Insert the message headers (@code{message-insert-headers}).
 @item C-c M-m
 @kindex C-c M-m
 @findex message-mark-inserted-region
-Mark some region in the current article with enclosing tags.
-See @code{message-mark-insert-begin} and @code{message-mark-insert-end}.
+Mark some region in the current article with enclosing tags.  See
+@code{message-mark-insert-begin} and @code{message-mark-insert-end}.
+When called with a prefix argument, use slrn style verbatim marks
+(@samp{#v+} and @samp{#v-}).
 
 @item C-c M-f
 @kindex C-c M-f
 @findex message-mark-insert-file
 Insert a file in the current article with enclosing tags.
 See @code{message-mark-insert-begin} and @code{message-mark-insert-end}.
+When called with a prefix argument, use slrn style verbatim marks
+(@samp{#v+} and @samp{#v-}).
 
 @end table
 
