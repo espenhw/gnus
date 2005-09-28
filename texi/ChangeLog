@@ -1,7 +1,8 @@
 2005-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Remove nntp-buggy-select, nntp-read-timeout,
-	nntp-server-hook, and nntp-warn-about-losing-connection.
+	nntp-server-hook, and nntp-warn-about-losing-connection; fix
+	description of nntp-open-connection-function.
 
 2005-09-27  Reiner Steib  <Reiner.Steib@gmx.de>
 

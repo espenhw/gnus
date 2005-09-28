@@ -12845,9 +12845,9 @@ that doesn't seem to work.
 It is possible to customize how the connection to the nntp server will
 be opened.  If you specify an @code{nntp-open-connection-function}
 parameter, Gnus will use that function to establish the connection.
-Five pre-made functions are supplied.  These functions can be grouped in
-two categories: direct connection functions (three pre-made), and
-indirect ones (two pre-made).
+Seven pre-made functions are supplied.  These functions can be grouped
+in two categories: direct connection functions (four pre-made), and
+indirect ones (three pre-made).
 
 @item nntp-prepare-post-hook
 @vindex nntp-prepare-post-hook
