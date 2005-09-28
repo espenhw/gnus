@@ -1,5 +1,7 @@
 2005-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-coding.texi: Added  some comments.
+
 	* message.texi (Insertion): Describe prefix for
 	message-mark-inserted-region and message-mark-insert-file.
 

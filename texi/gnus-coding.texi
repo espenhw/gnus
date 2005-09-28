@@ -33,10 +33,14 @@ license to the document, as described in section 6 of the license.
 @titlepage
 @title Gnus Coding Style and Maintainance Guide
 
-@c @author by 
+@c @author by Reiner Steib  <Reiner.Steib@gmx.de>
 
 @insertcopying
 @end titlepage
+
+@c Obviously this is only a very rudimentary draft.  We put it in CVS
+@c anyway hoping that it might annoy someone enough to fix it.  ;-)
+@c Fixing only a paragraph also is appreciated.
 
 @node Top
 
@@ -76,6 +80,11 @@ The CVS trunk is developed quite actively.
 
 
 @subsection Syncing
+
+@c Some MIDs related to this follow.  Use http://thread.gmane.org/MID
+@c (and click on the subject) to get the thread on Gmane.
+
+@c Some quotes from Miles Bader follow...
 
 @c <v9eklyke6b.fsf@marauder.physik.uni-ulm.de>
 @c <buovfd71nkk.fsf@mctpc71.ucom.lsi.nec.co.jp>
