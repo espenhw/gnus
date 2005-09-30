@@ -1,6 +1,6 @@
 2005-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* time-date.el: Autoload parse-time-string.
+	* time-date.el: Autoload parse-time-string, XEmacs needs it.
 
 2005-09-29  Simon Josefsson  <jas@extundo.com>
 
