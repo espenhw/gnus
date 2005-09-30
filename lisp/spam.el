@@ -42,6 +42,7 @@
 
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'spam-report))
+(eval-when-compile (require 'hashcash))
 
 (require 'gnus-sum)
 
@@ -2023,18 +2024,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;{{{ Hashcash.
 
-(eval-when-compile
-  (autoload 'mail-check-payment "hashcash"))
+(defun spam-check-hashcash ()
+  "Check the headers for hashcash payments."
+  (ignore-errors (mail-check-payment)))	 ;mail-check-payment returns a boolean
 
-(condition-case nil
-    (progn
-      (require 'hashcash)
-
-      (defun spam-check-hashcash ()
-	"Check the headers for hashcash payments."
-	(mail-check-payment)))	 ;mail-check-payment returns a boolean
-
-  (file-error))
 ;;}}}
 
 ;;{{{ BBDB

@@ -1,3 +1,10 @@
+2005-09-29  Simon Josefsson  <jas@extundo.com>
+
+	* spam.el: Load hashcash when compiling, to avoid warnings.  Don't
+	autoload mail-check-payment.
+	(spam-check-hashcash): Define unconditionally, since hashcash.el
+	is part of Gnus now.  Ignore errors from payment checking.
+
 2005-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-bold-region, message-unbold-region): Rename
