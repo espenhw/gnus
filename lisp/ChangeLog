@@ -1,3 +1,8 @@
+2005-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-el-elc): New entry.
+	(install): Use it so that .el files are necessarily installed.
+
 2005-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* time-date.el: Autoload parse-time-string, XEmacs needs it.
