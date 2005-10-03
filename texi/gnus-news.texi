@@ -89,8 +89,8 @@ It is enabled by default (see @code{password-cache}), with a short
 timeout of 16 seconds (see @code{password-cache-expiry}).  If
 @acronym{PGG} is used as the @acronym{PGP} back end, the @acronym{PGP}
 passphrase is managed by this mechanism.  Passwords for ManageSieve
-connections are managed by this mechanism, after quering the user about
-whether to do so.
+connections are managed by this mechanism, after querying the user
+about whether to do so.
 
 @item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
 
