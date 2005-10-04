@@ -1,5 +1,7 @@
 2005-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-url.el (mm-url-predefined-programs): Add switches for curl.
+
 	* gnus-util.el (gnus-remove-duplicates): Remove.
 
 	* nnmail.el (nnmail-article-group): Use mm-delete-duplicates
