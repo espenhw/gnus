@@ -28,6 +28,8 @@
 
 ;;; Code:
 
+(defvar dgnushack-default-load-path (copy-sequence load-path))
+
 (defalias 'facep 'ignore)
 
 (require 'cl)
@@ -410,6 +412,83 @@ dgnushack-compile."
 ;;; no-update-autoloads: t
 ;;; End:
 ;;; gnus-load.el ends here"))))
+
+(defun dgnushack-find-lisp-shadows (&optional lispdir)
+  "Return a list of directories in which other Gnus installations exist.
+This function looks for the other Gnus installations which will shadow
+the new Gnus Lisp modules which have been installed in LISPDIR, using
+the default `load-path'.  The return value will make sense only when
+LISPDIR is existent and is listed in the default `load-path'.  Assume
+LISPDIR will be prepended to `load-path' by a user if the default
+`load-path' does not contain it."
+  (unless lispdir
+    (setq lispdir (getenv "lispdir")))
+  (when (and lispdir (file-directory-p lispdir))
+    (setq lispdir (file-truename (directory-file-name lispdir)))
+    (let ((indices '("gnus.elc" "gnus.el" "gnus.el.bz2" "gnus.el.gz"
+		     "message.elc" "message.el" "message.el.bz2"
+		     "message.el.gz"))
+	  (path (delq nil (mapcar
+			   (lambda (p)
+			     (condition-case nil
+				 (when (and p (file-directory-p p))
+				   (file-truename (directory-file-name p)))
+			       (error nil)))
+			   dgnushack-default-load-path)))
+	  rest elcs)
+      (while path
+	(setq rest (cons (car path) rest)
+	      path (delete (car rest) (cdr path))))
+      (setq path (nreverse (cdr (member lispdir rest)))
+	    rest nil)
+      (while path
+	(setq elcs indices)
+	(while elcs
+	  (when (file-exists-p (expand-file-name (pop elcs) (car path)))
+	    (setq rest (cons (car path) rest)
+		  elcs nil)))
+	(setq path (cdr path)))
+      (prog1
+	  (setq path (nreverse rest))
+	(when path
+	  (let (print-level print-length)
+	    (princ (concat "\n\
+WARNING: The other Gnus installation" (if (cdr path) "s have" " has") "\
+ been detected in:\n\n  " (mapconcat 'identity path "\n  ") "\n\n\
+You will need to modify the run-time `load-path', remove them manually,
+or remove them using `make remove-installed-shadows'.\n\n"))))))))
+
+(defun dgnushack-remove-lisp-shadows (&optional lispdir)
+  "Remove the other Gnus installations which shadow the recent one."
+  (let ((path (with-temp-buffer
+		(let ((standard-output (current-buffer)))
+		  (dgnushack-find-lisp-shadows lispdir))))
+	elcs files shadows file)
+    (when path
+      (unless (setq elcs (directory-files srcdir nil "\\.elc\\'"))
+	(error "You should build .elc files first."))
+      (setq files
+	    (apply
+	     'append
+	     (mapcar
+	      (lambda (el)
+		(list (concat el "c") el (concat el ".bz2") (concat el ".gz")))
+	      (append
+	       (list (file-name-nondirectory dgnushack-gnus-load-file)
+		     (file-name-nondirectory dgnushack-cus-load-file))
+	       (mapcar (lambda (elc) (substring elc 0 -1)) elcs)))))
+      (while path
+	(setq shadows files)
+	(while shadows
+	  (setq file (expand-file-name (pop shadows) (car path)))
+	  (when (file-exists-p file)
+	    (princ (concat "  Removing " file "..."))
+	    (condition-case nil
+		(progn
+		  (delete-file file)
+		  (princ "done\n"))
+	      (error (princ "failed\n")))))
+	(setq path (cdr path))))))
 
 ;;; dgnushack.el ends here
 

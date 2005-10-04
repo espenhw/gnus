@@ -1,3 +1,13 @@
+2005-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (list-installed-shadows): New entry.
+	(install): Use it.
+	(remove-installed-shadows): New entry.
+
+	* dgnushack.el (dgnushack-default-load-path): New variable.
+	(dgnushack-find-lisp-shadows): New function.
+	(dgnushack-remove-lisp-shadows): New function.
+
 2005-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-el-elc): New entry.

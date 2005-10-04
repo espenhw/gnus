@@ -29,7 +29,7 @@ warn: clean-some gnus-load.el
 clever some l: gnus-load.el
 	$(EMACS_COMP) -f dgnushack-compile
 
-install: install-el-elc
+install: install-el-elc list-installed-shadows
 
 # This entry will never install .el files if there are no .elc files.
 install-el: gnus-load.el
@@ -66,6 +66,12 @@ install-el-elc: clever
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
 	done
+
+list-installed-shadows:
+	$(EMACS_COMP) -f dgnushack-find-lisp-shadows
+
+remove-installed-shadows:
+	$(EMACS_COMP) -f dgnushack-remove-lisp-shadows
 
 uninstall:
 	for p in *.elc; do \
