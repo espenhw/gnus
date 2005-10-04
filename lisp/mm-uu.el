@@ -167,7 +167,7 @@ This can be either \"inline\" or \"attachment\".")
     (verbatim-marks
      ;; slrn-style verbatim marks, see
      ;; http://www.slrn.org/manual/slrn-manual-6.html#ss6.81
-     "^#v\\+$"
+     "^#v\\+"
      "^#v\\-$"
      mm-uu-verbatim-marks-extract
      nil)
@@ -312,13 +312,13 @@ apply the face `mm-uu-extract'."
     (progn (goto-char start-point) (forward-line) (point))
     (progn (goto-char end-point) (forward-line -1) (point))
     t)
-   '("text/x-gnus-verbatim" (charset . gnus-decoded))))
+   '("text/x-verbatim" (charset . gnus-decoded))))
 
 (defun mm-uu-latex-extract ()
   (mm-make-handle
    (mm-uu-copy-to-buffer start-point end-point t)
    ;; application/x-tex?
-   '("text/x-gnus-verbatim" (charset . gnus-decoded))))
+   '("text/x-verbatim" (charset . gnus-decoded))))
 
 (defun mm-uu-emacs-sources-extract ()
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)

@@ -296,8 +296,7 @@ when selecting a different article."
   :group 'mime-display)
 
 (defcustom mm-automatic-display
-  '("text/plain" "text/enriched" "text/richtext" "text/html"
-    "text/x-gnus-verbatim"
+  '("text/plain" "text/enriched" "text/richtext" "text/html" "text/x-verbatim"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
     "message/rfc822" "text/x-patch" "text/dns" "application/pgp-signature"
     "application/emacs-lisp" "application/x-emacs-lisp"

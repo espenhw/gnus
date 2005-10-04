@@ -1,5 +1,12 @@
 2005-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-uu.el (mm-uu-verbatim-marks-extract, mm-uu-latex-extract):
+	Rename x-gnus-verbatim to x-verbatim.
+	(mm-uu-type-alist): Fix regexp for verbatim-marks.
+
+	* mm-decode.el (mm-automatic-display): Rename x-gnus-verbatim to
+	x-verbatim.
+
 	* mm-url.el (mm-url-predefined-programs): Add switches for curl.
 
 	* gnus-util.el (gnus-remove-duplicates): Remove.
