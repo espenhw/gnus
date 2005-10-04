@@ -1,3 +1,14 @@
+2005-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-insert-expires): New function.
+	(message-mode-map): Add key binding.
+	(message-mode-field-menu): Add menu entry.
+	(message-mode): Document it.
+
+2005-10-04  Josh Huber  <huber@alum.wpi.edu>
+
+	* message.el (message-make-expires-date): New function.
+
 2005-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (list-installed-shadows): New entry.

@@ -2311,6 +2311,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-fw" 'message-insert-wide-reply)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
   (define-key message-mode-map "\C-c\C-l" 'message-to-list-only)
+  (define-key message-mode-map "\C-c\C-f\C-e" 'message-insert-expires)
 
   (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
   (define-key message-mode-map "\C-c\M-n"
@@ -2419,7 +2420,8 @@ Point is left at the beginning of the narrowed-to region."
     ;; ["Followup-To (with note in body)" message-cross-post-followup-to t]
     ["Crosspost / Followup-To..." message-cross-post-followup-to t]
     ["Distribution" message-goto-distribution t]
-    ["X-No-Archive:" message-add-archive-header t ]
+    ["Expires" message-insert-expires t ]
+    ["X-No-Archive" message-add-archive-header t ]
     "----"
     ;; (typical) mailing-lists stuff
     ["Fetch To" message-insert-to
@@ -2522,6 +2524,7 @@ C-c C-f  move to a header field (and create it if there isn't):
          C-c C-f C-o  move to From (\"Originator\")
 	 C-c C-f C-f  move to Followup-To
 	 C-c C-f C-m  move to Mail-Followup-To
+	 C-c C-f C-e  move to Expires
 	 C-c C-f C-i  cycle through Importance values
 	 C-c C-f s    change subject and append \"(was: <Old Subject>)\"
 	 C-c C-f x    crossposting with FollowUp-To header and note in body
@@ -4694,6 +4697,23 @@ Otherwise, generate and save a value for `canlock-password' first."
 If NOW, use that time instead."
   (let ((system-time-locale "C"))
     (format-time-string "%a, %d %b %Y %T %z" now)))
+
+(defun message-insert-expires (days)
+  "Insert the Expires header.  Expiry in DAYS days."
+  (interactive "NExpire article in how many days? ")
+  (save-excursion
+    (message-position-on-field "Expires" "X-Draft-From")
+    (insert (message-make-expires-date days))))
+
+(defun message-make-expires-date (days)
+  "Make date string for the Expires header.  Expiry in DAYS days.
+
+In posting styles use `(\"Expires\" (make-expires-date 30))'."
+  (let* ((cur (decode-time (current-time)))
+	 (nday (+ days (nth 3 cur))))
+    (setf (nth 3 cur) nday)
+    (format-time-string "%a, %d %b %Y %H:%M:%S %Z"
+			(apply 'encode-time cur))))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."
