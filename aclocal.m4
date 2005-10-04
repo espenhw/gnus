@@ -87,7 +87,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
         datadir="\$(prefix)/lib"
         lispdir="\$(datadir)/${EMACS_FLAVOR}/site-packages/lisp/gnus"
     else
-    lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp"
+    lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp/gnus"
     fi
     for thedir in share lib; do
 	potential=
@@ -95,7 +95,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
            if test "$EMACS_FLAVOR" = "xemacs"; then
 	       lispdir="\$(prefix)/${thedir}/${EMACS_FLAVOR}/site-packages/lisp/gnus"
            else
-               lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp"
+               lispdir="\$(datadir)/${EMACS_FLAVOR}/site-lisp/gnus"
            fi
 	   break
 	fi
@@ -113,7 +113,7 @@ AC_DEFUN(AC_PATH_ETCDIR, [
     if test "$EMACS_FLAVOR" = "xemacs"; then
       etcdir="\$(lispdir)/../../etc"
     else
-    etcdir="\$(lispdir)/../etc"
+      etcdir="\$(lispdir)/../../etc"
     fi
   fi
   AC_MSG_RESULT($etcdir)

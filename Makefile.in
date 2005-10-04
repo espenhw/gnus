@@ -17,6 +17,12 @@ install:
 	cd texi && $(MAKE) EMACS="$(EMACS)" install
 	cd etc && $(MAKE) EMACS="$(EMACS)" install
 
+list-installed-shadows:
+	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" list-installed-shadows
+
+remove-installed-shadows:
+	cd lisp && $(MAKE) EMACS="$(EMACS)" lispdir="$(lispdir)" remove-installed-shadows
+
 uninstall:
 	cd lisp && $(MAKE) lispdir="$(lispdir)" uninstall
 	cd texi && $(MAKE) uninstall

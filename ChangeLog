@@ -1,3 +1,16 @@
+2005-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Default to .../site-lisp/gnus for
+	Emacs.
+	(AC_PATH_ETCDIR): Don't change the default value for Emacs.
+
+	* configure: Generated.
+
+	* Makefile.in (list-installed-shadows): New entry.
+	(remove-installed-shadows): New entry.
+
+	* GNUS-NEWS: Generated.
+
 2005-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* todo: Remove some items that are already done.  Add some new
