@@ -4,6 +4,7 @@
 	(message-mode-map): Add key binding.
 	(message-mode-field-menu): Add menu entry.
 	(message-mode): Document it.
+	(message-make-expires-date): Use `message-make-date'.
 
 2005-10-04  Josh Huber  <huber@alum.wpi.edu>
 
