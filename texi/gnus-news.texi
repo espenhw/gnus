@@ -143,6 +143,12 @@ customized with @code{gnus-summary-to-prefix} and
 See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
 @xref{MIME Commands}, @ref{Using MIME}.
 
+@item Lisp files are now installed in .../site-lisp/gnus/ by default.
+It defaulted to .../site-lisp/ formerly.  In addition to this, the new
+installer issues a warning if the other Gnus installations which will
+shadow the latest one are detected.  You can then remove those shadows
+manually or remove them using @samp{make remove-installed-shadows}.
+
 @end itemize
 @c gnus-news.texi ends here.
 
