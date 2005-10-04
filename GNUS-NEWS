@@ -54,7 +54,7 @@ articles (`gnus-article-treat-ansi-sequences').
 
 ** International host names (IDNA) can now be decoded inside article
 bodies using `W i' (`gnus-summary-idna-message').  This require that
-GNU Libidn (<http://www.gnu.org/software/libidn/>) has been installed.
+GNU Libidn (`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus includes an Emacs Lisp SASL library.
 
@@ -73,7 +73,7 @@ It is enabled by default (see `password-cache'), with a short timeout
 of 16 seconds (see `password-cache-expiry').  If PGG is used as the
 PGP back end, the PGP passphrase is managed by this mechanism.
 Passwords for ManageSieve connections are managed by this mechanism,
-after quering the user about whether to do so.
+after querying the user about whether to do so.
 
 ** IMAP identity (RFC 2971) is supported.
 
@@ -122,6 +122,12 @@ To From Newsgroups::.
 ** You can replace MIME parts with external bodies.  See
 `gnus-mime-replace-part' and `gnus-article-replace-part'.  *Note MIME
 Commands::, *Note Using MIME::.
+
+** Lisp files are now installed in .../site-lisp/gnus/ by default.  It
+defaulted to .../site-lisp/ formerly.  In addition to this, the new
+installer issues a warning if the other Gnus installations which will
+shadow the latest one are detected.  You can then remove those shadows
+manually or remove them using `make remove-installed-shadows'.
 
 
 * For older news, see Gnus info node "New Features".
