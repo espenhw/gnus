@@ -15307,8 +15307,9 @@ An integer specifying the minimum age, in seconds, of an article
 before it will be expired, or the symbol @code{never} to specify that
 articles should never be expired.  If this parameter is not set,
 @code{nnmaildir} falls back to the usual
-@code{nnmail-expiry-wait}(@code{-function}) variables (overrideable by
-the @code{expiry-wait}(@code{-function}) group parameters.  If you
+@code{nnmail-expiry-wait}(@code{-function}) variables (the
+@code{expiry-wait} group parameter overrides @code{nnmail-expiry-wait}
+and makes @code{nnmail-expiry-wait-function} ineffective).  If you
 wanted a value of 3 days, you could use something like @code{[(* 3 24
 60 60)]}; @code{nnmaildir} will evaluate the form and use the result.
 An article's age is measured starting from the article file's
@@ -15331,8 +15332,8 @@ the parameter belongs to, then the article is not expired at all.  If
 you use the vector form, the first element is evaluated once for each
 article.  So that form can refer to
 @code{nnmaildir-article-file-name}, etc., to decide where to put the
-article.  @emph{If this parameter is not set, @code{nnmaildir} does
-not fall back to the @code{expiry-target} group parameter or the
+article.  @emph{Even if this parameter is not set, @code{nnmaildir}
+does not fall back to the @code{expiry-target} group parameter or the
 @code{nnmail-expiry-target} variable.}
 
 @item read-only
