@@ -1,5 +1,9 @@
 2005-10-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-charset-synonym-alist): Improve doc string.
+	(mm-charset-override-alist): New variable.
+	(mm-charset-to-coding-system): Use it.
+
 	* dgnushack.el (with-syntax-table): Add some URLs WRT the XEmacs bug.
 
 2005-10-04  David Hansen  <david.hansen@gmx.net>

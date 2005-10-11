@@ -195,7 +195,24 @@ system object in XEmacs."
 	    '((ks_c_5601-1987 . cp949))
 	  '((ks_c_5601-1987 . euc-kr))))
     )
-  "A mapping from invalid charset names to the real charset names.")
+  "A mapping from unknown or invalid charset names to the real charset names.")
+
+(defcustom mm-charset-override-alist
+  `((iso-8859-1 . windows-1252))
+  "A mapping from undesired charset names to their replacement.
+
+You may add pair like (iso-8859-1 . windows-1252) here,
+i.e. treat iso-8859-1 as windows-1252.  windows-1252 is a
+superset of iso-8859-1."
+  :type '(list (set :inline t
+		    (const (iso-8859-1 . windows-1252))
+		    (const (undecided  . windows-1252)))
+	       (repeat :inline t
+		       :tag "Other options"
+		       (cons (symbol :tag "From charset")
+			     (symbol :tag "To charset"))))
+  :version "23.0" ;; No Gnus
+  :group 'mime)
 
 (defvar mm-binary-coding-system
   (cond
@@ -436,6 +453,9 @@ used as the line break code type of the coding system."
    ((or (null (mm-get-coding-system-list))
 	(not (fboundp 'coding-system-get)))
     charset)
+   ;; Check override list quite early:
+   ((let ((cs (cdr (assq charset mm-charset-override-alist))))
+      (and cs (mm-coding-system-p cs) cs)))
    ;; ascii
    ((eq charset 'us-ascii)
     'ascii)
