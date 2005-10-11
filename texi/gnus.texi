@@ -15752,7 +15752,8 @@ interfaces to these sources.
 * Customizing w3::              Doing stuff to Emacs/w3 from Gnus.
 @end menu
 
-All the web sources require Emacs/w3 and the url library to work.
+All the web sources require Emacs/w3 and the url library or those
+alternatives to work.
 
 The main caveat with all these web sources is that they probably won't
 work for a very long time.  Gleaning information from the @acronym{HTML} data

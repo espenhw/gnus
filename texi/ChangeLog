@@ -1,3 +1,7 @@
+2005-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Browsing the Web): Fix description.
+
 2005-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Maildir): Clarify expire-age and expire-group.
