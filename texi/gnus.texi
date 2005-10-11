@@ -688,7 +688,7 @@ Browsing the Web
 * Ultimate::                    The Ultimate Bulletin Board systems.
 * Web Archive::                 Reading mailing list archived on web.
 * RSS::                         Reading RDF site summary.
-* Customizing w3::              Doing stuff to Emacs/w3 from Gnus.
+* Customizing W3::              Doing stuff to Emacs/W3 from Gnus.
 
 @acronym{IMAP}
 
@@ -8653,8 +8653,8 @@ Customization, emacs-mime, The Emacs MIME Manual}) to convert the
 can use include:
 
 @table @code
-@item w3
-Use Emacs/w3.
+@item W3
+Use Emacs/W3.
 
 @item w3m
 Use @uref{http://emacs-w3m.namazu.org/, emacs-w3m}.
@@ -15749,10 +15749,10 @@ interfaces to these sources.
 * Ultimate::                    The Ultimate Bulletin Board systems.
 * Web Archive::                 Reading mailing list archived on web.
 * RSS::                         Reading RDF site summary.
-* Customizing w3::              Doing stuff to Emacs/w3 from Gnus.
+* Customizing W3::              Doing stuff to Emacs/W3 from Gnus.
 @end menu
 
-All the web sources require Emacs/w3 and the url library or those
+All the web sources require Emacs/W3 and the url library or those
 alternatives to work.
 
 The main caveat with all these web sources is that they probably won't
@@ -15840,8 +15840,9 @@ make money off of advertisements, not to provide services to the
 community.  Since @code{nnweb} washes the ads off all the articles, one
 might think that the providers might be somewhat miffed.  We'll see.
 
-You must have the @code{url} and @code{w3} package installed to be able
-to use @code{nnweb}.
+You must have the @code{url} and @code{W3} package or those alternatives
+(try @code{customize-group} on the @samp{mm-url} variable group)
+installed to be able to use @code{nnweb}.
 
 Virtual server variables:
 
@@ -16156,18 +16157,19 @@ summary buffer.
 (add-to-list 'nnmail-extra-headers nnrss-url-field)
 @end lisp
 
-@node Customizing w3
-@subsection Customizing w3
-@cindex w3
+@node Customizing W3
+@subsection Customizing W3
+@cindex W3
 @cindex html
 @cindex url
 @cindex Netscape
 
-Gnus uses the url library to fetch web pages and Emacs/w3 to display web
-pages.  Emacs/w3 is documented in its own manual, but there are some
-things that may be more relevant for Gnus users.
+Gnus uses the url library to fetch web pages and Emacs/W3 (or those
+alternatives) to display web pages.  Emacs/W3 is documented in its own
+manual, but there are some things that may be more relevant for Gnus
+users.
 
-For instance, a common question is how to make Emacs/w3 follow links
+For instance, a common question is how to make Emacs/W3 follow links
 using the @code{browse-url} functions (which will call some external web
 browser like Netscape).  Here's one way:
 
@@ -16182,7 +16184,7 @@ browser like Netscape).  Here's one way:
         (w3-fetch-orig url target)))))
 @end lisp
 
-Put that in your @file{.emacs} file, and hitting links in w3-rendered
+Put that in your @file{.emacs} file, and hitting links in W3-rendered
 @acronym{HTML} in the Gnus article buffers will use @code{browse-url} to
 follow the link.
 
@@ -25006,7 +25008,7 @@ XEmacs is distributed as a collection of packages.  You should install
 whatever packages the Gnus XEmacs package requires.  The current
 requirements are @samp{gnus}, @samp{mail-lib}, @samp{xemacs-base},
 @samp{eterm}, @samp{sh-script}, @samp{net-utils}, @samp{os-utils},
-@samp{dired}, @samp{mh-e}, @samp{sieve}, @samp{ps-print}, @samp{w3},
+@samp{dired}, @samp{mh-e}, @samp{sieve}, @samp{ps-print}, @samp{W3},
 @samp{pgg}, @samp{mailcrypt}, @samp{ecrypto}, and @samp{sasl}.
 
 

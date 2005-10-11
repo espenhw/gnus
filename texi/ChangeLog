@@ -1,6 +1,9 @@
 2005-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus.texi (Browsing the Web): Fix description.
+	* gnus.texi: Emacs/w3 -> Emacs/W3.
+	(Browsing the Web): Fix description.
+	(Web Searches): Ditto.
+	(Customizing W3): Ditto.
 
 2005-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
