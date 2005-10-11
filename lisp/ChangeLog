@@ -3,6 +3,10 @@
 	* mm-util.el (mm-charset-synonym-alist): Improve doc string.
 	(mm-charset-override-alist): New variable.
 	(mm-charset-to-coding-system): Use it.
+	(mm-codepage-setup): New helper function.
+	(mm-charset-eval-alist): New variable.
+	(mm-charset-to-coding-system): Use mm-charset-eval-alist.  Warn
+	about unknown charsets.
 
 	* dgnushack.el (with-syntax-table): Add some URLs WRT the XEmacs bug.
 

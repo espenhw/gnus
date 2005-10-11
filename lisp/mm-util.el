@@ -162,6 +162,30 @@ system object in XEmacs."
       ;; Is this branch ever actually useful?
       (car (memq cs (mm-get-coding-system-list))))))
 
+(defun mm-codepage-setup (number &optional alias)
+  "Create a coding system cpNUMBER.
+The coding system is created using `codepage-setup'.  If ALIAS is
+non-nil, an alias is created and added to
+`mm-charset-synonym-alist'.  If ALIAS is a string, it's used as
+the alias.  Else windows-NUMBER is used."
+  (interactive
+   (let ((completion-ignore-case t)
+	 (candidates (cp-supported-codepages)))
+     (list (completing-read "Setup DOS Codepage: (default 437) " candidates
+			    nil t nil nil "437"))))
+  (when alias
+    (setq alias (if (stringp alias)
+		    (intern alias)
+		  (intern (format "windows-%s" number)))))
+  (let* ((cp (intern (format "cp%s" number))))
+    (unless (mm-coding-system-p cp)
+      (codepage-setup number))
+    (when (and alias
+	       (mm-coding-system-p alias)
+	       ;; Don't add alias if setup of cp failed.
+	       (mm-coding-system-p cp))
+      (add-to-list 'mm-charset-synonym-alist (cons alias cp)))))
+
 (defvar mm-charset-synonym-alist
   `(
     ;; Not in XEmacs, but it's not a proper MIME charset anyhow.
@@ -212,6 +236,33 @@ superset of iso-8859-1."
 		       (cons (symbol :tag "From charset")
 			     (symbol :tag "To charset"))))
   :version "23.0" ;; No Gnus
+  :group 'mime)
+
+(defcustom mm-charset-eval-alist
+  (if (featurep 'xemacs)
+      nil ;; I don't know what would be useful for XEmacs.
+    '(;; Emacs 21 offers 1250 1251 1253 1257.  Emacs 22 provides autoloads for
+      ;; 1250-1258 (i.e. `mm-codepage-setup' does nothing).
+      (windows-1250 . (mm-codepage-setup 1250 t))
+      (windows-1251 . (mm-codepage-setup 1251 t))
+      (windows-1253 . (mm-codepage-setup 1253 t))
+      (windows-1257 . (mm-codepage-setup 1257 t))))
+  "An alist of (CHARSET . FORM) pairs.
+If an article is encoded in an unknown CHARSET, FORM is
+evaluated.  This allows to load additional libraries providing
+charsets on demand.  If supported by your Emacs version, you
+could use `autoload-coding-system' here."
+  :version "23.0" ;; No Gnus
+  :type '(list (set :inline t
+		    (const (windows-1250 . (mm-codepage-setup 1250 t)))
+		    (const (windows-1251 . (mm-codepage-setup 1251 t)))
+		    (const (windows-1253 . (mm-codepage-setup 1253 t)))
+		    (const (windows-1257 . (mm-codepage-setup 1257 t)))
+		    (const (cp850 . (mm-codepage-setup 850 nil))))
+	       (repeat :inline t
+		       :tag "Other options"
+		       (cons (symbol :tag "charset")
+			     (symbol :tag "form"))))
   :group 'mime)
 
 (defvar mm-binary-coding-system
@@ -468,9 +519,27 @@ used as the line break code type of the coding system."
 ;;; 	 (eq charset (coding-system-get charset 'mime-charset))
 	 )
     charset)
+   ;; Eval expressions from `mm-charset-eval-alist'
+   ((let* ((el (assq charset mm-charset-eval-alist))
+	   (cs (car el))
+	   (form (cdr el)))
+      (and cs
+	   form
+	   (prog2
+	       ;; Avoid errors...
+	       (condition-case nil (eval form) (error nil))
+	       ;; (message "Failed to eval `%s'" form))
+	       (mm-coding-system-p cs)
+	     (message "Added charset `%s' via `mm-charset-eval-alist'" cs))
+	   cs)))
    ;; Translate invalid charsets.
    ((let ((cs (cdr (assq charset mm-charset-synonym-alist))))
-      (and cs (mm-coding-system-p cs) cs)))
+      (and cs
+	   (mm-coding-system-p cs)
+	   ;; (message
+	   ;;  "Using synonym `%s' from `mm-charset-synonym-alist' for `%s'"
+	   ;;  cs charset)
+	   cs)))
    ;; Last resort: search the coding system list for entries which
    ;; have the right mime-charset in case the canonical name isn't
    ;; defined (though it should be).
@@ -482,6 +551,11 @@ used as the line break code type of the coding system."
 		 (eq charset (or (coding-system-get c :mime-charset)
 				 (coding-system-get c 'mime-charset))))
 	    (setq cs c)))
+      (unless cs
+	;; Warn the user about unknown charset:
+	(if (fboundp 'gnus-message)
+	    (gnus-message 7 "Unknown charset: %s" charset)
+	  (message "Unknown charset: %s" charset)))
       cs))))
 
 (eval-and-compile
