@@ -1,3 +1,7 @@
+2005-10-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* dgnushack.el (with-syntax-table): Add some URLs WRT the XEmacs bug.
+
 2005-10-04  David Hansen  <david.hansen@gmx.net>
 
 	* nnrss.el (nnrss-request-article): Add support for the comments tag.
