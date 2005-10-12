@@ -16062,9 +16062,9 @@ system because @acronym{RSS} uses UTF-8 for encoding non-@acronym{ASCII}
 text by default.  It is also used by default for non-@acronym{ASCII}
 group names.
 
-@kindex G R (Summary)
-Use @kbd{G R} from the summary buffer to subscribe to a feed---you will
-be prompted for the location, the title and the description of the feed.
+@kindex G R (Group)
+Use @kbd{G R} from the group buffer to subscribe to a feed---you will be
+prompted for the location, the title and the description of the feed.
 The title, which allows any characters, will be used for the group name
 and the name of the group data file.  The description can be omitted.
 
