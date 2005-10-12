@@ -7213,6 +7213,8 @@ For example:
     t)
    ((eq val 'head)
     nil)
+   ((eq val 'first)
+    (eq part-number 1))
    ((eq val 'last)
     (eq part-number total-parts))
    ((numberp val)
