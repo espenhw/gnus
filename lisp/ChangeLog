@@ -1,5 +1,11 @@
 2005-10-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-charset-to-coding-system): Add allow-override.
+	Use `mm-charset-override-alist' only when decoding.
+
+	* mm-bodies.el (mm-decode-body): Call
+	`mm-charset-to-coding-system' with allow-override argument.
+
 	* gnus-art.el (gnus-mime-view-part-as-type-internal): Try to fetch
 	`filename' from Content-Disposition if Content-Type doesn't
 	provide `name'.

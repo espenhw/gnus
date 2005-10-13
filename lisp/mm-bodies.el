@@ -247,7 +247,10 @@ decoding.  If it is nil, default to `mail-parse-charset'."
     (when encoding
       (mm-decode-content-transfer-encoding encoding type))
     (when (featurep 'mule)  ; Fixme: Wrong test for unibyte session.
-      (let ((coding-system (mm-charset-to-coding-system charset)))
+      (let ((coding-system (mm-charset-to-coding-system
+			    ;; Allow overwrite using
+			    ;; `mm-charset-override-alist'.
+			    charset nil t)))
 	(if (and (not coding-system)
 		 (listp mail-parse-ignored-charsets)
 		 (memq 'gnus-unknown mail-parse-ignored-charsets))

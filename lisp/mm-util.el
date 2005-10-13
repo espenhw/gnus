@@ -488,11 +488,17 @@ mail with multiple parts is preferred to sending a Unicode one.")
 	(pop alist))
       out)))
 
-(defun mm-charset-to-coding-system (charset &optional lbt)
+(defun mm-charset-to-coding-system (charset &optional lbt
+					    allow-override)
   "Return coding-system corresponding to CHARSET.
 CHARSET is a symbol naming a MIME charset.
 If optional argument LBT (`unix', `dos' or `mac') is specified, it is
-used as the line break code type of the coding system."
+used as the line break code type of the coding system.
+
+If ALLOW-OVERRIDE is given, use `mm-charset-override-alist' to
+map undesired charset names to their replacement.  This should
+only be used for decoding, not for encoding."
+  ;; OVERRIDE is used (only) in `mm-decode-body'.
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
   (when lbt
@@ -504,9 +510,11 @@ used as the line break code type of the coding system."
    ((or (null (mm-get-coding-system-list))
 	(not (fboundp 'coding-system-get)))
     charset)
-   ;; Check override list quite early:
-   ((let ((cs (cdr (assq charset mm-charset-override-alist))))
-      (and cs (mm-coding-system-p cs) cs)))
+   ;; Check override list quite early.  Should only used for decoding, not for
+   ;; encoding!
+   ((and allow-override
+	 (let ((cs (cdr (assq charset mm-charset-override-alist))))
+	   (and cs (mm-coding-system-p cs) cs))))
    ;; ascii
    ((eq charset 'us-ascii)
     'ascii)
