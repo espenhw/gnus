@@ -16777,7 +16777,7 @@ delete them.
 @cindex namespaces
 
 The @acronym{IMAP} protocol has a concept called namespaces, described
-by the following text in the RFC:
+by the following text in the RFC2060:
 
 @display
 5.1.2.  Mailbox Namespace Naming Convention
