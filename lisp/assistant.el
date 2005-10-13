@@ -31,6 +31,11 @@
 (require 'widget)
 (require 'wid-edit)
 
+(autoload 'gnus-error "gnus-util")
+(autoload 'netrc-get "netrc")
+(autoload 'netrc-machine "netrc")
+(autoload 'netrc-parse "netrc")
+
 (defvar assistant-readers
   '(("variable" assistant-variable-reader)
     ("validate" assistant-sexp-reader)

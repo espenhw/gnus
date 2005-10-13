@@ -1,5 +1,7 @@
 2005-10-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* assistant.el: Autoload gnus-util and netrc.
+
 	* mm-util.el (mm-charset-to-coding-system): Add allow-override.
 	Use `mm-charset-override-alist' only when decoding.
 
