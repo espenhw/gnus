@@ -4317,9 +4317,12 @@ Deleting parts may malfunction or destroy the article; continue? "))
 
 (defun gnus-mime-view-part-as-type-internal ()
   (gnus-article-check-buffer)
-  (let* ((name (mail-content-type-get
-		(mm-handle-type (get-text-property (point) 'gnus-data))
-		'name))
+  (let* ((handle (get-text-property (point) 'gnus-data))
+	 (name (or
+		;; Content-Type: foo/bar; name=...
+		(mail-content-type-get (mm-handle-type handle) 'name)
+		;; Content-Disposition: attachment; filename=...
+		(cdr (assq 'filename (cdr (mm-handle-disposition handle))))))
 	 (def-type (and name (mm-default-file-encoding name))))
     (and def-type (cons def-type 0))))
 
@@ -4327,11 +4330,14 @@ Deleting parts may malfunction or destroy the article; continue? "))
   "Choose a MIME media type, and view the part as such."
   (interactive)
   (unless mime-type
-    (setq mime-type (completing-read
-		     "View as MIME type: "
-		     (mapcar #'list (mailcap-mime-types))
-		     nil nil
-		     (gnus-mime-view-part-as-type-internal))))
+    (setq mime-type
+	  (let ((default (gnus-mime-view-part-as-type-internal)))
+	    (completing-read
+	     (format "View as MIME type (default %s): "
+		     (car default))
+	     (mapcar #'list (mailcap-mime-types))
+	     nil nil nil nil
+	     (car default)))))
   (gnus-article-check-buffer)
   (let ((handle (get-text-property (point) 'gnus-data)))
     (when handle
