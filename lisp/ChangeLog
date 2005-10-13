@@ -1,5 +1,18 @@
 2005-10-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml-sec.el (mml-secure-method): New internal variable.
+	(mml-secure-sign, mml-secure-encrypt, mml-secure-message-sign)
+	(mml-secure-message-sign-encrypt, mml-secure-message-encrypt): New
+	functions using mml-secure-method.
+
+	* mml.el (mml-mode-map): Add key bindings for those functions.
+	(mml-menu): Simplify security menu entries.  Suggested by Jesper
+	Harder <harder@myrealbox.com>.
+	(mml-attach-file, mml-attach-buffer, mml-attach-external): Goto
+	end of message if point is the headers of the message.
+
+	* message.el (message-in-body-p): New function.
+
 	* assistant.el: Autoload gnus-util and netrc.
 
 	* mm-util.el (mm-charset-to-coding-system): Add allow-override.

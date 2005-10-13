@@ -870,6 +870,11 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 	(encryptpart (make-sparse-keymap))
 	(map (make-sparse-keymap))
 	(main (make-sparse-keymap)))
+    (define-key map "\C-s" 'mml-secure-message-sign)
+    (define-key map "\C-c" 'mml-secure-message-encrypt)
+    (define-key map "\C-e" 'mml-secure-message-sign-encrypt)
+    (define-key map "\C-p\C-s" 'mml-secure-sign)
+    (define-key map "\C-p\C-c" 'mml-secure-encrypt)
     (define-key sign "p" 'mml-secure-message-sign-pgpmime)
     (define-key sign "o" 'mml-secure-message-sign-pgp)
     (define-key sign "s" 'mml-secure-message-sign-smime)
@@ -907,26 +912,51 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Attach File..." mml-attach-file
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Attach a file at point"))]
-    ["Attach Buffer..." mml-attach-buffer t]
-    ["Attach External..." mml-attach-external t]
-    ["Insert Part..." mml-insert-part t]
-    ["Insert Multipart..." mml-insert-multipart t]
-    ["PGP/MIME Sign" mml-secure-message-sign-pgpmime t]
-    ["PGP/MIME Encrypt" mml-secure-message-encrypt-pgpmime t]
-    ["PGP Sign" mml-secure-message-sign-pgp t]
-    ["PGP Encrypt" mml-secure-message-encrypt-pgp t]
-    ["S/MIME Sign" mml-secure-message-sign-smime t]
-    ["S/MIME Encrypt" mml-secure-message-encrypt-smime t]
-    ("Secure MIME part"
-     ["PGP/MIME Sign Part" mml-secure-sign-pgpmime t]
-     ["PGP/MIME Encrypt Part" mml-secure-encrypt-pgpmime t]
-     ["PGP Sign Part" mml-secure-sign-pgp t]
-     ["PGP Encrypt Part" mml-secure-encrypt-pgp t]
-     ["S/MIME Sign Part" mml-secure-sign-smime t]
-     ["S/MIME Encrypt Part" mml-secure-encrypt-smime t])
-    ["Encrypt/Sign off" mml-unsecure-message t]
+    ["Attach Buffer..." mml-attach-buffer
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Attach a buffer to the outgoing MIME message"))]
+    ["Attach External..." mml-attach-external
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Attach reference to file"))]
+    ;;
+    ("Change Security Method"
+     ["PGP/MIME"
+      (lambda () (interactive) (setq mml-secure-method "pgpmime"))
+      ,@(if (featurep 'xemacs) nil
+	  '(:help "Set Security Method to PGP/MIME"))
+      :style radio
+      :selected (equal mml-secure-method "pgpmime") ]
+     ["S/MIME"
+      (lambda () (interactive) (setq mml-secure-method "smime"))
+      ,@(if (featurep 'xemacs) nil
+	  '(:help "Set Security Method to S/MIME"))
+      :style radio
+      :selected (equal mml-secure-method "smime") ]
+     ["Inline PGP"
+      (lambda () (interactive) (setq mml-secure-method "pgp"))
+      ,@(if (featurep 'xemacs) nil
+	  '(:help "Set Security Method to inline PGP"))
+      :style radio
+      :selected (equal mml-secure-method "pgp") ] )
+    ;;
+    ["Sign Message" mml-secure-message-sign t]
+    ["Encrypt Message" mml-secure-message-encrypt t]
+    ["Sign and Encrypt Message" mml-secure-message-sign-encrypt t]
+    ["Encrypt/Sign off" mml-unsecure-message
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Don't Encrypt/Sign Message"))]
+    ;; Maybe we could remove these, because people who write MML most probably
+    ;; don't use the menu:
+    ["Insert Part..." mml-insert-part
+     :active (message-in-body-p)]
+    ["Insert Multipart..." mml-insert-multipart
+     :active (message-in-body-p)]
+    ;;
+    ;; Do we have separate encrypt and encrypt/sign commands for parts?
+    ["Sign Part" mml-secure-sign t]
+    ["Encrypt Part" mml-secure-encrypt t]
     ;;["Narrow" mml-narrow-to-part t]
-    ["Quote MML" mml-quote-region
+    ["Quote MML in region" mml-quote-region
      :active (message-mark-active-p)
      ,@(if (featurep 'xemacs) nil
 	 '(:help "Quote MML tags in region"))]
@@ -1093,11 +1123,13 @@ description of the attachment."
 	  (description (mml-minibuffer-read-description))
 	  (disposition (mml-minibuffer-read-disposition type)))
      (list file type description disposition)))
-  (mml-insert-empty-tag 'part
-			'type type
-			'filename file
-			'disposition (or disposition "attachment")
-			'description description))
+  (save-excursion
+    (unless (message-in-body-p) (goto-char (point-max)))
+    (mml-insert-empty-tag 'part
+			  'type type
+			  'filename file
+			  'disposition (or disposition "attachment")
+			  'description description)))
 
 (defun mml-dnd-attach-file (uri action)
   "Attach a drag and drop file.
@@ -1131,8 +1163,11 @@ See `mml-attach-file' for details of operation."
 	  (type (mml-minibuffer-read-type buffer "text/plain"))
 	  (description (mml-minibuffer-read-description)))
      (list buffer type description)))
-  (mml-insert-empty-tag 'part 'type type 'buffer buffer
-			'disposition "attachment" 'description description))
+  (save-excursion
+    (unless (message-in-body-p) (goto-char (point-max)))
+    (mml-insert-empty-tag 'part 'type type 'buffer buffer
+			  'disposition "attachment"
+			  'description description)))
 
 (defun mml-attach-external (file &optional type description)
   "Attach an external file into the buffer.
@@ -1143,8 +1178,10 @@ TYPE is the MIME type to use."
 	  (type (mml-minibuffer-read-type file))
 	  (description (mml-minibuffer-read-description)))
      (list file type description)))
-  (mml-insert-empty-tag 'external 'type type 'name file
-			'disposition "attachment" 'description description))
+  (save-excursion
+    (unless (message-in-body-p) (goto-char (point-max)))
+    (mml-insert-empty-tag 'external 'type type 'name file
+			  'disposition "attachment" 'description description)))
 
 (defun mml-insert-multipart (&optional type)
   (interactive (list (completing-read "Multipart type (default mixed): "
