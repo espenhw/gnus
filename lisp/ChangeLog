@@ -1,3 +1,7 @@
+2005-10-09  Daniel Brockman <daniel@brockman.se>
+
+	* format-spec.el (format-spec): Propagate text properties of % spec.
+
 2005-10-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-treat-predicate): Add `first'.
