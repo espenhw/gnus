@@ -28,14 +28,14 @@
 
 (if (featurep 'xemacs)
     (progn
-      (maybe-fbind '(delete-overlay
-		     detect-coding-string eudc-expand-inline event-click-count
-		     event-end event-start find-coding-systems-for-charsets
+      (maybe-fbind '(codepage-setup
+		     delete-overlay detect-coding-string eudc-expand-inline
+		     event-click-count event-end event-start
+		     find-coding-systems-for-charsets
 		     find-coding-systems-region find-coding-systems-string
-		     mail-abbrevs-setup mouse-minibuffer-check
-		     mouse-movement-p mouse-scroll-subr overlay-lists
-		     posn-point posn-window read-event set-buffer-multibyte
-		     track-mouse window-edges))
+		     mail-abbrevs-setup mouse-minibuffer-check mouse-movement-p
+		     mouse-scroll-subr overlay-lists posn-point posn-window
+		     read-event set-buffer-multibyte track-mouse window-edges))
       (maybe-bind '(adaptive-fill-first-line-regexp
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment
