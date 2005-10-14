@@ -17109,34 +17109,48 @@ totally ignored.
 
 @item article-begin
 This setting has to be present in all document type definitions.  It
-says what the beginning of each article looks like.
+says what the beginning of each article looks like.  To do more
+complicated things that cannot be dealt with a simple regexp, you can
+use @code{article-begin-function} instead of this.
+
+@item article-begin-function
+If present, this should be a function that moves point to the beginning
+of each article.  This setting overrides @code{article-begin}.
+
+@item head-begin
+If present, this should be a regexp that matches the head of the
+article.  To do more complicated things that cannot be dealt with a
+simple regexp, you can use @code{head-begin-function} instead of this.
 
 @item head-begin-function
 If present, this should be a function that moves point to the head of
-the article.
+the article.  This setting overrides @code{head-begin}.
 
-@item nndoc-head-begin
-If present, this should be a regexp that matches the head of the
-article.
-
-@item nndoc-head-end
+@item head-end
 This should match the end of the head of the article.  It defaults to
 @samp{^$}---the empty line.
 
-@item body-begin-function
-If present, this function should move point to the beginning of the body
-of the article.
-
 @item body-begin
 This should match the beginning of the body of the article.  It defaults
-to @samp{^\n}.
+to @samp{^\n}.  To do more complicated things that cannot be dealt with
+a simple regexp, you can use @code{body-begin-function} instead of this.
+
+@item body-begin-function
+If present, this function should move point to the beginning of the body
+of the article.  This setting overrides @code{body-begin}.
+
+@item body-end
+If present, this should match the end of the body of the article.  To do
+more complicated things that cannot be dealt with a simple regexp, you
+can use @code{body-end-function} instead of this.
 
 @item body-end-function
 If present, this function should move point to the end of the body of
-the article.
+the article.  This setting overrides @code{body-end}.
 
-@item body-end
-If present, this should match the end of the body of the article.
+@item file-begin
+If present, this should match the beginning of the file.  All text
+before this regexp will be totally ignored.
 
 @item file-end
 If present, this should match the end of the file.  All text after this
@@ -17166,6 +17180,19 @@ If present, this function is called to generate a head that Gnus can
 understand.  It is called with the article number as a parameter, and is
 expected to generate a nice head for the article in question.  It is
 called when requesting the headers of all articles.
+
+@item generate-article-function
+If present, this function is called to generate an entire article that
+Gnus can understand.  It is called with the article number as a
+parameter when requesting all articles.
+
+@item dissection-function
+If present, this function is called to dissect a document by itself,
+overriding @code{first-article}, @code{article-begin},
+@code{article-begin-function}, @code{head-begin},
+@code{head-begin-function}, @code{head-end}, @code{body-begin},
+@code{body-begin-function}, @code{body-end}, @code{body-end-function},
+@code{file-begin}, and @code{file-end}.
 
 @end table
 
