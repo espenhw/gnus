@@ -1,3 +1,10 @@
+2005-10-15  Kenichi Handa  <handa@m17n.org>
+
+	* rfc2047.el (rfc2047-decode-cte): New function.
+	(rfc2047-decode-region): Change the way to decode successive
+	encoded-words: decode B- or Q-encoding in each encoded-word,
+	concatenate them, and decode it as charset.
+
 2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind codepage-setup for XEmacs.

@@ -793,6 +793,22 @@ it, put the following line in your ~/.gnus.el file:
 ;; and worthwhile (is it more correct or not?), e.g. something like
 ;; `=?iso-8859-1?q?foo?=@'.
 
+(defun rfc2047-decode-cte (charset encoding word)
+  "Decode content-transfer-encoding of WORD by ENCODING.
+Put text property `coding' to the decoded word with value a coding system
+derived from CHARSET."
+  (cond ((char-equal ?B encoding)
+	 (setq word (base64-decode-string (rfc2047-pad-base64 word))))
+	((char-equal ?Q encoding)
+	 (setq word (quoted-printable-decode-string
+		     (mm-subst-char-in-string ?_ ?  word t))))
+	(t (error "Invalid encoding: %c" encoding)))
+  (setq word (mm-string-to-multibyte word))
+  (setq charset (intern (downcase charset)))
+  (put-text-property 0 (length word)
+		     'coding (mm-charset-to-coding-system charset) word)
+  word)
+
 (defun rfc2047-decode-region (start end)
   "Decode MIME-encoded words in region between START and END."
   (interactive "r")
@@ -813,18 +829,31 @@ it, put the following line in your ~/.gnus.el file:
 	;; Decode the encoded words.
 	(setq b (goto-char (point-min)))
 	(while (re-search-forward rfc2047-encoded-word-regexp nil t)
+	  ;; At first, decode content-transfer-encoding of the
+	  ;; succeeding encoded words.
 	  (setq e (match-beginning 0))
-	  (insert (rfc2047-parse-and-decode
-		   (prog1
-		       (match-string 0)
-		     (delete-region e (match-end 0)))))
-	  (while (looking-at rfc2047-encoded-word-regexp)
-	    (insert (rfc2047-parse-and-decode
-		     (prog1
-			 (match-string 0)
-		       (delete-region (point) (match-end 0))))))
+	  (let ((charset (match-string 1))
+		(encoding (char-after (match-beginning 3)))
+		(word (match-string 4)))
+	    (delete-region e (match-end 0))
+	    (insert (rfc2047-decode-cte charset encoding word))
+	    (while (looking-at rfc2047-encoded-word-regexp)
+	      (setq charset (match-string 1)
+		    encoding (char-after (match-beginning 3))
+		    word (match-string 4))
+	      (delete-region (point) (match-end 0))
+	      (insert (rfc2047-decode-cte charset encoding word))))
+	  ;; Then decode the text encoding.
 	  (save-restriction
 	    (narrow-to-region e (point))
+	    (goto-char e)
+	    (while (not (eobp))
+	      (let ((from (point))
+		    (coding (get-text-property (point) 'coding)))
+		(goto-char (next-single-property-change from coding nil
+							(point-max)))
+		(if coding
+		    (decode-coding-region from (point) coding))))
 	    (goto-char e)
 	    ;; Remove newlines between decoded words, though such
 	    ;; things essentially must not be there.
