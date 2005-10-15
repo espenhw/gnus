@@ -833,14 +833,14 @@ derived from CHARSET."
 	  ;; succeeding encoded words.
 	  (setq e (match-beginning 0))
 	  (let ((charset (match-string 1))
-		(encoding (char-after (match-beginning 3)))
-		(word (match-string 4)))
+		(encoding (char-after (match-beginning 2)))
+		(word (match-string 3)))
 	    (delete-region e (match-end 0))
 	    (insert (rfc2047-decode-cte charset encoding word))
 	    (while (looking-at rfc2047-encoded-word-regexp)
 	      (setq charset (match-string 1)
-		    encoding (char-after (match-beginning 3))
-		    word (match-string 4))
+		    encoding (char-after (match-beginning 2))
+		    word (match-string 3))
 	      (delete-region (point) (match-end 0))
 	      (insert (rfc2047-decode-cte charset encoding word))))
 	  ;; Then decode the text encoding.
