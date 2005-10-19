@@ -1,3 +1,13 @@
+2005-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-allow-incomplete-encoded-text): New variable.
+	(rfc2047-charset-to-coding-system): New function.
+	(rfc2047-decode-encoded-words): New function.
+	(rfc2047-decode-region): Use them.
+	(rfc2047-decode-cte): Remove.
+	(rfc2047-parse-and-decode): Remove.
+	(rfc2047-decode): Remove.
+
 2005-10-15  Kenichi Handa  <handa@m17n.org>
 
 	* rfc2047.el (rfc2047-decode-cte): New function.
