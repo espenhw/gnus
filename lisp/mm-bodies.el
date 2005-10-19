@@ -282,7 +282,11 @@ decoding.  If it is nil, default to `mail-parse-charset'."
     (setq charset mail-parse-charset))
   (or
    (when (featurep 'mule)
-     (let ((coding-system (mm-charset-to-coding-system charset)))
+     (let ((coding-system (mm-charset-to-coding-system
+			   charset
+			   ;; Allow overwrite using
+			   ;; `mm-charset-override-alist'.
+			   nil t)))
        (if (and (not coding-system)
 		(listp mail-parse-ignored-charsets)
 		(memq 'gnus-unknown mail-parse-ignored-charsets))

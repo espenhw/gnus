@@ -1,3 +1,8 @@
+2005-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-bodies.el (mm-decode-string): Call
+	`mm-charset-to-coding-system' with allow-override argument.
+
 2005-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-allow-incomplete-encoded-text): New variable.
