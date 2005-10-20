@@ -1,3 +1,8 @@
+2005-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-decode-encoded-words): Fix the handling of
+	errors.
+
 2005-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-bodies.el (mm-decode-string): Call

@@ -834,7 +834,7 @@ ENCODED-WORD)."
 			 ((char-equal ?Q (nth 1 word))
 			  (setq text (quoted-printable-decode-string
 				      (mm-subst-char-in-string
-				       ?_ ? (nth 2 word) t)))))
+				       ?_ ?  (nth 2 word) t)))))
 		 (error
 		  (message "%s" (error-message-string code))
 		  nil)))
@@ -845,7 +845,7 @@ ENCODED-WORD)."
 	    (push (cons cs text) rest))
 	;; Don't decode encoded-word.
 	(push (cons nil (nth 3 word)) rest)))
-    (setq words "")
+    (setq words nil)
     (while rest
       (setq words (concat
 		   (or (and (setq cs (caar rest))
@@ -856,7 +856,9 @@ ENCODED-WORD)."
 			       nil)))
 		       (concat (when (cdr rest) " ")
 			       (cdar rest)
-			       (unless (string-equal words "") " ")))
+			       (when (and words
+					  (not (eq (string-to-char words) ? )))
+				 " ")))
 		   words)
 	    rest (cdr rest)))
     words))
