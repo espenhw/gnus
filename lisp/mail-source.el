@@ -742,6 +742,7 @@ If CONFIRM is non-nil, ask for confirmation before removing a file."
 	      (funcall function mail-source-crash-box))
 	     ;; The default is to use pop3.el.
 	     (t
+	      (require 'pop3)
 	      (let ((pop3-password password)
 		    (pop3-maildrop user)
 		    (pop3-mailhost server)
@@ -804,6 +805,7 @@ If CONFIRM is non-nil, ask for confirmation before removing a file."
 	     (function)
 	     ;; The default is to use pop3.el.
 	     (t
+	      (require 'pop3)
 	      (let ((pop3-password password)
 		    (pop3-maildrop user)
 		    (pop3-mailhost server)

@@ -1,3 +1,8 @@
+2005-10-20  Hiroshi Fujishima  <hiroshi.fujishima@gmail.com>  (tiny change)
+
+	* mail-source.el (mail-source-fetch-pop): Require pop3.
+	(mail-source-check-pop): Ditto.
+
 2005-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-decode-encoded-words): Fix the handling of
