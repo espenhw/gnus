@@ -5,6 +5,11 @@
 
 2005-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-treat-strip-trailing-blank-lines)
+	(gnus-treat-strip-leading-blank-lines): Improve doc string.
+
+	* message.el (message-tool-bar-local-item-from-menu): Fix comment.
+
 	* mm-bodies.el (mm-decode-string): Call
 	`mm-charset-to-coding-system' with allow-override argument.
 
