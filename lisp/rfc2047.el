@@ -845,7 +845,6 @@ ENCODED-WORD)."
 	    (push (cons cs text) rest))
 	;; Don't decode encoded-word.
 	(push (cons nil (nth 3 word)) rest)))
-    (setq words nil)
     (while rest
       (setq words (concat
 		   (or (and (setq cs (caar rest))
