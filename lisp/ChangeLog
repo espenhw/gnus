@@ -1,3 +1,7 @@
+2005-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* lpath.el (featurep): Add nobreak-char-display.
+
 2005-10-20  Hiroshi Fujishima  <hiroshi.fujishima@gmail.com>  (tiny change)
 
 	* mail-source.el (mail-source-fetch-pop): Require pop3.

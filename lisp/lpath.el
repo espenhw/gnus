@@ -56,7 +56,8 @@
 		 w3-prepare-buffer w3-region window-pixel-height
 		 window-pixel-width))
   (maybe-bind '(help-echo-owns-message mail-mode-hook mm-w3m-mode-map
-				       show-nonbreak-escape)))
+				       show-nonbreak-escape
+				       nobreak-char-display)))
 
 (when (and (featurep 'xemacs)
 	   (not (featurep 'mule)))
