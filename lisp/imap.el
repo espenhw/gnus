@@ -173,7 +173,7 @@ the list is tried until a successful connection is made."
 
 (defcustom imap-gssapi-program (list
 				(concat "gsasl %s %p "
-					"--mechanism GSSAPI "
+					"--imap --mechanism GSSAPI "
 					"--authentication-id %l")
 				"imtest -m gssapi -u %l -p %p %s")
   "List of strings containing commands for GSSAPI (krb5) authentication.
@@ -596,7 +596,7 @@ sure of changing the value of `foo'."
 			(or (not (looking-at "S: "))
 			    (forward-char 3)
 			    t)
-			;; gnus sasl may print 'Trying ...' first.
+			;; GNU SASL may print 'Trying ...' first.
 			(or (not (looking-at "Trying "))
 			    (forward-line)
 			    t)
