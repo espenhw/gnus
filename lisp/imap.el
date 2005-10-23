@@ -173,7 +173,7 @@ the list is tried until a successful connection is made."
 
 (defcustom imap-gssapi-program (list
 				(concat "gsasl %s %p "
-					"--imap --mechanism GSSAPI "
+					"--mechanism GSSAPI "
 					"--authentication-id %l")
 				"imtest -m gssapi -u %l -p %p %s")
   "List of strings containing commands for GSSAPI (krb5) authentication.
