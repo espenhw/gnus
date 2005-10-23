@@ -1,3 +1,9 @@
+2005-10-23  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-gssapi-program): Align command line parameters
+	with latest GNU SASL.
+	(imap-gssapi-open): Ignore 'Trying ...' messages from GNU SASL.
+
 2005-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Update to new
