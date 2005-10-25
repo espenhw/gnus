@@ -74,9 +74,8 @@ There are no Gnus dependencies in this file.
 @table @file
 @item encrypt.el
 File encryption routines
-@c As of 2005-10-21...
-There are no Gnus serious dependencies in this file.  It uses
-@code{gnus-message} which can easily be replaced with @code{message}.
+@c As of 2005-10-25...
+There are no Gnus dependencies in this file.
 
 @item password.el
 Read passwords from user, possibly using a password cache.

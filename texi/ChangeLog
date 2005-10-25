@@ -1,6 +1,7 @@
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-coding.texi (Dependencies): Add some text.
+	(Dependencies): Update encrypt.el.
 
 2005-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
