@@ -1,3 +1,11 @@
+2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-fun.el (gnus-convert-image-to-x-face-command)
+	(gnus-convert-image-to-face-command): Use "convert" by default to
+	allow other input image formats.
+	(gnus-x-face-from-file, gnus-face-from-file): Adjust doc strings
+	accordingly.
+
 2005-10-23  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-gssapi-program): Align command line parameters
