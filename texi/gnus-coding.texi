@@ -7,7 +7,7 @@
 @syncodeindex pg cp
 
 @copying
-Copyright (c) 2004  Free Software Foundation, Inc.
+Copyright (c) 2004, 2005  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -33,7 +33,7 @@ license to the document, as described in section 6 of the license.
 @titlepage
 @title Gnus Coding Style and Maintainance Guide
 
-@c @author by Reiner Steib  <Reiner.Steib@gmx.de>
+@author by Reiner Steib  <Reiner.Steib@@gmx.de>
 
 @insertcopying
 @end titlepage
@@ -44,21 +44,141 @@ license to the document, as described in section 6 of the license.
 
 @node Top
 
-@section Gnus Coding Style
-@subsection Dependencies
+@chapter Gnus Coding Style
+@section Dependencies
+
+The Gnus distribution contains a lot of libraries that have been written
+for Gnus and used intensively for Gnus.  But many of those libraries are
+useful on their own.  E.g. other Emacs Lisp packages might use the
+@acronym{MIME} library @xref{Top, ,Top, emacs-mime, The Emacs MIME
+Manual}.
+
+@subsection General purpose libraries
+
+@table @file
+
+@item netrc.el
+@file{.netrc} parsing functionality.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item format-spec.el
+Functions for formatting arbitrary formatting strings.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@end table
+
+@subsection Encryption and security
+
+@table @file
+@item encrypt.el
+File encryption routines
+@c As of 2005-10-21...
+There are no Gnus serious dependencies in this file.  It uses
+@code{gnus-message} which can easily be replaced with @code{message}.
+
+@item password.el
+Read passwords from user, possibly using a password cache.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item tls.el
+TLS/SSL support via wrapper around GnuTLS
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item pgg*.el
+Glue for the various PGP implementations.
+@c As of 2005-10-21...
+There are no Gnus dependencies in these files.
+
+@end table
+
+@subsection Networking
+
+@table @file
+@item dig.el
+Domain Name System dig interface.
+@c As of 2005-10-21...
+There are no serious Gnus dependencies in this file.  Uses
+@code{gnus-run-mode-hooks} (a wrapper function).
+
+@item dns*.el
+Domain Name Service lookups.
+@c As of 2005-10-21...
+There are no Gnus dependencies in these files.
+@end table
+
+@subsection Mail and News related RFCs
+
+@table @file
+@item pop3.el
+Post Office Protocol (RFC 1460) interface.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item imap.el
+@acronym{IMAP} library.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item ietf-drums.el
+Functions for parsing RFC822bis headers.
+@c As of 2005-10-21...
+There are no Gnus dependencies in this file.
+
+@item rfc1843.el
+HZ (rfc1843) decoding.  HZ is a data format for exchanging files of
+arbitrarily mixed Chinese and @acronym{ASCII} characters.
+@c As of 2005-10-21...
+@code{rfc1843-gnus-setup} seem to be useful only for Gnus.  Maybe this
+function should be relocated to remove dependencies on Gnus.  Other
+minor dependencies: @code{gnus-newsgroup-name} could be eliminated by
+using an optional argument to @code{rfc1843-decode-article-body}.
+
+@item rfc2045.el
+Functions for decoding rfc2045 headers
+
+@item rfc2047.el
+Functions for encoding and decoding rfc2047 messages
+
+@item rfc2104.el
+RFC2104 Hashed Message Authentication Codes
+
+@item rfc2231.el
+Functions for decoding rfc2231 headers
+@end table
+
+@subsection message
+
+All message composition from Gnus (both mail and news) takes place in
+Message mode buffers.  Message mode is intended to be a replacement for
+Emacs mail mode.  There should be no Gnus dependencies in
+@file{message.el}.
+
+@subsection Gnus backends
+
+The files @file{nn*.el} provide functionality for accessing NNTP
+(@file{nntp.el}), IMAP (@file{nnimap.el}) and several other Mail back
+ends (probably @file{nnml.el}, @file{nnfolder.el} and
+@file{nnmaildir.el} are the ones most widely used mail back ends).
+
 
 @c message / gnus
 @c 
 @c nn*
 @c 
 @c mm*
-@c 
+@c
 @c rfc*
 @c 
+@c pgg*
 @c tla netrc pop3 dig dns ...
 @c format-spec.el
 
-@subsection Compatibility
+
+@section Compatibility
 
 @c Compatibility with XEmacs and older Emacs versions in v5-10 and in the
 @c trunk.
@@ -67,9 +187,9 @@ license to the document, as described in section 6 of the license.
 @c x
 @c @end table
 
-@section Gnus Maintainance Guide
+@chapter Gnus Maintainance Guide
 
-@subsection Stable and development versions
+@section Stable and development versions
 
 The CVS trunk is developed quite actively.
 
@@ -79,7 +199,7 @@ The CVS trunk is developed quite actively.
 @c e.g. 5.10.1
 
 
-@subsection Syncing
+@section Syncing
 
 @c Some MIDs related to this follow.  Use http://thread.gmane.org/MID
 @c (and click on the subject) to get the thread on Gmane.
@@ -151,7 +271,9 @@ can be easily resolved automatically (sometimes I notice silly things in
 such multiple commits, like whitespace differences, and unify those ;-).
 
 
-@subsection Miscellanea
+@section Miscellanea
+
+@heading @file{GNUS-NEWS}
 
 Starting from No Gnus, the @file{GNUS-NEWS} is created from
 @file{texi/gnus-news.texi}.  Don't edit @file{GNUS-NEWS}.  Edit
