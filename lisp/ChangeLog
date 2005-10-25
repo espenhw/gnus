@@ -1,5 +1,8 @@
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-score.el (gnus-default-adaptive-score-alist): Set defaults
+	depending on gnus-score-decay-constant.
+
 	* encrypt.el (encrypt-insert-file-contents)
 	(encrypt-write-file-contents): Don't use `gnus-message'.
 
