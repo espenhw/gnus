@@ -97,7 +97,7 @@ This can be either \"inline\" or \"attachment\".")
   :group 'gnus-article-mime)
 
 (defvar mm-uu-type-alist
-  '((postscript
+  `((postscript
      "^%!PS-"
      "^%%EOF$"
      mm-uu-postscript-extract
@@ -164,12 +164,24 @@ This can be either \"inline\" or \"attachment\".")
      mm-uu-diff-extract
      nil
      mm-uu-diff-test)
+    (message-marks
+     ,(concat "^" (regexp-quote message-mark-insert-begin))
+     ,(concat "^" (regexp-quote message-mark-insert-end))
+     (lambda () (mm-uu-verbatim-marks-extract 0 -1 1 -2))
+     nil)
+    ;; Omitting [a-z8<] leads to false positives (bogus signature separators
+    ;; and mailing list banners).
+    (insert-marks
+     "^ *\\(-\\|_\\)\\{30,\\}.*[a-z8<].*\\(-\\|_\\)\\{30,\\} *$"
+     "^ *\\(-\\|_\\)\\{30,\\}.*[a-z8<].*\\(-\\|_\\)\\{30,\\} *$"
+     (lambda () (mm-uu-verbatim-marks-extract 0 0 1 -1))
+     nil)
     (verbatim-marks
      ;; slrn-style verbatim marks, see
      ;; http://www.slrn.org/manual/slrn-manual-6.html#ss6.81
      "^#v\\+"
      "^#v\\-$"
-     mm-uu-verbatim-marks-extract
+     (lambda () (mm-uu-verbatim-marks-extract 0 0 1 -1))
      nil)
     (LaTeX
      "^\\\\documentclass"
@@ -217,15 +229,33 @@ To disable dissecting shar codes, for instance, add
 (defsubst mm-uu-function-2 (entry)
   (nth 5 entry))
 
-(defface mm-uu-extract
-  '((((class color)
-      (background dark))
-     (:background "gray5"))
-    (((class color)
-      (background light))
-     (:background "gray95"))
-    (t
-     ()))
+;; In Emacs 22, we could use `min-colors' in the face definition.  But Emacs
+;; 21 and XEmacs don't support it.
+(defcustom mm-uu-hide-markers
+  (< 16 (or (and (fboundp 'defined-colors)
+		 (length (defined-colors)))
+	    (and (fboundp (device-color-cells))
+		 (length (device-color-cells)))
+	    0))
+  "If non-nil, hide verbatim markers.
+The value should be nil on displays where the face
+`mm-uu-extract' isn't distinguishable to the face `default'."
+  :type '(choice (const :tag "Hide" t)
+		 (const :tag "Don't hide" nil))
+  :version "23.0" ;; No Gnus
+  :group 'gnus-article-mime)
+
+(defface mm-uu-extract '(;; Colors from `gnus-cite-3' plus background:
+			 (((class color)
+			   (background dark))
+			  (:foreground "light yellow"
+			   :background "dark green"))
+			 (((class color)
+			   (background light))
+			  (:foreground "dark green"
+			   :background "light yellow"))
+			 (t
+			  ()))
   "Face for extracted buffers."
   ;; See `mm-uu-verbatim-marks-extract'.
   :version "23.0" ;; No Gnus
@@ -306,13 +336,28 @@ apply the face `mm-uu-extract'."
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
 		  '("application/postscript")))
 
-(defun mm-uu-verbatim-marks-extract ()
-  (mm-make-handle
-   (mm-uu-copy-to-buffer
-    (progn (goto-char start-point) (forward-line) (point))
-    (progn (goto-char end-point) (forward-line -1) (point))
-    t)
-   '("text/x-verbatim" (charset . gnus-decoded))))
+(defun mm-uu-verbatim-marks-extract (start-offset end-offset
+						  &optional
+						  start-hide
+						  end-hide)
+  (let ((start (or (and mm-uu-hide-markers
+			start-hide)
+		   start-offset
+		   1))
+	(end   (or (and mm-uu-hide-markers
+			end-hide)
+		   end-offset
+		   -1)))
+    (mm-make-handle
+     (mm-uu-copy-to-buffer
+      (progn (goto-char start-point)
+	     (forward-line start)
+	     (point))
+      (progn (goto-char end-point)
+	   (forward-line end)
+	   (point))
+      t)
+     '("text/x-verbatim" (charset . gnus-decoded)))))
 
 (defun mm-uu-latex-extract ()
   (mm-make-handle

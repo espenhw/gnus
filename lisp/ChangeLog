@@ -1,5 +1,12 @@
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-uu.el (mm-uu-verbatim-marks-extract): Add four start and end
+	arguments.
+	(mm-uu-type-alist): Add message-marks and insert-marks.  Pass
+	arguments to mm-uu-verbatim-marks-extract.
+	(mm-uu-hide-markers): New variable.
+	(mm-uu-extract): Use face similar to `gnus-cite-3'.
+
 	* gnus-fun.el (gnus-convert-image-to-x-face-command)
 	(gnus-convert-image-to-face-command): Use "convert" by default to
 	allow other input image formats.
