@@ -1,5 +1,8 @@
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* encrypt.el (encrypt-insert-file-contents)
+	(encrypt-write-file-contents): Don't use `gnus-message'.
+
 	* mm-uu.el (mm-uu-verbatim-marks-extract): Add four start and end
 	arguments.
 	(mm-uu-type-alist): Add message-marks and insert-marks.  Pass
