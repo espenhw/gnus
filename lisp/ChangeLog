@@ -1,3 +1,8 @@
+2005-10-23  Chong Yidong  <cyd@stupidchicken.com>
+
+	* gnus-sum.el (gnus-ignored-from-addresses): Handle case where
+	user-mail-name is an empty string.
+
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-default-adaptive-score-alist): Set defaults
@@ -73,6 +78,22 @@
 2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind codepage-setup for XEmacs.
+
+2005-10-17  Chong Yidong  <cyd@stupidchicken.com>
+
+	* gnus-cus.el (gnus-custom-map): New variable.  Bind mouse-1 to
+	widget-move-and-invoke.
+	(gnus-custom-mode): Use gnus-custom-map.
+
+2005-10-15  Bill Wohler  <wohler@newt.com>
+
+	* message.el (message-tool-bar-map): Renamed image file from
+	mail_send to mail/send.
+
+2005-10-16  Masatake YAMATO  <jet@gyve.org>
+
+	* message.el (message-expand-group): Pass the common
+	prefix substring of completion to `display-completion-list'.
 
 2005-10-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
