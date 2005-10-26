@@ -234,8 +234,8 @@ To disable dissecting shar codes, for instance, add
 (defcustom mm-uu-hide-markers
   (< 16 (or (and (fboundp 'defined-colors)
 		 (length (defined-colors)))
-	    (and (fboundp (device-color-cells))
-		 (length (device-color-cells)))
+	    (and (fboundp 'device-color-cells)
+		 (device-color-cells))
 	    0))
   "If non-nil, hide verbatim markers.
 The value should be nil on displays where the face

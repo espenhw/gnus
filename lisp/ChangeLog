@@ -1,3 +1,7 @@
+2005-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-uu.el (mm-uu-hide-markers): Fix XEmacs case.
+
 2005-10-26  Simon Josefsson  <jas@extundo.com>
 
 	* flow-fill.el (fill-flowed): Flow-fill unquoted lines too, revert
