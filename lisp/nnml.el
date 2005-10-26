@@ -37,6 +37,7 @@
 (require 'gnus)
 (require 'nnheader)
 (require 'nnmail)
+(require 'gnus-bcklg)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
 
@@ -1018,8 +1019,23 @@ Use the nov database for the current group if available."
 
 
 ;;;
-;;; Group and server compaction
+;;; Group and server compaction. -- dvl
 ;;;
+
+;; #### FIXME: this function handles self Xref: entry correctly, but I don't
+;; #### know how to handle external cross-references. I actually don't know if
+;; #### this is handled correctly elsewhere. For instance, what happens if you
+;; #### move all articles to a new group (that's what people do for manual
+;; #### compaction) ?
+
+;; #### NOTE: the function below handles the article backlog. This is
+;; #### conceptually the wrong place to do it because the backend is at a
+;; #### lower level. However, this is the only place where we have the needed
+;; #### information to do the job. Ideally, this function should not handle
+;; #### the backlog by itself, but return a list of moved groups / articles to
+;; #### the caller. This will become important to avoid code duplication when
+;; #### other backends get a compaction feature. Also, note that invalidating
+;; #### the "original article buffer" is already done at an upper level.
 
 (defun nnml-request-compact-group (group &optional server save)
   (nnml-possibly-change-directory group server)
@@ -1044,58 +1060,89 @@ Use the nov database for the current group if available."
 	  (let ((old-number (car article)))
 	    (when (> old-number new-number)
 	      ;; There is a gap here:
-	      (setq compacted t)
-	      ;; #### NOTE: `nnml-article-to-file' calls
-	      ;; #### `nnml-update-file-alist'  (which in turn calls
-	      ;; #### `nnml-current-group-article-to-file-alist', which might
-	      ;; #### use the NOV database). This might turn out to be
-	      ;; #### inefficient. In that case, we will do the work manually.
-	      ;; 1/ Move the article to a new file:
-	      (let* ((oldfile (nnml-article-to-file old-number))
-		     (newfile
-		      (gnus-replace-in-string
-		       oldfile (concat "\\("
-				       (int-to-string old-number)
-				       "\\)\\(\\(\\.gz\\)?\\)$")
-		       (concat (int-to-string new-number) "\\2"))))
-		(with-current-buffer nntp-server-buffer
-		  (nnmail-find-file oldfile)
-		  (nnmail-write-region (point-min) (point-max) newfile))
-		(funcall nnmail-delete-file-function oldfile))
-	      ;; 2/ Update all marks for this article:
-	      ;; #### NOTE: it is possible that the new article number already
-	      ;; #### belongs to a range, whereas the corresponding article
-	      ;; #### doesn't exist (for example, if you delete an article).
-	      ;; #### For that reason, it is important to update the ranges
-	      ;; #### (meaning remove inexistant articles) before doing
-	      ;; anything on them.
-	      ;; 2 a/ read articles:
-	      (let ((read (gnus-info-read info)))
-		(setq read (gnus-remove-from-range read (list new-number)))
-		(when (gnus-member-of-range old-number read)
-		  (setq read (gnus-remove-from-range read (list old-number)))
-		  (setq read (gnus-add-to-range read (list new-number))))
-		(gnus-info-set-read info read))
-	      ;; 2 b/ marked articles:
-	      (let ((oldmarks (gnus-info-marks info))
-		    mark newmarks)
-		(while (setq mark (pop oldmarks))
-		  (setcdr mark (gnus-remove-from-range (cdr mark)
-						       (list new-number)))
-		  (when (gnus-member-of-range old-number (cdr mark))
+	      (let ((old-number-string (int-to-string old-number))
+		    (new-number-string (int-to-string new-number)))
+		(setq compacted t)
+		;; #### NOTE: `nnml-article-to-file' calls
+		;; #### `nnml-update-file-alist'  (which in turn calls
+		;; #### `nnml-current-group-article-to-file-alist', which
+		;; #### might use the NOV database). This might turn out to be
+		;; #### inefficient. In that case, we will do the work
+		;; #### manually.
+		;; 1/ Move the article to a new file:
+		(let* ((oldfile (nnml-article-to-file old-number))
+		       (newfile
+			(gnus-replace-in-string
+			 oldfile (concat "\\("
+					 old-number-string
+					 "\\)\\(\\(\\.gz\\)?\\)$")
+			 (concat new-number-string "\\2"))))
+		  (with-current-buffer nntp-server-buffer
+		    (nnmail-find-file oldfile)
+		    ;; Update the Xref header in the article itself:
+		    (when (and (re-search-forward "^Xref: [^ ]+ " nil t)
+			       (re-search-forward
+				(concat "\\<"
+					(regexp-quote
+					 (concat group ":" old-number-string))
+					"\\>")
+				(point-at-eol) t))
+		      (replace-match
+		       (concat group ":" new-number-string)))
+		    ;; Save to the new file:
+		    (nnmail-write-region (point-min) (point-max) newfile))
+		  (funcall nnmail-delete-file-function oldfile))
+		;; 2/ Update all marks for this article:
+		;; #### NOTE: it is possible that the new article number
+		;; #### already belongs to a range, whereas the corresponding
+		;; #### article doesn't exist (for example, if you delete an
+		;; #### article). For that reason, it is important to update
+		;; #### the ranges (meaning remove inexistant articles) before
+		;; #### doing anything on them.
+		;; 2 a/ read articles:
+		(let ((read (gnus-info-read info)))
+		  (setq read (gnus-remove-from-range read (list new-number)))
+		  (when (gnus-member-of-range old-number read)
+		    (setq read (gnus-remove-from-range read (list old-number)))
+		    (setq read (gnus-add-to-range read (list new-number))))
+		  (gnus-info-set-read info read))
+		;; 2 b/ marked articles:
+		(let ((oldmarks (gnus-info-marks info))
+		      mark newmarks)
+		  (while (setq mark (pop oldmarks))
 		    (setcdr mark (gnus-remove-from-range (cdr mark)
-							 (list old-number)))
-		    (setcdr mark (gnus-add-to-range (cdr mark)
-						    (list new-number))))
-		  (push mark newmarks))
-		(gnus-info-set-marks info newmarks))
-	      ;; 3/ Update the NOV entry for this article:
-	      (unless nnml-nov-is-evil
-		(save-excursion
-		  (set-buffer (nnml-open-nov group))
-		  (when (nnheader-find-nov-line old-number)
-		    (looking-at (int-to-string old-number))
-		    (replace-match (int-to-string new-number) nil t)))))
+							 (list new-number)))
+		    (when (gnus-member-of-range old-number (cdr mark))
+		      (setcdr mark (gnus-remove-from-range (cdr mark)
+							   (list old-number)))
+		      (setcdr mark (gnus-add-to-range (cdr mark)
+						      (list new-number))))
+		    (push mark newmarks))
+		  (gnus-info-set-marks info newmarks))
+		;; 3/ Update the NOV entry for this article:
+		(unless nnml-nov-is-evil
+		  (save-excursion
+		    (set-buffer (nnml-open-nov group))
+		    (when (nnheader-find-nov-line old-number)
+		      ;; Replace the article number:
+		      (looking-at old-number-string)
+		      (replace-match new-number-string nil t)
+		      ;; Update the Xref header:
+		      (when (re-search-forward
+			     (concat "\\(Xref:[^\t\n]* \\)\\<"
+				     (regexp-quote
+				      (concat group ":" old-number-string))
+				     "\\>")
+			     (point-at-eol) t)
+			(replace-match
+			 (concat "\\1" group ":" new-number-string))))))
+		;; 4/ Possibly remove the article from the backlog:
+		(when gnus-keep-backlog
+		  ;; #### NOTE: instead of removing the article, we could
+		  ;; #### modify the backlog to reflect the numbering change,
+		  ;; #### but I don't think it's worth it.
+		  (gnus-backlog-remove-article group-full-name old-number)
+		  (gnus-backlog-remove-article group-full-name new-number))))
 	    (setq new-number (1+ new-number)))))
       (if (not compacted)
 	  ;; No compaction had to be done:

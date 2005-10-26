@@ -1,3 +1,12 @@
+2005-10-26  Didier Verna  <didier@xemacs.org>
+
+	* gnus-group.el (gnus-group-compact-group): invalidate original
+	article buffer.
+	* gnus-srvr.el (gnus-server-compact-server): ditto.
+	* nnml.el (nnml-request-compact-group): handle self Xref: field in
+	NOV database and in article itself.
+	Invalidate article backlog.
+
 2005-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-uu.el (mm-uu-hide-markers): Fix XEmacs case.

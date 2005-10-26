@@ -4344,14 +4344,16 @@ This command may read the active file."
 
 
 ;;;
-;;; Group compaction
+;;; Group compaction. -- dvl
 ;;;
 
 (defun gnus-group-compact-group (group)
   "Conpact the current group.
 Compaction means removing gaps between article numbers.  Hence, this
 operation is only meaningful for back ends using one file per article
-\(e.g. nnml)."
+\(e.g. nnml).
+
+Note: currently only implemented in nnml."
   (interactive (list (gnus-group-group-name)))
   (unless group
     (error "No group to compact"))
@@ -4366,6 +4368,12 @@ Compacting group %s... (this may take a long time)"
 	    (gnus-error 3 "Couldn't compact group %s" group-decoded)
 	  (gnus-message 6 "Compacting group %s...done" group-decoded)
 	  t)
+      ;; Invalidate the "original article" buffer which might be out of date.
+      ;; #### NOTE: Yes, this might be a bit rude, but since compaction
+      ;; #### will not happen very often, I think this is acceptable.
+      (let ((original (get-buffer gnus-original-article-buffer)))
+	(and original (gnus-kill-buffer original)))
+      ;; Update the group line to reflect new information (art number etc).
       (gnus-group-update-group-line))))
 
 (provide 'gnus-group)

@@ -1017,13 +1017,15 @@ If NUMBER, fetch this number of articles."
 
 
 ;;;
-;;; Server compaction
+;;; Server compaction. -- dvl
 ;;;
 
 ;; #### FIXME: this function currently fails to update the Group buffer's
-;; #### FIXME: appearance. -- dvl
+;; #### appearance.
 (defun gnus-server-compact-server ()
-  "Issue a command to the server to compact all its groups."
+  "Issue a command to the server to compact all its groups.
+
+Note: currently only implemented in nnml."
   (interactive)
   (let ((server (gnus-server-server-name)))
     (unless server
@@ -1038,9 +1040,14 @@ Requesting compaction of %s... (this may take a long time)"
 		  server)
     (unless (gnus-open-server server)
       (error "Couldn't open server"))
-    (if (gnus-request-compact server)
-	(gnus-message 5 "Requesting compaction of %s...done" server)
-      (gnus-message 5 "Couldn't compact %s" server))))
+    (if (not (gnus-request-compact server))
+	(gnus-message 5 "Couldn't compact %s" server)
+      (gnus-message 5 "Requesting compaction of %s...done" server)
+      ;; Invalidate the original article buffer which might be out of date.
+      ;; #### NOTE: Yes, this might be a bit rude, but since compaction
+      ;; #### will not happen very often, I think this is acceptable.
+      (let ((original (get-buffer gnus-original-article-buffer)))
+	(and original (gnus-kill-buffer original))))))
 
 (provide 'gnus-srvr)
 
