@@ -1,7 +1,8 @@
 2005-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* flow-fill.el (fill-flowed-encode-tests): Restore trailing
-	whitespace removed in revision 7.8.
+	whitespace removed in revision 7.8.  Use concatenated string to
+	protect trailing whitespace.
 
 2005-10-27  Jouni K Seppanen <jks@iki.fi>  (tiny change)
 
