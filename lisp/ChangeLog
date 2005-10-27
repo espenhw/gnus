@@ -1,3 +1,11 @@
+2005-10-27  Jouni K Seppanen <jks@iki.fi>  (tiny change)
+
+	* nnimap.el (nnimap-search-uids-not-since-is-evil): Add variable.
+	(nnimap-request-expire-articles): Use it to avoid sending 'UID
+	SEARCH UID ... NOT SINCE' queries, for inefficient servers like
+	Courier IMAP ("some version from 2004").  Mostly based on similar
+	code in the same function.
+
 2005-10-26  Didier Verna  <didier@xemacs.org>
 
 	* gnus-group.el (gnus-group-compact-group): invalidate original
