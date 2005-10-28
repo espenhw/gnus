@@ -43,7 +43,14 @@ license to the document, as described in section 6 of the license.
 @c Fixing only a paragraph also is appreciated.
 
 @node Top
+@top Gnus Coding Style and Maintainance Guide
+This manual describes @dots{}
+@menu
+* Gnus Coding Style:: Gnus Coding Style
+* Gnus Maintainance Guide:: Gnus Maintainance Guide
+@end menu
 
+@node Gnus Coding Style
 @chapter Gnus Coding Style
 @section Dependencies
 
@@ -147,6 +154,11 @@ RFC2104 Hashed Message Authentication Codes
 
 @item rfc2231.el
 Functions for decoding rfc2231 headers
+
+@item flow-fill.el
+Interpret RFC2646 "flowed" text
+@c As of 2005-10-27...
+There are no Gnus dependencies in this file.
 @end table
 
 @subsection message
@@ -186,6 +198,7 @@ ends (probably @file{nnml.el}, @file{nnfolder.el} and
 @c x
 @c @end table
 
+@node Gnus Maintainance Guide
 @chapter Gnus Maintainance Guide
 
 @section Stable and development versions

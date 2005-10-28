@@ -1,3 +1,8 @@
+2005-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-coding.texi: Split into nodes.
+	(Gnus Coding Style): Add flow-fill.el.
+
 2005-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-coding.texi (Dependencies): Add some text.
