@@ -1,3 +1,7 @@
+2005-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-util.el (mm-codepage-setup): Remove bogus alias test.
+
 2005-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* flow-fill.el (fill-flowed-encode-tests): Restore trailing
