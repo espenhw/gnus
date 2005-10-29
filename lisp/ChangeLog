@@ -1,3 +1,12 @@
+2005-10-29 Sat  Jari Aalto  <jari dot aalto A T cante dot net>
+
+	* gnus-sum.el (gnus-article-sort-by-date-reverse): New function.
+
+2005-10-29  Jari Aalto  <jari aalto A T cante net>
+
+	* score-mode.el (gnus-score-edit-done-hook): Introduce variable.
+	Used in gnus-score.el.
+
 2005-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-util.el (mm-codepage-setup): Remove bogus alias test.
