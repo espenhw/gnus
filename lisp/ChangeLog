@@ -1,8 +1,12 @@
-2005-10-29 Sat  Jari Aalto  <jari dot aalto A T cante dot net>
+2005-10-29  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-fix-before-sending): Fix comment.
+
+2005-10-29  Jari Aalto  <jari.aalto@cante.net>
 
 	* gnus-sum.el (gnus-article-sort-by-date-reverse): New function.
 
-2005-10-29  Jari Aalto  <jari aalto A T cante net>
+2005-10-29  Jari Aalto  <jari.aalto@cante.net>
 
 	* score-mode.el (gnus-score-edit-done-hook): Introduce variable.
 	Used in gnus-score.el.
