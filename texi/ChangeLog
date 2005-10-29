@@ -1,3 +1,9 @@
+2005-10-29 Sat  Jari Aalto  <jari dot aalto A T cante dot net>
+
+	* gnus.texi (Sorting the Summary Buffer):
+	Added `gnus-thread-sort-by-date-reverse'. Added example
+	host to different sorting in NNTP and RSS groups.
+
 2005-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-coding.texi: Split into nodes.
