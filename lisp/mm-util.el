@@ -111,7 +111,22 @@
 			       (make-directory file))
 			   file)))
      (insert-byte . insert-char)
-     (multibyte-char-to-unibyte . identity))))
+     (multibyte-char-to-unibyte . identity)
+     (special-display-p
+      . (lambda (buffer-name)
+	  "Returns non-nil if a buffer named BUFFER-NAME gets a special frame."
+	  (and special-display-function
+	       (or (and (member buffer-name special-display-buffer-names) t)
+		   (cdr (assoc buffer-name special-display-buffer-names))
+		   (catch 'return
+		     (dolist (elem special-display-regexps)
+		       (and (stringp elem)
+			    (string-match elem buffer-name)
+			    (throw 'return t))
+		       (and (consp elem)
+			    (stringp (car elem))
+			    (string-match (car elem) buffer-name)
+			    (throw 'return (cdr elem))))))))))))
 
 (eval-and-compile
   (defalias 'mm-char-or-char-int-p

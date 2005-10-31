@@ -1213,7 +1213,12 @@ Should be adopted if code in `message-send-mail' is changed."
 
 (defun mml-preview (&optional raw)
   "Display current buffer with Gnus, in a new buffer.
-If RAW, don't highlight the article."
+If RAW, display a raw encoded MIME message.
+
+The window layout for the preview buffer is controled by the variables
+`special-display-buffer-names', `special-display-regexps', or
+`gnus-buffer-configuration' (the first match made will be used),
+or the `pop-to-buffer' function."
   (interactive "P")
   (setq mml-preview-buffer (generate-new-buffer
 			    (concat (if raw "*Raw MIME preview of "
@@ -1282,7 +1287,8 @@ If RAW, don't highlight the article."
 		       (interactive "@e")
 		       (widget-button-press (widget-event-point event) event)))
       (goto-char (point-min))))
-  (if (and (boundp 'gnus-buffer-configuration)
+  (if (and (not (mm-special-display-p (buffer-name mml-preview-buffer)))
+	   (boundp 'gnus-buffer-configuration)
 	   (assq 'mml-preview gnus-buffer-configuration))
       (let ((gnus-message-buffer (current-buffer)))
 	(gnus-configure-windows 'mml-preview))
