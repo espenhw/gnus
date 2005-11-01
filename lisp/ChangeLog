@@ -1,3 +1,14 @@
+2005-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-parameters-case-fold-search): New variable.
+	(gnus-parameters-get-parameter): Use it.
+
+	* gnus-score.el (gnus-home-score-file): Doc fix.
+
+2005-11-01  Xavier Maillard  <zedek@gnu-rox.org>  (tiny change)
+
+	* gnus-score.el (gnus-update-score-entry-dates): Doc fix.
+
 2005-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-special-display-p): New function.
