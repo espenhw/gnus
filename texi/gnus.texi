@@ -3103,6 +3103,19 @@ example:
 String value of parameters will be subjected to regexp substitution, as
 the @code{to-group} example shows.
 
+@vindex gnus-parameters-case-fold-search
+By default, whether comparing the group name and one of those regexps
+specified in @code{gnus-parameters} is done in a case-sensitive manner
+or a case-insensitive manner depends on the value of
+@code{case-fold-search} at the time when the comparison is done.  The
+value of @code{case-fold-search} is typically @code{t}; it means, for
+example, the element @code{("INBOX\\.FOO" (total-expire . t))} might be
+applied to both the @samp{INBOX.FOO} group and the @samp{INBOX.foo}
+group.  If you want to make those regexps always case-sensitive, set the
+value of the @code{gnus-parameters-case-fold-search} variable to
+@code{nil}.  Otherwise, set it to @code{t} if you want to compare them
+always in a case-insensitive manner.
+
 
 @node Listing Groups
 @section Listing Groups
@@ -20425,7 +20438,8 @@ group name, the @var{file-name} will be used as the home score file.
 
 @item
 A function.  If the function returns non-@code{nil}, the result will
-be used as the home score file.
+be used as the home score file.  The function will be called with the
+name of the group as the parameter.
 
 @item
 A string.  Use the string as the home score file.

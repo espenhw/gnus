@@ -1,3 +1,9 @@
+2005-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Group Parameters): Mention new varable
+	gnus-parameters-case-fold-search.
+	(Home Score File): Addition.
+
 2005-10-29  Jari Aalto  <jari.aalto@cante.net>
 
 	* gnus.texi (Sorting the Summary Buffer):
