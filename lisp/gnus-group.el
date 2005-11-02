@@ -4348,7 +4348,7 @@ This command may read the active file."
 ;;;
 
 (defun gnus-group-compact-group (group)
-  "Conpact the current group.
+  "Compact the current group.
 Compaction means removing gaps between article numbers.  Hence, this
 operation is only meaningful for back ends using one file per article
 \(e.g. nnml).
