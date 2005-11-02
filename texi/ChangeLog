@@ -1,3 +1,8 @@
+2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Conformity): Fix typo.
+	(Customizing Articles): Document `first'.
+
 2005-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Group Parameters): Mention new varable

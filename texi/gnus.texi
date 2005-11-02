@@ -11220,7 +11220,10 @@ for sensible values.
 @code{head}: Do the treatment on the headers.
 
 @item
-@code{last}: Do this treatment on the last part.
+@code{first}: Do this treatment on the first body part.
+
+@item
+@code{last}: Do this treatment on the last body part.
 
 @item
 An integer: Do this treatment on all body parts that have a length less
@@ -11273,7 +11276,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-overstrike (t, integer)
 @item gnus-treat-strip-cr (t, integer)
 @item gnus-treat-strip-headers-in-body (t, integer)
-@item gnus-treat-strip-leading-blank-lines (t, integer)
+@item gnus-treat-strip-leading-blank-lines (t, first, integer)
 @item gnus-treat-strip-multiple-blank-lines (t, integer)
 @item gnus-treat-strip-pem (t, last, integer)
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
@@ -25337,7 +25340,7 @@ decryption).
 
 @item PGP/MIME - RFC 2015/3156
 RFC 2015 (superseded by 3156 which references RFC 2440 instead of RFC
-1991) describes the @acronym{MIME}-wrapping around the RF 1991/2440 format.
+1991) describes the @acronym{MIME}-wrapping around the RFC 1991/2440 format.
 Gnus supports both encoding and decoding.
 
 @item S/MIME - RFC 2633
