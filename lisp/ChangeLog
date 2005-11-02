@@ -1,5 +1,8 @@
 2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-article-treat-custom): Add `first'.
+	(gnus-treat-*): Add `first' in all doc strings.
+
 	* gnus-group.el (gnus-group-compact-group): Fix typo.
 
 2005-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
