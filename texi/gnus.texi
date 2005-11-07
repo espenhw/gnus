@@ -22744,18 +22744,6 @@ This is where Gnus will look for pictures.  Gnus will normally
 auto-detect this directory, but you may set it manually if you have an
 unusual directory structure.
 
-@item gnus-xmas-logo-color-alist
-@vindex gnus-xmas-logo-color-alist
-This is an alist where the key is a type symbol and the values are the
-foreground and background color of the splash page glyph.
-
-@item gnus-xmas-logo-color-style
-@vindex gnus-xmas-logo-color-style
-This is the key used to look up the color in the alist described above.
-Valid values include @code{flame}, @code{pine}, @code{moss},
-@code{irish}, @code{sky}, @code{tin}, @code{velvet}, @code{grape},
-@code{labia}, @code{berry}, @code{neutral}, and @code{september}.
-
 @item gnus-xmas-modeline-glyph
 @vindex gnus-xmas-modeline-glyph
 A glyph displayed in all Gnus mode lines.  It is a tiny gnu head by

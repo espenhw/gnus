@@ -1,6 +1,8 @@
 2005-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (X-Face): Fix description.
+	(XVarious): Remove gnus-xmas-logo-color-alist and
+	gnus-xmas-logo-color-style.
 
 2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
