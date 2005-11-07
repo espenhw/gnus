@@ -22757,9 +22757,12 @@ default.
 
 @item gnus-use-toolbar
 @vindex gnus-use-toolbar
-If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
-one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
-@code{right-toolbar}, or @code{left-toolbar}.
+If you don't display toolbars, set this variable to @code{nil}.  If you
+display toolbars on the top, bottom, right, or left, set this variable
+to @code{top-toolbar}, @code{bottom-toolbar}, @code{right-toolbar}, or
+@code{left-toolbar} respectively.  Note that this variable is not for
+instructing how XEmacs displays toolbars, but for saying to Gnus how
+XEmacs displays toolbars.  The default is @code{default-toolbar}.
 
 @item gnus-group-toolbar
 @vindex gnus-group-toolbar

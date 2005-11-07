@@ -2,7 +2,7 @@
 
 	* gnus.texi (X-Face): Fix description.
 	(XVarious): Remove gnus-xmas-logo-color-alist and
-	gnus-xmas-logo-color-style.
+	gnus-xmas-logo-color-style; fix description of gnus-use-toolbar.
 
 2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
