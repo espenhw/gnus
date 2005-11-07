@@ -22460,11 +22460,11 @@ function, this function will be called with the face as the argument.
 If the @code{gnus-article-x-face-too-ugly} (which is a regexp) matches
 the @code{From} header, the face will not be shown.
 
-The default action under Emacs 20 is to fork off the @code{display}
-program@footnote{@code{display} is from the ImageMagick package.  For
-the @code{uncompface} and @code{icontopbm} programs look for a package
-like @code{compface} or @code{faces-xface} on a GNU/Linux system.}  to
-view the face.
+The default action under Emacs without image support is to fork off the
+@code{display} program@footnote{@code{display} is from the ImageMagick
+package.  For the @code{uncompface} and @code{icontopbm} programs look
+for a package like @code{compface} or @code{faces-xface} on a GNU/Linux
+system.} to view the face.
 
 Under XEmacs or Emacs 21+ with suitable image support, the default
 action is to display the face before the @code{From} header.  (It's
