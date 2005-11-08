@@ -1,3 +1,8 @@
+2005-11-08  Romain Francoise  <romain@orebokech.com>
+
+	* gnus.texi (Exiting the Summary Buffer): Add new function
+	`gnus-summary-catchup-and-goto-prev-group', bound to `Z p'.
+
 2005-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (XVarious): Revert description of gnus-use-toolbar.
