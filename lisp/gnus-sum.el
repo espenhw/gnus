@@ -1908,6 +1908,7 @@ increase the score of each group you read."
   "Q" gnus-summary-exit
   "Z" gnus-summary-exit
   "n" gnus-summary-catchup-and-goto-next-group
+  "p" gnus-summary-catchup-and-goto-prev-group
   "R" gnus-summary-reselect-current-group
   "G" gnus-summary-rescan-group
   "N" gnus-summary-next-group
@@ -2615,6 +2616,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      '(:help "Mark unread articles in this group as read, then exit"))]
 	 ["Catchup all and exit" gnus-summary-catchup-all-and-exit t]
 	 ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
+	 ["Catchup and goto prev" gnus-summary-catchup-and-goto-prev-group t]
 	 ["Exit group" gnus-summary-exit
 	  ,@(if (featurep 'xemacs) '(t)
 	      '(:help "Exit current group, return to group selection mode"))]
@@ -10591,6 +10593,15 @@ read."
   (save-excursion
     (gnus-summary-catchup all))
   (gnus-summary-next-group))
+
+(defun gnus-summary-catchup-and-goto-prev-group (&optional all)
+  "Mark all articles in this group as read and select the previous group.
+If given a prefix, mark all articles, unread as well as ticked, as
+read."
+  (interactive "P")
+  (save-excursion
+    (gnus-summary-catchup all))
+  (gnus-summary-next-group nil nil t))
 
 ;;;
 ;;; with article

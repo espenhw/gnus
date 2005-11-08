@@ -1,3 +1,9 @@
+2005-11-08  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-sum.el (gnus-summary-catchup-and-goto-prev-group): New function.
+	(gnus-summary-exit-map): Bind to `Z p'.
+	(gnus-summary-make-menu-bar): Add menu item.
+
 2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-article-treat-custom): Add `first'.
