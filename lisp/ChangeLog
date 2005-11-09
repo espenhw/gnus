@@ -1,3 +1,8 @@
+2005-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-generate-headers): Downcase the argument
+	given to message-check-element.
+
 2005-11-08  Kevin Greiner  <kevin.greiner@compsol.cc>
 
 	* nntp.el (nntp-authinfo-rejected): New error condition.
