@@ -750,6 +750,7 @@ Gnus Unplugged
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent Regeneration::          How to recover from lost connections and other accidents.
+* Agent and flags::             How the Agent maintains flags.
 * Agent and IMAP::              How to use the Agent with @acronym{IMAP}.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
@@ -18211,6 +18212,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
 * Agent Regeneration::          How to recover from lost connections and other accidents.
+* Agent and flags::             How the Agent maintains flags.
 * Agent and IMAP::              How to use the Agent with @acronym{IMAP}.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
@@ -19124,7 +19126,7 @@ the backend server rather than in @file{.newsrc}.  This means that the
 Agent, while unplugged or disconnected, will always record all changes
 to the flags in its own files.
 
-When you plug back in, Gnus will then check to see if you have any 
+When you plug back in, Gnus will then check to see if you have any
 changed any flags and ask if you wish to synchronize these with the
 server.  This behavior is customizable by @code{gnus-agent-synchronize-flags}.
 
