@@ -4,7 +4,7 @@
 
 2005-11-08  Kevin Greiner  <kevin.greiner@compsol.cc>
 
-	* gnus.texi (nntp-open-via-telnet-and-telnet): Fixed grammer.
+	* gnus.texi (nntp-open-via-telnet-and-telnet): Fixed grammar.
 	(Agent Parameters): Updated parameter names to match code.
 	(Group Agent Commands): Corrected 'gnus-agent-fetch-series' as
 	'gnus-agent-summary-fetch-series'.
