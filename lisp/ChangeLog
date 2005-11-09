@@ -1,3 +1,11 @@
+2005-11-08  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* nntp.el (nntp-authinfo-rejected): New error condition.
+	(nntp-wait-for): Use new error condition to signal authentication
+	error.
+	(nntp-retrieve-data): Rethrow new error condition to break out of
+	recursive call to nntp-send-authinfo.
+
 2005-11-08  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-sum.el (gnus-summary-catchup-and-goto-prev-group): New function.

@@ -284,6 +284,13 @@ Within a string, %s is replaced with the server address and %p with
 port number on server.  The program should accept IMAP commands on
 stdin and return responses to stdout.")
 
+(defvar nntp-authinfo-rejected nil
+"A custom error condition used to report 'Authentication Rejected' errors.  
+Condition handlers that match just this condition ensure that the nntp 
+backend doesn't catch this error.")
+(put 'nntp-authinfo-rejected 'error-conditions '(error nntp-authinfo-rejected))
+(put 'nntp-authinfo-rejected 'error-message "Authorization Rejected")
+
 
 
 ;;; Internal functions.
@@ -334,16 +341,21 @@ be restored and the command retried."
 
 (defsubst nntp-wait-for (process wait-for buffer &optional decode discard)
   "Wait for WAIT-FOR to arrive from PROCESS."
+
   (save-excursion
     (set-buffer (process-buffer process))
     (goto-char (point-min))
+
     (while (and (or (not (memq (char-after (point)) '(?2 ?3 ?4 ?5)))
-		    (looking-at "480"))
+		    (looking-at "48[02]"))
 		(memq (process-status process) '(open run)))
-      (when (looking-at "480")
-	(nntp-handle-authinfo process))
-      (when (looking-at "^.*\n")
-	(delete-region (point) (progn (forward-line 1) (point))))
+      (cond ((looking-at "480")
+	     (nntp-handle-authinfo process))
+	    ((looking-at "482")
+	     (nnheader-report 'nntp (get 'nntp-authinfo-rejected 'error-message))
+	     (signal 'nntp-authinfo-rejected nil))
+	    ((looking-at "^.*\n")
+	     (delete-region (point) (progn (forward-line 1) (point)))))
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1
@@ -439,6 +451,8 @@ be restored and the command retried."
                  (wait-for
                   (nntp-wait-for process wait-for buffer decode))
                  (t t)))
+	    (nntp-authinfo-rejected
+	     (signal 'nntp-authinfo-rejected (cdr err)))
             (error
              (nnheader-report 'nntp "Couldn't open connection to %s: %s"
                               address err))
