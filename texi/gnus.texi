@@ -13076,7 +13076,7 @@ List of strings to be used as the switches to
 
 @item nntp-open-via-telnet-and-telnet
 @findex nntp-open-via-telnet-and-telnet
-Does essentially also the same, but uses @samp{telnet} instead of
+Does essentially the same, but uses @samp{telnet} instead of
 @samp{rlogin} to connect to the intermediate host.
 
 @code{nntp-open-via-telnet-and-telnet}-specific variables:
@@ -18375,9 +18375,6 @@ listed below.
 
 @cindex Agent Parameters
 @table @code
-@item agent-cat-name
-The name of the category.
-
 @item agent-groups
 The list of groups that are in this category.
 
@@ -18385,7 +18382,7 @@ The list of groups that are in this category.
 A predicate which (generally) gives a rough outline of which articles
 are eligible for downloading; and
 
-@item agent-score-file
+@item agent-score
 a score rule which (generally) gives you a finer granularity when
 deciding what articles to download.  (Note that this @dfn{download
 score} is not necessarily related to normal scores.)
@@ -18406,11 +18403,11 @@ an integer that overrides the value of @code{gnus-agent-low-score}.
 @item agent-high-score
 an integer that overrides the value of @code{gnus-agent-high-score}.
 
-@item agent-length-when-short
+@item agent-short-article
 an integer that overrides the value of
 @code{gnus-agent-short-article}.
 
-@item agent-length-when-long
+@item agent-long-article
 an integer that overrides the value of @code{gnus-agent-long-article}.
 
 @item agent-enable-undownloaded-faces
@@ -18922,9 +18919,9 @@ Download all eligible (@pxref{Agent Categories}) articles in this group.
 
 @item J s
 @kindex J s (Agent Summary)
-@findex gnus-agent-fetch-series
+@findex gnus-agent-summary-fetch-series
 Download all processable articles in this group.
-(@code{gnus-agent-fetch-series}).
+(@code{gnus-agent-summary-fetch-series}).
 
 @item J u
 @kindex J u (Agent Summary)
@@ -19117,23 +19114,19 @@ then updates the internal data structures that document which articles
 are stored locally.  An optional argument will mark articles in the
 agent as unread.
 
-@node Agent and IMAP
-@subsection Agent and IMAP
+@node Agent and flags
+@subsection Agent and flags
 
-The Agent works with any Gnus back end, including nnimap.  However,
-since there are some conceptual differences between @acronym{NNTP} and
-@acronym{IMAP}, this section (should) provide you with some information to
-make Gnus Agent work smoother as a @acronym{IMAP} Disconnected Mode client.
+The Agent works with any Gnus back end including those, such as
+nnimap, that store flags (read, ticked, etc) on the server.  Sadly,
+the Agent does not actually know which backends keep their flags in
+the backend server rather than in @file{.newsrc}.  This means that the
+Agent, while unplugged or disconnected, will always record all changes
+to the flags in its own files.
 
-The first thing to keep in mind is that all flags (read, ticked, etc)
-are kept on the @acronym{IMAP} server, rather than in @file{.newsrc} as is the
-case for nntp.  Thus Gnus need to remember flag changes when
-disconnected, and synchronize these flags when you plug back in.
-
-Gnus keeps track of flag changes when reading nnimap groups under the
-Agent.  When you plug back in, Gnus will check if you have any changed
-any flags and ask if you wish to synchronize these with the server.
-The behavior is customizable by @code{gnus-agent-synchronize-flags}.
+When you plug back in, Gnus will then check to see if you have any 
+changed any flags and ask if you wish to synchronize these with the
+server.  This behavior is customizable by @code{gnus-agent-synchronize-flags}.
 
 @vindex gnus-agent-synchronize-flags
 If @code{gnus-agent-synchronize-flags} is @code{nil}, the Agent will
@@ -19147,6 +19140,23 @@ re-connect, you can do it manually with the
 @code{gnus-agent-synchronize-flags} command that is bound to @kbd{J Y}
 in the group buffer.
 
+Technical note: the synchronization algorithm does not work by ``pushing''
+all local flags to the server, but rather by incrementally updated the
+server view of flags by changing only those flags that were changed by
+the user.  Thus, if you set one flag on an article, quit the group then
+re-select the group and remove the flag; the flag will be set and
+removed from the server when you ``synchronize''.  The queued flag
+operations can be found in the per-server @code{flags} file in the Agent
+directory.  It's emptied when you synchronize flags.
+
+@node Agent and IMAP
+@subsection Agent and IMAP
+
+The Agent works with any Gnus back end, including nnimap.  However,
+since there are some conceptual differences between @acronym{NNTP} and
+@acronym{IMAP}, this section (should) provide you with some information to
+make Gnus Agent work smoother as a @acronym{IMAP} Disconnected Mode client.
+
 Some things are currently not implemented in the Agent that you'd might
 expect from a disconnected @acronym{IMAP} client, including:
 
@@ -19159,16 +19169,6 @@ Copying/moving articles into nnimap groups when unplugged.
 Creating/deleting nnimap groups when unplugged.
 
 @end itemize
-
-Technical note: the synchronization algorithm does not work by ``pushing''
-all local flags to the server, but rather incrementally update the
-server view of flags by changing only those flags that were changed by
-the user.  Thus, if you set one flag on an article, quit the group and
-re-select the group and remove the flag; the flag will be set and
-removed from the server when you ``synchronize''.  The queued flag
-operations can be found in the per-server @code{flags} file in the Agent
-directory.  It's emptied when you synchronize flags.
-
 
 @node Outgoing Messages
 @subsection Outgoing Messages
@@ -19252,6 +19252,14 @@ If @code{gnus-agent-mark-unread-after-downloaded} is non-@code{nil},
 mark articles as unread after downloading.  This is usually a safe
 thing to do as the newly downloaded article has obviously not been
 read.  The default is @code{t}.
+
+@item gnus-agent-synchronize-flags
+@vindex gnus-agent-synchronize-flags
+If @code{gnus-agent-synchronize-flags} is @code{nil}, the Agent will
+never automatically synchronize flags.  If it is @code{ask}, which is
+the default, the Agent will check if you made any changes and if so
+ask if you wish to synchronize these when you re-connect.  If it has
+any other value, all flags will be synchronized automatically.
 
 @item gnus-agent-consider-all-articles
 @vindex gnus-agent-consider-all-articles
