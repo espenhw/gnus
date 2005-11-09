@@ -4632,10 +4632,6 @@ using some other form will lead to serious barfage."
    (gnus-date-get-time (mail-header-date h1))
    (gnus-date-get-time (mail-header-date h2))))
 
-(defsubst gnus-article-sort-by-date-reverse (h1 h2)
-  "Sort articles in reverse order by root article date."
-  (gnus-article-sort-by-date h2 h1))
-
 (defun gnus-thread-sort-by-date (h1 h2)
   "Sort threads by root article date."
   (gnus-article-sort-by-date

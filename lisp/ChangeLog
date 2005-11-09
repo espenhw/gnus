@@ -1,3 +1,8 @@
+2005-11-09  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-article-sort-by-date-reverse): Remove,
+	use (not sort-by-date) instead.
+
 2005-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-generate-headers): Downcase the argument
