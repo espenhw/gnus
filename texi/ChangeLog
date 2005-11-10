@@ -1,3 +1,8 @@
+2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (XVarious): Fix description of gnus-use-toolbar; add
+	new variable gnus-toolbar-thickness.
+
 2005-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Agent and flags): Add it to the detailmenu.

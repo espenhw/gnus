@@ -22773,9 +22773,19 @@ default.
 
 @item gnus-use-toolbar
 @vindex gnus-use-toolbar
-If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
-one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
-@code{right-toolbar}, or @code{left-toolbar}.
+This variable specifies the position to display the toolbar.  If
+@code{nil}, don't display toolbars.  If it is non-nil, it should be one
+of the symbols @code{default}, @code{top}, @code{bottom}, @code{right},
+and @code{left}.  @code{default} means to use the default toolbar, the
+rest mean to display the toolbar on the place which those names show.
+The default is @code{default}.
+
+@item gnus-toolbar-thickness
+@vindex gnus-toolbar-thickness
+Cons of the height and the width specifying the thickness of a toolbar.
+The height is used for the toolbar displayed on the top or the bottom,
+the width is used for the toolbar displayed on the right or the left.
+The default is that of the default toolbar.
 
 @item gnus-group-toolbar
 @vindex gnus-group-toolbar
