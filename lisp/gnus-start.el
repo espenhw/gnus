@@ -754,6 +754,13 @@ prompt the user for the name of an NNTP server to use."
     (nnheader-init-server-buffer)
     (setq gnus-slave slave)
     (gnus-read-init-file)
+
+    ;; Add "native" to gnus-predefined-server-alist just to have a
+    ;; name for the native select method.
+    (when gnus-select-method
+      (push (cons "native" gnus-select-method)
+	    gnus-predefined-server-alist))
+    
     (if gnus-agent
 	(gnus-agentize))
 

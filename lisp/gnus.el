@@ -3501,11 +3501,8 @@ that that variable is buffer-local to the summary buffers."
                    (push name-method gnus-server-method-cache))
                  (throw 'server-name (car name-method))))
              server-alist))
-     (let ((alists (list gnus-server-alist
-                         gnus-predefined-server-alist)))
-       (if gnus-select-method
-           (push (list (cons "native" gnus-select-method)) alists))
-       alists))
+     (list gnus-server-alist
+	   gnus-predefined-server-alist))
 
     (let* ((name (if (member (cadr method) '(nil ""))
                      (format "%s" (car method))
