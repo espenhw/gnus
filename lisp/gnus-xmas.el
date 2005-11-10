@@ -525,17 +525,53 @@ call it with the value of the `gnus-data' text property."
 
 ;;; The toolbar.
 
-(defcustom gnus-use-toolbar (if (featurep 'toolbar)
-				'default-toolbar
-			      nil)
-  "*If nil, do not use a toolbar.
-If it is non-nil, it must be a toolbar.  The five valid values are
-`default-toolbar', `top-toolbar', `bottom-toolbar',
-`right-toolbar', and `left-toolbar'."
-  :type '(choice (const default-toolbar)
-		 (const top-toolbar) (const bottom-toolbar)
-		 (const left-toolbar) (const right-toolbar)
+(defun gnus-xmas-update-toolbars ()
+  "Update the toolbars' appearance."
+  (when (and (not noninteractive)
+	     (featurep 'gnus-xmas))
+    (save-excursion
+      (dolist (buffer (buffer-list))
+	(set-buffer buffer)
+	(cond ((eq major-mode 'gnus-group-mode)
+	       (gnus-xmas-setup-group-toolbar))
+	      ((eq major-mode 'gnus-summary-mode)
+	       (gnus-xmas-setup-summary-toolbar)))))))
+
+(defcustom gnus-use-toolbar (if (featurep 'toolbar) 'default)
+  "*Position to display the toolbar.  Nil means do not use a toolbar.
+If it is non-nil, it should be one of the symbols `default', `top',
+`bottom', `right', and `left'.  `default' means to use the default
+toolbar, the rest mean to display the toolbar on the place which those
+names show."
+  :type '(choice (const default)
+		 (const top) (const bottom) (const left) (const right)
 		 (const :tag "no toolbar" nil))
+  :set (lambda (symbol value)
+	 (set-default
+	  symbol
+	  (if (or (not value)
+		  (memq value (list 'default 'top 'bottom 'right 'left)))
+	      value
+	    'default))
+	 (gnus-xmas-update-toolbars))
+  :group 'gnus-xmas)
+
+(defcustom gnus-toolbar-thickness
+  (if (featurep 'toolbar)
+      (cons (specifier-instance default-toolbar-height)
+	    (specifier-instance default-toolbar-width)))
+  "*Cons of the height and the width specifying the thickness of a toolbar.
+The height is used for the toolbar displayed on the top or the bottom,
+the width is used for the toolbar displayed on the right or the left."
+  :type '(cons :tag "height & width"
+	       (integer :tag "height") (integer :tag "width"))
+  :set (lambda (symbol value)
+	 (set-default
+	  symbol
+	  (if (and (consp value) (natnump (car value)) (natnump (cdr value)))
+	      value
+	    '(37 . 40)))
+	 (gnus-xmas-update-toolbars))
   :group 'gnus-xmas)
 
 (defvar gnus-group-toolbar
@@ -617,19 +653,50 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     [gnus-summary-exit gnus-summary-exit t "Exit this summary"])
   "The summary buffer mail toolbar.")
 
+(defun gnus-xmas-setup-toolbar (toolbar)
+  (when (featurep 'toolbar)
+    (if (and gnus-use-toolbar
+	     (message-xmas-setup-toolbar toolbar nil "gnus"))
+	(let* ((bar (or (intern-soft (format "%s-toolbar" gnus-use-toolbar))
+			'default-toolbar))
+	       (bars (delq bar (list 'top-toolbar 'bottom-toolbar
+				     'right-toolbar 'left-toolbar)))
+	       hw)
+	  (while bars
+	    (remove-specifier (symbol-value (pop bars)) (current-buffer)))
+	  (unless (eq bar 'default-toolbar)
+	    (set-specifier default-toolbar nil (current-buffer)))
+	  (set-specifier (symbol-value bar) toolbar (current-buffer))
+	  (when (setq hw (cdr (assq gnus-use-toolbar
+				    '((default . default-toolbar-height)
+				      (top . top-toolbar-height)
+				      (bottom . bottom-toolbar-height)))))
+	    (set-specifier (symbol-value hw) (car gnus-toolbar-thickness)
+			   (current-buffer)))
+	  (when (setq hw (cdr (assq gnus-use-toolbar
+				    '((default . default-toolbar-width)
+				      (right . right-toolbar-width)
+				      (left . left-toolbar-width)))))
+	    (set-specifier (symbol-value hw) (cdr gnus-toolbar-thickness)
+			   (current-buffer))))
+      (set-specifier default-toolbar nil (current-buffer))
+      (remove-specifier top-toolbar (current-buffer))
+      (remove-specifier bottom-toolbar (current-buffer))
+      (remove-specifier right-toolbar (current-buffer))
+      (remove-specifier left-toolbar (current-buffer)))
+    (set-specifier default-toolbar-visible-p t (current-buffer))
+    (set-specifier top-toolbar-visible-p t (current-buffer))
+    (set-specifier bottom-toolbar-visible-p t (current-buffer))
+    (set-specifier right-toolbar-visible-p t (current-buffer))
+    (set-specifier left-toolbar-visible-p t (current-buffer))))
+
 (defun gnus-xmas-setup-group-toolbar ()
-  (and gnus-use-toolbar
-       (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus")
-       (set-specifier (symbol-value gnus-use-toolbar)
-		      (cons (current-buffer) gnus-group-toolbar))))
+  (gnus-xmas-setup-toolbar gnus-group-toolbar))
 
 (defun gnus-xmas-setup-summary-toolbar ()
-  (let ((bar (if (gnus-news-group-p gnus-newsgroup-name)
-		 gnus-summary-toolbar gnus-summary-mail-toolbar)))
-    (and gnus-use-toolbar
-	 (message-xmas-setup-toolbar bar nil "gnus")
-	 (set-specifier (symbol-value gnus-use-toolbar)
-			(cons (current-buffer) bar)))))
+  (gnus-xmas-setup-toolbar (if (gnus-news-group-p gnus-newsgroup-name)
+			       gnus-summary-toolbar
+			     gnus-summary-mail-toolbar)))
 
 (defun gnus-xmas-mail-strip-quoted-names (address)
   "Protect mail-strip-quoted-names from nil input.

@@ -1,3 +1,13 @@
+2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-xmas-update-toolbars): New function.
+	(gnus-use-toolbar): Change the valid values into default, top,
+	bottom, left, and right.
+	(gnus-toolbar-thickness): New variable.
+	(gnus-xmas-setup-toolbar): New function.
+	(gnus-xmas-setup-group-toolbar): Use it.
+	(gnus-xmas-setup-summary-toolbar): Use it.
+
 2005-11-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-1): Add "native" to
