@@ -3117,6 +3117,33 @@ value of the @code{gnus-parameters-case-fold-search} variable to
 @code{nil}.  Otherwise, set it to @code{t} if you want to compare them
 always in a case-insensitive manner.
 
+You can define different sorting to different groups via
+@code{gnus-parameters}.  Here is an example to sort an @acronym{NNTP}
+group by subject and an @acronym{RSS} group by reverse date to see the
+latest news at the top.  In this example, the first group is the Debian
+daily news group @code{gmane.linux.debian.user.news} from
+news.gmane.org.  The @acronym{RSS} group corresponds to the Debian
+weekly news RSS feed
+@url{http://packages.debian.org/unstable/newpkg_main.en.rdf},
+@xref{RSS}.
+
+@lisp
+(setq
+ gnus-parameters
+ '(("nntp.*gmane\\.debian\\.user\\.news"
+    (gnus-show-threads nil)
+    (gnus-article-sort-functions '((not gnus-article-sort-by-date)))
+    (gnus-use-adaptive-scoring nil)
+    (gnus-use-scoring nil))
+   ("nnrss.*debian"
+    (gnus-show-threads nil)
+    (gnus-article-sort-functions 'gnus-article-sort-by-subject)
+    (gnus-use-adaptive-scoring nil)
+    (gnus-use-scoring t)
+    (gnus-score-find-score-files-function 'gnus-score-find-single)
+    (gnus-summary-line-format "%U%R%z%d %I%(%[ %s %]%)\n"))))
+@end lisp
+
 
 @node Listing Groups
 @section Listing Groups
@@ -7080,44 +7107,8 @@ say something like:
 
 @lisp
 (setq gnus-thread-sort-functions
-      '((lambda (t1 t2)
-          (not (gnus-thread-sort-by-number t1 t2)))
+      '((not gnus-thread-sort-by-number)
         gnus-thread-sort-by-score))
-@end lisp
-
-Yet more examples. You can define different sorting to different
-groups. Here is an example for where one @acronym{NNTP} group is
-sorted by subject and the @acronym{RSS} group is sorted by date to see
-the latest news at the top.
-
-@lisp
-(require 'cl)
-
-(defun my-gnus-summary-mode-hook-group-select ()
-  (flet ((lsetq (x val) ;; Local setq
-                (set (make-local-variable x) val)))
-    (cond
-     ;;  In Group buffer to make Debian daily news group press: G m
-     ;;  and point it to nntp server news.gmane.org and
-     ;;  group gmane.linux.debian.user.news
-     ((string-match "nntp.*debian.user.news" gnus-newsgroup-name)
-      (lsetq 'gnus-show-threads nil)
-      (lsetq 'gnus-article-sort-functions 'gnus-article-sort-by-date-reverse)
-      (lsetq 'gnus-use-adaptive-scoring nil)
-      (lsetq 'gnus-use-scoring nil))
-     ;;  In Group buffer to read Debian weekly news RSS feed press: G R
-     ;;  and point it to url:
-     ;;  http://packages.debian.org/unstable/newpkg_main.en.rdf
-     ((string-match "nnrss.*debian" gnus-newsgroup-name)
-      (lsetq 'gnus-show-threads nil)
-      (lsetq 'gnus-article-sort-functions 'gnus-article-sort-by-subject)
-      (lsetq 'gnus-use-adaptive-scoring nil)
-      (lsetq 'gnus-use-scoring t)
-      (lsetq 'gnus-score-find-score-files-function 'gnus-score-find-single)
-      (lsetq 'gnus-summary-line-format "%U%R%z%d %I%(%[ %s %]%)\n")))))
-
-(defun my-gnus-summary-mode-hook  ()
-  (my-gnus-summary-mode-hook-group-select))
 @end lisp
 
 @vindex gnus-thread-score-function
@@ -7153,6 +7144,8 @@ say something like:
         gnus-article-sort-by-subject))
 @end lisp
 
+You can define group specific sorting via @code{gnus-parameters},
+@xref{Group Parameters}.
 
 
 @node Asynchronous Fetching
@@ -12543,7 +12536,19 @@ configuration to the example above:
       (nntp-via-rlogin-command "ssh")
 @end lisp
 
-See also @code{nntp-via-rlogin-command-switches}.
+See also @code{nntp-via-rlogin-command-switches}.  Here's an example for
+an indirect connection:
+@lisp
+(setq gnus-select-method
+      '(nntp "indirect"
+	     (nntp-address "news.server.example")
+             (nntp-via-user-name "intermediate_user_name")
+             (nntp-via-address "intermediate.host.example")
+             (nntp-via-rlogin-command "ssh")
+             (nntp-end-of-line "\n")
+             (nntp-via-rlogin-command-switches ("-C" "-t" "-e" "none"))
+             (nntp-open-connection-function nntp-open-via-rlogin-and-telnet)))
+@end lisp
 
 If you're behind a firewall, but have direct access to the outside world
 through a wrapper command like "runsocks", you could open a socksified

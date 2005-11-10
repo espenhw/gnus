@@ -1,3 +1,13 @@
+2005-11-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Sorting the Summary Buffer): Replace 2005-10-29
+	change by a reference to `Group Parameters'.  Use `(not ...)' in
+	example instead of `lambda' expression.
+	(Group Parameters): Add simplified sorting example based on
+	example for `Sorting the Summary Buffer' from Jari Aalto
+	<jari.aalto@cante.net>.
+	(Example Methods): Add example for an indirect connection.
+
 2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (XVarious): Fix description of gnus-use-toolbar; add
