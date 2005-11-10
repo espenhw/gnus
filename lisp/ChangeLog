@@ -1,5 +1,12 @@
 2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* messagexmas.el (message-use-toolbar): Change the valid values
+	into default, top, bottom, left, and right.
+	(message-toolbar-thickness): New variable.
+	(message-xmas-setup-toolbar): Locate gnus-xmas-glyph-directory as
+	well.
+	(message-setup-toolbar): Make it work.
+
 	* gnus-xmas.el (gnus-xmas-update-toolbars): New function.
 	(gnus-use-toolbar): Change the valid values into default, top,
 	bottom, left, and right.
