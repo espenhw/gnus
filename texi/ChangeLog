@@ -1,5 +1,8 @@
 2005-11-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-coding.texi (Gnus Coding Style): Add MIME subsection.
+	(Gnus Maintainance Guide): Improvements.
+
 	* gnus.texi (Sorting the Summary Buffer): Replace 2005-10-29
 	change by a reference to `Group Parameters'.  Use `(not ...)' in
 	example instead of `lambda' expression.
