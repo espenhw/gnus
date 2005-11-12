@@ -213,6 +213,17 @@ unplugged."
   :group 'gnus-agent
   :type 'boolean)
 
+(defcustom gnus-agent-article-alist-save-format 1
+  "Indicates whether to use compression(2), verses no
+  compression(1), when writing agentview files.  The compressed
+  files do save space but load times are 6-7 times higher.  A
+  group must be opened then closed for the agentview to be
+  updated using the new format."
+  :version "22.1"
+  :group 'gnus-agent
+  :type '(radio (const :format "Compressed" 2)
+		(const :format "Uncompressed" 1)))
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -1977,61 +1988,55 @@ doesn't exist, to valid the overview buffer."
            'gnus-agent-file-loading-cache
            'gnus-agent-read-agentview))))
 
-;; Save format may be either 1 or 2.  Two is the new, compressed
-;; format that is still being tested.  Format 1 is uncompressed but
-;; known to be reliable.
-(defconst gnus-agent-article-alist-save-format 2)
-
 (defun gnus-agent-read-agentview (file)
   "Load FILE and do a `read' there."
   (with-temp-buffer
     (condition-case nil
-      (progn
-        (nnheader-insert-file-contents file)
-        (goto-char (point-min))
-        (let ((alist (read (current-buffer)))
-              (version (condition-case nil (read (current-buffer))
-                         (end-of-file 0)))
-              changed-version)
+	(progn
+	  (nnheader-insert-file-contents file)
+	  (goto-char (point-min))
+	  (let ((alist (read (current-buffer)))
+		(version (condition-case nil (read (current-buffer))
+			   (end-of-file 0)))
+		changed-version)
 
-          (cond
-           ((< version 2)
-            (error "gnus-agent-read-agentview no longer supports version %d.  Stop gnus, manually evaluate gnus-agent-convert-to-compressed-agentview, then restart gnus." version))
-           ((= version 0)
-            (let ((inhibit-quit t)
-                  entry)
-              (gnus-agent-open-history)
-              (set-buffer (gnus-agent-history-buffer))
-              (goto-char (point-min))
-              (while (not (eobp))
-                (if (and (looking-at
-                          "[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
-                         (string= (match-string 2)
-                                  gnus-agent-read-agentview)
-                         (setq entry (assoc (string-to-number (match-string 3)) alist)))
-                    (setcdr entry (string-to-number (match-string 1))))
-                (forward-line 1))
-              (gnus-agent-close-history)
-              (setq changed-version t)))
-           ((= version 1)
-            (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
-           ((= version 2)
-            (let (uncomp)
-              (mapcar
-               (lambda (comp-list)
-                 (let ((state (car comp-list))
-                       (sequence (inline
-				   (gnus-uncompress-range
-				    (cdr comp-list)))))
-                   (mapcar (lambda (article-id)
-                             (setq uncomp (cons (cons article-id state) uncomp)))
-                           sequence)))
-               alist)
-              (setq alist (sort uncomp 'car-less-than-car)))))
-          (when changed-version
-            (let ((gnus-agent-article-alist alist))
-              (gnus-agent-save-alist gnus-agent-read-agentview)))
-          alist))
+	    (cond
+	     ((= version 0)
+	      (let ((inhibit-quit t)
+		    entry)
+		(gnus-agent-open-history)
+		(set-buffer (gnus-agent-history-buffer))
+		(goto-char (point-min))
+		(while (not (eobp))
+		  (if (and (looking-at
+			    "[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
+			   (string= (match-string 2)
+				    gnus-agent-read-agentview)
+			   (setq entry (assoc (string-to-number (match-string 3)) alist)))
+		      (setcdr entry (string-to-number (match-string 1))))
+		  (forward-line 1))
+		(gnus-agent-close-history)
+		(setq changed-version t)))
+	     ((= version 1)
+	      (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
+	     ((= version 2)
+	      (let (uncomp)
+		(mapcar
+		 (lambda (comp-list)
+		   (let ((state (car comp-list))
+			 (sequence (inline
+				     (gnus-uncompress-range
+				      (cdr comp-list)))))
+		     (mapcar (lambda (article-id)
+			       (setq uncomp (cons (cons article-id state) uncomp)))
+			     sequence)))
+		 alist)
+		(setq alist (sort uncomp 'car-less-than-car)))
+	      (setq changed-version (not (= 2 gnus-agent-article-alist-save-format)))))
+	    (when changed-version
+	      (let ((gnus-agent-article-alist alist))
+		(gnus-agent-save-alist gnus-agent-read-agentview)))
+	    alist))
       (file-error nil))))
 
 (defun gnus-agent-save-alist (group &optional articles state)

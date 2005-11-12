@@ -1,3 +1,12 @@
+2005-11-12  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-article-alist-save-format): Changed
+	internal variable to a custom variable.  Changed default value
+	from compressed(2) to uncompressed(1).
+	(gnus-agent-read-agentview): Reversed revision 7.8 to restore
+	support for uncompressed agentview files.  Taken together, reading
+	the agentview file should now be 6-7 times faster.
+
 2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* messagexmas.el (message-use-toolbar): Change the valid values
