@@ -7,6 +7,12 @@
 	support for uncompressed agentview files.  Taken together, reading
 	the agentview file should now be 6-7 times faster.
 
+2005-11-11  Jan Nieuwenhuizen  <janneke@gnu.org>
+
+	* gnus-start.el (gnus-dribble-read-file): Set file-precious-flag,
+	as a buffer-local variable.  This avoids creating truncated
+	dribble files as a result of a hang up, eg.
+
 2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* messagexmas.el (message-use-toolbar): Change the valid values
