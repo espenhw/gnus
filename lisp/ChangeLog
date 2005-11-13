@@ -1,3 +1,10 @@
+2005-11-12  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-braid-nov): Now tests new nov entries
+	for duplicates which are removed.  The invalid sort check then
+	triggers a rescan after the sort as sorting may have moved
+	duplicate entries such that they can be cheaply detected.
+
 2005-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-dribble-read-file): Quote file-precious-flag.

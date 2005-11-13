@@ -1866,7 +1866,7 @@ article numbers will be returned."
 (defsubst gnus-agent-read-article-number ()
   "Reads the article number at point.  Returns nil when a valid article number can not be read."
 
-  ;; It is unfortunite but the read function quietly overflows
+  ;; It is unfortunate but the read function quietly overflows
   ;; integer.  As a result, I have to use string operations to test
   ;; for overflow BEFORE calling read.
   (when (looking-at "[0-9]+\t")
@@ -1925,21 +1925,21 @@ doesn't exist, to valid the overview buffer."
       (gnus-agent-copy-nov-line (pop articles))
 
       (ignore-errors
-       (while articles
-	 (while (let ((art (read (current-buffer))))
-		  (cond ((< art (car articles))
-			 (forward-line 1)
-			 t)
-			((= art (car articles))
-			 (beginning-of-line)
-			 (delete-region
-			  (point) (progn (forward-line 1) (point)))
-			 nil)
-			(t
-			 (beginning-of-line)
-			 nil))))
+	(while articles
+	  (while (let ((art (read (current-buffer))))
+		   (cond ((< art (car articles))
+			  (forward-line 1)
+			  t)
+			 ((= art (car articles))
+			  (beginning-of-line)
+			  (delete-region
+			   (point) (progn (forward-line 1) (point)))
+			  nil)
+			 (t
+			  (beginning-of-line)
+			  nil))))
 
-	 (gnus-agent-copy-nov-line (pop articles)))))
+	  (gnus-agent-copy-nov-line (pop articles)))))
 
     (goto-char (point-max))
 
@@ -1955,23 +1955,39 @@ doesn't exist, to valid the overview buffer."
 	(goto-char p))
 
       (setq last (or last -134217728))
-      (let (sort art)
-	(while (not (eobp))
-	  (setq art (gnus-agent-read-article-number))
-	  (cond ((not art)
-		 ;; Bad art num - delete this line
-		 (beginning-of-line)
-		 (delete-region (point) (progn (forward-line 1) (point))))
-		((< art last)
-		 ;; Art num out of order - enable sort
-		 (setq sort t)
-		 (forward-line 1))
-		(t
-		 ;; Good art num
-		 (setq last art)
-		 (forward-line 1))))
-	(when sort
-	  (sort-numeric-fields 1 (point-min) (point-max)))))))
+      (while (catch 'problems
+	       (let (sort art)
+		 (while (not (eobp))
+		   (setq art (gnus-agent-read-article-number))
+		   (cond ((not art)
+			  ;; Bad art num - delete this line
+			  (beginning-of-line)
+			  (delete-region (point) (progn (forward-line 1) (point))))
+			 ((< art last)
+			  ;; Art num out of order - enable sort
+			  (setq sort t)
+			  (forward-line 1))
+			 ((= art last)
+			  ;; Bad repeat of art number - delete this line
+			  (beginning-of-line)
+			  (delete-region (point) (progn (forward-line 1) (point))))
+			 (t
+			  ;; Good art num
+			  (setq last art)
+			  (forward-line 1))))
+		 (when sort
+		   ;; something is seriously wrong as we simply shouldn't see out-of-order data.
+		   ;; First, we'll fix the sort.
+		   (sort-numeric-fields 1 (point-min) (point-max))
+
+		   ;; but now we have to consider that we may have duplicate rows...	  
+		   ;; so reset to beginning of file
+		   (goto-char (point-min))
+		   (setq last -134217728)
+	  
+		   ;; and throw a code that restarts this scan
+		   (throw 'problems t))
+		 nil))))))
 
 ;; Keeps the compiler from warning about the free variable in
 ;; gnus-agent-read-agentview.
