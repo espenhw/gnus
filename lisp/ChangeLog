@@ -1,3 +1,7 @@
+2005-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-dribble-read-file): Quote file-precious-flag.
+
 2005-11-12  Kevin Greiner  <kevin.greiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-article-alist-save-format): Changed
