@@ -2,6 +2,7 @@
 
 	* gnus.texi (Various Various): Fix the default value of
 	nnheader-max-head-length.
+	(Gnus Versions): Fix typo.
 
 2005-11-10  Reiner Steib  <Reiner.Steib@gmx.de>
 

@@ -25168,7 +25168,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37 releases.
-If was released as ``Gnus 5.6'' on March 8th 1998 (46 releases).
+It was released as ``Gnus 5.6'' on March 8th 1998 (46 releases).
 
 Gnus 5.6 begat Pterodactyl Gnus on August 29th 1998 and was released as
 ``Gnus 5.8'' (after 99 releases and a CVS repository) on December 3rd
