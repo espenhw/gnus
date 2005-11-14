@@ -1,3 +1,11 @@
+2005-11-13  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-read-local): Trivial fix to format of
+	error message to display actual error condition.
+	(gnus-agent-save-local): Avoid saving symbols that are bound to
+	nil as they simply result in a warning message in
+	gnus-agent-read-local.
+
 2005-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-dribble-read-file): Use make-local-variable

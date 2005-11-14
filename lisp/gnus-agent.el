@@ -2164,7 +2164,7 @@ modified) original contents, they are first saved to their own file."
               ;; NOTE: The '+ 0' ensure that min and max are both numerics.
               (set group (cons (+ 0 min) (+ 0 max))))
           (error
-           (gnus-message 3 "Warning - invalid agent local: %s on line %d: "
+           (gnus-message 3 "Warning - invalid agent local: %s on line %d: %s"
                          file line (error-message-string err))))
         (forward-line 1)
         (setq line (1+ line))))
@@ -2195,13 +2195,14 @@ modified) original contents, they are first saved to their own file."
 				((member (symbol-name symbol) '("+dirty" "+method"))
 				 nil)
 				(t
-				 (prin1 symbol)
 				 (let ((range (symbol-value symbol)))
-				   (princ " ")
-				   (princ (car range))
-				   (princ " ")
-				   (princ (cdr range))
-				   (princ "\n")))))
+				   (when range
+				     (prin1 symbol)
+				     (princ " ")
+				     (princ (car range))
+				     (princ " ")
+				     (princ (cdr range))
+				     (princ "\n"))))))
 			my-obarray))))))))
 
 (defun gnus-agent-get-local (group &optional gmane method)
