@@ -24987,7 +24987,7 @@ to the Gnus back ends instead of Gnus proper.
 @item nnheader-max-head-length
 @vindex nnheader-max-head-length
 When the back ends read straight heads of articles, they all try to read
-as little as possible.  This variable (default 4096) specifies
+as little as possible.  This variable (default 8192) specifies
 the absolute max length the back ends will try to read before giving up
 on finding a separator line between the head and the body.  If this
 variable is @code{nil}, there is no upper read bound.  If it is
