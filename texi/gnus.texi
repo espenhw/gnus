@@ -26709,7 +26709,7 @@ The new variable @code{gnus-parameters} can be used to set group parameters.
 Earlier this was done only via @kbd{G p} (or @kbd{G c}), which stored
 the parameters in @file{~/.newsrc.eld}, but via this variable you can
 enjoy the powers of customize, and simplified backups since you set the
-variable in @file{~/.emacs} instead of @file{~/.newsrc.eld}.  The
+variable in @file{~/.gnus.el} instead of @file{~/.newsrc.eld}.  The
 variable maps regular expressions matching group names to group
 parameters, a'la:
 @lisp
@@ -26724,7 +26724,7 @@ parameters, a'la:
 @item
 Smileys (@samp{:-)}, @samp{;-)} etc) are now iconized for Emacs too.
 
-Put @code{(setq gnus-treat-display-smileys nil)} in @file{~/.emacs} to
+Put @code{(setq gnus-treat-display-smileys nil)} in @file{~/.gnus.el} to
 disable it.
 
 @item
@@ -26751,8 +26751,8 @@ appropriate headers and a note in the body for cross-postings and
 followups (see the variables @code{message-cross-post-@var{*}}).
 
 @item
-References and X-Draft-Headers are no longer generated when you start
-composing messages and @code{message-generate-headers-first} is
+References and X-Draft-From headers are no longer generated when you
+start composing messages and @code{message-generate-headers-first} is
 @code{nil}.
 
 @item
@@ -26993,7 +26993,8 @@ It was aliased to @kbd{Y c}
 (@code{gnus-summary-insert-cached-articles}).  The new function filters
 out other articles.
 
-@item Some limiting commands accept a @kbd{C-u} prefix to negate the match.
+@item
+Some limiting commands accept a @kbd{C-u} prefix to negate the match.
 
 If @kbd{C-u} is used on subject, author or extra headers, i.e., @kbd{/
 s}, @kbd{/ a}, and @kbd{/ x}
