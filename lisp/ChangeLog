@@ -1,3 +1,7 @@
+2005-11-16  Boris Samorodov <bsam@ipt.ru>  (tiny patch)
+
+	* imap.el (imap-kerberos4-open): Ignore SSL stuff.
+
 2005-11-13  Kevin Greiner  <kevin.greiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-read-local): Trivial fix to format of
