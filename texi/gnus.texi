@@ -27454,7 +27454,7 @@ minimum.  You can, in fact, make do without them altogether---most of the
 useful data is in the summary buffer, anyway.  Set this variable to
 @samp{^NEVVVVER} or @samp{From:}, or whatever you feel you need.
 
-Set this hook to all the available hiding commands:
+Use the following to enable all the available hiding features:
 @lisp
 (setq gnus-treat-hide-headers 'head
       gnus-treat-hide-signature t
