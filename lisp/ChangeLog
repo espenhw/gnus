@@ -1,3 +1,7 @@
+2005-11-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* flow-fill.el (fill-flowed): Bind adaptive-fill-mode to nil. 
+
 2005-11-16  Boris Samorodov <bsam@ipt.ru>  (tiny patch)
 
 	* imap.el (imap-kerberos4-open): Ignore SSL stuff.

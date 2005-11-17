@@ -140,7 +140,8 @@ RFC 2646 suggests 66 characters for readability."
 	    (condition-case nil
 		(let ((fill-prefix (when quote (concat quote " ")))
 		      (fill-column (eval fill-flowed-display-column))
-		      filladapt-mode)
+		      filladapt-mode
+		      adaptive-fill-mode)
 		  (fill-region (point-at-bol)
 			       (min (1+ (point-at-eol))
 				    (point-max))
