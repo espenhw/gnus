@@ -63,17 +63,21 @@ it will be killed sometime later."
 
 (defcustom gnus-fetch-old-headers nil
   "*Non-nil means that Gnus will try to build threads by grabbing old headers.
-If an unread article in the group refers to an older, already read (or
-just marked as read) article, the old article will not normally be
-displayed in the Summary buffer.  If this variable is t, Gnus
-will attempt to grab the headers to the old articles, and thereby
-build complete threads.  If it has the value `some', only enough
-headers to connect otherwise loose threads will be displayed.  This
-variable can also be a number.  In that case, no more than that number
-of old headers will be fetched.  If it has the value `invisible', all
+If an unread article in the group refers to an older, already
+read (or just marked as read) article, the old article will not
+normally be displayed in the Summary buffer.  If this variable is
+t, Gnus will attempt to grab the headers to the old articles, and
+thereby build complete threads.  If it has the value `some', all
+old headers will be fetched but only enough headers to connect
+otherwise loose threads will be displayed.  This variable can
+also be a number.  In that case, no more than that number of old
+headers will be fetched.  If it has the value `invisible', all
 old headers will be fetched, but none will be displayed.
 
-The server has to support NOV for any of this to work."
+The server has to support NOV for any of this to work.
+
+This feature can seriously impact performance it ignores all
+locally cached header entries."
   :group 'gnus-thread
   :type '(choice (const :tag "off" nil)
 		 (const :tag "on" t)

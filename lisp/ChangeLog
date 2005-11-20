@@ -1,5 +1,11 @@
 2005-11-19  Kevin Greiner  <kevin.greiner@compsol.cc>
 
+	* gnus-sum.el (gnus-fetch-old-headers): Updated docs to warn that
+	it can seriously impact performance as it bypasses the agent's
+	local caches.
+
+2005-11-19  Kevin Greiner  <kevin.greiner@compsol.cc>
+
 	* gnus-agent.el (gnus-agent-possibly-synchronize-flags): A server
 	must be explicitly online rather than "not explicitly offline" for
 	its flags to be synchronized.
