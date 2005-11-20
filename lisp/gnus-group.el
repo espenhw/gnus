@@ -1703,7 +1703,7 @@ If FIRST-TOO, the current line is also eligible as a target."
 	 (size (+ size-in-cache size-in-agent))
 	 (suffix '("B" "K" "M" "G"))
 	 (scale 1024.0)
-	 (cutoff (* 10 scale)))
+	 (cutoff scale))
     (while (> size cutoff)
       (setq size (/ size scale)
 	    suffix (cdr suffix)))

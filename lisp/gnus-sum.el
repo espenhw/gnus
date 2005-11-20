@@ -10020,7 +10020,8 @@ the actual number of articles marked is returned."
     (when (gnus-summary-goto-subject article)
       (gnus-summary-show-thread)
       (gnus-summary-goto-subject article)
-      (gnus-summary-update-secondary-mark article))))
+      (gnus-summary-update-secondary-mark article)))
+  t)
 
 (defun gnus-summary-set-saved-mark (article)
   "Set the process mark on ARTICLE and update the summary line."

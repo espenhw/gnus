@@ -838,7 +838,7 @@ be a select method."
   (save-excursion
     (dolist (gnus-command-method (gnus-agent-covered-methods))
       (when (and (file-exists-p (gnus-agent-lib-file "flags"))
-		 (not (eq (gnus-server-status gnus-command-method) 'offline)))
+		 (eq (gnus-server-status gnus-command-method) 'ok))
 	(gnus-agent-possibly-synchronize-flags-server gnus-command-method)))))
 
 (defun gnus-agent-synchronize-flags-server (method)
