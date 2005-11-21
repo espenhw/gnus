@@ -1,3 +1,13 @@
+2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-fancy-expiry-target): Use current-time instead
+	of current-time-string.
+
+2005-11-20  Stefan Schimanski  <schimmi@debian.org>  (tiny change)
+
+	* nnmail.el (nnmail-fancy-expiry-target): Protect against invalid
+	date header.
+
 2005-11-19  Kevin Greiner  <kevin.greiner@compsol.cc>
 
 	* gnus-sum.el (gnus-fetch-old-headers): Updated docs to warn that
@@ -18,7 +28,7 @@
 
 2005-11-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* flow-fill.el (fill-flowed): Bind adaptive-fill-mode to nil. 
+	* flow-fill.el (fill-flowed): Bind adaptive-fill-mode to nil.
 
 2005-11-16  Boris Samorodov <bsam@ipt.ru>  (tiny patch)
 
