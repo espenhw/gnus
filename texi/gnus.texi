@@ -29184,8 +29184,10 @@ interpreted.)  If you decide that you don't like the way Gnus does
 certain things, it's trivial to have it do something a different way.
 (Well, at least if you know how to write Lisp code.)  However, that's
 beyond the scope of this manual, so we are simply going to talk about
-some common constructs that you normally use in your @file{.emacs} file
-to customize Gnus.
+some common constructs that you normally use in your @file{~/.gnus.el}
+file to customize Gnus.  (You can also use the @file{~/.emacs} file, but
+in order to set things of Gnus up, it is much better to use the
+@file{~/.gnus.el} file, @xref{Startup Files}.)
 
 If you want to set the variable @code{gnus-florgbnize} to four (4), you
 write the following:
@@ -29196,12 +29198,12 @@ write the following:
 
 This function (really ``special form'') @code{setq} is the one that can
 set a variable to some value.  This is really all you need to know.  Now
-you can go and fill your @file{.emacs} file with lots of these to change
-how Gnus works.
+you can go and fill your @file{~/.gnus.el} file with lots of these to
+change how Gnus works.
 
-If you have put that thing in your @file{.emacs} file, it will be read
-and @code{eval}ed (which is lisp-ese for ``run'') the next time you
-start Emacs.  If you want to change the variable right away, simply say
+If you have put that thing in your @file{~/.gnus.el} file, it will be
+read and @code{eval}ed (which is Lisp-ese for ``run'') the next time you
+start Gnus.  If you want to change the variable right away, simply say
 @kbd{C-x C-e} after the closing parenthesis.  That will @code{eval} the
 previous ``form'', which is a simple @code{setq} statement here.
 

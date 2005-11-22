@@ -1,3 +1,7 @@
+2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Emacs Lisp): Use ~/.gnus.el instead of ~/.emacs.
+
 2005-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Slow Terminal Connection): Replace old description
