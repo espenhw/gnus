@@ -1,5 +1,7 @@
 2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* message.texi (Mailing Lists): Fix description about MFT.
+
 	* gnus.texi (Emacs Lisp): Use ~/.gnus.el instead of ~/.emacs.
 
 2005-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
