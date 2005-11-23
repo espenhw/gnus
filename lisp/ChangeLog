@@ -1,3 +1,17 @@
+2005-11-23  Dave Love  <fx@gnu.org>
+
+	Add pop3s, pop3/starttls.
+
+	* pop3.el (pop3-authentication-scheme): Clarify doc.
+	(open-tls-stream, starttls-open-stream): Autoload.
+	(pop3-stream-type): New.
+	(pop3-open-server): Use it.
+
+	* mail-source.el (mail-sources): Fix some :types.  Add stream type
+	for POP.
+	(mail-source-keyword-map): Add :stream for POP.
+	(mail-source-fetch-pop): Use pop3-stream-type.
+
 2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-fancy-expiry-target): Use current-time instead
