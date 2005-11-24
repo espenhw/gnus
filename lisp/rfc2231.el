@@ -130,7 +130,9 @@ The list will be on the form
 			   (point)
 			   (progn
 			     (forward-sexp)
-			     ;; EXTENSION: Support non-ascii chars.
+			     ;; We might not have reached at the end of
+			     ;; the value because of non-ascii chars,
+			     ;; so we should jump over them if any.
 			     (while (and (not (eobp))
 					 (> (char-after) ?\177))
 			       (forward-char 1)
