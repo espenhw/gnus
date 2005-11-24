@@ -1,4 +1,8 @@
-2005-11-24  Pixel  <pixel@mandriva.com>  (tiny change)
+2005-11-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* pop3.el (pop3-open-server): Recognize a string as a service name.
+
+2005-11-24  Pascal Rigaux  <pixel@mandriva.com>  (tiny change)
 
 	* rfc2231.el (rfc2231-parse-string): Support non-ascii chars.
 
