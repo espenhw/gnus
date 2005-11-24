@@ -1,3 +1,7 @@
+2005-11-24  Pixel  <pixel@mandriva.com>  (tiny change)
+
+	* rfc2231.el (rfc2231-parse-string): Support non-ascii chars.
+
 2005-11-23  Dave Love  <fx@gnu.org>
 
 	Add pop3s, pop3/starttls.
