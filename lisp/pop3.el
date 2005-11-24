@@ -222,7 +222,7 @@ Returns the process associated with the connection."
       (setq process
 	    (cond
 	     ((or (eq pop3-stream-type 'ssl)
-		  (and (not pop3-stream-type) (= port 995))) ; pop3s
+		  (and (not pop3-stream-type) (member port '(995 "pop3s"))))
 	      (let ((process (open-tls-stream "POP" (current-buffer)
 					      mailhost port)))
 		(when process
