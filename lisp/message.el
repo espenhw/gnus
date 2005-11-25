@@ -2897,7 +2897,7 @@ or in the synonym headers, defined by `message-header-synonyms'."
   "Kill all text up to the signature.
 If a numberic argument or prefix arg is given, leave that number
 of lines before the signature intact."
-  (interactive "p")
+  (interactive "P")
   (save-excursion
     (save-restriction
       (let ((point (point)))
