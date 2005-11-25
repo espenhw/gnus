@@ -1,3 +1,9 @@
+2005-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.texi (Header Commands): Clarify descriptions of
+	message-cross-post-followup-to, message-reduce-to-to-cc, and
+	message-insert-wide-reply.
+
 2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi (Mailing Lists): Fix description about MFT.

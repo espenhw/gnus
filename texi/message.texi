@@ -681,26 +681,30 @@ stripped on replying, see @code{message-subject-trailing-was-query}
 @kindex C-c C-f x
 @findex message-cross-post-followup-to
 @vindex message-cross-post-default
+@vindex message-cross-post-note-function
 @cindex X-Post
 @cindex cross-post
-Ask for an additional @samp{Newsgroups} and @samp{FollowUp-To} for a
-cross-post.  @code{message-cross-post-followup-to} mangles
-@samp{FollowUp-To} and @samp{Newsgroups} header to point to group.
-If @code{message-cross-post-default} is @code{nil} or if called with a
-prefix-argument @samp{Follow-Up} is set, but the message is not
-cross-posted.
+Set up the @samp{FollowUp-To} header with a target newsgroup for a
+cross-post, add that target newsgroup to the @samp{Newsgroups} header if
+it is not a member of @samp{Newsgroups}, and insert a note in the body.
+If @code{message-cross-post-default} is @code{nil} or if this command is
+called with a prefix-argument, only the @samp{FollowUp-To} header will
+be set but the the target newsgroup will not be added to the
+@samp{Newsgroups} header.  The function to insert a note is controlled
+by the @code{message-cross-post-note-function} variable.
 
 @item C-c C-f t
 @kindex C-c C-f t
 @findex message-reduce-to-to-cc
 Replace contents of @samp{To} header with contents of @samp{Cc} or
-@samp{Bcc} header.
+@samp{Bcc} header.  (Iff @samp{Cc} header is not present, @samp{Bcc}
+header will be used instead.)
 
 @item C-c C-f w
 @kindex C-c C-f w
 @findex message-insert-wide-reply
 Insert @samp{To} and @samp{Cc} headers as if you were doing a wide
-reply.
+reply even if the message was not made for a wide reply first.
 
 @item C-c C-f a
 @kindex C-c C-f a
