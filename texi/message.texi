@@ -1106,7 +1106,7 @@ The text is killed and replaced with the contents of the variable
 Kill the address under point.
 
 @item C-c C-z
-@kindex C-c C-x
+@kindex C-c C-z
 @findex message-kill-to-signature
 Kill all the text up to the signature, or if that's missing, up to the
 end of the message (@code{message-kill-to-signature}).
@@ -1150,9 +1150,9 @@ prompt for a new buffer name.
 @kindex TAB
 @findex message-tab
 @vindex message-tab-body-function
-If non-@code{nil} execute the function specified in
-@code{message-tab-body-function}.  Otherwise use the function bound to
-@kbd{TAB} in @code{text-mode-map} or @code{global-map}.
+If @code{message-tab-body-function} is non-@code{nil}, execute the
+function it specifies.  Otherwise use the function bound to @kbd{TAB} in
+@code{text-mode-map} or @code{global-map}.
 
 @end table
 

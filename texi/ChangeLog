@@ -3,6 +3,8 @@
 	* message.texi (Header Commands): Clarify descriptions of
 	message-cross-post-followup-to, message-reduce-to-to-cc, and
 	message-insert-wide-reply.
+	(Various Commands): Fix kindex for message-kill-to-signature;
+	clarify description of message-tab.
 
 2005-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
