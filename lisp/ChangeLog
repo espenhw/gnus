@@ -1,3 +1,9 @@
+2005-11-26  Dave Love  <fx@gnu.org>
+
+	* pop3.el (pop3-open-server) <ssl>:  Clarify a loop.  Deal with
+	port null or service name.
+	(starttls-negotiate): Autoload.
+
 2005-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-kill-to-signature): Fix interactive spec.
