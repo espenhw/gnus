@@ -1,5 +1,12 @@
 2005-11-26  Dave Love  <fx@gnu.org>
 
+	* tls.el (open-tls-stream): Rename arg SERVICE to PORT.
+	(tls-program, tls-success): Provide openssl alternative.
+
+	* starttls.el: Doc fixes.
+	(starttls-open-stream-gnutls, starttls-open-stream): Rename arg
+	SERVICE to PORT.
+
 	* pop3.el (pop3-open-server) <ssl>:  Clarify a loop.  Deal with
 	port null or service name.
 	(starttls-negotiate): Autoload.
