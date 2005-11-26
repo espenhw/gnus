@@ -194,6 +194,7 @@ Shorter values mean quicker response, but are more CPU intensive.")
 
 (autoload 'open-tls-stream "tls")
 (autoload 'starttls-open-stream "starttls")
+(autoload 'starttls-negotiate "starttls") ; avoid warning
 
 (defcustom pop3-stream-type nil
   "*Transport security type for POP3 connexions.
@@ -223,6 +224,10 @@ Returns the process associated with the connection."
 	    (cond
 	     ((or (eq pop3-stream-type 'ssl)
 		  (and (not pop3-stream-type) (member port '(995 "pop3s"))))
+	      ;; gnutls-cli, openssl don't accept service names
+	      (if (or (equal port "pop3s")
+		      (null port))
+		  (setq port 995))
 	      (let ((process (open-tls-stream "POP" (current-buffer)
 					      mailhost port)))
 		(when process
@@ -232,13 +237,18 @@ Returns the process associated with the connection."
 			   (goto-char (point-max))
 			   (forward-line -1)
 			   (if (looking-at "\\+OK")
-			       (delete-region (point-min) (point))
+			       (progn
+				 (delete-region (point-min) (point))
+				 nil)
 			     (pop3-quit process)
 			     (error "POP SSL connexion failed"))))
 		  process)))
 	     ((eq pop3-stream-type 'starttls)
+	      ;; gnutls-cli, openssl don't accept service names
+	      (if (equal port "pop3")
+		  (setq port 110))
 	      (let ((process (starttls-open-stream "POP" (current-buffer)
-						   mailhost port)))
+						   mailhost (or port 110))))
 		(pop3-send-command process "STLS")
 		(let ((response (pop3-read-response process t)))
 		  (if (and response (string-match "+OK" response))
