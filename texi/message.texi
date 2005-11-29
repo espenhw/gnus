@@ -249,7 +249,10 @@ supersede the message in the current buffer.
 Headers matching the @code{message-ignored-supersedes-headers} are
 removed before popping up the new message buffer.  The default is@*
 @samp{^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|@*
-^Received:\\|^X-From-Line:\\|Return-Path:\\|^Supersedes:}.
+^Received:\\|^X-From-Line:\\|^X-Trace:\\|^X-Complaints-To:\\|@*
+Return-Path:\\|^Supersedes:\\|^NNTP-Posting-Date:\\|^X-Trace:\\|@*
+^X-Complaints-To:\\|^Cancel-Lock:\\|^Cancel-Key:\\|^X-Hashcash:\\|@*
+^X-Payment:\\|^Approved:}.
 
 
 
@@ -330,7 +333,7 @@ undeliverable.
 @vindex message-ignored-bounced-headers
 Headers that match the @code{message-ignored-bounced-headers} regexp
 will be removed before popping up the buffer.  The default is
-@samp{^\\(Received\\|Return-Path\\):}.
+@samp{^\\(Received\\|Return-Path\\|Delivered-To\\):}.
 
 
 @node Mailing Lists
@@ -859,8 +862,8 @@ typed a non-@acronym{ASCII} domain name.
 The @code{message-use-idna} variable control whether @acronym{IDNA} is
 used.  If the variable is @code{nil} no @acronym{IDNA} encoding will
 ever happen, if it is set to the symbol @code{ask} the user will be
-queried, and if set to @code{t} @acronym{IDNA} encoding happens
-automatically (the default).
+queried, and if set to @code{t} (which is the default if @acronym{IDNA}
+is fully available) @acronym{IDNA} encoding happens automatically.
 
 @findex message-idna-to-ascii-rhs
 If you want to experiment with the @acronym{IDNA} encoding, you can
@@ -1460,13 +1463,14 @@ header when the message is already @code{Cc}ed to the recipient.
 @item message-required-mail-headers
 @vindex message-required-mail-headers
 @xref{News Headers}, for the syntax of this variable.  It is
-@code{(From Date Subject (optional . In-Reply-To) Message-ID Lines
+@code{(From Subject Date (optional . In-Reply-To) Message-ID
 (optional . User-Agent))} by default.
 
 @item message-ignored-mail-headers
 @vindex message-ignored-mail-headers
-Regexp of headers to be removed before mailing.  The default is
-@samp{^[GF]cc:\\|^Resent-Fcc:\\|^Xref:\\|^X-Draft-From:}.
+Regexp of headers to be removed before mailing.  The default is@*
+@samp{^[GF]cc:\\|^Resent-Fcc:\\|^Xref:\\|^X-Draft-From:\\|@*
+^X-Gnus-Agent-Meta-Information:}.
 
 @item message-default-mail-headers
 @vindex message-default-mail-headers
@@ -1743,7 +1747,8 @@ All these conditions are checked by default.
 @item message-ignored-news-headers
 @vindex message-ignored-news-headers
 Regexp of headers to be removed before posting.  The default is@*
-@samp{^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:\\|^X-Draft-From:}.
+@samp{^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:\\|@*
+^X-Draft-From:\\|^X-Gnus-Agent-Meta-Information:}.
 
 @item message-default-news-headers
 @vindex message-default-news-headers
@@ -1904,12 +1909,13 @@ say.
 @item message-default-charset
 @vindex message-default-charset
 @cindex charset
-Symbol naming a @acronym{MIME} charset.  Non-@acronym{ASCII}
-characters in messages are assumed to be encoded using this charset.
-The default is @code{nil}, which means ask the user.  (This variable
-is used only on non-@sc{mule} Emacsen.  @xref{Charset Translation, ,
-Charset Translation, emacs-mime, Emacs MIME Manual}, for details on
-the @sc{mule}-to-@acronym{MIME} translation process.
+Symbol naming a @acronym{MIME} charset.  Non-@acronym{ASCII} characters
+in messages are assumed to be encoded using this charset.  The default
+is @code{iso-8859-1} on non-@sc{mule} Emacsen; otherwise @code{nil},
+which means ask the user.  (This variable is used only on non-@sc{mule}
+Emacsen.)  @xref{Charset Translation, , Charset Translation, emacs-mime,
+Emacs MIME Manual}, for details on the @sc{mule}-to-@acronym{MIME}
+translation process.
 
 @item message-signature-separator
 @vindex message-signature-separator
