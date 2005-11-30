@@ -1,3 +1,10 @@
+2005-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-use-toolbar): Determine the default value
+	according to default-toolbar-visible-p.
+
+	* messagexmas.el (message-use-toolbar): Ditto.
+
 2005-11-26  Dave Love  <fx@gnu.org>
 
 	* tls.el (open-tls-stream): Rename arg SERVICE to PORT.

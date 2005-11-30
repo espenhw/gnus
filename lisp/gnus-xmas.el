@@ -537,7 +537,10 @@ call it with the value of the `gnus-data' text property."
 	      ((eq major-mode 'gnus-summary-mode)
 	       (gnus-xmas-setup-summary-toolbar)))))))
 
-(defcustom gnus-use-toolbar (if (featurep 'toolbar) 'default)
+(defcustom gnus-use-toolbar
+  (if (and (featurep 'toolbar)
+	   (specifier-instance default-toolbar-visible-p))
+      'default)
   "*Position to display the toolbar.  Nil means do not use a toolbar.
 If it is non-nil, it should be one of the symbols `default', `top',
 `bottom', `right', and `left'.  `default' means to use the default

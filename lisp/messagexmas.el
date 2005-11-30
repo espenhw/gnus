@@ -38,7 +38,10 @@
 If this variable is nil, Message will try to locate the directory
 automatically.")
 
-(defvar message-use-toolbar (if (featurep 'toolbar) 'default)
+(defvar message-use-toolbar
+  (if (and (featurep 'toolbar)
+	   (specifier-instance default-toolbar-visible-p))
+      'default)
   "*Position to display the toolbar.  Nil means do not use a toolbar.
 If it is non-nil, it should be one of the symbols `default', `top',
 `bottom', `right', and `left'.  `default' means to use the default
