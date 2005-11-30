@@ -1,3 +1,7 @@
+2005-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.texi (Various Message Variables): Addition.
+
 2005-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi: Fix default values.

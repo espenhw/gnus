@@ -2023,8 +2023,11 @@ message composition doesn't break too bad.
 
 @item message-send-method-alist
 @vindex message-send-method-alist
-
-Alist of ways to send outgoing messages.  Each element has the form
+@findex message-mail-p
+@findex message-news-p
+@findex message-send-via-mail
+@findex message-send-via-news
+Alist of ways to send outgoing messages.  Each element has the form:
 
 @lisp
 (@var{type} @var{predicate} @var{function})
@@ -2036,19 +2039,32 @@ A symbol that names the method.
 
 @item predicate
 A function called without any parameters to determine whether the
-message is a message of type @var{type}.
+message is a message of type @var{type}.  The function will be called in
+the buffer where the message is.
 
 @item function
 A function to be called if @var{predicate} returns non-@code{nil}.
 @var{function} is called with one parameter---the prefix.
 @end table
 
+The default is:
+
 @lisp
 ((news message-news-p message-send-via-news)
  (mail message-mail-p message-send-via-mail))
 @end lisp
 
+The @code{message-news-p} function returns non-@code{nil} if the message
+looks like news, and the @code{message-send-via-news} function sends the
+message according to the @code{message-send-news-function} variable
+(@pxref{News Variables}).  The @code{message-mail-p} function returns
+non-@code{nil} if the message looks like mail, and the
+@code{message-send-via-mail} function sends the message according to the
+@code{message-send-mail-function} variable (@pxref{Mail Variables}).
 
+All the elements in this alist will be tried in order, so a message
+containing both a valid @samp{Newsgroups} header and a valid @samp{To}
+header, for example, will be sent as news, and then as mail.
 @end table
 
 
