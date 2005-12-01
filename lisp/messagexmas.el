@@ -38,10 +38,7 @@
 If this variable is nil, Message will try to locate the directory
 automatically.")
 
-(defvar message-use-toolbar
-  (if (and (featurep 'toolbar)
-	   (specifier-instance default-toolbar-visible-p))
-      'default)
+(defvar message-use-toolbar (if (featurep 'toolbar) 'default)
   "*Position to display the toolbar.  Nil means do not use a toolbar.
 If it is non-nil, it should be one of the symbols `default', `top',
 `bottom', `right', and `left'.  `default' means to use the default
@@ -98,38 +95,45 @@ the width is used for the toolbar displayed on the right or the left.")
   (when (featurep 'toolbar)
     (if (and message-use-toolbar
 	     (message-xmas-setup-toolbar message-toolbar))
-	(let* ((bar (or (intern-soft (format "%s-toolbar" message-use-toolbar))
-			'default-toolbar))
-	       (bars (delq bar (list 'top-toolbar 'bottom-toolbar
-				     'right-toolbar 'left-toolbar)))
-	       hw)
-	  (while bars
-	    (remove-specifier (symbol-value (pop bars)) (current-buffer)))
-	  (unless (eq bar 'default-toolbar)
-	    (set-specifier default-toolbar nil (current-buffer)))
-	  (set-specifier (symbol-value bar) message-toolbar (current-buffer))
-	  (when (setq hw (cdr (assq message-use-toolbar
-				    '((default . default-toolbar-height)
-				      (top . top-toolbar-height)
-				      (bottom . bottom-toolbar-height)))))
-	    (set-specifier (symbol-value hw) (car message-toolbar-thickness)
-			   (current-buffer)))
-	  (when (setq hw (cdr (assq message-use-toolbar
-				    '((default . default-toolbar-width)
-				      (right . right-toolbar-width)
-				      (left . left-toolbar-width)))))
-	    (set-specifier (symbol-value hw) (cdr message-toolbar-thickness)
-			   (current-buffer))))
-      (set-specifier default-toolbar nil (current-buffer))
-      (remove-specifier top-toolbar (current-buffer))
-      (remove-specifier bottom-toolbar (current-buffer))
-      (remove-specifier right-toolbar (current-buffer))
-      (remove-specifier left-toolbar (current-buffer)))
-    (set-specifier default-toolbar-visible-p t (current-buffer))
-    (set-specifier top-toolbar-visible-p t (current-buffer))
-    (set-specifier bottom-toolbar-visible-p t (current-buffer))
-    (set-specifier right-toolbar-visible-p t (current-buffer))
-    (set-specifier left-toolbar-visible-p t (current-buffer))))
+	(let ((bar (or (intern-soft (format "%s-toolbar" message-use-toolbar))
+		       'default-toolbar))
+	      (height (car message-toolbar-thickness))
+	      (width (cdr message-toolbar-thickness))
+	      (cur (current-buffer))
+	      bars)
+	  (set-specifier (symbol-value bar) message-toolbar cur)
+	  (set-specifier default-toolbar-height height cur)
+	  (set-specifier default-toolbar-width width cur)
+	  (set-specifier top-toolbar-height height cur)
+	  (set-specifier bottom-toolbar-height height cur)
+	  (set-specifier right-toolbar-width width cur)
+	  (set-specifier left-toolbar-width width cur)
+	  (if (eq bar 'default-toolbar)
+	      (progn
+		(remove-specifier default-toolbar-visible-p cur)
+		(remove-specifier top-toolbar cur)
+		(remove-specifier top-toolbar-visible-p cur)
+		(remove-specifier bottom-toolbar cur)
+		(remove-specifier bottom-toolbar-visible-p cur)
+		(remove-specifier right-toolbar cur)
+		(remove-specifier right-toolbar-visible-p cur)
+		(remove-specifier left-toolbar cur)
+		(remove-specifier left-toolbar-visible-p cur))
+	    (set-specifier (symbol-value (intern (format "%s-visible-p" bar)))
+			   t cur)
+	    (setq bars (delq bar (list 'default-toolbar
+				       'bottom-toolbar 'top-toolbar
+				       'right-toolbar 'left-toolbar)))
+	    (while bars
+	      (set-specifier (symbol-value (intern (format "%s-visible-p"
+							   (pop bars))))
+			     nil cur))))
+      (let ((cur (current-buffer)))
+	(set-specifier default-toolbar-visible-p nil cur)
+	(set-specifier top-toolbar-visible-p nil cur)
+	(set-specifier bottom-toolbar-visible-p nil cur)
+	(set-specifier right-toolbar-visible-p nil cur)
+	(set-specifier left-toolbar-visible-p nil cur)))))
 
 (defun message-xmas-exchange-point-and-mark ()
   "Exchange point and mark, but allow for XEmacs' optional argument."

@@ -1,3 +1,13 @@
+2005-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-use-toolbar): Revert.
+	(gnus-xmas-setup-toolbar): Use global default-toolbar if
+	gnus-use-toolbar is default.
+
+	* messagexmas.el (message-use-toolbar): Revert.
+	(message-setup-toolbar): Use global default-toolbar if
+	message-use-toolbar is default.
+
 2005-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-use-toolbar): Determine the default value
