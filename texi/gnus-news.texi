@@ -29,7 +29,7 @@ file, where this release will store flags for nntp.  See a later entry
 for more information about nntp marks.  Note that downgrading isn't
 safe in general.
 
-@item The nntp back end store article marks in @file{~/News/marks}.
+@item The nntp back end stores article marks in @file{~/News/marks}.
 
 The directory can be changed using the (customizable) variable
 @code{nntp-marks-directory}, and marks can be disabled using the
@@ -68,12 +68,12 @@ highlighting articles (@code{gnus-article-treat-ansi-sequences}).
 
 @item International host names (@acronym{IDNA}) can now be decoded
 inside article bodies using @kbd{W i}
-(@code{gnus-summary-idna-message}).  This require that GNU Libidn
+(@code{gnus-summary-idna-message}).  This requires that GNU Libidn
 (@url{http://www.gnu.org/software/libidn/}) has been installed.
 
 @item Gnus includes an Emacs Lisp @acronym{SASL} library.
 
-This provide a clean @acronym{API} to @acronym{SASL} mechanisms from
+This provides a clean @acronym{API} to @acronym{SASL} mechanisms from
 within Emacs.  The user visible aspects of this, compared to the earlier
 situation, include support for @acronym{DIGEST}-@acronym{MD5} and
 @acronym{NTLM}.
@@ -81,9 +81,9 @@ situation, include support for @acronym{DIGEST}-@acronym{MD5} and
 @item ManageSieve connections uses the @acronym{SASL} library by default.
 
 The primary change this brings is support for @acronym{DIGEST-MD5} and
-@acronym{NTLM}, when the server support it.
+@acronym{NTLM}, when the server supports it.
 
-@item Gnus include a password cache mechanism in password.el.
+@item Gnus includes a password cache mechanism in password.el.
 
 It is enabled by default (see @code{password-cache}), with a short
 timeout of 16 seconds (see @code{password-cache-expiry}).  If
@@ -94,16 +94,16 @@ about whether to do so.
 
 @item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
 
-By default, Gnus do not send any information about itself, but you can
+By default, Gnus does not send any information about itself, but you can
 customize it using the variable @code{nnimap-id}.
 
 @item The @file{all.SCORE} file can be edited from the group buffer
 using @kbd{W e}.
 
-@item Gnus now MIME decode articles even when they lack "MIME-Version" header.
+@item Gnus now MIME decodes articles even when they lack "MIME-Version" header.
 This changes the default of @code{gnus-article-loose-mime}.
 
-@item Gnus now view DNS master files sent as text/dns using dns-mode.
+@item Gnus now views DNS master files sent as text/dns using dns-mode.
 
 @item Gnus now support the ``hashcash'' client puzzle anti-spam idea.
 See the Gnus manual, section Hashcash, for more information.  Use
@@ -129,12 +129,12 @@ The @code{References} header is hidden by default.  To make all
 headers visible, use @code{(setq message-hidden-headers nil)}.
 
 @item @code{gnus-decay-scores} can be a regexp matching score files.
-This allows to decay only adaptive score files.  @xref{Score Decays}.
+This only adaptive score files to decay.  @xref{Score Decays}.
 
-@item @acronym{S/MIME} now feature @acronym{LDAP} user certificate searches.
+@item @acronym{S/MIME} now features @acronym{LDAP} user certificate searches.
 You need to configure the server in @code{smime-ldap-host-list}.
 
-@item Strings prefixed to the @code{To} and @code{Newsgroup} headers in
+@item Strings prefixing to the @code{To} and @code{Newsgroup} headers in
 summary lines when using @code{gnus-ignored-from-addresses} can be
 customized with @code{gnus-summary-to-prefix} and
 @code{gnus-summary-newsgroup-prefix}.  @xref{To From Newsgroups}.
@@ -145,9 +145,11 @@ See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
 
 @item Lisp files are now installed in .../site-lisp/gnus/ by default.
 It defaulted to .../site-lisp/ formerly.  In addition to this, the new
-installer issues a warning if the other Gnus installations which will
+installer issues a warning if other Gnus installations which will
 shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using @samp{make remove-installed-shadows}.
+
+@item Retrieving mail with @acronym{POP3} is supported over @acronym{SSL}/@acronym{TLS} and with StartTLS.
 
 @end itemize
 @c gnus-news.texi ends here.
