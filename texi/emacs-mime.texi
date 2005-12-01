@@ -187,14 +187,14 @@ LaTeX documents.  It only works in groups matching
 
 @end table
 
-@cindex text/x-gnus-verbatim
+@cindex text/x-verbatim
 @c Is @vindex suitable for a face?
 @vindex mm-uu-extract
 Some inlined non-@acronym{MIME} attachments are displayed using the face
 @code{mm-uu-extract}.  By default, no @acronym{MIME} button for these
 parts is displayed.  You can force displaying a button using @kbd{K b}
-(@code{gnus-summary-display-buttonized}) or add @code{text/x-gnus-verbatim} to
-@code{gnus-buttonized-mime-types}, @xref{MIME Commands, ,MIME
+(@code{gnus-summary-display-buttonized}) or add @code{text/x-verbatim}
+to @code{gnus-buttonized-mime-types}, @xref{MIME Commands, ,MIME
 Commands, gnus, Gnus Manual}.
 
 @node Handles
