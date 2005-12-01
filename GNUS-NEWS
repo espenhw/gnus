@@ -1,5 +1,5 @@
 GNUS NEWS -- history of user-visible changes.
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send Gnus bug reports to bugs@gnus.org.
@@ -20,7 +20,7 @@ where this release will store flags for nntp.  See a later entry for
 more information about nntp marks.  Note that downgrading isn't safe
 in general.
 
-** The nntp back end store article marks in `~/News/marks'.
+** The nntp back end stores article marks in `~/News/marks'.
 
 The directory can be changed using the (customizable) variable
 `nntp-marks-directory', and marks can be disabled using the (back
@@ -34,7 +34,7 @@ data in `~/.newsrc.eld'.
 `gnus-picon-style'.  *Note Picons::.
 
 ** You can import and export your RSS subscriptions from OPML files.
-*Note RSS::.
+ *Note RSS::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
@@ -53,21 +53,21 @@ ANSI sequences are used in some Chinese hierarchies for highlighting
 articles (`gnus-article-treat-ansi-sequences').
 
 ** International host names (IDNA) can now be decoded inside article
-bodies using `W i' (`gnus-summary-idna-message').  This require that
+bodies using `W i' (`gnus-summary-idna-message').  This requires that
 GNU Libidn (`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus includes an Emacs Lisp SASL library.
 
-This provide a clean API to SASL mechanisms from within Emacs.  The
+This provides a clean API to SASL mechanisms from within Emacs.  The
 user visible aspects of this, compared to the earlier situation,
 include support for DIGEST-MD5 and NTLM.
 
 ** ManageSieve connections uses the SASL library by default.
 
 The primary change this brings is support for DIGEST-MD5 and NTLM,
-when the server support it.
+when the server supports it.
 
-** Gnus include a password cache mechanism in password.el.
+** Gnus includes a password cache mechanism in password.el.
 
 It is enabled by default (see `password-cache'), with a short timeout
 of 16 seconds (see `password-cache-expiry').  If PGG is used as the
@@ -77,17 +77,17 @@ after querying the user about whether to do so.
 
 ** IMAP identity (RFC 2971) is supported.
 
-By default, Gnus do not send any information about itself, but you can
+By default, Gnus does not send any information about itself, but you can
 customize it using the variable `nnimap-id'.
 
 ** The `all.SCORE' file can be edited from the group buffer using `W e'.
 
-** Gnus now MIME decode articles even when they lack "MIME-Version"
+** Gnus now MIME decodes articles even when they lack a "MIME-Version"
 header.  This changes the default of `gnus-article-loose-mime'.
 
-** Gnus now view DNS master files sent as text/dns using dns-mode.
+** Gnus now views DNS master files sent as text/dns using dns-mode.
 
-** Gnus now support the "hashcash" client puzzle anti-spam idea.  See
+** Gnus now supports the "hashcash" client puzzle anti-spam idea.  See
 the Gnus manual, section Hashcash, for more information.  Use `(setq
 message-generate-hashcash t)' to enable.
 
@@ -109,12 +109,12 @@ key ring when you click on them.
 visible, use `(setq message-hidden-headers nil)'.
 
 ** `gnus-decay-scores' can be a regexp matching score files.  This
-allows to decay only adaptive score files.  *Note Score Decays::.
+allows only adaptive score files to decay.  *Note Score Decays::.
 
-** S/MIME now feature LDAP user certificate searches.  You need to
+** S/MIME now features LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
 
-** Strings prefixed to the `To' and `Newsgroup' headers in summary lines
+** Strings prefixing the `To' and `Newsgroup' headers in summary lines
 when using `gnus-ignored-from-addresses' can be customized with
 `gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note
 To From Newsgroups::.
@@ -125,9 +125,11 @@ Commands::, *Note Using MIME::.
 
 ** Lisp files are now installed in .../site-lisp/gnus/ by default.  It
 defaulted to .../site-lisp/ formerly.  In addition to this, the new
-installer issues a warning if the other Gnus installations which will
+installer issues a warning if other Gnus installations which will
 shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using `make remove-installed-shadows'.
+
+** Retrieving mail with POP3 is supported over SSL/TLS and with starttls.
 
 
 * For older news, see Gnus info node "New Features".
