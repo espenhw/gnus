@@ -34,7 +34,7 @@ data in `~/.newsrc.eld'.
 `gnus-picon-style'.  *Note Picons::.
 
 ** You can import and export your RSS subscriptions from OPML files.
- *Note RSS::.
+*Note RSS::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
@@ -77,17 +77,17 @@ after querying the user about whether to do so.
 
 ** IMAP identity (RFC 2971) is supported.
 
-By default, Gnus does not send any information about itself, but you can
-customize it using the variable `nnimap-id'.
+By default, Gnus does not send any information about itself, but you
+can customize it using the variable `nnimap-id'.
 
 ** The `all.SCORE' file can be edited from the group buffer using `W e'.
 
-** Gnus now MIME decodes articles even when they lack a "MIME-Version"
+** Gnus now MIME decodes articles even when they lack "MIME-Version"
 header.  This changes the default of `gnus-article-loose-mime'.
 
 ** Gnus now views DNS master files sent as text/dns using dns-mode.
 
-** Gnus now supports the "hashcash" client puzzle anti-spam idea.  See
+** Gnus now support the "hashcash" client puzzle anti-spam idea.  See
 the Gnus manual, section Hashcash, for more information.  Use `(setq
 message-generate-hashcash t)' to enable.
 
@@ -108,14 +108,14 @@ key ring when you click on them.
 `References' header is hidden by default.  To make all headers
 visible, use `(setq message-hidden-headers nil)'.
 
-** `gnus-decay-scores' can be a regexp matching score files.  This
-allows only adaptive score files to decay.  *Note Score Decays::.
+** `gnus-decay-scores' can be a regexp matching score files.  This only
+adaptive score files to decay.  *Note Score Decays::.
 
 ** S/MIME now features LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
 
-** Strings prefixing the `To' and `Newsgroup' headers in summary lines
-when using `gnus-ignored-from-addresses' can be customized with
+** Strings prefixing to the `To' and `Newsgroup' headers in summary
+lines when using `gnus-ignored-from-addresses' can be customized with
 `gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note
 To From Newsgroups::.
 
@@ -129,7 +129,7 @@ installer issues a warning if other Gnus installations which will
 shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using `make remove-installed-shadows'.
 
-** Retrieving mail with POP3 is supported over SSL/TLS and with starttls.
+** Retrieving mail with POP3 is supported over SSL/TLS and with StartTLS.
 
 
 * For older news, see Gnus info node "New Features".
@@ -137,7 +137,7 @@ manually or remove them using `make remove-installed-shadows'.
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim copies
    of this document as received, in any medium, provided that the
