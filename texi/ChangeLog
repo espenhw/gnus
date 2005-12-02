@@ -1,3 +1,8 @@
+2005-12-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.el: Update Copyright.
+	(gnus-news-translate-file): Avoid "*Note" at beginning of line.
+
 2005-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Non-MIME): x-gnus-verbatim -> x-verbatim.
