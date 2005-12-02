@@ -1,3 +1,8 @@
+2005-12-02  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Fix misplaced
+	parens.
+
 2005-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-use-toolbar): Revert.
