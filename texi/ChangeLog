@@ -1,3 +1,8 @@
+2005-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* pgg.texi (User Commands): Fix description of pgg-verify-region.
+	(Selecting an implementation): Fix descriptions.
+
 2005-12-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.el: Update Copyright.
