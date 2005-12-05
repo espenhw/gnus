@@ -1,3 +1,11 @@
+2005-12-05  Adrian Aichner  <adrian@xemacs.org>
+
+	* nnir.el: New variable nnir-swish-e-index-files to support
+	multiple swish-e index files.
+	* nnir.el (nnir-swish-e-index-file): Make obsolete.
+	* nnir.el (nnir-swish-e-index-files): New.
+	* nnir.el (nnir-run-swish-e): Use nnir-swish-e-index-files.
+
 2005-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnir.el (nnir): Add :group.

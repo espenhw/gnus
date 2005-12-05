@@ -532,16 +532,29 @@ that it is for swish++, not Glimpse."
   :type '(regexp)
   :group 'nnir)
 
-;; Swish-E.  Next three variables Copyright (C) 2000 Christoph Conrad
-;; <christoph.conrad@gmx.de>.
+;; Swish-E.
 ;; URL: http://sunsite.berkeley.edu/SWISH-E/
 ;; New version: http://www.boe.es/swish-e
+;; Variables `nnir-swish-e-index-file', `nnir-swish-e-program' and
+;; `nnir-swish-e-additional-switches'
+;; Copyright (C) 2000 Christoph Conrad <christoph.conrad@gmx.de>.
 
+(make-obsolete-variable 'nnir-swish-e-index-file
+			'nnir-swish-e-index-files)
 (defcustom nnir-swish-e-index-file
   (expand-file-name "~/Mail/index.swish-e")
   "*Index file for swish-e.
-This could be a server parameter."
+This could be a server parameter.
+It is never consulted once `nnir-swish-e-index-files', which should be
+used instead, has been customized."
   :type '(file)
+  :group 'nnir)
+
+(defcustom nnir-swish-e-index-files
+  (list nnir-swish-e-index-file)
+  "*List of index files for swish-e.
+This could be a server parameter."
+  :type '(repeat (file))
   :group 'nnir)
 
 (defcustom nnir-swish-e-program "swish-e"
@@ -1196,10 +1209,10 @@ Tested with swish-e-2.0.1 on Windows NT 4.0."
       (erase-buffer)
 
       (message "Doing swish-e query %s..." query)
-      (let* ((index-file
+      (let* ((index-files
 	      (or (nnir-read-server-parm
-		   'nnir-swish-e-index-file server)
-		  (error "Missing parameter `nnir-swish-e-index-file'")))
+		   'nnir-swish-e-index-files server)
+		  (error "Missing parameter `nnir-swish-e-index-files'")))
 	     (additional-switches
 	      (nnir-read-server-parm
 	       'nnir-swish-e-additional-switches server))
@@ -1207,7 +1220,7 @@ Tested with swish-e-2.0.1 on Windows NT 4.0."
 			nil		; input from /dev/null
 			t		; output
 			nil		; don't redisplay
-			"-f" ,index-file
+			"-f" ,@index-files
 			,@additional-switches
 			"-w"
 			,qstring	; the query, in swish-e format
