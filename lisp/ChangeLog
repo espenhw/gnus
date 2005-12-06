@@ -1,5 +1,7 @@
 2005-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nntp.el (nntp-marks-directory): Fix custom group.
+
 	* gnus-fun.el (gnus-face-from-file): Decrease quant in smaller
 	steps when < 10.
 

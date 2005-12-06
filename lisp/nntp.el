@@ -205,7 +205,7 @@ See `nnml-marks-is-evil' for more information.")
 (defcustom nntp-marks-directory
   (nnheader-concat gnus-directory "marks/")
   "*The directory where marks for nntp groups will be stored."
-  :group 'gnus
+  :group 'nntp
   :type 'directory)
 
 (defcustom nntp-authinfo-file "~/.authinfo"
