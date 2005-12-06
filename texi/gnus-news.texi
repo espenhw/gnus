@@ -57,8 +57,8 @@ See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}.
 @xref{MIME, ,MIME, message, Message Manual}.
 
 @item The option @code{message-yank-empty-prefix} now controls how
-empty lines are prefixed in cited text.
-@xref{(message)Insertion Variables}.
+empty lines are prefixed in cited text.  @xref{Insertion Variables,
+,Insertion Variables, message, Message Manual}.
 
 @item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
 using @kbd{W A}.
@@ -129,7 +129,8 @@ The @code{References} header is hidden by default.  To make all
 headers visible, use @code{(setq message-hidden-headers nil)}.
 
 @item @code{gnus-decay-scores} can be a regexp matching score files.
-This only adaptive score files to decay.  @xref{Score Decays}.
+For example, set it to @samp{\\.ADAPT\\'} and only adaptive score files
+will be decayed.  @xref{Score Decays}.
 
 @item @acronym{S/MIME} now features @acronym{LDAP} user certificate searches.
 You need to configure the server in @code{smime-ldap-host-list}.
@@ -150,6 +151,16 @@ shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using @samp{make remove-installed-shadows}.
 
 @item Retrieving mail with @acronym{POP3} is supported over @acronym{SSL}/@acronym{TLS} and with StartTLS.
+
+@item Having edited the select-method for the foreign server in the
+server buffer is immediately reflected to the subscription of the groups
+which use the server in question.  For instance, if you change
+@code{nntp-via-address} into @samp{bar.example.com} from
+@samp{foo.example.com}, Gnus will connect to the news host by way of the
+intermediate host @samp{bar.example.com} from next time.
+
+@item You can change the location of XEmacs' toolbars in Gnus buffers.
+See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 
 @end itemize
 @c gnus-news.texi ends here.

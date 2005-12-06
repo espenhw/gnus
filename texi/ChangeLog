@@ -1,3 +1,7 @@
+2005-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-news.el: Markup and description fixes and additions.
+
 2005-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* pgg.texi (User Commands): Fix description of pgg-verify-region.
