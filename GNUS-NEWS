@@ -5,7 +5,6 @@ See the end for copying conditions.
 Please send Gnus bug reports to bugs@gnus.org.
 For older news, see Gnus info node "New Features".
 
-
 
 * Changes in No Gnus
 
@@ -45,7 +44,8 @@ inline PGP signed messages.
 (message)MIME.
 
 ** The option `message-yank-empty-prefix' now controls how empty lines
-are prefixed in cited text.  *Note (message)Insertion Variables::.
+are prefixed in cited text.  *Note Insertion Variables:
+(message)Insertion Variables.
 
 ** ANSI SGR control sequences can be transformed using `W A'.
 
@@ -108,8 +108,9 @@ key ring when you click on them.
 `References' header is hidden by default.  To make all headers
 visible, use `(setq message-hidden-headers nil)'.
 
-** `gnus-decay-scores' can be a regexp matching score files.  This only
-adaptive score files to decay.  *Note Score Decays::.
+** `gnus-decay-scores' can be a regexp matching score files.  For
+example, set it to `\\.ADAPT\\'' and only adaptive score files will
+be decayed.  *Note Score Decays::.
 
 ** S/MIME now features LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
@@ -130,6 +131,16 @@ shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using `make remove-installed-shadows'.
 
 ** Retrieving mail with POP3 is supported over SSL/TLS and with StartTLS.
+
+** Having edited the select-method for the foreign server in the server
+buffer is immediately reflected to the subscription of the groups
+which use the server in question.  For instance, if you change
+`nntp-via-address' into `bar.example.com' from `foo.example.com',
+Gnus will connect to the news host by way of the intermediate host
+`bar.example.com' from next time.
+
+** You can change the location of XEmacs' toolbars in Gnus buffers.  See
+`gnus-use-toolbar' and `message-use-toolbar'.
 
 
 * For older news, see Gnus info node "New Features".
