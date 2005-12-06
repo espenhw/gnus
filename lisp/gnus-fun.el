@@ -172,7 +172,7 @@ different input formats."
 			 quant))))
 	(if (> (length attempt) 726)
 	    (progn
-	      (setq quant (- quant 2))
+	      (setq quant (- quant (if (< quant 10) 1 2)))
 	      (gnus-message 9 "Length %d; trying quant %d"
 			    (length attempt) quant))
 	  (setq done t)))
