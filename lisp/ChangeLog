@@ -1,3 +1,12 @@
+2005-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-display-external): Use nametemplate (defined in
+	RFC1524) if it is in mailcap or add a suffix according to
+	mailcap-mime-extensions when generating a temp filename; postpone
+	deleting a temp file for 2 seconds for some wrappers, shell
+	scripts, and so on, which might exit right after having started a
+	viewer command as a background job.
+
 2005-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nntp.el (nntp-marks-directory): Fix custom group.
