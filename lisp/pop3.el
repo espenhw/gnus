@@ -203,7 +203,7 @@ SSL/TSL-secured stream) or `starttls' (use the starttls mechanism
 to turn on TLS security after opening the stream).  However, if
 this is nil, `ssl' is assumed for connexions to port
 995 (pop3s)."
-  :version "23.1"			; fixme?
+  :version "23.0" ;; No Gnus
   :group 'pop3
   :type '(choice (const :tag "Plain" nil)
 		 (const :tag "SSL/TLS" ssl)

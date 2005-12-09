@@ -102,13 +102,13 @@ This can be either \"inline\" or \"attachment\".")
      "^%%EOF$"
      mm-uu-postscript-extract
      nil)
-    (uu
+    (uu ;; Maybe we should have a more strict test here.
      "^begin[ \t]+0?[0-7][0-7][0-7][ \t]+"
      "^end[ \t]*$"
      mm-uu-uu-extract
      mm-uu-uu-filename)
     (binhex
-     "^:...............................................................$"
+     "^:.\\{63,63\\}$"
      ":$"
      mm-uu-binhex-extract
      nil

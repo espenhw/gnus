@@ -1,3 +1,9 @@
+2005-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* pop3.el (pop3-stream-type): Fix custom version.
+
+	* mm-uu.el (mm-uu-type-alist): Simplify uu regexp.
+
 2005-12-09  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
 
 	* mm-decode.el (mm-display-external): Add lacked cdr.
