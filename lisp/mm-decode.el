@@ -760,7 +760,7 @@ external if displayed external."
 		   ;; Use nametemplate (defined in RFC1524) if it is
 		   ;; specified in mailcap.
 		   (if (assoc "nametemplate" mime-info)
-		       (format (assoc "nametemplate" mime-info) file)
+		       (format (cdr (assoc "nametemplate" mime-info)) file)
 		     ;; Add a suffix according to `mailcap-mime-extensions'.
 		     (concat file (car (rassoc (mm-handle-media-type handle)
 					       mailcap-mime-extensions))))))
