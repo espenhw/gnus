@@ -1,5 +1,8 @@
 2005-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* rfc2047.el (rfc2047-charset-to-coding-system): Recognize
+	us-ascii as a MIME charset.
+
 	* mm-bodies.el (mm-decode-content-transfer-encoding): Protect
 	against the case where the 2nd arg TYPE is nil.
 
