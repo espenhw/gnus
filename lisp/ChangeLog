@@ -1,3 +1,17 @@
+2005-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-buttonized-mime-types): Mention addition of
+	multipart/alternative and add xref to mm-discouraged-alternatives
+	in doc string.
+
+	* mm-decode.el (mm-discouraged-alternatives): Add xref to
+	gnus-buttonized-mime-types in doc string.
+
+2005-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-decode.el (mm-discouraged-alternatives): Fix custom type.
+	Suggest image/.* in the doc string.
+
 2005-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-uu.el (mm-uu-type-alist): Don't depend on message.el for

@@ -335,8 +335,13 @@ for instance, text/html parts are very unwanted, and text/richtext are
 somewhat unwanted, then the value of this variable should be set
 to:
 
- (\"text/html\" \"text/richtext\")"
-  :type '(repeat string)
+ (\"text/html\" \"text/richtext\")
+
+Adding \"image/.*\" might also be useful.  Spammers use it as the
+prefered part of multipart/alternative messages.  See also
+`gnus-buttonized-mime-types', to which adding \"multipart/alternative\"
+enables you to choose manually one of two types those mails include."
+  :type '(repeat regexp) ;; See `mm-preferred-alternative-precedence'.
   :group 'mime-display)
 
 (defcustom mm-tmp-directory
