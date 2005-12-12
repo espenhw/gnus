@@ -1,6 +1,6 @@
 ;;; password.el --- Read passwords from user, possibly using a password cache.
 
-;; Copyright (C) 1999, 2000, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Created: 2003-12-21
@@ -79,21 +79,29 @@ Whether passwords are cached at all is controlled by `password-cache'."
 
 (defvar password-data (make-vector 7 0))
 
+(defun password-read-from-cache (key)
+  "Obtain passphrase for KEY from time-limited passphrase cache.
+Custom variables `password-cache' and `password-cache-expiry'
+regulate cache behavior."
+  (and password-cache
+       key
+       (symbol-value (intern-soft key password-data))))
+
 (defun password-read (prompt &optional key)
   "Read password, for use with KEY, from user, or from cache if wanted.
 KEY indicate the purpose of the password, so the cache can
 separate passwords.  The cache is not used if KEY is nil.  It is
 typically a string.
 The variable `password-cache' control whether the cache is used."
-  (or (and password-cache
-	   key
-	   (symbol-value (intern-soft key password-data)))
+  (or (password-read-from-cache key)
       (read-passwd prompt)))
 
 (defun password-read-and-add (prompt &optional key)
   "Read password, for use with KEY, from user, or from cache if wanted.
 Then store the password in the cache.  Uses `password-read' and
-`password-cache-add'."
+`password-cache-add'.
+Custom variables `password-cache' and `password-cache-expiry'
+regulate cache behavior."
   (let ((password (password-read prompt key)))
     (when (and password key)
       (password-cache-add key password))
