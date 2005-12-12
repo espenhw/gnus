@@ -1,3 +1,8 @@
+2005-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-uu.el (mm-uu-type-alist): Don't depend on message.el for
+	message-marks (Debian bug #342521).
+
 2005-12-12  Simon Josefsson  <jas@extundo.com>
 
 	* password.el (password-read-from-cache): Add.

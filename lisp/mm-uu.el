@@ -97,7 +97,7 @@ This can be either \"inline\" or \"attachment\".")
   :group 'gnus-article-mime)
 
 (defvar mm-uu-type-alist
-  `((postscript
+  '((postscript
      "^%!PS-"
      "^%%EOF$"
      mm-uu-postscript-extract
@@ -165,8 +165,11 @@ This can be either \"inline\" or \"attachment\".")
      nil
      mm-uu-diff-test)
     (message-marks
-     ,(concat "^" (regexp-quote message-mark-insert-begin))
-     ,(concat "^" (regexp-quote message-mark-insert-end))
+     ;; Text enclosed with tags similar to `message-mark-insert-begin' and
+     ;; `message-mark-insert-end'.  Don't use those variables to avoid
+     ;; dependency on `message.el'.
+     "^-+[8<>]*-\\{9,\\}[a-z ]+-\\{9,\\}[a-z ]+-\\{9,\\}[8<>]*-+$"
+     "^-+[8<>]*-\\{9,\\}[a-z ]+-\\{9,\\}[a-z ]+-\\{9,\\}[8<>]*-+$"
      (lambda () (mm-uu-verbatim-marks-extract 0 -1 1 -2))
      nil)
     ;; Omitting [a-z8<] leads to false positives (bogus signature separators
