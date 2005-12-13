@@ -2,6 +2,10 @@
 
 	* gnus-news.el (gnus-news-translate-file): Fix previous commit.
 
+	* gnus-coding.texi (Gnus Coding Style): Add `uudecode.el'.
+	(Gnus Maintainance Guide): Add ref to "Gnus Development".  Add
+	conventions about custom versions.
+
 2005-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (MIME Commands): Mention addition of

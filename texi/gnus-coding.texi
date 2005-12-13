@@ -50,6 +50,8 @@ This manual describes @dots{}
 * Gnus Maintainance Guide:: Gnus Maintainance Guide
 @end menu
 
+@c @ref{Gnus Reference Guide, ,Gnus Reference Guide, gnus, The Gnus Newsreader}
+
 @node Gnus Coding Style
 @chapter Gnus Coding Style
 @section Dependencies
@@ -156,9 +158,15 @@ RFC2104 Hashed Message Authentication Codes
 Functions for decoding rfc2231 headers
 
 @item flow-fill.el
-Interpret RFC2646 "flowed" text
+Interpret RFC2646 "flowed" text.
 @c As of 2005-10-27...
 There are no Gnus dependencies in this file.
+
+@item uudecode.el
+Elisp native uudecode.
+@c As of 2005-12-06...
+There are no Gnus dependencies in this file.
+@c ... but the custom group is gnus-extract.
 @end table
 
 @subsection message
@@ -185,6 +193,10 @@ ends (probably @file{nnml.el}, @file{nnfolder.el} and
 @file{nnmaildir.el} are the most widely used mail back ends).
 
 
+
+@c mm-uu requires nnheader which requires gnus-util.  message.el also
+@c requires nnheader.
+
 @c message / gnus
 @c 
 @c nn*
@@ -199,9 +211,6 @@ ends (probably @file{nnml.el}, @file{nnfolder.el} and
 
 
 @section Compatibility
-
-@c Compatibility with XEmacs and older Emacs versions in v5-10 and in
-@c the trunk.
 
 No Gnus should work on:
 @itemize @bullet
@@ -232,6 +241,7 @@ feature period of several months.  After the release of Gnus 5.10.6 the
 development of new features started again on the trunk while the 5.10
 series is continued on the stable branch (v5-10) from which more stable
 releases will be done when needed (5.10.7, @dots{}).
+@ref{Gnus Development, ,Gnus Development, gnus, The Gnus Newsreader}
 
 Stable releases of Gnus finally become part of Emacs.  E.g. Gnus 5.8
 became a part of Emacs 21 (relabeled to Gnus 5.9).  The 5.10 series will
@@ -333,6 +343,13 @@ Starting from No Gnus, the @file{GNUS-NEWS} is created from
 @file{texi} directory and commit @file{GNUS-NEWS} and
 @file{texi/gnus-news.texi}.
 
+@heading Conventions for version information in defcustoms
+
+For new customizable variables introduced in Oort Gnus (including the
+v5-10 branch) use @code{:version "22.1" ;; Oort Gnus} including the
+comment.
+@c
+If the variable is new in No Gnus use @code{:version "23.0" ;; No Gnus}.
 
 @c Local Variables:
 @c mode: texinfo
