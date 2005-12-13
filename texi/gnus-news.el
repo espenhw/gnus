@@ -96,16 +96,16 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
       (goto-char (point-max))
       (delete-char -1)
       (goto-char (point-min))
-      ;; Avoid `*' from @ref at beginning of line:
-      (save-excursion
-	(while (re-search-forward "^\\*Note" nil t)
-	  (replace-match " \\&")))
       (save-excursion
 	(while (re-search-forward "^   \\* " nil t)
 	  (replace-match "** ")))
       (save-excursion
 	(while (re-search-forward "^     " nil t)
 	  (replace-match "")))
+      ;; Avoid `*' from @ref at beginning of line:
+      (save-excursion
+	(while (re-search-forward "^\\*Note" nil t)
+	  (replace-match " \\&")))
       (goto-char (point-min))
       (insert gnus-news-header-disclaimer)
       (goto-char (point-max))
