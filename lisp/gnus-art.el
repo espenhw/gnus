@@ -6297,9 +6297,11 @@ address, `ask' if unsure and `invalid' if the string is invalid."
 	   (gnus-url-mailto url-mailto))
 	  (t (gnus-message 3 "Invalid string.")))))
 
-(defun gnus-button-handle-custom (url)
-  "Follow a Custom URL."
-  (customize-apropos (gnus-url-unhex-string url)))
+(defun gnus-button-handle-custom (fun arg)
+  "Call function FUN on argument ARG.
+Both FUN and ARG are supposed to be strings.  ARG will be passed
+as a symbol to FUN."
+  (funcall (intern fun) (intern arg)))
 
 (defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[Ff]1>?\\)")
 
@@ -6479,10 +6481,8 @@ positives are possible."
      ;; Info links like `C-h i d m CC Mode RET'
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-keystrokes 2)
     ;; This is custom
-    ("\\bcustom:\\(//\\)?\\([^'\">\n\t ]+\\)"
-     0 (>= gnus-button-emacs-level 5) gnus-button-handle-custom 2)
-    ("M-x[ \t\n]customize-[^ ]+[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1)
+    ("M-x[ \t\n]\\(customize-[^ ]+\\)[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
+     (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1 2)
     ;; Emacs help commands
     ("M-x[ \t\n]+apropos[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      ;; regexp doesn't match arguments containing ` '.

@@ -1,3 +1,13 @@
+2005-12-14  Ralf Angeli  <angeli@iwi.uni-sb.de>
+
+	* gnus-art.el (gnus-button-handle-custom): Do not just use
+	`customize-apropos' for any "M-x customize-*" button but the
+	function called for.  Accept both the function name and its
+	argument in order to achieve this.
+	(gnus-button-alist): Remove support for "custom:" URL's.  Pass
+	function name to `gnus-button-handle-custom' in case of "M-x
+	customize-*" buttons.
+
 2005-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-buttonized-mime-types): Mention addition of
