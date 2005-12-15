@@ -24044,8 +24044,15 @@ This variable is @code{t} by default.  Set it to @code{nil} if you are
 running your own news server, for instance, and the local article
 numbers don't correspond to the Gmane article numbers.  When
 @code{spam-report-gmane-use-article-number} is @code{nil},
-@code{spam-report.el} will use the @code{X-Report-Spam} header that
-Gmane provides.
+@code{spam-report.el} will fetch the number from the article headers.
+
+@end defvar
+
+@defvar spam-report-user-mail-address
+
+Mail address exposed in the User-Agent spam reports to Gmane.  It allows
+the Gmane administrators to contact you in case of misreports.  The
+default is @code{user-mail-address}.
 
 @end defvar
 

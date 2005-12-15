@@ -1,3 +1,9 @@
+2005-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Gmane Spam Reporting): Fix
+	spam-report-gmane-use-article-number.  Add
+	spam-report-user-mail-address.
+
 2005-12-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.el (gnus-news-translate-file): Fix previous commit.
