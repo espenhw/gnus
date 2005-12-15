@@ -1,3 +1,9 @@
+2005-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam-report.el (spam-report-user-mail-address)
+	(spam-report-user-agent): New variables.
+	(spam-report-url-ping-plain): Use spam-report-user-agent.
+
 2005-12-14  Ralf Angeli  <angeli@iwi.uni-sb.de>
 
 	* gnus-art.el (gnus-button-handle-custom): Do not just use

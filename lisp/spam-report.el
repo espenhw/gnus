@@ -185,6 +185,24 @@ the function specified by `spam-report-url-ping-function'."
   ;; report: "/gmane.some.group:123456"
   (funcall spam-report-url-ping-function host report))
 
+(defcustom spam-report-user-mail-address
+  (and (stringp user-mail-address)
+       (gnus-replace-in-string user-mail-address "@" "<at>"))
+  "Mail address of this user used for spam reports to Gmane.
+This is initialized based on `user-mail-address'."
+  :type '(choice string
+		 (const :tag "Don't expose address" nil))
+  :version "23.0" ;; No Gnus
+  :group 'spam-report)
+
+(defvar spam-report-user-agent
+  (if spam-report-user-mail-address
+      (format "%s (%s) %s" "spam-report.el"
+	      spam-report-user-mail-address
+	      (gnus-extended-version))
+    (format "%s %s" "spam-report.el"
+	    (gnus-extended-version))))
+
 (defun spam-report-url-ping-plain (host report)
   "Ping a host through HTTP, addressing a specific GET resource."
   (let ((tcp-connection))
@@ -199,8 +217,8 @@ the function specified by `spam-report-url-ping-function'."
       (set-marker (process-mark tcp-connection) (point-min))
       (process-send-string
        tcp-connection
-       (format "GET %s HTTP/1.1\nUser-Agent: %s (spam-report.el)\nHost: %s\n\n"
-	       report (gnus-extended-version) host)))))
+       (format "GET %s HTTP/1.1\nUser-Agent: %s\nHost: %s\n\n"
+	       report spam-report-user-agent host)))))
 
 ;;;###autoload
 (defun spam-report-process-queue (&optional file keep)
