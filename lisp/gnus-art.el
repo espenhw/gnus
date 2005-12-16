@@ -229,7 +229,9 @@ only of boring text.  Boring text is controlled by
 This can also be a list of regexps.  In that case, it will be checked
 from head to tail looking for a separator.  Searches will be done from
 the end of the buffer."
-  :type '(repeat string)
+  :type '(choice :format "%{%t%}: %[Value Menu%]\n%v"
+		 (regexp)
+		 (repeat :tag "List of regexp" regexp))
   :group 'gnus-article-signature)
 
 (defcustom gnus-signature-limit nil
@@ -1675,10 +1677,24 @@ Initialized from `text-mode-syntax-table.")
   "Delete text of TYPE in the current buffer."
   (save-excursion
     (let ((b (point-min)))
-      (while (setq b (text-property-any b (point-max) 'article-type type))
-	(delete-region
-	 b (or (text-property-not-all b (point-max) 'article-type type)
-	       (point-max)))))))
+      (if (eq type 'multipart)
+	  ;; Remove MIME buttons associated with multipart/alternative parts.
+	  (progn
+	    (goto-char b)
+	    (while (if (get-text-property (point) 'gnus-part)
+		       (setq b (point))
+		     (when (setq b (next-single-property-change (point)
+								'gnus-part))
+		       (goto-char b)
+		       t))
+	      (end-of-line)
+	      (skip-chars-forward "\n")
+	      (when (eq (get-text-property b 'article-type) 'multipart)
+		(delete-region b (point)))))
+	(while (setq b (text-property-any b (point-max) 'article-type type))
+	  (delete-region
+	   b (or (text-property-not-all b (point-max) 'article-type type)
+		 (point-max))))))))
 
 (defun gnus-article-delete-invisible-text ()
   "Delete all invisible text in the current buffer."
@@ -5103,7 +5119,7 @@ If displaying \"text/html\" is discouraged \(see
 	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	     face ,gnus-article-button-face
 	     gnus-part ,id
-	     gnus-data ,handle))
+	     article-type multipart))
 	  (widget-convert-button 'link from (point)
 				 :action 'gnus-widget-press-button
 				 :button-keymap gnus-widget-button-keymap)

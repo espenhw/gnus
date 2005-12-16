@@ -283,7 +283,7 @@ before the external MIME handler is invoked."
   "List of media types that are to be displayed inline.
 See also `mm-inline-media-tests', which says how to display a media
 type inline."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-keep-viewer-alive-types
@@ -292,7 +292,7 @@ type inline."
   "List of media types for which the external viewer will not be killed
 when selecting a different article."
   :version "22.1"
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-automatic-display
@@ -304,7 +304,7 @@ when selecting a different article."
     "application/pkcs7-signature" "application/x-pkcs7-mime"
     "application/pkcs7-mime")
   "A list of MIME types to be displayed automatically."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-attachment-override-types '("text/x-vcard"
@@ -313,17 +313,17 @@ when selecting a different article."
 					  "application/pkcs7-signature"
 					  "application/x-pkcs7-signature")
   "Types to have \"attachment\" ignored if they can be displayed inline."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-inline-override-types nil
   "Types to be treated as attachments even if they can be displayed inline."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically."
-  :type '(repeat string)
+  :type '(repeat regexp)
   :group 'mime-display)
 
 (defcustom mm-discouraged-alternatives nil
