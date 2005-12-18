@@ -37,12 +37,12 @@
 (require 'gnus)
 (require 'nnheader)
 (require 'nnmail)
-(require 'gnus-bcklg)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
-  (autoload 'gnus-article-unpropagatable-p "gnus-sum"))
+  (autoload 'gnus-article-unpropagatable-p "gnus-sum")
+  (autoload 'gnus-backlog-remove-article "gnus-bcklg"))
 
 (nnoo-declare nnml)
 
@@ -85,7 +85,12 @@ marks file will be regenerated properly by Gnus.")
   "If non-nil, inhibit expiry.")
 
 (defvoo nnml-use-compressed-files nil
-  "If non-nil, allow using compressed message files.")
+  "If non-nil, allow using compressed message files.
+
+If it is a string, use it as the file extension which specifies
+the comression program.  You can set it to \".bz2\" if your Emacs
+supports auto-compression using the bzip2 program.  A value of t
+is equivalent to \".gz\".")
 
 (defvoo nnml-compressed-files-size-threshold 1000
   "Default size threshold for compressed message files.
@@ -631,7 +636,9 @@ non-nil.")
     (setq extension
          (and nnml-use-compressed-files
 	      (> chars nnml-compressed-files-size-threshold)
-              ".gz"))
+	      (if (stringp nnml-use-compressed-files)
+		  nnml-use-compressed-files
+		".gz")))
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmail-prepare-save-mail-hook)
     (run-hooks 'nnml-prepare-save-mail-hook)

@@ -1,3 +1,9 @@
+2005-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnml.el: Don't require gnus-bcklg.  Autoload it.
+	(nnml-use-compressed-files, nnml-save-mail): Support other
+	comression programs such as bzip2.
+
 2005-12-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dns.el (query-dns): Make sure we check the buffer size before
