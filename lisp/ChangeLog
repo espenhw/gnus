@@ -1,3 +1,8 @@
+2005-12-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (query-dns): Make sure we check the buffer size before
+	removing tcp headers.
+
 2005-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-delete-text-of-type): Enable it to
