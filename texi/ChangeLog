@@ -1,3 +1,8 @@
+2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (Display Customization): Add setting example to
+	mm-discouraged-alternatives.
+
 2005-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Gmane Spam Reporting): Fix
