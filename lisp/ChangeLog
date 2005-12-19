@@ -1,3 +1,8 @@
+2005-12-19  Mark Plaksin <happy@mcplaksin.org>  (tiny change)
+
+	* nnrss.el (nnrss-check-group): Put the RSS dc:subject in the
+	article.
+
 2005-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnml.el: Don't require gnus-bcklg.  Autoload it.

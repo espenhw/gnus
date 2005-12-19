@@ -533,7 +533,7 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
 ;;; Snarf functions
 
 (defun nnrss-check-group (group server)
-  (let (file xml subject url extra changed author date
+  (let (file xml subject url extra changed author date feed-subject
 	     enclosure comments rss-ns rdf-ns content-ns dc-ns)
     (if (and nnrss-use-local
 	     (file-exists-p (setq file (expand-file-name
@@ -576,6 +576,8 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
 	(setq extra (or extra
 			(nnrss-node-text content-ns 'encoded item)
 			(nnrss-node-text rss-ns 'description item)))
+        (if (setq feed-subject (nnrss-node-text dc-ns 'subject item))
+            (setq extra (concat feed-subject "<br /><br />\n" extra)))
 	(setq author (or (nnrss-node-text rss-ns 'author item)
 			 (nnrss-node-text dc-ns 'creator item)
 			 (nnrss-node-text dc-ns 'contributor item)))
