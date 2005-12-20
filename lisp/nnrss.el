@@ -212,7 +212,8 @@ for decoding when the cdr that the data specify is not available.")
 		    "<#part type=\"text/plain\">\n")
 	    (setq body (point))
 	    (when text
-	      (insert text "\n")
+	      ;; See `nnrss-check-group', which inserts <br />s.
+	      (insert (gnus-replace-in-string text "<br />" "\n") "\n")
 	      (when (or link enclosure)
 		(insert "\n")))
 	    (when link
@@ -576,8 +577,8 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
 	(setq extra (or extra
 			(nnrss-node-text content-ns 'encoded item)
 			(nnrss-node-text rss-ns 'description item)))
-        (if (setq feed-subject (nnrss-node-text dc-ns 'subject item))
-            (setq extra (concat feed-subject "<br /><br />\n" extra)))
+	(if (setq feed-subject (nnrss-node-text dc-ns 'subject item))
+	    (setq extra (concat feed-subject "<br /><br />" extra)))
 	(setq author (or (nnrss-node-text rss-ns 'author item)
 			 (nnrss-node-text dc-ns 'creator item)
 			 (nnrss-node-text dc-ns 'contributor item)))

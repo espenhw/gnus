@@ -1,3 +1,9 @@
+2005-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-request-article): Replace <br />s with newlines
+	in text/plain part.
+	(nnrss-check-group): Don't add excessive newline to dc:subject.
+
 2005-12-19  Mark Plaksin <happy@mcplaksin.org>  (tiny change)
 
 	* nnrss.el (nnrss-check-group): Put the RSS dc:subject in the
