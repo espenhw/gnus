@@ -1,3 +1,8 @@
+2005-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-request-article): Fix last change; fill
+	text/plain parts.
+
 2005-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-article): Replace <br />s with newlines
