@@ -489,7 +489,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	;; specified.
 	(gnus-summary-top-thread)
 	(setq gnus-article-reply (gnus-uu-get-list-of-articles nil)))
-      ;; Specify articles to be forwarded.  Note that it should be
+      ;; Specify articles to be forwarded.  Note that they should be
       ;; reversed; see `gnus-uu-get-list-of-articles'.
       (setq gnus-newsgroup-processable (reverse gnus-article-reply))
       (gnus-setup-message 'forward
