@@ -237,7 +237,8 @@ This means that the group \"nnimap+server:INBOX.group\" is placed in
 \"~/Maildir/.group\"."
   :group 'gnus-namazu
   :type '(repeat
-	  (cons (regexp :tag "Regexp of group name")
+	  (cons (choice (regexp :tag "Regexp of group name")
+			(const :tag "Groups served by `gnus-select-method'" t))
 		(string :tag "Base path of groups")))
   :set (lambda (symbol value)
 	 (prog1 (set-default symbol value)
@@ -336,7 +337,9 @@ This means that the group \"nnimap+server:INBOX.group\" is placed in
 		       "-a"		; show all matches
 		       "-l")		; use list format
 		 gnus-namazu-additional-arguments
-		 (list query)
+		 (list (if gnus-namazu-command-prefix
+			   (concat "'" query "'")
+			 query))
 		 gnus-namazu-index-directories)))
     (apply 'call-process (car commands) nil t nil (cdr commands))))
 
@@ -367,10 +370,14 @@ This means that the group \"nnimap+server:INBOX.group\" is placed in
 			       (gnus-namazu/server-directory method))))
 	       (push (cons dir group) alist)))
 	   (dolist (pair gnus-namazu-remote-groups)
-	     (when (string-match (car pair) group)
-	       (setq dir (nnmail-group-pathname
-			  (substring group (match-end 0))
-			  "/"))
+	     (when (setq dir
+			 (or (and (eq t (car pair))
+				  (gnus-method-equal method gnus-select-method)
+				  group)
+			     (and (stringp (car pair))
+				  (string-match (car pair) group)
+				  (substring group (match-end 0)))))
+	       (setq dir (nnmail-group-pathname dir "/"))
 	       (push (cons (concat (cdr pair)
 				   ;; nnmail-group-pathname() on some
 				   ;; systems returns pathnames which

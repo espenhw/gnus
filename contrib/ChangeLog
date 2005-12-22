@@ -1,3 +1,10 @@
+2005-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus-namazu.el (gnus-namazu-remote-groups): Accept `t' as an
+	symbol that matches the method specified by `gnus-select-method'.
+	(gnus-namazu/make-directory-table): Follow the above change.
+	(gnus-namazu/call-namazu): Wrap a query string with quotes.
+
 2005-12-05  Adrian Aichner  <adrian@xemacs.org>
 
 	* nnir.el: New variable nnir-swish-e-index-files to support
