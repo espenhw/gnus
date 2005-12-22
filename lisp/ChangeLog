@@ -1,3 +1,8 @@
+2005-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Reverse the order of
+	the articles to be forwarded.
+
 2005-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-article): Fix last change; fill
