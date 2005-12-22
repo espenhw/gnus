@@ -1,3 +1,7 @@
+2005-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Summary Post Commands): Fix function bound to `S O p'.
+
 2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Display Customization): Add setting example to

@@ -5569,7 +5569,7 @@ default, the message is decoded and forwarded as an rfc822 @acronym{MIME} sectio
 @cindex digests
 @cindex making digests
 Digest the current series and forward the result to a newsgroup
-(@code{gnus-uu-digest-mail-forward}).  This command uses the
+(@code{gnus-uu-digest-post-forward}).  This command uses the
 process/prefix convention.
 
 @item S u
