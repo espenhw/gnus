@@ -42,6 +42,10 @@ one-line-cookie.diff
 
 ssl.el
 
+        Obsolete interface to OpenSSL.  Completely replaced by
+        lisp/tls.el, which supports both GnuTLS and OpenSSL.  This
+        file will be removed eventually.
+
 ucs-tables.el
 
 	This file provides improved Unicode functionality.  It defines
