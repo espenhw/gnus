@@ -380,7 +380,11 @@ otherwise return nil."
 	;; FIXME: shouldn't binding `coding-system-for-read' be moved
 	;; to `mm-url-insert'?
 	(let ((coding-system-for-read 'binary))
-	  (mm-url-insert url)))
+	  (condition-case err
+	      (mm-url-insert url)
+	    (error (if (or debug-on-quit debug-on-error)
+		       (signal (car err) (cdr err))
+		     (message "nnrss: Failed to fetch %s" url))))))
       (nnheader-remove-cr-followed-by-lf)
       ;; Decode text according to the encoding attribute.
       (when (setq cs (nnrss-get-encoding))
@@ -516,7 +520,11 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
 
 (defun nnrss-insert-w3 (url)
   (mm-with-unibyte-current-buffer
-    (mm-url-insert url)))
+    (condition-case err
+	(mm-url-insert url)
+      (error (if (or debug-on-quit debug-on-error)
+		 (signal (car err) (cdr err))
+	       (message "nnrss: Failed to fetch %s" url))))))
 
 (defun nnrss-decode-entities-string (string)
   (if string
