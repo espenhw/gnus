@@ -1,3 +1,11 @@
+2006-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-request-article): Fix the way to fill text/plain
+	parts.
+	(nnrss-normalize-date): New function converts ISO 8601 date into
+	RFC822 style.  Suggested by Mark Plaksin <happy@mcplaksin.org>.
+	(nnrss-check-group): Use it.
+
 2006-01-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-work-articles): Remove useless `min'.

@@ -215,22 +215,21 @@ for decoding when the cdr that the data specify is not available.")
 	      (insert text)
 	      (goto-char body)
 	      ;; See `nnrss-check-group', which inserts "<br /><br />".
-	      (if (search-forward "<br /><br />" nil t)
-		  (if (eobp)
-		      (replace-match "\n")
-		    (replace-match "\n\n")
-		    (let ((fill-column default-fill-column)
-			  (window (get-buffer-window nntp-server-buffer)))
-		      (when window
-			(setq fill-column
-			      (max 1 (/ (* (window-width window) 7) 8))))
-		      (fill-region (point) (point-max))
-		      (goto-char (point-max))
-		      ;; XEmacs version of `fill-region' inserts newline.
-		      (unless (bolp)
-			(insert "\n"))))
-		(goto-char (point-max))
-		(insert "\n"))
+	      (when (search-forward "<br /><br />" nil t)
+		(if (eobp)
+		    (replace-match "\n")
+		  (replace-match "\n\n")))
+	      (unless (eobp)
+		(let ((fill-column default-fill-column)
+		      (window (get-buffer-window nntp-server-buffer)))
+		  (when window
+		    (setq fill-column
+			  (max 1 (/ (* (window-width window) 7) 8))))
+		  (fill-region (point) (point-max))
+		  (goto-char (point-max))
+		  ;; XEmacs version of `fill-region' inserts newline.
+		  (unless (bolp)
+		    (insert "\n"))))
 	      (when (or link enclosure)
 		(insert "\n")))
 	    (when link
@@ -435,6 +434,74 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
       (unless (assoc (car elem) nnrss-group-alist)
 	(insert (prin1-to-string (car elem)) " 0 1 y\n")))))
 
+(eval-and-compile (autoload 'timezone-parse-date "timezone"))
+
+(defun nnrss-normalize-date (date)
+  "Return a date string of DATE in the RFC822 style.
+This function handles the ISO 8601 date format described in
+<URL:http://www.w3.org/TR/NOTE-datetime>, and also the RFC822 style
+which RSS 2.0 allows."
+  (let (case-fold-search vector year month day time zone cts)
+    (cond ((null date))
+	  ;; RFC822
+	  ((string-match " [0-9]+ " date)
+	   (setq vector (timezone-parse-date date)
+		 year (string-to-number (aref vector 0)))
+	   (when (>= year 1969)
+	     (setq month (string-to-number (aref vector 1))
+		   day (string-to-number (aref vector 2)))
+	     (unless (>= (length (setq time (aref vector 3))) 3)
+	       (setq time "00:00:00"))
+	     (when (and (setq zone (aref vector 4))
+			(not (string-match "\\`[A-Z+-]" zone)))
+	       (setq zone nil))))
+	  ;; ISO 8601
+	  ((string-match
+	    (eval-when-compile
+	      (concat
+	       ;; 1. year
+	       "\\(199[0-9]\\|20[0-9][0-9]\\)"
+	       "\\(?:-"
+	       ;; 2. month
+	       "\\([01][0-9]\\)"
+	       "\\(?:-"
+	       ;; 3. day
+	       "\\([0-3][0-9]\\)"
+	       "\\)?\\)?\\(?:T"
+	       ;; 4. hh:mm
+	       "\\([012][0-9]:[0-5][0-9]\\)"
+	       "\\(?:"
+	       ;; 5. :ss
+	       "\\(:[0-5][0-9]\\)"
+	       "\\(?:\\.[0-9]+\\)?\\)?\\)?"
+	       ;; 6+7,8,9. zone
+	       "\\(?:\\(?:\\([+-][012][0-9]\\):\\([0-5][0-9]\\)\\)"
+	       "\\|\\([+-][012][0-9][0-5][0-9]\\)"
+	       "\\|\\(Z\\)\\)?"))
+	    date)
+	   (setq year (string-to-number (match-string 1 date))
+		 month (string-to-number (or (match-string 2 date) "1"))
+		 day (string-to-number (or (match-string 3 date) "1"))
+		 time (if (match-beginning 5)
+			  (substring date (match-beginning 4) (match-end 5))
+			(concat (or (match-string 4 date) "00:00") ":00"))
+		 zone (cond ((match-beginning 6)
+			     (concat (match-string 6 date)
+				     (match-string 7 date)))
+			    ((match-beginning 9) ;; Z
+			     "+0000")
+			    (t ;; nil if zone is not provided.
+			     (match-string 8 date))))))
+    (if month
+	(progn
+	  (setq cts (current-time-string (encode-time 0 0 0 day month year)))
+	  (format "%s, %02d %s %04d %s%s"
+		  (substring cts 0 3) day (substring cts 4 7) year time
+		  (if zone
+		      (concat " " zone)
+		    "")))
+      (message-make-date))))
+
 ;;; data functions
 
 (defun nnrss-read-server-data (server)
@@ -607,9 +674,9 @@ nnrss: %s: Not valid XML %s and w3-parse doesn't work %s"
 	(setq author (or (nnrss-node-text rss-ns 'author item)
 			 (nnrss-node-text dc-ns 'creator item)
 			 (nnrss-node-text dc-ns 'contributor item)))
-	(setq date (or (nnrss-node-text dc-ns 'date item)
-		       (nnrss-node-text rss-ns 'pubDate item)
-		       (message-make-date)))
+	(setq date (nnrss-normalize-date
+		    (or (nnrss-node-text dc-ns 'date item)
+			(nnrss-node-text rss-ns 'pubDate item))))
 	(setq comments (nnrss-node-text rss-ns 'comments item))
 	(when (setq enclosure (cadr (assq (intern (concat rss-ns "enclosure")) item)))
 	  (let ((url (cdr (assq 'url enclosure)))
