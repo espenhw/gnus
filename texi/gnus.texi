@@ -3119,9 +3119,9 @@ always in a case-insensitive manner.
 
 You can define different sorting to different groups via
 @code{gnus-parameters}.  Here is an example to sort an @acronym{NNTP}
-group by subject and an @acronym{RSS} group by reverse date to see the
-latest news at the top.  In this example, the first group is the Debian
-daily news group @code{gmane.linux.debian.user.news} from
+group by reverse date to see the latest news at the top and an
+@acronym{RSS} group by subject.  In this example, the first group is the
+Debian daily news group @code{gmane.linux.debian.user.news} from
 news.gmane.org.  The @acronym{RSS} group corresponds to the Debian
 weekly news RSS feed
 @url{http://packages.debian.org/unstable/newpkg_main.en.rdf},
@@ -16206,6 +16206,7 @@ the summary buffer.
 
 The following code may be useful to open an nnrss url directly from the
 summary buffer.
+
 @lisp
 (require 'browse-url)
 
@@ -16227,6 +16228,33 @@ summary buffer.
       (kbd "<RET>") 'browse-nnrss-url))
 (add-to-list 'nnmail-extra-headers nnrss-url-field)
 @end lisp
+
+The @code{nnrss} back end generates @samp{multipart/alternative}
+@acronym{MIME} articles in which each contains a @samp{text/plain} part
+and a @samp{text/html} part.  Even if you have added @code{"text/html"}
+to the @code{mm-discouraged-alternatives} variable (@pxref{Display
+Customization, ,Display Customization, emacs-mime, The Emacs MIME
+Manual}) since you don't want to see @acronym{HTML} parts, it might be
+more useful especially in @code{nnrss} groups to display
+@samp{text/html} parts.  Here's an example of setting
+@code{mm-discouraged-alternatives} as a group parameter (@pxref{Group
+Parameters}) in order to display @samp{text/html} parts only in
+@code{nnrss} groups:
+
+@lisp
+;; @r{Set the default value of @code{mm-discouraged-alternatives}.}
+(eval-after-load "gnus-sum"
+  '(add-to-list
+    'gnus-newsgroup-variables
+    '(mm-discouraged-alternatives
+      . '("text/html" "image/.*"))))
+
+;; @r{Display @samp{text/html} parts in @code{nnrss} groups.}
+(add-to-list
+ 'gnus-parameters
+ '("\\`nnrss:" (mm-discouraged-alternatives nil)))
+@end lisp
+
 
 @node Customizing W3
 @subsection Customizing W3
