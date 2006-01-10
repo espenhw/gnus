@@ -16200,7 +16200,7 @@ parts as @acronym{HTML}.  The function specified by the
 @code{mm-text-html-renderer} variable (@pxref{Display Customization,
 ,Display Customization, emacs-mime, The Emacs MIME Manual}) will be used
 to render text.  If it is @code{nil}, which is the default, text will
-simply be folded.  Leave it @code{nil}, if you prefer to see
+simply be folded.  Leave it @code{nil} if you prefer to see
 @samp{text/html} parts.
 @end table
 
