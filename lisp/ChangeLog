@@ -1,3 +1,11 @@
+2006-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-wash-html-in-text-plain-parts): New variable.
+	(nnrss-request-article): Render text/plain parts as HTML.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): No need to narrow
+	the buffer.
+
 2006-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-article): Fix the way to fill text/plain
