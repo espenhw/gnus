@@ -2566,19 +2566,17 @@ If READ-CHARSET, ask for a coding system."
 (defun gnus-article-wash-html-with-w3m ()
   "Wash the current buffer with emacs-w3m."
   (mm-setup-w3m)
-  (save-restriction
-    (narrow-to-region (point) (point-max))
-    (let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
-	  w3m-force-redisplay)
-      (w3m-region (point-min) (point-max)))
-    (when (and mm-inline-text-html-with-w3m-keymap
-	       (boundp 'w3m-minor-mode-map)
-	       w3m-minor-mode-map)
-      (add-text-properties
-       (point-min) (point-max)
-       (list 'keymap w3m-minor-mode-map
-	     ;; Put the mark meaning this part was rendered by emacs-w3m.
-	     'mm-inline-text-html-with-w3m t)))))
+  (let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
+	w3m-force-redisplay)
+    (w3m-region (point-min) (point-max)))
+  (when (and mm-inline-text-html-with-w3m-keymap
+	     (boundp 'w3m-minor-mode-map)
+	     w3m-minor-mode-map)
+    (add-text-properties
+     (point-min) (point-max)
+     (list 'keymap w3m-minor-mode-map
+	   ;; Put the mark meaning this part was rendered by emacs-w3m.
+	   'mm-inline-text-html-with-w3m t))))
 
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
