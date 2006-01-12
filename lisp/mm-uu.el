@@ -170,7 +170,7 @@ This can be either \"inline\" or \"attachment\".")
      ;; dependency on `message.el'.
      "^-+[8<>]*-\\{9,\\}[a-z ]+-\\{9,\\}[a-z ]+-\\{9,\\}[8<>]*-+$"
      "^-+[8<>]*-\\{9,\\}[a-z ]+-\\{9,\\}[a-z ]+-\\{9,\\}[8<>]*-+$"
-     (lambda () (mm-uu-verbatim-marks-extract 0 -1 1 -2))
+     (lambda () (mm-uu-verbatim-marks-extract 0 -1 1 -1))
      nil)
     ;; Omitting [a-z8<] leads to false positives (bogus signature separators
     ;; and mailing list banners).
@@ -187,7 +187,7 @@ This can be either \"inline\" or \"attachment\".")
      (lambda () (mm-uu-verbatim-marks-extract 0 0 1 -1))
      nil)
     (LaTeX
-     "^\\\\documentclass"
+     "^\\(\\\\[^\n]+\n\\)*\\\\documentclass"
      "^\\\\end{document}"
      mm-uu-latex-extract
      nil
