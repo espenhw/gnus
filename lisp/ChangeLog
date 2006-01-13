@@ -1,3 +1,15 @@
+2006-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (article-wash-html): Use
+	gnus-summary-show-article-charset-alist if a numeric arg is given.
+	(gnus-article-wash-html-with-w3m-standalone): New function.
+
+	* mm-view.el (mm-text-html-renderer-alist): Map w3m-standalone to
+	mm-inline-text-html-render-with-w3m-standalone.
+	(mm-text-html-washer-alist): Map w3m-standalone to
+	gnus-article-wash-html-with-w3m-standalone.
+	(mm-inline-text-html-render-with-w3m-standalone): New function.
+
 2006-01-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-uu.el (mm-uu-type-alist): Fix previous message-marks commit.
