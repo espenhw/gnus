@@ -1,7 +1,7 @@
 ;;; message.el --- composing mail and news messages
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005 Free Software Foundation, Inc.
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: mail, news
@@ -5202,7 +5202,7 @@ Headers already prepared in the buffer are not modified."
 		;; totally and insert the new value.
 		(delete-region (point) (point-at-eol))
 		;; If the header is optional, and the header was
-		;; empty, we con't insert it anyway.
+		;; empty, we can't insert it anyway.
 		(unless optionalp
 		  (push header-string message-inserted-headers)
 		  (insert value)
@@ -6247,7 +6247,9 @@ news, Source is the list of newsgroups is was posted to."
 	 (prefix
 	  (if group
 	      (gnus-group-decoded-name group)
-	    (or (and from (car (gnus-extract-address-components from)))
+	    (or (and from (or
+			   (car (gnus-extract-address-components from))
+			   (cadr (gnus-extract-address-components from))))
 		"(nowhere)"))))
     (concat "["
 	    (if message-forward-decoded-p

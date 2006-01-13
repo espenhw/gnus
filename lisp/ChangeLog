@@ -1,3 +1,9 @@
+2006-01-13  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-forward-subject-name-subject): Prefer the
+	address to 'nowhere' if the sender has no name.
+	Fix typo.  Update copyright year.
+
 2006-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-wash-html): Use
