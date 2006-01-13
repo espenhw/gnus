@@ -1,3 +1,7 @@
+2006-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Article Washing): Additions.
+
 2006-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (RSS): Document nnrss-wash-html-in-text-plain-parts.
