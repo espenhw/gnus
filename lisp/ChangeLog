@@ -1,3 +1,11 @@
+2006-01-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-info): New function.
+	(message-mode-menu): Add it.
+	Update copyright.
+
+	* ChangeLog: Fix and update copyright.
+
 2006-01-13  Romain Francoise  <romain@orebokech.com>
 
 	* message.el (message-forward-subject-name-subject): Prefer the
@@ -7013,7 +7021,7 @@
 
 See ChangeLog.2 for earlier changes.
 
-    Copyright (C) 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
+    Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
   Copying and distribution of this file, with or without modification,
   are permitted provided the copyright notice and this notice are preserved.
 

@@ -2252,6 +2252,17 @@ Point is left at the beginning of the narrowed-to region."
     (message-skip-to-next-address)
     (kill-region start (point))))
 
+
+(defun message-info (&optional arg)
+  "Display the Message manual.
+
+Prefixed with one \\[universal-argument], display the Emacs MIME manual.
+Prefixed with two \\[universal-argument]'s, display the PGG manual."
+  (interactive "p")
+  (cond ((eq arg 16) (Info-goto-node "(pgg)Top"))
+	((eq arg  4) (Info-goto-node "(emacs-mime)Top"))
+	(t           (Info-goto-node "(message)Top"))))
+
 
 
 ;;;
@@ -2379,7 +2390,11 @@ Point is left at the beginning of the narrowed-to region."
 	 '(:help "Ask, then arrange to send message at that time"))]
     ["Kill Message" message-kill-buffer
      ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Delete this message without sending"))]))
+	 '(:help "Delete this message without sending"))]
+    "----"
+    ["Message manual" message-info
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Display the Message manual"))]))
 
 (easy-menu-define
   message-mode-field-menu message-mode-map ""
