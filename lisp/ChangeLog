@@ -1,3 +1,15 @@
+2006-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el: Update copyright.
+	(nnrss-opml-import): Query whether to subscribe to each entry.
+
+	* gnus-art.el:
+	* gnus-sum.el:
+	* gnus-xmas.el:
+	* messagexmas.el:
+	* mm-uu.el:
+	* mm-view.el: Update copyright.
+
 2006-01-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-info): New function.
