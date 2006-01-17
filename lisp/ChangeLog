@@ -1,4 +1,4 @@
-2006-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+2006-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-inlined-types): Add application/pgp.
 	(mm-automatic-display): Ditto.
