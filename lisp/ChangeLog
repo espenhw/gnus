@@ -1,5 +1,13 @@
 2006-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-decode.el (mm-inlined-types): Add application/pgp.
+	(mm-automatic-display): Ditto.
+
+	* mm-uu.el (mm-uu-dissect-text-parts): Recognize application/pgp
+	part as text.
+
+2006-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* nnrss.el: Update copyright.
 	(nnrss-opml-import): Query whether to subscribe to each entry.
 
