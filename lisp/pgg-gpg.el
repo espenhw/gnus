@@ -1,7 +1,7 @@
 ;;; pgg-gpg.el --- GnuPG support for PGG.
 
 ;; Copyright (C) 1999, 2000, 2002, 2003, 2004,
-;;   2005 Free Software Foundation, Inc.
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Created: 1999/10/28
@@ -150,7 +150,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	     pgg-gpg-user-id)))
 	 (args
 	  (append
-	   (list "--batch" "--armor" "--always-trust" "--encrypt")
+	   (list "--batch" "--textmode" "--armor" "--always-trust" "--encrypt")
 	   (if sign (list "--sign" "--local-user" pgg-gpg-user-id))
 	   (if recipients
 	       (apply #'nconc
