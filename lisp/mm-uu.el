@@ -636,7 +636,8 @@ value of `mm-uu-text-plain-type'."
 			      (mm-uu-dissect t (mm-handle-type handle)))))
 	     (kill-buffer buffer)
 	     (setcar handle (car children))
-	     (setcdr handle (cdr children))))
+	     (setcdr handle (cdr children))
+	     (mm-uu-dissect-text-parts handle)))
 	  (t
 	   (mapc 'mm-uu-dissect-text-parts handle)))))
 
