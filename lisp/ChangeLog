@@ -7,6 +7,7 @@
 	tool bars.
 	(gmm-tool-bar-from-list): Fix typos in doc string.  Remove debug
 	output.
+	(gmm): Add :prefix to defgroup.
 
 2006-01-20  Per Abrahamsen  <abraham@dina.kvl.dk>
 
