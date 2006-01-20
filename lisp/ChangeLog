@@ -1,3 +1,7 @@
+2006-01-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mml.el (mml-attach-file): Describe `description' in doc string.
+
 2005-12-12  Richard M. Stallman  <rms@gnu.org>
 
 	* mm-url.el (mm-url-load-url): Require url-parse and url-vars.

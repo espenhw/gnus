@@ -1114,9 +1114,12 @@ to specify options."
 The file is not inserted or encoded until you send the message with
 `\\[message-send-and-exit]' or `\\[message-send]'.
 
-FILE is the name of the file to attach.  TYPE is its content-type, a
-string of the form \"type/subtype\".  DESCRIPTION is a one-line
-description of the attachment."
+FILE is the name of the file to attach.  TYPE is its
+content-type, a string of the form \"type/subtype\".  DESCRIPTION
+is a one-line description of the attachment.  The DISPOSITION
+specifies how the attachment is intended to be displayed.  It can
+be either \"inline\" (displayed automatically within the message
+body) or \"attachment\" (separate from the body)."
   (interactive
    (let* ((file (mml-minibuffer-read-file "Attach file: "))
 	  (type (mml-minibuffer-read-type file))
