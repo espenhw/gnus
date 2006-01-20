@@ -1663,6 +1663,7 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
   (autoload 'gnus-request-post "gnus-int")
   (autoload 'gnus-server-string "gnus")
   (autoload 'idna-to-ascii "idna")
+  (autoload 'gmm-tool-bar-from-list "gmm-utils")
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-new-draft-name "mh-comp")
   (autoload 'mh-send-letter "mh-comp")
@@ -2591,7 +2592,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
     (set (make-local-variable 'font-lock-defaults)
 	 '(message-font-lock-keywords t))
     (if (boundp 'tool-bar-map)
-	(set (make-local-variable 'tool-bar-map) (message-tool-bar-map))))
+	(set (make-local-variable 'tool-bar-map) (message-make-tool-bar))))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   (gnus-make-local-hook 'after-change-functions)
@@ -6702,50 +6703,93 @@ which specify the range to operate on."
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
-(defun message-tool-bar-local-item-from-menu (command icon in-map &optional from-map &rest props)
-  ;; We need to make tool bar entries in local keymaps with
-  ;; `tool-bar-local-item-from-menu' in Emacs >= 22
-  (if (fboundp 'tool-bar-local-item-from-menu)
-      (tool-bar-local-item-from-menu command icon in-map from-map props)
-    (tool-bar-add-item-from-menu command icon from-map props)))
+(defcustom message-tool-bar-zap-list
+ '(new-file print-buffer kill-buffer save-buffer write-file dired
+  open-file customize help)
+  "List of icon items from the global tool bar.
+These items are not displayed on the message mode tool bar.
 
-(defun message-tool-bar-map ()
-  (or message-tool-bar-map
-      (setq message-tool-bar-map
-	    (and
-	     (condition-case nil (require 'tool-bar) (error nil))
-	     (fboundp 'tool-bar-add-item-from-menu)
-	     tool-bar-mode
-	     (let ((tool-bar-map (copy-keymap tool-bar-map))
-		   (load-path (mm-image-load-path)))
-	       ;; Zap some items which aren't so relevant and take
-	       ;; up space.
-	       (dolist (key '(print-buffer kill-buffer save-buffer
-					   write-file dired open-file))
-		 (define-key tool-bar-map (vector key) nil))
-	       (message-tool-bar-local-item-from-menu
-		'message-send-and-exit "mail/send" tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'message-kill-buffer "close" tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		    'message-dont-send "cancel" tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'mml-attach-file "attach" tool-bar-map mml-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'ispell-message "spell" tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'mml-preview "preview"
-		tool-bar-map mml-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'message-insert-importance-high "important"
-		tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'message-insert-importance-low "unimportant"
-		tool-bar-map message-mode-map)
-	       (message-tool-bar-local-item-from-menu
-		'message-insert-disposition-notification-to "receipt"
-		tool-bar-map message-mode-map)
-	       tool-bar-map)))))
+You can use \\[describe-key] <icon> to find out the name of a
+icon item.  Example:
+
+  <tool-bar> <new-file> runs the command find-file
+
+Then use `new-file'."
+  :type '(choice (const :tag "Zap all" t)
+		 (const :tag "Keep all" nil)
+		 (repeat (symbol :tag "Icon item")))
+  :group 'message)
+
+;; The default will be changed to `message-tool-bar-gnome' when the new icons
+;; have been checked in:
+(defcustom message-tool-bar 'message-tool-bar-retro
+  "Specifies the message mode tool bar.
+
+It can be either a list or a symbol refering to a list.  See
+`gmm-tool-bar-from-list' for the format of the list.  The
+default key map is `message-mode-map'.
+
+Pre-defined symbols include `message-tool-bar-gnome' and
+`message-tool-bar-retro'."
+  :type '(repeat gmm-tool-bar-list-item)
+  :type '(choice (const :tag "GNOME style" message-tool-bar-gnome)
+		 (const :tag "Retro look"  message-tool-bar-retro)
+		 (repeat :tag "User defined list" gmm-tool-bar-item)
+		 (symbol))
+  :group 'message)
+
+;; The new icons are not yet committed, see
+;; http://thread.gmane.org/gmane.emacs.gnus.general/61719
+(defcustom message-tool-bar-gnome
+  '((ignore "separator" nil :help "") ;; How to get no tooltip?
+    (message-send-and-exit "send")
+    (message-dont-send "save-draft")
+    (message-kill-buffer "close") ;; stock_cancel
+    (mml-attach-file "attach" mml-mode-map)
+    (ispell-message "spell" nil :visible (not flyspell-mode))
+    ;; We should have a mail-preview icon with an envelope like the one in
+    ;; stock_mail-reply.
+    (mml-preview "mail-preview" mml-mode-map)
+    (mml-secure-message-sign-encrypt "lock" mml-mode-map :visible nil)
+    (message-insert-importance-high "important" nil :visible nil)
+    (message-insert-importance-low "unimportant" nil :visible nil)
+    (message-insert-disposition-notification-to "receipt" nil :visible nil)
+    (message-info "help" t :help "Message manual"))
+  "List of items for the message tool bar (GNOME style).
+
+See `gmm-tool-bar-from-list' for details on the format of the list."
+  :type '(repeat gmm-tool-bar-item)
+  :version "23.0" ;; No Gnus
+  :group 'message)
+
+(defcustom message-tool-bar-retro
+  '((message-send-and-exit "mail/send")
+    (message-kill-buffer "close")
+    (message-dont-send "cancel")
+    (mml-attach-file "attach" mml-mode-map)
+    (ispell-message "spell")
+    (mml-preview "preview" mml-mode-map)
+    (message-insert-importance-high "important")
+    (message-insert-importance-low "unimportant")
+    (message-insert-disposition-notification-to "receipt"))
+  "List of items for the message tool bar (retro style).
+
+See `gmm-tool-bar-from-list' for details on the format of the list."
+  :type '(repeat gmm-tool-bar-item)
+  :version "23.0" ;; No Gnus
+  :group 'message)
+
+(defun message-make-tool-bar (&optional force)
+  "Make a message mode tool bar from `message-tool-bar-list'.
+When FORCE, rebuild the tool bar."
+  (when (or (not message-tool-bar-map) force)
+    (setq message-tool-bar-map
+	  (when (default-value 'tool-bar-mode)
+	    (let ((load-path (mm-image-load-path)))
+	      (gmm-tool-bar-from-list message-tool-bar
+					  message-tool-bar-zap-list
+					  'message-mode-map)))))
+  message-tool-bar-map)
 
 ;;; Group name completion.
 

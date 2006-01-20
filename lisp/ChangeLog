@@ -1,5 +1,12 @@
 2006-01-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-tool-bar-zap-list, message-tool-bar)
+	(message-tool-bar-gnome, message-tool-bar-retro): New variables.
+	(message-tool-bar-local-item-from-menu): Remove.
+	(message-tool-bar-map): Replace by `message-make-tool-bar'.
+	(message-make-tool-bar): New function.
+	(message-mode): Use `message-make-tool-bar'.
+
 	* gmm-utils.el: New file.
 	(gmm-verbose, gmm-message, gmm-error): From gnus-utils.el.
 	(gmm-lazy): New widget copied from `nnmail.el'.
