@@ -5,6 +5,8 @@
 	(gmm-lazy): New widget copied from `nnmail.el'.
 	(gmm-tool-bar-from-list): New function for creating customizable
 	tool bars.
+	(gmm-tool-bar-from-list): Fix typos in doc string.  Remove debug
+	output.
 
 2006-01-20  Per Abrahamsen  <abraham@dina.kvl.dk>
 

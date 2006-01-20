@@ -127,10 +127,10 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 (defun gmm-tool-bar-from-list (icon-list zap-list default-map)
   "Make a tool bar from ICON-LIST.
 
-Withing each entry of ICON-LIST, the first element is a menu
+Within each entry of ICON-LIST, the first element is a menu
 command, the second element is an icon file name and the third
 element is a test function.  You can use \\[describe-key]
-<menu-entry> to find out the name of a menu command.  The forth
+<menu-entry> to find out the name of a menu command.  The fourth
 and all following elements are passed a the PROPS argument to the
 function `tool-bar-local-item'.
 
@@ -152,7 +152,6 @@ DEFAULT-MAP specifies the default key map for ICON-LIST."
 		  (icon (nth 1 el))
 		  (fmap (or (nth 2 el) default-map))
 		  (props  (cdr (cdr (cdr el)))) )
-	      (if props (gmm-message 9 "props=`%s'" props))
 	      ;; command may stem from different from-maps:
 	      (cond ((eq command 'ignore)
 		     ;; FIXME: How to get no tool tip at all?
