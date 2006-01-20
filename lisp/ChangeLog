@@ -1,5 +1,17 @@
 2006-01-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gmm-utils.el: New file.
+	(gmm-verbose, gmm-message, gmm-error): From gnus-utils.el.
+	(gmm-lazy): New widget copied from `nnmail.el'.
+	(gmm-tool-bar-from-list): New function for creating customizable
+	tool bars.
+
+2006-01-20  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gmm-utils.el (gmm-widget-p): New function.
+
+2006-01-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* mml.el (mml-attach-file): Describe `description' in doc string.
 	(mml-menu): Add Emacs MIME manual and PGG manual.
 
