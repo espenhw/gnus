@@ -1,4 +1,12 @@
-2005-11-04 Ken Manheimer  <ken.manheimer@gmail.com>
+2005-12-12  Richard M. Stallman  <rms@gnu.org>
+
+	* mm-url.el (mm-url-load-url): Require url-parse and url-vars.
+
+2005-11-14  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* nntp.el (nntp-end-of-line): Doc fix.
+
+2005-11-04  Ken Manheimer  <ken.manheimer@gmail.com>
 
 	* pgg-pgp.el (pgg-pgp-encrypt-region, pgg-pgp-decrypt-region)
 	(pgg-pgp-sign-region): Add optional 'passphrase' argument to all
@@ -13,6 +21,11 @@
 	passed in to the system.
 	(pgg-pgp5-sign-region): Use new name of
 	pgg-add-passphrase-to-cache function.
+
+2005-10-30  Chong Yidong  <cyd@stupidchicken.com>
+
+	* imap.el (imap-open): Handle case where buffer is a buffer
+	object.
 
 2005-10-29  Ken Manheimer  <ken.manheimer@gmail.com>
 
@@ -35,12 +48,12 @@
 	(pgg-remove-passphrase-from-cache): Rename from
 	`pgg-remove-passphrase-cache' to reduce confusion (all callers
 	changed).
-	(pgg-read-passphrase) (pgg-add-passphrase-cache)
+	(pgg-read-passphrase, pgg-add-passphrase-cache)
 	(pgg-remove-passphrase-cache): Add informative docstrings.
 	(pgg-decrypt): Convey provided passphrase in subordinate call to
 	pgg-decrypt-region.
 
-2005-10-20  Ken Manheimer <ken.manheimer+emacs@gmail.com>
+2005-10-20  Ken Manheimer  <ken.manheimer+emacs@gmail.com>
 
 	* pgg.el (pgg-encrypt-region, pgg-encrypt-symmetric-region)
 	(pgg-encrypt-symmetric, pgg-encrypt, pgg-decrypt-region)
@@ -74,6 +87,16 @@
 
 	* pgg.el (pgg-encrypt-symmetric, pgg-encrypt-symmetric-region):
 	New user commands for symmetric encryption.
+
+2005-11-30  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-delay.el (gnus-delay): Don't autoload.
+	It's useless and could trigger a bug in cus-dep.el causing ldefs-boot
+	to be re-loaded when customizing the `gnus-delay' group.
+
+2005-11-19  Chong Yidong  <cyd@stupidchicken.com>
+
+	* message.el (message-insert-citation-line): Use newlines.
 
 2006-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 

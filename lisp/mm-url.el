@@ -1,6 +1,7 @@
 ;;; mm-url.el --- a wrapper of url functions/commands for Gnus
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005,
+;;   2006 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 
@@ -273,7 +274,10 @@ This is taken from RFC 2396.")
 (defun mm-url-load-url ()
   "Load `url-insert-file-contents'."
   (unless (condition-case ()
-	      (require 'url-handlers)
+	      (progn
+		(require 'url-handlers)
+		(require 'url-parse)
+		(require 'url-vars))
 	    (error nil))
     ;; w3-4.0pre0.46 or earlier version.
     (require 'w3-vars)

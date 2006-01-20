@@ -3408,7 +3408,9 @@ This function strips off the signature from the original message."
 (defun message-insert-citation-line ()
   "Insert a simple citation line."
   (when message-reply-headers
-    (insert (mail-header-from message-reply-headers) " writes:\n\n")))
+    (insert (mail-header-from message-reply-headers) " writes:")
+    (newline)
+    (newline)))
 
 (defun message-position-on-field (header &rest afters)
   (let ((case-fold-search t))

@@ -1,7 +1,7 @@
 ;;; imap.el --- imap library
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005 Free Software Foundation, Inc.
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
 ;; Keywords: mail
@@ -1102,8 +1102,11 @@ necessary.  If nil, the buffer name is generated."
 			   stream))
 		      ;; We're done, kill the first connection
 		      (imap-close buffer)
-		      (kill-buffer buffer)
-		      (rename-buffer buffer)
+		      (let ((name (if (stringp buffer)
+				      buffer
+				    (buffer-name buffer))))
+			(kill-buffer buffer)
+			(rename-buffer name))
 		      (message "imap: Reconnecting with stream `%s'...done"
 			       stream)
 		      (setq imap-stream stream)

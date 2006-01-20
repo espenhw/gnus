@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993,
 ;;   1994, 1995, 1996, 1997, 1998, 2000, 2001, 2002,
-;;   2003, 2004, 2005 Free Software Foundation, Inc.
+;;   2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -104,8 +104,8 @@ This command is used by the methods `nntp-open-telnet-stream',
 
 (defvoo nntp-end-of-line "\r\n"
   "*String to use on the end of lines when talking to the NNTP server.
-This is \"\\r\\n\" by default, but should be \"\\n\" when using and
-indirect telnet connection method (nntp-open-via-*-and-telnet).")
+This is \"\\r\\n\" by default, but should be \"\\n\" when using an indirect
+connection method (nntp-open-via-*).")
 
 (defvoo nntp-via-rlogin-command "rsh"
   "*Rlogin command used to connect to an intermediate host.
