@@ -1,6 +1,7 @@
 2006-01-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-attach-file): Describe `description' in doc string.
+	(mml-menu): Add Emacs MIME manual and PGG manual.
 
 2005-12-12  Richard M. Stallman  <rms@gnu.org>
 
