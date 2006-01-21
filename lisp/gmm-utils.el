@@ -192,4 +192,5 @@ DEFAULT-MAP specifies the default key map for ICON-LIST."
 
 (provide 'gmm-utils)
 
+;; arch-tag: e0b60920-2ce6-40c1-bfc0-cadbbe26b602
 ;;; gmm-utils.el ends here
