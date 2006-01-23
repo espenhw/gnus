@@ -62,7 +62,8 @@ inside loops."
 
 ;;;###autoload
 (defun gmm-error (level &rest args)
-  "Beep an error if LEVEL is equal to or less than `gmm-verbose'."
+  "Beep an error if LEVEL is equal to or less than `gmm-verbose'.
+ARGS are passed to `message'."
   (when (<= (floor level) gmm-verbose)
     (apply 'message args)
     (ding)
@@ -122,6 +123,37 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 		       (sexp :tag "Other map"))
 	       (plist :inline t :tag "Properties")))
 
+;;;###autoload
+(define-widget 'gmm-tool-bar-zap-list (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
+  "Tool bar zap list."
+  :tag "Tool bar zap list"
+  :type '(choice (const :tag "Zap all" t)
+		 (const :tag "Keep all" nil)
+		 (list
+		  ;; :value
+		  ;; Work around (bug in customize?), see
+		  ;; <news:v9is48jrj1.fsf@marauder.physik.uni-ulm.de>
+		  ;; (new-file open-file dired kill-buffer write-file
+		  ;; 	    print-buffer customize help)
+		  (set :inline t
+		       (const new-file)
+		       (const open-file)
+		       (const dired)
+		       (const kill-buffer)
+		       (const save-buffer)
+		       (const write-file)
+		       (const undo)
+		       (const cut)
+		       (const copy)
+		       (const paste)
+		       (const search-forward)
+		       (const print-buffer)
+		       (const customize)
+		       (const help))
+		  (repeat :inline t
+			  :tag "Other"
+			  (symbol :tag "Icon item")))))
+
 (defvar tool-bar-map)
 
 ;;;###autoload
@@ -136,7 +168,10 @@ and all following elements are passed a the PROPS argument to the
 function `tool-bar-local-item'.
 
 If ZAP-LIST is a list, remove those item from the default
-`tool-bar-map'.  If it is t, start with a new sparse map.
+`tool-bar-map'.  If it is t, start with a new sparse map.  You
+can use \\[describe-key] <icon> to find out the name of an icon
+item.  When \\[describe-key] <icon> shows \"<tool-bar> <new-file>
+runs the command find-file\", then use `new-file' in ZAP-LIST.
 
 DEFAULT-MAP specifies the default key map for ICON-LIST."
   (let (;; For Emacs 21, we must let-bind `tool-bar-map'.  In Emacs 22, we

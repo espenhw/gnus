@@ -1,3 +1,11 @@
+2006-01-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-util.el (gnus-error): Describe `args'.
+
+	* gmm-utils.el (gmm-error): Describe `args'.
+	(gmm-tool-bar-zap-list): New widget.
+	(gmm-tool-bar-from-list): Improve description of `zap-list'.
+
 2006-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-buttonize-original-text-parts): New variable.
