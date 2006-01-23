@@ -6703,22 +6703,18 @@ which specify the range to operate on."
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
-(defcustom message-tool-bar-zap-list
- '(new-file print-buffer kill-buffer save-buffer write-file dired
-  open-file customize help)
-  "List of icon items from the global tool bar.
-These items are not displayed on the message mode tool bar.
-
-You can use \\[describe-key] <icon> to find out the name of a
-icon item.  Example:
-
-  <tool-bar> <new-file> runs the command find-file
-
-Then use `new-file'."
-  :type '(choice (const :tag "Zap all" t)
-		 (const :tag "Keep all" nil)
-		 (repeat (symbol :tag "Icon item")))
-  :group 'message)
+;; Note: The :set function in the `message-tool-bar*' will only affect _new_
+;; message buffers.  We might add a function that walks thru all message-mode
+;; buffers and force the update.
+(defun message-tool-bar-update (&optional symbol value)
+  "Update message mode toolbar.
+Setter function for custom variables."
+  (if symbol
+      ;; When used as ":set" function:
+      (progn
+	(set-default symbol value)
+	(setq-default message-tool-bar-map nil))
+    (message-make-tool-bar t)))
 
 ;; The default will be changed to `message-tool-bar-gnome' when the new icons
 ;; have been checked in:
@@ -6736,6 +6732,9 @@ Pre-defined symbols include `message-tool-bar-gnome' and
 		 (const :tag "Retro look"  message-tool-bar-retro)
 		 (repeat :tag "User defined list" gmm-tool-bar-item)
 		 (symbol))
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'message-tool-bar-update
   :group 'message)
 
 ;; The new icons are not yet committed, see
@@ -6747,6 +6746,8 @@ Pre-defined symbols include `message-tool-bar-gnome' and
     (message-kill-buffer "close") ;; stock_cancel
     (mml-attach-file "attach" mml-mode-map)
     (ispell-message "spell" nil :visible (not flyspell-mode))
+    (flyspell-buffer "spell" t :visible flyspell-mode
+		     :help "Flyspell whole buffer")
     ;; We should have a mail-preview icon with an envelope like the one in
     ;; stock_mail-reply.
     (mml-preview "mail-preview" mml-mode-map)
@@ -6760,6 +6761,8 @@ Pre-defined symbols include `message-tool-bar-gnome' and
 See `gmm-tool-bar-from-list' for details on the format of the list."
   :type '(repeat gmm-tool-bar-item)
   :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'message-tool-bar-update
   :group 'message)
 
 (defcustom message-tool-bar-retro
@@ -6777,6 +6780,21 @@ See `gmm-tool-bar-from-list' for details on the format of the list."
 See `gmm-tool-bar-from-list' for details on the format of the list."
   :type '(repeat gmm-tool-bar-item)
   :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'message-tool-bar-update
+  :group 'message)
+
+(defcustom message-tool-bar-zap-list
+  '(new-file open-file dired kill-buffer write-file
+	     print-buffer customize help)
+  "List of icon items from the global tool bar.
+These items are not displayed on the message mode tool bar.
+
+See `gmm-tool-bar-from-list' for the format of the list."
+  :type 'gmm-tool-bar-zap-list
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'message-tool-bar-update
   :group 'message)
 
 (defun message-make-tool-bar (&optional force)

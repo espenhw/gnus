@@ -1,5 +1,12 @@
 2006-01-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-tool-bar-zap-list): Use
+	gmm-tool-bar-zap-list as custom type.
+	(message-tool-bar-update): New function.
+	(message-tool-bar, message-tool-bar-gnome)
+	(message-tool-bar-retro): Add message-tool-bar-update.
+	(message-tool-bar-gnome): Add flyspell-buffer.
+
 	* gnus-util.el (gnus-error): Describe `args'.
 
 	* gmm-utils.el (gmm-error): Describe `args'.
