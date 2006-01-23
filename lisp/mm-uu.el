@@ -618,8 +618,17 @@ value of `mm-uu-text-plain-type'."
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
 
+(defcustom mm-uu-buttonize-original-text-parts nil
+  "Non-nil means that the originals of dissected parts get buttons.
+This variable is overridden by `gnus-inhibit-mime-unbuttonizing'."
+  :type 'boolean
+  :version "23.0"
+  :group 'gnus-article-mime)
+
 (defun mm-uu-dissect-text-parts (handle)
-  "Dissect text parts and put uu handles into HANDLE."
+  "Dissect text parts and put uu handles into HANDLE.
+If `mm-uu-buttonize-original-text-parts' is non-nil, the part that HANDLE
+points will always get a button."
   (let ((buffer (mm-handle-buffer handle)))
     (cond ((stringp buffer)
 	   (mapc 'mm-uu-dissect-text-parts (cdr handle)))
@@ -642,10 +651,17 @@ value of `mm-uu-text-plain-type'."
 				   encoding type)
 				  (mm-uu-dissect t (mm-handle-type handle)))
 			      (mm-uu-dissect t (mm-handle-type handle))))))
-	       (kill-buffer buffer)
-	       (setcar handle (car children))
-	       (setcdr handle (cdr children))
-	       (mm-uu-dissect-text-parts handle))))
+	       (if (or mm-uu-buttonize-original-text-parts
+		       (and (boundp 'gnus-inhibit-mime-unbuttonizing)
+			    (symbol-value 'gnus-inhibit-mime-unbuttonizing)))
+		   (let ((parent (copy-sequence handle)))
+		     (mm-handle-set-disposition parent '("attachment"))
+		     (mm-handle-set-description parent "The original part of")
+		     (setcdr handle (cons parent (cdr children))))
+		 (kill-buffer buffer)
+		 (setcdr handle (cdr children)))
+	       (setcar handle (car children)) ;; "multipart/mixed"
+	       (mapc 'mm-uu-dissect-text-parts (cdr children)))))
 	  (t
 	   (mapc 'mm-uu-dissect-text-parts handle)))))
 

@@ -1,5 +1,13 @@
 2006-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-uu.el (mm-uu-buttonize-original-text-parts): New variable.
+	(mm-uu-dissect-text-parts): Buttonize original text parts.
+
+	* mm-decode.el (mm-handle-set-disposition): New macro.
+	(mm-handle-set-description): New macro.
+
+2006-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mm-uu.el (mm-uu-dissect-text-parts): Decode content transfer
 	encoding.
 
