@@ -1,5 +1,21 @@
 2006-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-mime-security-button-commands): New variable.
+	(gnus-mime-security-button-menu): New definition.
+	(gnus-mime-security-button-map): Use them.
+	(gnus-mime-security-button-menu): New function.
+	(gnus-insert-mime-security-button): Addition to help echo.
+	(gnus-mime-security-run-function, gnus-mime-security-save-part)
+	(gnus-mime-security-pipe-part): New functions.
+
+	* mm-uu.el (mm-uu-buttonize-original-text-parts): Remove.
+	(mm-uu-dissect-text-parts): Revert 2006-01-23 change.
+
+	* mm-decode.el (mm-handle-set-disposition): Remove.
+	(mm-handle-set-description): Remove.
+
+2006-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mm-view.el (mm-w3m-standalone-supports-m17n-p): New variable.
 	(mm-w3m-standalone-supports-m17n-p): New function.
 	(mm-inline-text-html-render-with-w3m-standalone): Use it to alter
