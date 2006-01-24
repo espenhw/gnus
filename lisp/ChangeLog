@@ -1,3 +1,13 @@
+2006-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-w3m-standalone-supports-m17n-p): New variable.
+	(mm-w3m-standalone-supports-m17n-p): New function.
+	(mm-inline-text-html-render-with-w3m-standalone): Use it to alter
+	w3m usage.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m-standalone): Use
+	mm-w3m-standalone-supports-m17n-p to alter w3m usage.
+
 2006-01-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-tool-bar-zap-list): Use
