@@ -114,14 +114,21 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 (define-widget 'gmm-tool-bar-item (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
   "Tool bar list item."
   :tag "Tool bar item"
-  :type '(list (function :tag "Menu Command")
-	       (string   :tag "Icon file")
-	       (choice (const :tag "Default map" nil)
-		       ;; Note: Usually we need non-nil attributes if map is
-		       ;; t.
-		       (const :tag "No menu" t)
-		       (sexp :tag "Other map"))
-	       (plist :inline t :tag "Properties")))
+  :type '(choice
+	  (list :tag "Command and Icon"
+		(function :tag "Command")
+		(string :tag "Icon file")
+		(choice
+		 (const :tag "Default map" nil)
+		 ;; Note: Usually we need non-nil attributes if map is t.
+		 (const :tag "No menu" t)
+		 (sexp :tag "Other map"))
+		(plist :inline t :tag "Properties"))
+	  (list :tag "Separator"
+		(const :tag "No command" gmm-ignore)
+		(string :tag "Icon file")
+		(const :tag "No map")
+		(plist :inline t :tag "Properties"))))
 
 ;;;###autoload
 (define-widget 'gmm-tool-bar-zap-list (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
@@ -189,14 +196,15 @@ DEFAULT-MAP specifies the default key map for ICON-LIST."
 		  (fmap (or (nth 2 el) default-map))
 		  (props  (cdr (cdr (cdr el)))) )
 	      ;; command may stem from different from-maps:
-	      (cond ((eq command 'ignore)
-		     ;; FIXME: How to get no tool tip at all?
+	      (cond ((eq command 'gmm-ignore)
+		     ;; The dummy `gmm-ignore', see `gmm-tool-bar-item'
+		     ;; widget.  Suppress tooltip by adding `:enable nil'.
 		     (if (fboundp 'tool-bar-local-item)
 			 (apply 'tool-bar-local-item icon nil nil
-				tool-bar-map props)
+				tool-bar-map :enable nil props)
 		       ;; (tool-bar-local-item ICON DEF KEY MAP &rest PROPS)
 		       ;; (tool-bar-add-item ICON DEF KEY &rest PROPS)
-		       (apply 'tool-bar-add-item icon nil nil props)))
+		       (apply 'tool-bar-add-item icon nil nil :enable nil props)))
 		    ((equal fmap t) ;; Not a menu command
 		     (if (fboundp 'tool-bar-local-item)
 			 (apply 'tool-bar-local-item

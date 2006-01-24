@@ -6740,7 +6740,7 @@ Pre-defined symbols include `message-tool-bar-gnome' and
 ;; The new icons are not yet committed, see
 ;; http://thread.gmane.org/gmane.emacs.gnus.general/61719
 (defcustom message-tool-bar-gnome
-  '((ignore "separator" nil :help "") ;; How to get no tooltip?
+  '((gmm-ignore "separator")
     (message-send-and-exit "send")
     (message-dont-send "save-draft")
     (message-kill-buffer "close") ;; stock_cancel

@@ -1,3 +1,10 @@
+2006-01-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-tool-bar-item): Add "Separator".
+	(gmm-tool-bar-from-list): Suppress tooltip for `gmm-ignore'.
+
+	* message.el (message-tool-bar-gnome): Use gmm-ignore.
+
 2006-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-mime-security-button-menu): New alias.
