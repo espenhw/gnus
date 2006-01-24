@@ -12,7 +12,7 @@
 	(gnus-mime-security-pipe-part): New functions.
 
 	* mm-uu.el (mm-uu-buttonize-original-text-parts): Remove.
-	(mm-uu-dissect-text-parts): Revert 2006-01-23 change.
+	(mm-uu-dissect-text-parts): Revert a part of 2006-01-23 change.
 
 	* mm-decode.el (mm-handle-set-disposition): Remove.
 	(mm-handle-set-description): Remove.
@@ -45,7 +45,8 @@
 2006-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-buttonize-original-text-parts): New variable.
-	(mm-uu-dissect-text-parts): Buttonize original text parts.
+	(mm-uu-dissect-text-parts): Buttonize original text parts; reduce
+	the number of recursive calls.
 
 	* mm-decode.el (mm-handle-set-disposition): New macro.
 	(mm-handle-set-description): New macro.
