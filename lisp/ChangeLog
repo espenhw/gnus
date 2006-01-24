@@ -1,5 +1,8 @@
 2006-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-xmas.el (gnus-mime-security-button-menu): New alias.
+	(gnus-xmas-mime-security-button-menu): New function.
+
 	* gnus-art.el (gnus-mime-security-button-commands): New variable.
 	(gnus-mime-security-button-menu): New definition.
 	(gnus-mime-security-button-map): Use them.
