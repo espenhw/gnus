@@ -430,6 +430,8 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-mark-active-p 'region-exists-p)
   (defalias 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
   (defalias 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
+  (defalias 'gnus-mime-security-button-menu
+    'gnus-xmas-mime-security-button-menu)
   (defalias 'gnus-image-type-available-p 'gnus-xmas-image-type-available-p)
   (defalias 'gnus-put-image 'gnus-xmas-put-image)
   (defalias 'gnus-create-image 'gnus-xmas-create-image)
@@ -780,6 +782,21 @@ XEmacs compatibility workaround."
 		   `("MIME Part"
 		     ,@(mapcar (lambda (c) `[,(caddr c) ,(car c) t])
 			       gnus-mime-button-commands)))))
+    (set-buffer (event-buffer event))
+    (goto-char (event-point event))
+    (funcall (event-function response) (event-object response))))
+
+(defun gnus-xmas-mime-security-button-menu (event prefix)
+  "Construct a context-sensitive menu of security commands."
+  (interactive "e\nP")
+  (let ((response
+	 (get-popup-menu-response
+	  `("Security Part"
+	    ,@(delq nil
+		    (mapcar (lambda (c)
+			      (unless (eq (car c) 'undefined)
+				`[,(caddr c) ,(car c) t]))
+			    gnus-mime-security-button-commands))))))
     (set-buffer (event-buffer event))
     (goto-char (event-point event))
     (funcall (event-function response) (event-object response))))
