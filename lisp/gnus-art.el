@@ -7371,11 +7371,50 @@ For example:
     (?d gnus-tmp-details ?s)
     (?D gnus-tmp-pressed-details ?s)))
 
+(defvar gnus-mime-security-button-commands
+  '((gnus-article-press-button "\r" "Show Detail")
+    (undefined "v")
+    (undefined "t")
+    (undefined "C")
+    (gnus-mime-security-save-part "o" "Save...")
+    (undefined "\C-o")
+    (undefined "r")
+    (undefined "d")
+    (undefined "c")
+    (undefined "i")
+    (undefined "E")
+    (undefined "e")
+    (undefined "p")
+    (gnus-mime-security-pipe-part "|" "Pipe To Command...")
+    (undefined ".")))
+
 (defvar gnus-mime-security-button-map
   (let ((map (make-sparse-keymap)))
     (define-key map gnus-mouse-2 'gnus-article-push-button)
-    (define-key map "\r" 'gnus-article-press-button)
+    (define-key map gnus-down-mouse-3 'gnus-mime-security-button-menu)
+    (dolist (c gnus-mime-security-button-commands)
+      (define-key map (cadr c) (car c)))
     map))
+
+(easy-menu-define
+  gnus-mime-security-button-menu gnus-mime-security-button-map
+  "Security button menu."
+  `("Security Part"
+    ,@(delq nil
+	    (mapcar (lambda (c)
+		      (unless (eq (car c) 'undefined)
+			(vector (caddr c) (car c) :enable t)))
+		    gnus-mime-security-button-commands))))
+
+(defun gnus-mime-security-button-menu (event prefix)
+  "Construct a context-sensitive menu of security commands."
+  (interactive "e\nP")
+  (save-window-excursion
+    (let ((pos (event-start event)))
+      (select-window (posn-window pos))
+      (goto-char (posn-point pos))
+      (gnus-article-check-buffer)
+      (popup-menu gnus-mime-security-button-menu nil prefix))))
 
 (defvar gnus-mime-security-details-buffer nil)
 
@@ -7501,8 +7540,9 @@ For example:
        (when (boundp 'help-echo-owns-message)
 	 (setq help-echo-owns-message t))
        (format
-	"%S: show detail"
-	(aref gnus-mouse-2 0))))))
+	"%S: show detail; %S: more options"
+	(aref gnus-mouse-2 0)
+	(aref gnus-down-mouse-3 0))))))
 
 (defun gnus-mime-display-security (handle)
   (save-restriction
@@ -7520,6 +7560,34 @@ For example:
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))
 	   (set-marker (make-marker) (point-max))))))
+
+(defun gnus-mime-security-run-function (function)
+  "Run FUNCTION with the security part under point."
+  (gnus-article-check-buffer)
+  (let ((data (get-text-property (point) 'gnus-data))
+	buffer handle)
+    (when (and (stringp (car-safe data))
+	       (setq buffer (mm-handle-multipart-original-buffer data))
+	       (setq handle (cadr data)))
+      (if (bufferp (mm-handle-buffer handle))
+	  (progn
+	    (setq handle (cons buffer (copy-sequence (cdr handle))))
+	    (mm-handle-set-undisplayer handle nil))
+	(setq handle (mm-make-handle
+		      buffer
+		      (mm-handle-multipart-ctl-parameter handle 'protocol)
+		      nil nil nil nil nil nil)))
+      (funcall function handle))))
+
+(defun gnus-mime-security-save-part ()
+  "Save the security part under point."
+  (interactive)
+  (gnus-mime-security-run-function 'mm-save-part))
+
+(defun gnus-mime-security-pipe-part ()
+  "Pipe the security part under point to a process."
+  (interactive)
+  (gnus-mime-security-run-function 'mm-pipe-part))
 
 (gnus-ems-redefine)
 
