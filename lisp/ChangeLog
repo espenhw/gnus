@@ -98,7 +98,7 @@
 
 	* nntp.el (nntp-end-of-line): Doc fix.
 
-2005-11-04  Ken Manheimer  <ken.manheimer@gmail.com>
+2006-01-19  Ken Manheimer  <ken.manheimer@gmail.com>
 
 	* pgg-pgp.el (pgg-pgp-encrypt-region, pgg-pgp-decrypt-region)
 	(pgg-pgp-sign-region): Add optional 'passphrase' argument to all
@@ -119,7 +119,7 @@
 	* imap.el (imap-open): Handle case where buffer is a buffer
 	object.
 
-2005-10-29  Ken Manheimer  <ken.manheimer@gmail.com>
+2006-01-19  Ken Manheimer  <ken.manheimer@gmail.com>
 
 	* pgg-gpg.el (pgg-gpg-select-matching-key): Fix: look at the right
 	part of the decoded armor to find the key-identifier.
@@ -145,7 +145,7 @@
 	(pgg-decrypt): Convey provided passphrase in subordinate call to
 	pgg-decrypt-region.
 
-2005-10-20  Ken Manheimer  <ken.manheimer+emacs@gmail.com>
+2006-01-19  Ken Manheimer  <ken.manheimer+emacs@gmail.com>
 
 	* pgg.el (pgg-encrypt-region, pgg-encrypt-symmetric-region)
 	(pgg-encrypt-symmetric, pgg-encrypt, pgg-decrypt-region)
@@ -168,7 +168,7 @@
 	'notruncate' argument, so the passphrase cache can be used
 	reliably with identifiers besides a pgp packet's key id.
 
-2005-10-29  Sascha Wilde  <swilde@sha-bang.de>
+2006-01-19  Sascha Wilde  <swilde@sha-bang.de>
 
 	* pgg-gpg.el (pgg-gpg-encrypt-symmetric-region): New function for
 	symmetric encryption.
