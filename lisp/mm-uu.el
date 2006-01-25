@@ -644,6 +644,7 @@ Assume text has been decoded if DECODED is non-nil."
 						(mm-handle-type handle)
 						'charset))
 				 'gnus-decoded))
+			 (setq decoded t)
 			 (mm-uu-dissect
 			  t (cons type '((charset . gnus-decoded)))))
 			(charset
