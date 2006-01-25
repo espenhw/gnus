@@ -618,30 +618,52 @@ value of `mm-uu-text-plain-type'."
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
 
-(defun mm-uu-dissect-text-parts (handle)
-  "Dissect text parts and put uu handles into HANDLE."
+;;;###autoload
+(defun mm-uu-dissect-text-parts (handle &optional decoded)
+  "Dissect text parts and put uu handles into HANDLE.
+Assume text has been decoded if DECODED is non-nil."
   (let ((buffer (mm-handle-buffer handle)))
     (cond ((stringp buffer)
-	   (mapc 'mm-uu-dissect-text-parts (cdr handle)))
+	   (dolist (elem (cdr handle))
+	     (mm-uu-dissect-text-parts elem decoded)))
 	  ((bufferp buffer)
 	   (let ((type (mm-handle-media-type handle))
 		 (case-fold-search t) ;; string-match
-		 encoding children)
+		 children charset encoding)
 	     (when (and
 		    (stringp type)
 		    ;; Mutt still uses application/pgp even though
 		    ;; it has already been withdrawn.
 		    (string-match "\\`text/\\|\\`application/pgp\\'" type)
-		    (setq children
-			  (with-current-buffer buffer
-			    (if (setq encoding (mm-handle-encoding handle))
-				;; Inherit the multibyteness of the `buffer'.
-				(with-temp-buffer
-				  (insert-buffer-substring buffer)
-				  (mm-decode-content-transfer-encoding
-				   encoding type)
-				  (mm-uu-dissect t (mm-handle-type handle)))
-			      (mm-uu-dissect t (mm-handle-type handle))))))
+		    (setq
+		     children
+		     (with-current-buffer buffer
+		       (cond
+			((or decoded
+			     (eq (setq charset (mail-content-type-get
+						(mm-handle-type handle)
+						'charset))
+				 'gnus-decoded))
+			 (mm-uu-dissect
+			  t (cons type '((charset . gnus-decoded)))))
+			(charset
+			 (setq decoded t)
+			 (mm-with-multibyte-buffer
+			   (insert (mm-decode-string (mm-get-part handle)
+						     charset))
+			   (mm-uu-dissect
+			    t (cons type '((charset . gnus-decoded))))))
+			((setq encoding (mm-handle-encoding handle))
+			 (setq decoded nil)
+			 ;; Inherit the multibyteness of the `buffer'.
+			 (with-temp-buffer
+			   (insert-buffer-substring buffer)
+			   (mm-decode-content-transfer-encoding
+			    encoding type)
+			   (mm-uu-dissect t (list type))))
+			(t
+			 (setq decoded nil)
+			 (mm-uu-dissect t (list type)))))))
 	       ;; Ignore it if a given part is dissected into a single
 	       ;; part of which the type is the same as the given one.
 	       (if (and (<= (length children) 2)
@@ -652,9 +674,10 @@ value of `mm-uu-text-plain-type'."
 		 (setcdr handle (cdr children))
 		 (setcar handle (car children)) ;; "multipart/mixed"
 		 (dolist (elem (cdr children))
-		   (mm-uu-dissect-text-parts elem))))))
+		   (mm-uu-dissect-text-parts elem decoded))))))
 	  (t
-	   (mapc 'mm-uu-dissect-text-parts handle)))))
+	   (dolist (elem handle)
+	     (mm-uu-dissect-text-parts elem decoded))))))
 
 (provide 'mm-uu)
 

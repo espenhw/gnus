@@ -2,7 +2,7 @@
 
 	* mm-uu.el (mm-uu-dissect-text-parts): Ignore it if a given part
 	is dissected into a single part of which the type is the same as
-	the given one.
+	the given one; decode charset.
 
 2006-01-21  Kevin Ryde  <user42@zip.com.au>
 
