@@ -1,5 +1,7 @@
 2006-01-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el: Change some comments WRT tool-bars.
+
 	* gnus-sum.el (gnus-summary-tool-bar)
 	(gnus-summary-tool-bar-gnome, gnus-summary-tool-bar-retro)
 	(gnus-summary-tool-bar-zap-list): New variables.

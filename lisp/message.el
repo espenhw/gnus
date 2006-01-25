@@ -6705,9 +6705,9 @@ which specify the range to operate on."
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
-;; Note: The :set function in the `message-tool-bar*' will only affect _new_
-;; message buffers.  We might add a function that walks thru all message-mode
-;; buffers and force the update.
+;; Note: The :set function in the `message-tool-bar*' variables will only
+;; affect _new_ message buffers.  We might add a function that walks thru all
+;; message-mode buffers and force the update.
 (defun message-tool-bar-update (&optional symbol value)
   "Update message mode toolbar.
 Setter function for custom variables."
@@ -6718,8 +6718,7 @@ Setter function for custom variables."
 	(setq-default message-tool-bar-map nil))
     (message-make-tool-bar t)))
 
-;; The default will be changed to `message-tool-bar-gnome' when the new icons
-;; have been checked in:
+;; The default will be changed when the new icons have been checked in:
 (defcustom message-tool-bar 'message-tool-bar-retro
   "Specifies the message mode tool bar.
 
