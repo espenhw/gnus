@@ -651,7 +651,8 @@ value of `mm-uu-text-plain-type'."
 		 (kill-buffer buffer)
 		 (setcdr handle (cdr children))
 		 (setcar handle (car children)) ;; "multipart/mixed"
-		 (mapc 'mm-uu-dissect-text-parts (cdr children))))))
+		 (dolist (elem (cdr children))
+		   (mm-uu-dissect-text-parts elem))))))
 	  (t
 	   (mapc 'mm-uu-dissect-text-parts handle)))))
 

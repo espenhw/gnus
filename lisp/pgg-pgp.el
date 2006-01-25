@@ -166,7 +166,7 @@ passphrase cache or user."
 	      (pgg-read-passphrase
 	       (format "PGP passphrase for %s: " pgg-pgp-user-id) key)))
 	 (args
-	  '("+verbose=1" "+batchmode" "+language=us" "-f")))
+          '("+verbose=1" "+batchmode" "+language=us" "-f")))
     (pgg-pgp-process-region start end passphrase pgg-pgp-program args)
     (pgg-process-when-success
       (if pgg-cache-passphrase

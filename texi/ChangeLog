@@ -6,6 +6,10 @@
 
 	* gnus.texi (Article Washing): Additions.
 
+2006-01-08  Alex Schroeder  <alex@gnu.org>
+
+	* pgg.texi (Caching passphrase): Rewording.
+
 2006-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (RSS): Document nnrss-wash-html-in-text-plain-parts.
@@ -152,6 +156,12 @@
 	(XVarious): Remove gnus-xmas-logo-color-alist and
 	gnus-xmas-logo-color-style; fix description of gnus-use-toolbar.
 
+2005-11-04 Ken Manheimer  <ken.manheimer@gmail.com>
+
+	* pgg.texi (User Commands): Document additional passphrase
+	argument for pgg-encrypt-*, pgg-decrypt-*, and pgg-sign-* functions.
+	(Backend methods): Likewise for corresponding pgg-scheme-* functions.
+
 2005-11-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Conformity): Fix typo.
@@ -162,6 +172,13 @@
 	* gnus.texi (Group Parameters): Mention new varable
 	gnus-parameters-case-fold-search.
 	(Home Score File): Addition.
+
+2005-10-29  Sascha Wilde  <wilde@sha-bang.de>
+
+	* pgg.texi (How to use): Update the example to add autoload of
+	pgg-encrypt-symmetric-region.
+	(User Commands): Document pgg-encrypt-symmetric-region.
+	(Backend methods): Document pgg-scheme-encrypt-symmetric-region.
 
 2005-10-29  Jari Aalto  <jari.aalto@cante.net>
 

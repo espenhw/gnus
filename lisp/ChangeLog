@@ -272,6 +272,19 @@
 	* gnus-art.el (gnus-article-wash-html-with-w3m): No need to narrow
 	the buffer.
 
+2006-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-cus.el (gnus-group-parameters): Sync posting-style with
+	custom definition of `gnus-posting-styles'.
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bind
+	print-circle.  Suggested by Kalle Olavi Niemitalo <kon@iki.fi>.
+
+2006-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-useful-groups): Use Gmane for ding.  Use
+	nntp for bug archive.
+
 2006-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-article): Fix the way to fill text/plain
@@ -320,6 +333,13 @@
 
 	* dns.el (query-dns): Make sure we check the buffer size before
 	removing tcp headers.
+
+2006-01-08  Chong Yidong  <cyd@stupidchicken.com>
+
+	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p)
+	(spam-group-spam-marks): Delete functions.
+	(spam-list-articles): Just call spam-group-ham-marks directly.
+	(spam-group-ham-marks): Simplify.
 
 2005-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -413,6 +433,9 @@
 
 	* gnus-fun.el (gnus-face-from-file): Decrease quant in smaller
 	steps when < 10.
+
+	* gnus-start.el (gnus-no-server-1): Mention
+	`gnus-level-default-subscribed' in doc string.
 
 2005-12-02  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
 
@@ -550,6 +573,44 @@
 	as a buffer-local variable.  This avoids creating truncated
 	dribble files as a result of a hang up, eg.
 
+2006-01-03  Rodrigo Ventura <yoda@isr.ist.utl.pt>  (tiny change)
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Typo
+	gnus-splash-face -> gnus-splash.  Fixes starting from a TTY in
+	XEmacs.
+
+2005-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-start-draft-setup): Enforce
+	`gnus-draft-mode' for nndraft:drafts at startup.
+
+	* gnus.el (gnus-splash): Change custom group.
+	(gnus-group-get-parameter, gnus-group-parameter-value): Describe
+	allow-list argument.
+
+	* gnus-agent.el (gnus-agent-article-alist-save-format): Format doc
+	string.
+
+2005-12-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-default-article-saver): Add user-defined
+	`function' to custom type.
+
+2005-10-30  Chong Yidong  <cyd@stupidchicken.com>
+
+	* imap.el (imap-open): Handle case where buffer is a buffer
+	object.
+
+2005-11-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-cache.el (gnus-cache-rename-group): Wrap doc strings and
+	long lines.
+	(gnus-cache-delete-group): Wrap doc strings.
+
+	* gnus-agent.el (gnus-agent-rename-group)
+	(gnus-agent-delete-group): Wrap doc strings.
+
+
 2005-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* messagexmas.el (message-use-toolbar): Change the valid values
@@ -580,6 +641,47 @@
 
 	* gnus-sum.el (gnus-article-sort-by-date-reverse): Remove,
 	use (not sort-by-date) instead.
+
+2005-11-30  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-delay.el (gnus-delay-group): Don't autoload.
+	It's useless and could trigger a bug in cus-dep.el causing ldefs-boot
+	to be re-loaded when customizing the `gnus-delay' group.
+
+2005-11-19  Chong Yidong  <cyd@stupidchicken.com>
+
+	* message.el: Revert last changes.
+	(message-insert-citation-line): Use newlines.
+
+2005-11-17  Chong Yidong  <cyd@stupidchicken.com>
+
+	* message.el (message-courtesy-message)
+	(message-mark-insert-begin, message-mark-insert-end)
+	(message-elide-ellipsis, message-cancel-message)
+	(message-add-header, message-change-subject)
+	(message-cross-post-followup-to-header)
+	(message-cross-post-insert-note, message-reduce-to-to-cc)
+	(message-widen-reply, message-delete-not-region)
+	(message-kill-to-signature, message-insert-signature)
+	(message-insert-importance-high, message-insert-importance-low)
+	(message-insert-or-toggle-importance)
+	(message-insert-disposition-notification-to)
+	(message-indent-citation, message-yank-original)
+	(message-cite-original-without-signature, message-cite-original)
+	(message-insert-citation-line, message-position-on-field)
+	(message-fix-before-sending, message-send-mail-partially)
+	(message-send-mail, message-send-mail-with-sendmail)
+	(message-send-mail-with-qmail, message-send-news)
+	(message-check-news-header-syntax, message-generate-headers)
+	(message-insert-courtesy-copy, message-fill-address)
+	(message-fill-header, message-shorten-references)
+	(message-setup-1, message-cancel-news)
+	(message-forward-make-body-plain) (message-forward-make-body-mime)
+	(message-forward-make-body-mml) (message-encode-message-body)
+	(message-forward-make-body-digest-plain)
+	(message-forward-make-body-digest-mime)
+	(message-use-alternative-email-as-from): Insert `hard-newline'
+	instead of ordinary newlines.
 
 2005-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
