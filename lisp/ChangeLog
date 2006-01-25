@@ -1,3 +1,7 @@
+2006-01-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-mode-field-menu): Add "Show hidden Headers".
+
 2006-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-dissect-text-parts): Ignore it if a given part

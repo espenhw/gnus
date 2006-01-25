@@ -2449,6 +2449,8 @@ Prefixed with two \\[universal-argument]'s, display the PGG manual."
     "----"
     ["Sort Headers" message-sort-headers t]
     ["Encode non-ASCII domain names" message-idna-to-ascii-rhs t]
+    ;; We hide `message-hidden-headers' by narrowing the buffer.
+    ["Show Hidden Headers" widen t]
     ["Goto Body" message-goto-body t]
     ["Goto Signature" message-goto-signature t]))
 
