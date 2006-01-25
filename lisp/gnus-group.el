@@ -39,6 +39,7 @@
 (require 'gnus-range)
 (require 'gnus-win)
 (require 'gnus-undo)
+(require 'gmm-utils)
 (require 'time-date)
 (require 'gnus-ems)
 
@@ -995,36 +996,128 @@ simple manner.")
 
     (gnus-run-hooks 'gnus-group-menu-hook)))
 
-(defvar gnus-group-toolbar-map nil)
 
-;; Emacs 21 tool bar.  Should be no-op otherwise.
-(defun gnus-group-make-tool-bar ()
-  (if (and
-       (condition-case nil (require 'tool-bar) (error nil))
-       (fboundp 'tool-bar-add-item-from-menu)
-       (default-value 'tool-bar-mode)
-       (not gnus-group-toolbar-map))
-      (setq gnus-group-toolbar-map
-	    (let ((tool-bar-map (make-sparse-keymap))
-		  (load-path (mm-image-load-path)))
-	      (tool-bar-add-item-from-menu
-	       'gnus-group-get-new-news "get-news" gnus-group-mode-map)
-	      (tool-bar-add-item-from-menu
-	       'gnus-group-get-new-news-this-group "gnntg" gnus-group-mode-map)
-	      (tool-bar-add-item-from-menu
-	       'gnus-group-catchup-current "catchup" gnus-group-mode-map)
-	      (tool-bar-add-item-from-menu
-	       'gnus-group-describe-group "describe-group" gnus-group-mode-map)
-	      (tool-bar-add-item "subscribe" 'gnus-group-subscribe 'subscribe
-				 :help "Subscribe to the current group")
-	      (tool-bar-add-item "unsubscribe" 'gnus-group-unsubscribe
-				 'unsubscribe
-				 :help "Unsubscribe from the current group")
-	      (tool-bar-add-item-from-menu
-	       'gnus-group-exit "exit-gnus" gnus-group-mode-map)
-	      tool-bar-map)))
-  (if gnus-group-toolbar-map
-      (set (make-local-variable 'tool-bar-map) gnus-group-toolbar-map)))
+(defvar gnus-group-tool-bar-map nil)
+
+(defun gnus-group-tool-bar-update (&optional symbol value)
+  "Update group buffer toolbar.
+Setter function for custom variables."
+  (when symbol
+    (set-default symbol value))
+  ;; (setq-default gnus-group-tool-bar-map nil)
+  ;; (use-local-map gnus-group-mode-map)
+  (when (gnus-alive-p)
+    (with-current-buffer gnus-group-buffer
+      (gnus-group-make-tool-bar t))))
+
+;; The default will be changed when the new icons have been checked in:
+(defcustom gnus-group-tool-bar 'gnus-group-tool-bar-retro
+  "Specifies the Gnus group tool bar.
+
+It can be either a list or a symbol refering to a list.  See
+`gmm-tool-bar-from-list' for the format of the list.  The
+default key map is `gnus-group-mode-map'.
+
+Pre-defined symbols include `gnus-group-tool-bar-gnome' and
+`gnus-group-tool-bar-retro'."
+  :type '(choice (const :tag "GNOME style" gnus-group-tool-bar-gnome)
+		 (const :tag "Retro look" gnus-group-tool-bar-retro)
+		 (repeat :tag "User defined list" gmm-tool-bar-item)
+		 (symbol))
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'gnus-group-tool-bar-update
+  :group 'gnus-group)
+
+(defcustom gnus-group-tool-bar-gnome
+  '((gnus-group-post-news "compose")
+    (gnus-group-get-new-news "inbox") ;; Add... nil :visible gnus-plugged ?
+    ;; FIXME: gnus-*-read-group should have a better help text.
+    (gnus-topic-read-group "open" nil :visible gnus-topic-mode)
+    (gnus-group-read-group "open" nil :visible (not gnus-topic-mode))
+    ;; (gnus-group-find-new-groups "???" nil)
+    (gnus-group-save-newsrc "save")
+    (gnus-group-describe-group "describe")
+    (gnus-group-unsubscribe-current-group "toggle-subscription")
+    ;; (gnus-group-subscribe "subscribe" t
+    ;; 			  :help "Subscribe to the current group")
+    ;; (gnus-group-unsubscribe "unsubscribe" t
+    ;; 			    :help "Unsubscribe from the current group")
+    ;;
+    ;; Some useful agent icons?  I don't use the agent so agent users should
+    ;; suggest useful commands:
+    (gnus-group-send-queue "outbox" t
+			   :visible (and gnus-agent gnus-plugged)
+			   :help "Send articles from the queue group")
+    (gnus-agent-toggle-plugged "connect" nil
+     			       :visible (and gnus-agent (not gnus-plugged)))
+    (gnus-agent-toggle-plugged "disconnect" nil
+     			       :visible (and gnus-agent gnus-plugged))
+    ;;
+    (gnus-group-exit "exit-mode")
+    (gnus-info-find-node "help"))
+  "List of functions for the group tool bar (GNOME style).
+
+See `gmm-tool-bar-from-list' for the format of the list."
+  :type '(repeat gmm-tool-bar-item)
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'gnus-group-tool-bar-update
+  :group 'gnus-group)
+
+(defcustom gnus-group-tool-bar-retro
+  '((gnus-group-get-new-news "get-news")
+    (gnus-group-get-new-news-this-group "gnntg")
+    (gnus-group-catchup-current "catchup")
+    (gnus-group-describe-group "describe-group")
+    (gnus-group-subscribe "subscribe" t
+			  :help "Subscribe to the current group")
+    (gnus-group-unsubscribe "unsubscribe" t
+			    :help "Unsubscribe from the current group")
+    (gnus-group-exit "exit-gnus" gnus-group-mode-map))
+  "List of functions for the group tool bar (retro look).
+
+See `gmm-tool-bar-from-list' for the format of the list."
+  :type '(repeat gmm-tool-bar-item)
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'gnus-group-tool-bar-update
+  :group 'gnus-group)
+
+;; FIXME: Moving through the Group buffer (in topic mode) e.g. with C-n
+;; doesn't update the state (enabled/disabled) of the icon
+;; `gnus-group-describe-group'.  After `C-l' the state is correct.
+;; See the following report on emacs-devel
+;; <http://thread.gmane.org/v9acdmrcse.fsf@marauder.physik.uni-ulm.de>:
+;; From: Reiner Steib
+;; Subject: tool bar icons not updated according to :active condition
+;; Newsgroups: gmane.emacs.devel
+;; Date: Mon, 23 Jan 2006 19:59:13 +0100
+;; Message-ID: <v9acdmrcse.fsf@marauder.physik.uni-ulm.de>
+
+(defcustom gnus-group-tool-bar-zap-list t
+  "List of icon items from the global tool bar.
+These items are not displayed in the Gnus group mode tool bar.
+
+See `gmm-tool-bar-from-list' for the format of the list."
+  :type 'gmm-tool-bar-zap-list
+  :version "23.0" ;; No Gnus
+  :initialize 'custom-initialize-default
+  :set 'gnus-group-tool-bar-update
+  :group 'gnus-group)
+
+(defun gnus-group-make-tool-bar (&optional force)
+  "Make a group mode tool bar from `gnus-group-tool-bar'.
+When FORCE, rebuild the tool bar."
+  (when (or (not gnus-group-tool-bar-map) force)
+    (let ((map (when (default-value 'tool-bar-mode)
+		 (let ((load-path (mm-image-load-path)))
+		   (gmm-tool-bar-from-list gnus-group-tool-bar
+					       gnus-group-tool-bar-zap-list
+					       'gnus-group-mode-map)))))
+      (if map
+	  (set (make-local-variable 'tool-bar-map) map))))
+  gnus-group-tool-bar-map)
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -2247,6 +2340,25 @@ If EXCLUDE-GROUP, do not go to that group."
       (goto-char best-point))
     (gnus-group-position-point)
     (and best-point (gnus-group-group-name))))
+
+;; Is there something like an after-point-motion-hook?
+;; (inhibit-point-motion-hooks?).  Is there a tool-bar-update function?
+
+;; (defun gnus-group-menu-bar-update ()
+;;   (let* ((buf (list (with-current-buffer gnus-group-buffer
+;; 		      (current-buffer))))
+;; 	 (name (buffer-name (car buf))))
+;;     (setcdr buf
+;; 	    (if (> (length name) 27)
+;; 		(concat (substring name 0 12)
+;; 			"..."
+;; 			(substring name -12))
+;; 	      name))
+;;     (menu-bar-update-buffers-1 buf)))
+
+;; (defun gnus-group-position-point ()
+;;   (gnus-goto-colon)
+;;   (gnus-group-menu-bar-update))
 
 (defun gnus-group-first-unread-group ()
   "Go to the first group with unread articles."
