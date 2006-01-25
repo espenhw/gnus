@@ -619,9 +619,7 @@ value of `mm-uu-text-plain-type'."
       result)))
 
 (defun mm-uu-dissect-text-parts (handle)
-  "Dissect text parts and put uu handles into HANDLE.
-If `mm-uu-buttonize-original-text-parts' is non-nil, the part that HANDLE
-points will always get a button."
+  "Dissect text parts and put uu handles into HANDLE."
   (let ((buffer (mm-handle-buffer handle)))
     (cond ((stringp buffer)
 	   (mapc 'mm-uu-dissect-text-parts (cdr handle)))
@@ -644,10 +642,16 @@ points will always get a button."
 				   encoding type)
 				  (mm-uu-dissect t (mm-handle-type handle)))
 			      (mm-uu-dissect t (mm-handle-type handle))))))
-	       (kill-buffer buffer)
-	       (setcdr handle (cdr children))
-	       (setcar handle (car children)) ;; "multipart/mixed"
-	       (mapc 'mm-uu-dissect-text-parts (cdr children)))))
+	       ;; Ignore it if a given part is dissected into a single
+	       ;; part of which the type is the same as the given one.
+	       (if (and (<= (length children) 2)
+			(string-equal (mm-handle-media-type (cadr children))
+				      type))
+		   (kill-buffer (mm-handle-buffer (cadr children)))
+		 (kill-buffer buffer)
+		 (setcdr handle (cdr children))
+		 (setcar handle (car children)) ;; "multipart/mixed"
+		 (mapc 'mm-uu-dissect-text-parts (cdr children))))))
 	  (t
 	   (mapc 'mm-uu-dissect-text-parts handle)))))
 
