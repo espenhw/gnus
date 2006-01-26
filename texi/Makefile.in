@@ -49,7 +49,7 @@ dvi: gnus.dvi message.dvi $(REFCARD).dvi emacs-mime.dvi sieve.dvi pgg.dvi sasl.d
 pdf: gnus.pdf message.pdf $(REFCARD).pdf emacs-mime.pdf sieve.pdf pgg.pdf sasl.pdf
 
 .texi.dvi :
-	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
+	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi
 	$(TEXI2DVI) -I $(srcdir) gnustmp.texi
 	cp gnustmp.dvi $*.dvi
 	rm -f gnustmp.*
@@ -58,7 +58,7 @@ pdf: gnus.pdf message.pdf $(REFCARD).pdf emacs-mime.pdf sieve.pdf pgg.pdf sasl.p
 	TEXPICTS=$(srcdir) $(DVIPS) -t $(PAPERTYPE) -f $< > $@
 
 .texi.pdf :
-	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
+	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi
 	$(TEXI2PDF) -I $(srcdir) gnustmp.texi
 	cp gnustmp.pdf $*.pdf
 	rm -f gnustmp.*
@@ -90,9 +90,9 @@ gnus-booklet.pdf: $(REFCARD).tex  $(LOGO).pdf
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
           $(PDFLATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' ;\
 	fi
-	mv $(REFCARD).pdf $@ 
+	mv $(REFCARD).pdf $@
 
-gnus-faq-full-update:  gnus-faq-clean gnus-faq-texi
+gnus-faq-full-update: gnus-faq-clean gnus-faq-texi
 
 gnus-faq.xml:
 	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gnus \
@@ -111,7 +111,7 @@ gnus-faq-texi: gnus-faq.xml xml2texi.sh xml2texi.scm
 gnus-faq-clean:
 	rm -f gnus-faq.xml gnus-faq.*.tmp gnus-faq.texi
 
-clean:
+almost-clean:
 	rm -f *.[cgk]idx *.aux *.cp *.cps *.dvi *.dvi-x *.fn *.ky	\
 	*.kys *.latexi *.log *.orig *.pdf *.pdf-x *.pg *.rej		\
 	*.tmplatexi *.toc *.tp *.vr gnus.*.bak gnus.[cgk]ind gnus.idx	\
@@ -202,11 +202,11 @@ latexboth: gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz
 out:
 	scp gnus-manual-*.ps.gz gnus-manual-*.pdf www@quimby:html/gnus/documents
 
-veryclean: clean
+clean: almost-clean
 	rm -f gnus.dvi gnus.ps texi2latex.elc
 	rm -f gnus-manual-a4.* gnus-manual-standard.*
 
-distclean: veryclean
+distclean: clean
 	rm -f *.orig *.rej *.elc *~ gnus-[0-9] gnus-[0-9][0-9] Makefile
 	rm -f message-[0-9]
 	rm -f $(INFO_DEPS)
@@ -247,7 +247,7 @@ uninstall:
 	  done; \
 	else : ; fi
 
-tmps: 
+tmps:
 	cd ps; make all
 	for j in ps/picons-*.ps; do \
 		i=ps/`basename $$j .ps`; \
@@ -263,7 +263,7 @@ tmps:
 		a="h"; echo -n "\\gnussmiley{$$i}"; fi done > smiley.tex; \
 		if [ -n "$$a" ]; then echo "{$$i}" >> smiley.tex; fi
 pspackage:
-	cd ps; make clean
+	cd ps; make almost-clean
 	tar czvf pspackage.tar.gz gnus-faq.texi gnus.texi herds misc pagestyle.sty picons pixidx.sty postamble.tex ps screen smilies splitindex texi2latex.el xface Makefile README etc
 
 Makefile: $(srcdir)/Makefile.in ../config.status
