@@ -1,3 +1,14 @@
+2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (clean): Clean all subdirectories; remove *~.
+	(elclean): Remove lisp/auto-autoloads.el, lisp/custom-load.el, and
+	lisp/gnus-load.el.
+	(distclean): Don't use sub-make to run clean; use $(MAKE) instead
+	of make.
+
+	* etc/Makefile.in (clean): New rule.
+	(distclean): Use it.
+
 2005-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* GNUS-NEWS: Generated.
