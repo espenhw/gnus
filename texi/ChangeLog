@@ -1,5 +1,7 @@
 2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* ps/Makefile.in (distclean): Remove Makefile.
+
 	* Makefile.in (almost-clean): Rename from clean.
 	(clean): Rename from veryclean.
 	(distclean): Use clean.

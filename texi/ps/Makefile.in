@@ -136,7 +136,7 @@ pdf: $(PDFFILES)
 .ps.pdf:
 	epstopdf $<
 
-.SUFFIXES: .pdf .ps .eps .xbm .xpm .png .tif .gif 
+.SUFFIXES: .pdf .ps .eps .xbm .xpm .png .tif .gif
 
 clean:
 	rm -f $(PSFILES)
@@ -145,6 +145,7 @@ clean:
 veryclean: clean
 
 distclean: clean
+	rm -f Makefile
 
 install:
 

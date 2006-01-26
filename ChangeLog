@@ -7,7 +7,7 @@
 	of make.
 
 	* etc/Makefile.in (clean): New rule.
-	(distclean): Use it.
+	(distclean): Use it; remove Makefile.
 
 2005-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
