@@ -2765,7 +2765,10 @@ See `gmm-tool-bar-from-list' for the format of the list."
 (defun gnus-summary-make-tool-bar (&optional force)
   "Make a summary mode tool bar from `gnus-summary-tool-bar'.
 When FORCE, rebuild the tool bar."
-  (when (or (not gnus-summary-tool-bar-map) force)
+  (when (and (not (featurep 'xemacs))
+	     (boundp 'tool-bar-mode)
+	     tool-bar-mode
+	     (or (not gnus-summary-tool-bar-map) force))
     (let ((map (when (default-value 'tool-bar-mode)
 		 (let ((load-path (mm-image-load-path)))
 		   (gmm-tool-bar-from-list gnus-summary-tool-bar

@@ -1109,7 +1109,12 @@ See `gmm-tool-bar-from-list' for the format of the list."
 (defun gnus-group-make-tool-bar (&optional force)
   "Make a group mode tool bar from `gnus-group-tool-bar'.
 When FORCE, rebuild the tool bar."
-  (when (or (not gnus-group-tool-bar-map) force)
+  (when (and (not (featurep 'xemacs))
+	     (boundp 'tool-bar-mode)
+	     tool-bar-mode
+	     ;; The Gnus 5.10.6 code checked (default-value 'tool-bar-mode).
+	     ;; Why?  --rsteib
+	     (or (not gnus-group-tool-bar-map) force))
     (let ((map (when (default-value 'tool-bar-mode)
 		 (let ((load-path (mm-image-load-path)))
 		   (gmm-tool-bar-from-list gnus-group-tool-bar

@@ -6711,12 +6711,10 @@ which specify the range to operate on."
 (defun message-tool-bar-update (&optional symbol value)
   "Update message mode toolbar.
 Setter function for custom variables."
-  (if symbol
-      ;; When used as ":set" function:
-      (progn
-	(set-default symbol value)
-	(setq-default message-tool-bar-map nil))
-    (message-make-tool-bar t)))
+  (setq-default message-tool-bar-map nil)
+  (when symbol
+    ;; When used as ":set" function:
+    (set-default symbol value)))
 
 ;; The default will be changed when the new icons have been checked in:
 (defcustom message-tool-bar 'message-tool-bar-retro
@@ -6801,7 +6799,10 @@ See `gmm-tool-bar-from-list' for the format of the list."
 (defun message-make-tool-bar (&optional force)
   "Make a message mode tool bar from `message-tool-bar-list'.
 When FORCE, rebuild the tool bar."
-  (when (or (not message-tool-bar-map) force)
+  (when (and (not (featurep 'xemacs))
+	     (boundp 'tool-bar-mode)
+	     tool-bar-mode
+	     (or (not message-tool-bar-map) force))
     (setq message-tool-bar-map
 	  (when (default-value 'tool-bar-mode)
 	    (let ((load-path (mm-image-load-path)))

@@ -1,5 +1,14 @@
 2006-01-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-make-tool-bar): Add checks for XEmacs
+	and tool-bar-mode.
+
+	* gnus-group.el (gnus-group-make-tool-bar): Add checks for XEmacs
+	and tool-bar-mode.
+
+	* message.el (message-tool-bar-update): Simlify.
+	(message-make-tool-bar): Add checks for XEmacs and tool-bar-mode.
+
 	* gnus-sum.el (gnus-summary-tool-bar-update): Check for
 	gnus-summary-buffer.
 	(gnus-summary-tool-bar-gnome): Use "reply-author" icon for
