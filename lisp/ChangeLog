@@ -1,3 +1,8 @@
+2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (clean): New rule.
+	(distclean): Use it.
+
 2006-01-26  Steve Youngs  <steve@sxemacs.org>
 
 	* gmm-utils.el (gmm-tool-bar-item, gmm-tool-bar-zap-list): Don't
