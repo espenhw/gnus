@@ -1,5 +1,10 @@
 2006-01-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-tool-bar-update): Check for
+	gnus-summary-buffer.
+	(gnus-summary-tool-bar-gnome): Use "reply-author" icon for
+	gnus-summary-reply.
+
 	* gmm-utils.el (gmm): Add :version.
 
 2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>

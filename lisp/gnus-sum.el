@@ -2638,16 +2638,17 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 
 ;; Note: The :set function in the `gnus-summary-tool-bar*' variables will only
 ;; affect _new_ message buffers.  We might add a function that walks thru all
-;; message-mode buffers and force the update.
+;; summary-mode buffers and force the update.
 (defun gnus-summary-tool-bar-update (&optional symbol value)
   "Update summary mode toolbar.
 Setter function for custom variables."
-  (if symbol
-      ;; When used as ":set" function:
-      (progn
-	(set-default symbol value)
-	(setq-default gnus-summary-tool-bar-map nil))
-    (gnus-summary-make-tool-bar t)))
+  (setq-default gnus-summary-tool-bar-map nil)
+  (when symbol
+    ;; When used as ":set" function:
+    (set-default symbol value))
+  (when (gnus-buffer-live-p gnus-summary-buffer)
+    (with-current-buffer gnus-summary-buffer
+      (gnus-summary-make-tool-bar))))
 
 ;; The default will be changed when the new icons have been checked in:
 (defcustom gnus-summary-tool-bar 'gnus-summary-tool-bar-retro
@@ -2671,14 +2672,13 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
 (defcustom gnus-summary-tool-bar-gnome
   '((gnus-summary-post-news "compose" nil)
     (gnus-summary-reply-with-original "reply-author")
-    (gnus-summary-reply "reply" nil :visible nil)
+    (gnus-summary-reply "reply-author" nil :visible nil)
     (gnus-summary-followup-with-original "reply-all")
     (gnus-summary-followup "reply-all" nil :visible nil)
     (gnus-summary-mail-forward "forward")
     (gnus-summary-save-article "save") ;;  stock_mail-copy
     (gnus-summary-search-article-forward "search")
     (gnus-summary-print-article "print")
-    ;; gnus-group-read-only-p
     (gnus-summary-mark-as-expirable
      "delete" nil
      :visible (gnus-check-backend-function 'request-expire-articles
