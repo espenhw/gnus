@@ -6,7 +6,7 @@
 	* gnus-group.el (gnus-group-make-tool-bar): Add checks for XEmacs
 	and tool-bar-mode.
 
-	* message.el (message-tool-bar-update): Simlify.
+	* message.el (message-tool-bar-update): Simplify.
 	(message-make-tool-bar): Add checks for XEmacs and tool-bar-mode.
 
 	* gnus-sum.el (gnus-summary-tool-bar-update): Check for
