@@ -33,6 +33,7 @@
 (defgroup gmm nil
   "Utility functions for Gnus, Message and MML"
   :prefix "gmm-"
+  :version "23.0" ;; No Gnus
   :group 'lisp)
 
 ;; Helper functions from `gnus-utils.el': gmm-verbose, gmm-message, gmm-error

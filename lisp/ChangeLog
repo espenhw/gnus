@@ -1,3 +1,7 @@
+2006-01-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm): Add :version.
+
 2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (clean): New rule.
