@@ -41,10 +41,11 @@ info:
 	cd texi && $(MAKE) EMACS="$(EMACS)" all
 
 clean:
-	rm -f */*.orig */*.rej *.orig *.rej
+	for i in lisp texi etc texi/ps; do (cd $$i; $(MAKE) clean); done
+	rm -f *.orig *.rej *~
 
 elclean:
-	rm lisp/*.elc
+	cd lisp && rm -f *.elc auto-autoloads.el custom-load.el gnus-load.el
 
 x:
 	$(MAKE) EMACS=$(XEMACS)
@@ -52,10 +53,8 @@ x:
 xsome:
 	$(MAKE) EMACS="$(XEMACS)" some
 
-distclean:
-	make clean
-	rm -rf *~
-	for i in lisp texi etc texi/ps; do (cd $$i; make distclean); done
+distclean: clean
+	for i in lisp texi etc texi/ps; do (cd $$i; $(MAKE) distclean); done
 	rm -f config.log config.status config.cache Makefile
 
 config.status: $(srcdir)/configure
