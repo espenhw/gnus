@@ -43,7 +43,8 @@ The higher the number, the more messages will flash to say what
 it done.  At zero, it will be totally mute; at five, it will
 display most important messages; and at ten, it will keep on
 jabbering all the time."
-  :type 'integer)
+  :type 'integer
+  :group 'gmm)
 
 ;;;###autoload
 (defun gmm-message (level &rest args)
@@ -110,7 +111,6 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 ;; version will provide customizable tool bar buttons using a different
 ;; interface.
 
-;;;###autoload
 (define-widget 'gmm-tool-bar-item (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
   "Tool bar list item."
   :tag "Tool bar item"
@@ -130,7 +130,6 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 		(const :tag "No map")
 		(plist :inline t :tag "Properties"))))
 
-;;;###autoload
 (define-widget 'gmm-tool-bar-zap-list (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
   "Tool bar zap list."
   :tag "Tool bar zap list"

@@ -1,3 +1,12 @@
+2006-01-26  Steve Youngs  <steve@sxemacs.org>
+
+	* gmm-utils.el (gmm-tool-bar-item, gmm-tool-bar-zap-list): Don't
+	autoload.
+
+2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gmm-utils.el (gmm-verbose): Add :group.
+
 2006-01-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Change some comments WRT tool-bars.
