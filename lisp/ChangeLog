@@ -1,3 +1,9 @@
+2006-01-30  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-type-definition, nnweb-google-parse-1)
+	(nnweb-google-create-mapping, nnweb-google-search): Adapt to
+	current Google Groups.
+
 2006-01-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-make-tool-bar): Add checks for XEmacs
