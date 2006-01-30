@@ -1,3 +1,7 @@
+2006-01-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnweb.el (nnweb-google-parse-1): Clarify some comments.
+
 2006-01-30  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-type-definition, nnweb-google-parse-1)

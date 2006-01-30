@@ -27,12 +27,12 @@
 
 ;; Note: You need to have `w3' installed for some functions to work.
 
-;; FIXME: Due to changes in the HTML output of Gmane, stuff related to
-;; Gmane web groups doesn't work anymore.
+;; FIXME: Due to changes in the HTML output of Gmane, stuff related to Gmane
+;; web groups (`gnus-group-make-web-group') doesn't work anymore.
 
-;; FIXME: Solid web groups are currently broken because ARGS are no
-;; longer passed to nnweb-request-create-group from
-;; gnus-group-make-web-group
+;; FIXME: Solid web groups are currently broken because ARGS are no longer
+;; passed from `gnus-group-make-web-group' to `nnweb-request-create-group'.
+;; See revision 6.96 of `gnus-group.el' (2003-01-06).
 
 ;;; Code:
 
@@ -352,11 +352,13 @@ Valid types include `google', `dejanews', and `gmane'.")
 	    nnweb-group-alist))
     ;; Go through all the article hits on this page.
     (goto-char (point-min))
-    (while (re-search-forward
-	    "a +href=\"/group/\\([^>\"]+\\)/browse_thread/[^>]+#\\([0-9a-f]+\\)" nil t)
+    (while
+	(re-search-forward
+	 "a +href=\"/group/\\([^>\"]+\\)/browse_thread/[^>]+#\\([0-9a-f]+\\)"
+	 nil t)
       (setq Newsgroups (match-string-no-properties 1)
-	    ;; Note: with groups-ng, mid is no longer a common
-	    ;; Message-ID, but some internal id.
+	    ;; Note: Starting with Google Groups 2, `mid' is a Google-internal
+	    ;; ID, not a proper Message-ID.
 	    mid (match-string-no-properties 2)
 	    url (format
 		 (nnweb-definition 'result) Newsgroups mid))
