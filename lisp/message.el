@@ -6702,7 +6702,6 @@ which specify the range to operate on."
 
 ;; Support for toolbar
 (eval-when-compile
-  (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
 ;; Note: The :set function in the `message-tool-bar*' variables will only

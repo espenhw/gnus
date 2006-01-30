@@ -1,3 +1,12 @@
+2006-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el: Bind tool-bar-mode instead of tool-bar-map when
+	compiling.
+
+	* gnus-sum.el: Ditto.
+
+	* message.el: Don't bind tool-bar-map when compiling.
+
 2006-01-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnweb.el (nnweb-google-parse-1): Clarify some comments.
