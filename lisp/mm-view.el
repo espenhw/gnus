@@ -540,7 +540,8 @@
       (buffer-disable-undo)
       (mm-enable-multibyte)
       (insert (cond ((eq charset 'gnus-decoded)
-		     (mm-insert-part handle))
+		     (with-current-buffer (mm-handle-buffer handle)
+		       (buffer-string)))
 		    (coding-system
 		     (mm-decode-coding-string text coding-system))
 		    (charset

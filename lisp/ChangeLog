@@ -1,3 +1,11 @@
+2006-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-uu.el (mm-uu-emacs-sources-extract): Say the part has been
+	decoded.
+	(mm-uu-diff-extract): Ditto.
+
+	* mm-view.el (mm-display-inline-fontify): Get decoded part rightly.
+
 2006-01-31  Kevin Ryde  <user42@zip.com.au>
 
 	* mailcap.el (mailcap-viewer-passes-test): Don't put "(nil t)" into
