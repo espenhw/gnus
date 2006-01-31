@@ -1,7 +1,7 @@
 ;;; nnweb.el --- retrieving articles via web search engines
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-;;   2004, 2005 Free Software Foundation, Inc.
+;;   2004, 2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -29,10 +29,6 @@
 
 ;; FIXME: Due to changes in the HTML output of Gmane, stuff related to Gmane
 ;; web groups (`gnus-group-make-web-group') doesn't work anymore.
-
-;; FIXME: Solid web groups are currently broken because ARGS are no longer
-;; passed from `gnus-group-make-web-group' to `nnweb-request-create-group'.
-;; See revision 6.96 of `gnus-group.el' (2003-01-06).
 
 ;;; Code:
 
@@ -103,7 +99,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 
 (defvoo nnweb-articles nil)
 (defvoo nnweb-buffer nil)
-(defvoo nnweb-group-alist nil)
+(defvar nnweb-group-alist nil)
 (defvoo nnweb-group nil)
 (defvoo nnweb-hashtb nil)
 
@@ -126,25 +122,19 @@ Valid types include `google', `dejanews', and `gmane'.")
 (deffoo nnweb-request-scan (&optional group server)
   (nnweb-possibly-change-server group server)
   (if nnweb-ephemeral-p
-      (setq nnweb-hashtb (gnus-make-hashtable 4095)))
+      (setq nnweb-hashtb (gnus-make-hashtable 4095))
+    (unless nnweb-articles
+      (nnweb-read-overview group)))
   (funcall (nnweb-definition 'map))
   (unless nnweb-ephemeral-p
     (nnweb-write-active)
     (nnweb-write-overview group)))
 
 (deffoo nnweb-request-group (group &optional server dont-check)
-  (nnweb-possibly-change-server nil server)
-  (when (and group
-	     (not (equal group nnweb-group))
-	     (not nnweb-ephemeral-p))
-    (setq nnweb-group group
-	  nnweb-articles nil)
-    (let ((info (assoc group nnweb-group-alist)))
-      (when info
-	(setq nnweb-type (nth 2 info))
-	(setq nnweb-search (nth 3 info))
-	(unless dont-check
-	  (nnweb-read-overview group)))))
+  (nnweb-possibly-change-server group server)
+  (unless (or nnweb-ephemeral-p
+	      dont-check)
+    (nnweb-read-overview group))
   (cond
    ((not nnweb-articles)
     (nnheader-report 'nnweb "No matching articles"))
@@ -208,7 +198,7 @@ Valid types include `google', `dejanews', and `gmane'.")
   (nnweb-possibly-change-server nil server)
   (save-excursion
     (set-buffer nntp-server-buffer)
-    (nnmail-generate-active nnweb-group-alist)
+    (nnmail-generate-active (list (assoc server nnweb-group-alist)))
     t))
 
 (deffoo nnweb-request-update-info (group info &optional server)
@@ -220,7 +210,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 (deffoo nnweb-request-create-group (group &optional server args)
   (nnweb-possibly-change-server nil server)
   (nnweb-request-delete-group group)
-  (push `(,group ,(cons 1 0) ,@args) nnweb-group-alist)
+  (push `(,group ,(cons 1 0)) nnweb-group-alist)
   (nnweb-write-active)
   t)
 
@@ -290,18 +280,16 @@ Valid types include `google', `dejanews', and `gmane'.")
     def))
 
 (defun nnweb-possibly-change-server (&optional group server)
-  (nnweb-init server)
   (when server
     (unless (nnweb-server-opened server)
-      (nnweb-open-server server)))
+      (nnweb-open-server server))
+    (nnweb-init server))
   (unless nnweb-group-alist
     (nnweb-read-active))
   (unless nnweb-hashtb
     (setq nnweb-hashtb (gnus-make-hashtable 4095)))
   (when group
-    (when (and (not nnweb-ephemeral-p)
-	       (equal group nnweb-group))
-      (nnweb-request-group group nil t))))
+    (setq nnweb-group group)))
 
 (defun nnweb-init (server)
   "Initialize buffers and such."
@@ -347,8 +335,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 	Subject Score Date Newsgroups From
 	map url mid)
     (unless active
-      (push (list nnweb-group (setq active (cons 1 0))
-		  nnweb-type nnweb-search)
+      (push (list nnweb-group (setq active (cons 1 0)))
 	    nnweb-group-alist))
     ;; Go through all the article hits on this page.
     (goto-char (point-min))

@@ -1,3 +1,18 @@
+2006-01-31  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-group-alist): Use defvar instead of defvoo,
+	there's only one active file for all servers.
+	(nnweb-request-scan): Make sure nnweb-articles is initialized on
+	solid groups.  Gnus might have used a FAST request to select the
+	group.
+	(nnweb-request-group, nnweb-google-parse-1): nnweb-type and
+	nnweb-search are no longer redundantly kept in the active file.
+	(nnweb-request-list): Don't list bogus groups.  There can only be
+	one.
+	(nnweb-request-create-group): Don't use ARGS.
+	(nnweb-possibly-change-server, nnweb-request-group): Remove some
+	initialisations.  Let nnoo do the work.
+
 2006-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-emacs-sources-extract): Say the part has been
