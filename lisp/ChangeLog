@@ -5,8 +5,8 @@
 	(nnweb-request-scan): Make sure nnweb-articles is initialized on
 	solid groups.  Gnus might have used a FAST request to select the
 	group.
-	(nnweb-request-group, nnweb-google-parse-1): nnweb-type and
-	nnweb-search are no longer redundantly kept in the active file.
+	(nnweb-request-group, nnweb-google-parse-1): Don't keep nnweb-type
+	and nnweb-search redundantly in the active file.
 	(nnweb-request-list): Don't list bogus groups.  There can only be
 	one.
 	(nnweb-request-create-group): Don't use ARGS.
