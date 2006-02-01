@@ -382,8 +382,8 @@
 
 2006-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-group.el (gnus-useful-groups): Use Gmane for ding.  Use
-	nntp for bug archive.
+	* gnus-group.el (gnus-useful-groups): Use Gmane for ding.
+	Use nntp for bug archive.
 
 2006-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -418,7 +418,7 @@
 	in text/plain part.
 	(nnrss-check-group): Don't add excessive newline to dc:subject.
 
-2005-12-19  Mark Plaksin <happy@mcplaksin.org>  (tiny change)
+2005-12-19  Mark Plaksin  <happy@mcplaksin.org>  (tiny change)
 
 	* nnrss.el (nnrss-check-group): Put the RSS dc:subject in the
 	article.
@@ -516,7 +516,7 @@
 
 2005-12-09  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
 
-	* mm-decode.el (mm-display-external): Add lacked cdr.
+	* mm-decode.el (mm-display-external): Add missing cdr.
 
 2005-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -630,7 +630,7 @@
 
 	* flow-fill.el (fill-flowed): Bind adaptive-fill-mode to nil.
 
-2005-11-16  Boris Samorodov <bsam@ipt.ru>  (tiny patch)
+2005-11-16  Boris Samorodov  <bsam@ipt.ru>  (tiny patch)
 
 	* imap.el (imap-kerberos4-open): Ignore SSL stuff.
 
@@ -776,8 +776,8 @@
 	(message-insert-courtesy-copy, message-fill-address)
 	(message-fill-header, message-shorten-references)
 	(message-setup-1, message-cancel-news)
-	(message-forward-make-body-plain) (message-forward-make-body-mime)
-	(message-forward-make-body-mml) (message-encode-message-body)
+	(message-forward-make-body-plain, message-forward-make-body-mime)
+	(message-forward-make-body-mml, message-encode-message-body)
 	(message-forward-make-body-digest-plain)
 	(message-forward-make-body-digest-mime)
 	(message-use-alternative-email-as-from): Insert `hard-newline'
@@ -849,7 +849,7 @@
 	whitespace removed in revision 7.8.  Use concatenated string to
 	protect trailing whitespace.
 
-2005-10-27  Jouni K Seppanen <jks@iki.fi>  (tiny change)
+2005-10-27  Jouni K Seppanen  <jks@iki.fi>  (tiny change)
 
 	* nnimap.el (nnimap-search-uids-not-since-is-evil): Add variable.
 	(nnimap-request-expire-articles): Use it to avoid sending 'UID
@@ -1007,7 +1007,7 @@
 	(gnus-mime-view-part-as-type): Set default instead of
 	initial-input.
 
-2005-10-09  Daniel Brockman <daniel@brockman.se>
+2005-10-09  Daniel Brockman  <daniel@brockman.se>
 
 	* format-spec.el (format-spec): Propagate text properties of % spec.
 
@@ -2478,7 +2478,7 @@
 
 	* imap.el (imap-authenticate): Fix typo.
 
-2005-03-08  Bjorn Solberg <bjorn_ding@hekneby.org>  (tiny change)
+2005-03-08  Bjorn Solberg  <bjorn_ding@hekneby.org>  (tiny change)
 
 	* nnimap.el (nnimap-retrieve-headers-from-server): Sort NOV
 	buffer (since IMAP server might return FETCH response out of
