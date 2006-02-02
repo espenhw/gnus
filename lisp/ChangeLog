@@ -1,3 +1,8 @@
+2006-02-01  Max Froumentin  <max@lapin-bleu.net>  (tiny change)
+
+	* mml.el (mml-generate-mime-1): Correct the order of inline signed
+	parts.
+
 2006-01-31  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-group-alist): Use defvar instead of defvoo,
