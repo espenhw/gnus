@@ -1,3 +1,11 @@
+2006-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2231.el (rfc2231-parse-string): Add missing semicolons to
+	segmented lines of parameter value to cope with Thunderbird 1.5
+	bug (cf. https://bugzilla.mozilla.org/show_bug.cgi?id=323318).
+	Suggested by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
+	(rfc2231-encode-string): Don't make lines exceeding 76 column.
+
 2006-02-01  Max Froumentin  <max@lapin-bleu.net>  (tiny change)
 
 	* mml.el (mml-generate-mime-1): Correct the order of inline signed
