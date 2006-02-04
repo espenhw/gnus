@@ -53,10 +53,6 @@ The list will be on the form
 	  display-name mailbox c display-string parameters
 	  attribute value type subtype number encoded
 	  prev-attribute prev-encoded)
-      ;; Some mailer (e.g. Thunderbird 1.5) doesn't terminate each
-      ;; line with semicolon when folding a long parameter value.
-      (while (string-match "\\([^\t\n\r ;]\\)[\t ]*\r?\n[\t ]+" string)
-	(setq string (replace-match "\\1;\n " nil nil string)))
       (ietf-drums-init (mail-header-remove-whitespace
 			(mail-header-remove-comments string)))
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
@@ -239,7 +235,7 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	    (forward-char 1)))
 	(goto-char (point-min))
 	(if (not broken)
-	    (insert param "*=")
+	    (insert "\n " param "*=")
 	  (while (not (eobp))
 	    (insert (if (>= num 0) " " "\n ")
 		    param "*" (format "%d" (incf num)) "*=")
