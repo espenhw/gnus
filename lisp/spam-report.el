@@ -50,7 +50,11 @@ instead."
   :group 'spam-report)
 
 (defcustom spam-report-gmane-use-article-number t
-  "Whether the article number (faster!) or the header should be used."
+  "Whether the article number (faster!) or the header should be used.
+
+You must set this to nil if you don't read Gmane groups directly
+from news.gmane.org, e.g. when using local newsserver such as
+leafnode."
   :type 'boolean
   :group 'spam-report)
 
@@ -158,18 +162,20 @@ Reports is as ham when HAM is set."
 	    (setq field (or (gnus-fetch-field "X-Report-Spam")
 			    (gnus-fetch-field "X-Report-Unspam")
 			    (gnus-fetch-field "Archived-At")))
-	    (setq host (progn
-			 (string-match
-			  (concat "http://\\([a-z]+\\.gmane\\.org\\)"
-				  "\\(/[^:/]+[:/][0-9]+\\)")
-			  field)
-			 (match-string 1 field)))
-	    (setq report (match-string 2 field))
-	    (when (string-equal "permalink.gmane.org" host)
-	      (setq host rpt-host)
-	      (setq report (gnus-replace-in-string
-			    report "/\\([0-9]+\\)$" ":\\1")))
-	    (setq url (format "http://%s%s" host report))
+	    (when (stringp field)
+	      (setq host
+		    (progn
+		      (string-match
+		       (concat "http://\\([a-z]+\\.gmane\\.org\\)"
+			       "\\(/[^:/]+[:/][0-9]+\\)")
+		       field)
+		      (match-string 1 field)))
+	      (setq report (match-string 2 field))
+	      (when (string-equal "permalink.gmane.org" host)
+		(setq host rpt-host)
+		(setq report (gnus-replace-in-string
+			      report "/\\([0-9]+\\)$" ":\\1")))
+	      (setq url (format "http://%s%s" host report)))
 	    (if (not (and host report url))
 		(gnus-message
 		 3 "Could not find a spam report header in article %d..."
