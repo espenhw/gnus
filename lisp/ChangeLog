@@ -1,5 +1,13 @@
 2006-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nnfolder.el (nnfolder-insert-newsgroup-line): Use
+	message-make-date instead of current-time-string.
+
+	* mm-view.el (mm-inline-message): Don't set gnus-newsgroup-charset
+	to gnus-decoded which mm-uu might set.
+
+2006-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* rfc2231.el (rfc2231-parse-string): Sort segmented parameters;
 	don't decode quoted parameters; remove misimported Emacs code.
 	Suggested by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
