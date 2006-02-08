@@ -42,6 +42,10 @@
 	* rfc2231.el (rfc2231-parse-string): Revert 2006-02-03 change.
 	(rfc2231-encode-string): Make param*=value always begin with LWSP.
 
+2006-02-05  Romain Francoise  <romain@orebokech.com>
+
+	Update copyright notices of all files in the gnus directory.
+
 2006-02-03  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-request-group): Avoid growing overview files.

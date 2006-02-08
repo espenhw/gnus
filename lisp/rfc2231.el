@@ -56,6 +56,10 @@ function fails in parsing of parameters."
 	  display-name mailbox c display-string parameters
 	  attribute value type subtype number encoded
 	  prev-attribute prev-encoded)
+      ;; Some mailer (e.g. Thunderbird 1.5) doesn't terminate each
+      ;; line with semicolon when folding a long parameter value.
+      (while (string-match "\\([^\t\n\r ;]\\)[\t ]*\r?\n[\t ]+" string)
+	(setq string (replace-match "\\1;\n " nil nil string)))
       (ietf-drums-init (mail-header-remove-whitespace
 			(mail-header-remove-comments string)))
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
@@ -259,12 +263,12 @@ the result of this function."
 	    (forward-line 1))))
        (spacep
 	(goto-char (point-min))
-	(insert param "=\"")
+	(insert "\n " param "=\"")
 	(goto-char (point-max))
 	(insert "\""))
        (t
 	(goto-char (point-min))
-	(insert param "=")))
+	(insert "\n " param "=")))
       (buffer-string))))
 
 (provide 'rfc2231)
