@@ -2,6 +2,7 @@
 
 	* gnus.texi (Mail Spool): nnml-use-compressed-files can be a
 	string.
+	(Gnus Versions): Add history beyond start of Oort.
 
 	* gnus-news.texi: Add nnml-use-compressed-files.
 
