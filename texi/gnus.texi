@@ -15190,9 +15190,12 @@ The name of the @dfn{marks} files.  The default is @file{.marks}.
 @item nnml-use-compressed-files
 @vindex nnml-use-compressed-files
 If non-@code{nil}, @code{nnml} will allow using compressed message
-files.  This variable requires @code{auto-compression-mode} to be
-enabled (@pxref{Compressed Files, ,Compressed Files, emacs, The Emacs
-Manual})
+files.  This requires @code{auto-compression-mode} to be enabled
+(@pxref{Compressed Files, ,Compressed Files, emacs, The Emacs Manual}).
+If the value of @code{nnml-use-compressed-files} is a string, it is used
+as the file extension specifying the comression program.  You can set it
+to @samp{.bz2} if your Emacs supports it.  A value of @code{t} is
+equivalent to @samp{.gz}.
 
 @item nnml-compressed-files-size-threshold
 @vindex nnml-compressed-files-size-threshold

@@ -1,3 +1,8 @@
+2006-02-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Mail Spool): nnml-use-compressed-files can be a
+	string.
+
 2006-01-31  Romain Francoise  <romain@orebokech.com>
 
 	* message.texi: Update copyright year.
@@ -182,7 +187,7 @@
 
 2005-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus.texi (Group Parameters): Mention new varable
+	* gnus.texi (Group Parameters): Mention new variable
 	gnus-parameters-case-fold-search.
 	(Home Score File): Addition.
 
