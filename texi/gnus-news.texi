@@ -162,6 +162,9 @@ intermediate host @samp{bar.example.com} from next time.
 @item You can change the location of XEmacs' toolbars in Gnus buffers.
 See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 
+@item The nnml back end allows other compression programs beside @file{gzip}
+for compressed message files.  @xref{Mail Spool}.
+
 @end itemize
 @c gnus-news.texi ends here.
 
