@@ -2612,14 +2612,14 @@ Recurse into multiparts."
 	(cond ((and (bufferp (car handle))
 		    (string-match "text/html" (car (mm-handle-type handle))))
 	       (let ((tmp-file (mm-make-temp-file
-				(format "gnus-html-%s-"
-					(user-login-name)) nil ".html")))
+				;; Do we need to care for 8.3 filenames?
+				(format "mm-") nil ".html")))
 		 (mm-save-part-to-file handle tmp-file)
 		 (browse-url tmp-file)
 		 (setq showed t)))
 	      ;; If multipart, recurse
 	      ((and (stringp (car handle))
-		    (string-match "^multipart/" (substring (car handle) 0 10))
+		    (string-match "^multipart/" (car handle))
 		    (setq showed (or showed (hs-show-html-list handle))))))))
     showed))
 

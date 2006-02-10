@@ -1,5 +1,8 @@
 2006-02-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-article-browse-html-parts): Remove useless
+	`substring'.  Shorten tmp-file name.
+
 	* gnus.el: Remove bogus comment.
 
 2006-02-10  Hynek Schlawack  <hynek@ularx.de>
