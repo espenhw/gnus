@@ -86,7 +86,7 @@
 
 	Update copyright notices of all files in the gnus directory.
 
-2006-02-03  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
+2006-02-03  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-request-group): Avoid growing overview files.
 
@@ -103,7 +103,7 @@
 	* mml.el (mml-generate-mime-1): Correct the order of inline signed
 	parts.
 
-2006-01-31  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
+2006-01-31  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-group-alist): Use defvar instead of defvoo,
 	there's only one active file for all servers.
@@ -146,7 +146,7 @@
 
 	* nnweb.el (nnweb-google-parse-1): Clarify some comments.
 
-2006-01-30  Andreas Seltenreich <uwi7@stud.uni-karlsruhe.de>
+2006-01-30  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-type-definition, nnweb-google-parse-1)
 	(nnweb-google-create-mapping, nnweb-google-search): Adapt to
@@ -771,7 +771,7 @@
 	as a buffer-local variable.  This avoids creating truncated
 	dribble files as a result of a hang up, eg.
 
-2006-01-03  Rodrigo Ventura <yoda@isr.ist.utl.pt>  (tiny change)
+2006-01-03  Rodrigo Ventura  <yoda@isr.ist.utl.pt>  (tiny change)
 
 	* gnus-xmas.el (gnus-xmas-group-startup-message): Typo
 	gnus-splash-face -> gnus-splash.  Fixes starting from a TTY in
@@ -2561,7 +2561,7 @@
 
 	* nnimap.el (nnimap-retrieve-headers-from-server): Fix last change.
 
-2005-03-10  Arne J,Ax(Brgensen <arne@arnested.dk>  (tiny change)
+2005-03-10  Arne J,Ax(Brgensen  <arne@arnested.dk>  (tiny change)
 
 	* nnimap.el (nnimap-retrieve-headers-from-server): Fix off-by-one flaw.
 
@@ -2570,7 +2570,7 @@
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Add
 	gnus-expert-user to default.
 
-2005-03-08  Juergen Kreileder <jk@blackdown.de>  (tiny change)
+2005-03-08  Juergen Kreileder  <jk@blackdown.de>  (tiny change)
 
 	* nnimap.el (nnimap-open-server): Ditto.
 
@@ -2729,7 +2729,7 @@
 
 	* mml.el (mml-parse-1): Use them.
 
-2005-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
+2005-02-21  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* nnrss.el (nnrss-verbose): Removed.
 	(nnrss-request-group): Use `nnheader-message' instead.
@@ -2793,7 +2793,7 @@
 	mml-smime-get-dns-ldap.
 	(mml-smime-encrypt-query): Use new function.  Default to ldap.
 
-2005-02-14  Arne J,Ax(Brgensen <arne@arnested.dk>
+2005-02-14  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* smime.el: Require smime-ldap.
 	(smime-ldap-host-list): New variable.
@@ -2980,12 +2980,12 @@
 	* mml.el (mml-generate-mime-1): Convert string into unibyte when
 	inserting " *mml*" buffer's contents into a unibyte temp buffer.
 
-2005-01-24  Harald Meland <harald.meland@usit.uio.no>  (tiny change)
+2005-01-24  Harald Meland  <harald.meland@usit.uio.no>  (tiny change)
 
 	* mail-source.el (mail-source-fetch-imap): Search for ^From case
 	sensitively.
 
-2005-01-21  Derek Atkins <warlord@MIT.EDU>  (tiny change)
+2005-01-21  Derek Atkins  <warlord@MIT.EDU>  (tiny change)
 
 	* pgg-pgp.el (pgg-pgp-decrypt-region): Use passphrase cache.
 
@@ -6065,13 +6065,13 @@
 	* gnus-art.el (gnus-article-read-summary-keys): Restore new
 	window-start and hscroll to summary window.
 
-2004-03-12  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-12  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-convert-old-newsrc): Only write the
 	conversion message to newsrc-dribble when an actual conversion is
 	performed.
 
-2004-03-10  Malcolm Purvis <malcolmpurvis@optushome.com.au>  (tiny change)
+2004-03-10  Malcolm Purvis  <malcolmpurvis@optushome.com.au>  (tiny change)
 
 	* spam-stat.el (spam-stat-coding-system): Use mm-coding-system-p.
 
@@ -6083,7 +6083,7 @@
 	* gnus-art.el (gnus-mime-save-part-and-strip): Use it.
 	(gnus-mime-delete-part): Use it.
 
-2004-03-09  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-read-local): Bind
 	nnheader-file-coding-system to gnus-agent-file-coding-system to
@@ -6099,7 +6099,7 @@
 	signaling an error; don't use mm-multiple-handles.
 	(gnus-mime-delete-part): Ditto.
 
-2004-03-08  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-08  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-read-agentview): Removed support for
 	old file versions.
@@ -6164,7 +6164,7 @@
 	* gnus.el (spam-autodetect-methods): add spam-use-gmane-xref as
 	an autodetect method
 
-2004-03-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-int.el (gnus-request-accept-article): Inform the agent that
 	articles are being added to a group.
@@ -6211,7 +6211,7 @@
 
 	* uudecode.el: Don't autoload executable-find.
 
-2004-03-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-file-header-cache): Removed.
 	(gnus-agent-possibly-alter-active): Avoid null in numeric
@@ -6243,7 +6243,7 @@
 
 	* gnus-cus.el (gnus-agent-customize-category): Mismatched paren.
 
-2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-02  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-cus.el (gnus-agent-customize-category): Removed
 	ignore-errors macro reference that required cl to be loaded at
@@ -6323,11 +6323,11 @@
 
 	* flow-fill.el: Typo.
 
-2004-02-26  Andrew Cohen <cohen@andy.bu.edu>
+2004-02-26  Andrew Cohen  <cohen@andy.bu.edu>
 
 	* spam-wash.el: New file.
 
-2004-02-26  Mark A. Hershberger <mah@everybody.org>
+2004-02-26  Mark A. Hershberger  <mah@everybody.org>
 
 	* nnrss.el (nnrss-opml-import, nnrss-opml-export): New functions.
 
@@ -6639,7 +6639,7 @@
 	* spam-stat.el (spam-stat-process-directory-age): New option.
 	(spam-stat-process-directory): Use it.
 
-2004-01-24  Hiroshi Fujishima <pooh@nature.tsukuba.ac.jp>  (tiny change)
+2004-01-24  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>  (tiny change)
 
 	* spam-stat.el (spam-stat-reduce-size): Set spam-stat-dirty.
 	(spam-stat-save): Accept prefix argument.
@@ -6671,7 +6671,7 @@
 
 	* gnus-gl.el: Remove.
 
-2004-01-23  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-01-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-adjust-marks): Now correctly handles a list of
 	marks consisting of a single range {for example, (3 . 5)} rather
@@ -6687,7 +6687,7 @@
 	* mm-util.el (mm-charset-synonym-alist): Add ks_c_5601-1987.
 	Remove obsolete entries for big5 and gb2312.
 
-2004-01-22  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-01-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-adjust-marks): Avoid splicing null INTO the
 	uncompressed list.
@@ -6700,7 +6700,7 @@
 	* gnus-util.el (gnus-fetch-field): Don't bind case-fold-search
 	here -- it's done in message-fetch-field.
 
-2004-01-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-01-21  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-queue-mail,
 	gnus-agent-prompt-send-queue): New variables.

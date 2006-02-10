@@ -117,7 +117,7 @@
 
 	* etc/gnus/news-server.ast: Use library validation.
 
-2004-03-08  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-08  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* make.bat: Make sure that gnus-load.el and sieve are writable to
 	avoid breakage.
@@ -436,7 +436,7 @@
 
 	* configure.in: Use it.
 
-2001-01-15  Jesper Harder <harder@ifa.au.dk>
+2001-01-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* make.bat: Fix doc.
 
@@ -444,11 +444,11 @@
 
 	* configure.in: Add etc/Makefile.
 
-2000-12-20  Jesper Harder <jesper_harder@hotmail.com>
+2000-12-20  Jesper Harder  <jesper_harder@hotmail.com>
 
 	* make.bat: set max-lisp-eval-depth.
 
-2000-10-12  Jesper Harder <jesper_harder@hotmail.com>
+2000-10-12  Jesper Harder  <jesper_harder@hotmail.com>
 
 	* make.bat: Makes it possible to generate the Info files on
 	windows again.
