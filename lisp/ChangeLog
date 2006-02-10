@@ -533,13 +533,6 @@
 	* dns.el (query-dns): Make sure we check the buffer size before
 	removing tcp headers.
 
-2006-01-08  Chong Yidong  <cyd@stupidchicken.com>
-
-	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p)
-	(spam-group-spam-marks): Delete functions.
-	(spam-list-articles): Just call spam-group-ham-marks directly.
-	(spam-group-ham-marks): Simplify.
-
 2005-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-delete-text-of-type): Enable it to
