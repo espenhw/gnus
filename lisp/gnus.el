@@ -4301,9 +4301,6 @@ current display is used."
 		       (delete-frame gnus-other-frame-object))
 		     (setq gnus-other-frame-object nil)))))))
 
-;;(setq thing ?				; this is a comment
-;;      more 'yes)
-
 ;;;###autoload
 (defun gnus (&optional arg dont-connect slave)
   "Read network news.
