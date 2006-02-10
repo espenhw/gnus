@@ -2705,7 +2705,7 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
     (gnus-summary-insert-new-articles "inbox")
     ;;
     (gnus-summary-exit "exit-mode")
-    ;;
+    ;; (customize-group 'gnus-summary) "preferences"
     (gnus-info-find-node "help"))
   "List of functions for the summary tool bar (GNOME style).
 
@@ -2769,11 +2769,10 @@ When FORCE, rebuild the tool bar."
 	     (boundp 'tool-bar-mode)
 	     tool-bar-mode
 	     (or (not gnus-summary-tool-bar-map) force))
-    (let ((map (when (default-value 'tool-bar-mode)
-		 (let ((load-path (mm-image-load-path)))
-		   (gmm-tool-bar-from-list gnus-summary-tool-bar
-					       gnus-summary-tool-bar-zap-list
-					       'gnus-summary-mode-map)))))
+    (let* ((load-path (mm-image-load-path))
+	   (map (gmm-tool-bar-from-list gnus-summary-tool-bar
+					gnus-summary-tool-bar-zap-list
+					'gnus-summary-mode-map)))
       (when map
 	;; Need to set `gnus-summary-tool-bar-map' because `gnus-article-mode'
 	;; uses it's value.

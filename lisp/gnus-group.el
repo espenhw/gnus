@@ -1115,11 +1115,10 @@ When FORCE, rebuild the tool bar."
 	     ;; The Gnus 5.10.6 code checked (default-value 'tool-bar-mode).
 	     ;; Why?  --rsteib
 	     (or (not gnus-group-tool-bar-map) force))
-    (let ((map (when (default-value 'tool-bar-mode)
-		 (let ((load-path (mm-image-load-path)))
-		   (gmm-tool-bar-from-list gnus-group-tool-bar
-					       gnus-group-tool-bar-zap-list
-					       'gnus-group-mode-map)))))
+    (let* ((load-path (mm-image-load-path))
+	   (map (gmm-tool-bar-from-list gnus-group-tool-bar
+					gnus-group-tool-bar-zap-list
+					'gnus-group-mode-map)))
       (if map
 	  (set (make-local-variable 'tool-bar-map) map))))
   gnus-group-tool-bar-map)

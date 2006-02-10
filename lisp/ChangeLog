@@ -1,5 +1,12 @@
 2006-02-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-make-tool-bar): Remove duplicate check
+	for `tool-bar-mode' and don't check it's default-value.
+
+	* gnus-sum.el (gnus-summary-make-tool-bar): Ditto.
+
+	* message.el (message-make-tool-bar): Ditto.
+
 	* gnus-art.el (gnus-article-browse-html-parts): Remove useless
 	`substring'.  Shorten tmp-file name.
 

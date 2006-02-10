@@ -6803,11 +6803,10 @@ When FORCE, rebuild the tool bar."
 	     tool-bar-mode
 	     (or (not message-tool-bar-map) force))
     (setq message-tool-bar-map
-	  (when (default-value 'tool-bar-mode)
-	    (let ((load-path (mm-image-load-path)))
-	      (gmm-tool-bar-from-list message-tool-bar
-					  message-tool-bar-zap-list
-					  'message-mode-map)))))
+	  (let ((load-path (mm-image-load-path)))
+	    (gmm-tool-bar-from-list message-tool-bar
+				    message-tool-bar-zap-list
+				    'message-mode-map))))
   message-tool-bar-map)
 
 ;;; Group name completion.
