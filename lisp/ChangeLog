@@ -1,3 +1,9 @@
+2006-02-10  Hynek Schlawack  <hynek@ularx.de>
+
+	* gnus-art.el (gnus-article-browse-html-parts): New function.
+	(gnus-article-browse-html-article): New function for viewing html
+	articles with a browser.
+
 2006-02-09  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Don't convert line-endings

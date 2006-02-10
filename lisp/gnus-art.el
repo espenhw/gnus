@@ -2600,6 +2600,47 @@ charset defined in `gnus-summary-show-article-charset-alist' is used."
 	   "-I" (symbol-name charset) "-O" (symbol-name charset))))
     (mm-inline-wash-with-stdin nil "w3m" "-dump" "-T" "text/html")))
 
+(defun gnus-article-browse-html-parts (list)
+  "View all \"text/html\" parts from LIST.
+Recurse into multiparts."
+  ;; Internal function used by `gnus-article-browse-html-article'.
+  (let ((showed))
+    ;; Find and show the html-parts.
+    (dolist (handle list)
+      ;; If HTML, show it:
+      (when (listp handle)
+	(cond ((and (bufferp (car handle))
+		    (string-match "text/html" (car (mm-handle-type handle))))
+	       (let ((tmp-file (mm-make-temp-file
+				(format "gnus-html-%s-"
+					(user-login-name)) nil ".html")))
+		 (mm-save-part-to-file handle tmp-file)
+		 (browse-url tmp-file)
+		 (setq showed t)))
+	      ;; If multipart, recurse
+	      ((and (stringp (car handle))
+		    (string-match "^multipart/" (substring (car handle) 0 10))
+		    (setq showed (or showed (hs-show-html-list handle))))))))
+    showed))
+
+;; TODO: Key binding; Remove temp files.
+(defun gnus-article-browse-html-article ()
+  "View \"text/html\" parts of the current article with a WWW browser."
+  (interactive)
+  (save-window-excursion
+    ;; Open raw article and select the buffer
+    (gnus-summary-show-article t)
+    (gnus-summary-select-article-buffer)
+    (let ((parts (mm-dissect-buffer t t)))
+      ;; If singlepart, enforce a list.
+      (when (and (bufferp (car parts))
+		 (stringp (car (mm-handle-type parts))))
+	(setq parts (list parts)))
+      ;; Process the list
+      (unless (gnus-article-browse-html-parts parts)
+	(gnus-error 3 "Mail doesn't contain a \"text/html\" part!"))
+      (gnus-summary-show-article))))
+
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
 The `gnus-list-identifiers' variable specifies what to do."
