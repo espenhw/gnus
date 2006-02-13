@@ -99,7 +99,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 
 (defvoo nnweb-articles nil)
 (defvoo nnweb-buffer nil)
-(defvar nnweb-group-alist nil)
+(defvoo nnweb-group-alist nil)
 (defvoo nnweb-group nil)
 (defvoo nnweb-hashtb nil)
 
@@ -309,22 +309,26 @@ Valid types include `google', `dejanews', and `gmane'.")
 
 (defun nnweb-google-wash-article ()
   ;; We have Google's masked e-mail addresses here.  :-/
-  (let ((case-fold-search t))
+  (let ((case-fold-search t)
+	(start-re "<pre>\n *")
+	(end-re "\n *</pre>"))
     (goto-char (point-min))
     (if (save-excursion
 	  (or (re-search-forward "The requested message.*could not be found."
 				 nil t)
-	      (not (and (re-search-forward "^<pre>" nil t)
-			(re-search-forward "^</pre>" nil t)))))
+	      (not (and (re-search-forward start-re nil t)
+			(re-search-forward end-re nil t)))))
 	;; FIXME: Don't know how to indicate "not found".
 	;; Should this function throw an error?  --rsteib
 	(progn
 	  (gnus-message 3 "Requested article not found")
 	  (erase-buffer))
       (delete-region (point-min)
-		     (1+ (re-search-forward "^<pre>" nil t)))
+		     (re-search-forward start-re))
       (goto-char (point-min))
-      (delete-region (- (re-search-forward "^</pre>" nil t) (length "</pre>"))
+      (delete-region (progn
+		       (re-search-forward end-re)
+		       (match-beginning 0))
 		     (point-max))
       (mm-url-decode-entities))))
 

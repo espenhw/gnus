@@ -1,3 +1,8 @@
+2006-02-13  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
+
+        * nnweb.el (nnweb-google-wash-article): Update regexps.
+        (nnweb-group-alist): Use defvoo instead of defvar.
+
 2006-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnoo.el (nnoo-declare): Don't generate duplicate entries when
