@@ -1,3 +1,10 @@
+2006-02-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-browse-html-parts):
+	`hs-show-html-list' should read `gnus-article-browse-html-parts'.
+	Don't use suffix argument for mm-make-temp-file for Emacs 21
+	compatibility.  Remove useless `format'.
+
 2006-02-13  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
 
         * nnweb.el (nnweb-google-wash-article): Update regexps.
