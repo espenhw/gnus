@@ -1247,6 +1247,7 @@ Will not return a nil score."
     (gnus-group-spam-exit-processor-stat         spam spam-use-stat)
     (gnus-group-spam-exit-processor-spamoracle   spam spam-use-spamoracle)
     (gnus-group-spam-exit-processor-spamassassin spam spam-use-spamassassin)
+    (gnus-group-spam-exit-processor-report-gmane spam spam-use-gmane) ;; Buggy?
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
     (gnus-group-ham-exit-processor-bsfilter      ham spam-use-bsfilter)
@@ -2614,7 +2615,8 @@ REMOVE not nil, remove the ADDRESSES."
   (if score				; scoring mode
       (let ((header (message-fetch-field spam-spamassassin-spam-status-header)))
 	(when header
-	  (if (string-match "hits=\\(-?[0-9.]+\\)" header)
+	  (if (string-match "\\(?:score\\|hits\\)=\\(-?[0-9.]+\\)" header)
+	      ;; "score" for Spamassassin 3.0 or later.
 	      (match-string 1 header)
 	    "0")))
     ;; spam detection mode

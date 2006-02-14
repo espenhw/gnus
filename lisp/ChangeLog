@@ -1,3 +1,10 @@
+2006-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam.el (spam-check-spamassassin-headers): Adapt format for
+	Spamassassin 3.0 or later.  Reported by ARISAWA Akihiro
+	<ari@mbf.ocn.ne.jp>.
+	(spam-list-of-processors): Add spam-use-gmane.
+
 2006-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-make-temp-file): Import the Emacs 22 version of
