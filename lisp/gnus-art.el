@@ -2611,10 +2611,9 @@ Recurse into multiparts."
       (when (listp handle)
 	(cond ((and (bufferp (car handle))
 		    (string-match "text/html" (car (mm-handle-type handle))))
-	       (let ((tmp-file
-		      (concat (mm-make-temp-file
-			       ;; Do we need to care for 8.3 filenames?
-			       (format "mm-") nil)  ".html")))
+	       (let ((tmp-file (mm-make-temp-file
+				;; Do we need to care for 8.3 filenames?
+				"mm-" nil ".html")))
 		 (mm-save-part-to-file handle tmp-file)
 		 (browse-url tmp-file)
 		 (setq showed t)))

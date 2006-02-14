@@ -100,16 +100,6 @@
 	   (lambda (ch) (mm-string-as-multibyte (char-to-string ch)))
 	   string "")))
      (multibyte-string-p . ignore)
-     ;; It is not a MIME function, but some MIME functions use it.
-     (make-temp-file . (lambda (prefix &optional dir-flag)
-			 (let ((file (expand-file-name
-				      (make-temp-name prefix)
-				      (if (fboundp 'temp-directory)
-					  (temp-directory)
-					temporary-file-directory))))
-			   (if dir-flag
-			       (make-directory file))
-			   file)))
      (insert-byte . insert-char)
      (multibyte-char-to-unibyte . identity)
      (special-display-p
@@ -1052,6 +1042,71 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
 		     inhibit-file-name-handlers)
 	   inhibit-file-name-handlers)))
     (write-region start end filename append visit lockname)))
+
+;; It is not a MIME function, but some MIME functions use it.
+(if (and (fboundp 'make-temp-file)
+	 (ignore-errors
+	   (let ((def (symbol-function 'make-temp-file)))
+	     (and (byte-code-function-p def)
+		  (setq def (if (fboundp 'compiled-function-arglist)
+				;; XEmacs
+				(eval (list 'compiled-function-arglist def))
+			      (aref def 0)))
+		  (>= (length def) 4)
+		  (eq (nth 3 def) 'suffix)))))
+    (defalias 'mm-make-temp-file 'make-temp-file)
+  ;; Stolen (and modified for XEmacs) from Emacs 22.
+  (defun mm-make-temp-file (prefix &optional dir-flag suffix)
+    "Create a temporary file.
+The returned file name (created by appending some random characters at the end
+of PREFIX, and expanding against `temporary-file-directory' if necessary),
+is guaranteed to point to a newly created empty file.
+You can then use `write-region' to write new data into the file.
+
+If DIR-FLAG is non-nil, create a new empty directory instead of a file.
+
+If SUFFIX is non-nil, add that at the end of the file name."
+    (let ((umask (default-file-modes))
+	  file)
+      (unwind-protect
+	  (progn
+	    ;; Create temp files with strict access rights.  It's easy to
+	    ;; loosen them later, whereas it's impossible to close the
+	    ;; time-window of loose permissions otherwise.
+	    (set-default-file-modes 448)
+	    (while (condition-case ()
+		       (progn
+			 (setq file
+			       (make-temp-name
+				(expand-file-name
+				 prefix
+				 (if (fboundp 'temp-directory)
+				     ;; XEmacs
+				     (temp-directory)
+				   temporary-file-directory))))
+			 (if suffix
+			     (setq file (concat file suffix)))
+			 (if dir-flag
+			     (make-directory file)
+			   (if (featurep 'xemacs)
+			       ;; NOTE: This is unsafe if an XEmacs user
+			       ;; doesn't use a secure temp directory.
+			       (if (file-exists-p file)
+				   (signal 'file-already-exists
+					   (list "File exists" file))
+				 (write-region "" nil file nil 'silent))
+			     (write-region "" nil file nil 'silent
+					   nil 'excl)))
+			 nil)
+		     (file-already-exists t)
+		     ;; The XEmacs version of `make-directory' issues it.
+		     (file-error t))
+	      ;; the file was somehow created by someone else between
+	      ;; `make-temp-name' and `write-region', let's try again.
+	      nil)
+	    file)
+	;; Reset the umask.
+	(set-default-file-modes umask)))))
 
 (defun mm-image-load-path (&optional package)
   (let (dir result)
