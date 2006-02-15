@@ -1,3 +1,7 @@
+2006-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-make-temp-file): Don't catch file-error in Emacs.
+
 2006-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el (spam-check-spamassassin-headers): Adapt format for
@@ -22,7 +26,7 @@
 	* gnus-draft.el (gnus-draft-send): Replace message-narrow-to-head
 	with message-narrow-to-headers.
 	(gnus-draft-setup): Narrow to header to run message-fetch-field.
-	(gnus-draft-check-draft-articles articles): New function.
+	(gnus-draft-check-draft-articles): New function.
 	(gnus-draft-edit-message, gnus-draft-send-message): Use it.
 
 2006-02-13  Reiner Steib  <Reiner.Steib@gmx.de>

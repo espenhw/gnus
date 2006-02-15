@@ -1074,7 +1074,7 @@ If SUFFIX is non-nil, add that at the end of the file name."
 	    ;; loosen them later, whereas it's impossible to close the
 	    ;; time-window of loose permissions otherwise.
 	    (set-default-file-modes 448)
-	    (while (condition-case ()
+	    (while (condition-case err
 		       (progn
 			 (setq file
 			       (make-temp-name
@@ -1089,8 +1089,8 @@ If SUFFIX is non-nil, add that at the end of the file name."
 			 (if dir-flag
 			     (make-directory file)
 			   (if (featurep 'xemacs)
-			       ;; NOTE: This is unsafe if an XEmacs user
-			       ;; doesn't use a secure temp directory.
+			       ;; NOTE: This is unsafe if XEmacs users
+			       ;; don't use a secure temp directory.
 			       (if (file-exists-p file)
 				   (signal 'file-already-exists
 					   (list "File exists" file))
@@ -1099,8 +1099,11 @@ If SUFFIX is non-nil, add that at the end of the file name."
 					   nil 'excl)))
 			 nil)
 		     (file-already-exists t)
-		     ;; The XEmacs version of `make-directory' issues it.
-		     (file-error t))
+		     ;; The XEmacs version of `make-directory' issues
+		     ;; `file-error'.
+		     (file-error (or (and (featurep 'xemacs)
+					  (file-exists-p file))
+				     (signal (car err) (cdr err)))))
 	      ;; the file was somehow created by someone else between
 	      ;; `make-temp-name' and `write-region', let's try again.
 	      nil)
