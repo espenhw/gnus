@@ -594,7 +594,8 @@ A string or a list of strings is returned."
 				       host '("userCertificate") nil))
 	(retbuf (generate-new-buffer (format "*certificate for %s*" mail)))
 	cert)
-    (if (>= (length ldapresult) 1)
+    (if (and (>= (length ldapresult) 1)
+             (> (length (cadaar ldapresult)) 0))
 	(with-current-buffer retbuf
 	  ;; Certificates on LDAP servers _should_ be in DER format,
 	  ;; but there are some servers out there that distributes the

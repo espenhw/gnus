@@ -1,3 +1,8 @@
+2006-02-14  Arne J,Ax(Brgensen  <arne@arnested.dk>
+
+	* smime.el (smime-cert-by-ldap-1): Fix bug where
+	`smime-ldap-search' returns results without userCertificates.
+
 2006-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-make-temp-file): Don't catch file-error in Emacs.
