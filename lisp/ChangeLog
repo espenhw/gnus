@@ -1,5 +1,10 @@
 2006-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (article-strip-banner): Use
+	gnus-extract-address-components instead of
+	mail-header-parse-addresses to make it work with non-ASCII text;
+	remove mail-encode-encoded-word-string.
+
 	* rfc2231.el (rfc2231-parse-string): Attempt to parse parameter
 	values which are surrounded with \"...\"; make it never cause a
 	Lisp error; give up parsing of parameters if it failed in
