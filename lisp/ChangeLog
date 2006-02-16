@@ -1,3 +1,10 @@
+2006-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2231.el (rfc2231-parse-string): Attempt to parse parameter
+	values which are surrounded with \"...\"; make it never cause a
+	Lisp error; give up parsing of parameters if it failed in
+	extracting type.
+
 2006-02-14  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* smime.el (smime-cert-by-ldap-1): Fix bug where
