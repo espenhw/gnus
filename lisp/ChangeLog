@@ -1,5 +1,8 @@
 2006-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (mm-url-insert-file-contents-external): Autoload
+	mm-url.
+
 	* mm-uu.el (mm-uu-type-alist): Improve `LaTeX'.
 
 2006-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>

@@ -53,6 +53,7 @@
 (autoload 'gnus-button-reply "gnus-msg" nil t)
 (autoload 'parse-time-string "parse-time" nil nil)
 (autoload 'ansi-color-apply-on-region "ansi-color")
+(autoload 'mm-url-insert-file-contents-external "mm-url")
 
 (defgroup gnus-article nil
   "Article display."
