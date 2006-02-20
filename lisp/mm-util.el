@@ -229,7 +229,7 @@ the alias.  Else windows-NUMBER is used."
   `((iso-8859-1 . windows-1252))
   "A mapping from undesired charset names to their replacement.
 
-You may add pair like (iso-8859-1 . windows-1252) here,
+You may add pairs like (iso-8859-1 . windows-1252) here,
 i.e. treat iso-8859-1 as windows-1252.  windows-1252 is a
 superset of iso-8859-1."
   :type '(list (set :inline t

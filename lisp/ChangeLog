@@ -1,5 +1,7 @@
 2006-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-charset-override-alist): Fix type in doc string.
+
 	* gnus-art.el (mm-url-insert-file-contents-external): Autoload
 	mm-url.
 
