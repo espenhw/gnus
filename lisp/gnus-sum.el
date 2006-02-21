@@ -2670,13 +2670,13 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
   :group 'gnus-summary)
 
 (defcustom gnus-summary-tool-bar-gnome
-  '((gnus-summary-post-news "compose" nil)
-    (gnus-summary-reply-with-original "reply-author")
-    (gnus-summary-reply "reply-author" nil :visible nil)
-    (gnus-summary-followup-with-original "reply-all")
-    (gnus-summary-followup "reply-all" nil :visible nil)
-    (gnus-summary-mail-forward "forward")
-    (gnus-summary-save-article "save") ;;  stock_mail-copy
+  '((gnus-summary-post-news "mail/compose" nil)
+    (gnus-summary-reply-with-original "mail/reply")
+    (gnus-summary-reply "mail/reply" nil :visible nil)
+    (gnus-summary-followup-with-original "mail/reply-all")
+    (gnus-summary-followup "mail/reply-all" nil :visible nil)
+    (gnus-summary-mail-forward "mail/forward")
+    (gnus-summary-save-article "mail/save")
     (gnus-summary-search-article-forward "search")
     (gnus-summary-print-article "print")
     (gnus-summary-mark-as-expirable
@@ -2685,10 +2685,10 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
 					   gnus-newsgroup-name))
     (gnus-summary-tick-article-forward "flag-followup" nil :visible nil)
     (gnus-summary-mark-as-spam
-     "spam" t :visible (spam-group-ham-contents-p gnus-newsgroup-name)
+     "mail/spam" t :visible (spam-group-ham-contents-p gnus-newsgroup-name)
      :help "Mark as spam")
     (gnus-summary-mark-as-read-forward
-     "not-spam" nil :visible (spam-group-spam-contents-p gnus-newsgroup-name))
+     "mail/not-spam" nil :visible (spam-group-spam-contents-p gnus-newsgroup-name))
     ;; Some new commands that may need more suitable icons:
     (gnus-summary-save-newsrc "save" nil :visible nil)
     ;; (gnus-summary-show-article "stock_message-display" nil :visible nil)
@@ -2702,9 +2702,9 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
     (gnus-summary-sort-by-author "sort-a-z" nil :visible nil)
     (gnus-summary-sort-by-date "sort-1-9" nil :visible nil)
     ;;
-    (gnus-summary-insert-new-articles "inbox")
+    (gnus-summary-insert-new-articles "mail/inbox")
     ;;
-    (gnus-summary-exit "exit-mode")
+    (gnus-summary-exit "exit")
     ;; (customize-group 'gnus-summary) "preferences"
     (gnus-info-find-node "help"))
   "List of functions for the summary tool bar (GNOME style).
@@ -2769,7 +2769,8 @@ When FORCE, rebuild the tool bar."
 	     (boundp 'tool-bar-mode)
 	     tool-bar-mode
 	     (or (not gnus-summary-tool-bar-map) force))
-    (let* ((load-path (mm-image-load-path))
+    (let* ((load-path (gmm-image-load-path "gnus" nil 'load-path))
+	   (image-load-path (gmm-image-load-path "gnus" nil 'image-load-path))
 	   (map (gmm-tool-bar-from-list gnus-summary-tool-bar
 					gnus-summary-tool-bar-zap-list
 					'gnus-summary-mode-map)))

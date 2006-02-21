@@ -1,5 +1,14 @@
 2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-tool-bar-gnome): Use new icon names.
+	(gnus-group-make-tool-bar): Use `gmm-image-load-path'.
+
+	* gnus-sum.el (gnus-summary-tool-bar-gnome): Use new icon names.
+	(gnus-summary-make-tool-bar): Use `gmm-image-load-path'.
+
+	* message.el (message-tool-bar-gnome): Use new icon names.
+	(message-make-tool-bar): Use `gmm-image-load-path'.
+
 	* gmm-utils.el (gmm-defun-compat, gmm-image-search-load-path): New
 	functions from MH-E.
 	(gmm-image-load-path): New variable from MH-E.
