@@ -1307,6 +1307,8 @@ or the `pop-to-buffer' function."
 		     (lambda (event)
 		       (interactive "@e")
 		       (widget-button-press (widget-event-point event) event)))
+      ;; FIXME: Buffer is in article mode, but most tool bar commands won't
+      ;; work.  Maybe only keep the following icons: search, print, quit
       (goto-char (point-min))))
   (if (and (not (mm-special-display-p (buffer-name mml-preview-buffer)))
 	   (boundp 'gnus-buffer-configuration)
