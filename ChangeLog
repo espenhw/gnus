@@ -1,3 +1,7 @@
+2006-02-21  Miguel Frasson  <frasson@math.leidenuniv.nl>
+
+	* etc/images/separator.xpm: Copy of sep.xpm from AUCTeX.
+
 2006-02-21  Adam Sj,Ax(Bgren  <asjo@koldfront.dk>
 
 	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: New icons.
