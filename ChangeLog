@@ -1,3 +1,7 @@
+2006-02-21  Adam Sj,Ax(Bgren  <asjo@koldfront.dk>
+
+	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: New icons.
+
 2006-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (clean): Clean all subdirectories; remove *~.
