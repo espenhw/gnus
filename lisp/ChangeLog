@@ -3,7 +3,9 @@
 	* gmm-utils.el (gmm-defun-compat, gmm-image-search-load-path): New
 	functions from MH-E.
 	(gmm-image-load-path): New variable from MH-E.
-	(gmm-image-load-path): New function from MH-E.
+	(gmm-image-load-path): New function from MH-E.  Added arguments
+	LIBRARY, IMAGE and PATH.  Don't modify paths.  Don't use
+	*-image-load-path-called-flag.
 
 2006-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
 
