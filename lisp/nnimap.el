@@ -1554,6 +1554,7 @@ function is generally only called when Gnus is shutting down."
 	       (setq result (eval accept-form))
 	       (kill-buffer buf)
 	       result)
+	     (nnimap-possibly-change-group group server)
 	     (imap-message-flags-add
 	      (imap-range-to-message-set (list article))
 	      "\\Deleted" 'silent nnimap-server-buffer))

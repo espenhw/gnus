@@ -1,3 +1,9 @@
+2006-02-21  Wolfram Fenske  <wolfram.fenske@student.uni-magdeburg.de>
+	(tiny change)
+
+	* nnimap.el (nnimap-request-move-article): Change folder back to
+	source group before deleting.
+
 2006-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-util.el (mm-charset-override-alist): Fix type in doc string.
