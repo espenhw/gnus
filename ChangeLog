@@ -1,3 +1,19 @@
+2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* etc/images/connect.xpm, etc/images/contact.xpm,
+	etc/images/delete.xpm, etc/images/describe.xpm,
+	etc/images/disconnect.xpm, etc/images/exit.xpm,
+	etc/images/lock-broken.xpm, etc/images/lock-ok.xpm,
+	etc/images/lock.xpm, etc/images/refresh.xpm,
+	etc/images/gnus/toggle-subscription.xpm,
+	etc/images/mail/attach.xpm, etc/images/mail/compose.xpm,
+	etc/images/mail/copy.xpm, etc/images/mail/forward.xpm,
+	etc/images/mail/inbox.xpm, etc/images/mail/move.xpm,
+	etc/images/mail/not-spam.xpm, etc/images/mail/outbox.xpm,
+	etc/images/mail/reply-all.xpm, etc/images/mail/reply.xpm,
+	etc/images/mail/save-draft.xpm, etc/images/mail/send.xpm,
+	etc/images/mail/spam.xpm: New icons from GNOME 2.6.
+
 2006-02-21  Miguel Frasson  <frasson@math.leidenuniv.nl>
 
 	* etc/images/separator.xpm: Copy of sep.xpm from AUCTeX.
