@@ -1,3 +1,7 @@
+2006-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
+
+	* mm-view.el (mm-view-pkcs7-verify): Implement using smime.el.
+
 2006-02-21  Wolfram Fenske  <wolfram.fenske@student.uni-magdeburg.de>
 	(tiny change)
 
