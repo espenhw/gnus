@@ -187,9 +187,14 @@ if not exist %GNUS_ETC_DIR%\gnus\nul mkdir %GNUS_ETC_DIR%\gnus
 xcopy /R /Q /Y .\gnus\* %GNUS_ETC_DIR%\gnus\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-*
 if not exist %GNUS_ETC_DIR%\images\nul mkdir %GNUS_ETC_DIR%\images
+xcopy /R /Q /Y .\images\*.??? %GNUS_ETC_DIR%\images
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-*
 if not exist %GNUS_ETC_DIR%\images\gnus\nul mkdir %GNUS_ETC_DIR%\images\gnus
 xcopy /R /Q /Y .\images\gnus\* %GNUS_ETC_DIR%\images\gnus\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-gnus-*
+if not exist %GNUS_ETC_DIR%\images\mail\nul mkdir %GNUS_ETC_DIR%\images\mail
+xcopy /R /Q /Y .\images\mail\* %GNUS_ETC_DIR%\images\mail\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-mail-*
 if not exist %GNUS_ETC_DIR%\images\smilies\nul mkdir %GNUS_ETC_DIR%\images\smilies
 xcopy /R /Q /Y .\images\smilies\* %GNUS_ETC_DIR%\images\smilies\
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-smilies-*

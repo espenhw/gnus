@@ -1,5 +1,11 @@
 2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* make.bat (:etc): Also consider images in images/mail and
+	images/.
+
+	* etc/Makefile.in (install, uninstall): Also consider images in
+	images/mail and images/.
+
 	* etc/images/connect.xpm, etc/images/contact.xpm,
 	etc/images/delete.xpm, etc/images/describe.xpm,
 	etc/images/disconnect.xpm, etc/images/exit.xpm,

@@ -20,9 +20,12 @@ install:
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/gnus
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/gnus $(etcdir)/images/mail
 	cd $(srcdir) \
-	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
+	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
+                    images/mail/*.xpm images/mail/*.pbm \
+                    images/*.xpm images/*.pbm \
+                    images/gnus/x-splash; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
@@ -36,7 +39,10 @@ install:
 uninstall:
 	rm -f $(etcdir)/gnus-tut.txt
 	cd $(srcdir) \
-	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm images/gnus/x-splash; do \
+	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
+                    images/mail/*.xpm images/mail/*.pbm \
+                    images/*.xpm images/*.pbm \
+                    images/gnus/x-splash; do \
 	  rm -f "$(etcdir)/$$p"; \
 	done
 	rmdir $(etcdir)/images/gnus 2> /dev/null || true
