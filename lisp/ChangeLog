@@ -1,3 +1,10 @@
+2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-defun-compat, gmm-image-search-load-path): New
+	functions from MH-E.
+	(gmm-image-load-path): New variable from MH-E.
+	(gmm-image-load-path): New function from MH-E.
+
 2006-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
 
 	* mm-view.el (mm-view-pkcs7-verify): Implement using smime.el.
@@ -5273,8 +5280,10 @@
 	* spam.el (spam-mark-junk-as-spam-routine)
 	(spam-mark-new-messages-in-spam-group-as-spam): allow user to
 	disable assigning the spam-mark to new messages
-	(spam-ham-copy-or-move-routine): todo decleared twice (tiny
-	change).  From Adam Sj,Ax(Bgren <asjo@koldfront.dk>.
+
+2004-05-26  Adam Sj,Ax(Bgren  <asjo@koldfront.dk> (tiny change)
+
+	(spam-ham-copy-or-move-routine): todo decleared twice
 
 2004-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

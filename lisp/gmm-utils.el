@@ -233,6 +233,84 @@ DEFAULT-MAP specifies the default key map for ICON-LIST."
 	    icon-list))
     tool-bar-map))
 
+;; WARNING: The following is subject to change.  Don't rely on it yet.
+
+;; From MH-E without modifications:
+
+(defmacro gmm-defun-compat (name function arg-list &rest body)
+  "Create function NAME.
+If FUNCTION exists, then NAME becomes an alias for FUNCTION.
+Otherwise, create function NAME with ARG-LIST and BODY."
+  (let ((defined-p (fboundp function)))
+    (if defined-p
+        `(defalias ',name ',function)
+      `(defun ,name ,arg-list ,@body))))
+
+(gmm-defun-compat gmm-image-search-load-path
+  image-search-load-path (file &optional path)
+  "Emacs 21 and XEmacs don't have `image-search-load-path'.
+This function returns nil on those systems."
+  nil)
+
+;; From MH-E with modifications:
+
+(defvar gmm-image-load-path nil
+  "Directory where images are found.
+See the function `gmm-image-load-path'.")
+
+(defun gmm-image-load-path ()
+  "Ensure that the GMM-E images are accessible by `find-image'.
+
+Images for GMM-E are found in \"../../etc/images\" relative to the
+files in \"lisp/gmm-e\", in `image-load-path', or in `load-path'.
+This function saves the actual location found in the variable
+`gmm-image-load-path'. If the images on your system are actually
+located elsewhere, then set the variable `gmm-image-load-path'
+before starting GMM-E.
+
+If `image-load-path' exists (since Emacs 22), then the contents
+of the variable `gmm-image-load-path' is added to it if isn't
+already there. Otherwise, the contents of the variable
+`gmm-image-load-path' is added to the `load-path' if it isn't
+already there.
+
+See also variable `gmm-image-load-path-called-flag'."
+  (unless gmm-image-load-path-called-flag
+    (cond
+     (gmm-image-load-path)               ; user setting exists
+     ((let (gmm-library-name)            ; try relative setting
+        ;; First, find gmm-e in the load-path.
+        (setq gmm-library-name (locate-library "gmm-e"))
+        (if (not gmm-library-name)
+            (error "Can not find GMM-E in load-path"))
+        ;; And then set gmm-image-load-path relative to that.
+        (setq gmm-image-load-path
+              (expand-file-name (concat
+                                 (file-name-directory gmm-library-name)
+                                 "../../etc/images")))
+        (file-exists-p (expand-file-name "gmm-logo.xpm" gmm-image-load-path))))
+     ((gmm-image-search-load-path "gmm-logo.xpm")
+      ;; Images in image-load-path.
+      (setq gmm-image-load-path
+	    (file-name-directory (gmm-image-search-load-path "gmm-logo.xpm"))))
+     ((locate-library "gmm-logo.xpm")
+      ;; Images in load-path.
+      (setq gmm-image-load-path
+	    (file-name-directory (locate-library "gmm-logo.xpm")))))
+
+    (if (not (file-exists-p gmm-image-load-path))
+        (error "Directory %s in gmm-image-load-path does not exist"
+               gmm-image-load-path))
+    (if (not (file-exists-p
+              (expand-file-name "gmm-logo.xpm" gmm-image-load-path)))
+      (error "Directory %s in gmm-image-load-path does not contain GMM-E images"
+             gmm-image-load-path))
+    (if (boundp 'image-load-path)
+        (add-to-list 'image-load-path gmm-image-load-path)
+      (add-to-list 'load-path gmm-image-load-path))
+
+    (setq gmm-image-load-path-called-flag t)))
+
 (provide 'gmm-utils)
 
 ;; arch-tag: e0b60920-2ce6-40c1-bfc0-cadbbe26b602
