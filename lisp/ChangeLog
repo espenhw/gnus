@@ -1,5 +1,12 @@
 2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-make-tool-bar): Add IMAGE argument to
+	gmm-image-load-path calls.
+
+	* gnus-sum.el (gnus-summary-make-tool-bar): Ditto.
+
+	* message.el (message-make-tool-bar): Ditto.
+
 	* mml.el (mml-preview): Added comment concerning tool bar icons.
 
 	* gnus-group.el (gnus-group-tool-bar-gnome): Use new icon names.

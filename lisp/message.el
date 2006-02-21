@@ -6803,9 +6803,12 @@ When FORCE, rebuild the tool bar."
 	     tool-bar-mode
 	     (or (not message-tool-bar-map) force))
     (setq message-tool-bar-map
-	  (let ((load-path (gmm-image-load-path "message" nil 'load-path))
+	  (let ((load-path
+		 (gmm-image-load-path "message" "mail/save-draft.xpm"
+				      'load-path))
 		(image-load-path
-		 (gmm-image-load-path "message" nil 'image-load-path)))
+		 (gmm-image-load-path "message" "mail/save-draft.xpm"
+				      'image-load-path)))
 	    (gmm-tool-bar-from-list message-tool-bar
 				    message-tool-bar-zap-list
 				    'message-mode-map))))

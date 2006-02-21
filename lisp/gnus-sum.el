@@ -2769,8 +2769,10 @@ When FORCE, rebuild the tool bar."
 	     (boundp 'tool-bar-mode)
 	     tool-bar-mode
 	     (or (not gnus-summary-tool-bar-map) force))
-    (let* ((load-path (gmm-image-load-path "gnus" nil 'load-path))
-	   (image-load-path (gmm-image-load-path "gnus" nil 'image-load-path))
+    (let* ((load-path
+	    (gmm-image-load-path "gnus" "mail/save.xpm" 'load-path))
+	   (image-load-path
+	    (gmm-image-load-path "gnus" "mail/save.xpm" 'image-load-path))
 	   (map (gmm-tool-bar-from-list gnus-summary-tool-bar
 					gnus-summary-tool-bar-zap-list
 					'gnus-summary-mode-map)))
