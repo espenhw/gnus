@@ -1,3 +1,14 @@
+2006-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gmm-utils.el (gmm-image-load-path): Don't make
+	`gmm-image-load-path' include subdirectories which the second arg
+	`image' might specify.
+
+	* gnus-group.el (gnus-group-tool-bar-retro): Prepend the "gnus/"
+	subdirectory to icon file names.
+
+	* gnus-sum.el (gnus-summary-tool-bar-retro): Ditto.
+
 2006-02-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el (gnus-group-make-tool-bar): Add IMAGE argument to

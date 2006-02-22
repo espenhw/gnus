@@ -1066,15 +1066,15 @@ See `gmm-tool-bar-from-list' for the format of the list."
   :group 'gnus-group)
 
 (defcustom gnus-group-tool-bar-retro
-  '((gnus-group-get-new-news "get-news")
-    (gnus-group-get-new-news-this-group "gnntg")
-    (gnus-group-catchup-current "catchup")
-    (gnus-group-describe-group "describe-group")
-    (gnus-group-subscribe "subscribe" t
+  '((gnus-group-get-new-news "gnus/get-news")
+    (gnus-group-get-new-news-this-group "gnus/gnntg")
+    (gnus-group-catchup-current "gnus/catchup")
+    (gnus-group-describe-group "gnus/describe-group")
+    (gnus-group-subscribe "gnus/subscribe" t
 			  :help "Subscribe to the current group")
-    (gnus-group-unsubscribe "unsubscribe" t
+    (gnus-group-unsubscribe "gnus/unsubscribe" t
 			    :help "Unsubscribe from the current group")
-    (gnus-group-exit "exit-gnus" gnus-group-mode-map))
+    (gnus-group-exit "gnus/exit-gnus" gnus-group-mode-map))
   "List of functions for the group tool bar (retro look).
 
 See `gmm-tool-bar-from-list' for the format of the list."

@@ -282,14 +282,21 @@ path to IMAGE.  If PATH is given, it is used instead of
 				    (file-name-directory gmm-library-name)
 				    "../../etc/images")))
 	   (file-exists-p (expand-file-name image gmm-image-load-path))))
-	((gmm-image-search-load-path image)
-	 ;; Images in image-load-path.
-	 (setq gmm-image-load-path
-	       (file-name-directory (gmm-image-search-load-path image))))
-	((locate-library image)
-	 ;; Images in load-path.
-	 (setq gmm-image-load-path
-	       (file-name-directory (locate-library image)))))
+	((let ((img image)
+	       (dir (or
+		     ;; Images in image-load-path.
+		     (gmm-image-search-load-path image)
+		     ;; Images in load-path.
+		     (locate-library image)))
+	       parent)
+	   (and dir
+		(setq dir (file-name-directory dir))
+		(progn
+		  ;; Remove subdirectories.
+		  (while (setq parent (file-name-directory img))
+		    (setq img (directory-file-name parent)
+			  dir (expand-file-name "../" dir)))
+		  (setq gmm-image-load-path dir))))))
   ;;
   (unless (file-exists-p gmm-image-load-path)
     (error "Directory `%s' in gmm-image-load-path does not exist"
