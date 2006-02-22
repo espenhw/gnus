@@ -36,7 +36,7 @@
 	LIBRARY, IMAGE and PATH.  Don't modify paths.  Don't use
 	*-image-load-path-called-flag.
 
-2006-02-21  Arne J,Ax(Brgensen <arne@arnested.dk>
+2006-02-21  Milan Zamazal <pdm@brailcom.org>
 
 	* mm-view.el (mm-view-pkcs7-verify): Implement using smime.el.
 
