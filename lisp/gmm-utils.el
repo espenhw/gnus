@@ -271,17 +271,26 @@ path to IMAGE.  If PATH is given, it is used instead of
   (unless library (error "No library specified."))
   (unless image   (error "No image specified."))
   (cond (gmm-image-load-path) ;; User setting exists.
-	((let (gmm-library-name) ;; Try relative setting
+	((let (gmm-library-name d1ei d2ei)
+	   ;; Try relative setting
 	   ;; First, find library in the load-path.
 	   (setq gmm-library-name (locate-library library))
 	   (if (not gmm-library-name)
 	       (error "Cannot find library `%s' in load-path" library))
 	   ;; And then set gmm-image-load-path relative to that.
+	   (setq
+	    ;; Go down 2 levels...
+	    d2ei (expand-file-name
+		  (concat (file-name-directory gmm-library-name)
+			  "../../etc/images"))
+	    ;; Go down 1 level...
+	    d1ei (expand-file-name
+		  (concat (file-name-directory gmm-library-name)
+			  "../etc/images")))
 	   (setq gmm-image-load-path
-		 (expand-file-name (concat
-				    (file-name-directory gmm-library-name)
-				    "../../etc/images")))
-	   (file-exists-p (expand-file-name image gmm-image-load-path))))
+		 ;; Set it to nil if image is not found...
+		 (cond ((file-exists-p (expand-file-name image d2ei)) d2ei)
+		       ((file-exists-p (expand-file-name image d1ei)) d1ei)))))
 	((let ((img image)
 	       (dir (or
 		     ;; Images in image-load-path.

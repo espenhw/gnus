@@ -1,3 +1,14 @@
+2006-02-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el: Autoload gmm-image-load-path.
+	(message-tool-bar-retro): Prepend "gnus/" subdirectory to some
+	icon file names.  Use old Emacs 21 "mail_send.xpm" icon for
+	consitency.
+
+	* gmm-utils.el (gmm-image-load-path): Also search in
+	"../etc/images".  Don't set gmm-image-load-path if we don't find
+	the image.
+
 2006-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gmm-utils.el (gmm-image-load-path): Don't make

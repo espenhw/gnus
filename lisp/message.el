@@ -1664,6 +1664,7 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
   (autoload 'gnus-server-string "gnus")
   (autoload 'idna-to-ascii "idna")
   (autoload 'gmm-tool-bar-from-list "gmm-utils")
+  (autoload 'gmm-image-load-path "gmm-utils")
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-new-draft-name "mh-comp")
   (autoload 'mh-send-letter "mh-comp")
@@ -6735,8 +6736,6 @@ Pre-defined symbols include `message-tool-bar-gnome' and
   :set 'message-tool-bar-update
   :group 'message)
 
-;; The new icons are not yet committed, see
-;; http://thread.gmane.org/gmane.emacs.gnus.general/61719
 (defcustom message-tool-bar-gnome
   '((gmm-ignore "separator")
     (message-send-and-exit "mail/send")
@@ -6764,15 +6763,16 @@ See `gmm-tool-bar-from-list' for details on the format of the list."
   :group 'message)
 
 (defcustom message-tool-bar-retro
-  '((message-send-and-exit "mail/send")
+  '(;; Old Emacs 21 icon for consitency.
+    (message-send-and-exit "gnus/mail_send")
     (message-kill-buffer "close")
     (message-dont-send "cancel")
     (mml-attach-file "attach" mml-mode-map)
     (ispell-message "spell")
     (mml-preview "preview" mml-mode-map)
-    (message-insert-importance-high "important")
-    (message-insert-importance-low "unimportant")
-    (message-insert-disposition-notification-to "receipt"))
+    (message-insert-importance-high "gnus/important")
+    (message-insert-importance-low "gnus/unimportant")
+    (message-insert-disposition-notification-to "gnus/receipt"))
   "List of items for the message tool bar (retro style).
 
 See `gmm-tool-bar-from-list' for details on the format of the list."
