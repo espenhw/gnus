@@ -193,4 +193,5 @@ card under the id following the `card:' prefix in FILE."
 
 (provide 'smime-card)
 
+;; arch-tag: 51da9eb2-1ebe-4255-a429-9f5b04aea4bd
 ;;; smime-card.el ends here
