@@ -6764,9 +6764,9 @@
 	* rfc2047.el (rfc2047-pad-base64): Deal with more cases of invalid
 	padding.
 
-2004-01-27  Ralf Angeli  <angeli@iwi.uni-sb.de>.
+2004-01-27  Ralf Angeli  <angeli@iwi.uni-sb.de>
 
-	* mm-view.el (mm-fill-flowed): Add.
+	* mm-view.el (mm-fill-flowed): New variable.
 	(mm-inline-text): Use it.
 
 2004-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
