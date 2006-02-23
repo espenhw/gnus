@@ -1051,6 +1051,8 @@ Pre-defined symbols include `gnus-group-tool-bar-gnome' and
     (gnus-group-save-newsrc "save")
     (gnus-group-describe-group "describe")
     (gnus-group-unsubscribe-current-group "gnus/toggle-subscription")
+    (gnus-group-prev-unread-group "prev-node") ;; Emacs 22
+    (gnus-group-next-unread-group "next-node") ;; Emacs 22
     (gnus-group-exit "exit")
     (gnus-info-find-node "help"))
   "List of functions for the group tool bar (GNOME style).

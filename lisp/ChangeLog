@@ -2,6 +2,8 @@
 
 	* gnus-group.el (gnus-group-tool-bar-gnome): Fix
 	gnus-agent-toggle-plugged.  Re-order icons.
+	(gnus-group-tool-bar-gnome): Add
+	gnus-group-{prev,next}-unread-group.
 
 	* gnus-sum.el (gnus-summary-tool-bar-gnome): Move
 	gnus-summary-insert-new-articles.
