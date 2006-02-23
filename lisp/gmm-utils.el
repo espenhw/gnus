@@ -316,12 +316,14 @@ path to IMAGE.  If PATH is given, it is used instead of
   ;; Return augmented `image-load-path' or `load-path'.
   (cond ((and path (symbolp path))
 	 (nconc (list gmm-image-load-path)
-		(delete gmm-image-load-path (if (boundp path)
-						(symbol-value path)
-					      nil))))
+		(delete gmm-image-load-path
+			(if (boundp path)
+			    (copy-sequence (symbol-value path))
+			  nil))))
 	(t
 	 (nconc (list gmm-image-load-path)
-		(delete gmm-image-load-path load-path)))))
+		(delete gmm-image-load-path
+			(copy-sequence load-path))))))
 
 (provide 'gmm-utils)
 

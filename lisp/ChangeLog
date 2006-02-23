@@ -1,3 +1,8 @@
+2006-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gmm-utils.el (gmm-image-load-path): Don't modify image-load-path
+	and load-path.
+
 2006-02-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Autoload gmm-image-load-path.
