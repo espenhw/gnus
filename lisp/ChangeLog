@@ -1980,7 +1980,7 @@
 
 	* gnus-topic.el (gnus-topic-mode): Ditto.
 
-2005-07-08  Ralf Angeli  <angeli@iwi.uni-sb.de>  (tiny change)
+2005-07-08  Ralf Angeli  <angeli@iwi.uni-sb.de>
 
 	* gnus-art.el (gnus-article-next-page, gnus-article-next-page-1)
 	(gnus-article-prev-page): Take scroll-margin into consideration.
@@ -6764,11 +6764,10 @@
 	* rfc2047.el (rfc2047-pad-base64): Deal with more cases of invalid
 	padding.
 
-2004-01-27  Simon Josefsson  <jas@extundo.com>
+2004-01-27  Ralf Angeli  <angeli@iwi.uni-sb.de>.
 
 	* mm-view.el (mm-fill-flowed): Add.
-	(mm-inline-text): Use it.  Tiny patch from Ralf Angeli
-	<angeli@iwi.uni-sb.de>.
+	(mm-inline-text): Use it.
 
 2004-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
