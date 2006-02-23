@@ -4,6 +4,7 @@
 	gnus-agent-toggle-plugged.  Re-order icons.
 	(gnus-group-tool-bar-gnome): Add
 	gnus-group-{prev,next}-unread-group.
+	(gnus-group-tool-bar-gnome): Re-order icons.
 
 	* gnus-sum.el (gnus-summary-tool-bar-gnome): Move
 	gnus-summary-insert-new-articles.

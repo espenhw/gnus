@@ -1031,19 +1031,20 @@ Pre-defined symbols include `gnus-group-tool-bar-gnome' and
 
 (defcustom gnus-group-tool-bar-gnome
   '((gnus-group-post-news "mail/compose")
-    (gnus-group-send-queue "mail/outbox" t
-			   :visible (and gnus-agent gnus-plugged)
-			   :help "Send articles from the queue group")
-    (gnus-group-get-new-news "mail/inbox" nil
-			     :visible (or (not gnus-agent)
-					  gnus-plugged))
     ;; Some useful agent icons?  I don't use the agent so agent users should
     ;; suggest useful commands:
     (gnus-agent-toggle-plugged "connect" t
      			       :visible (and gnus-agent (not gnus-plugged)))
     (gnus-agent-toggle-plugged "disconnect" t
      			       :visible (and gnus-agent gnus-plugged))
-    ;;
+    ;; FIXME: gnus-agent-toggle-plugged (in gnus-agent-group-make-menu-bar)
+    ;; should have a better help text.
+    (gnus-group-send-queue "mail/outbox" t
+			   :visible (and gnus-agent gnus-plugged)
+			   :help "Send articles from the queue group")
+    (gnus-group-get-new-news "mail/inbox" nil
+			     :visible (or (not gnus-agent)
+					  gnus-plugged))
     ;; FIXME: gnus-*-read-group should have a better help text.
     (gnus-topic-read-group "open" nil :visible gnus-topic-mode)
     (gnus-group-read-group "open" nil :visible (not gnus-topic-mode))
