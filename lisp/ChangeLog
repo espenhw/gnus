@@ -1,5 +1,14 @@
 2006-02-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-tool-bar-gnome): Fix
+	gnus-agent-toggle-plugged.  Re-order icons.
+
+	* gnus-sum.el (gnus-summary-tool-bar-gnome): Move
+	gnus-summary-insert-new-articles.
+
+	* message.el (message-tool-bar-gnome, message-tool-bar-retro): Fix
+	comments.
+
 	* utf7.el (utf7-utf-16-coding-system): Fix comment.  utf-16-be is
 	also available in Emacs 21.3.
 

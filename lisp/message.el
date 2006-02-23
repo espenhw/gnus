@@ -6745,8 +6745,6 @@ Pre-defined symbols include `message-tool-bar-gnome' and
     (ispell-message "spell" nil :visible (not flyspell-mode))
     (flyspell-buffer "spell" t :visible flyspell-mode
 		     :help "Flyspell whole buffer")
-    ;; We should have a mail-preview icon with an envelope like the one in
-    ;; stock_mail-reply.
     (mml-preview "mail/preview" mml-mode-map)
     (mml-secure-message-sign-encrypt "lock" mml-mode-map :visible nil)
     (message-insert-importance-high "important" nil :visible nil)
@@ -6763,7 +6761,7 @@ See `gmm-tool-bar-from-list' for details on the format of the list."
   :group 'message)
 
 (defcustom message-tool-bar-retro
-  '(;; Old Emacs 21 icon for consitency.
+  '(;; Old Emacs 21 icon for consistency.
     (message-send-and-exit "gnus/mail_send")
     (message-kill-buffer "close")
     (message-dont-send "cancel")

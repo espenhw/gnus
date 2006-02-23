@@ -2671,6 +2671,8 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
 
 (defcustom gnus-summary-tool-bar-gnome
   '((gnus-summary-post-news "mail/compose" nil)
+    (gnus-summary-insert-new-articles "mail/inbox")
+    ;;
     (gnus-summary-reply-with-original "mail/reply")
     (gnus-summary-reply "mail/reply" nil :visible nil)
     (gnus-summary-followup-with-original "mail/reply-all")
@@ -2699,10 +2701,8 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
     (gnus-summary-enter-digest-group "right_arrow" nil :visible nil)
     ;;
     ;; Maybe some sort-by-... could be added:
-    (gnus-summary-sort-by-author "sort-a-z" nil :visible nil)
-    (gnus-summary-sort-by-date "sort-1-9" nil :visible nil)
-    ;;
-    (gnus-summary-insert-new-articles "mail/inbox")
+    ;; (gnus-summary-sort-by-author "sort-a-z" nil :visible nil)
+    ;; (gnus-summary-sort-by-date "sort-1-9" nil :visible nil)
     ;;
     (gnus-summary-exit "exit")
     ;; (customize-group 'gnus-summary) "preferences"
