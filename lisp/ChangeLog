@@ -1,3 +1,7 @@
+2006-02-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-view.el (mm-fill-flowed): Add :version.
+
 2006-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gmm-utils.el (gmm-image-load-path): Don't modify image-load-path
