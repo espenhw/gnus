@@ -164,7 +164,7 @@ system object in XEmacs."
     (if (fboundp 'coding-system-p)
 	(when (coding-system-p cs)
 	  cs)
-      ;; Is this branch ever actually useful?
+      ;; no-MULE XEmacs:
       (car (memq cs (mm-get-coding-system-list))))))
 
 (defun mm-codepage-setup (number &optional alias)
@@ -397,7 +397,7 @@ with Mule charsets.  It is completely useless for Emacs."
 	  cs mime mule alist)
       (while css
 	(setq cs (pop css)
-	      mime (or (coding-system-get cs :mime-charset) ; Emacs 22
+	      mime (or (coding-system-get cs :mime-charset) ; Emacs 23 (unicode)
 		       (coding-system-get cs 'mime-charset)))
 	(when (and mime
 		   (not (eq t (setq mule
