@@ -1,3 +1,7 @@
+2006-02-24  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-gmane-create-mapping): Don't choke on ^M.
+
 2006-02-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-int.el (gnus-open-server): Respect gnus-batch-mode.

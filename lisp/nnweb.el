@@ -471,7 +471,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 	(forward-line 1)
 	;; Thanks to Olly Betts we now have NOV lines in our buffer!
 	(while (not (eobp))
-	  (unless (eolp)
+	  (unless (or (eolp) (looking-at "\x0d"))
 	    (let ((header (nnheader-parse-nov)))
 	      (let ((xref (mail-header-xref header))
 		    (from (mail-header-from header))
