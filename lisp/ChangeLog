@@ -1,3 +1,12 @@
+2006-02-24  Andreas Seltenreich  <uwi7@stud.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-type-definition, nnweb-gmane-create-mapping)
+	(nnweb-gmane-wash-article, nnweb-gmane-search): Fix Gmane web
+	groups.  Kudos to Olly Betts <olly@survex.com> for providing NOV
+	output on the server side.
+        (nnweb-google-create-mapping): Update regexps and add some
+	progress indication.
+
 2006-02-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el (gnus-group-tool-bar-gnome): Fix
