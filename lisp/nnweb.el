@@ -79,7 +79,7 @@ Valid types include `google', `dejanews', and `gmane'.")
      (reference . identity)
      (map . nnweb-gmane-create-mapping)
      (search . nnweb-gmane-search)
-     (address . "http://search.gmane.org/cgi-bin/omega.cgi")
+     (address . "http://search.gmane.org/nov.php")
      (identifier . nnweb-gmane-identity)))
   "Type-definition alist.")
 
@@ -522,7 +522,6 @@ Valid types include `google', `dejanews', and `gmane'.")
     "?"
     (mm-url-encode-www-form-urlencoded
      `(("query" . ,search)
-       ("FMT" . "nov")
        ("HITSPERPAGE" . ,(number-to-string nnweb-max-hits))))))
   (setq buffer-file-name nil)
   (set-buffer-multibyte t)
