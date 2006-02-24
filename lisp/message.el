@@ -3708,7 +3708,7 @@ not have PROP."
 	  (when (let ((char (char-after)))
 		  (or (< (mm-char-int char) 128)
 		      (and (mm-multibyte-p)
-			   ;; Fixme: Wrong for Emacs 23 (unicode) and for
+			   ;; FIXME: Wrong for Emacs 23 (unicode) and for
 			   ;; things like undecable utf-8.  Should at least
 			   ;; use find-coding-systems-region.
 			   (memq (char-charset char)

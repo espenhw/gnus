@@ -15,7 +15,7 @@
 	* utf7.el (utf7-utf-16-coding-system): Fix comment.  utf-16-be is
 	also available in Emacs 21.3.
 
-	* message.el (message-fix-before-sending): Change "Emacs 23" to
+	* message.el (message-fix-before-sending): Change "Emacs 22" to
 	"Emacs 23 (unicode)" in comment.
 
 	* qp.el (quoted-printable-encode-region): Change "Emacs 22" to
