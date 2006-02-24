@@ -1,3 +1,11 @@
+2006-02-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-int.el (gnus-open-server): Respect gnus-batch-mode.
+
+2005-12-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (query-dns): Protect more against buggy tcp output.
+
 2006-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnweb.el (nnweb-type-definition, nnweb-gmane-search): Use new
