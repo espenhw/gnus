@@ -162,7 +162,7 @@
 	* make.bat: Make sure that gnus-load.el and sieve are writable to
 	avoid breakage.
 
-2004-03-01  Michael Schierl <schierlm-public@gmx.de>  (tiny change)
+2004-03-01  Michael Schierl  <schierlm-public@gmx.de>  (tiny change)
 
 	* make.bat: Fix directory test for Windows 9x/ME.
 
@@ -492,7 +492,7 @@
 	* make.bat: Makes it possible to generate the Info files on
 	windows again.
 
-2000-08-24 Jesper Harder <jesper_harder@hotmail.com>
+2000-08-24 Jesper Harder  <jesper_harder@hotmail.com>
 
 	* make.bat: Use emacs.exe if emacs.bat does not exist.
 
