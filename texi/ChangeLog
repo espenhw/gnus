@@ -514,7 +514,7 @@
 
 	* gnus-news.texi: Ditto.
 
-2005-01-16  Xavier Maillard  <zedek@gnu-rox.org> (tiny change)
+2005-01-16  Xavier Maillard  <zedek@gnu-rox.org>  (tiny change)
 
 	* gnus-faq.texi ([4.1]): Typo.
 
@@ -1073,7 +1073,7 @@
 
 	* gnus.texi (The problem of spam): Fix, reported by Cheng Gao
 	<chenggao@cyberhut.org> and suggested by Richard Hoskins
-	<rmh@apk.net> (tiny change).
+	<rmh@apk.net>  (tiny change).
 
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
@@ -1476,11 +1476,13 @@
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package):
 	mentioned the spam-install-hooks mess
 
+2003-07-11  Matthias Andree <ma@dt.e-technik.uni-dortmund.de>  (tiny change)
+
+	* gnus.texi (Splitting in IMAP): Typos.
+
 2003-07-11  Simon Josefsson  <jas@extundo.com>
 
-	* gnus.texi (Splitting in IMAP): Typos, tiny patch from Matthias
-	Andree <ma@dt.e-technik.uni-dortmund.de>.
-	(Splitting in IMAP): Mention Sieve.
+	* gnus.texi (Splitting in IMAP): Mention Sieve.
 
 2003-07-10  Simon Josefsson  <jas@extundo.com>
 
@@ -1606,10 +1608,9 @@
 
 	* message.texi (Insertion Variables): do.
 
-2003-05-13  Simon Josefsson  <jas@extundo.com>
+2003-05-13  Niklas Morberg <niklas.morberg@axis.com>  (tiny change)
 
-	* gnus.texi (IMAP, Agent and IMAP, Oort Gnus): s/a/an/.  Tiny
-	patch from Niklas Morberg <niklas.morberg@axis.com>.
+	* gnus.texi (IMAP, Agent and IMAP, Oort Gnus): s/a/an/.
 
 2003-05-12  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
@@ -1904,10 +1905,9 @@
 
 	* gnus.texi (Required Back End Functions): Add.
 
-2003-03-17  Simon Josefsson  <jas@extundo.com>
+2003-03-17  Frank Haun	<pille3003@fhaun.de>  (tiny change)
 
-	* pgg.texi: Fix setfilename.  Tiny patch by Frank Haun
-	<pille3003@fhaun.de>.
+	* pgg.texi: Fix setfilename.
 
 2003-03-09  Paul Jarc  <prj@po.cwru.edu>
 

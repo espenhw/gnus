@@ -1,3 +1,8 @@
+2006-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* ChangeLog, texi/ChangeLog, lisp/ChangeLog: Fix "From so-and-so"
+	and "(tiny change)" entries.
+
 2006-02-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* etc/images/gnus/mail_send.xpm: Emacs 21 icon for
@@ -157,14 +162,13 @@
 	* make.bat: Make sure that gnus-load.el and sieve are writable to
 	avoid breakage.
 
-2004-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+2004-03-01  Michael Schierl <schierlm-public@gmx.de>  (tiny change)
 
-	* make.bat: Fix directory test for Windows 9x/ME.  From Michael
-	Schierl <schierlm-public@gmx.de> (tiny change).
+	* make.bat: Fix directory test for Windows 9x/ME.
 
-2004-01-07  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
+2004-01-07  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>  (tiny change)
 
-	* etc/gnus-tut.txt: `G m' instead of `G V' (tiny patch).
+	* etc/gnus-tut.txt: `G m' instead of `G V'
 
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 

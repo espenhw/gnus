@@ -2337,11 +2337,10 @@
 	process-kill-without-query.
 	(starttls-open-stream): Ditto.
 
-2005-05-31  Simon Josefsson  <jas@extundo.com>
+2005-05-31  Ulf Stegemann <ulf@zeitform.de>  (tiny change)
 
 	* smime.el (smime-cert-by-ldap-1): Don't use
-	replace-regexp-in-string, tiny patch from Ulf Stegemann
-	<ulf@zeitform.de>.
+	replace-regexp-in-string.
 
 2005-05-31  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
@@ -2558,10 +2557,9 @@
 	* nntp.el: Autoload format-spec instead of format; use
 	eval-and-compile to evaluate autoload forms.
 
-2005-05-09  Simon Josefsson  <jas@extundo.com>
+2005-05-09  Georg C. F. Greve <greve@gnu.org>  (tiny change)
 
-	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): Fix PIN caching,
-	tiny patch from "Georg C. F. Greve" <greve@gnu.org>.
+	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): Fix PIN caching.
 
 2005-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -3838,11 +3836,13 @@
 
 	* deuglify.el (gnus-outlook-deuglify): Add :version.
 
-	* html2text.el: Beautify code.  Improve doc strings.  Some checkdoc
-	cleanup.
+	* html2text.el: Beautify code.  Improve doc strings.  Some
+	checkdoc cleanup.
 	(html2text-get-attr, html2text-fix-paragraph): Simplify code.
-	(html2text-format-tag-list): Add "strong" and "em".
-	From "Alfred M. Szmidt" <ams@kemisten.nu> (tiny change).
+
+2004-11-01  Alfred M. Szmidt <ams@kemisten.nu>  (tiny change)
+
+	* html2text.el (html2text-format-tag-list): Add "strong" and "em".
 
 2004-10-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -4700,16 +4700,13 @@
 	* nnimap.el (nnimap-authinfo-file, nnimap-prune-cache):
 	Add :group 'nnimap.
 
-2004-08-30  Simon Josefsson  <jas@extundo.com>
+2004-08-30  Andreas Schwab <schwab@suse.de>
 
 	* rfc2231.el (rfc2231-parse-string): Restore whitespace syntax for
-	?* and ?\; (tiny patch).  From Andreas Schwab <schwab@suse.de>.
-
-2004-08-30  Simon Josefsson  <jas@extundo.com>
+	?* and ?\;.
 
 	* ietf-drums.el (ietf-drums-syntax-table): Set syntax of ?* ?\;
-	and ?\' to symbol instead of whitespace (tiny patch).  From
-	Andreas Schwab <schwab@suse.de>.
+	and ?\' to symbol instead of whitespace.
 
 2004-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5383,7 +5380,7 @@
 	(spam-mark-new-messages-in-spam-group-as-spam): allow user to
 	disable assigning the spam-mark to new messages
 
-2004-05-26  Adam Sj,Ax(Bgren  <asjo@koldfront.dk> (tiny change)
+2004-05-26  Adam Sj,Ax(Bgren  <asjo@koldfront.dk>  (tiny change)
 
 	(spam-ham-copy-or-move-routine): todo decleared twice
 
@@ -5395,10 +5392,10 @@
 	(rfc2047-decode): Treat the ascii coding-system as raw-text by
 	default.
 
-2004-05-25  Teodor Zlatanov  <tzz@lifelogs.com>
+2004-05-25  Anand Mitra <mitramc@yahoo.com>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-delete-article): invoke hook with
-	correct data (tiny change).  From Anand Mitra <mitramc@yahoo.com>.
+	correct data.
 
 2004-05-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -5763,13 +5760,14 @@
 
 2004-05-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-dup.el (gnus-dup-unsuppress-article): don't assume the mail
-	header is not nil (tiny change).  From Nelson Ferreira
-	<nelson.ferreira@verizon.net>.
-
 	* spam.el (spam-summary-prepare-exit): only produce "marking spam
 	as expired without moving it" message when there are spam
 	messages left
+
+2004-05-14  Nelson Ferreira  <nelson.ferreira@verizon.net>  (tiny change)
+
+	* gnus-dup.el (gnus-dup-unsuppress-article): don't assume the mail
+	header is not nil.
 
 2004-05-14  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
@@ -7485,10 +7483,10 @@
 
 	* nnheaderxm.el: Remove definition of run-at-time.
 
-2004-01-05  Karl Pfl,Ad(Bsterer  <sigurd@12move.de>
+2004-01-05  Karl Pfl,Ad(Bsterer  <sigurd@12move.de>  (tiny change)
 
 	* mml.el (mml-minibuffer-read-disposition): Show attachment type
-	in prompt (tiny change)
+	in prompt.
 
 2004-01-06  Steve Youngs  <sryoungs@bigpond.net.au>
 
