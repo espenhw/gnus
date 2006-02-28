@@ -1173,6 +1173,15 @@ backends)."
 	(return))))
     result))
 
+(defvar spam-spamassassin-score-regexp
+  ".*\\b\\(?:score\\|hits\\)=\\(-?[0-9.]+\\)"
+  "Regexp matching SpamAssassin score header.
+The first group must match the number.")
+;; "score" for Spamassassin 3.0 or later:
+;; X-Spam-Status: Yes, score=13.1 required=5.0 tests=DNS_FROM_RFC_ABUSE,
+;; 	[...],UNDISC_RECIPS autolearn=disabled version=3.0.3
+
+
 (defun spam-extra-header-to-number (header headers)
   "Transform an extra HEADER to a number, using list of HEADERS.
 Note this has to be fast."
@@ -1181,7 +1190,8 @@ Note this has to be fast."
        ((eq header 'X-Spam-Status)
 	(string-to-number (gnus-replace-in-string
 			   (gnus-extra-header header headers)
-			   ".*hits=" "")))
+			   spam-spamassassin-score-regexp
+			   "\\1")))
        ;; for CRM checking, it's probably faster to just do the string match
        ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header))
 	(match-string 1 header))
@@ -2615,8 +2625,7 @@ REMOVE not nil, remove the ADDRESSES."
   (if score				; scoring mode
       (let ((header (message-fetch-field spam-spamassassin-spam-status-header)))
 	(when header
-	  (if (string-match "\\(?:score\\|hits\\)=\\(-?[0-9.]+\\)" header)
-	      ;; "score" for Spamassassin 3.0 or later.
+	  (if (string-match spam-spamassassin-score-regexp header)
 	      (match-string 1 header)
 	    "0")))
     ;; spam detection mode
