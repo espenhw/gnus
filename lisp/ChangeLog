@@ -1,3 +1,8 @@
+2006-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-sequence-of-unread-articles): Return nil if
+	first or last are nil.
+
 2006-02-24  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-gmane-create-mapping): Don't choke on ^M.
