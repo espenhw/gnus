@@ -1,3 +1,8 @@
+2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: Rename
+	char*.
+
 2006-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* ChangeLog, texi/ChangeLog, lisp/ChangeLog: Fix "From so-and-so"

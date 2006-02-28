@@ -1,5 +1,5 @@
 /* XPM */
-static char * preview_xpm[] = {
+static char * mail_preview_xpm[] = {
 "24 24 151 2",
 "  	c None",
 ". 	c #343434",

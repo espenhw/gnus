@@ -1,5 +1,5 @@
 /* XPM */
-static char * save_xpm[] = {
+static char * mail_save_xpm[] = {
 "24 24 264 2",
 "  	c None",
 ". 	c #000000",
