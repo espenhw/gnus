@@ -1,3 +1,7 @@
+2006-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-with-unibyte-current-buffer): Add note.
+
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button): New face.
@@ -51,7 +55,7 @@
 	(nnweb-gmane-wash-article, nnweb-gmane-search): Fix Gmane web
 	groups.  Kudos to Olly Betts <olly@survex.com> for providing NOV
 	output on the server side.
-        (nnweb-google-create-mapping): Update regexps and add some
+	(nnweb-google-create-mapping): Update regexps and add some
 	progress indication.
 
 2006-02-23  Reiner Steib  <Reiner.Steib@gmx.de>
