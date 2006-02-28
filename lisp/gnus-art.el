@@ -651,7 +651,12 @@ Each element is a regular expression."
 (make-obsolete-variable 'gnus-article-hide-pgp-hook
 			"This variable is obsolete in Gnus 5.10.")
 
-(defcustom gnus-article-button-face 'bold
+(defface gnus-button
+  '((t :weight bold))
+  "Face used for highlighting a button in the article buffer."
+  :group 'gnus-article-buttons)
+
+(defcustom gnus-article-button-face 'gnus-button
   "Face used for highlighting buttons in the article buffer.
 
 An article button is a piece of text that you can activate by pressing
