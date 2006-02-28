@@ -3,6 +3,13 @@
 
 * Go through the todo list and remove items already done.
 
+* Use a new custom type (`define-widget') for posting-style in `gnus-cus.el'
+  (G c) and for `gnus-posting-styles'.  Maybe some allowed types are still
+  missing.
+
+* Add proper doc strings to functions and variables explained in the manual
+  (info "(gnus)Gnus Utility Functions")
+
 * Add Message-IDs or URLs refering to relevant discussions on lists and
   newsgroups.
 
@@ -13,18 +20,18 @@
   http://theotp1.physik.uni-ulm.de/~ste/comp/emacs/gnus/tool-bar/ for a
   suggestion.
 
-* nnweb doesn't work properly.
-
-  Due to changes in the HTML output of Google Groups and Gmane, stuff related
-  to web groups (gnus-group-make-web-group) doesn't work anymore.
-  
-  Fetching an article by MID (cf. gnus-refer-article-method) over Google
-  Groups should work.
+* Maybe Gnus should support the LIST SUBSCRIPTIONS, see RFC 2980.
 
 * Merge `message-extra-wide-headers' and ` message-header-synonyms'?
 
 * Maybe texi/emacs-mime.texi could be divided into user-visible stuff and
   reference manual for the MIME library.
+
+  Related: Bill Wohler's article on mh-e-user.
+  http://thread.gmane.org/29067.1138078896@olgas.newt.com
+
+* Fix `change servers' command, see David Kastrup's message.
+  http://thread.gmane.org/x54qewqxz4.fsf@lola.goethe.zz
 
 * texi/gnus-coding.texi should be fixed.
 

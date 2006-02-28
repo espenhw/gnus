@@ -1,5 +1,9 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* todo: Remove nnweb.  Add: widget for posting styles, doc string
+	for utility functions, LIST SUBSCRIPTIONS, divide emacs-mime.texi,
+	change servers.
+
 	* etc/images/README (next-page.xpm): From Gnome, not from Emacs
 	22.
 
