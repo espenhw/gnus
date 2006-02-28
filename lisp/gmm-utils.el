@@ -112,6 +112,21 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 ;; version will provide customizable tool bar buttons using a different
 ;; interface.
 
+;; TODO: Extend API so that the "Command" entry can be a function or a plist.
+;; In case of a list it should have the format...
+;;
+;;  (:none command-without-modifier
+;;   :shift command-with-shift-pressed
+;;   :control command-with-ctrl-pressed
+;;   :control-shift command-with-control-and-shift-pressed
+;;   ;; mouse-2 and mouse-3 can't be used in Emacs yet.
+;;   :mouse-2 command-on-mouse-2-press
+;;   :mouse-3 command-on-mouse-3-press) ;; typically a menu of related commands
+;;
+;; Combinations of mouse-[23] plus shift and/or controll might be overkill.
+;;
+;; Then use (plist-get rs-command :none), (plist-get rs-command :shift)
+
 (define-widget 'gmm-tool-bar-item (if (gmm-widget-p 'lazy) 'lazy 'gmm-lazy)
   "Tool bar list item."
   :tag "Tool bar item"

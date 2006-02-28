@@ -999,6 +999,31 @@ simple manner.")
 
 (defvar gnus-group-tool-bar-map nil)
 
+;; Work around for Emacs not updating the tool bar, see
+; http://www.google.com/groups?as_umsgid=v9u0an3hti.fsf@marauder.physik.uni-ulm.de
+(defvar gnus-group-redraw-line-number nil
+  "When non-nil, redraw the Group buffer frame when idle.
+Internal variable.")
+;; Don't make this customizable yet.
+
+(defun gnus-group-redraw-check ()
+  "Check if we need to redraw the frame."
+  (when (and gnus-group-redraw-line-number
+	     (not (featurep 'xemacs))
+	     (boundp 'tool-bar-mode)
+	     tool-bar-mode)
+    (let ((no (if (fboundp 'line-number-at-pos) ;; Emacs 22 only
+		  (line-number-at-pos)
+		;; Not equivalent to `line-number-at-pos' but good enough
+		;; here:
+		(1+ (count-lines (point-min) (point))))))
+      (unless (eq gnus-group-redraw-line-number no)
+	(setq gnus-group-redraw-line-number no)
+	;; (run-with-idle-timer 1 nil 'menu-bar-update-buffers t)
+	;; (run-with-idle-timer 1 nil 'redraw-frame (selected-frame))
+	(run-with-idle-timer 1 nil 'force-window-update)
+        t))))
+
 (defun gnus-group-tool-bar-update (&optional symbol value)
   "Update group buffer toolbar.
 Setter function for custom variables."
@@ -1008,6 +1033,9 @@ Setter function for custom variables."
   ;; (use-local-map gnus-group-mode-map)
   (when (gnus-alive-p)
     (with-current-buffer gnus-group-buffer
+      (when gnus-group-redraw-line-number
+	(add-to-list (make-local-variable 'post-command-hook)
+		     'gnus-group-redraw-check))
       (gnus-group-make-tool-bar t))))
 
 ;; The default will be changed when the new icons have been checked in:
@@ -1052,8 +1080,8 @@ Pre-defined symbols include `gnus-group-tool-bar-gnome' and
     (gnus-group-save-newsrc "save")
     (gnus-group-describe-group "describe")
     (gnus-group-unsubscribe-current-group "gnus/toggle-subscription")
-    (gnus-group-prev-unread-group "prev-node") ;; Emacs 22
-    (gnus-group-next-unread-group "next-node") ;; Emacs 22
+    (gnus-group-prev-unread-group "left-arrow")
+    (gnus-group-next-unread-group "right-arrow")
     (gnus-group-exit "exit")
     (gnus-info-find-node "help"))
   "List of functions for the group tool bar (GNOME style).

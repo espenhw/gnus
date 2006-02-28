@@ -1,5 +1,17 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-tool-bar-gnome): Add
+	gnus-summary-next-page.  Re-order.
+
+	* gnus-group.el (gnus-group-tool-bar-gnome): prev-node and
+	next-node are now included.
+	(gnus-group-redraw-line-number): New internal variable.
+	(gnus-group-redraw-check): Helper function for updating the tool
+	bar.
+	(gnus-group-tool-bar-update): Add gnus-group-redraw-check.
+
+	* gmm-utils.el (gmm-tool-bar-item): Add TODO about modifiers.
+
 	* spam.el (spam-spamassassin-score-regexp): New internal variable.
 	(spam-extra-header-to-number, spam-check-spamassassin-headers):
 	Use it to match format of Spamassassin 3.0 and later.  Reported by

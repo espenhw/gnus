@@ -2681,28 +2681,27 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
     (gnus-summary-save-article "mail/save")
     (gnus-summary-search-article-forward "search")
     (gnus-summary-print-article "print")
+    (gnus-summary-tick-article-forward "flag-followup" nil :visible nil)
+    ;; Some new commands that may need more suitable icons:
+    (gnus-summary-save-newsrc "save" nil :visible nil)
+    ;; (gnus-summary-show-article "stock_message-display" nil :visible nil)
+    (gnus-summary-prev-article "left-arrow")
+    (gnus-summary-next-article "right-arrow")
+    (gnus-summary-next-page "next-page")
+    ;; (gnus-summary-enter-digest-group "right_arrow" nil :visible nil)
+    ;;
+    ;; Maybe some sort-by-... could be added:
+    ;; (gnus-summary-sort-by-author "sort-a-z" nil :visible nil)
+    ;; (gnus-summary-sort-by-date "sort-1-9" nil :visible nil)
     (gnus-summary-mark-as-expirable
      "delete" nil
      :visible (gnus-check-backend-function 'request-expire-articles
 					   gnus-newsgroup-name))
-    (gnus-summary-tick-article-forward "flag-followup" nil :visible nil)
     (gnus-summary-mark-as-spam
      "mail/spam" t :visible (spam-group-ham-contents-p gnus-newsgroup-name)
      :help "Mark as spam")
     (gnus-summary-mark-as-read-forward
      "mail/not-spam" nil :visible (spam-group-spam-contents-p gnus-newsgroup-name))
-    ;; Some new commands that may need more suitable icons:
-    (gnus-summary-save-newsrc "save" nil :visible nil)
-    ;; (gnus-summary-show-article "stock_message-display" nil :visible nil)
-    (gnus-summary-prev-article "left-arrow" nil :visible nil)  ;; Emacs 22
-    (gnus-summary-next-article "right-arrow" nil :visible nil) ;; Emacs 22
-    (gnus-summary-prev-unread-article "prev-node") ;; Emacs 22
-    (gnus-summary-next-unread-article "next-node") ;; Emacs 22
-    (gnus-summary-enter-digest-group "right_arrow" nil :visible nil)
-    ;;
-    ;; Maybe some sort-by-... could be added:
-    ;; (gnus-summary-sort-by-author "sort-a-z" nil :visible nil)
-    ;; (gnus-summary-sort-by-date "sort-1-9" nil :visible nil)
     ;;
     (gnus-summary-exit "exit")
     ;; (customize-group 'gnus-summary) "preferences"
