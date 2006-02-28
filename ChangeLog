@@ -1,5 +1,8 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* etc/gnus/gnus-setup.ast, etc/gnus/news-server.ast: Use
+	texinfo-mode.
+
 	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: Rename
 	char*.
 

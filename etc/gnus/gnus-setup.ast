@@ -1,8 +1,10 @@
 @title Configuring Gnus for the first time
 
 @node What do you want to do with Gnus?
+
 @variable outbound (:radio ((item :tag "Send mail via sendmail" "sendmail") (item :tag "Send mail via SMTP" "smtp"))) "sendmail"
-@variable backends (:set ((item :tag "Read news via NNTP" "nntp") (item :tag"Sacrifice a goat" "goat") (item :tag "Read mail, store it locally" "nnml") (item :tag "Read mail and store it on an IMAP server" "nnimap"))) (list "nnml")
+
+@variable backends (:set ((item :tag "Read news via NNTP" "nntp") (item :tag "Read mail, store it locally" "nnml") (item :tag "Read mail and store it on an IMAP server" "nnimap"))) (list "nnml")
 @result primary-mail-selections (list backends outbound)
 
 @text
@@ -38,6 +40,12 @@ TODO: this will be a real link.
 Run M-x assistant and use the news-server.ast file as input.
 @end text
 
+
+@c Local variables:
+@c mode: texinfo
+@c End:
+
 @ignore
    arch-tag: 6b7b200b-9169-4b44-8b32-b73773fa71af
 @end ignore
+
