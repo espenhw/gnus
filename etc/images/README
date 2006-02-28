@@ -9,7 +9,9 @@ The following icons are from GNOME 2.6:
     lock-broken.xpm (stock_lock_broken)
     lock-ok.xpm (stock_lock_ok)
     lock.xpm (stock_lock)
+    next-page.xpm (stock_next-page)
     refresh.xpm (stock_refresh)
+
 
     gnus/toggle-subscription.xpm (stock_task-recurring)
 
@@ -45,7 +47,6 @@ Emacs 21 or look different there.
     diropen.xpm
     help.xpm
     left-arrow.xpm
-    next-page.xpm
     paste.xpm
     print.xpm
     redo.xpm

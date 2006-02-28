@@ -1,5 +1,8 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* etc/images/README (next-page.xpm): From Gnome, not from Emacs
+	22.
+
 	* cancel.xpm, copy.xpm, diropen.xpm, help.xpm, left-arrow.xpm,
 	next-page.xpm, paste.xpm, print.xpm, redo.xpm, right-arrow.xpm,
 	save.xpm, search.xpm: New icons duplicated from Emacs 22.
