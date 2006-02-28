@@ -1,5 +1,11 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* cancel.xpm, copy.xpm, diropen.xpm, help.xpm, left-arrow.xpm,
+	next-page.xpm, paste.xpm, print.xpm, redo.xpm, right-arrow.xpm,
+	save.xpm, search.xpm: New icons duplicated from Emacs 22.
+
+	* etc/images/README: Add these icons.
+
 	* etc/images/README: Describe the new images.
 
 	* etc/gnus/gnus-setup.ast, etc/gnus/news-server.ast: Use

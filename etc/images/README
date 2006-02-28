@@ -36,3 +36,20 @@ The following icon is from AUCTeX:
 
     separator.xpm (sep.xpm)
 
+
+The folling icon are duplicated from Emacs 22.  They are either not present in
+Emacs 21 or look different there.
+
+    cancel.xpm
+    copy.xpm
+    diropen.xpm
+    help.xpm
+    left-arrow.xpm
+    next-page.xpm
+    paste.xpm
+    print.xpm
+    redo.xpm
+    right-arrow.xpm
+    save.xpm
+    search.xpm
+
