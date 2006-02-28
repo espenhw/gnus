@@ -2514,7 +2514,7 @@ REMOVE not nil, remove the ADDRESSES."
 		     (if db `("-d" ,db "-v") `("-v"))))
 	    (setq return (spam-check-bogofilter-headers score))))
 	return)
-    (gnus-error "`spam.el' doesnt support obsolete bogofilter versions")))
+    (gnus-error 5 "`spam.el' doesn't support obsolete bogofilter versions")))
 
 (defun spam-bogofilter-register-with-bogofilter (articles
 						 spam
@@ -2540,7 +2540,7 @@ REMOVE not nil, remove the ADDRESSES."
 		     spam-bogofilter-path
 		     nil nil nil switch
 		     (if db `("-d" ,db "-v") `("-v")))))))
-    (gnus-error "`spam.el' doesnt support obsolete bogofilter versions")))
+    (gnus-error 5 "`spam.el' doesn't support obsolete bogofilter versions")))
 
 (defun spam-bogofilter-register-spam-routine (articles &optional unregister)
   (spam-bogofilter-register-with-bogofilter articles t unregister))
