@@ -1,5 +1,7 @@
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* etc/images/README: Describe the new images.
+
 	* etc/gnus/gnus-setup.ast, etc/gnus/news-server.ast: Use
 	texinfo-mode.
 
