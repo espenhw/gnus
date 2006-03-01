@@ -652,7 +652,7 @@ Each element is a regular expression."
 			"This variable is obsolete in Gnus 5.10.")
 
 (defface gnus-button
-  '((t :weight bold))
+  '((t (:weight bold)))
   "Face used for highlighting a button in the article buffer."
   :group 'gnus-article-buttons)
 
