@@ -903,7 +903,7 @@ New Features
 * Quassia Gnus::                Two times two is four, or Gnus 5.6/5.7.
 * Pterodactyl Gnus::            Pentad also starts with P, AKA Gnus 5.8/5.9.
 * Oort Gnus::                   It's big.  It's far out.  Gnus 5.10/5.11.
-* No Gnus::                     Very punny. 
+* No Gnus::                     Very punny.
 
 Customization
 
@@ -25852,7 +25852,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * Quassia Gnus::                Two times two is four, or Gnus 5.6/5.7.
 * Pterodactyl Gnus::            Pentad also starts with P, AKA Gnus 5.8/5.9.
 * Oort Gnus::                   It's big.  It's far out.  Gnus 5.10/5.11.
-* No Gnus::                     Lars, FIXME!
+* No Gnus::                     Very punny.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
