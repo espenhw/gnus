@@ -1,3 +1,11 @@
+2006-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-group-redraw-when-idle): Rename from
+	gnus-group-redraw-line-number.
+	(gnus-group-redraw-check): Simplify.
+	(gnus-group-tool-bar-update): Remove redraw check.
+	(gnus-group-make-tool-bar): Add redraw check.
+
 2006-03-01  Michael Piotrowski  <mxp@dynalabs.de>  (tiny change)
 
 	* gnus-art.el (gnus-button): Add missing parentheses.
