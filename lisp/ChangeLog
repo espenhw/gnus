@@ -1,5 +1,24 @@
 2006-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el: Require gmm-utils, remove autoloads.
+	(message-tool-bar): Set default based on
+	gmm-tool-bar-style.
+	(message-tool-bar-gnome): Add gmm-customize-mode.
+
+	* gnus-sum.el (gnus-summary-tool-bar): Set default based on
+	gmm-tool-bar-style.
+	(gnus-summary-tool-bar-gnome): Add gmm-customize-mode.
+
+	* gnus-group.el (gnus-group-tool-bar): Set default based on
+	gmm-tool-bar-style.
+	(gnus-group-tool-bar-gnome): Add gmm-customize-mode.
+
+	* gmm-utils.el (gmm-image-directory): Rename variable from
+	gmm-image-load-path.
+	(gmm-image-load-path): Use gmm-image-directory.
+	(gmm-customize-mode): New function.
+	(gmm-tool-bar-style): New variable.
+
 	* gnus-group.el (gnus-group-redraw-when-idle): Rename from
 	gnus-group-redraw-line-number.
 	(gnus-group-redraw-check): Simplify.

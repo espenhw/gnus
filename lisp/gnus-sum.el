@@ -2650,8 +2650,9 @@ Setter function for custom variables."
     (with-current-buffer gnus-summary-buffer
       (gnus-summary-make-tool-bar))))
 
-;; The default will be changed when the new icons have been checked in:
-(defcustom gnus-summary-tool-bar 'gnus-summary-tool-bar-retro
+(defcustom gnus-summary-tool-bar (if (eq gmm-tool-bar-style 'gnome)
+				     'gnus-summary-tool-bar-gnome
+				   'gnus-summary-tool-bar-retro)
   "Specifies the Gnus summary tool bar.
 
 It can be either a list or a symbol refering to a list.  See
@@ -2704,7 +2705,7 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
      "mail/not-spam" nil :visible (spam-group-spam-contents-p gnus-newsgroup-name))
     ;;
     (gnus-summary-exit "exit")
-    ;; (customize-group 'gnus-summary) "preferences"
+    (gmm-customize-mode "preferences" t :help "Edit mode preferences")
     (gnus-info-find-node "help"))
   "List of functions for the summary tool bar (GNOME style).
 

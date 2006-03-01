@@ -1029,8 +1029,9 @@ Setter function for custom variables."
     (with-current-buffer gnus-group-buffer
       (gnus-group-make-tool-bar t))))
 
-;; The default will be changed when the new icons have been checked in:
-(defcustom gnus-group-tool-bar 'gnus-group-tool-bar-retro
+(defcustom gnus-group-tool-bar (if (eq gmm-tool-bar-style 'gnome)
+				   'gnus-group-tool-bar-gnome
+				 'gnus-group-tool-bar-retro)
   "Specifies the Gnus group tool bar.
 
 It can be either a list or a symbol refering to a list.  See
@@ -1074,6 +1075,7 @@ Pre-defined symbols include `gnus-group-tool-bar-gnome' and
     (gnus-group-prev-unread-group "left-arrow")
     (gnus-group-next-unread-group "right-arrow")
     (gnus-group-exit "exit")
+    (gmm-customize-mode "preferences" t :help "Edit mode preferences")
     (gnus-info-find-node "help"))
   "List of functions for the group tool bar (GNOME style).
 

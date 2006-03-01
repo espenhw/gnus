@@ -39,6 +39,7 @@
 (require 'canlock)
 (require 'mailheader)
 (require 'nnheader)
+(require 'gmm-utils)
 ;; This is apparently necessary even though things are autoloaded.
 ;; Because we dynamically bind mail-abbrev-mode-regexp, we'd better
 ;; require mailabbrev here.
@@ -1663,8 +1664,6 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
   (autoload 'gnus-request-post "gnus-int")
   (autoload 'gnus-server-string "gnus")
   (autoload 'idna-to-ascii "idna")
-  (autoload 'gmm-tool-bar-from-list "gmm-utils")
-  (autoload 'gmm-image-load-path "gmm-utils")
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-new-draft-name "mh-comp")
   (autoload 'mh-send-letter "mh-comp")
@@ -6716,8 +6715,9 @@ Setter function for custom variables."
     ;; When used as ":set" function:
     (set-default symbol value)))
 
-;; The default will be changed when the new icons have been checked in:
-(defcustom message-tool-bar 'message-tool-bar-retro
+(defcustom message-tool-bar (if (eq gmm-tool-bar-style 'gnome)
+				'message-tool-bar-gnome
+			      'message-tool-bar-retro)
   "Specifies the message mode tool bar.
 
 It can be either a list or a symbol refering to a list.  See
@@ -6750,6 +6750,7 @@ Pre-defined symbols include `message-tool-bar-gnome' and
     (message-insert-importance-high "important" nil :visible nil)
     (message-insert-importance-low "unimportant" nil :visible nil)
     (message-insert-disposition-notification-to "receipt" nil :visible nil)
+    (gmm-customize-mode "preferences" t :help "Edit mode preferences")
     (message-info "help" t :help "Message manual"))
   "List of items for the message tool bar (GNOME style).
 
