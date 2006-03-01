@@ -1,3 +1,7 @@
+2006-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind line-number-at-pos.
+
 2006-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-with-unibyte-current-buffer): Add note.
