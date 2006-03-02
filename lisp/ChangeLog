@@ -1,5 +1,7 @@
 2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-redraw-check): Remove redundant tests.
+
 	* gmm-utils.el (gmm-image-load-path): Mention ../etc search in doc
 	string.
 

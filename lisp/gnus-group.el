@@ -999,24 +999,18 @@ simple manner.")
 
 (defvar gnus-group-tool-bar-map nil)
 
-;; Work around for Emacs not updating the tool bar, see
+;; Work around for Emacs not updating the tool bar automatically, see
 ; http://www.google.com/groups?as_umsgid=v9u0an3hti.fsf@marauder.physik.uni-ulm.de
+;; Don't make this customizable yet.
 (defvar gnus-group-redraw-when-idle 2
   "When non-nil, redraw the Group buffer frame when idle.
 Internal variable.")
-;; Don't make this customizable yet.
 
 (defun gnus-group-redraw-check ()
   "Check if we need to redraw the frame."
-  (when (and gnus-group-redraw-when-idle
-	     (not (featurep 'xemacs))
-	     (boundp 'tool-bar-mode)
-	     tool-bar-mode)
-    ;;(run-with-idle-timer gnus-group-redraw-when-idle
-    ;;			 nil 'redraw-frame (selected-frame))
+  (when gnus-group-redraw-when-idle
     (run-with-idle-timer gnus-group-redraw-when-idle
-			 nil 'force-window-update)
-    t))
+			 nil 'force-window-update)))
 
 (defun gnus-group-tool-bar-update (&optional symbol value)
   "Update group buffer toolbar.
