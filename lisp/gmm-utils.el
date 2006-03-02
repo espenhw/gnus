@@ -305,9 +305,9 @@ See the function `gmm-image-load-path'.")
 (defun gmm-image-load-path (library image &optional path)
   "Return a suitable search path for images of LIBRARY.
 
-Images for LIBRARY are found in \"../../etc/images\" relative to
-the files in \"lisp/LIBRARY\", in `image-load-path', or in
-`load-path'.
+Images for LIBRARY are searched for in \"../../etc/images\" and
+\"../etc/images\" relative to the files in \"lisp/LIBRARY\", in
+`image-load-path', or in `load-path'.
 
 This function returns value of `load-path' augmented with the
 path to IMAGE.  If PATH is given, it is used instead of

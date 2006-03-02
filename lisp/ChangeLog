@@ -1,5 +1,12 @@
 2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gmm-utils.el (gmm-image-load-path): Mention ../etc search in doc
+	string.
+
+	* gnus-sum.el (gnus-summary-tool-bar-gnome): Don't use
+	gnus-summary-insert-new-articles when unplugged.  Remove
+	gnus-summary-search-article-forward.
+
 	* gmm-utils.el (gmm-tool-bar-style): Test tool-bar-mode and
 	display-visual-class instead of display-color-cells.
 
