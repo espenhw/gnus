@@ -2672,15 +2672,16 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
 
 (defcustom gnus-summary-tool-bar-gnome
   '((gnus-summary-post-news "mail/compose" nil)
-    (gnus-summary-insert-new-articles "mail/inbox")
-    ;;
+    (gnus-summary-insert-new-articles "mail/inbox" nil
+				      :visible (or (not gnus-agent)
+						   gnus-plugged))
     (gnus-summary-reply-with-original "mail/reply")
     (gnus-summary-reply "mail/reply" nil :visible nil)
     (gnus-summary-followup-with-original "mail/reply-all")
     (gnus-summary-followup "mail/reply-all" nil :visible nil)
     (gnus-summary-mail-forward "mail/forward")
     (gnus-summary-save-article "mail/save")
-    (gnus-summary-search-article-forward "search")
+    (gnus-summary-search-article-forward "search" nil :visible nil)
     (gnus-summary-print-article "print")
     (gnus-summary-tick-article-forward "flag-followup" nil :visible nil)
     ;; Some new commands that may need more suitable icons:
