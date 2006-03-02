@@ -176,9 +176,30 @@ This is copy of the `lazy' widget in Emacs 22.1 provided for compatibility."
 			  :tag "Other"
 			  (symbol :tag "Icon item")))))
 
-(defcustom gmm-tool-bar-style (if (> (display-color-cells) 256)
-				  'gnome
-				'retro)
+;; (defun gmm-color-cells (&optional display)
+;;   "Return the number of color cells supported by DISPLAY.
+;; Compatibility function."
+;;   ;; `display-color-cells' doesn't return more than 256 even if color depth is
+;;   ;; > 8 in Emacs 21.
+;;   ;;
+;;   ;; Feel free to add proper XEmacs support.
+;;   (let* ((cells (and (fboundp 'display-color-cells)
+;; 		     (display-color-cells display)))
+;; 	 (plane (and (fboundp 'x-display-planes)
+;; 		     (ash 1 (x-display-planes))))
+;; 	 (none -1))
+;;     (max (if (integerp cells) cells none)
+;; 	 (if (integerp plane) plane none))))
+
+(defcustom gmm-tool-bar-style
+  (if (and (boundp 'tool-bar-mode)
+	   tool-bar-mode
+	   (and (fboundp 'display-visual-class)
+		(not (memq (display-visual-class)
+			   (list 'static-gray 'gray-scale
+				 'static-color 'pseudo-color)))))
+      'gnome
+    'retro)
   "Prefered tool bar style."
   :type '(choice (const :tag "GNOME style" 'gnome)
 		 (const :tag "Retro look"  'retro))
@@ -347,7 +368,6 @@ path to IMAGE.  If PATH is given, it is used instead of
 	 (nconc (list gmm-image-directory)
 		(delete gmm-image-directory
 			(copy-sequence load-path))))))
-
 
 (defun gmm-customize-mode (&optional mode)
   "Customize customization group for MODE.

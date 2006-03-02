@@ -1,3 +1,8 @@
+2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-tool-bar-style): Test tool-bar-mode and
+	display-visual-class instead of display-color-cells.
+
 2006-03-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload customize-group for XEmacs.
