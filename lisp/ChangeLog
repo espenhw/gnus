@@ -1,5 +1,7 @@
 2006-03-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* dgnushack.el: Autoload customize-group for XEmacs.
+
 	* mml.el (mml-generate-mime-1): Encode parts other than text/* or
 	message/* containing non-ASCII text properly.
 
