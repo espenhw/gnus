@@ -518,7 +518,15 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 				 (mm-find-buffer-file-coding-system
 				  filename)))))
 	       (t
-		(insert (cdr (assq 'contents cont)))))
+		(let ((contents (cdr (assq 'contents cont))))
+		  (if (if (featurep 'xemacs)
+			  (string-match "[^\000-\377]" contents)
+			(mm-multibyte-string-p contents))
+		      (progn
+			(mm-enable-multibyte)
+			(insert contents)
+			(setq charset (mm-encode-body charset)))
+		    (insert contents)))))
 	      (setq encoding (mm-encode-buffer type)
 		    coded (mm-string-as-multibyte (buffer-string))))
 	    (mml-insert-mime-headers cont type charset encoding nil)
