@@ -62,6 +62,12 @@
 	(spam-bogofilter-register-with-bogofilter): Fix args of
 	`gnus-error' calls.
 
+2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-draft.el (gnus-draft-send): Bind message-signature to avoid
+	unnecessary interaction when sending queued mails.  Reported by
+	TAKAHASHI Yoshio <tkh@jp.fujitsu.com>.
+
 2006-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-sequence-of-unread-articles): Return nil if
