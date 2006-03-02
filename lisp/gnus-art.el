@@ -2606,6 +2606,27 @@ charset defined in `gnus-summary-show-article-charset-alist' is used."
 	   "-I" (symbol-name charset) "-O" (symbol-name charset))))
     (mm-inline-wash-with-stdin nil "w3m" "-dump" "-T" "text/html")))
 
+(defvar gnus-article-browse-html-temp nil
+  "Temporary files created by `gnus-article-browse-html-parts'")
+
+(defvar gnus-article-browse-delete-temp 'ask
+  "Defines how to deal with temporary files created by
+`gnus-article-browse-html-parts':
+Possible values: t: Delete
+                 ask: Ask before delete
+                 nil: Don't delete")
+
+(defun gnus-article-browse-delete-temp-files ()
+  "Delete temp-files created by `gnus-article-browse-html-parts'."
+  (when (and gnus-article-browse-html-temp
+	     (or (and (equal gnus-article-browse-delete-temp 'ask)
+		      (y-or-n-p "Delete temporary files from showing HTML-mails? "))
+		 (eq gnus-article-browse-delete-temp t)))
+    (dolist (tmp-file gnus-article-browse-html-temp)
+      (when (file-exists-p tmp-file)
+	(delete-file tmp-file)))
+    (setq gnus-article-browse-html-temp nil)))
+
 (defun gnus-article-browse-html-parts (list)
   "View all \"text/html\" parts from LIST.
 Recurse into multiparts."
@@ -2621,6 +2642,7 @@ Recurse into multiparts."
 				;; Do we need to care for 8.3 filenames?
 				"mm-" nil ".html")))
 		 (mm-save-part-to-file handle tmp-file)
+		 (add-to-list 'gnus-article-browse-html-temp tmp-file)
 		 (browse-url tmp-file)
 		 (setq showed t)))
 	      ;; If multipart, recurse
@@ -2631,7 +2653,7 @@ Recurse into multiparts."
 			      (gnus-article-browse-html-parts handle))))))))
     showed))
 
-;; TODO: Key binding; Remove temp files.
+;; TODO: Key binding
 (defun gnus-article-browse-html-article ()
   "View \"text/html\" parts of the current article with a WWW browser."
   (interactive)
