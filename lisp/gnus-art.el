@@ -2606,26 +2606,44 @@ charset defined in `gnus-summary-show-article-charset-alist' is used."
 	   "-I" (symbol-name charset) "-O" (symbol-name charset))))
     (mm-inline-wash-with-stdin nil "w3m" "-dump" "-T" "text/html")))
 
-(defvar gnus-article-browse-html-temp nil
-  "Temporary files created by `gnus-article-browse-html-parts'")
+(defvar gnus-article-browse-html-temp-list nil
+  "List of temporary files created by `gnus-article-browse-html-parts'.
+Internal variable.")
 
-(defvar gnus-article-browse-delete-temp 'ask
-  "Defines how to deal with temporary files created by
-`gnus-article-browse-html-parts':
-Possible values: t: Delete
-                 ask: Ask before delete
-                 nil: Don't delete")
+(defcustom gnus-article-browse-delete-temp 'ask
+  "What to do with temporary files from `gnus-article-browse-html-parts'.
+If nil, don't delete temporary files.  If it is t, delete them on
+exit from the summary buffer.  If it is the symbol `file', query
+on each file, if it is `ask' ask once when exiting from the
+summary buffer."
+  :group 'gnus-article
+  :type '(choice (const :tag "Don't delete" nil)
+		 (const :tag "Don't ask" t)
+		 (const :tag "Ask" ask)
+		 (const :tag "Ask for each file" file)))
 
-(defun gnus-article-browse-delete-temp-files ()
+(defun gnus-article-browse-delete-temp-files (&optional how)
   "Delete temp-files created by `gnus-article-browse-html-parts'."
-  (when (and gnus-article-browse-html-temp
-	     (or (and (equal gnus-article-browse-delete-temp 'ask)
-		      (y-or-n-p "Delete temporary files from showing HTML-mails? "))
-		 (eq gnus-article-browse-delete-temp t)))
-    (dolist (tmp-file gnus-article-browse-html-temp)
-      (when (file-exists-p tmp-file)
-	(delete-file tmp-file)))
-    (setq gnus-article-browse-html-temp nil)))
+  (unless how
+    (setq how gnus-article-browse-delete-temp))
+  (when (and gnus-article-browse-html-temp-list how)
+    (when (and (eq how 'ask)
+	       (y-or-n-p (format
+			  "Delete all %s temporary HTML file(s)? "
+			  (length gnus-article-browse-html-temp-list)))
+	       (setq how t)))
+    (dolist (file gnus-article-browse-html-temp-list)
+      (when (and (file-exists-p file)
+		 (or (eq how t)
+		     ;; `how' is neither `nil', `ask' nor `t' (i.e. `file'):
+		     (gnus-y-or-n-p
+		      (format "Delete temporary HTML file `%s'? " file))))
+	(delete-file file))
+      ;; Also remove file from the list when not deleted or if file doesn't
+      ;; exist anymore.
+      (setq gnus-article-browse-html-temp-list
+	    (delete file gnus-article-browse-html-temp-list))))
+  gnus-article-browse-html-temp-list)
 
 (defun gnus-article-browse-html-parts (list)
   "View all \"text/html\" parts from LIST.
@@ -2642,7 +2660,12 @@ Recurse into multiparts."
 				;; Do we need to care for 8.3 filenames?
 				"mm-" nil ".html")))
 		 (mm-save-part-to-file handle tmp-file)
-		 (add-to-list 'gnus-article-browse-html-temp tmp-file)
+		 (add-to-list 'gnus-article-browse-html-temp-list tmp-file)
+		 (add-hook 'gnus-summary-prepare-exit-hook
+			   'gnus-article-browse-delete-temp-files)
+		 (add-hook 'gnus-exit-gnus-hook
+			   (lambda  ()
+			     (gnus-article-browse-delete-temp-files t)))
 		 (browse-url tmp-file)
 		 (setq showed t)))
 	      ;; If multipart, recurse
