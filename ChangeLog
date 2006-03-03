@@ -21,6 +21,11 @@
 	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: Rename
 	char*.
 
+2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Add note about "Out of environment space" on Windows
+	98 SE.  Avoid `>' in echo.
+
 2006-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* ChangeLog, texi/ChangeLog, lisp/ChangeLog: Fix "From so-and-so"

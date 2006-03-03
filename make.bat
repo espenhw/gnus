@@ -3,6 +3,16 @@
 rem Written by Frank Schmitt (ich@frank-schmitt.net)
 rem based on the work by David Charlap (shamino@writeme.com)
 rem .
+rem .
+rem From http://my.gnus.org/node/343:
+rem   A comment on installing Gnus on Windows 98 SE that might help others: When
+rem   I ran the "make.bat" file in the 5.10.6 tarball I got a bunch of "Out of
+rem   environment space" messages. The solution was to (1) make a shortcut to
+rem   the make.bat file, and (2) right-click on the shortcut, setting "Cmd line"
+rem   in the "Program" tab in "properties" to include the parameters make.bat
+rem   requires, and "initial environment" in the "memories" tab, to the maximum
+rem   (in my case, anyway, 2560).
+rem .
 rem Clear PWD so emacs doesn't get confused
 set GNUS_PWD_SAVE=%PWD%
 set PWD=
@@ -21,8 +31,8 @@ goto noemacs
 set EMACS=emacs.bat
 echo.
 echo ***************************************************************************
-echo * Using emacs.bat (If you've got en Emacs >= 20.3 please remove Emacs.bat,
-echo * it isn't needed anymore.
+echo * Using emacs.bat  (If you've got Emacs 20.3 or higher please remove
+echo * Emacs.bat, it isn't needed anymore.)
 echo ***************************************************************************
 echo.
 goto emacs
