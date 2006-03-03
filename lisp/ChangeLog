@@ -1,5 +1,13 @@
 2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-group.el (gnus-group-tool-bar-gnome): Check if gnus-topic.el
+	is loaded.
+
+	* gnus-sum.el (gnus-summary-tool-bar-gnome): Check if spam.el is
+	loaded.
+
+2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mm-decode.el (mm-get-part): Don't use
 	mm-with-unibyte-current-buffer.
 

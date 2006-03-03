@@ -1060,8 +1060,12 @@ Pre-defined symbols include `gnus-group-tool-bar-gnome' and
 			     :visible (or (not gnus-agent)
 					  gnus-plugged))
     ;; FIXME: gnus-*-read-group should have a better help text.
-    (gnus-topic-read-group "open" nil :visible gnus-topic-mode)
-    (gnus-group-read-group "open" nil :visible (not gnus-topic-mode))
+    (gnus-topic-read-group "open" nil
+			   :visible (and (boundp 'gnus-topic-mode)
+					 gnus-topic-mode))
+    (gnus-group-read-group "open" nil
+			   :visible (not (and (boundp 'gnus-topic-mode)
+					      gnus-topic-mode)))
     ;; (gnus-group-find-new-groups "???" nil)
     (gnus-group-save-newsrc "save")
     (gnus-group-describe-group "describe")

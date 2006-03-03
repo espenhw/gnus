@@ -2700,10 +2700,14 @@ Pre-defined symbols include `gnus-summary-tool-bar-gnome' and
      :visible (gnus-check-backend-function 'request-expire-articles
 					   gnus-newsgroup-name))
     (gnus-summary-mark-as-spam
-     "mail/spam" t :visible (spam-group-ham-contents-p gnus-newsgroup-name)
+     "mail/spam" t
+     :visible (and (fboundp 'spam-group-ham-contents-p)
+		   (spam-group-ham-contents-p gnus-newsgroup-name))
      :help "Mark as spam")
     (gnus-summary-mark-as-read-forward
-     "mail/not-spam" nil :visible (spam-group-spam-contents-p gnus-newsgroup-name))
+     "mail/not-spam" nil
+     :visible (and (fboundp 'spam-group-spam-contents-p)
+		   (spam-group-spam-contents-p gnus-newsgroup-name)))
     ;;
     (gnus-summary-exit "exit")
     (gmm-customize-mode "preferences" t :help "Edit mode preferences")
