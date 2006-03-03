@@ -1,3 +1,11 @@
+2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-get-part): Don't use
+	mm-with-unibyte-current-buffer.
+
+	* gnus-sum.el (gnus-summary-set-display-table): Don't nix out
+	characters 160 through 255 in Emacs 23.
+
 2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-article-browse-html-temp-list): Rename from
