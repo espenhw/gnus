@@ -1,3 +1,7 @@
+2006-03-03  Daniel Pittman <daniel@rimspace.net>
+
+	* nnimap.el (nnimap-request-update-info-internal): Optimize.
+
 2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-tool-bar-gnome): Check if gnus-topic.el
