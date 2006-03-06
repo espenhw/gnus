@@ -307,8 +307,9 @@ Images for LIBRARY are searched for in \"../../etc/images\" and
 well as in `image-load-path' and `load-path'.
 
 This function returns the value of `load-path' augmented with the
-path to IMAGE. If PATH is given, it is used instead of
-`load-path'.
+path to IMAGE.  If PATH is given, it is used instead of
+`load-path'.  If PATH is t, return a single image directory
+instead of a path.
 
 Here is an example that uses a common idiom to provide
 compatibility with versions of Emacs that lack the variable
@@ -366,8 +367,10 @@ This function is used by Emacs versions that don't have
       (error "Could not find image %s for library %s" image library)))
 
     ;; Return augmented `image-load-path' or `load-path'.
-    (cond ((and path (symbolp path))
-           (nconc (list image-directory)
+    (cond ((eq path t)
+	   image-directory)
+	  ((and path (symbolp path))
+	   (nconc (list image-directory)
                   (delete image-directory
                           (if (boundp path)
                               (copy-sequence (symbol-value path))

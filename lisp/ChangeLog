@@ -1,5 +1,8 @@
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gmm-utils.el (gmm-image-load-path-for-library): Return single
+	directory if path is t.
+
 	* gnus-group.el (gnus-group-make-tool-bar): Use add-hook.
 	Suggested by Stefan Monnier <monnier@iro.umontreal.ca>.
 
