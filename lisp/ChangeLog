@@ -1,3 +1,10 @@
+2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-image-load-path-for-library): Sync with
+	mh-compat.el revision 1.9 in Emacs.  Rename `gmm-image-load-path'.
+	Add example to docstring.  Rename local variables.  Move error
+	checks to default case in cond and simplify.
+
 2006-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-w3m-cid-retrieve-1): Check carefully whether

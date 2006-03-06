@@ -298,76 +298,83 @@ This function returns nil on those systems."
 
 ;; From MH-E with modifications:
 
-(defvar gmm-image-directory nil
-  "Directory where images are found.
-See the function `gmm-image-load-path'.")
-
-(defun gmm-image-load-path (library image &optional path)
-  "Return a suitable search path for images of LIBRARY.
+(gmm-defun-compat gmm-image-load-path-for-library
+  image-load-path-for-library (library image &optional path)
+  "Return a suitable search path for images relative to LIBRARY.
 
 Images for LIBRARY are searched for in \"../../etc/images\" and
-\"../etc/images\" relative to the files in \"lisp/LIBRARY\", in
-`image-load-path', or in `load-path'.
+\"../etc/images\" relative to the files in \"lisp/LIBRARY\" as
+well as in `image-load-path' and `load-path'.
 
-This function returns value of `load-path' augmented with the
-path to IMAGE.  If PATH is given, it is used instead of
-`load-path'."
-  (unless library (error "No library specified."))
-  (unless image   (error "No image specified."))
-  (cond (gmm-image-directory) ;; User setting exists.
-	((let (gmm-library-name d1ei d2ei)
-	   ;; Try relative setting
-	   ;; First, find library in the load-path.
-	   (setq gmm-library-name (locate-library library))
-	   (if (not gmm-library-name)
-	       (error "Cannot find library `%s' in load-path" library))
-	   ;; And then set gmm-image-directory relative to that.
-	   (setq
-	    ;; Go down 2 levels...
-	    d2ei (expand-file-name
-		  (concat (file-name-directory gmm-library-name)
-			  "../../etc/images"))
-	    ;; Go down 1 level...
-	    d1ei (expand-file-name
-		  (concat (file-name-directory gmm-library-name)
-			  "../etc/images")))
-	   (setq gmm-image-directory
-		 ;; Set it to nil if image is not found...
-		 (cond ((file-exists-p (expand-file-name image d2ei)) d2ei)
-		       ((file-exists-p (expand-file-name image d1ei)) d1ei)))))
-	((let ((img image)
-	       (dir (or
-		     ;; Images in image-load-path.
-		     (gmm-image-search-load-path image)
-		     ;; Images in load-path.
-		     (locate-library image)))
-	       parent)
-	   (and dir
-		(setq dir (file-name-directory dir))
-		(progn
-		  ;; Remove subdirectories.
-		  (while (setq parent (file-name-directory img))
-		    (setq img (directory-file-name parent)
-			  dir (expand-file-name "../" dir)))
-		  (setq gmm-image-directory dir))))))
-  ;;
-  (unless (file-exists-p gmm-image-directory)
-    (error "Directory `%s' in gmm-image-directory does not exist"
-	     gmm-image-directory))
-  (unless (file-exists-p (expand-file-name image gmm-image-directory))
-    (error "Directory `%s' in gmm-image-directory does not contain image `%s'."
-	   gmm-image-directory image))
-  ;; Return augmented `image-load-path' or `load-path'.
-  (cond ((and path (symbolp path))
-	 (nconc (list gmm-image-directory)
-		(delete gmm-image-directory
-			(if (boundp path)
-			    (copy-sequence (symbol-value path))
-			  nil))))
-	(t
-	 (nconc (list gmm-image-directory)
-		(delete gmm-image-directory
-			(copy-sequence load-path))))))
+This function returns the value of `load-path' augmented with the
+path to IMAGE. If PATH is given, it is used instead of
+`load-path'.
+
+Here is an example that uses a common idiom to provide
+compatibility with versions of Emacs that lack the variable
+`image-load-path':
+
+  (let ((load-path
+         (image-load-path-for-library \"mh-e\" \"mh-logo.xpm\"))
+        (image-load-path
+         (image-load-path-for-library \"mh-e\" \"mh-logo.xpm\" 'image-load-path)))
+    (mh-tool-bar-folder-buttons-init))
+
+This function is used by Emacs versions that don't have
+`image-load-path-for-library'."
+  (unless library (error "No library specified"))
+  (unless image   (error "No image specified"))
+  (let ((image-directory))
+    (cond
+     ;; Try relative setting.
+     ((let (library-name d1ei d2ei)
+        ;; First, find library in the load-path.
+        (setq library-name (locate-library library))
+        (if (not library-name)
+            (error "Cannot find library %s in load-path" library))
+        ;; And then set image-directory relative to that.
+        (setq
+         ;; Go down 2 levels.
+         d2ei (expand-file-name
+               (concat (file-name-directory library-name) "../../etc/images"))
+         ;; Go down 1 level.
+         d1ei (expand-file-name
+               (concat (file-name-directory library-name) "../etc/images")))
+        (setq image-directory
+              ;; Set it to nil if image is not found.
+              (cond ((file-exists-p (expand-file-name image d2ei)) d2ei)
+                    ((file-exists-p (expand-file-name image d1ei)) d1ei)))))
+     ;; Check for images in image-load-path or load-path.
+     ((let ((img image)
+            (dir (or
+                  ;; Images in image-load-path.
+                  (gmm-image-search-load-path image)
+                  ;; Images in load-path.
+                  (locate-library image)))
+            parent)
+        ;; Since the image might be in a nested directory (for
+        ;; example, mail/attach.pbm), adjust `image-directory'
+        ;; accordingly.
+        (and dir
+             (setq dir (file-name-directory dir))
+             (progn
+               (while (setq parent (file-name-directory img))
+                 (setq img (directory-file-name parent)
+                       dir (expand-file-name "../" dir)))
+               (setq image-directory dir)))))
+     (t
+      (error "Could not find image %s for library %s" image library)))
+
+    ;; Return augmented `image-load-path' or `load-path'.
+    (cond ((and path (symbolp path))
+           (nconc (list image-directory)
+                  (delete image-directory
+                          (if (boundp path)
+                              (copy-sequence (symbol-value path))
+                            nil))))
+          (t
+           (nconc (list image-directory)
+                  (delete image-directory (copy-sequence load-path)))))))
 
 (defun gmm-customize-mode (&optional mode)
   "Customize customization group for MODE.
