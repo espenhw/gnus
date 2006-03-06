@@ -21,6 +21,10 @@
 	* etc/images/mail/save.xpm, etc/images/mail/preview.xpm: Rename
 	char*.
 
+2006-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* xemacs.mak: Remove outdated file.  Use make.bat instead.
+
 2006-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* make.bat: Add note about "Out of environment space" on Windows

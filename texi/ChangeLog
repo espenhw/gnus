@@ -1,3 +1,9 @@
+2006-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* xemacs.mak: Remove outdated file.  Use make.bat instead.
+
+	* gnus.texi (Oort Gnus): Add `mm-fill-flowed'.
+
 2006-02-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail Spool): nnml-use-compressed-files can be a
