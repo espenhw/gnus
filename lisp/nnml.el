@@ -770,11 +770,11 @@ non-nil.")
     (nnml-open-server server))
   (setq nnml-directory (expand-file-name nnml-directory))
   ;; Recurse down the directories.
-  (nnml-generate-nov-databases-1 nnml-directory nil t)
+  (nnml-generate-nov-databases-directory nnml-directory nil t)
   ;; Save the active file.
   (nnmail-save-active nnml-group-alist nnml-active-file))
 
-(defun nnml-generate-nov-databases-1 (dir &optional seen no-active)
+(defun nnml-generate-nov-databases-directory (dir &optional seen no-active)
   "Regenerate the NOV database in DIR."
   (interactive "DRegenerate NOV in: ")
   (setq dir (file-name-as-directory dir))
@@ -785,7 +785,7 @@ non-nil.")
     (dolist (dir (directory-files dir t nil t))
       (when (and (not (string-match "^\\." (file-name-nondirectory dir)))
 		 (file-directory-p dir))
-	(nnml-generate-nov-databases-1 dir seen)))
+	(nnml-generate-nov-databases-directory dir seen)))
     ;; Do this directory.
     (let ((files (sort (nnheader-article-to-file-alist dir)
 		       'car-less-than-car)))
@@ -1043,6 +1043,8 @@ Use the nov database for the current group if available."
 ;; #### the caller. This will become important to avoid code duplication when
 ;; #### other backends get a compaction feature. Also, note that invalidating
 ;; #### the "original article buffer" is already done at an upper level.
+
+;; Shouldn't `nnml-request-compact-group' be interactive? --rsteib
 
 (defun nnml-request-compact-group (group &optional server save)
   (nnml-possibly-change-directory group server)
