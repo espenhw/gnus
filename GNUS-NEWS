@@ -1,6 +1,6 @@
 GNUS NEWS -- history of user-visible changes.
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005,
+   2006 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send Gnus bug reports to bugs@gnus.org.
@@ -34,7 +34,7 @@ data in `~/.newsrc.eld'.
 `gnus-picon-style'.  *Note Picons::.
 
 ** You can import and export your RSS subscriptions from OPML files.
-*Note RSS::.
+ *Note RSS::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
@@ -143,14 +143,17 @@ Gnus will connect to the news host by way of the intermediate host
 ** You can change the location of XEmacs' toolbars in Gnus buffers.  See
 `gnus-use-toolbar' and `message-use-toolbar'.
 
+** The nnml back end allows other compression programs beside `gzip' for
+compressed message files.  *Note Mail Spool::.
+
 
 * For older news, see Gnus info node "New Features".
 
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005,
+   2006 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim copies
    of this document as received, in any medium, provided that the
