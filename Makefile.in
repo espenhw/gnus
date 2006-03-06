@@ -7,6 +7,35 @@ srcdir = @srcdir@
 EMACS = @EMACS@
 XEMACS = @EMACS@
 
+# # # # # # # # # # Release variables (for maintainer only):
+#
+# Release files, not included in CVS:
+TAR_BALL_EXTRA = README
+# Files removed from `cvs export' output before creating the tar-ball:
+CVS_IGNORE_FILES = .cvsignore contrib/.cvsignore etc/.cvsignore	\
+  lisp/.cvsignore texi/.cvsignore
+# Name and mail address in ChangeLog format for the release commit:
+COMMITTER = Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
+# CODENAME for development releases (CODENAME must have a trailing space,
+# (e.g. "Oort ")
+CODENAME = 
+# Files with hard-coded versions numbers:
+RELEASE_COMMIT_FILES = lisp/ChangeLog lisp/gnus.el \
+  texi/ChangeLog texi/gnus.texi texi/message.texi texi/gnus-faq.texi
+# Pattern matching previous version(s):
+OLD_PATTERN = 5.10.[0-9]*
+# CVS tag of the previous version:
+OLD_TAG     = v5-10-6
+# CVS tag of the current release:
+TAG  = v5-10
+#
+# Procedure:
+# - release-bump-version
+# - release-commit
+# - release-files
+#
+# # # # # # # # # # End of release variables
+
 all: lick info
 
 lick:
@@ -63,6 +92,81 @@ $(srcdir)/configure: $(srcdir)/configure.in
 	cd $(srcdir) && autoconf
 Makefile: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+# # # # # # # # # # Release targets (for maintainer only):
+
+release-check-settings:
+	@echo
+	@echo "COMMITTER = '$(COMMITTER)'"
+	@echo "  (example: 'Foo Bar  <foo.bar@somewhere.invalid>')"
+	@echo "VERSION   = '$(VERSION)' (example: '5.10.6')"
+	@echo "CODENAME  = '$(CODENAME)' (example: 'Oort ')"
+	@echo "TAG       = '$(TAG)' (example: 'v5-10-6')"
+	@echo "OLDTAG    = '$(OLDTAG)' (example: 'v5-10-5')"
+	@echo
+	@if [ x"$(VERSION)" = x ]; then echo "error: No VERSION given."; exit 1; else :; fi
+	@if [ x"$(TAG)" = x ]; then echo "error: No TAG given."; exit 1; else :; fi
+
+# Needs GNU grep and a recent GNU sed:
+release-bump-version:	release-check-settings
+	sed -i -e '/^(defconst gnus-version-number /s|"$(OLD_PATTERN)"|"$(VERSION)"|' lisp/gnus.el
+	sed -i -e '/^.newcommand{.gnusversionname}{Gnus v/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus.texi
+	sed -i -e '/^This manual corresponds to Gnus v/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus.texi
+	sed -i -e '/^This manual corresponds to Message v/s|$(OLD_PATTERN)|$(VERSION)|' texi/message.texi
+	sed -i -e '/The current release ($(OLD_PATTERN)) should/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus-faq.texi
+	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" texi/ChangeLog; then \
+	  echo "texi/ChangeLog is already updated"; \
+	else \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.texi, gnus-faq.texi, message.texi: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" texi/ChangeLog; \
+	fi
+	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" lisp/ChangeLog; then \
+	  echo "lisp/ChangeLog is already updated"; \
+	else \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.el: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" lisp/ChangeLog; \
+	fi
+	cvs diff -U0 $(RELEASE_COMMIT_FILES); sleep 2
+
+release-revert-changelog:
+	rm -i      lisp/ChangeLog texi/ChangeLog
+	cvs update lisp/ChangeLog texi/ChangeLog
+
+release-commit:	release-check-settings
+	@echo -e '\007'
+	@echo
+	@echo "Really do the release-commit for $(CODENAME)Gnus v$(VERSION)?"
+	@echo
+	@echo "Hit RET to continue or Ctrl-C to abort."
+	@echo
+	@read dummy
+	cvs commit -m "$(CODENAME)Gnus v$(VERSION) is released." $(RELEASE_COMMIT_FILES)
+	@echo
+	@echo "Add tag $(TAG) to CVS?"
+	@echo "Hit RET to continue or Ctrl-C to abort."
+	@echo
+	@read dummy
+	cvs tag $(TAG)
+
+release-files:	release-cvs-export release-make-tar-ball release-diff
+
+release-cvs-export gnus-$(TAG):	release-check-settings
+	cvs export -d gnus-$(TAG) -r $(TAG) gnus
+
+release-make-tar-ball:	gnus-$(TAG) $(TAR_BALL_EXTRA)
+	[ -d gnus-$(TAG) ] && cd gnus-$(TAG) && \
+	  rm $(CVS_IGNORE_FILES) || true
+	tar zcvf gnus-$(TAG).tar.gz gnus-$(TAG)
+
+# Make a diff between current and previous release.  Example:
+# ftp://quimby.gnus.org/pub/gnus/ding-patches/gnus-5.10.5-5.10.6.diff.gz
+release-diff:	release-check-settings
+	cvs diff -r $(OLD_TAG) -r $(TAG) > temp.diff || true
+	mv temp.diff gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
+	gzip         gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
+
+release-post-clean:	release-check-settings
+	rm -fr gnus-$(TAG) temp.diff
+
+# # # # # # # # # # End of release targets
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

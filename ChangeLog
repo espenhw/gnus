@@ -1,3 +1,7 @@
+2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (release-*): New targets.
+
 2006-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* todo: Remove nnweb.  Add: widget for posting styles, doc string
