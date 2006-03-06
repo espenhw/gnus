@@ -1,5 +1,5 @@
 ;;; gnus-news.el --- a hack to create GNUS-NEWS from texinfo source
-;; Copyright (C)  2004, 2005  Free Software Foundation, Inc.
+;; Copyright (C)  2004, 2005, 2006  Free Software Foundation, Inc.
 
 ;; Author: Reiner Steib  <Reiner.Steib@gmx.de>
 ;; Keywords: tools
@@ -27,7 +27,7 @@
 
 (defvar gnus-news-header-disclaimer
 "GNUS NEWS -- history of user-visible changes.
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send Gnus bug reports to bugs\@gnus.org.

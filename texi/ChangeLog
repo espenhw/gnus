@@ -1,3 +1,7 @@
+2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.el, gnus-news.texi: Update copyright.
+
 2006-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* xemacs.mak: Remove outdated file.  Use make.bat instead.
