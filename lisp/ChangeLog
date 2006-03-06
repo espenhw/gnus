@@ -1,3 +1,9 @@
+2006-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-w3m-cid-retrieve-1): Check carefully whether
+	handle is multipart when calling it recursively.
+	(mm-w3m-cid-retrieve): Display warning if retrieving fails.
+
 2006-03-03  Daniel Pittman <daniel@rimspace.net>
 
 	* nnimap.el (nnimap-request-update-info-internal): Optimize.
