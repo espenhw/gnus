@@ -1135,8 +1135,7 @@ When FORCE, rebuild the tool bar."
 	     ;; Why?  --rsteib
 	     (or (not gnus-group-tool-bar-map) force))
     (when gnus-group-redraw-when-idle
-      (add-to-list (make-local-variable 'post-command-hook)
-		   'gnus-group-redraw-check))
+      (add-hook 'post-command-hook 'gnus-group-redraw-check nil t))
     (let* ((load-path
 	    (gmm-image-load-path "gnus" "gnus/toggle-subscription.xpm"
 				 'load-path))

@@ -1,5 +1,8 @@
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-make-tool-bar): Use add-hook.
+	Suggested by Stefan Monnier <monnier@iro.umontreal.ca>.
+
 	* gnus-art.el (gnus-article-browse-delete-temp-files): Simplify
 	resetting gnus-article-browse-html-temp-list.
 
