@@ -1,5 +1,8 @@
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-article-browse-delete-temp-files): Simplify
+	resetting gnus-article-browse-html-temp-list.
+
 	* gmm-utils.el (gmm-image-load-path-for-library): Sync with
 	mh-compat.el revision 1.9 in Emacs.  Rename `gmm-image-load-path'.
 	Add example to docstring.  Rename local variables.  Move error

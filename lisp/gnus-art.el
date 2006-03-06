@@ -2622,11 +2622,13 @@ summary buffer."
 		 (const :tag "Ask" ask)
 		 (const :tag "Ask for each file" file)))
 
+;; Cf. mm-postponed-undisplay-list / mm-destroy-postponed-undisplay-list.
+
 (defun gnus-article-browse-delete-temp-files (&optional how)
   "Delete temp-files created by `gnus-article-browse-html-parts'."
-  (unless how
-    (setq how gnus-article-browse-delete-temp))
-  (when (and gnus-article-browse-html-temp-list how)
+  (when (and gnus-article-browse-html-temp-list
+	     (or how
+		 (setq how gnus-article-browse-delete-temp)))
     (when (and (eq how 'ask)
 	       (y-or-n-p (format
 			  "Delete all %s temporary HTML file(s)? "
@@ -2638,11 +2640,10 @@ summary buffer."
 		     ;; `how' is neither `nil', `ask' nor `t' (i.e. `file'):
 		     (gnus-y-or-n-p
 		      (format "Delete temporary HTML file `%s'? " file))))
-	(delete-file file))
-      ;; Also remove file from the list when not deleted or if file doesn't
-      ;; exist anymore.
-      (setq gnus-article-browse-html-temp-list
-	    (delete file gnus-article-browse-html-temp-list))))
+	(delete-file file)))
+    ;; Also remove file from the list when not deleted or if file doesn't
+    ;; exist anymore.
+    (setq gnus-article-browse-html-temp-list nil))
   gnus-article-browse-html-temp-list)
 
 (defun gnus-article-browse-html-parts (list)
