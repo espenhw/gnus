@@ -299,7 +299,7 @@ This function returns nil on those systems."
 ;; From MH-E with modifications:
 
 (gmm-defun-compat gmm-image-load-path-for-library
-  image-load-path-for-library (library image &optional path)
+  image-load-path-for-library (library image &optional path no-error)
   "Return a suitable search path for images relative to LIBRARY.
 
 Images for LIBRARY are searched for in \"../../etc/images\" and
@@ -310,6 +310,9 @@ This function returns the value of `load-path' augmented with the
 path to IMAGE.  If PATH is given, it is used instead of
 `load-path'.  If PATH is t, return a single image directory
 instead of a path.
+
+If NO-ERROR is non-nil, don't signal an error if no suitable path
+for can be found.
 
 Here is an example that uses a common idiom to provide
 compatibility with versions of Emacs that lack the variable
@@ -363,6 +366,9 @@ This function is used by Emacs versions that don't have
                  (setq img (directory-file-name parent)
                        dir (expand-file-name "../" dir)))
                (setq image-directory dir)))))
+     (no-error
+      ;; In this case we will return a nil element
+      (gmm-message 1 "Could not find image %s for library %s" image library))
      (t
       (error "Could not find image %s for library %s" image library)))
 
