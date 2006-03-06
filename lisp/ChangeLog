@@ -1,5 +1,7 @@
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gmm-utils.el (gmm-image-load-path): Add alias.
+
 	* nnml.el (nnml-generate-nov-databases-directory): Rename from
 	nnml-generate-nov-databases-1.
 	(nnml-generate-nov-databases): Use it.

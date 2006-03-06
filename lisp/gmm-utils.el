@@ -385,6 +385,9 @@ This function is used by Emacs versions that don't have
            (nconc (list image-directory)
                   (delete image-directory (copy-sequence load-path)))))))
 
+;; No time to do it right ATM, sorry...
+(defalias 'gmm-image-load-path 'gmm-image-load-path-for-library)
+
 (defun gmm-customize-mode (&optional mode)
   "Customize customization group for MODE.
 If mode is nil, use `major-mode' of the curent buffer."
