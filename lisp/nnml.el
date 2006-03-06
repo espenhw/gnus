@@ -775,7 +775,9 @@ non-nil.")
   (nnmail-save-active nnml-group-alist nnml-active-file))
 
 (defun nnml-generate-nov-databases-directory (dir &optional seen no-active)
-  "Regenerate the NOV database in DIR."
+  "Regenerate the NOV database in DIR.
+
+Unless no-active is non-nil, update the active file too."
   (interactive "DRegenerate NOV in: ")
   (setq dir (file-name-as-directory dir))
   ;; Only scan this sub-tree if we haven't been here yet.

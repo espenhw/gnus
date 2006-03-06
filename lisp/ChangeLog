@@ -3,6 +3,8 @@
 	* nnml.el (nnml-generate-nov-databases-directory): Rename from
 	nnml-generate-nov-databases-1.
 	(nnml-generate-nov-databases): Use it.
+	(nnml-generate-nov-databases-directory): Document no-active
+	argument.
 
 	* gmm-utils.el (gmm-image-load-path-for-library): Return single
 	directory if path is t.  Add no-error.
