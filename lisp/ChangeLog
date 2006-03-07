@@ -1,3 +1,14 @@
+2006-03-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-make-tool-bar): Rename gmm-image-load-path
+	to gmm-image-load-path-for-library.  Call with no-error argument.
+
+	* gnus-sum.el (gnus-summary-make-tool-bar): Ditto.
+
+	* gnus-group.el (gnus-group-make-tool-bar): Ditto.
+
+	* gmm-utils.el (gmm-image-load-path): Remove alias.
+
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gmm-utils.el (gmm-image-load-path): Add alias.

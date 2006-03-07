@@ -1137,11 +1137,13 @@ When FORCE, rebuild the tool bar."
     (when gnus-group-redraw-when-idle
       (add-hook 'post-command-hook 'gnus-group-redraw-check nil t))
     (let* ((load-path
-	    (gmm-image-load-path "gnus" "gnus/toggle-subscription.xpm"
-				 'load-path))
+	    (gmm-image-load-path-for-library "gnus"
+					     "gnus/toggle-subscription.xpm"
+					     nil t))
 	   (image-load-path
-	    (gmm-image-load-path "gnus" "gnus/toggle-subscription.xpm"
-				 'image-load-path))
+	    (gmm-image-load-path-for-library "gnus"
+					     "gnus/toggle-subscription.xpm"
+					     'image-load-path t))
 	   (map (gmm-tool-bar-from-list gnus-group-tool-bar
 					gnus-group-tool-bar-zap-list
 					'gnus-group-mode-map)))
