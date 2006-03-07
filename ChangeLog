@@ -1,3 +1,14 @@
+2006-03-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* etc/images/README: Add GIMP script.
+	(attach.xpm): Move to top level.
+	(sort-*.xpm) Add.
+
+	* etc/images/sort-ascending.xpm,
+	etc/images/sort-column-ascending.xpm,
+	etc/images/sort-criteria.xpm, etc/images/sort-descending.xpm,
+	etc/images/sort-row-ascending.xpm: New icons from GNOME 2.6.
+
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Generated.

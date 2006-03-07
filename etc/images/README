@@ -1,5 +1,6 @@
 The following icons are from GNOME 2.6:
 
+    attach.xpm (stock_attach)
     connect.xpm (stock_connect)
     contact.xpm (stock_contact)
     delete.xpm (stock_delete)
@@ -11,11 +12,14 @@ The following icons are from GNOME 2.6:
     lock.xpm (stock_lock)
     next-page.xpm (stock_next-page)
     refresh.xpm (stock_refresh)
-
+    sort-ascending.xpm (stock_sort-ascending)
+    sort-column-ascending.xpm (stock_sort-column-ascending)
+    sort-criteria.xpm (stock_sort-criteria)
+    sort-descending.xpm (stock_sort-descending)
+    sort-row-ascending.xpm (stock_sort-row-ascending)
 
     gnus/toggle-subscription.xpm (stock_task-recurring)
 
-    mail/attach.xpm (stock_attach)
     mail/compose.xpm (stock_mail-compose)
     mail/copy.xpm (stock_mail-copy)
     mail/forward.xpm (stock_mail-forward)
@@ -29,10 +33,12 @@ The following icons are from GNOME 2.6:
     mail/send.xpm (stock_mail-send)
     mail/spam.xpm (stock_spam)
 
-The following icons were contributed by from Adam Sjøgren <asjo@koldfront.dk>:
+
+The following icons were contributed by Adam Sjøgren <asjo@koldfront.dk>:
 
     mail/preview.xpm (combining stock_mail and stock_zoom)
     mail/save.xpm    (combining stock_mail, stock_save and stock_convert) 
+
 
 The following icon is from AUCTeX:
 
@@ -54,3 +60,17 @@ Emacs 21 or look different there.
     save.xpm
     search.xpm
 
+
+The GNOME's stock_*.png files were converted to XPM using the following GIMP
+script:
+
+;; -*- scheme -*-
+;; Put this file in ~/.gimp-*/scripts/
+;; gimp -i -b '(rs-save-as-xpm "foo.png" "foo.xpm" 127)'  '(gimp-quit 0)'
+(define (rs-save-as-xpm filename filename2 threshold)
+  (let* ((image (car (gimp-file-load RUN-NONINTERACTIVE filename filename)))
+	 (drawable (car (gimp-image-get-active-layer image))))
+    (file-xpm-save RUN-NONINTERACTIVE image drawable
+		   filename2 filename2 threshold)
+    (gimp-image-delete image)))
+;; end
