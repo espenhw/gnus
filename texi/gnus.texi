@@ -9499,10 +9499,10 @@ Display "multipart/alternative" parts as "multipart/mixed".
 Display "multipart/related" parts as "multipart/mixed".
 
 If displaying "text/html" is discouraged, see
-@code{mm-discouraged-alternatives} in @ref{Display Customization,
-Display Customization, , emacs-mime, Emacs-Mime Manual}.  Images or
-other material inside a "multipart/related" part might be overlooked
-when this variable is @code{nil}.
+@code{mm-discouraged-alternatives}, images or other material inside a
+"multipart/related" part might be overlooked when this variable is
+@code{nil}.  @ref{Display Customization, Display Customization, ,
+emacs-mime, Emacs-Mime Manual}.
 
 @vindex gnus-mime-display-multipart-as-mixed
 @item gnus-mime-display-multipart-as-mixed
@@ -26908,6 +26908,8 @@ groups.
 A new file from Raymond Scholz @email{rscholz@@zonix.de} for deuglifying
 broken Outlook (Express) articles.
 
+@c FIXME: `gnus-load' is mentioned in README, which is not included in
+@c CVS.  We should find a better place for this item.
 @item
 @code{(require 'gnus-load)}
 

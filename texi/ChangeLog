@@ -1,3 +1,10 @@
+2006-03-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* emacs-mime.texi (Display Customization): Reword image/.* stuff.
+
+	* gnus.texi (Oort Gnus): Add note about `gnus-load'.
+	(MIME Commands): Fix mm-discouraged-alternatives.
+
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.el, gnus-news.texi: Update copyright.
