@@ -2,6 +2,7 @@
 
 	* message.el (message-make-tool-bar): Rename gmm-image-load-path
 	to gmm-image-load-path-for-library.  Call with no-error argument.
+	(message-tool-bar-gnome): Rename "mail/attach" to "attach".
 
 	* gnus-sum.el (gnus-summary-make-tool-bar): Ditto.
 

@@ -6741,7 +6741,7 @@ Pre-defined symbols include `message-tool-bar-gnome' and
     (message-send-and-exit "mail/send")
     (message-dont-send "mail/save-draft")
     (message-kill-buffer "close") ;; stock_cancel
-    (mml-attach-file "mail/attach" mml-mode-map)
+    (mml-attach-file "attach" mml-mode-map)
     (ispell-message "spell" nil :visible (not flyspell-mode))
     (flyspell-buffer "spell" t :visible flyspell-mode
 		     :help "Flyspell whole buffer")
