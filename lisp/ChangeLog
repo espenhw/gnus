@@ -1,3 +1,8 @@
+2006-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-split-it): Invert match-partial-words behavior
+	if optional last element is specified in splits (FIELD VALUE...).
+
 2006-03-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-make-tool-bar): Rename gmm-image-load-path
