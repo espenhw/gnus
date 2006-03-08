@@ -999,19 +999,6 @@ simple manner.")
 
 (defvar gnus-group-tool-bar-map nil)
 
-;; Work around for Emacs not updating the tool bar automatically, see
-; http://www.google.com/groups?as_umsgid=v9u0an3hti.fsf@marauder.physik.uni-ulm.de
-;; Don't make this customizable yet.
-(defvar gnus-group-redraw-when-idle 2
-  "When non-nil, redraw the Group buffer frame when idle.
-Internal variable.")
-
-(defun gnus-group-redraw-check ()
-  "Check if we need to redraw the frame."
-  (when gnus-group-redraw-when-idle
-    (run-with-idle-timer gnus-group-redraw-when-idle
-			 nil 'force-window-update)))
-
 (defun gnus-group-tool-bar-update (&optional symbol value)
   "Update group buffer toolbar.
 Setter function for custom variables."
@@ -1134,8 +1121,6 @@ When FORCE, rebuild the tool bar."
 	     ;; The Gnus 5.10.6 code checked (default-value 'tool-bar-mode).
 	     ;; Why?  --rsteib
 	     (or (not gnus-group-tool-bar-map) force))
-    (when gnus-group-redraw-when-idle
-      (add-hook 'post-command-hook 'gnus-group-redraw-check nil t))
     (let* ((load-path
 	    (gmm-image-load-path-for-library "gnus"
 					     "gnus/toggle-subscription.xpm"

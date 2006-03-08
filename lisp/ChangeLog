@@ -1,3 +1,9 @@
+2006-03-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-group-redraw-when-idle)
+	(gnus-group-redraw-check): Remove.
+	(gnus-group-make-tool-bar): Remove gnus-group-redraw-check.
+
 2006-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-split-it): Invert match-partial-words behavior
