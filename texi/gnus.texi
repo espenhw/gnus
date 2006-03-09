@@ -14274,9 +14274,9 @@ the end of the matched @var{value}, the @var{split} is ignored.  If
 none of the @var{restrict} clauses match, @var{split} is processed.
 
 The last element @var{invert-match-partial-words} is optional.  If it is
-not omitted and the value is non-nil, the match-partial-words behavior
-controlled by the @code{nnmail-split-fancy-match-partial-words} variable
-(see below) will be inverted.
+not omitted and the value is non-@code{nil}, the match-partial-words
+behavior controlled by the @code{nnmail-split-fancy-match-partial-words}
+variable (see below) will be inverted.  (New in Gnus 5.10.7)
 
 @item (| @var{split} @dots{})
 If the split is a list, and the first element is @code{|} (vertical
@@ -14372,7 +14372,8 @@ aforementioned in this section.  If the flag is set, word boundaries on
 both sides of a word are ignored even if
 @code{nnmail-split-fancy-match-partial-words} is @code{nil}.
 Contrarily, if the flag is set, word boundaries are not ignored even if
-@code{nnmail-split-fancy-match-partial-words} is non-@code{nil}.
+@code{nnmail-split-fancy-match-partial-words} is non-@code{nil}.  (New
+in Gnus 5.10.7)
 @end enumerate
 
 @vindex nnmail-split-abbrev-alist
@@ -15227,7 +15228,7 @@ equivalent to @samp{.gz}.
 @vindex nnml-compressed-files-size-threshold
 Default size threshold for compressed message files.  Message files with
 bodies larger than that many characters will be automatically compressed
-if @code{nnml-use-compressed-files} is non-nil.
+if @code{nnml-use-compressed-files} is non-@code{nil}.
 
 @end table
 
@@ -22858,11 +22859,11 @@ default.
 @item gnus-use-toolbar
 @vindex gnus-use-toolbar
 This variable specifies the position to display the toolbar.  If
-@code{nil}, don't display toolbars.  If it is non-nil, it should be one
-of the symbols @code{default}, @code{top}, @code{bottom}, @code{right},
-and @code{left}.  @code{default} means to use the default toolbar, the
-rest mean to display the toolbar on the place which those names show.
-The default is @code{default}.
+@code{nil}, don't display toolbars.  If it is non-@code{nil}, it should
+be one of the symbols @code{default}, @code{top}, @code{bottom},
+@code{right}, and @code{left}.  @code{default} means to use the default
+toolbar, the rest mean to display the toolbar on the place which those
+names show.  The default is @code{default}.
 
 @item gnus-toolbar-thickness
 @vindex gnus-toolbar-thickness
