@@ -9,6 +9,15 @@
 	etc/images/sort-criteria.xpm, etc/images/sort-descending.xpm,
 	etc/images/sort-row-ascending.xpm: New icons from GNOME 2.6.
 
+2006-03-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (release-check-settings): Add status and
+	suggestions.
+	(release-files): Remove duplicate release-cvs-export.
+	(README): New target.
+	(release-files, release-make-tar-ball, release-diff): List files.
+	(README, release-make-tar-ball): Fix.
+
 2006-03-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Generated.

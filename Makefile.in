@@ -106,6 +106,13 @@ release-check-settings:
 	@echo
 	@if [ x"$(VERSION)" = x ]; then echo "error: No VERSION given."; exit 1; else :; fi
 	@if [ x"$(TAG)" = x ]; then echo "error: No TAG given."; exit 1; else :; fi
+	@echo
+	@echo Settings checked successfully.
+	@echo
+	@echo You may now make...
+	@echo   release-bump-version
+	@echo   release-commit
+	@echo   release-files
 
 # Needs GNU grep and a recent GNU sed:
 release-bump-version:	release-check-settings
@@ -146,15 +153,25 @@ release-commit:	release-check-settings
 	@read dummy
 	cvs tag $(TAG)
 
-release-files:	release-cvs-export release-make-tar-ball release-diff
+release-files:	release-make-tar-ball release-diff
+	@echo "Release files have been created:"
+	@ls -l gnus-$(TAG).tar.gz
+	@ls -l        gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
 
 release-cvs-export gnus-$(TAG):	release-check-settings
+	rm -fr gnus-$(TAG)
 	cvs export -d gnus-$(TAG) -r $(TAG) gnus
 
 release-make-tar-ball:	gnus-$(TAG) $(TAR_BALL_EXTRA)
 	[ -d gnus-$(TAG) ] && cd gnus-$(TAG) && \
 	  rm $(CVS_IGNORE_FILES) || true
+	cp -p $(TAR_BALL_EXTRA) gnus-$(TAG)/
 	tar zcvf gnus-$(TAG).tar.gz gnus-$(TAG)
+	ls -l gnus-$(TAG).tar.gz
+
+README:
+	@echo README is not in CVS.  Get it from Lars.
+	false
 
 # Make a diff between current and previous release.  Example:
 # ftp://quimby.gnus.org/pub/gnus/ding-patches/gnus-5.10.5-5.10.6.diff.gz
@@ -162,6 +179,7 @@ release-diff:	release-check-settings
 	cvs diff -r $(OLD_TAG) -r $(TAG) > temp.diff || true
 	mv temp.diff gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
 	gzip         gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
+	ls -l        gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
 
 release-post-clean:	release-check-settings
 	rm -fr gnus-$(TAG) temp.diff
