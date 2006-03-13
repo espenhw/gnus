@@ -1,3 +1,10 @@
+2006-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-uu.el (mm-uu-dissect): Dissect all parts correctly.
+
+	* gnus-art.el (gnus-mime-display-single): Make sure there is an
+	empty line between a part and a message part.
+
 2006-03-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* smiley.el: Add more test smileys.
