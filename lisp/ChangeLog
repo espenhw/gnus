@@ -1,3 +1,9 @@
+2006-03-14  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-unique-id): Don't use message-number-base36
+	if (user-uid) is a float.  Reported by Bjorn Solberg
+	<bjorn_ding1@hekneby.org>.
+
 2006-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-dissect): Dissect all parts correctly.

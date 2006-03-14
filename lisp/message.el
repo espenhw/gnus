@@ -4767,7 +4767,9 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
 	   (* 25 25)))
   (let ((tm (current-time)))
     (concat
-     (if (memq system-type '(ms-dos emx vax-vms))
+     (if (or (memq system-type '(ms-dos emx vax-vms))
+	     ;; message-number-base36 doesn't handle bigints.
+	     (float (user-uid)))
 	 (let ((user (downcase (user-login-name))))
 	   (while (string-match "[^a-z0-9_]" user)
 	     (aset user (match-beginning 0) ?_))
