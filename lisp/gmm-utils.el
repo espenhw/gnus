@@ -298,8 +298,10 @@ This function returns nil on those systems."
 
 ;; From MH-E with modifications:
 
-(gmm-defun-compat gmm-image-load-path-for-library
-  image-load-path-for-library (library image &optional path no-error)
+;; Don't use `gmm-defun-compat' until API changes in
+;; `image-load-path-for-library' in Emacs CVS are completed.
+
+(defun gmm-image-load-path-for-library (library image &optional path no-error)
   "Return a suitable search path for images relative to LIBRARY.
 
 Images for LIBRARY are searched for in \"../../etc/images\" and
@@ -312,7 +314,7 @@ path to IMAGE.  If PATH is given, it is used instead of
 instead of a path.
 
 If NO-ERROR is non-nil, don't signal an error if no suitable path
-for can be found.
+can be found.
 
 Here is an example that uses a common idiom to provide
 compatibility with versions of Emacs that lack the variable

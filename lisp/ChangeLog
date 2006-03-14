@@ -1,3 +1,8 @@
+2006-03-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-image-load-path-for-library): Fix typo.  Use
+	`defun' instead of `gmm-defun-compat'.
+
 2006-03-14  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-unique-id): Don't use message-number-base36
