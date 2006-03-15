@@ -1,3 +1,10 @@
+2006-03-15  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus-art.el (gnus-article-only-boring-p): Bind
+	inhibit-point-motion-hooks to avoid infinite loop when entering
+	intangible text.  Reported by Ralf Wachinger
+	<rwnewsmampfer@geekmail.de>.
+
 2006-03-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gmm-utils.el (gmm-image-load-path-for-library): Fix typo.  Use

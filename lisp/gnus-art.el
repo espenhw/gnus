@@ -5551,14 +5551,15 @@ not have a face in `gnus-article-boring-faces'."
 	     (boundp 'gnus-article-boring-faces)
 	     (symbol-value 'gnus-article-boring-faces))
     (save-excursion
-      (catch 'only-boring
-	(while (re-search-forward "\\b\\w\\w" nil t)
-	  (forward-char -1)
-	  (when (not (gnus-intersection
-		      (gnus-faces-at (point))
-		      (symbol-value 'gnus-article-boring-faces)))
-	    (throw 'only-boring nil)))
-	(throw 'only-boring t)))))
+      (let ((inhibit-point-motion-hooks t))
+	(catch 'only-boring
+	  (while (re-search-forward "\\b\\w\\w" nil t)
+	    (forward-char -1)
+	    (when (not (gnus-intersection
+			(gnus-faces-at (point))
+			(symbol-value 'gnus-article-boring-faces)))
+	      (throw 'only-boring nil)))
+	  (throw 'only-boring t))))))
 
 (defun gnus-article-refer-article ()
   "Read article specified by message-id around point."
