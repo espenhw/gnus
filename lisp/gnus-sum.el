@@ -2767,6 +2767,8 @@ See `gmm-tool-bar-from-list' for the format of the list."
   :set 'gnus-summary-tool-bar-update
   :group 'gnus-summary)
 
+(defvar image-load-path)
+
 (defun gnus-summary-make-tool-bar (&optional force)
   "Make a summary mode tool bar from `gnus-summary-tool-bar'.
 When FORCE, rebuild the tool bar."
@@ -2778,10 +2780,9 @@ When FORCE, rebuild the tool bar."
 	    (gmm-image-load-path-for-library "gnus"
 					     "mail/save.xpm"
 					     nil t))
-	   (image-load-path
-	    (gmm-image-load-path-for-library "gnus"
-					     "mail/save.xpm"
-					     'image-load-path t))
+           (image-load-path (cons (car load-path)
+                                  (when (boundp 'image-load-path)
+                                    image-load-path)))
 	   (map (gmm-tool-bar-from-list gnus-summary-tool-bar
 					gnus-summary-tool-bar-zap-list
 					'gnus-summary-mode-map)))

@@ -6796,6 +6796,8 @@ See `gmm-tool-bar-from-list' for the format of the list."
   :set 'message-tool-bar-update
   :group 'message)
 
+(defvar image-load-path)
+
 (defun message-make-tool-bar (&optional force)
   "Make a message mode tool bar from `message-tool-bar-list'.
 When FORCE, rebuild the tool bar."
@@ -6804,14 +6806,13 @@ When FORCE, rebuild the tool bar."
 	     tool-bar-mode
 	     (or (not message-tool-bar-map) force))
     (setq message-tool-bar-map
-	  (let ((load-path
-		 (gmm-image-load-path-for-library "message"
-						  "mail/save-draft.xpm"
-						  nil t))
-		(image-load-path
-		 (gmm-image-load-path-for-library "message"
-						  "mail/save-draft.xpm"
-						  'image-load-path t)))
+	  (let* ((load-path
+		  (gmm-image-load-path-for-library "message"
+						   "mail/save-draft.xpm"
+						   nil t))
+		 (image-load-path (cons (car load-path)
+					(when (boundp 'image-load-path)
+					  image-load-path))))
 	    (gmm-tool-bar-from-list message-tool-bar
 				    message-tool-bar-zap-list
 				    'message-mode-map))))

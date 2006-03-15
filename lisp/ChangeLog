@@ -1,3 +1,17 @@
+2006-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-image-load-path-for-library): Sync with
+	image.el, revision 1.59, in Emacs.  Pass value of path rather than
+	symbol.  Always return list of directories.  Guarantee that image
+	directory comes first.
+
+	* message.el (message-make-tool-bar): Adjust to new API of
+	`gmm-image-load-path-for-library'.
+
+	* gnus-sum.el (gnus-summary-make-tool-bar): Ditto.
+
+	* gnus-group.el (gnus-group-make-tool-bar): Ditto.
+
 2006-03-15  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* gnus-art.el (gnus-article-only-boring-p): Bind

@@ -1112,6 +1112,8 @@ See `gmm-tool-bar-from-list' for the format of the list."
   :set 'gnus-group-tool-bar-update
   :group 'gnus-group)
 
+(defvar image-load-path)
+
 (defun gnus-group-make-tool-bar (&optional force)
   "Make a group mode tool bar from `gnus-group-tool-bar'.
 When FORCE, rebuild the tool bar."
@@ -1125,10 +1127,9 @@ When FORCE, rebuild the tool bar."
 	    (gmm-image-load-path-for-library "gnus"
 					     "gnus/toggle-subscription.xpm"
 					     nil t))
-	   (image-load-path
-	    (gmm-image-load-path-for-library "gnus"
-					     "gnus/toggle-subscription.xpm"
-					     'image-load-path t))
+           (image-load-path (cons (car load-path)
+                                  (when (boundp 'image-load-path)
+                                    image-load-path)))
 	   (map (gmm-tool-bar-from-list gnus-group-tool-bar
 					gnus-group-tool-bar-zap-list
 					'gnus-group-mode-map)))

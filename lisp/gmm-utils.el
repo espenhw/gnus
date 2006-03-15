@@ -304,30 +304,32 @@ This function returns nil on those systems."
 (defun gmm-image-load-path-for-library (library image &optional path no-error)
   "Return a suitable search path for images relative to LIBRARY.
 
-Images for LIBRARY are searched for in \"../../etc/images\" and
-\"../etc/images\" relative to the files in \"lisp/LIBRARY\" as
-well as in `image-load-path' and `load-path'.
+First it searches for IMAGE in a path suitable for LIBRARY, which
+includes \"../../etc/images\" and \"../etc/images\" relative to
+the library file itself, followed by `image-load-path' and
+`load-path'.
 
-This function returns the value of `load-path' augmented with the
-path to IMAGE.  If PATH is given, it is used instead of
-`load-path'.  If PATH is t, return a single image directory
-instead of a path.
+Then this function returns a list of directories which contains
+first the directory in which IMAGE was found, followed by the
+value of `load-path'. If PATH is given, it is used instead of
+`load-path'.
 
-If NO-ERROR is non-nil, don't signal an error if no suitable path
-can be found.
+If NO-ERROR is non-nil and a suitable path can't be found, don't
+signal an error. Instead, return a list of directories as before,
+except that nil appears in place of the image directory.
 
 Here is an example that uses a common idiom to provide
 compatibility with versions of Emacs that lack the variable
 `image-load-path':
 
-  (let ((load-path
-         (image-load-path-for-library \"mh-e\" \"mh-logo.xpm\"))
-        (image-load-path
-         (image-load-path-for-library \"mh-e\" \"mh-logo.xpm\" 'image-load-path)))
-    (mh-tool-bar-folder-buttons-init))
+    ;; Shush compiler.
+    (defvar image-load-path)
 
-This function is used by Emacs versions that don't have
-`image-load-path-for-library'."
+    (let* ((load-path (image-load-path-for-library \"mh-e\" \"mh-logo.xpm\"))
+           (image-load-path (cons (car load-path)
+                                  (when (boundp 'image-load-path)
+                                    image-load-path))))
+      (mh-tool-bar-folder-buttons-init))"
   (unless library (error "No library specified"))
   (unless image   (error "No image specified"))
   (let ((image-directory))
@@ -354,7 +356,7 @@ This function is used by Emacs versions that don't have
      ((let ((img image)
             (dir (or
                   ;; Images in image-load-path.
-                  (gmm-image-search-load-path image)
+                  (gmm-image-search-load-path image) ;; "gmm-" prefix!
                   ;; Images in load-path.
                   (locate-library image)))
             parent)
@@ -369,23 +371,13 @@ This function is used by Emacs versions that don't have
                        dir (expand-file-name "../" dir)))
                (setq image-directory dir)))))
      (no-error
-      ;; In this case we will return a nil element
-      (gmm-message 1 "Could not find image %s for library %s" image library))
+      (message "Could not find image %s for library %s" image library))
      (t
       (error "Could not find image %s for library %s" image library)))
 
-    ;; Return augmented `image-load-path' or `load-path'.
-    (cond ((eq path t)
-	   image-directory)
-	  ((and path (symbolp path))
-	   (nconc (list image-directory)
-                  (delete image-directory
-                          (if (boundp path)
-                              (copy-sequence (symbol-value path))
-                            nil))))
-          (t
-           (nconc (list image-directory)
-                  (delete image-directory (copy-sequence load-path)))))))
+    ;; Return an augmented `path' or `load-path'.
+    (nconc (list image-directory)
+           (delete image-directory (copy-sequence (or path load-path))))))
 
 (defun gmm-customize-mode (&optional mode)
   "Customize customization group for MODE.
