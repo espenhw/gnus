@@ -1,9 +1,15 @@
+2006-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (gmm-image-load-path-for-library): Prefer user's
+	images in image-load-path.  [Sync with image.el, revision 1.60, in
+	Emacs.]
+
 2006-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gmm-utils.el (gmm-image-load-path-for-library): Sync with
-	image.el, revision 1.59, in Emacs.  Pass value of path rather than
-	symbol.  Always return list of directories.  Guarantee that image
-	directory comes first.
+	* gmm-utils.el (gmm-image-load-path-for-library): Pass value of
+	path rather than symbol.  Always return list of directories.
+	Guarantee that image directory comes first.  [Sync with image.el,
+	revision 1.59, in Emacs.]
 
 	* message.el (message-make-tool-bar): Adjust to new API of
 	`gmm-image-load-path-for-library'.
