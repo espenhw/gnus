@@ -3381,7 +3381,7 @@
 	(mm-display-inline-fontify): Rewrite for decoding and decompressing
 	parts.
 
-2004-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2005-02-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mm-view.el (mm-display-inline-fontify): Decode a part according
 	to the charset parameter.
@@ -3396,12 +3396,12 @@
 	* nntp.el (nntp-marks-changed-p): Use time-less-p to compare the
 	timestamps.
 
-2005-01-29  Jari Aalto  <jari.aalto@cante.net>
+2005-02-02  Jari Aalto  <jari.aalto@cante.net>
 
 	* gnus-sum.el (gnus-list-of-unread-articles): Improve active
 	groups error checking and notify user.
 
-2004-09-04  Jari Aalto  <jari.aalto@poboxes.com>
+2005-02-02  Jari Aalto  <jari.aalto@poboxes.com>
 
 	* message.el (message-send-mail-function): Check existence of
 	sendmail-program first before using default value
