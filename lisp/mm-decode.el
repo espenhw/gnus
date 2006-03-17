@@ -35,6 +35,7 @@
 (eval-and-compile
   (autoload 'mm-inline-partial "mm-partial")
   (autoload 'mm-inline-external-body "mm-extern")
+  (autoload 'mm-extern-cache-contents "mm-extern")
   (autoload 'mm-insert-inline "mm-view"))
 
 (defvar gnus-current-window-configuration)
@@ -1076,17 +1077,35 @@ external if displayed external."
 ;;; Functions for outputting parts
 ;;;
 
+(defmacro mm-with-part (handle &rest forms)
+  "Run FORMS in the temp buffer containing the contents of HANDLE."
+  `(let* ((handle ,handle)
+	  ;; The multibyteness of the temp buffer should be turned on
+	  ;; if inserting a multibyte string.  Contrarily, the buffer's
+	  ;; multibyteness should be off if inserting a unibyte string,
+	  ;; especially if a string contains 8bit data.
+	  (default-enable-multibyte-characters
+	    (with-current-buffer (mm-handle-buffer handle)
+	      (mm-multibyte-p))))
+     (with-temp-buffer
+       (insert-buffer-substring (mm-handle-buffer handle))
+       (mm-disable-multibyte)
+       (mm-decode-content-transfer-encoding
+	(mm-handle-encoding handle)
+	(mm-handle-media-type handle))
+       ,@forms)))
+(put 'mm-with-part 'lisp-indent-function 1)
+(put 'mm-with-part 'edebug-form-spec '(body))
+
 (defun mm-get-part (handle)
   "Return the contents of HANDLE as a string."
-  (let ((default-enable-multibyte-characters
-	  (with-current-buffer (mm-handle-buffer handle)
-	    (mm-multibyte-p))))
-    (with-temp-buffer
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-disable-multibyte)
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle)
-       (mm-handle-media-type handle))
+  (if (equal (mm-handle-media-type handle) "message/external-body")
+      (progn
+	(unless (mm-handle-cache handle)
+	  (mm-extern-cache-contents handle))
+	(with-current-buffer (mm-handle-buffer (mm-handle-cache handle))
+	  (buffer-string)))
+    (mm-with-part handle
       (buffer-string))))
 
 (defun mm-insert-part (handle)
@@ -1143,18 +1162,19 @@ string if you do not like underscores."
 (defun mm-save-part (handle &optional prompt)
   "Write HANDLE to a file.
 PROMPT overrides the default one used to ask user for a file name."
-  (let* ((name (mail-content-type-get (mm-handle-type handle) 'name))
-	 (filename (mail-content-type-get
-		    (mm-handle-disposition handle) 'filename))
-	 file)
+  (let ((filename (or (mail-content-type-get
+		       (mm-handle-disposition handle) 'filename)
+		      (mail-content-type-get
+		       (mm-handle-type handle) 'name)))
+	file)
     (when filename
       (setq filename (gnus-map-function mm-file-name-rewrite-functions
 					(file-name-nondirectory filename))))
     (setq file
 	  (mm-with-multibyte
-	    (read-file-name (or prompt "Save MIME part to: ")
-			    (or mm-default-directory default-directory)
-			    nil nil (or filename name ""))))
+	   (read-file-name (or prompt "Save MIME part to: ")
+			   (or mm-default-directory default-directory)
+			   nil nil (or filename ""))))
     (setq mm-default-directory (file-name-directory file))
     (and (or (not (file-exists-p file))
 	     (yes-or-no-p (format "File %s already exists; overwrite? "

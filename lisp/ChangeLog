@@ -1,3 +1,18 @@
+2006-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-with-part): New macro.
+	(mm-get-part): Use it; work with message/external-body as well.
+	(mm-save-part): Treat name and filename equally.
+
+	* mm-extern.el (mm-extern-cache-contents): New function.
+	(mm-inline-external-body): Use it; force the part to be displayed;
+	move undisplayer added to the cached handle to the parent.
+
+	* gnus-art.el (gnus-mime-save-part-and-strip): Add name parameter.
+	(gnus-mime-view-part-as-type): Work with message/external-body.
+
+	* gnus-util.el (gnus-tool-bar-update): Bind tool-bar-mode.
+
 2006-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gmm-utils.el (gmm-image-load-path-for-library): Prefer user's
