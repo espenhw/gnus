@@ -785,7 +785,7 @@ If EXAMINE is non-nil the group is selected read-only."
  	   (port (if nnimap-server-port
  		     (int-to-string nnimap-server-port)
  		   "imap"))
-	   (user (netrc-machine-user-or-password 
+	   (user (netrc-machine-user-or-password
 		  "login"
 		  list
 		  (list server
@@ -793,7 +793,7 @@ If EXAMINE is non-nil the group is selected read-only."
 			    nnimap-address))
 		  (list port)
 		  (list "imap" "imaps")))
-	   (passwd (netrc-machine-user-or-password 
+	   (passwd (netrc-machine-user-or-password
 		    "password"
 		    list
 		    (list server
@@ -804,7 +804,7 @@ If EXAMINE is non-nil the group is selected read-only."
       (if (imap-authenticate user passwd nnimap-server-buffer)
 	  (prog2
 	      (setq nnimap-server-buffer-alist
-		    (nnimap-remove-server-from-buffer-alist 
+		    (nnimap-remove-server-from-buffer-alist
 		     server
 		     nnimap-server-buffer-alist))
 	      (push (list server nnimap-server-buffer)
@@ -863,7 +863,7 @@ Return nil if the server couldn't be closed for some reason."
       (setq nnimap-server-buffer nil
 	    nnimap-current-server nil
 	    nnimap-server-buffer-alist
-	    (nnimap-remove-server-from-buffer-alist 
+	    (nnimap-remove-server-from-buffer-alist
 	     server
 	     nnimap-server-buffer-alist)))
     (nnoo-close-server 'nnimap server)))
@@ -1183,11 +1183,11 @@ function is generally only called when Gnus is shutting down."
 	  (let (seen unseen)
 	    ;; read info could contain articles marked unread by other
 	    ;; imap clients!  we correct this
-	    (setq unseen (gnus-compress-sequence 
+	    (setq unseen (gnus-compress-sequence
 			  (imap-search "UNSEEN UNDELETED"))
 		  seen (gnus-range-difference (gnus-info-read info) unseen)
-		  seen (gnus-range-add seen 
-				       (gnus-compress-sequence 
+		  seen (gnus-range-add seen
+				       (gnus-compress-sequence
 					(imap-search "SEEN")))
 		  seen (if (and (integerp (car seen))
 				(null (cdr seen)))
@@ -1525,7 +1525,7 @@ function is generally only called when Gnus is shutting down."
   ;; return articles not deleted
   articles)
 
-(deffoo nnimap-request-move-article (article group server accept-form 
+(deffoo nnimap-request-move-article (article group server accept-form
 					     &optional last move-is-internal)
   (when (nnimap-possibly-change-server server)
     (save-excursion
