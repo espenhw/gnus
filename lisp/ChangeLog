@@ -164,6 +164,7 @@
 2006-03-03  Daniel Pittman <daniel@rimspace.net>
 
 	* nnimap.el (nnimap-request-update-info-internal): Optimize.
+	Don't `gnus-uncompress-range' to avoid excessive memory usage.
 
 2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
