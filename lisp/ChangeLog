@@ -5649,13 +5649,15 @@
 	* spam.el (spam-group-spam-contents-p): handle empty groupname
 	strings
 	(spam-report-articles-resend)
-	(spam-report-resend-register-routine): allow spam-report-resend-to
-	to be a group parameter or a global value
-	(tiny change).  From Daniel Pittman <daniel@rimspace.net>.
 	(spam-register-routine): do registration iff any articles warrant
 	it.
 	(spam-summary-prepare-exit): changed log message for nil group
 	destinations
+
+2004-05-27  Daniel Pittman  <daniel@rimspace.net>
+
+	* spam.el (spam-report-resend-register-routine): allow
+	spam-report-resend-to to be a group parameter or a global value
 
 2004-05-26  Simon Josefsson  <jas@extundo.com>
 
