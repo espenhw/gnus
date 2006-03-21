@@ -1,5 +1,7 @@
 2006-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-agent.el (gnus-agent-queue-mail): Fix custom tag for `t'.
+
 	* spam.el (spam-mark-new-messages-in-spam-group-as-spam): Add
 	comment on version.
 
