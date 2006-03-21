@@ -288,7 +288,8 @@ passphrase cache or user."
 	 (passphrase (or passphrase
 			 (when (not pgg-gpg-use-agent)
 			   (pgg-read-passphrase
-			    (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
+			    (format "GnuPG passphrase for %s: "
+				    pgg-gpg-user-id)
 			    pgg-gpg-user-id))))
 	 (args
 	  (append (list (if cleartext "--clearsign" "--detach-sign")

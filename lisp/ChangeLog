@@ -17,6 +17,10 @@
 	* spam.el (spam-mark-new-messages-in-spam-group-as-spam): Add
 	comment on version.
 
+2006-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* smiley.el: Add missing test smiley.
+
 2006-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-with-part): New macro.
