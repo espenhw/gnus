@@ -10907,7 +10907,7 @@ Returns nil if no thread was there to be shown."
 
 (defun gnus-map-articles (predicate articles)
   "Map PREDICATE over ARTICLES and return non-nil if any predicate is non-nil."
-  (apply 'gnus-or (mapcar predicaten
+  (apply 'gnus-or (mapcar predicate
 			  (mapcar (lambda (number)
 				    (gnus-summary-article-header number))
 				  articles))))
