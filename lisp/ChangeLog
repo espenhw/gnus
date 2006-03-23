@@ -6,6 +6,18 @@
 	* mm-decode.el (mm-get-part): Add optional 'no-cache' argument.
 	(mm-insert-part): Ditto.
 
+2006-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-update-agent): Add again, with fixes from
+	Reiner.
+	(pgg-gpg-use-agent-p): Use it again.
+
+2006-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-update-agent): Remove, doesn't work with
+	older emacsen.
+	(pgg-gpg-use-agent-p): Don't use it.
+
 2006-03-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* pgg-gpg.el (pgg-gpg-update-agent): Only use make-network-process
