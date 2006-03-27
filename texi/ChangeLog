@@ -1,5 +1,14 @@
 2006-03-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* sasl.texi: Use @copyright{} instead of (C).  Update copyright.
+
+2006-03-27  Karl Berry  <karl@gnu.org>
+
+	* gnus.texi, message.texi, emacs-mime.texi, sieve.texi, pgg.texi:
+	Do not indent copyright year list.
+
+2006-03-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* gnus-faq.texi: Use .invalid.
 	([5.4]): Fix gnus-posting-styles example.
 
