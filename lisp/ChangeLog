@@ -1,4 +1,4 @@
-2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
 
 	* hashcash.el (hashcash-already-paid-p): Bind case-fold-search
 	when searching for already-paid recipients.
