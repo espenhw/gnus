@@ -3522,7 +3522,13 @@ buffer that was in action when the last article was fetched."
 		      (inline
 			(gnus-summary-extract-address-component
 			 (funcall gnus-decode-encoded-word-function to)))))
-	     ((setq newsgroups (cdr (assq 'Newsgroups extra-headers)))
+	     ((setq newsgroups
+		    (or
+		     (cdr (assq 'Newsgroups extra-headers))
+		     (and
+                      (eq (car (gnus-find-method-for-group
+                                gnus-newsgroup-name)) 'nntp)
+                      (replace-in-string gnus-newsgroup-name "^.*:" ""))))
 	      (concat gnus-summary-newsgroup-prefix newsgroups)))))
      (inline (gnus-summary-extract-address-component gnus-tmp-from)))))
 
