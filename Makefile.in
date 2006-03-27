@@ -133,9 +133,9 @@ release-bump-version:	release-check-settings
 	fi
 	cvs diff -U0 $(RELEASE_COMMIT_FILES); sleep 2
 
-release-revert-changelog:
-	rm -i      lisp/ChangeLog texi/ChangeLog
-	cvs update lisp/ChangeLog texi/ChangeLog
+release-revert-files:
+	rm -i      $(RELEASE_COMMIT_FILES)
+	cvs update $(RELEASE_COMMIT_FILES)
 
 release-commit:	release-check-settings
 	@echo -e '\007'
@@ -176,7 +176,7 @@ README:
 # Make a diff between current and previous release.  Example:
 # ftp://quimby.gnus.org/pub/gnus/ding-patches/gnus-5.10.5-5.10.6.diff.gz
 release-diff:	release-check-settings
-	cvs diff -r $(OLD_TAG) -r $(TAG) > temp.diff || true
+	cvs diff -r $(OLD_TAG) -r $(TAG) | sed -e '/^\? /d' > temp.diff || true
 	mv temp.diff gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
 	gzip         gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
 	ls -l        gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
