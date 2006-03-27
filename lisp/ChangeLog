@@ -1,3 +1,9 @@
+2006-03-27  Karl Kleinpaste  <karl@charcoal.com>
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Improve
+	newsgroups handling for NNTP overviews which don't include
+	Newsgroups.
+
 2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
 
 	* message.el (message-resend): Bind message-generate-hashcash to
