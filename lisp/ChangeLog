@@ -1,5 +1,10 @@
 2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
 
+	* message.el (message-resend): Bind message-generate-hashcash to
+	to nil.
+
+2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
+
 	* hashcash.el (hashcash-already-paid-p): Bind case-fold-search
 	when searching for already-paid recipients.
 

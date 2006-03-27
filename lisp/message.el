@@ -6507,6 +6507,7 @@ Optional DIGEST will use digest to forward."
 	(set-buffer (get-buffer-create " *message resend*"))
 	(erase-buffer))
       (let ((message-this-is-mail t)
+	    message-generate-hashcash
 	    message-setup-hook)
 	(message-setup `((To . ,address))))
       ;; Insert our usual headers.
@@ -6544,6 +6545,7 @@ Optional DIGEST will use digest to forward."
       ;; Send it.
       (let ((message-inhibit-body-encoding t)
 	    message-required-mail-headers
+	    message-generate-hashcash
 	    rfc2047-encode-encoded-words)
 	(message-send-mail))
       (kill-buffer (current-buffer)))
