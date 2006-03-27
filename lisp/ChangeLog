@@ -4,12 +4,12 @@
 	newsgroups handling for NNTP overviews which don't include
 	Newsgroups.
 
-2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
+2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* message.el (message-resend): Bind message-generate-hashcash to
 	to nil.
 
-2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
+2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* hashcash.el (hashcash-already-paid-p): Bind case-fold-search
 	when searching for already-paid recipients.
