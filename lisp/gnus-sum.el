@@ -3528,7 +3528,7 @@ buffer that was in action when the last article was fetched."
 		     (and
                       (eq (car (gnus-find-method-for-group
                                 gnus-newsgroup-name)) 'nntp)
-                      (replace-in-string gnus-newsgroup-name "^.*:" ""))))
+		      (gnus-group-real-name gnus-newsgroup-name))))
 	      (concat gnus-summary-newsgroup-prefix newsgroups)))))
      (inline (gnus-summary-extract-address-component gnus-tmp-from)))))
 
