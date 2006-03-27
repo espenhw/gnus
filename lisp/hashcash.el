@@ -210,7 +210,8 @@ Return immediately.  Call CALLBACK with process and result when ready."
   (save-excursion
     (save-restriction
       (message-narrow-to-headers-or-head)
-      (let ((token (message-fetch-field "x-hashcash")))
+      (let ((token (message-fetch-field "x-hashcash"))
+	    (case-fold-search t))
 	(and (stringp token)
 	     (string-match (regexp-quote recipient) token))))))
 

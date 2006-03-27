@@ -1,3 +1,8 @@
+2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* hashcash.el (hashcash-already-paid-p): Bind case-fold-search
+	when searching for already-paid recipients.
+
 2006-03-27  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-gpg.el: Invoke gpg asynchronous, to avoid querying for
