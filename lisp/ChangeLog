@@ -1,3 +1,7 @@
+2006-03-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-tool-bar-gnome): Move "spell".
+
 2006-03-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Don't use
