@@ -12074,7 +12074,8 @@ So here's a new example:
       '((".*"
          (signature-file "~/.signature")
          (name "User Name")
-         ("X-Home-Page" (getenv "WWW_HOME"))
+         (x-face-file "~/.xface")
+         (x-url (getenv "WWW_HOME"))
          (organization "People's Front Against MWM"))
         ("^rec.humor"
          (signature my-funny-signature-randomizer))
@@ -22627,8 +22628,10 @@ on the @code{xface} image type in XEmacs if it is built with the
 @samp{libcompface} library.
 @end table
 
-Gnus provides a few convenience functions and variables to allow
-easier insertion of X-Face headers in outgoing messages.
+If you use posting styles, you can use an @code{x-face-file} entry in
+@code{gnus-posting-styles}, @xref{Posting Styles}.  If you don't, Gnus
+provides a few convenience functions and variables to allow easier
+insertion of X-Face headers in outgoing messages.
 
 @findex gnus-random-x-face
 @vindex gnus-convert-pbm-to-x-face-command
