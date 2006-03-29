@@ -1,3 +1,8 @@
+2006-03-29  Daiki Ueno  <ueno@unixuser.org>
+
+	* pgg-gpg.el (pgg-gpg-start-process): Don't bind
+	default-enable-multibyte-characters.
+
 2006-03-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-tool-bar-gnome): Move "spell".
