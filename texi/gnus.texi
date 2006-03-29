@@ -360,6 +360,7 @@ can be gotten by any nefarious means you can think of---@acronym{NNTP}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
+@c Adjust ../Makefile.in if you change the following lines:
 This manual corresponds to No Gnus v0.3.
 
 @end ifinfo

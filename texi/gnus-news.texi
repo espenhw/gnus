@@ -162,6 +162,11 @@ intermediate host @samp{bar.example.com} from next time.
 @item You can change the location of XEmacs' toolbars in Gnus buffers.
 See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 
+@item The tool bar has been updated to use GNOME icons.
+You can also customize the tool bar.  There's no documentation in the
+manual yet, but @kbd{M-x customize-apropos RET -tool-bar$} should get
+you started.  (Only for Emacs, not in XEmacs.)
+
 @item The nnml back end allows other compression programs beside @file{gzip}
 for compressed message files.  @xref{Mail Spool}.
 
