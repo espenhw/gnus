@@ -116,11 +116,15 @@ release-check-settings:
 
 # Needs GNU grep and a recent GNU sed:
 release-bump-version:	release-check-settings
-	sed -i -e '/^(defconst gnus-version-number /s|"$(OLD_PATTERN)"|"$(VERSION)"|' lisp/gnus.el
-	sed -i -e '/^.newcommand{.gnusversionname}{Gnus v/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus.texi
-	sed -i -e '/^This manual corresponds to Gnus v/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus.texi
-	sed -i -e '/^This manual corresponds to Message v/s|$(OLD_PATTERN)|$(VERSION)|' texi/message.texi
-	sed -i -e '/The current release ($(OLD_PATTERN)) should/s|$(OLD_PATTERN)|$(VERSION)|' texi/gnus-faq.texi
+	sed -i -e '/^(defconst gnus-version-number /s,"$(OLD_PATTERN)","$(VERSION)",' lisp/gnus.el
+	sed -i -e '/^.newcommand{.gnusversionname}{Gnus v/s,$(OLD_PATTERN),$(VERSION),' texi/gnus.texi
+	sed -i -e '/^This manual corresponds to [A-Za-z ]*Gnus v/s,$(OLD_PATTERN),$(VERSION),' texi/gnus.texi
+	sed -i -e '/^corresponding to this manual is [A-Za-z ]*Gnusv/s,$(OLD_PATTERN),$(VERSION),' texi/message.texi
+	if [ "x$(CODENAME)" = "x" ]; then \
+	  sed -i -e '/The current release ($(OLD_PATTERN)) should/s,$(OLD_PATTERN),$(VERSION),' texi/gnus-faq.texi; \
+	else \
+	  true; \
+	fi
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" texi/ChangeLog; then \
 	  echo "texi/ChangeLog is already updated"; \
 	else \

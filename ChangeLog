@@ -1,5 +1,8 @@
 2006-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* Makefile.in (release-bump-version): Consider named Gnus versions
+	in replacements.
+
 	* todo: Update "tool bar icons".
 
 2006-03-27  Reiner Steib  <Reiner.Steib@gmx.de>
