@@ -1,3 +1,7 @@
+2006-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* todo: Update "tool bar icons".
+
 2006-03-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (release-revert-files): Replace

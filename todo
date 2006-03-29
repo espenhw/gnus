@@ -13,12 +13,27 @@
 * Add Message-IDs or URLs refering to relevant discussions on lists and
   newsgroups.
 
-* Use nicer icons, especially group, summary and message mode
+* Use nicer tool bar icons from GNOME
 
-  Only basic and frequently used commands should have an icons.
-  Maybe use Gnome icons if we can (copyright assignment?). See
-  http://theotp1.physik.uni-ulm.de/~ste/comp/emacs/gnus/tool-bar/ for a
-  suggestion.
+  Done for Emacs (The GNOME icons won't fit into standard XEmacs icons,
+  IMHO. -- rsteib) in group, summary and message mode.
+
+  Some modes might also deserve improved tool bars:
+  
+  - gnus-draft-mode
+  
+  - mml-preview buffer:
+  
+    . zap most buttons; except print, customize (?) and help
+  
+    . "exit" should just kill the buffer
+  
+  - gnus-server-mode: Add some commands from the Connections and Server
+    menu.
+  
+  - gnus-browse-mode (could borrow some icons from gnus-group-mode)
+  
+  (See http://article.gmane.org/gmane.emacs.gnus.general/62147).
 
 * Maybe Gnus should support the LIST SUBSCRIPTIONS, see RFC 2980.
 
