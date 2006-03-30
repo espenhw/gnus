@@ -17,7 +17,7 @@
 @c this file (see `gnus-news.el').
 
 @itemize @bullet
-
+
 @item Installation changes in No Gnus
 
 @itemize @bullet
@@ -39,7 +39,6 @@ shadow the latest one are detected.  You can then remove those shadows
 manually or remove them using @samp{make remove-installed-shadows}.
 @end itemize
 
-
 @item Major new features in No Gnus
 
 @itemize @bullet
@@ -93,7 +92,6 @@ You need to configure the server in @code{smime-ldap-host-list}.
 PGP key ring when you click on them.
 @end itemize
 
-
 @item Changes in back ends
 
 @itemize @bullet
@@ -123,7 +121,6 @@ supported.  @xref{RSS}.
 @item Retrieving mail with @acronym{POP3} is supported over @acronym{SSL}/@acronym{TLS} and with StartTLS.
 @end itemize
 
-
 @item Changes in Message
 
 @itemize @bullet
@@ -143,7 +140,6 @@ headers visible, use @code{(setq message-hidden-headers nil)}.
 for compressed message files.  @xref{Mail Spool}.
 @end itemize
 
-
 @item Other changes in No Gnus
 
 @itemize @bullet
@@ -198,10 +194,6 @@ inline @acronym{PGP} signed messages.
 @end itemize
 
 @c gnus-news.texi ends here.
-
-@c Local Variables:
-@c page-delimiter: "^\f"
-@c End:
 
 @ignore
    arch-tag: 872c7569-4340-4d73-9d1d-7826d9f94a51
