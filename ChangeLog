@@ -1,3 +1,7 @@
+2006-03-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Generated.
+
 2006-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (release-bump-version): Consider named Gnus versions

@@ -166,6 +166,12 @@ See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 You can also customize the tool bar.  There's no documentation in the
 manual yet, but @kbd{M-x customize-apropos RET -tool-bar$} should get
 you started.  (Only for Emacs, not in XEmacs.)
+@c FIXME: Document this in the manual
+
+@item The tool bar icons are now (de)activated correctly
+in the group buffer, see the variable @code{gnus-group-update-tool-bar}.
+It's default value depends on your Emacs version.
+@c FIXME: Document this in the manual
 
 @item The nnml back end allows other compression programs beside @file{gzip}
 for compressed message files.  @xref{Mail Spool}.

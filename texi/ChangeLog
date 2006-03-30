@@ -1,3 +1,7 @@
+2006-03-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Add gnus-group-update-tool-bar.
+
 2006-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Top): Add comment about version line.

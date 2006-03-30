@@ -143,6 +143,15 @@ Gnus will connect to the news host by way of the intermediate host
 ** You can change the location of XEmacs' toolbars in Gnus buffers.  See
 `gnus-use-toolbar' and `message-use-toolbar'.
 
+** The tool bar has been updated to use GNOME icons.  You can also
+customize the tool bar.  There's no documentation in the manual yet,
+but `M-x customize-apropos RET -tool-bar$' should get you started.
+(Only for Emacs, not in XEmacs.)
+
+** The tool bar icons are now (de)activated correctly in the group
+buffer, see the variable `gnus-group-update-tool-bar'.  It's default
+value depends on your Emacs version.
+
 ** The nnml back end allows other compression programs beside `gzip' for
 compressed message files.  *Note Mail Spool::.
 
