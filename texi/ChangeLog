@@ -1,12 +1,11 @@
 2006-03-30  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-news.texi: Reorder entries in sections.  Fix typos.
-	Add local variables section.  Add page breaks.
+	Add local variables section.
 
 	* gnus-news.el (gnus-news-header-disclaimer): Delete top section.
 	(gnus-news-fill-column): Increment to 80.
-	(gnus-news-translate-file): Support nested list items.  Fix up
-	page breaks.
+	(gnus-news-translate-file): Support nested list items.
 
 2006-03-30  Reiner Steib  <Reiner.Steib@gmx.de>
 

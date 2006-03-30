@@ -97,17 +97,13 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
       (goto-char (point-min))
       (save-excursion
 	(while (re-search-forward "^   \\* " nil t)
-	  (replace-match "* ")))
+	  (replace-match "\f\n* ")))
       (save-excursion
 	(while (re-search-forward "^        \\* " nil t)
 	  (replace-match "** ")))
       (save-excursion
 	(while (re-search-forward "^     " nil t)
 	  (replace-match "")))
-      ;; Fix up extra newline after page breaks due to makeinfo
-      (save-excursion
-	(while (re-search-forward "\f\n" nil t)
-	  (replace-match "\f")))
       ;; Avoid `*' from @ref at beginning of line:
       (save-excursion
 	(while (re-search-forward "^\\*Note" nil t)
