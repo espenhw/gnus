@@ -34,9 +34,6 @@ See the end for copying conditions.
 Please send Gnus bug reports to bugs\@gnus.org.
 For older news, see Gnus info node \"New Features\".
 
-
-* Changes in No Gnus
-
 ")
 
 (defvar gnus-news-trailer
@@ -63,7 +60,7 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
 
 (defvar gnus-news-makeinfo-command "makeinfo")
 
-(defvar gnus-news-fill-column 72)
+(defvar gnus-news-fill-column 80)
 
 (defvar gnus-news-makeinfo-switches
   (concat " --no-headers --paragraph-indent=0"
@@ -100,10 +97,17 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
       (goto-char (point-min))
       (save-excursion
 	(while (re-search-forward "^   \\* " nil t)
+	  (replace-match "* ")))
+      (save-excursion
+	(while (re-search-forward "^        \\* " nil t)
 	  (replace-match "** ")))
       (save-excursion
 	(while (re-search-forward "^     " nil t)
 	  (replace-match "")))
+      ;; Fix up extra newline after page breaks due to makeinfo
+      (save-excursion
+	(while (re-search-forward "\f\n" nil t)
+	  (replace-match "\f")))
       ;; Avoid `*' from @ref at beginning of line:
       (save-excursion
 	(while (re-search-forward "^\\*Note" nil t)

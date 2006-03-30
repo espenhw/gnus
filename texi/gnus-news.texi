@@ -17,7 +17,10 @@
 @c this file (see `gnus-news.el').
 
 @itemize @bullet
+
+@item Installation changes in No Gnus
 
+@itemize @bullet
 @item Upgrading from previous (stable) version if you have used No Gnus.
 
 If you have tried No Gnus (the unstable Gnus branch leading to this
@@ -29,43 +32,17 @@ file, where this release will store flags for nntp.  See a later entry
 for more information about nntp marks.  Note that downgrading isn't
 safe in general.
 
-@item The nntp back end stores article marks in @file{~/News/marks}.
+@item Lisp files are now installed in .../site-lisp/gnus/ by default.
+It defaulted to .../site-lisp/ formerly.  In addition to this, the new
+installer issues a warning if other Gnus installations which will
+shadow the latest one are detected.  You can then remove those shadows
+manually or remove them using @samp{make remove-installed-shadows}.
+@end itemize
 
-The directory can be changed using the (customizable) variable
-@code{nntp-marks-directory}, and marks can be disabled using the
-(back end) variable @code{nntp-marks-is-evil}.  The advantage of this
-is that you can copy @file{~/News/marks} (using rsync, scp or
-whatever) to another Gnus installation, and it will realize what
-articles you have read and marked.  The data in @file{~/News/marks}
-has priority over the same data in @file{~/.newsrc.eld}.
+
+@item Major new features in No Gnus
 
-@item
-Picons can be displayed right from the textual address, see
-@code{gnus-picon-style}.  @xref{Picons}.
-
-@item
-You can import and export your @acronym{RSS} subscriptions from
-@acronym{OPML} files.  @xref{RSS}.
-
-@item
-The option @code{mm-fill-flowed} can be used to disable treatment of
-format=flowed messages.  Also, flowed text is disabled when sending
-inline @acronym{PGP} signed messages.
-
-@item You can now drag and drop attachments to the Message buffer.
-See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}.
-@xref{MIME, ,MIME, message, Message Manual}.
-
-@item The option @code{message-yank-empty-prefix} now controls how
-empty lines are prefixed in cited text.  @xref{Insertion Variables,
-,Insertion Variables, message, Message Manual}.
-
-@item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
-using @kbd{W A}.
-
-@acronym{ANSI} sequences are used in some Chinese hierarchies for
-highlighting articles (@code{gnus-article-treat-ansi-sequences}).
-
+@itemize @bullet
 @item International host names (@acronym{IDNA}) can now be decoded
 inside article bodies using @kbd{W i}
 (@code{gnus-summary-idna-message}).  This requires that GNU Libidn
@@ -92,20 +69,12 @@ passphrase is managed by this mechanism.  Passwords for ManageSieve
 connections are managed by this mechanism, after querying the user
 about whether to do so.
 
-@item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
-
-By default, Gnus does not send any information about itself, but you can
-customize it using the variable @code{nnimap-id}.
-
 @item The @file{all.SCORE} file can be edited from the group buffer
 using @kbd{W e}.
 
-@item Gnus now MIME decodes articles even when they lack "MIME-Version" header.
-This changes the default of @code{gnus-article-loose-mime}.
-
 @item Gnus now views DNS master files sent as text/dns using dns-mode.
 
-@item Gnus now support the ``hashcash'' client puzzle anti-spam idea.
+@item Gnus now supports the ``hashcash'' client puzzle anti-spam mechanism.
 See the Gnus manual, section Hashcash, for more information.  Use
 @code{(setq message-generate-hashcash t)} to enable.
 
@@ -117,23 +86,83 @@ See the Gnus manual, section Hashcash, for more information.  Use
 @kbd{C-c C-s C-t} (@code{gnus-summary-sort-by-recipient}).  @xref{Summary
 Sorting}.
 
+@item @acronym{S/MIME} now features @acronym{LDAP} user certificate searches.
+You need to configure the server in @code{smime-ldap-host-list}.
+
+@item URLs inside OpenPGP: headers are retrieved and imported to your
+PGP key ring when you click on them.
+@end itemize
+
+
+@item Changes in back ends
+
+@itemize @bullet
+@item The nntp back end stores article marks in @file{~/News/marks}.
+
+The directory can be changed using the (customizable) variable
+@code{nntp-marks-directory}, and marks can be disabled using the
+(back end) variable @code{nntp-marks-is-evil}.  The advantage of this
+is that you can copy @file{~/News/marks} (using rsync, scp or
+whatever) to another Gnus installation, and it will realize what
+articles you have read and marked.  The data in @file{~/News/marks}
+has priority over the same data in @file{~/.newsrc.eld}.
+
+@item
+You can import and export your @acronym{RSS} subscriptions from
+@acronym{OPML} files.  @xref{RSS}.
+
+@item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
+
+By default, Gnus does not send any information about itself, but you can
+customize it using the variable @code{nnimap-id}.
+
 @item The @code{nnrss} back end now supports multilingual text.
 Non-@acronym{ASCII} group names for the @code{nnrss} groups are also
 supported.  @xref{RSS}.
 
-@item URLs inside OpenPGP: headers are retrieved and imported to your
-PGP key ring when you click on them.
+@item Retrieving mail with @acronym{POP3} is supported over @acronym{SSL}/@acronym{TLS} and with StartTLS.
+@end itemize
+
+
+@item Changes in Message
+
+@itemize @bullet
+@item You can now drag and drop attachments to the Message buffer.
+See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}.
+@xref{MIME, ,MIME, message, Message Manual}.
+
+@item The option @code{message-yank-empty-prefix} now controls how
+empty lines are prefixed in cited text.  @xref{Insertion Variables,
+,Insertion Variables, message, Message Manual}.
 
 @item Gnus uses narrowing to hide headers in Message buffers.
 The @code{References} header is hidden by default.  To make all
 headers visible, use @code{(setq message-hidden-headers nil)}.
 
+@item The nnml back end allows other compression programs beside @file{gzip}
+for compressed message files.  @xref{Mail Spool}.
+@end itemize
+
+
+@item Other changes in No Gnus
+
+@itemize @bullet
+@item
+Picons can be displayed right from the textual address, see
+@code{gnus-picon-style}.  @xref{Picons}.
+
+@item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
+using @kbd{W A}.
+
+@acronym{ANSI} sequences are used in some Chinese hierarchies for
+highlighting articles (@code{gnus-article-treat-ansi-sequences}).
+
+@item Gnus now MIME decodes articles even when they lack "MIME-Version" header.
+This changes the default of @code{gnus-article-loose-mime}.
+
 @item @code{gnus-decay-scores} can be a regexp matching score files.
 For example, set it to @samp{\\.ADAPT\\'} and only adaptive score files
 will be decayed.  @xref{Score Decays}.
-
-@item @acronym{S/MIME} now features @acronym{LDAP} user certificate searches.
-You need to configure the server in @code{smime-ldap-host-list}.
 
 @item Strings prefixing to the @code{To} and @code{Newsgroup} headers in
 summary lines when using @code{gnus-ignored-from-addresses} can be
@@ -143,14 +172,6 @@ customized with @code{gnus-summary-to-prefix} and
 @item You can replace @acronym{MIME} parts with external bodies.
 See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
 @xref{MIME Commands}, @ref{Using MIME}.
-
-@item Lisp files are now installed in .../site-lisp/gnus/ by default.
-It defaulted to .../site-lisp/ formerly.  In addition to this, the new
-installer issues a warning if other Gnus installations which will
-shadow the latest one are detected.  You can then remove those shadows
-manually or remove them using @samp{make remove-installed-shadows}.
-
-@item Retrieving mail with @acronym{POP3} is supported over @acronym{SSL}/@acronym{TLS} and with StartTLS.
 
 @item Having edited the select-method for the foreign server in the
 server buffer is immediately reflected to the subscription of the groups
@@ -162,22 +183,25 @@ intermediate host @samp{bar.example.com} from next time.
 @item You can change the location of XEmacs' toolbars in Gnus buffers.
 See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 
-@item The tool bar has been updated to use GNOME icons.
-You can also customize the tool bar.  There's no documentation in the
-manual yet, but @kbd{M-x customize-apropos RET -tool-bar$} should get
-you started.  (Only for Emacs, not in XEmacs.)
 @c FIXME: Document this in the manual
-
 @item The tool bar icons are now (de)activated correctly
 in the group buffer, see the variable @code{gnus-group-update-tool-bar}.
-It's default value depends on your Emacs version.
+Its default value depends on your Emacs version.
 @c FIXME: Document this in the manual
 
-@item The nnml back end allows other compression programs beside @file{gzip}
-for compressed message files.  @xref{Mail Spool}.
+@item
+The option @code{mm-fill-flowed} can be used to disable treatment of
+format=flowed messages.  Also, flowed text is disabled when sending
+inline @acronym{PGP} signed messages.
+@end itemize
 
 @end itemize
+
 @c gnus-news.texi ends here.
+
+@c Local Variables:
+@c page-delimiter: "^\f"
+@c End:
 
 @ignore
    arch-tag: 872c7569-4340-4d73-9d1d-7826d9f94a51
