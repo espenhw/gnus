@@ -7,88 +7,56 @@ Please send Gnus bug reports to bugs@gnus.org.
 For older news, see Gnus info node "New Features".
 
 
-* Changes in No Gnus
+* Installation changes in No Gnus
 
 ** Upgrading from previous (stable) version if you have used No Gnus.
 
 If you have tried No Gnus (the unstable Gnus branch leading to this
-release) but went back to a stable version, be careful when upgrading
-to this version.  In particular, you will probably want to remove the
-`~/News/marks' directory (perhaps selectively), so that flags are
-read from your `~/.newsrc.eld' instead of from the stale marks file,
-where this release will store flags for nntp.  See a later entry for
-more information about nntp marks.  Note that downgrading isn't safe
-in general.
+release) but went back to a stable version, be careful when upgrading to
+this version.  In particular, you will probably want to remove the
+`~/News/marks' directory (perhaps selectively), so that flags are read
+from your `~/.newsrc.eld' instead of from the stale marks file, where
+this release will store flags for nntp.  See a later entry for more
+information about nntp marks.  Note that downgrading isn't safe in
+general.
 
-** The nntp back end stores article marks in `~/News/marks'.
+** Lisp files are now installed in .../site-lisp/gnus/ by default.  It
+defaulted to .../site-lisp/ formerly.  In addition to this, the new
+installer issues a warning if other Gnus installations which will shadow
+the latest one are detected.  You can then remove those shadows manually
+or remove them using `make remove-installed-shadows'.
 
-The directory can be changed using the (customizable) variable
-`nntp-marks-directory', and marks can be disabled using the (back
-end) variable `nntp-marks-is-evil'.  The advantage of this is that
-you can copy `~/News/marks' (using rsync, scp or whatever) to another
-Gnus installation, and it will realize what articles you have read
-and marked.  The data in `~/News/marks' has priority over the same
-data in `~/.newsrc.eld'.
+
+* Major new features in No Gnus
 
-** Picons can be displayed right from the textual address, see
-`gnus-picon-style'.  *Note Picons::.
-
-** You can import and export your RSS subscriptions from OPML files.
- *Note RSS::.
-
-** The option `mm-fill-flowed' can be used to disable treatment of
-format=flowed messages.  Also, flowed text is disabled when sending
-inline PGP signed messages.
-
-** You can now drag and drop attachments to the Message buffer.  See
-`mml-dnd-protocol-alist' and `mml-dnd-attach-options'.  *Note MIME:
-(message)MIME.
-
-** The option `message-yank-empty-prefix' now controls how empty lines
-are prefixed in cited text.  *Note Insertion Variables:
-(message)Insertion Variables.
-
-** ANSI SGR control sequences can be transformed using `W A'.
-
-ANSI sequences are used in some Chinese hierarchies for highlighting
-articles (`gnus-article-treat-ansi-sequences').
-
-** International host names (IDNA) can now be decoded inside article
-bodies using `W i' (`gnus-summary-idna-message').  This requires that
-GNU Libidn (`http://www.gnu.org/software/libidn/') has been installed.
+** International host names (IDNA) can now be decoded inside article bodies
+using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
+(`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus includes an Emacs Lisp SASL library.
 
 This provides a clean API to SASL mechanisms from within Emacs.  The
-user visible aspects of this, compared to the earlier situation,
-include support for DIGEST-MD5 and NTLM.
+user visible aspects of this, compared to the earlier situation, include
+support for DIGEST-MD5 and NTLM.
 
 ** ManageSieve connections uses the SASL library by default.
 
-The primary change this brings is support for DIGEST-MD5 and NTLM,
-when the server supports it.
+The primary change this brings is support for DIGEST-MD5 and NTLM, when
+the server supports it.
 
 ** Gnus includes a password cache mechanism in password.el.
 
-It is enabled by default (see `password-cache'), with a short timeout
-of 16 seconds (see `password-cache-expiry').  If PGG is used as the
-PGP back end, the PGP passphrase is managed by this mechanism.
-Passwords for ManageSieve connections are managed by this mechanism,
-after querying the user about whether to do so.
-
-** IMAP identity (RFC 2971) is supported.
-
-By default, Gnus does not send any information about itself, but you
-can customize it using the variable `nnimap-id'.
+It is enabled by default (see `password-cache'), with a short timeout of
+16 seconds (see `password-cache-expiry').  If PGG is used as the PGP
+back end, the PGP passphrase is managed by this mechanism.  Passwords
+for ManageSieve connections are managed by this mechanism, after
+querying the user about whether to do so.
 
 ** The `all.SCORE' file can be edited from the group buffer using `W e'.
 
-** Gnus now MIME decodes articles even when they lack "MIME-Version"
-header.  This changes the default of `gnus-article-loose-mime'.
-
 ** Gnus now views DNS master files sent as text/dns using dns-mode.
 
-** Gnus now support the "hashcash" client puzzle anti-spam idea.  See
+** Gnus now supports the "hashcash" client puzzle anti-spam mechanism.  See
 the Gnus manual, section Hashcash, for more information.  Use `(setq
 message-generate-hashcash t)' to enable.
 
@@ -99,61 +67,100 @@ message-generate-hashcash t)' to enable.
 ** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
 (`gnus-summary-sort-by-recipient').  *Note Summary Sorting::.
 
-** The `nnrss' back end now supports multilingual text.  Non-ASCII group
-names for the `nnrss' groups are also supported.  *Note RSS::.
-
-** URLs inside OpenPGP: headers are retrieved and imported to your PGP
-key ring when you click on them.
-
-** Gnus uses narrowing to hide headers in Message buffers.  The
-`References' header is hidden by default.  To make all headers
-visible, use `(setq message-hidden-headers nil)'.
-
-** `gnus-decay-scores' can be a regexp matching score files.  For
-example, set it to `\\.ADAPT\\'' and only adaptive score files will
-be decayed.  *Note Score Decays::.
-
 ** S/MIME now features LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
 
-** Strings prefixing to the `To' and `Newsgroup' headers in summary
-lines when using `gnus-ignored-from-addresses' can be customized with
-`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note
-To From Newsgroups::.
+** URLs inside OpenPGP: headers are retrieved and imported to your PGP key
+ring when you click on them.
+
+
+* Changes in back ends
+
+** The nntp back end stores article marks in `~/News/marks'.
+
+The directory can be changed using the (customizable) variable
+`nntp-marks-directory', and marks can be disabled using the (back end)
+variable `nntp-marks-is-evil'.  The advantage of this is that you can
+copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
+installation, and it will realize what articles you have read and
+marked.  The data in `~/News/marks' has priority over the same data in
+`~/.newsrc.eld'.
+
+** You can import and export your RSS subscriptions from OPML files.  *Note
+RSS::.
+
+** IMAP identity (RFC 2971) is supported.
+
+By default, Gnus does not send any information about itself, but you can
+customize it using the variable `nnimap-id'.
+
+** The `nnrss' back end now supports multilingual text.  Non-ASCII group
+names for the `nnrss' groups are also supported.  *Note RSS::.
+
+** Retrieving mail with POP3 is supported over SSL/TLS and with StartTLS.
+
+
+* Changes in Message
+
+** You can now drag and drop attachments to the Message buffer.  See
+`mml-dnd-protocol-alist' and `mml-dnd-attach-options'.  *Note MIME:
+(message)MIME.
+
+** The option `message-yank-empty-prefix' now controls how empty lines are
+prefixed in cited text.  *Note Insertion Variables: (message)Insertion
+Variables.
+
+** Gnus uses narrowing to hide headers in Message buffers.  The
+`References' header is hidden by default.  To make all headers visible,
+use `(setq message-hidden-headers nil)'.
+
+** The nnml back end allows other compression programs beside `gzip' for
+compressed message files.  *Note Mail Spool::.
+
+
+* Other changes in No Gnus
+
+** Picons can be displayed right from the textual address, see
+`gnus-picon-style'.  *Note Picons::.
+
+** ANSI SGR control sequences can be transformed using `W A'.
+
+ANSI sequences are used in some Chinese hierarchies for highlighting
+articles (`gnus-article-treat-ansi-sequences').
+
+** Gnus now MIME decodes articles even when they lack "MIME-Version" header.
+This changes the default of `gnus-article-loose-mime'.
+
+** `gnus-decay-scores' can be a regexp matching score files.  For example,
+set it to `\\.ADAPT\\'' and only adaptive score files will be decayed.
+ *Note Score Decays::.
+
+** Strings prefixing to the `To' and `Newsgroup' headers in summary lines
+when using `gnus-ignored-from-addresses' can be customized with
+`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note To
+From Newsgroups::.
 
 ** You can replace MIME parts with external bodies.  See
 `gnus-mime-replace-part' and `gnus-article-replace-part'.  *Note MIME
 Commands::, *Note Using MIME::.
 
-** Lisp files are now installed in .../site-lisp/gnus/ by default.  It
-defaulted to .../site-lisp/ formerly.  In addition to this, the new
-installer issues a warning if other Gnus installations which will
-shadow the latest one are detected.  You can then remove those shadows
-manually or remove them using `make remove-installed-shadows'.
-
-** Retrieving mail with POP3 is supported over SSL/TLS and with StartTLS.
-
 ** Having edited the select-method for the foreign server in the server
-buffer is immediately reflected to the subscription of the groups
-which use the server in question.  For instance, if you change
-`nntp-via-address' into `bar.example.com' from `foo.example.com',
-Gnus will connect to the news host by way of the intermediate host
+buffer is immediately reflected to the subscription of the groups which
+use the server in question.  For instance, if you change
+`nntp-via-address' into `bar.example.com' from `foo.example.com', Gnus
+will connect to the news host by way of the intermediate host
 `bar.example.com' from next time.
 
 ** You can change the location of XEmacs' toolbars in Gnus buffers.  See
 `gnus-use-toolbar' and `message-use-toolbar'.
 
-** The tool bar has been updated to use GNOME icons.  You can also
-customize the tool bar.  There's no documentation in the manual yet,
-but `M-x customize-apropos RET -tool-bar$' should get you started.
-(Only for Emacs, not in XEmacs.)
+** The tool bar icons are now (de)activated correctly in the group buffer,
+see the variable `gnus-group-update-tool-bar'.  Its default value
+depends on your Emacs version.
 
-** The tool bar icons are now (de)activated correctly in the group
-buffer, see the variable `gnus-group-update-tool-bar'.  It's default
-value depends on your Emacs version.
-
-** The nnml back end allows other compression programs beside `gzip' for
-compressed message files.  *Note Mail Spool::.
+** The option `mm-fill-flowed' can be used to disable treatment of
+format=flowed messages.  Also, flowed text is disabled when sending
+inline PGP signed messages.
 
 
 * For older news, see Gnus info node "New Features".
