@@ -122,16 +122,16 @@ See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
 The option @code{mm-fill-flowed} can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
 inline @acronym{PGP} signed messages.
+@xref{Flowed text, ,Flowed text, emacs-mime, The Emacs MIME Manual}.
 
 @end itemize
-
 
 @item Changes in Message mode
 
 @itemize @bullet
 @item Gnus now supports the ``hashcash'' client puzzle anti-spam mechanism.
-See the Gnus manual, section Hashcash, for more information.  Use
-@code{(setq message-generate-hashcash t)} to enable.
+Use @code{(setq message-generate-hashcash t)} to enable.
+@xref{Hashcash}.
 
 @item You can now drag and drop attachments to the Message buffer.
 See @code{mml-dnd-protocol-alist} and @code{mml-dnd-attach-options}.
@@ -144,6 +144,7 @@ empty lines are prefixed in cited text.  @xref{Insertion Variables,
 @item Gnus uses narrowing to hide headers in Message buffers.
 The @code{References} header is hidden by default.  To make all
 headers visible, use @code{(setq message-hidden-headers nil)}.
+@xref{Message Headers, ,Message Headers, message, Message Manual}.
 @end itemize
 
 @item Changes in back ends
@@ -177,7 +178,6 @@ supported.  @xref{RSS}.
 @item The nnml back end allows other compression programs beside @file{gzip}
 for compressed message files.  @xref{Mail Spool}.
 @end itemize
-
 
 @item Appearance
 @c Maybe it's not worth to separate this from "Miscellaneous"?
