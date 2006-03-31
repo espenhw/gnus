@@ -96,15 +96,14 @@ Commands::, *Note Using MIME::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
-inline PGP signed messages.
+inline PGP signed messages.  *Note Flowed text: (emacs-mime)Flowed text.
 
 
 
-* Changes in Message
+* Changes in Message mode
 
-** Gnus now supports the "hashcash" client puzzle anti-spam mechanism.  See
-the Gnus manual, section Hashcash, for more information.  Use `(setq
-message-generate-hashcash t)' to enable.
+** Gnus now supports the "hashcash" client puzzle anti-spam mechanism.  Use
+`(setq message-generate-hashcash t)' to enable.  *Note Hashcash::.
 
 ** You can now drag and drop attachments to the Message buffer.  See
 `mml-dnd-protocol-alist' and `mml-dnd-attach-options'.  *Note MIME:
@@ -116,7 +115,8 @@ Variables.
 
 ** Gnus uses narrowing to hide headers in Message buffers.  The
 `References' header is hidden by default.  To make all headers visible,
-use `(setq message-hidden-headers nil)'.
+use `(setq message-hidden-headers nil)'.  *Note Message Headers:
+(message)Message Headers.
 
 
 * Changes in back ends
