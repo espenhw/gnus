@@ -40,11 +40,6 @@ The following icons were contributed by Adam Sjøgren <asjo@koldfront.dk>:
     mail/save.xpm    (combining stock_mail, stock_save and stock_convert) 
 
 
-The following icon is from AUCTeX:
-
-    separator.xpm (sep.xpm)
-
-
 The folling icon are duplicated from Emacs 22.  They are either not present in
 Emacs 21 or look different there.
 
@@ -59,7 +54,7 @@ Emacs 21 or look different there.
     right-arrow.xpm
     save.xpm
     search.xpm
-
+    separator.xpm
 
 The GNOME's stock_*.png files were converted to XPM using the following GIMP
 script:
