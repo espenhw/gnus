@@ -3,6 +3,7 @@
 	* GNUS-NEWS: Generated.
 
 	* Makefile.in (CVS_IGNORE_FILES): Additions.
+	(release-files-signed): New target.
 
 	* etc/images/README: Update separator.xpm.
 
