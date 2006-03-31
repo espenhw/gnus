@@ -7,7 +7,7 @@ Please send Gnus bug reports to bugs@gnus.org.
 For older news, see Gnus info node "New Features".
 
 
-* Installation changes in No Gnus
+* Installation changes
 
 ** Upgrading from previous (stable) version if you have used No Gnus.
 
@@ -20,24 +20,20 @@ this release will store flags for nntp.  See a later entry for more
 information about nntp marks.  Note that downgrading isn't safe in
 general.
 
-** Lisp files are now installed in .../site-lisp/gnus/ by default.  It
-defaulted to .../site-lisp/ formerly.  In addition to this, the new
+** Lisp files are now installed in `.../site-lisp/gnus/' by default.  It
+defaulted to `.../site-lisp/' formerly.  In addition to this, the new
 installer issues a warning if other Gnus installations which will shadow
 the latest one are detected.  You can then remove those shadows manually
 or remove them using `make remove-installed-shadows'.
 
 
-* Major new features in No Gnus
+* New packages and libraries within Gnus
 
-** International host names (IDNA) can now be decoded inside article bodies
-using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
-(`http://www.gnu.org/software/libidn/') has been installed.
-
-** Gnus includes an Emacs Lisp SASL library.
+** Gnus includes the Emacs Lisp SASL library.
 
 This provides a clean API to SASL mechanisms from within Emacs.  The
 user visible aspects of this, compared to the earlier situation, include
-support for DIGEST-MD5 and NTLM.
+support for DIGEST-MD5 and NTLM.   *Note Emacs SASL: (sasl)Top.
 
 ** ManageSieve connections uses the SASL library by default.
 
@@ -52,13 +48,14 @@ back end, the PGP passphrase is managed by this mechanism.  Passwords
 for ManageSieve connections are managed by this mechanism, after
 querying the user about whether to do so.
 
-** The `all.SCORE' file can be edited from the group buffer using `W e'.
+
+* Changes in summary and article mode
 
-** Gnus now views DNS master files sent as text/dns using dns-mode.
+** International host names (IDNA) can now be decoded inside article bodies
+using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
+(`http://www.gnu.org/software/libidn/') has been installed.
 
-** Gnus now supports the "hashcash" client puzzle anti-spam mechanism.  See
-the Gnus manual, section Hashcash, for more information.  Use `(setq
-message-generate-hashcash t)' to enable.
+** Gnus now displays DNS master files sent as text/dns using dns-mode.
 
 ** Gnus supports new limiting commands in the Summary buffer: `/ r'
 (`gnus-summary-limit-to-replied') and `/ R'
@@ -70,8 +67,56 @@ message-generate-hashcash t)' to enable.
 ** S/MIME now features LDAP user certificate searches.  You need to
 configure the server in `smime-ldap-host-list'.
 
-** URLs inside OpenPGP: headers are retrieved and imported to your PGP key
+** URLs inside OpenPGP headers are retrieved and imported to your PGP key
 ring when you click on them.
+
+** Picons can be displayed right from the textual address, see
+`gnus-picon-style'.  *Note Picons::.
+
+** ANSI SGR control sequences can be transformed using `W A'.
+
+ANSI sequences are used in some Chinese hierarchies for highlighting
+articles (`gnus-article-treat-ansi-sequences').
+
+** Gnus now MIME decodes articles even when they lack "MIME-Version" header.
+This changes the default of `gnus-article-loose-mime'.
+
+** `gnus-decay-scores' can be a regexp matching score files.  For example,
+set it to `\\.ADAPT\\'' and only adaptive score files will be decayed.
+ *Note Score Decays::.
+
+** Strings prefixing to the `To' and `Newsgroup' headers in summary lines
+when using `gnus-ignored-from-addresses' can be customized with
+`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note To
+From Newsgroups::.
+
+** You can replace MIME parts with external bodies.  See
+`gnus-mime-replace-part' and `gnus-article-replace-part'.  *Note MIME
+Commands::, *Note Using MIME::.
+
+** The option `mm-fill-flowed' can be used to disable treatment of
+format=flowed messages.  Also, flowed text is disabled when sending
+inline PGP signed messages.
+
+
+
+* Changes in Message
+
+** Gnus now supports the "hashcash" client puzzle anti-spam mechanism.  See
+the Gnus manual, section Hashcash, for more information.  Use `(setq
+message-generate-hashcash t)' to enable.
+
+** You can now drag and drop attachments to the Message buffer.  See
+`mml-dnd-protocol-alist' and `mml-dnd-attach-options'.  *Note MIME:
+(message)MIME.
+
+** The option `message-yank-empty-prefix' now controls how empty lines are
+prefixed in cited text.  *Note Insertion Variables: (message)Insertion
+Variables.
+
+** Gnus uses narrowing to hide headers in Message buffers.  The
+`References' header is hidden by default.  To make all headers visible,
+use `(setq message-hidden-headers nil)'.
 
 
 * Changes in back ends
@@ -99,50 +144,27 @@ names for the `nnrss' groups are also supported.  *Note RSS::.
 
 ** Retrieving mail with POP3 is supported over SSL/TLS and with StartTLS.
 
-
-* Changes in Message
-
-** You can now drag and drop attachments to the Message buffer.  See
-`mml-dnd-protocol-alist' and `mml-dnd-attach-options'.  *Note MIME:
-(message)MIME.
-
-** The option `message-yank-empty-prefix' now controls how empty lines are
-prefixed in cited text.  *Note Insertion Variables: (message)Insertion
-Variables.
-
-** Gnus uses narrowing to hide headers in Message buffers.  The
-`References' header is hidden by default.  To make all headers visible,
-use `(setq message-hidden-headers nil)'.
-
 ** The nnml back end allows other compression programs beside `gzip' for
 compressed message files.  *Note Mail Spool::.
 
 
-* Other changes in No Gnus
+* Appearance
 
-** Picons can be displayed right from the textual address, see
-`gnus-picon-style'.  *Note Picons::.
+** The tool bar has been updated to use GNOME icons.  You can also
+customize the tool bar.  There's no documentation in the manual yet, but
+`M-x customize-apropos RET -tool-bar$' should get you started.  (Only
+for Emacs, not in XEmacs.)
 
-** ANSI SGR control sequences can be transformed using `W A'.
+** The tool bar icons are now (de)activated correctly in the group buffer,
+see the variable `gnus-group-update-tool-bar'.  Its default value
+depends on your Emacs version.
 
-ANSI sequences are used in some Chinese hierarchies for highlighting
-articles (`gnus-article-treat-ansi-sequences').
+** You can change the location of XEmacs' toolbars in Gnus buffers.  See
+`gnus-use-toolbar' and `message-use-toolbar'.
 
-** Gnus now MIME decodes articles even when they lack "MIME-Version" header.
-This changes the default of `gnus-article-loose-mime'.
 
-** `gnus-decay-scores' can be a regexp matching score files.  For example,
-set it to `\\.ADAPT\\'' and only adaptive score files will be decayed.
- *Note Score Decays::.
-
-** Strings prefixing to the `To' and `Newsgroup' headers in summary lines
-when using `gnus-ignored-from-addresses' can be customized with
-`gnus-summary-to-prefix' and `gnus-summary-newsgroup-prefix'.  *Note To
-From Newsgroups::.
-
-** You can replace MIME parts with external bodies.  See
-`gnus-mime-replace-part' and `gnus-article-replace-part'.  *Note MIME
-Commands::, *Note Using MIME::.
+
+* Miscellaneous changes
 
 ** Having edited the select-method for the foreign server in the server
 buffer is immediately reflected to the subscription of the groups which
@@ -151,16 +173,8 @@ use the server in question.  For instance, if you change
 will connect to the news host by way of the intermediate host
 `bar.example.com' from next time.
 
-** You can change the location of XEmacs' toolbars in Gnus buffers.  See
-`gnus-use-toolbar' and `message-use-toolbar'.
+** The `all.SCORE' file can be edited from the group buffer using `W e'.
 
-** The tool bar icons are now (de)activated correctly in the group buffer,
-see the variable `gnus-group-update-tool-bar'.  Its default value
-depends on your Emacs version.
-
-** The option `mm-fill-flowed' can be used to disable treatment of
-format=flowed messages.  Also, flowed text is disabled when sending
-inline PGP signed messages.
 
 
 * For older news, see Gnus info node "New Features".
