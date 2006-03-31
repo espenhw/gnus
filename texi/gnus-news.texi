@@ -71,7 +71,8 @@ about whether to do so.
 @item The @file{all.SCORE} file can be edited from the group buffer
 using @kbd{W e}.
 
-@item Gnus now views DNS master files sent as text/dns using dns-mode.
+@item Gnus now displays @acronym{DNS} master files sent as text/dns
+using dns-mode.
 
 @item Gnus now supports the ``hashcash'' client puzzle anti-spam mechanism.
 See the Gnus manual, section Hashcash, for more information.  Use
@@ -88,8 +89,8 @@ Sorting}.
 @item @acronym{S/MIME} now features @acronym{LDAP} user certificate searches.
 You need to configure the server in @code{smime-ldap-host-list}.
 
-@item URLs inside OpenPGP: headers are retrieved and imported to your
-PGP key ring when you click on them.
+@item URLs inside Open@acronym{PGP} headers are retrieved and imported
+to your PGP key ring when you click on them.
 @end itemize
 
 @item Changes in back ends
@@ -179,16 +180,22 @@ intermediate host @samp{bar.example.com} from next time.
 @item You can change the location of XEmacs' toolbars in Gnus buffers.
 See @code{gnus-use-toolbar} and @code{message-use-toolbar}.
 
-@c FIXME: Document this in the manual
 @item The tool bar icons are now (de)activated correctly
 in the group buffer, see the variable @code{gnus-group-update-tool-bar}.
 Its default value depends on your Emacs version.
+@c FIXME: Document this in the manual
+
+@item The tool bar has been updated to use GNOME icons.
+You can also customize the tool bar.  There's no documentation in the
+manual yet, but @kbd{M-x customize-apropos RET -tool-bar$} should get
+you started.  (Only for Emacs, not in XEmacs.)
 @c FIXME: Document this in the manual
 
 @item
 The option @code{mm-fill-flowed} can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
 inline @acronym{PGP} signed messages.
+
 @end itemize
 
 @end itemize

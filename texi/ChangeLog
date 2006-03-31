@@ -1,3 +1,8 @@
+2006-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Restore customizable tool bar item.  Markup
+	fixes.  Minor rewording.
+
 2006-03-31  Romain Francoise  <romain@orebokech.com>
 
 	* gnus.texi (Virtual Groups): `nnvirtual-always-rescan' defaults
