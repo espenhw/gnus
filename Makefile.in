@@ -13,7 +13,7 @@ XEMACS = @EMACS@
 TAR_BALL_EXTRA = README
 # Files removed from `cvs export' output before creating the tar-ball:
 CVS_IGNORE_FILES = .cvsignore contrib/.cvsignore etc/.cvsignore	\
-  lisp/.cvsignore texi/.cvsignore
+  lisp/.cvsignore texi/.cvsignore texi/ps/.cvsignore .arch-inventory
 # Name and mail address in ChangeLog format for the release commit:
 COMMITTER = Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 # CODENAME for development releases (CODENAME must have a trailing space,

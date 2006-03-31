@@ -1,5 +1,7 @@
 2006-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* Makefile.in (CVS_IGNORE_FILES): Additions.
+
 	* etc/images/README: Update separator.xpm.
 
 2006-03-30  Romain Francoise  <romain@orebokech.com>
