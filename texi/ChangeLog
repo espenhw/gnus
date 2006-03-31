@@ -1,8 +1,9 @@
 2006-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.texi: Restore customizable tool bar item.  Markup
-	fixes.  Minor rewording.  Add "summary and article", "Appearance",
-	"Miscellaneous".  Remove "Major new features" and "Other changes".
+	fixes.  Minor rewording.  Add "New packages and libraries",
+	"summary and article", "Appearance" and "Miscellaneous".  Remove
+	"Major new features" and "Other changes".
 
 2006-03-31  Romain Francoise  <romain@orebokech.com>
 
