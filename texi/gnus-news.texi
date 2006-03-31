@@ -126,7 +126,7 @@ inline @acronym{PGP} signed messages.
 @end itemize
 
 
-@item Changes in Message
+@item Changes in Message mode
 
 @itemize @bullet
 @item Gnus now supports the ``hashcash'' client puzzle anti-spam mechanism.
