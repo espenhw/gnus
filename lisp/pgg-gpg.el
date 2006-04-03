@@ -144,7 +144,7 @@
     (when (buffer-live-p (process-buffer process))
       (insert-buffer-substring (process-buffer process))
       (goto-char (point-min))
-      (delete-matching-lines "^\\[GNUPG:] ")
+      ;(delete-matching-lines "^\\[GNUPG:] ")
       (goto-char (point-min))
       (while (re-search-forward "^gpg: " nil t)
 	(replace-match "")))
