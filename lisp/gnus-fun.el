@@ -65,10 +65,10 @@ on stdout."
   "convert -scale 48x48! %s -colors %d png:-"
   "Command for converting an image to a Face.
 
-The command must take an image filename (first format
-argument\"%s\") and the number of colors (second format argument:
-\"%d\") as input.  The output must be the Face header data on
-stdout in PNG format."
+The command must take an image filename (first format argument
+\"%s\") and the number of colors (second format argument: \"%d\")
+as input.  The output must be the Face header data on stdout in
+PNG format."
   :version "22.1"
   :group 'gnus-fun
   :type '(choice (const :tag "djpeg, netpbm (JPG input only)"

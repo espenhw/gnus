@@ -1,3 +1,8 @@
+2006-04-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-fun.el (gnus-convert-image-to-face-command): Fix typo in
+	doc string.
+
 2006-04-03  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-gpg.el (pgg-gpg-process-filter)
