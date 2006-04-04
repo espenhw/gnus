@@ -1,5 +1,16 @@
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* etc/images/README: Add more Emacs 22 icons.  Add suggestion on
+	how to use those in Emacs 21.
+
+	* etc/images/close.xpm, etc/images/cut.xpm, etc/images/home.xpm,
+	etc/images/index.xpm, etc/images/jump-to.xpm, etc/images/new.xpm,
+	etc/images/next-node.xpm, etc/images/open.xpm,
+	etc/images/preferences.xpm, etc/images/prev-node.xpm,
+	etc/images/saveas.xpm, etc/images/spell.xpm: New icons duplicated
+	from Emacs 22.
+
+
 	* README: Addition from 5.10.6 tar ball.  Clarify "beta".
 	Simplify Info directory setting.  Update required Emacs and XEmacs
 	version.  Use current Gnus version in examples.

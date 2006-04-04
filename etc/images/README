@@ -44,17 +44,40 @@ The folling icon are duplicated from Emacs 22.  They are either not present in
 Emacs 21 or look different there.
 
     cancel.xpm
+    close.xpm
     copy.xpm
+    cut.xpm
     diropen.xpm
     help.xpm
+    home.xpm
+    index.xpm
+    jump-to.xpm
     left-arrow.xpm
+    new.xpm
+    next-node.xpm
+    open.xpm
     paste.xpm
+    preferences.xpm
+    prev-node.xpm
     print.xpm
     redo.xpm
     right-arrow.xpm
     save.xpm
+    saveas.xpm
     search.xpm
     separator.xpm
+    spell.xpm
+
+You might want to use the following code to get Gnome icons in Emacs 21:
+
+  ;; Only for Emacs 21:
+  (when (and (not (featurep 'xemacs))
+  	   (not (boundp 'image-load-path))
+  	   tool-bar-mode)
+    (push "/path/to/etc/images/" image-load-path)
+    (setq tool-bar-map (make-sparse-keymap))
+    (clear-image-cache)
+    (tool-bar-setup))
 
 The GNOME's stock_*.png files were converted to XPM using the following GIMP
 script:
