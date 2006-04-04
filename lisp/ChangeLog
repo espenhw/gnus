@@ -1,3 +1,8 @@
+2006-04-04  Daiki Ueno  <ueno@unixuser.org>
+
+	* pgg-gpg.el: Clean up process buffers every time gpg processes
+	complete.
+
 2006-04-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-fun.el (gnus-convert-image-to-face-command): Fix typo in
