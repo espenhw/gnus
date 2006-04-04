@@ -31,8 +31,8 @@ To enable reading the Gnus manual, you could say something like:
       (add-to-list 'Info-directory-list "~/gnus-5.10.8/texi/")
     (add-to-list 'Info-default-directory-list "~/gnus-5.10.8/texi/"))
 
-Gnus 5.10 does absolutely not work with anything older than Emacs 20.7 or
-XEmacs 21.1.
+No Gnus does absolutely not work with anything older than Emacs 21.1 or
+XEmacs 21.4.
 
 To compile the Gnus manual, you either need a pretty new Emacs, or a
 pretty new version of the texinfo tools.
