@@ -3526,6 +3526,7 @@ buffer that was in action when the last article was fetched."
 		    (or
 		     (cdr (assq 'Newsgroups extra-headers))
 		     (and
+		      (memq 'Newsgroups gnus-extra-headers)
                       (eq (car (gnus-find-method-for-group
                                 gnus-newsgroup-name)) 'nntp)
 		      (gnus-group-real-name gnus-newsgroup-name))))

@@ -1,5 +1,8 @@
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Check
+	gnus-extra-headers for 'Newsgroups.
+
 	* message.el (message-tool-bar-gnome): Check if `flyspell-mode' is
 	bound.
 
