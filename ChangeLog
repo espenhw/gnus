@@ -10,7 +10,6 @@
 	etc/images/saveas.xpm, etc/images/spell.xpm: New icons duplicated
 	from Emacs 22.
 
-
 	* README: Addition from 5.10.6 tar ball.  Clarify "beta".
 	Simplify Info directory setting.  Update required Emacs and XEmacs
 	version.  Use current Gnus version in examples.
