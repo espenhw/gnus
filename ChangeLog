@@ -4,6 +4,11 @@
 	Remove; README is in CVS now.
 	(release-files, release-files-signed, release-cvs-export)
 	(release-make-tar-ball): Use $(VERSION) instead of $(TAG).
+	(OLD_PATTERN): Catch stable and trunk.
+	(CIN): New variable.
+	(release-files, release-files-signed, release-cvs-export)
+	(release-make-tar-ball, release-diff, release-post-clean): Add
+	CIN.
 
 	* etc/images/README: Add more Emacs 22 icons.  Add suggestion on
 	how to use those in Emacs 21.
