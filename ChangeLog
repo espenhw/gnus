@@ -1,5 +1,8 @@
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* Makefile.in (TAR_BALL_EXTRA, release-make-tar-ball, README):
+	Remove; README is in CVS now.
+
 	* etc/images/README: Add more Emacs 22 icons.  Add suggestion on
 	how to use those in Emacs 21.
 

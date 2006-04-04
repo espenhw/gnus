@@ -9,8 +9,6 @@ XEMACS = @EMACS@
 
 # # # # # # # # # # Release variables (for maintainer only):
 #
-# Release files, not included in CVS:
-TAR_BALL_EXTRA = README
 # Files removed from `cvs export' output before creating the tar-ball:
 CVS_IGNORE_FILES = .cvsignore contrib/.cvsignore etc/.cvsignore	\
   lisp/.cvsignore texi/.cvsignore texi/ps/.cvsignore .arch-inventory
@@ -177,16 +175,11 @@ release-cvs-export gnus-$(TAG):	release-check-settings
 	rm -fr gnus-$(TAG)
 	cvs export -d gnus-$(TAG) -r $(TAG) gnus
 
-release-make-tar-ball:	gnus-$(TAG) $(TAR_BALL_EXTRA)
+release-make-tar-ball:	gnus-$(TAG)
 	[ -d gnus-$(TAG) ] && cd gnus-$(TAG) && \
 	  rm $(CVS_IGNORE_FILES) || true
-	cp -p $(TAR_BALL_EXTRA) gnus-$(TAG)/
 	tar zcvf gnus-$(TAG).tar.gz gnus-$(TAG)
 	ls -l gnus-$(TAG).tar.gz
-
-README:
-	@echo README is not in CVS.  Get it from Lars.
-	false
 
 # Make a diff between current and previous release.  Example:
 # ftp://quimby.gnus.org/pub/gnus/ding-patches/gnus-5.10.5-5.10.6.diff.gz
