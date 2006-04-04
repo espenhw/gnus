@@ -9,6 +9,8 @@
 	(release-files, release-files-signed, release-cvs-export)
 	(release-make-tar-ball, release-diff, release-post-clean): Add
 	CIN.
+	(OLD_PATTERN): Remove quotes.
+	(release-bump-version): Fix typo.
 
 	* etc/images/README: Add more Emacs 22 icons.  Add suggestion on
 	how to use those in Emacs 21.

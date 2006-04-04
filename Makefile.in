@@ -23,7 +23,7 @@ CIN =
 RELEASE_COMMIT_FILES = lisp/ChangeLog lisp/gnus.el \
   texi/ChangeLog texi/gnus.texi texi/message.texi texi/gnus-faq.texi
 # Pattern matching previous version(s):
-OLD_PATTERN = '5.10.[0-9]*\|0\.3'
+OLD_PATTERN = 5.10.[0-9]*\|0\.3
 # CVS tag of the previous version:
 OLD_TAG     = v5-10-6
 # CVS tag of the current release:
@@ -120,7 +120,7 @@ release-bump-version:	release-check-settings
 	sed -i -e '/^(defconst gnus-version-number /s,"$(OLD_PATTERN)","$(VERSION)",' lisp/gnus.el
 	sed -i -e '/^.newcommand{.gnusversionname}{Gnus v/s,$(OLD_PATTERN),$(VERSION),' texi/gnus.texi
 	sed -i -e '/^This manual corresponds to [A-Za-z ]*Gnus v/s,$(OLD_PATTERN),$(VERSION),' texi/gnus.texi
-	sed -i -e '/^corresponding to this manual is [A-Za-z ]*Gnusv/s,$(OLD_PATTERN),$(VERSION),' texi/message.texi
+	sed -i -e '/^corresponding to this manual is [A-Za-z ]*Gnus v/s,$(OLD_PATTERN),$(VERSION),' texi/message.texi
 	if [ "x$(CODENAME)" = "x" ]; then \
 	  sed -i -e '/The current release ($(OLD_PATTERN)) should/s,$(OLD_PATTERN),$(VERSION),' texi/gnus-faq.texi; \
 	else \
