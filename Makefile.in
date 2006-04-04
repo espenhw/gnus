@@ -157,29 +157,29 @@ release-commit:	release-check-settings
 
 release-files:	release-make-tar-ball release-diff
 	@echo "Release files have been created:"
-	@ls -l gnus-$(TAG).tar.gz
+	@ls -l gnus-$(VERSION).tar.gz
 	@ls -l gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
 
 release-files-signed:	release-files
 	read -sp "Enter pass phrase: " phrase ; \
-	for i in gnus-$(TAG).tar.gz \
+	for i in gnus-$(VERSION).tar.gz \
 	         gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz; do \
 	   echo "$$phrase" | gpg --passphrase-fd 0 --detach-sign $$i ; \
 	done; true
-	@ls -l gnus-$(TAG).tar.gz{.sig,}
+	@ls -l gnus-$(VERSION).tar.gz{.sig,}
 	@ls -l gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz{.sig,}
-	@gpg --verify gnus-$(TAG).tar.gz{.sig,}
+	@gpg --verify gnus-$(VERSION).tar.gz{.sig,}
 	@gpg --verify gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz{.sig,}
 
-release-cvs-export gnus-$(TAG):	release-check-settings
-	rm -fr gnus-$(TAG)
-	cvs export -d gnus-$(TAG) -r $(TAG) gnus
+release-cvs-export gnus-$(VERSION):	release-check-settings
+	rm -fr gnus-$(VERSION)
+	cvs export -d gnus-$(VERSION) -r $(TAG) gnus
 
-release-make-tar-ball:	gnus-$(TAG)
-	[ -d gnus-$(TAG) ] && cd gnus-$(TAG) && \
+release-make-tar-ball:	gnus-$(VERSION)
+	[ -d gnus-$(VERSION) ] && cd gnus-$(VERSION) && \
 	  rm $(CVS_IGNORE_FILES) || true
-	tar zcvf gnus-$(TAG).tar.gz gnus-$(TAG)
-	ls -l gnus-$(TAG).tar.gz
+	tar zcvf gnus-$(VERSION).tar.gz gnus-$(VERSION)
+	ls -l gnus-$(VERSION).tar.gz
 
 # Make a diff between current and previous release.  Example:
 # ftp://quimby.gnus.org/pub/gnus/ding-patches/gnus-5.10.5-5.10.6.diff.gz
