@@ -6741,8 +6741,12 @@ Pre-defined symbols include `message-tool-bar-gnome' and
   :group 'message)
 
 (defcustom message-tool-bar-gnome
-  '((ispell-message "spell" nil :visible (not flyspell-mode))
-    (flyspell-buffer "spell" t :visible flyspell-mode
+  '((ispell-message "spell" nil
+		    :visible (or (not (boundp 'flyspell-mode))
+				 (not flyspell-mode)))
+    (flyspell-buffer "spell" t
+		     :visible (and (boundp 'flyspell-mode)
+				   flyspell-mode)
 		     :help "Flyspell whole buffer")
     (gmm-ignore "separator")
     (message-send-and-exit "mail/send")
