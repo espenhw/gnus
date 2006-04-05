@@ -1,3 +1,8 @@
+2006-04-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (X-Face): Clarify.
+	(Face): Need Emacs with PNG support.
+
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi, message.texi: Bump version.
