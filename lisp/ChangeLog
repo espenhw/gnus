@@ -3219,11 +3219,10 @@
 	* gnus-async.el: Require timer-funcs at compile time when in
 	XEmacs for `run-with-idle-timer'.
 
-2005-03-13  Steve Youngs  <steve@sxemacs.org>
+2005-03-13  Andrey Slusar  <anrays@gmail.com>  (tiny change)
 
 	* gnus.el: Don't try and mark `gnus-agent-save-groups' as an
 	autoloaded function.
-	From: Andrey Slusar <anrays@gmail.com>.
 
 2005-03-10  Stefan Monnier  <monnier@iro.umontreal.ca>
 
@@ -5442,10 +5441,9 @@
 	* mm-encode.el (mm-content-transfer-encoding-defaults): Use
 	qp-or-base64 for the application/* types.
 
-2004-07-02  Jesper Harder  <harder@ifa.au.dk>
+2004-07-02  Joakim Verona  <joakim@verona.se>  (tiny change)
 
-	* nnrss.el (nnrss-read-group-data): Fix off-by-one error.  From
-	Joakim Verona <joakim@verona.se>.
+	* nnrss.el (nnrss-read-group-data): Fix off-by-one error.
 
 2004-06-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -5468,6 +5466,11 @@
 	* gnus-group.el (gnus-group-get-new-news-this-group): Don't
 	update info that isn't there.
 
+2004-06-29  From Ilya N. Golubev  <gin@mo.msk.ru>.
+
+	* mm-util.el (mm-mime-mule-charset-alist): Add the windows-1251
+	entry.
+
 2004-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-inline-render-with-function): Use multibyte
@@ -5479,7 +5482,7 @@
 	entry.  From Ilya N. Golubev <gin@mo.msk.ru>.
 	(mm-enrich-utf-8-by-mule-ucs): New function run when Mule-UCS is
 	loaded under XEmacs.
-	(): Don't make duplicated entries in mm-mime-mule-charset-alist.
+	(mm-mime-mule-charset-alist): Avoid duplicated entries.
 
 2004-06-28  Jesper Harder  <harder@ifa.au.dk>
 
@@ -6604,13 +6607,14 @@
 
 	* gnus-util.el (gnus-rename-file): New function.
 
+2004-04-07  Christian Neukirchen  <chneukirchen@yahoo.de>  (tiny change)
+
+	* mm-util.el (mm-image-load-path): Handle nil in load-path.
+
 2004-04-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-encoded-word-regexp): Remove unnecessary
 	'+'.  Reported by Stefan Wiens <s.wi@gmx.net>.
-
-	* mm-util.el (mm-image-load-path): Handle nil in load-path.
-	From Christian Neukirchen <chneukirchen@yahoo.de>.
 
 2004-04-06  Jesper Harder  <harder@ifa.au.dk>
 
