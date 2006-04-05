@@ -122,12 +122,10 @@
 	  (save-excursion
 	    (if (looking-at "\\[GNUPG:] \\([A-Z_]+\\)\\>.*")
 		(let* ((status (match-string 1))
-		       (symbol (intern-soft (concat "pgg-gpg-status-" status)))
-		       (entry (member status pgg-gpg-pending-status-list)))
-		  (if entry
-		      (setq pgg-gpg-pending-status-list
-			    (delq (car entry)
-				  pgg-gpg-pending-status-list)))
+		       (symbol (intern-soft (concat "pgg-gpg-status-"
+						    status))))
+		  (if (member status pgg-gpg-pending-status-list)
+		      (setq pgg-gpg-pending-status-list nil))
 		  (if (and symbol
 			   (fboundp symbol))
 		      (funcall symbol process (buffer-substring
