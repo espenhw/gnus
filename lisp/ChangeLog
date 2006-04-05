@@ -1,3 +1,7 @@
+2006-04-05  Simon Josefsson  <jas@extundo.com>
+
+	* password.el (password-reset): New function.
+
 2006-04-05  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region, pgg-gpg-sign-region): Wait

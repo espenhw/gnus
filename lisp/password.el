@@ -1,6 +1,6 @@
 ;;; password.el --- Read passwords from user, possibly using a password cache.
 
-;; Copyright (C) 1999, 2000, 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Created: 2003-12-21
@@ -129,6 +129,11 @@ seconds."
 		 key))
   (set (intern key password-data) password)
   nil)
+
+(defun password-reset ()
+  "Clear the password cache."
+  (interactive)
+  (fillarray password-data 0))
 
 (provide 'password)
 
