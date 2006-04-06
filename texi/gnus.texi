@@ -22702,11 +22702,14 @@ The contents of a @code{Face} header must be a base64 encoded PNG image.
 See @uref{http://quimby.gnus.org/circus/face/} for the precise
 specifications.
 
-Viewing an @code{X-Face} header either an Emacs that is able to display
+The @code{gnus-face-properties-alist} variable affects the appearance of
+displayed Face images.  @xref{X-Face}.
+
+Viewing an @code{Face} header requires an Emacs that is able to display
 PNG images.
 @c Maybe add this:
 @c (if (featurep 'xemacs)
-@c     (featurep 'pgn)
+@c     (featurep 'png)
 @c   (image-type-available-p 'png))
 
 Gnus provides a few convenience functions and variables to allow
