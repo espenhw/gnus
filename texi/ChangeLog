@@ -1,6 +1,6 @@
 2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus.texi (Face): Restore XREF to gnus-face-properties-alist;
+	* gnus.texi (Face): Restore xref to gnus-face-properties-alist;
 	fix typo.
 
 2006-04-05  Reiner Steib  <Reiner.Steib@gmx.de>
