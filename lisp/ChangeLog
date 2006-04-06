@@ -1,3 +1,7 @@
+2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-fun.el (gnus-face-properties-alist): Add :version.
+
 2006-04-05  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-gpg.el (pgg-gpg-process-filter): Fix.
