@@ -1,6 +1,6 @@
 2006-04-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-fun.el: Require gnus for gnus-directory.
+	* gnus-fun.el (gnus): Require it for gnus-directory.
 
 2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
