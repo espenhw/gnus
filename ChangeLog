@@ -1,3 +1,9 @@
+2006-04-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (GZIP_PROG): New variable.
+	(release-diff): Use it.
+	(release-sign-files): New sign-only target.  Use GPG_AGENT_INFO.
+
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (TAR_BALL_EXTRA, release-make-tar-ball, README):

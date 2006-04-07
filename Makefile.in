@@ -7,6 +7,8 @@ srcdir = @srcdir@
 EMACS = @EMACS@
 XEMACS = @EMACS@
 
+GZIP_PROG = gzip
+
 # # # # # # # # # # Release variables (for maintainer only):
 #
 # Files removed from `cvs export' output before creating the tar-ball:
@@ -163,11 +165,19 @@ release-files:	release-make-tar-ball release-diff
 	@ls -l $(CIN)gnus-$(VERSION).tar.gz
 	@ls -l $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
 
-release-files-signed:	release-files
-	read -sp "Enter pass phrase: " phrase ; \
+release-files-signed:	release-files release-sign-files
+
+# Sign prepared files:
+release-sign-files:
+	if [ "x$$GPG_AGENT_INFO" = "x" ]; then \
+	  read -sp "Enter pass phrase: " phrase ; \
+	  gpg_opt="--passphrase-fd 0"; \
+	else \
+	  gpg_opt=""; phrase=""; \
+	fi; \
 	for i in $(CIN)gnus-$(VERSION).tar.gz \
 	         $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz; do \
-	   echo "$$phrase" | gpg --passphrase-fd 0 --detach-sign $$i ; \
+	   echo "$$phrase" | gpg --detach-sign $$gpg_opt $$i; \
 	done; true
 	@ls -l $(CIN)gnus-$(VERSION).tar.gz{.sig,}
 	@ls -l $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz{.sig,}
@@ -189,7 +199,7 @@ release-make-tar-ball:	$(CIN)gnus-$(VERSION)
 release-diff:	release-check-settings
 	cvs diff -r $(OLD_TAG) -r $(TAG) | sed -e '/^\? /d' > temp.diff || true
 	mv temp.diff $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
-	gzip         $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
+	$(GZIP_PROG) $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff
 	ls -l        $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz
 
 release-post-clean:	release-check-settings
