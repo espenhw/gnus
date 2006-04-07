@@ -2788,6 +2788,9 @@ If the group parameter list has the element @code{(visible . t)},
 that group will always be visible in the Group buffer, regardless
 of whether it has any unread articles.
 
+This parameter cannot be set via @code{gnus-parameters}. See
+@code{gnus-permanently-visible-groups} as an alternative.
+
 @item broken-reply-to
 @cindex broken-reply-to
 Elements like @code{(broken-reply-to . t)} signals that @code{Reply-To}
@@ -3079,8 +3082,9 @@ parameters (@pxref{Topic Parameters}).
 
 @vindex gnus-parameters
 Group parameters can be set via the @code{gnus-parameters} variable too.
-But some variables, such as @code{visible}, have no effect.  For
-example:
+But some variables, such as @code{visible}, have no effect (For this
+case see @code{gnus-permanently-visible-groups} as an alternative.).
+For example:
 
 @lisp
 (setq gnus-parameters

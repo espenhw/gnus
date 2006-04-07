@@ -1,3 +1,8 @@
+2006-04-07  Jochen K,A|(Bpper  <jochen@fhi-berlin.mpg.de>
+
+	* gnus.texi (Group Parameters): Mention
+	gnus-permanently-visible-groups.
+
 2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Face): Restore xref to gnus-face-properties-alist;
