@@ -4751,7 +4751,7 @@ The line number.
 @item O
 Download mark.
 @item *
-Desired cursor position (instead of after first colon)
+Desired cursor position (instead of after first colon).
 @item &user-date;
 Age sensitive date format.  Various date format is defined in
 @code{gnus-user-date-format-alist}.
