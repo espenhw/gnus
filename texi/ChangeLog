@@ -1,3 +1,7 @@
+2006-04-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Summary Buffer Lines): Add `*'.
+
 2006-04-07  Jochen K,A|(Bpper  <jochen@fhi-berlin.mpg.de>
 
 	* gnus.texi (Group Parameters): Mention
