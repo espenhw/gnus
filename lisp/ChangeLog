@@ -3222,7 +3222,7 @@
 	* nnmaildir.el (nnmaildir-request-accept-article):
 	Use `nnheader-cancel-timer' for compatibility with current XEmacs.
 
-2005-03-13  Steve Youngs  <steve@sxemacs.org>
+2005-03-13  Andrey Slusar  <anrays@gmail.com>  (tiny change)
 
 	* gnus-async.el: Require timer-funcs at compile time when in
 	XEmacs for `run-with-idle-timer'.
@@ -5186,6 +5186,17 @@
 	* gnus-sum.el (gnus-summary-make-menu-bar): Avoid the
 	"Unrecognized menu descriptor" error in XEmacs.
 
+2004-08-26  Stefan Wiens <s.wi@gmx.net>  (tiny change)
+
+	* gnus-sum.el (gnus-read-header): Don't remove a header for the
+	parent article of a sparse article in the thread hashtb.
+
+2004-08-26  David Hedbor <dhedbor@real.com>  (tiny change)
+
+	* nnmail.el (nnmail-split-lowercase-expanded): New user option.
+	(nnmail-expand-newtext): Lowercase expanded entries if
+	nnmail-split-lowercase-expanded is non-nil.
+
 2004-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nndoc.el (nndoc-type-alist): Fix regexp in the rfc822-forward
@@ -5399,13 +5410,6 @@
 2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Fix last change.
-
-2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
-	From David Hedbor <dhedbor@real.com>.
-
-	* nnmail.el (nnmail-split-lowercase-expanded): New user option.
-	(nnmail-expand-newtext): Lowercase expanded entries if
-	nnmail-split-lowercase-expanded is non-nil.
 
 2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6051,7 +6055,7 @@
 
 	* pgg-pgp.el (pgg-pgp-verify-region): Clean up.
 
-2004-05-19  Michael Schierl  <schierlm-usenet@gmx.de>
+2004-05-19  Michael Schierl  <schierlm-usenet@gmx.de>  (tiny change)
 
 	* pgg-pgp.el (pgg-pgp-verify-region): Default when signature
 	isn't a string.
@@ -6732,10 +6736,6 @@
 
 	* gnus-agent.el (gnus-agent-read-agentview): Add a missing arg to
 	error.
-
-	* gnus-sum.el (gnus-read-header): Don't remove a header for the
-	parent article of a sparse article in the thread hashtb.  From
-	Stefan Wiens <s.wi@gmx.net>.
 
 2004-03-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
