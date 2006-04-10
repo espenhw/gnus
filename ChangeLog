@@ -1,5 +1,9 @@
 2006-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* Makefile.in (GZIP_PROG): Use gzip -f.
+	(release-bump-version, RELEASE_COMMIT_FILES): Add README.
+	(release-sign-files): Remove old *.sig files.
+
 	* README: Say "development version".  Let sentences end with
 	double space.
 
