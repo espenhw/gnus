@@ -1,6 +1,6 @@
-This package contains a beta version of Gnus (beta because the final version
-is the one included in Emacs). The lisp directory contains the source lisp
-files, and the texi directory contains a draft of the Gnus info pages.
+This package contains a development version of Gnus.  The lisp directory
+contains the source lisp files, and the texi directory contains the Gnus info
+pages.
 
 To use Gnus you first have to unpack the files, which you've obviously
 done, because you are reading this.
