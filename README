@@ -5,7 +5,7 @@ pages.
 To use Gnus you first have to unpack the files, which you've obviously
 done, because you are reading this.
 
-You should definitely byte-compile the source files. To do that, you
+You should definitely byte-compile the source files.  To do that, you
 can simply say "./configure && make" in this directory.
 
 Do not say "make install".  I repeat, do *NOT* say "make install".  If
@@ -16,7 +16,7 @@ won't.
 
 If you are using XEmacs, you *must* say "./configure && make EMACS=xemacs".
 
-Then you have to tell Emacs where Gnus is. You might put something
+Then you have to tell Emacs where Gnus is.  You might put something
 like
 
    (setq load-path (cons (expand-file-name "~/gnus-5.10.8/lisp") load-path))
@@ -38,13 +38,13 @@ To compile the Gnus manual, you either need a pretty new Emacs, or a
 pretty new version of the texinfo tools.
 
 Then you do a `M-x gnus', and everything should... uhm... it should
-work, but it might not. Set `debug-on-error' to t, and mail me the
+work, but it might not.  Set `debug-on-error' to t, and mail me the
 backtraces, or, better yet, find out why Gnus does something wrong,
-fix it, and send me the diffs. :-)
+fix it, and send me the diffs.  :-)
 
 There are four main things I want your help and input on:
 
-1) Startup. Does everything go smoothly, and why not?
+1) Startup.  Does everything go smoothly, and why not?
 
 2) Any errors while you read news normally?
 
@@ -54,4 +54,4 @@ There are four main things I want your help and input on:
    bit, and features you would like to see.
 
 Send any comments and all your bug fixes/complaints to
-`bugs@gnus.org'. 
+`bugs@gnus.org'.
