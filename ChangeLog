@@ -8,6 +8,7 @@
 	(RELEASE_COMMIT_FILES): Add README.
 	(OLD_PATTERN): Fix.
 	(release-bump-version): Fix gnusversionname substitution.
+	(OLD_PATTERN): Add grouping.
 
 2006-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
