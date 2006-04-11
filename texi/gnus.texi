@@ -52,7 +52,7 @@ license to the document, as described in section 6 of the license.
 \begin{document}
 
 % Adjust ../Makefile.in if you change the following line:
-\newcommand{\gnusversionname}{No Gnus v0.3}
+\newcommand{\gnusversionname}{No Gnus v0.4}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 

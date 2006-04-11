@@ -1,3 +1,7 @@
+2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el: No Gnus v0.4 is released.
+
 2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Fix up to new
