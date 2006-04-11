@@ -1,3 +1,7 @@
+2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump version.
+
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.el: No Gnus v0.4 is released.
