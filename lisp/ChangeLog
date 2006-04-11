@@ -1,13 +1,13 @@
 2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Fix up to new
-	layout. 
+	layout.
 
 	* rfc2047.el (rfc2047-decode-encoded-words): Don't message about
-	unknown charset.  
+	unknown charset.
 
 	* message.el (message-header-synonyms): Add Original-To to the
-	default. 
+	default.
 
 	* gnus-sum.el (gnus-get-newsgroup-headers-xover): group is an
 	optional parameter.
