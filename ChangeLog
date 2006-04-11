@@ -5,6 +5,7 @@
 	(release-bump-version): Add README.
 	(release-check-settings): OLD_TAG, not OLDTAG.
 	(release-commit): Echo command lines before prompt.
+	(RELEASE_COMMIT_FILES): Add README.
 
 2006-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
