@@ -6177,7 +6177,8 @@ Return a list of headers that match SEQUENCE (see
 	(allp (cond
 	       ((eq gnus-read-all-available-headers t)
 		t)
-	       ((stringp gnus-read-all-available-headers)
+	       ((and (stringp gnus-read-all-available-headers)
+		     group)
 		(string-match gnus-read-all-available-headers group))
 	       (t
 		nil)))

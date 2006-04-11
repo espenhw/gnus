@@ -1,3 +1,8 @@
+2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): group is an
+	optional parameter.
+
 2006-04-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-fun.el (gnus): Require it for gnus-directory.
