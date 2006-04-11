@@ -1,5 +1,8 @@
 2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2047.el (rfc2047-decode-encoded-words): Don't message about
+	unknown charset.  
+
 	* message.el (message-header-synonyms): Add Original-To to the
 	default. 
 
