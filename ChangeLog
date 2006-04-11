@@ -3,6 +3,8 @@
 	* Makefile.in (release-sign-files): Use rm -f.
 	(RELEASE_COMMIT_FILES): Add ./ChangeLog.
 	(release-bump-version): Add README.
+	(release-check-settings): OLD_TAG, not OLDTAG.
+	(release-commit): Echo command lines before prompt.
 
 2006-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 

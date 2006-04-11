@@ -105,7 +105,7 @@ release-check-settings:
 	@echo "CODENAME  = '$(CODENAME)' (example: 'No ')"
 	@echo "CIN       = '$(CIN)' (example: 'n', codename initial)"
 	@echo "TAG       = '$(TAG)' (example: 'v5-10-6')"
-	@echo "OLDTAG    = '$(OLDTAG)' (example: 'v5-10-5')"
+	@echo "OLD_TAG   = '$(OLD_TAG)' (example: 'v5-10-5')"
 	@echo
 	@if [ x"$(VERSION)" = x ]; then echo "error: No VERSION given."; exit 1; else :; fi
 	@if [ x"$(TAG)" = x ]; then echo "error: No TAG given."; exit 1; else :; fi
@@ -154,6 +154,8 @@ release-commit:	release-check-settings
 	@echo -e '\007'
 	@echo
 	@echo "Really do the release-commit for $(CODENAME)Gnus v$(VERSION)?"
+	@echo "Command line:"
+	@echo "  " cvs commit -m "$(CODENAME)Gnus v$(VERSION) is released." $(RELEASE_COMMIT_FILES)
 	@echo
 	@echo "Hit RET to continue or Ctrl-C to abort."
 	@echo
@@ -161,6 +163,8 @@ release-commit:	release-check-settings
 	cvs commit -m "$(CODENAME)Gnus v$(VERSION) is released." $(RELEASE_COMMIT_FILES)
 	@echo
 	@echo "Add tag $(TAG) to CVS?"
+	@echo "Command line:"
+	@echo "  " cvs tag $(TAG)
 	@echo "Hit RET to continue or Ctrl-C to abort."
 	@echo
 	@read dummy
