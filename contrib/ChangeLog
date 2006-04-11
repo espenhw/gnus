@@ -1,3 +1,7 @@
+2006-04-11  Sascha Wilde  <wilde@sha-bang.de>  (tiny patch)
+
+	* nnir.el (nnir-run-swish++): Allow matching gzipped files.
+
 2006-02-11  Miles Bader  <miles@gnu.org>
 
 	* sendmail.el, smtpmail.el: New files, from Emacs tree.
