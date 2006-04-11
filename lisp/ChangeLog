@@ -1,6 +1,7 @@
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-valid-localpart-regexp): Exclude `@'.
+	(gnus-article-browse-delete-temp): Add :version.
 
 2006-04-11  Arne J,Ax(Brgensen  <arne@arnested.dk>
 

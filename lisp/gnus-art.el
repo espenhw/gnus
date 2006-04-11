@@ -2618,6 +2618,7 @@ exit from the summary buffer.  If it is the symbol `file', query
 on each file, if it is `ask' ask once when exiting from the
 summary buffer."
   :group 'gnus-article
+  :version "23.0" ;; No Gnus
   :type '(choice (const :tag "Don't delete" nil)
 		 (const :tag "Don't ask" t)
 		 (const :tag "Ask" ask)
