@@ -1,5 +1,11 @@
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* smiley.el (smiley-style): New variable.
+	(smiley-directory): New function.
+	(smiley-data-directory): Derive from `smiley-style' using
+	`smiley-directory'.
+	(smiley-regexp-alist): Add new entries.
+
 	* gnus-art.el (gnus-button-valid-localpart-regexp): Exclude `@'.
 	(gnus-article-browse-delete-temp): Add :version.
 

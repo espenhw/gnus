@@ -59,22 +59,57 @@
   :group 'gnus-visual)
 
 ;; Maybe this should go.
-(defcustom smiley-data-directory
-  (nnheader-find-etc-directory "images/smilies")
-  "Location of the smiley faces files."
+(defcustom smiley-style 'low-color
+  "Smiley style."
+  :type '(choice (const :tag "small, 3 colors" low-color)
+		 (const :tag "medium, ~10 colors" medium)
+		 (const :tag "dull, grayscale" grayscale))
+  :set (lambda (symbol value)
+	 (set-default symbol value)
+	 (setq smiley-data-directory (smiley-directory))
+	 (smiley-update-cache))
+  :initialize 'custom-initialize-default
+  :version "23.0" ;; No Gnus
+  :group 'smiley)
+
+;; For compatibility, honor the variable `smiley-data-directory' if the user
+;; has set it.
+
+(defun smiley-directory (&optional style)
+  "Return a the location of the smiley faces files.
+STYLE specifies which style to use, see `smiley-style'.  If STYLE
+is nil, use `smiley-style'."
+  (unless style (setq style smiley-style))
+  (nnheader-find-etc-directory
+   (concat "images/smilies"
+	   (cond ((eq smiley-style 'low-color) "")
+		 ((eq smiley-style 'medium) "/medium")
+		 ((eq smiley-style 'grayscale) "/grayscale")))))
+
+(defcustom smiley-data-directory (smiley-directory)
+  "*Location of the smiley faces files."
+  :set (lambda (symbol value)
+	 (set-default symbol value)
+	 (smiley-update-cache))
+  :initialize 'custom-initialize-default
   :type 'directory
   :group 'smiley)
 
 ;; The XEmacs version has a baroque, if not rococo, set of these.
 (defcustom smiley-regexp-alist
-  '(("\\(:-?)\\)\\W" 1 "smile")
-    ("\\(;-?)\\)\\W" 1 "blink")
+  '(("\\(;-?)\\)\\W" 1 "blink")
     ("\\(:-]\\)\\W" 1 "forced")
     ("\\(8-)\\)\\W" 1 "braindamaged")
     ("\\(:-|\\)\\W" 1 "indifferent")
     ("\\(:-[/\\]\\)\\W" 1 "wry")
     ("\\(:-(\\)\\W" 1 "sad")
-    ("\\(:-{\\)\\W" 1 "frown"))
+    ("\\(:-{\\)\\W" 1 "frown")
+    ("\\(>:-)\\)\\W" 1 "evil")
+    ("\\(;-(\\)\\W" 1 "cry")
+    ("\\(X-)\\)\\W" 1 "dead")
+    ("\\(:-D\\)\\W" 1 "grin")
+    ;; "smile" must be come after "evil"
+    ("\\(\\^?:-?)\\)\\W" 1 "smile"))
   "*A list of regexps to map smilies to images.
 The elements are (REGEXP MATCH IMAGE), where MATCH is the submatch in
 regexp to replace with IMAGE.  IMAGE is the name of an image file in
