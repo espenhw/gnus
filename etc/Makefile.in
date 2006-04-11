@@ -29,9 +29,11 @@ install:
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies \
+	  $(etcdir)/images/smilies/grayscale $(etcdir)/images/smilies/medium
 	cd $(srcdir) \
-	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
+	&& for p in images/smilies/*.pbm images/smilies/*.xpm \
+            images/smilies/grayscale/*.xpm images/smilies/medium/*.xpm; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
