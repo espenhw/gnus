@@ -1,3 +1,7 @@
+2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (release-sign-files): Use rm -f.
+
 2006-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (GZIP_PROG): Use gzip -f.

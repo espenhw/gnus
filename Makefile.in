@@ -178,7 +178,7 @@ release-sign-files:
 	fi; \
 	for i in $(CIN)gnus-$(VERSION).tar.gz \
 	         $(CIN)gnus-`echo $(OLD_TAG)%$(TAG)|tr - .|tr -d v|tr % -`.diff.gz; do \
-	   rm $$i.sig; \
+	   rm -f $$i.sig; \
 	   echo "$$phrase" | gpg --detach-sign $$gpg_opt $$i; \
 	done; true
 	@ls -l $(CIN)gnus-$(VERSION).tar.gz{.sig,}
