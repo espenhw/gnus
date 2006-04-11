@@ -1,5 +1,8 @@
 2006-04-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-header-synonyms): Add Original-To to the
+	default. 
+
 	* gnus-sum.el (gnus-get-newsgroup-headers-xover): group is an
 	optional parameter.
 
