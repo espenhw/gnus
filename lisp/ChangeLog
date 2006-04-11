@@ -1,4 +1,4 @@
-2006-04-11  Arne J,Ax(Brgensen  <arne@arnested.dk>  (tiny patch)
+2006-04-11  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* gnus-sieve.el (gnus-sieve-generate): Delete from the start of
 	the sieve region.
