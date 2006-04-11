@@ -1,3 +1,9 @@
+2006-04-11  Adam Sj,Ax(Bgren  <asjo@koldfront.dk>
+
+	* etc/images/smilies/grayscale/*.xpm: New larger grayscale smileys.
+
+	* etc/images/smilies/medium/*.xpm: New colorful smileys.
+
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: No Gnus v0.4 is released.
