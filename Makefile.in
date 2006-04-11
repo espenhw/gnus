@@ -22,7 +22,7 @@ CODENAME =
 # Codename initial (lower case), e.g. 'n' for "No Gnus".
 CIN =
 # Files with hard-coded versions numbers:
-RELEASE_COMMIT_FILES = lisp/ChangeLog lisp/gnus.el \
+RELEASE_COMMIT_FILES = ChangeLog lisp/ChangeLog lisp/gnus.el \
   texi/ChangeLog texi/gnus.texi texi/message.texi texi/gnus-faq.texi
 # Pattern matching previous version(s):
 OLD_PATTERN = 5.10.[0-9]*\|0\.3
@@ -128,6 +128,11 @@ release-bump-version:	release-check-settings
 	  sed -i -e '/The current release ($(OLD_PATTERN)) should/s,$(OLD_PATTERN),$(VERSION),' texi/gnus-faq.texi; \
 	else \
 	  true; \
+	fi
+	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" ChangeLog; then \
+	  echo "ChangeLog is already updated"; \
+	else \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* README: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" ChangeLog; \
 	fi
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" texi/ChangeLog; then \
 	  echo "texi/ChangeLog is already updated"; \
