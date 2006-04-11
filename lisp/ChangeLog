@@ -1,3 +1,7 @@
+2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-valid-localpart-regexp): Exclude `@'.
+
 2006-04-11  Arne J,Ax(Brgensen  <arne@arnested.dk>
 
 	* gnus-sieve.el (gnus-sieve-generate): Delete from the start of
