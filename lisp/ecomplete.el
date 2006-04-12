@@ -40,10 +40,6 @@
 ;;; Internal variables.
 
 (defvar ecomplete-database nil)
-(defvar ecomplete-current-matches nil)
-(defvar ecomplete-match-length nil)
-(defvar ecomplete-current-line nil)
-(defvar ecomplete-current-match nil)
 
 (defun ecomplete-setup ()
   (when (file-exists-p ecomplete-database-file)
@@ -79,7 +75,6 @@
     (write-region (point-min) (point-max) ecomplete-database-file nil 'silent)))
 
 (defun ecomplete-get-matches (type match)
-  (setq ecomplete-current-match match)
   (let* ((elems (cdr (assq type ecomplete-database)))
 	 (match (regexp-quote match))
 	 (candidates
@@ -105,17 +100,22 @@
 (defun ecomplete-display-matches (type word)
   (let* ((matches (ecomplete-get-matches type word))
 	 (line 0)
-	 (max-lines (length (split-string matches "\n")))
-	 command)
-    (while (not (memq (setq command (read-char)) '(?  ?\r)))
-      (cond
-       ((eq command ?n)
-	(setq line (min (1+ line) max-lines)))
-       ((eq command ?p)
-	(setq line (max (1- line) 0))))
-      (ecomplete-highlight-match-line matches line))
-    (when (eq command ?\r)
-      (nth line (split-string ecomplete-current-matches "\n")))))
+	 (max-lines (when matches (- (length (split-string matches "\n")) 2)))
+	 command highlight)
+    (if (not matches)
+	(progn
+	  (message "No ecomplete matches")
+	  nil)
+      (setq highlight (ecomplete-highlight-match-line matches line))
+      (while (not (memq (setq command (read-event highlight)) '(? return)))
+	(cond
+	 ((eq command ?n)
+	  (setq line (min (1+ line) max-lines)))
+	 ((eq command ?p)
+	  (setq line (max (1- line) 0))))
+	(setq highlight (ecomplete-highlight-match-line matches line)))
+      (when (eq command 'return)
+	(nth line (split-string matches "\n"))))))
 
 (defun ecomplete-highlight-match-line (matches line)
   (with-temp-buffer
@@ -130,7 +130,7 @@
 	(unless (get-text-property (point) 'face)
 	  (put-text-property (point) (1+ (point)) 'face 'region))
 	(forward-char 1)))
-    (message "%s" (buffer-string))))
+    (buffer-string)))
 
 (provide 'ecomplete)
 

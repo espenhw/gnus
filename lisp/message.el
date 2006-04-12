@@ -7188,8 +7188,8 @@ From headers in the original article."
 		 (looking-at "To\\|Cc"))))
     (let* ((end (point))
 	   (start (save-excursion
-		    (re-search-backward "\n\t " nil t)
-		    (1- (point))))
+		    (re-search-backward "[\n\t ]" nil t)
+		    (1+ (point))))
 	   (word (buffer-substring start end))
 	   (match (ecomplete-display-matches 'mail word)))
       (when match

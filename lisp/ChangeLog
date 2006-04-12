@@ -1,7 +1,11 @@
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-display-abbrev): Fix regexp.
+
 	* ecomplete.el (ecomplete-highlight-match-line): Reimplement
 	choosing. 
+	(ecomplete-highlight-match-line): Fix up code rewrite, remove
+	dead variables. 
 
 	* message.el (message-newline-and-indent): Remove debugging.
 	(message-display-abbrev): Use new implementation.
