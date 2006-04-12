@@ -1,3 +1,8 @@
+2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* smiley.el (smiley-style): Move definition later to avoid a
+	compilation warning.
+
 2006-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-copy-part): Find name parameter in
