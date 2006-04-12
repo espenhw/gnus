@@ -134,4 +134,5 @@
 
 (provide 'ecomplete)
 
+;; arch-tag: 34622935-bb81-4711-a600-57b89c2ece72
 ;;; ecomplete.el ends here
