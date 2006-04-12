@@ -49,6 +49,7 @@
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
+(require 'ecomplete)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -1085,6 +1086,7 @@ mail aliases off."
   :group 'message
   :link '(custom-manual "(message)Mail Aliases")
   :type '(choice (const :tag "Use Mailabbrev" abbrev)
+		 (const :tag "Use ecomplete" ecomplete)
 		 (const :tag "No expansion" nil)))
 
 (defcustom message-auto-save-directory
@@ -3594,6 +3596,9 @@ It should typically alter the sending method in some way or other."
       (save-excursion
 	(run-hooks 'message-sent-hook))
       (message "Sending...done")
+      ;; Do ecomplete address snarfing.
+      (when (eq message-mail-alias-type 'ecomplete)
+	(message-put-addresses-in-ecomplete))
       ;; Mark the buffer as unmodified and delete auto-save.
       (set-buffer-modified-p nil)
       (delete-auto-save-file-if-necessary t)
@@ -7154,6 +7159,13 @@ From headers in the original article."
     (if reverse
 	(not result)
       result)))
+
+(defun message-put-addresses-in-ecomplete ()
+  (dolist (header '("to" "cc" "from" "reply-to"))
+    (let ((value (message-fetch-field header)))
+      (dolist (string (mail-header-parse-addresses value 'raw))
+	(ecomplete-add-item 'mail (car (mail-header-parse-address string))
+			    string)))))
 
 (when (featurep 'xemacs)
   (require 'messagexmas)

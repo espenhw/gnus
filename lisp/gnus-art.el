@@ -158,7 +158,10 @@
      "X-Virus-Scanned" "X-Delivery-Agent" "Posted-Date" "X-Gateway"
      "X-Local-Origin" "X-Local-Destination" "X-UserInfo1"
      "X-Received-Date" "X-Hashcash" "Face" "X-DMCA-Notifications"
-     "X-Abuse-and-DMCA-Info" "X-Postfilter" "X-Gpg-.*" "X-Disclaimer"))
+     "X-Abuse-and-DMCA-Info" "X-Postfilter" "X-Gpg-.*" "X-Disclaimer"
+     "Envelope-To" "X-Spam-Score" "System-Type" "X-Injected-Via-Gmane"
+     "X-Gmane-NNTP-Posting-Host" "Jabber-ID" "Archived-At"
+     "Envelope-Sender" "Envelope-Recipients"))
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."

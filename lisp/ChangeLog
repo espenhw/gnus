@@ -1,3 +1,15 @@
+2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-headers): Add some more headers.
+
+	* ietf-drums.el (ietf-drums-parse-addresses): Take a RAWP
+	parameter to say whether to actually parse the individual
+	addresses. 
+
+	* message.el (message-put-addresses-in-ecomplete): New function.
+	(ecomplete): Require.
+	(message-mail-alias-type): Add ecomplete as an option.
+
 2006-04-12  Ralf Angeli  <angeli@iwi.uni-sb.de>
 
 	* flow-fill.el (fill-flowed): Remove trailing space from blank

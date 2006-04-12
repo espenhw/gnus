@@ -213,8 +213,10 @@ backslash and doublequote.")
 	     (ietf-drums-get-comment string)))
 	(cons mailbox display-string)))))
 
-(defun ietf-drums-parse-addresses (string)
-  "Parse STRING and return a list of MAILBOX / DISPLAY-NAME pairs."
+(defun ietf-drums-parse-addresses (string &optional rawp)
+  "Parse STRING and return a list of MAILBOX / DISPLAY-NAME pairs.
+If RAWP, don't actually parse the addresses, but instead return
+a list of address strings."
   (if (null string)
       nil
     (with-temp-buffer
@@ -231,20 +233,24 @@ backslash and doublequote.")
 	       (skip-chars-forward "^,"))))
 	   ((eq c ?,)
 	    (setq address
-		  (condition-case nil
-		      (ietf-drums-parse-address
-		       (buffer-substring beg (point)))
-		    (error nil)))
+		  (if rawp
+		      (buffer-substring beg (point))
+		    (condition-case nil
+			(ietf-drums-parse-address
+			 (buffer-substring beg (point)))
+		      (error nil))))
 	    (if address (push address pairs))
 	    (forward-char 1)
 	    (setq beg (point)))
 	   (t
 	    (forward-char 1))))
 	(setq address
-	      (condition-case nil
-		  (ietf-drums-parse-address
-		   (buffer-substring beg (point)))
-		(error nil)))
+	      (if rawp
+		  (buffer-substring beg (point))
+		(condition-case nil
+		    (ietf-drums-parse-address
+		     (buffer-substring beg (point)))
+		  (error nil))))
 	(if address (push address pairs))
 	(nreverse pairs)))))
 
