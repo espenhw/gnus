@@ -6,6 +6,8 @@
 
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-newline-and-indent): New function.
+
 	* ecomplete.el: Implement more bits.
 
 	* message.el (message-put-addresses-in-ecomplete): Clean up the
