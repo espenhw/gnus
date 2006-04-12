@@ -7206,7 +7206,6 @@ From headers in the original article."
   "If looking at an abbrev, insert that.  Otherwise `newline-and-indent'."
   (interactive)
   (let ((current-message (current-message)))
-    (debug current-message)
     (if (and (not (zerop (length current-message)))
 	     (get-text-property 0 'ecomplete current-message))
 	(insert (ecomplete-return-current-match))
