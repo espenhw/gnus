@@ -18,13 +18,6 @@
 	* gnus-uu.el (gnus-uu-save-article): Put mml tags instead of part
 	tag to summarized topics part in order to encode non-ASCII text.
 
-2006-04-12  Kenichi Handa  <handa@m17n.org>
-
-	* rfc2231.el (rfc2231-decode-encoded-string): Work on unibyte
-	buffer and then decode the buffer text if necessary.
-	(rfc2231-encode-string): Be sure to work on multibyte buffer at
-	first, and after mm-encode-body, change the buffer to unibyte.
-
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* smiley.el (smiley-style): New variable.
@@ -203,6 +196,21 @@
 	* gnus-sum.el (gnus-map-articles): Don't funcall symbol macro.
 	Reported by Ralf Wachinger <rwachinger@gmx.de>.
 
+<<<<<<< TREE
+=======
+2006-03-23  Kenichi Handa  <handa@m17n.org>
+
+	* rfc2231.el (rfc2231-encode-string): Use mm-disable-multibyte
+	instead of set-buffer-multibyte.
+
+2006-03-23  Kenichi Handa  <handa@m17n.org>
+
+	* rfc2231.el (rfc2231-decode-encoded-string): Work on unibyte
+	buffer and then decode the buffer text if necessary.
+	(rfc2231-encode-string): Be sure to work on multibyte buffer at
+	first, and after mm-encode-body, change the buffer to unibyte.
+
+>>>>>>> MERGE-SOURCE
 2006-03-21  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el: Ideas below based on patch from Sascha Wilde
