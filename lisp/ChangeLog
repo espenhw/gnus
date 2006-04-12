@@ -3,14 +3,17 @@
 	* message.el (message-display-abbrev): Fix regexp.
 
 	* ecomplete.el (ecomplete-highlight-match-line): Reimplement
-	choosing. 
+	choosing.
 	(ecomplete-highlight-match-line): Fix up code rewrite, remove
-	dead variables. 
+	dead variables.
 
 	* message.el (message-newline-and-indent): Remove debugging.
 	(message-display-abbrev): Use new implementation.
 
 2006-04-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-mode): Set
+	cursor-in-non-selected-windows to nil.
 
 	* smiley.el: Revert previous change.
 	(smiley-data-directory): defvar it before using it in the
@@ -23,7 +26,7 @@
 	* ecomplete.el: Implement more bits.
 
 	* message.el (message-put-addresses-in-ecomplete): Clean up the
-	string. 
+	string.
 
 	* ecomplete.el (ecomplete-add-item): Chop off decimals.
 
@@ -35,7 +38,7 @@
 
 	* ietf-drums.el (ietf-drums-parse-addresses): Take a RAWP
 	parameter to say whether to actually parse the individual
-	addresses. 
+	addresses.
 
 	* message.el (message-put-addresses-in-ecomplete): New function.
 	(ecomplete): Require.

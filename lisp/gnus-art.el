@@ -3950,6 +3950,7 @@ commands:
   (make-local-variable 'gnus-article-ignored-charsets)
   ;; Prevent recent Emacsen from displaying non-break space as "\ ".
   (set (make-local-variable 'nobreak-char-display) nil)
+  (setq cursor-in-non-selected-windows nil)
   (gnus-set-default-directory)
   (buffer-disable-undo)
   (setq buffer-read-only t
