@@ -1,5 +1,11 @@
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* ecomplete.el (ecomplete-add-item): Chop off decimals.
+
+	* gnus-sum.el (gnus-summary-save-parts): Bind
+	gnus-summary-save-parts-counter and use it to make unique file
+	names.
+
 	* gnus-art.el (gnus-ignored-headers): Add some more headers.
 
 	* ietf-drums.el (ietf-drums-parse-addresses): Take a RAWP

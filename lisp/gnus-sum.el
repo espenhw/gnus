@@ -11403,6 +11403,8 @@ save those articles instead."
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
 
+(defvar gnus-summary-save-parts-counter)
+
 (defun gnus-summary-save-parts (type dir n &optional reverse)
   "Save parts matching TYPE to DIR.
 If REVERSE, save parts that do not match TYPE."
@@ -11425,7 +11427,8 @@ If REVERSE, save parts that do not match TYPE."
       (let ((handles (or gnus-article-mime-handles
 			 (mm-dissect-buffer nil gnus-article-loose-mime)
 			 (and gnus-article-emulate-mime
-			      (mm-uu-dissect)))))
+			      (mm-uu-dissect))))
+	    (gnus-summary-save-parts-counter 1))
 	(when handles
 	  (gnus-summary-save-parts-1 type dir handles reverse)
 	  (unless gnus-article-mime-handles ;; Don't destroy this case.
@@ -11447,10 +11450,11 @@ If REVERSE, save parts that do not match TYPE."
 		       (mm-handle-disposition handle) 'filename)
 		      (mail-content-type-get
 		       (mm-handle-type handle) 'name)
-		      (concat gnus-newsgroup-name
-			      "." (number-to-string
-				   (cdr gnus-article-current))))))
+		      (format "%s.%d.%d" gnus-newsgroup-name
+			      (cdr gnus-article-current)
+			      gnus-summary-save-parts-counter))))
 		   dir)))
+	(incf gnus-summary-save-parts-counter)
 	(unless (file-exists-p file)
 	  (mm-save-part-to-file handle file))))))
 
