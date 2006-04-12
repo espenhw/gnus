@@ -40,6 +40,9 @@
 ;;; Internal variables.
 
 (defvar ecomplete-database nil)
+(defvar ecomplete-current-matches nil)
+(defvar ecomplete-match-length nil)
+(defvar ecomplete-current-line nil)
 
 (defun ecomplete-setup ()
   (when (file-exists-p ecomplete-database-file)
@@ -81,6 +84,62 @@
 	  (insert ")\n"))
     (insert ")")
     (write-region (point-min) (point-max) ecomplete-database-file nil 'silent)))
+
+(defun ecomplete-show-matches (type match)
+  (let* ((elems (cdr (assq type ecomplete-database)))
+	 (match (regexp-quote match))
+	 (candidates
+	  (sort 
+	   (loop for (key count time text) in elems
+		 when (string-match match text)
+		 collect (list count time text))
+	   (lambda (l1 l2)
+	     (> (car l1) (car l2))))))
+    (when (> (length candidates) 10)
+      (setcdr (nthcdr 10 candidates) nil))
+    (unless (zerop (length candidates))
+      (with-temp-buffer
+	(dolist (candidate candidates)
+	  (insert (caddr candidate) "\n"))
+	(goto-char (point-min))
+	(while (re-search-forward match nil t)
+	  (put-text-property (match-beginning 0) (match-end 0)
+			     'face 'isearch))
+	(setq ecomplete-current-matches (buffer-string)
+	      ecomplete-current-line 0
+	      ecomplete-match-length (count-lines (point-min) (point-max)))
+	(ecomplete-highlight-match-line)))))
+
+(defun ecomplete-up-list ()
+  "Go up the list of matches."
+  (interactive)
+  (when (and ecomplete-current-matches
+	     (> ecomplete-current-line 0))
+    (decf ecomplete-current-line)
+    (ecomplete-highlight-match-line)))
+
+(defun ecomplete-down-list ()
+  "Go down the list of matches."
+  (interactive)
+  (when (and ecomplete-current-matches
+	     (< ecomplete-current-line ecomplete-match-length))
+    (incf ecomplete-current-line)
+    (ecomplete-highlight-match-line)))
+
+(defun ecomplete-highlight-match-line ()
+  (with-temp-buffer
+    (insert ecomplete-current-matches)
+    (goto-char (point-min))
+    (forward-line ecomplete-current-line)
+    (save-restriction
+      (narrow-to-region (point) (line-end-position))
+      (while (not (eobp))
+	;; Put the 'region face on any charactes on this line that
+	;; aren't already highlighted.
+	(unless (get-text-property (point) 'face)
+	  (put-text-property (point) (1+ (point)) 'face 'region))
+	(forward-char 1)))
+    (message "%s" (buffer-string))))
 
 (provide 'ecomplete)
 

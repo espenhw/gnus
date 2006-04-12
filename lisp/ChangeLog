@@ -1,5 +1,10 @@
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* ecomplete.el: Implement more bits.
+
+	* message.el (message-put-addresses-in-ecomplete): Clean up the
+	string. 
+
 	* ecomplete.el (ecomplete-add-item): Chop off decimals.
 
 	* gnus-sum.el (gnus-summary-save-parts): Bind

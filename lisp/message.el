@@ -7164,6 +7164,10 @@ From headers in the original article."
   (dolist (header '("to" "cc" "from" "reply-to"))
     (let ((value (message-fetch-field header)))
       (dolist (string (mail-header-parse-addresses value 'raw))
+	(setq string
+	      (replace-regexp-in-string
+	       "\n" "" 
+	       (replace-regexp-in-string "^ +\\| *$" "" string)))
 	(ecomplete-add-item 'mail (car (mail-header-parse-address string))
 			    string)))))
 
