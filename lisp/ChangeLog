@@ -26,6 +26,14 @@
 	* smiley.el (smiley-style): Move definition later to avoid a
 	compilation warning.
 
+2006-04-12  Kenichi Handa  <handa@m17n.org>
+
+	* rfc2231.el (rfc2231-decode-encoded-string): Work on unibyte
+	buffer and then decode the buffer text if necessary.
+	(rfc2231-encode-string): Be sure to work on multibyte buffer at
+	first, and after mm-encode-body, change the buffer to unibyte.
+	Use mm-disable-multibyte instead of set-buffer-multibyte.
+
 2006-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-copy-part): Find name parameter in
@@ -224,21 +232,6 @@
 	* gnus-sum.el (gnus-map-articles): Don't funcall symbol macro.
 	Reported by Ralf Wachinger <rwachinger@gmx.de>.
 
-<<<<<<< TREE
-=======
-2006-03-23  Kenichi Handa  <handa@m17n.org>
-
-	* rfc2231.el (rfc2231-encode-string): Use mm-disable-multibyte
-	instead of set-buffer-multibyte.
-
-2006-03-23  Kenichi Handa  <handa@m17n.org>
-
-	* rfc2231.el (rfc2231-decode-encoded-string): Work on unibyte
-	buffer and then decode the buffer text if necessary.
-	(rfc2231-encode-string): Be sure to work on multibyte buffer at
-	first, and after mm-encode-body, change the buffer to unibyte.
-
->>>>>>> MERGE-SOURCE
 2006-03-21  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el: Ideas below based on patch from Sascha Wilde
