@@ -1,6 +1,10 @@
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* ecomplete.el (ecomplete-highlight-match-line): Reimplement
+	choosing. 
+
 	* message.el (message-newline-and-indent): Remove debugging.
+	(message-display-abbrev): Use new implementation.
 
 2006-04-12  Reiner Steib  <Reiner.Steib@gmx.de>
 

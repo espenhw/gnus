@@ -100,35 +100,28 @@
 	(while (re-search-forward match nil t)
 	  (put-text-property (match-beginning 0) (match-end 0)
 			     'face 'isearch))
-	(setq ecomplete-current-matches (buffer-string)
-	      ecomplete-current-line -1
-	      ecomplete-match-length (count-lines (point-min) (point-max)))))))
+	(buffer-string)))))
 
-(defun ecomplete-prev-match (type match)
-  "Go up the list of matches."
-  (interactive)
-  (unless (equal match ecomplete-current-match)
-    (ecomplete-get-matches type match))
-  (when (and ecomplete-current-matches
-	     (> ecomplete-current-line 0))
-    (decf ecomplete-current-line)
-    (ecomplete-highlight-match-line)))
+(defun ecomplete-display-matches (type word)
+  (let* ((matches (ecomplete-get-matches type word))
+	 (line 0)
+	 (max-lines (length (split-string matches "\n")))
+	 command)
+    (while (not (memq (setq command (read-char)) '(?  ?\r)))
+      (cond
+       ((eq command ?n)
+	(setq line (min (1+ line) max-lines)))
+       ((eq command ?p)
+	(setq line (max (1- line) 0))))
+      (ecomplete-highlight-match-line matches line))
+    (when (eq command ?\r)
+      (nth line (split-string ecomplete-current-matches "\n")))))
 
-(defun ecomplete-next-match (type match)
-  "Go down the list of matches."
-  (interactive)
-  (unless (equal match ecomplete-current-match)
-    (ecomplete-get-matches type match))
-  (when (and ecomplete-current-matches
-	     (< ecomplete-current-line ecomplete-match-length))
-    (incf ecomplete-current-line)
-    (ecomplete-highlight-match-line)))
-
-(defun ecomplete-highlight-match-line ()
+(defun ecomplete-highlight-match-line (matches line)
   (with-temp-buffer
-    (insert ecomplete-current-matches)
+    (insert matches)
     (goto-char (point-min))
-    (forward-line ecomplete-current-line)
+    (forward-line line)
     (save-restriction
       (narrow-to-region (point) (line-end-position))
       (while (not (eobp))
@@ -138,9 +131,6 @@
 	  (put-text-property (point) (1+ (point)) 'face 'region))
 	(forward-char 1)))
     (message "%s" (buffer-string))))
-
-(defun ecomplete-return-current-match ()
-  (nth ecomplete-current-line (split-string ecomplete-current-matches "\n")))
 
 (provide 'ecomplete)
 

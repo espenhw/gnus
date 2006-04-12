@@ -2351,9 +2351,7 @@ Prefixed with two \\[universal-argument]'s, display the PGG manual."
   (define-key message-mode-map "\t" 'message-tab)
   (define-key message-mode-map "\M-;" 'comment-region)
 
-  (define-key message-mode-map "\M-n" 'message-next-abbrev)
-  (define-key message-mode-map "\M-p" 'message-prev-abbrev)
-  (define-key message-mode-map "\r" 'message-newline-and-indent))
+  (define-key message-mode-map "\M-n" 'message-display-abbrev))
 
 (easy-menu-define
   message-mode-menu message-mode-map "Message Menu."
@@ -7179,37 +7177,24 @@ From headers in the original article."
 			    string))))
   (ecomplete-save))
 
-(defun message-next-abbrev ()
+(defun message-display-abbrev ()
   "Display the next possible abbrev for the text before point."
   (interactive)
-  (message-display-abbrev 'next))
-
-(defun message-prev-abbrev ()
-  "Display the previous possible abbrev for the text before point."
-  (interactive)
-  (message-display-abbrev 'prev))
-
-(defun message-display-abbrev (direction)
   (when (and (message-point-in-header-p)
 	     (save-excursion
 	       (save-restriction
 		 (message-narrow-to-field)
 		 (goto-char (point-min))
 		 (looking-at "To\\|Cc"))))
-    (let ((word (buffer-substring (point) (save-excursion
-					    (backward-word) (point)))))
-      (if (eq direction 'next)
-	  (ecomplete-next-match 'mail word)
-	(ecomplete-prev-match 'mail word)))))
-
-(defun message-newline-and-indent ()
-  "If looking at an abbrev, insert that.  Otherwise `newline-and-indent'."
-  (interactive)
-  (let ((current-message (current-message)))
-    (if (and (not (zerop (length current-message)))
-	     (get-text-property 0 'ecomplete current-message))
-	(insert (ecomplete-return-current-match))
-      (newline-and-indent))))
+    (let* ((end (point))
+	   (start (save-excursion
+		    (re-search-backward "\n\t " nil t)
+		    (1- (point))))
+	   (word (buffer-substring start end))
+	   (match (ecomplete-display-matches 'mail word)))
+      (when match
+	(delete-region start end)
+	(insert match)))))
 
 (when (featurep 'xemacs)
   (require 'messagexmas)
