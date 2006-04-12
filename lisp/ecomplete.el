@@ -43,20 +43,13 @@
 (defvar ecomplete-current-matches nil)
 (defvar ecomplete-match-length nil)
 (defvar ecomplete-current-line nil)
+(defvar ecomplete-current-match nil)
 
 (defun ecomplete-setup ()
   (when (file-exists-p ecomplete-database-file)
     (with-temp-buffer
       (insert-file-contents ecomplete-database-file)
-      (setq ecomplete-database (read (current-buffer))))
-    (save-excursion
-      (loop for (type . elems) in ecomplete-database
-	    do (let ((buffer (get-buffer-create
-			      (format " *ecomplete %s*" type))))
-		 (set-buffer buffer)
-		 (erase-buffer)
-		 (loop for (key count time text) in elems
-		       do (insert text "\n")))))))
+      (setq ecomplete-database (read (current-buffer))))))
 
 (defun ecomplete-add-item (type key text)
   (let ((elems (assq type ecomplete-database))
@@ -85,7 +78,8 @@
     (insert ")")
     (write-region (point-min) (point-max) ecomplete-database-file nil 'silent)))
 
-(defun ecomplete-show-matches (type match)
+(defun ecomplete-get-matches (type match)
+  (setq ecomplete-current-match match)
   (let* ((elems (cdr (assq type ecomplete-database)))
 	 (match (regexp-quote match))
 	 (candidates
@@ -102,25 +96,29 @@
 	(dolist (candidate candidates)
 	  (insert (caddr candidate) "\n"))
 	(goto-char (point-min))
+	(put-text-property (point) (1+ (point)) 'ecomplete t)
 	(while (re-search-forward match nil t)
 	  (put-text-property (match-beginning 0) (match-end 0)
 			     'face 'isearch))
 	(setq ecomplete-current-matches (buffer-string)
-	      ecomplete-current-line 0
-	      ecomplete-match-length (count-lines (point-min) (point-max)))
-	(ecomplete-highlight-match-line)))))
+	      ecomplete-current-line -1
+	      ecomplete-match-length (count-lines (point-min) (point-max)))))))
 
-(defun ecomplete-up-list ()
+(defun ecomplete-prev-match (type match)
   "Go up the list of matches."
   (interactive)
+  (unless (equal match ecomplete-current-match)
+    (ecomplete-get-matches type match))
   (when (and ecomplete-current-matches
 	     (> ecomplete-current-line 0))
     (decf ecomplete-current-line)
     (ecomplete-highlight-match-line)))
 
-(defun ecomplete-down-list ()
+(defun ecomplete-next-match (type match)
   "Go down the list of matches."
   (interactive)
+  (unless (equal match ecomplete-current-match)
+    (ecomplete-get-matches type match))
   (when (and ecomplete-current-matches
 	     (< ecomplete-current-line ecomplete-match-length))
     (incf ecomplete-current-line)
@@ -140,6 +138,9 @@
 	  (put-text-property (point) (1+ (point)) 'face 'region))
 	(forward-char 1)))
     (message "%s" (buffer-string))))
+
+(defun ecomplete-return-current-match ()
+  (nth ecomplete-current-line (split-string ecomplete-current-matches "\n")))
 
 (provide 'ecomplete)
 
