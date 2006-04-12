@@ -1210,7 +1210,7 @@ decompressed data.  The buffer's multibyteness must be turned off."
 	      (coding-system-for-write mm-binary-coding-system)
 	      retval err-msg)
 	  (message "%s" msg)
-	  (with-temp-buffer
+	  (mm-with-unibyte-buffer
 	    (insert-buffer-substring cur)
 	    (condition-case err
 		(progn
