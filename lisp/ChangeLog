@@ -1,3 +1,9 @@
+2006-04-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* smiley.el: Revert previous change.
+	(smiley-data-directory): defvar it before using it in the
+	defcustom of `smiley-style'.
+
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* ecomplete.el: Implement more bits.

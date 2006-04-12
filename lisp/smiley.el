@@ -58,16 +58,8 @@
   "Turn :-)'s into real images."
   :group 'gnus-visual)
 
-(defcustom smiley-data-directory (smiley-directory)
-  "*Location of the smiley faces files."
-  :set (lambda (symbol value)
-	 (set-default symbol value)
-	 (smiley-update-cache))
-  :initialize 'custom-initialize-default
-  :type 'directory
-  :group 'smiley)
+(defvar smiley-data-directory)
 
-;; Maybe this should go.
 (defcustom smiley-style 'low-color
   "Smiley style."
   :type '(choice (const :tag "small, 3 colors" low-color)
@@ -94,6 +86,15 @@ is nil, use `smiley-style'."
 	   (cond ((eq smiley-style 'low-color) "")
 		 ((eq smiley-style 'medium) "/medium")
 		 ((eq smiley-style 'grayscale) "/grayscale")))))
+
+(defcustom smiley-data-directory (smiley-directory)
+  "*Location of the smiley faces files."
+  :set (lambda (symbol value)
+	 (set-default symbol value)
+	 (smiley-update-cache))
+  :initialize 'custom-initialize-default
+  :type 'directory
+  :group 'smiley)
 
 ;; The XEmacs version has a baroque, if not rococo, set of these.
 (defcustom smiley-regexp-alist
