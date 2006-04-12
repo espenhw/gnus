@@ -1,3 +1,8 @@
+2006-04-12  Ralf Angeli  <angeli@iwi.uni-sb.de>
+
+	* flow-fill.el (fill-flowed): Remove trailing space from blank
+	quoted lines.
+
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* smiley.el (smiley-style): Move definition later to avoid a
