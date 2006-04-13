@@ -3332,13 +3332,15 @@ up is returned."
 	  (when (eq 'nnvirtual (car method))
 	    (nnvirtual-catchup-group
 	     (gnus-group-real-name group) (nth 1 method) all)))
-	(if (>= (gnus-group-level group) gnus-level-zombie)
-	    (gnus-message 2 "Dead groups can't be caught up")
-	  (if (prog1
-		  (gnus-group-goto-group group)
-		(gnus-group-catchup group all))
-	      (gnus-group-update-group-line)
-	    (setq ret (1+ ret)))))
+	(cond
+	 ((>= (gnus-group-level group) gnus-level-zombie)
+	  (gnus-message 2 "Dead groups can't be caught up"))
+	 ((prog1
+	      (gnus-group-goto-group group)
+	    (gnus-group-catchup group all))
+	  (gnus-group-update-group-line))
+	 (t
+	  (setq ret (1+ ret)))))
       (gnus-group-next-unread-group 1)
       ret)))
 

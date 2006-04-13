@@ -1,3 +1,8 @@
+2006-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-catchup-current): Change
+	if-then-else-if-then-else into cond.
+
 2006-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-display-abbrev): Fix regexp.
