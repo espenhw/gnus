@@ -2108,11 +2108,26 @@ be permanent."
     (gnus-group-read-ephemeral-group
      (gnus-group-prefixed-name group method) method)))
 
+(defun group-name-at-point ()
+  (let ((regexp "[^-a-zA-Z+.:_]"))
+    (save-excursion
+      (buffer-substring
+       (progn
+	 (re-search-backward regexp nil t)
+	 (forward-char 1)
+	 (point))
+       (progn
+	 (re-search-forward regexp nil t)
+	 (forward-char -1)
+	 (point))))))
+
 ;;;###autoload
 (defun gnus-fetch-group (group &optional articles)
   "Start Gnus if necessary and enter GROUP.
 Returns whether the fetching was successful or not."
-  (interactive (list (completing-read "Group name: " gnus-active-hashtb)))
+  (interactive (list (completing-read "Group name: " gnus-active-hashtb
+				      nil nil nil nil
+				      (group-name-at-point))))
   (unless (get-buffer gnus-group-buffer)
     (gnus-no-server))
   (gnus-group-read-group articles nil group))
