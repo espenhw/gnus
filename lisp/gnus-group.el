@@ -3378,10 +3378,12 @@ or nil if no action could be taken."
 	(gnus-add-marked-articles group 'dormant nil nil 'force))
       ;; Do auto-expirable marks if that's required.
       (when (gnus-group-auto-expirable-p group)
-        (gnus-range-map (lambda (article)
-                          (gnus-add-marked-articles group 'expire (list article))
-                          (gnus-request-set-mark group (list (list (list article) 'add '(expire)))))
-                        unread))
+        (gnus-range-map
+	 (lambda (article)
+	   (gnus-add-marked-articles group 'expire (list article))
+	   (gnus-request-set-mark group (list (list (list article)
+						    'add '(expire)))))
+	 unread))
       (let ((gnus-newsgroup-name group))
 	(gnus-run-hooks 'gnus-group-catchup-group-hook))
       num)))
