@@ -1,3 +1,11 @@
+2006-04-13  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-util.el (gnus-alist-to-hashtable, gnus-hashtable-to-alist):
+	Moved here (and renamed) from gnus-registry.el.
+
+	* gnus-registry.el: Require gnus-util.
+	Use `gnus-alist-to-hashtable' and `gnus-hashtable-to-alist'.
+
 2006-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-catchup-current): Change

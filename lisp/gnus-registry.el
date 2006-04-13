@@ -60,6 +60,7 @@
 (require 'gnus)
 (require 'gnus-int)
 (require 'gnus-sum)
+(require 'gnus-util)
 (require 'nnmail)
 
 (defvar gnus-registry-dirty t
@@ -242,7 +243,8 @@ way."
 	(gnus-registry-clean-empty-function))
       ;; now trim the registry appropriately
       (setq gnus-registry-alist (gnus-registry-trim
-				 (hashtable-to-alist gnus-registry-hashtb)))
+				 (gnus-hashtable-to-alist
+				  gnus-registry-hashtb)))
       ;; really save
       (gnus-registry-cache-save)
       (setq gnus-registry-entry-caching caching)
@@ -287,7 +289,7 @@ way."
 
 (defun gnus-registry-read ()
   (gnus-registry-cache-read)
-  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
+  (setq gnus-registry-hashtb (gnus-alist-to-hashtable gnus-registry-alist))
   (setq gnus-registry-dirty nil))
 
 (defun gnus-registry-trim (alist)
@@ -315,26 +317,6 @@ Also, drop all gnus-registry-ignored-groups matches."
 		     (time-less-p
 		      (or (cdr (gethash (car a) timehash)) '(0 0 0))
 		      (or (cdr (gethash (car b) timehash)) '(0 0 0))))))))))
-
-(defun alist-to-hashtable (alist)
-  "Build a hashtable from the values in ALIST."
-  (let ((ht (make-hash-table
-	     :size 4096
-	     :test 'equal)))
-    (mapc
-     (lambda (kv-pair)
-       (puthash (car kv-pair) (cdr kv-pair) ht))
-     alist)
-     ht))
-
-(defun hashtable-to-alist (hash)
-  "Build an alist from the values in HASH."
-  (let ((list nil))
-    (maphash
-     (lambda (key value)
-       (setq list (cons (cons key value) list)))
-     hash)
-    list))
 
 (defun gnus-registry-action (action data-header from &optional to method)
   (let* ((id (mail-header-id data-header))
@@ -714,7 +696,7 @@ Returns the first place where the trail finds a group name."
   "Clear the Gnus registry."
   (interactive)
   (setq gnus-registry-alist nil)
-  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
+  (setq gnus-registry-hashtb (gnus-alist-to-hashtable gnus-registry-alist))
   (setq gnus-registry-dirty t))
 
 ;;;###autoload

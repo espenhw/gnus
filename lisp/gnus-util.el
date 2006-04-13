@@ -723,6 +723,28 @@ If there's no subdirectory, delete DIRECTORY as well."
       (unless dir
 	(delete-directory directory)))))
 
+;; The following two functions are used in gnus-registry.
+;; They were contributed by Andreas Fuchs <asf@void.at>.
+(defun gnus-alist-to-hashtable (alist)
+  "Build a hashtable from the values in ALIST."
+  (let ((ht (make-hash-table
+	     :size 4096
+	     :test 'equal)))
+    (mapc
+     (lambda (kv-pair)
+       (puthash (car kv-pair) (cdr kv-pair) ht))
+     alist)
+     ht))
+
+(defun gnus-hashtable-to-alist (hash)
+  "Build an alist from the values in HASH."
+  (let ((list nil))
+    (maphash
+     (lambda (key value)
+       (setq list (cons (cons key value) list)))
+     hash)
+    list))
+
 (defun gnus-strip-whitespace (string)
   "Return STRING stripped of all whitespace."
   (while (string-match "[\r\n\t ]+" string)
