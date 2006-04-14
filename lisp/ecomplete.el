@@ -97,7 +97,7 @@
 			     'face 'isearch))
 	(buffer-string)))))
 
-(defun ecomplete-display-matches (type word)
+(defun ecomplete-display-matches (type word &optional choose)
   (let* ((matches (ecomplete-get-matches type word))
 	 (line 0)
 	 (max-lines (when matches (- (length (split-string matches "\n")) 2)))
@@ -107,15 +107,19 @@
 	  (message "No ecomplete matches")
 	  nil)
       (setq highlight (ecomplete-highlight-match-line matches line))
-      (while (not (memq (setq command (read-event highlight)) '(? return)))
-	(cond
-	 ((eq command (aref (kbd "M-n") 0))
-	  (setq line (min (1+ line) max-lines)))
-	 ((eq command (aref (kbd "M-p") 0))
-	  (setq line (max (1- line) 0))))
-	(setq highlight (ecomplete-highlight-match-line matches line)))
-      (when (eq command 'return)
-	(nth line (split-string matches "\n"))))))
+      (if (not choose)
+	  (progn
+	    (message highlight)
+	    nil)
+	(while (not (memq (setq command (read-event highlight)) '(? return)))
+	  (cond
+	   ((eq command (aref (kbd "M-n") 0))
+	    (setq line (min (1+ line) max-lines)))
+	   ((eq command (aref (kbd "M-p") 0))
+	    (setq line (max (1- line) 0))))
+	  (setq highlight (ecomplete-highlight-match-line matches line)))
+	(when (eq command 'return)
+	  (nth line (split-string matches "\n")))))))
 
 (defun ecomplete-highlight-match-line (matches line)
   (with-temp-buffer

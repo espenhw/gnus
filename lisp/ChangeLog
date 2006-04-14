@@ -1,5 +1,12 @@
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* ecomplete.el (ecomplete-display-matches): Allow automatic
+	display. 
+
+	* message.el (message-strip-forbidden-properties): Display
+	abbrevs. 
+	(message-display-abbrev): Get automatic display right.
+
 	* ecomplete.el (ecomplete-display-matches): Use M-n/M-p
 	keystrokes. 
 

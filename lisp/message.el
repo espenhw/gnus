@@ -2517,6 +2517,8 @@ These properties are essential to work, so we should never strip them."
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
+  (when (eq message-mail-alias-type 'ecomplete)
+    (message-display-abbrev))
   (when (and message-strip-special-text-properties
 	     (message-tamago-not-in-use-p begin))
     (let ((buffer-read-only nil)
@@ -7177,9 +7179,9 @@ From headers in the original article."
 			    string))))
   (ecomplete-save))
 
-(defun message-display-abbrev ()
+(defun message-display-abbrev (&optional choose)
   "Display the next possible abbrev for the text before point."
-  (interactive)
+  (interactive (list t))
   (when (and (message-point-in-header-p)
 	     (save-excursion
 	       (save-restriction
@@ -7188,11 +7190,13 @@ From headers in the original article."
 		 (looking-at "To\\|Cc"))))
     (let* ((end (point))
 	   (start (save-excursion
-		    (re-search-backward "[\n\t ]" nil t)
-		    (1+ (point))))
-	   (word (buffer-substring start end))
-	   (match (ecomplete-display-matches 'mail word)))
-      (when match
+		    (and (re-search-backward "[\n\t ]" nil t)
+			 (1+ (point)))))
+	   (word (when start (buffer-substring start end)))
+	   (match (when (and word
+			     (not (zerop (length word))))
+		    (ecomplete-display-matches 'mail word choose))))
+      (when (and choose match)
 	(delete-region start end)
 	(insert match)))))
 
