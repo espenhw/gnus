@@ -1,6 +1,7 @@
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Mail Aliases): Document ecomplete.
+	(Mail Aliases): Fix typo.
 
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
