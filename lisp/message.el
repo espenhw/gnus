@@ -7182,7 +7182,8 @@ From headers in the original article."
 (defun message-display-abbrev (&optional choose)
   "Display the next possible abbrev for the text before point."
   (interactive (list t))
-  (when (and (message-point-in-header-p)
+  (when (and (member (char-after (line-beginning-position)) '(?C ?T ? ))
+	     (message-point-in-header-p)
 	     (save-excursion
 	       (save-restriction
 		 (message-narrow-to-field)

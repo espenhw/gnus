@@ -1,5 +1,7 @@
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-display-abbrev): Small optimization.
+
 	* ecomplete.el (ecomplete-display-matches): Allow automatic
 	display. 
 
