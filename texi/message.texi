@@ -1194,11 +1194,13 @@ Kill the message buffer and exit (@code{message-kill-buffer}).
 @section Mail Aliases
 @cindex mail aliases
 @cindex aliases
+@cindex completion
+@cindex ecomplete
 
 @vindex message-mail-alias-type
 The @code{message-mail-alias-type} variable controls what type of mail
-alias expansion to use.  Currently only one form is supported---Message
-uses @code{mailabbrev} to handle mail aliases.  If this variable is
+alias expansion to use.  Currently two forms are supported:
+@code{mailabbrev} and @code{ecomplete}.  If this variable is
 @code{nil}, no mail alias expansion will be performed.
 
 @code{mailabbrev} works by parsing the @file{/etc/mailrc} and
@@ -1216,6 +1218,14 @@ on) headers and press @kbd{SPC} to expand the alias.
 No expansion will be performed upon sending of the message---all
 expansions have to be done explicitly.
 
+If you're using @code{ecomplete}, all addresses from @code{To} and
+@code{Cc} headers will automatically be put into the
+@file{~/.ecompleterc} file.  When you enter text in the @code{To} and
+@code{Cc} headers, @code{ecomplete} will check out the values stored
+there and ``electrically'' say what completions are possible.  To
+choose one of these completions, use the @kbd{M-n} command to move
+down to the list.  Use @kdb{M-n} and @kdb{M-p} to move down and up the
+list, and @kdb{RET} to choose a completion.
 
 @node Spelling
 @section Spelling
