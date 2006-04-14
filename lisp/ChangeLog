@@ -2,6 +2,7 @@
 
 	* ecomplete.el (ecomplete-display-matches): Get highlightling
 	right. 
+	(ecomplete-display-matches): Use literals.
 
 	* message.el (message-display-abbrev): Small optimization.
 
