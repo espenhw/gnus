@@ -109,9 +109,9 @@
       (setq highlight (ecomplete-highlight-match-line matches line))
       (while (not (memq (setq command (read-event highlight)) '(? return)))
 	(cond
-	 ((eq command ?n)
+	 ((eq command (aref (kbd "M-n") 0))
 	  (setq line (min (1+ line) max-lines)))
-	 ((eq command ?p)
+	 ((eq command (aref (kbd "M-p") 0))
 	  (setq line (max (1- line) 0))))
 	(setq highlight (ecomplete-highlight-match-line matches line)))
       (when (eq command 'return)
