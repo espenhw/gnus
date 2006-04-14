@@ -2,6 +2,8 @@
 
 	* nnagent.el (nnagent-request-set-mark): Silence log file
 	writing. 
+	(nnagent-request-set-mark): Use write-region instead of
+	append-to-file. 
 
 	* gnus-sum.el (gnus-read-header): Fudge article number if using a
 	strange select method.
