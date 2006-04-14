@@ -1,5 +1,8 @@
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-read-header): Fudge article number if using a
+	strange select method.
+
 	* ecomplete.el (ecomplete-display-matches): Get highlightling
 	right. 
 	(ecomplete-display-matches): Use literals.

@@ -11609,11 +11609,14 @@ If REVERSE, save parts that do not match TYPE."
 	    ()				; Malformed head.
 	  (unless (gnus-summary-article-sparse-p (mail-header-number header))
 	    (when (and (stringp id)
-		       (not (string= (gnus-group-real-name group)
-				     (car where))))
-	      ;; If we fetched by Message-ID and the article came
-	      ;; from a different group, we fudge some bogus article
-	      ;; numbers for this article.
+		       (or
+			(not (string= (gnus-group-real-name group)
+				      (car where)))
+			(not (gnus-server-equal gnus-override-method
+						(gnus-group-method group)))))
+	      ;; If we fetched by Message-ID and the article came from
+	      ;; a different group (or server), we fudge some bogus
+	      ;; article numbers for this article.
 	      (mail-header-set-number header gnus-reffed-article-number))
 	    (save-excursion
 	      (set-buffer gnus-summary-buffer)
