@@ -101,6 +101,7 @@
   (let* ((matches (ecomplete-get-matches type word))
 	 (line 0)
 	 (max-lines (when matches (- (length (split-string matches "\n")) 2)))
+	 (message-log-max nil)
 	 command highlight)
     (if (not matches)
 	(progn

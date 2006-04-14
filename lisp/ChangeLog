@@ -3,6 +3,7 @@
 	* ecomplete.el (ecomplete-display-matches): Get highlightling
 	right. 
 	(ecomplete-display-matches): Use literals.
+	(ecomplete-display-matches): Disable message logging.
 
 	* message.el (message-display-abbrev): Small optimization.
 
