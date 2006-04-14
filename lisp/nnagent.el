@@ -130,7 +130,8 @@
 	    (gnus-method-to-server gnus-command-method)
 	    "\"")
     (insert ")\n")
-    (append-to-file (point-min) (point-max) (gnus-agent-lib-file "flags")))
+    (append-to-file (point-min) (point-max) (gnus-agent-lib-file "flags")
+		    nil 'silent))
   nil)
 
 (deffoo nnagent-retrieve-headers (articles &optional group server fetch-old)
