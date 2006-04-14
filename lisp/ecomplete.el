@@ -106,11 +106,11 @@
 	(progn
 	  (message "No ecomplete matches")
 	  nil)
-      (setq highlight (ecomplete-highlight-match-line matches line))
       (if (not choose)
 	  (progn
-	    (message highlight)
+	    (message matches)
 	    nil)
+	(setq highlight (ecomplete-highlight-match-line matches line))
 	(while (not (memq (setq command (read-event highlight)) '(? return)))
 	  (cond
 	   ((eq command (aref (kbd "M-n") 0))
