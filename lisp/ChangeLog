@@ -1,5 +1,8 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (unmorse-region): Remove autoload, because morse.el
+	does it itself.
+
 	* message.el (message-point-in-header-p): Simplify definition.
 
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>

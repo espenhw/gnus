@@ -9151,10 +9151,6 @@ installed for this command to work."
 	      (replace-match (idna-to-unicode (match-string 1))))
 	    (set-window-start (get-buffer-window (current-buffer)) start)))))))
 
-(autoload 'unmorse-region "morse"
-  "Convert morse coded text in region to ordinary ASCII text."
-  t)
-
 (defun gnus-summary-morse-message (&optional arg)
   "Morse decode the current article."
   (interactive "P")
