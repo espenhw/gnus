@@ -1,5 +1,8 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-strip-forbidden-properties): Only display on
+	self-insert-command. 
+
 	* hashcash.el (hashcash-insert-payment-async): Remove dead code;
 	reindent. 
 	(hashcash-insert-payment-async-2): Make sure the buffer is alive. 

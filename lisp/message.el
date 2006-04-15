@@ -2517,7 +2517,8 @@ These properties are essential to work, so we should never strip them."
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (when (eq message-mail-alias-type 'ecomplete)
+  (when (and (eq message-mail-alias-type 'ecomplete)
+	     (eq this-command 'self-insert-command))
     (message-display-abbrev))
   (when (and message-strip-special-text-properties
 	     (message-tamago-not-in-use-p begin))
