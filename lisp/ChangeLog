@@ -2,6 +2,7 @@
 
 	* hashcash.el (hashcash-insert-payment-async): Remove dead code;
 	reindent. 
+	(hashcash-insert-payment-async-2): Make sure the buffer is alive. 
 
 2006-04-15  NAKAJI Hiroyuki  <nakaji@takamatsu-nct.ac.jp>  (tiny change)
 

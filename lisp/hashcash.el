@@ -238,15 +238,16 @@ Only start calculation.  Results are inserted when ready."
 	(hashcash-insert-payment-async-2 ,(current-buffer) process payment)))))
 
 (defun hashcash-insert-payment-async-2 (buffer process pay)
-  (with-current-buffer buffer
-    (save-excursion
-      (save-restriction
-	(setq hashcash-process-alist (delq
-				      (assq process hashcash-process-alist)
-				      hashcash-process-alist))
-	(message-goto-eoh)
-	(when pay
-	  (insert-before-markers "X-Hashcash: " pay))))))
+  (when (buffer-live-p buffer)
+    (with-current-buffer buffer
+      (save-excursion
+	(save-restriction
+	  (setq hashcash-process-alist (delq
+					(assq process hashcash-process-alist)
+					hashcash-process-alist))
+	  (message-goto-eoh)
+	  (when pay
+	    (insert-before-markers "X-Hashcash: " pay)))))))
 
 (defun hashcash-cancel-async (&optional buffer)
   "Delete any hashcash processes associated with BUFFER.
