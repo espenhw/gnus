@@ -223,9 +223,6 @@ Return immediately.  Call CALLBACK with process and result when ready."
     (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
 					  (hashcash-payment-required arg))))
       (when pay
-	;;      (insert-before-markers "X-Payment: hashcash "
-	;;			     (number-to-string (hashcash-version pay)) " "
-	;;			     pay "\n")
 	(insert-before-markers "X-Hashcash: " pay "\n")))))
 
 ;;;###autoload
@@ -234,10 +231,11 @@ Return immediately.  Call CALLBACK with process and result when ready."
 Only start calculation.  Results are inserted when ready."
   (interactive "sPay to: ")
   (unless (hashcash-already-paid-p arg)
-    (hashcash-generate-payment-async (hashcash-payment-to arg)
-				     (hashcash-payment-required arg)
-				     `(lambda (process payment)
-					(hashcash-insert-payment-async-2 ,(current-buffer) process payment)))))
+    (hashcash-generate-payment-async
+     (hashcash-payment-to arg)
+     (hashcash-payment-required arg)
+     `(lambda (process payment)
+	(hashcash-insert-payment-async-2 ,(current-buffer) process payment)))))
 
 (defun hashcash-insert-payment-async-2 (buffer process pay)
   (with-current-buffer buffer
@@ -248,9 +246,6 @@ Only start calculation.  Results are inserted when ready."
 				      hashcash-process-alist))
 	(message-goto-eoh)
 	(when pay
-;;      (insert-before-markers "X-Payment: hashcash "
-;;			     (number-to-string (hashcash-version pay)) " "
-;;			     pay "\n")
 	  (insert-before-markers "X-Hashcash: " pay))))))
 
 (defun hashcash-cancel-async (&optional buffer)

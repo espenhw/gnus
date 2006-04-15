@@ -1,3 +1,8 @@
+2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* hashcash.el (hashcash-insert-payment-async): Remove dead code;
+	reindent. 
+
 2006-04-15  NAKAJI Hiroyuki  <nakaji@takamatsu-nct.ac.jp>  (tiny change)
 
 	* smiley.el (smiley-style): Fix typo.
