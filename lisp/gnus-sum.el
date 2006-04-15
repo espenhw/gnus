@@ -10818,41 +10818,45 @@ is non-nil or the Subject: of both articles are the same."
     (error "The current newsgroup does not support article editing"))
   (unless (<= (length gnus-newsgroup-processable) 1)
     (error "No more than one article may be marked"))
-  (save-window-excursion
-    (let ((gnus-article-buffer " *reparent*")
-	  (current-article (gnus-summary-article-number))
-	  ;; First grab the marked article, otherwise one line up.
-	  (parent-article (if (not (null gnus-newsgroup-processable))
-			      (car gnus-newsgroup-processable)
-			    (save-excursion
-			      (if (eq (forward-line -1) 0)
-				  (gnus-summary-article-number)
-				(error "Beginning of summary buffer"))))))
-      (unless (not (eq current-article parent-article))
-	(error "An article may not be self-referential"))
-      (let ((message-id (mail-header-id
-			 (gnus-summary-article-header parent-article))))
-	(unless (and message-id (not (equal message-id "")))
-	  (error "No message-id in desired parent"))
-	(gnus-with-article current-article
-	  (save-restriction
-	    (goto-char (point-min))
-	    (message-narrow-to-head)
-	    (if (re-search-forward "^References: " nil t)
-		(progn
-		  (re-search-forward "^[^ \t]" nil t)
-		  (forward-line -1)
-		  (end-of-line)
-		  (insert " " message-id))
-	      (insert "References: " message-id "\n"))))
-	(set-buffer gnus-summary-buffer)
-	(gnus-summary-unmark-all-processable)
-	(gnus-summary-update-article current-article)
-	(if (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
+  (let ((child (gnus-summary-article-number))
+	;; First grab the marked article, otherwise one line up.
+	(parent (if (not (null gnus-newsgroup-processable))
+		    (car gnus-newsgroup-processable)
+		  (save-excursion
+		    (if (eq (forward-line -1) 0)
+			(gnus-summary-article-number)
+		      (error "Beginning of summary buffer"))))))
+    (gnus-summary-reparent-children parent (list child))))
+
+(defun gnus-summary-reparent-children (parent children)
+  (dolist (child children)
+    (save-window-excursion
+      (let ((gnus-article-buffer " *reparent*"))
+	(unless (not (eq parent child))
+	  (error "An article may not be self-referential"))
+	(let ((message-id (mail-header-id
+			   (gnus-summary-article-header parent))))
+	  (unless (and message-id (not (equal message-id "")))
+	    (error "No message-id in desired parent"))
+	  (gnus-with-article child
+	    (save-restriction
+	      (goto-char (point-min))
+	      (message-narrow-to-head)
+	      (if (re-search-forward "^References: " nil t)
+		  (progn
+		    (re-search-forward "^[^ \t]" nil t)
+		    (forward-line -1)
+		    (end-of-line)
+		    (insert " " message-id))
+		(insert "References: " message-id "\n"))))
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-unmark-all-processable)
+	  (gnus-summary-update-article child)
+	  (when (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
 	    (gnus-summary-update-secondary-mark (cdr gnus-article-current)))
-	(gnus-summary-rethread-current)
-	(gnus-message 3 "Article %d is now the child of article %d"
-		      current-article parent-article)))))
+	  (gnus-summary-rethread-current)
+	  (gnus-message 3 "Article %d is now the child of article %d"
+			child parent))))))
 
 (defun gnus-summary-toggle-threads (&optional arg)
   "Toggle showing conversation threads.
