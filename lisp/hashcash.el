@@ -246,9 +246,7 @@ Only start calculation.  Results are inserted when ready."
 	(setq hashcash-process-alist (delq
 				      (assq process hashcash-process-alist)
 				      hashcash-process-alist))
-	(goto-char (point-min))
-	(search-forward mail-header-separator)
-	(beginning-of-line)
+	(message-goto-eoh)
 	(when pay
 ;;      (insert-before-markers "X-Payment: hashcash "
 ;;			     (number-to-string (hashcash-version pay)) " "
@@ -318,10 +316,7 @@ Set ASYNC to t to start asynchronous calculation.  (See
 	(addrlist nil))
     (save-excursion
       (save-restriction
-	(goto-char (point-min))
-	(search-forward mail-header-separator)
-	(beginning-of-line)
-	(narrow-to-region (point-min) (point))
+	(message-narrow-to-headers)
 	(let ((to (hashcash-strip-quoted-names (mail-fetch-field "To" nil t)))
 	      (cc (hashcash-strip-quoted-names (mail-fetch-field "Cc" nil t)))
 	      (ng (hashcash-strip-quoted-names (mail-fetch-field "Newsgroups"

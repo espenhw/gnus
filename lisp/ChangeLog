@@ -1,5 +1,10 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* hashcash.el (hashcash-insert-payment-async-2): Use
+	message-goto-eoh instead of doing it manually.
+	(mail-add-payment): Use message-narrow-to-header instead of trying
+	to do the same itself.
+
 	* message.el (message-hidden-headers): Add Face.
 
 	* gnus-sum.el (gnus-summary-reparent-thread): Factor out
