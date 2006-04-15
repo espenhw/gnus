@@ -3,6 +3,8 @@
 	* gnus-sum.el (gnus-summary-reparent-thread): Factor out
 	reparenting code.
 	(gnus-summary-reparent-children): Refactored out code.
+	(gnus-summary-thread-map): New keystroke.
+	(gnus-summary-reparent-children): Make into command.
 
 	* smiley.el (smiley-style): Default to `medium' if using a large
 	font.

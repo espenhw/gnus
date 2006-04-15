@@ -1889,6 +1889,7 @@ increase the score of each group you read."
   "T" gnus-summary-toggle-threads
   "t" gnus-summary-rethread-current
   "^" gnus-summary-reparent-thread
+  "\M-^" gnus-summary-reparent-children
   "s" gnus-summary-show-thread
   "S" gnus-summary-show-all-threads
   "h" gnus-summary-hide-thread
@@ -10829,6 +10830,12 @@ is non-nil or the Subject: of both articles are the same."
     (gnus-summary-reparent-children parent (list child))))
 
 (defun gnus-summary-reparent-children (parent children)
+  "Make PARENT the parent of CHILDREN.
+When called interactively, PARENT is is current article and
+CHILDREN are the process-marked articles."
+  (interactive
+   (list (gnus-summary-article-number)
+	 (gnus-summary-work-articles nil)))
   (dolist (child children)
     (save-window-excursion
       (let ((gnus-article-buffer " *reparent*"))
