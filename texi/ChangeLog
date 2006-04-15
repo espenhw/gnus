@@ -1,3 +1,7 @@
+2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Thread Commands): T M-^.
+
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Mail Aliases): Document ecomplete.

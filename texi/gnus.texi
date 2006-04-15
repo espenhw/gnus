@@ -7020,6 +7020,12 @@ summary buffer is otherwise unthreaded.
 Make the current article the child of the marked (or previous) article
 (@code{gnus-summary-reparent-thread}).
 
+@item T M-^
+@kindex T M-^ (Summary)
+@findex gnus-summary-reparent-children
+Make the current article the parent of the marked articles
+(@code{gnus-summary-reparent-children}).
+
 @end table
 
 The following commands are thread movement commands.  They all
