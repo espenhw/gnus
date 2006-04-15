@@ -1,5 +1,8 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* smiley.el (smiley-style): Default to `medium' if using a large
+	font.
+
 	* gnus-sum.el (unmorse-region): Remove autoload, because morse.el
 	does it itself.
 
