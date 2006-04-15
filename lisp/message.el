@@ -3040,15 +3040,11 @@ Message buffers and is not meant to be called directly."
       (message-newline-and-reformat arg t))
     t))
 
-;; Is it better to use `mail-header-end'?
 (defun message-point-in-header-p ()
   "Return t if point is in the header."
   (save-excursion
-    (let ((p (point)))
-      (goto-char (point-min))
-      (not (re-search-forward
-	    (concat "^" (regexp-quote mail-header-separator) "\n")
-	    p t)))))
+    (not (re-search-backward
+	  (concat "^" (regexp-quote mail-header-separator) "\n") nil t))))
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."

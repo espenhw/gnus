@@ -1,3 +1,7 @@
+2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-point-in-header-p): Simplify definition.
+
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnagent.el (nnagent-request-set-mark): Silence log file
