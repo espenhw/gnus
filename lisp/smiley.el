@@ -63,7 +63,7 @@
 (defcustom smiley-style
   (if (or (and (fboundp 'face-attribute)
 	       (>= (face-attribute 'default :height) 160))
-	  (and (fbound 'face-height)
+	  (and (fboundp 'face-height)
 	       (>= (face-height 'default) 14)))
       'medium
     'low-color)
