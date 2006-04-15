@@ -1,5 +1,7 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-hidden-headers): Add Face.
+
 	* gnus-sum.el (gnus-summary-reparent-thread): Factor out
 	reparenting code.
 	(gnus-summary-reparent-children): Refactored out code.
