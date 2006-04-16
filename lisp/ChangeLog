@@ -1,5 +1,8 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-treatment-function-alist): Change order of
+	newsgroups/generic header folding to avoid double-folding. 
+
 	* message.el (message-hidden-headers): Add X-Draft-From.
 
 	* gnus-sum.el (gnus-summary-repeat-search-article-forward): New
