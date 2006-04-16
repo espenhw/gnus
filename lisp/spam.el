@@ -1156,6 +1156,8 @@ backends)."
       (push 'X-Spam-Status list))
     (when spam-use-bogofilter
       (push 'X-Bogosity list))
+    (when spam-use-crm114
+      (push 'X-CRM114-Status list))
     list))
 
 (defun spam-user-format-function-S (headers)
@@ -1186,24 +1188,25 @@ The first group must match the number.")
 (defun spam-extra-header-to-number (header headers)
   "Transform an extra HEADER to a number, using list of HEADERS.
 Note this has to be fast."
-  (if (gnus-extra-header header headers)
-      (cond
-       ((eq header 'X-Spam-Status)
-	(string-to-number (gnus-replace-in-string
-			   (gnus-extra-header header headers)
-			   spam-spamassassin-score-regexp
-			   "\\1")))
-       ;; for CRM checking, it's probably faster to just do the string match
-       ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header))
-	(match-string 1 header))
-       ((eq header 'X-Bogosity)
-	(string-to-number (gnus-replace-in-string
-			   (gnus-replace-in-string
-			    (gnus-extra-header header headers)
-			    ".*spamicity=" "")
-			   ",.*" "")))
-       (t nil))
-    nil))
+  (let ((header-content (gnus-extra-header header headers)))
+    (if header-content
+        (cond
+         ((eq header 'X-Spam-Status)
+          (string-to-number (gnus-replace-in-string
+                             header-content
+                             spam-spamassassin-score-regexp
+                             "\\1")))
+         ;; for CRM checking, it's probably faster to just do the string match
+         ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header-content))
+          (string-to-number (match-string 1 header-content)))
+         ((eq header 'X-Bogosity)
+          (string-to-number (gnus-replace-in-string
+                             (gnus-replace-in-string
+                              header-content
+                              ".*spamicity=" "")
+                             ",.*" "")))
+         (t nil))
+      nil)))
 
 (defun spam-summary-score (headers &optional specific-header)
   "Score an article for the summary buffer, as fast as possible.

@@ -1,3 +1,9 @@
+2006-04-16  Jo,Ac(Bo Cachopo  <joao.cachopo@inesc-id.pt>  (tiny change)
+
+	* spam.el (spam-necessary-extra-headers): Add X-CRM114-Status. 
+	(spam-extra-header-to-number): Return the CRM114 number as a
+	number instead of a string.
+
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-face-properties-alist): Moved here from
