@@ -1132,7 +1132,8 @@ candidates:
   (or (not (listp message-shoot-gnksa-feet))
       (memq feature message-shoot-gnksa-feet)))
 
-(defcustom message-hidden-headers '("^References:" "^Face:" "^X-Face:")
+(defcustom message-hidden-headers '("^References:" "^Face:" "^X-Face:"
+				    "^X-Draft-From:")
   "Regexp of headers to be hidden when composing new messages.
 This can also be a list of regexps to match headers.  Or a list
 starting with `not' and followed by regexps."

@@ -1,5 +1,7 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-hidden-headers): Add X-Draft-From.
+
 	* gnus-sum.el (gnus-summary-repeat-search-article-forward): New
 	command. 
 	(gnus-summary-repeat-search-article-backward): New command. 
