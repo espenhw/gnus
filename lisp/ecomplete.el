@@ -29,7 +29,7 @@
   (require 'cl))
 
 (defgroup ecomplete nil
-  "Suppression of duplicate articles."
+  "Electric completion of email addresses and the like."
   :group 'mail)
 
 (defcustom ecomplete-database-file "~/.ecompleterc"
@@ -41,6 +41,7 @@
 
 (defvar ecomplete-database nil)
 
+;;;###autoload
 (defun ecomplete-setup ()
   (when (file-exists-p ecomplete-database-file)
     (with-temp-buffer

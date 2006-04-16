@@ -1,5 +1,8 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-put-addresses-in-ecomplete): Use
+	gnus-replace-in-string. 
+
 	* gnus-sum.el (gnus-summary-limit-to-bodies): New command and
 	keystroke. 
 
