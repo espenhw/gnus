@@ -6131,16 +6131,16 @@ regexp to match all of yours addresses."
 	   ;; Email address in From field equals to our address
 	   (and (setq from (message-fetch-field "from"))
 		(string-equal
-		 (downcase (cadr (mail-extract-address-components from)))
-		 (downcase (cadr (mail-extract-address-components
-				  (message-make-from))))))
+		 (downcase (car (mail-header-parse-address from)))
+		 (downcase (car (mail-header-parse-address
+				 (message-make-from))))))
 	   ;; Email address in From field matches
 	   ;; 'message-alternative-emails' regexp
 	   (and from
 		message-alternative-emails
 		(string-match
 		 message-alternative-emails
-		 (cadr (mail-extract-address-components from))))))))))
+		 (car (mail-header-parse-address from))))))))))
 
 ;;;###autoload
 (defun message-cancel-news (&optional arg)

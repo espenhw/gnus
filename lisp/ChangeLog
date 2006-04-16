@@ -1,7 +1,10 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-put-addresses-in-ecomplete): Use
-	gnus-replace-in-string. 
+	gnus-replace-in-string.
+	(message-is-yours-p): Use the more correct
+	mail-header-parse-address instead of
+	mail-extract-address-components.
 
 	* gnus-sum.el (gnus-summary-limit-to-bodies): New command and
 	keystroke. 
