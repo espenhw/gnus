@@ -1,6 +1,7 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Searching for Articles): Document M-S and M-R. 
+	(Limiting): Document / b.
 
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

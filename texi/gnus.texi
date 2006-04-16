@@ -6520,6 +6520,14 @@ if @var{back-end}@code{-get-new-mail} is non-@code{nil}.
 Insert all old articles in the summary buffer.  If given a numbered
 prefix, fetch this number of articles.
 
+@item / b
+@kindex / b (Summary)
+@findex gnus-summary-limit-to-bodies
+Limit the summary buffer to articles that have bodies that match a
+certain regexp (@code{gnus-summary-limit-to-bodies}).  If given a
+prefix, reverse the limit.  This command is quite slow since it
+requires selecting each article to find the matches.
+
 @end table
 
 
