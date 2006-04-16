@@ -78,31 +78,6 @@ PNG format."
 			"convert -scale 48x48! %s -colors %d png:-")
 		 (string)))
 
-(defcustom gnus-face-properties-alist (if (featurep 'xemacs)
-					  '((xface . (:face gnus-x-face)))
-					'((pbm . (:face gnus-x-face))
-					  (png . nil)))
-  "Alist of image types and properties applied to Face and X-Face images.
-Here are examples:
-
-;; Specify the altitude of Face images in the From header.
-\(setq gnus-face-properties-alist
-      '((pbm . (:face gnus-x-face :ascent 80))
-	(png . (:ascent 80))))
-
-;; Show Face images as pressed buttons.
-\(setq gnus-face-properties-alist
-      '((pbm . (:face gnus-x-face :relief -2))
-	(png . (:relief -2))))
-
-See the manual for the valid properties for various image types.
-Currently, `pbm' is used for X-Face images and `png' is used for Face
-images in Emacs.  Only the `:face' property is effective on the `xface'
-image type in XEmacs if it is built with the libcompface library."
-  :version "23.0" ;; No Gnus
-  :group 'gnus-fun
-  :type '(repeat (cons :format "%v" (symbol :tag "Image type") plist)))
-
 (defun gnus-shell-command-to-string (command)
   "Like `shell-command-to-string' except not mingling ERROR."
   (with-output-to-string

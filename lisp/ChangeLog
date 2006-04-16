@@ -1,3 +1,10 @@
+2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-face-properties-alist): Moved here from
+	gnus-fun.
+
+	* gnus-fun.el (gnus-face-properties-alist): Move to gnus-art.
+
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-strip-forbidden-properties): Only display on

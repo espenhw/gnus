@@ -794,6 +794,31 @@ be displayed by the first non-nil matching CONTENT face."
 			       (item :tag "skip" nil)
 			       (face :value default)))))
 
+(defcustom gnus-face-properties-alist (if (featurep 'xemacs)
+					  '((xface . (:face gnus-x-face)))
+					'((pbm . (:face gnus-x-face))
+					  (png . nil)))
+  "Alist of image types and properties applied to Face and X-Face images.
+Here are examples:
+
+;; Specify the altitude of Face images in the From header.
+\(setq gnus-face-properties-alist
+      '((pbm . (:face gnus-x-face :ascent 80))
+	(png . (:ascent 80))))
+
+;; Show Face images as pressed buttons.
+\(setq gnus-face-properties-alist
+      '((pbm . (:face gnus-x-face :relief -2))
+	(png . (:relief -2))))
+
+See the manual for the valid properties for various image types.
+Currently, `pbm' is used for X-Face images and `png' is used for Face
+images in Emacs.  Only the `:face' property is effective on the `xface'
+image type in XEmacs if it is built with the libcompface library."
+  :version "23.0" ;; No Gnus
+  :group 'gnus-article-headers
+  :type '(repeat (cons :format "%v" (symbol :tag "Image type") plist)))
+
 (defcustom gnus-article-decode-hook
   '(article-decode-charset article-decode-encoded-words
 			   article-decode-group-name article-decode-idna-rhs)
