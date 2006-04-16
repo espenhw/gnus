@@ -1712,6 +1712,8 @@ increase the score of each group you read."
   "," gnus-summary-best-unread-article
   "\M-s" gnus-summary-search-article-forward
   "\M-r" gnus-summary-search-article-backward
+  "\M-S" gnus-summary-repeat-search-article-forward
+  "\M-R" gnus-summary-repeat-search-article-backward
   "<" gnus-summary-beginning-of-article
   ">" gnus-summary-end-of-article
   "j" gnus-summary-goto-article
@@ -8684,6 +8686,20 @@ If REGEXP-P (the prefix) is non-nil, do regexp isearch."
     (save-restriction
       (widen)
       (isearch-forward regexp-p))))
+
+(defun gnus-summary-repeat-search-article-forward ()
+  "Repeat the previous search forwards."
+  (interactive)
+  (unless gnus-last-search-regexp
+    (error "No previous search"))
+  (gnus-summary-search-article-forward gnus-last-search-regexp))
+
+(defun gnus-summary-repeat-search-article-backward ()
+  "Repeat the previous search backwards."
+  (interactive)
+  (unless gnus-last-search-regexp
+    (error "No previous search"))
+  (gnus-summary-search-article-forward gnus-last-search-regexp t))
 
 (defun gnus-summary-search-article-forward (regexp &optional backward)
   "Search for an article containing REGEXP forward.

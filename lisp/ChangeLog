@@ -1,5 +1,9 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-repeat-search-article-forward): New
+	command. 
+	(gnus-summary-repeat-search-article-backward): New command. 
+
 	* gnus-topic.el (gnus-topic-display-missing-topic): Skip past
 	groups in the parent topic.
 
