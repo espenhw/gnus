@@ -1,5 +1,8 @@
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-limit-to-bodies): New command and
+	keystroke. 
+
 	* gnus-art.el (gnus-treatment-function-alist): Change order of
 	newsgroups/generic header folding to avoid double-folding. 
 

@@ -1845,6 +1845,7 @@ increase the score of each group you read."
 (gnus-define-keys (gnus-summary-limit-map "/" gnus-summary-mode-map)
   "/" gnus-summary-limit-to-subject
   "n" gnus-summary-limit-to-articles
+  "b" gnus-summary-limit-to-bodies
   "w" gnus-summary-pop-limit
   "s" gnus-summary-limit-to-subject
   "a" gnus-summary-limit-to-author
@@ -8002,6 +8003,38 @@ If ALL is non-nil, limit strictly to unread articles."
 	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark
 	   gnus-duplicate-mark gnus-souped-mark)
      'reverse)))
+
+(defun gnus-summary-limit-to-bodies (match &optional reverse)
+  "Limit the summary buffer to articles that have bodies that match MATCH.
+If REVERSE (the prefix), limit to articles that don't match."
+  (interactive "sMatch body (regexp): \nP")
+  (let ((articles nil)
+	(gnus-select-article-hook nil)	;Disable hook.
+	(gnus-article-prepare-hook nil)
+	(gnus-use-article-prefetch nil)
+	(gnus-keep-backlog nil)
+	(gnus-break-pages nil)
+	(gnus-summary-display-arrow nil)
+	(gnus-updated-mode-lines nil)
+	(gnus-auto-center-summary nil)
+	(gnus-display-mime-function nil))
+    (dolist (data gnus-newsgroup-data)
+      (let (gnus-mark-article-hook)
+	(gnus-summary-select-article t t nil (gnus-data-number data)))
+      (save-excursion
+	(set-buffer gnus-article-buffer)
+	(article-goto-body)
+	(let* ((case-fold-search t)
+	       (found (re-search-forward match nil t)))
+	  (when (or (and found
+			 (not reverse))
+		    (and (not found)
+			 reverse))
+	    (push (gnus-data-number data) articles)))))
+    (if (not articles)
+	(message "No messages matched")
+      (gnus-summary-limit articles)))
+  (gnus-summary-position-point))
 
 (defun gnus-summary-limit-to-replied (&optional unreplied)
   "Limit the summary buffer to replied articles.
