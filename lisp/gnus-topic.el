@@ -726,6 +726,9 @@ articles in the topic and its subtopics."
 	       (not (gnus-topic-goto-missing-topic (caadr parent))))
       (gnus-topic-display-missing-topic (caadr parent))))
   (gnus-topic-goto-missing-topic topic)
+  ;; Skip past all groups in the topic we're in.
+  (while (gnus-group-group-name)
+    (forward-line 1))
   (let* ((top (gnus-topic-find-topology topic))
 	 (children (cddr top))
 	 (type (cadr top))
