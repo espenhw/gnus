@@ -5,6 +5,7 @@
 	(message-is-yours-p): Use the more correct
 	mail-header-parse-address instead of
 	mail-extract-address-components.
+	(message-put-addresses-in-ecomplete): Fix typo.
 
 	* gnus-sum.el (gnus-summary-limit-to-bodies): New command and
 	keystroke. 

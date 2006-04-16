@@ -7171,8 +7171,7 @@ From headers in the original article."
       (dolist (string (mail-header-parse-addresses value 'raw))
 	(setq string
 	      (gnus-replace-in-string
-	       "\n" "" 
-	       (gnus-replace-in-string "^ +\\| *$" "" string)))
+	       (gnus-replace-in-string string "^ +\\| *$" "") "\n" ""))
 	(ecomplete-add-item 'mail (car (mail-header-parse-address string))
 			    string))))
   (ecomplete-save))
