@@ -10444,6 +10444,18 @@ Search through all subsequent (raw) articles for a regexp
 Search through all previous (raw) articles for a regexp
 (@code{gnus-summary-search-article-backward}).
 
+@item M-S
+@kindex M-S (Summary)
+@findex gnus-summary-repeat-search-article-forward
+Repeat the previous search forwards
+(@code{gnus-summary-repeat-search-article-forward}).
+
+@item M-R
+@kindex M-R (Summary)
+@findex gnus-summary-repeat-search-article-backward
+Repeat the previous search backwards
+(@code{gnus-summary-repeat-search-article-backward}).
+
 @item &
 @kindex & (Summary)
 @findex gnus-summary-execute-command
