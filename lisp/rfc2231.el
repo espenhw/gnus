@@ -53,8 +53,7 @@ must never cause a Lisp error."
     (let ((ttoken (ietf-drums-token-to-list ietf-drums-text-token))
 	  (stoken (ietf-drums-token-to-list ietf-drums-tspecials))
 	  (ntoken (ietf-drums-token-to-list "0-9"))
-	  c type attribute encoded number prev-attribute vals
-	  prev-encoded parameters value)
+	  c type attribute encoded number parameters value)
       (ietf-drums-init
        (condition-case nil
 	   (mail-header-remove-whitespace
@@ -142,19 +141,6 @@ must never cause a Lisp error."
 			    (setq c (char-after)))))
 		    (setq number nil
 			  encoded nil))
-		  ;; See if we have any previous continuations.
-		  (when (and prev-attribute
-			     (not (eq prev-attribute attribute)))
-		    (setq vals
-			  (mapconcat 'cdr (sort vals 'car-less-than-car) ""))
-		    (push (cons prev-attribute
-				(if prev-encoded
-				    (rfc2231-decode-encoded-string vals)
-				  vals))
-			  parameters)
-		    (setq prev-attribute nil
-			  vals nil
-			  prev-encoded nil))
 		  (unless (eq c ?=)
 		    (error "Invalid header: %s" string))
 		  (forward-char 1)
@@ -187,31 +173,27 @@ must never cause a Lisp error."
 			     (point)))))
 		   (t
 		    (error "Invalid header: %s" string)))
-		  (if number
-		      (progn
-			(push (cons number value) vals)
-			(setq prev-attribute attribute
-			      prev-encoded encoded))
-		    (push (cons attribute
-				(if encoded
-				    (rfc2231-decode-encoded-string value)
-				  value))
-			  parameters))))
-
-	      ;; Take care of any final continuations.
-	      (when prev-attribute
-		(setq vals (mapconcat 'cdr (sort vals 'car-less-than-car) ""))
-		(push (cons prev-attribute
-			    (if prev-encoded
-				(rfc2231-decode-encoded-string vals)
-			      vals))
-		      parameters)))
+		  (push (list attribute
+			      (if encoded
+				  (rfc2231-decode-encoded-string value)
+				value)
+			      number)
+			parameters))))
 	  (error
 	   (setq parameters nil)
 	   (when signal-error
 	     (signal (car err) (cdr err)))))
 
-	(cons type (nreverse parameters))))))
+	;; Now collect and concatenate continuation parameters.
+	(let ((cparams nil)
+	      elem)
+	  (loop for (attribute value part) in (nreverse parameters)
+		do (if (or (not (setq elem (assq attribute cparams)))
+			   (and (numberp part)
+				(zerop part)))
+		       (push (cons attribute value) cparams)
+		     (setcdr elem (concat (cdr elem) value))))
+	  (cons type (nreverse cparams)))))))
 
 (defun rfc2231-decode-encoded-string (string)
   "Decode an RFC2231-encoded string.

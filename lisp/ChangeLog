@@ -1,6 +1,12 @@
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2231.el (rfc2231-parse-string): Remove dead code.
+	(rfc2231-parse-string): Allow concatanation of parameters that
+	aren't contiguous.  The test case is
+	  (mail-header-parse-content-type "message/external-body;
+            name*0*=us-ascii''~%2ffoo%2fbar%2fbaz%2fxyzzy%2f;
+            access-type=LOCAL-FILE;
+            name*1*=plugh%2fhello-sailor%2fbing.pdf")
 
 2006-04-17  Stefan Monnier  <monnier@iro.umontreal.ca>
 
