@@ -200,7 +200,9 @@ backslash and doublequote.")
 		  (buffer-substring
 		   (1+ (point))
 		   (progn (forward-sexp 1) (1- (point))))))))
-	 (t (error "Unknown symbol: %c" c))))
+	 (t
+	  (message "Unknown symbol: %c" c)
+	  (forward-char 1))))
       ;; If we found no display-name, then we look for comments.
       (if display-name
 	  (setq display-string
