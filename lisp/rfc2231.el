@@ -208,10 +208,8 @@ must never cause a Lisp error."
 		      parameters)))
 	  (error
 	   (setq parameters nil)
-	   (if signal-error
-	       (signal (car err) (cdr err))
-	     ;;(message "%s" (error-message-string err))
-	     )))
+	   (when signal-error
+	     (signal (car err) (cdr err)))))
 
 	(cons type (nreverse parameters))))))
 
