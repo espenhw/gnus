@@ -1,3 +1,8 @@
+2006-04-17  Reiner Steib  <reinersteib+from-uce@imap.cc>
+
+	* gnus-util.el (gnus-select-frame-set-input-focus): Check for
+	Emacs 22 when setting focus.
+
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-treat-types): Do treatment of

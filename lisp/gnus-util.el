@@ -1428,6 +1428,8 @@ CHOICE is a list of the choice char and help message at IDX."
 	;; (defalias 'gnus-select-frame-set-input-focus
 	;;   'select-frame-set-input-focus)
 	;; (select-frame-set-input-focus frame))
+	((>= emacs-major-version 22)
+	 (select-frame-set-input-focus frame))
 	(t
 	 (raise-frame frame)
 	 (select-frame frame)
