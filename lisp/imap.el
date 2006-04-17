@@ -912,14 +912,27 @@ Returns t if login was successful, nil otherwise."
   (and (not (imap-capability 'LOGINDISABLED buffer))
        (not (imap-capability 'X-LOGIN-CMD-DISABLED buffer))))
 
+(defun imap-quote-specials (string)
+  (with-temp-buffer
+    (insert string)
+    (goto-char (point-min))
+    (while (re-search-forward "[\\\"]" nil t)
+      (forward-char -1)
+      (insert "\\")
+      (forward-char 1))
+    (buffer-string)))
+
 (defun imap-login-auth (buffer)
   "Login to server using the LOGIN command."
   (message "imap: Plaintext authentication...")
   (imap-interactive-login buffer
 			  (lambda (user passwd)
 			    (imap-ok-p (imap-send-command-wait
-					(concat "LOGIN \"" user "\" \""
-						passwd "\""))))))
+					(concat "LOGIN \""
+						(imap-quote-specials user)
+						"\" \""
+						(imap-quote-specials passwd)
+						"\""))))))
 
 (defun imap-anonymous-p (buffer)
   t)

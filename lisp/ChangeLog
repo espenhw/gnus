@@ -1,5 +1,8 @@
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* imap.el (imap-quote-specials): New function.
+	(imap-login-auth): Quote specials.
+
 	* rfc2231.el (rfc2231-parse-string): Remove dead code.
 	(rfc2231-parse-string): Allow concatanation of parameters that
 	aren't contiguous.  The test case is
