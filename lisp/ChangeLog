@@ -1,5 +1,7 @@
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2231.el (rfc2231-parse-string): Sort the parameters first. 
+
 	* message.el (message-forward-make-body-plain): Allow
 	message-forward-ignored-headers to be a list.
 	(message-remove-ignored-headers): Factor out into function.

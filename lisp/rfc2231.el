@@ -187,7 +187,10 @@ must never cause a Lisp error."
 	;; Now collect and concatenate continuation parameters.
 	(let ((cparams nil)
 	      elem)
-	  (loop for (attribute value part) in (nreverse parameters)
+	  (loop for (attribute value part) in (sort parameters
+						    (lambda (e1 e2)
+						      (< (or (caddr e1) 0)
+							 (or (caddr e2) 0))))
 		do (if (or (not (setq elem (assq attribute cparams)))
 			   (and (numberp part)
 				(zerop part)))
