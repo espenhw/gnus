@@ -996,7 +996,6 @@ simple manner.")
 
     (gnus-run-hooks 'gnus-group-menu-hook)))
 
-
 (defvar gnus-group-tool-bar-map nil)
 
 (defun gnus-group-tool-bar-update (&optional symbol value)
@@ -1089,17 +1088,6 @@ See `gmm-tool-bar-from-list' for the format of the list."
   :initialize 'custom-initialize-default
   :set 'gnus-group-tool-bar-update
   :group 'gnus-group)
-
-;; FIXME: Moving through the Group buffer (in topic mode) e.g. with C-n
-;; doesn't update the state (enabled/disabled) of the icon
-;; `gnus-group-describe-group'.  After `C-l' the state is correct.
-;; See the following report on emacs-devel
-;; <http://thread.gmane.org/v9acdmrcse.fsf@marauder.physik.uni-ulm.de>:
-;; From: Reiner Steib
-;; Subject: tool bar icons not updated according to :active condition
-;; Newsgroups: gmane.emacs.devel
-;; Date: Mon, 23 Jan 2006 19:59:13 +0100
-;; Message-ID: <v9acdmrcse.fsf@marauder.physik.uni-ulm.de>
 
 (defcustom gnus-group-tool-bar-zap-list t
   "List of icon items from the global tool bar.
@@ -1506,6 +1494,17 @@ if it is a string, only list groups matching REGEXP."
 	       (gnus-range-difference
 		(gnus-range-difference (list active) (gnus-info-read info))
 		seen))))))
+
+;; Moving through the Group buffer (in topic mode) e.g. with C-n doesn't
+;; update the state (enabled/disabled) of the icon `gnus-group-describe-group'
+;; automatically.  After `C-l' the state is correct.  See the following report
+;; on emacs-devel
+;; <http://thread.gmane.org/v9acdmrcse.fsf@marauder.physik.uni-ulm.de>:
+;; From: Reiner Steib
+;; Subject: tool bar icons not updated according to :active condition
+;; Newsgroups: gmane.emacs.devel
+;; Date: Mon, 23 Jan 2006 19:59:13 +0100
+;; Message-ID: <v9acdmrcse.fsf@marauder.physik.uni-ulm.de>
 
 (defcustom gnus-group-update-tool-bar
   (and (not (featurep 'xemacs))

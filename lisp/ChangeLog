@@ -1,3 +1,7 @@
+2006-04-17  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el: Move comment to gnus-group-update-tool-bar.
+
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2231.el (rfc2231-parse-string): Sort the parameters first. 
@@ -29,7 +33,7 @@
 	(gnus-button-alist): Recognize more diff formats.
 	(gnus-button-patch): Strip directory.
 
-2006-04-17  Reiner Steib  <reinersteib+from-uce@imap.cc>
+2006-04-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-util.el (gnus-select-frame-set-input-focus): Check for
 	Emacs 22 when setting focus.
