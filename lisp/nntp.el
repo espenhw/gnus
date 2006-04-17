@@ -1386,22 +1386,22 @@ password contained in '~/.nntp-authinfo'."
 
 (defun nntp-accept-process-output (process)
   "Wait for output from PROCESS and message some dots."
-  (save-excursion
-    (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
-		    nntp-server-buffer))
+  (with-current-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
+                           nntp-server-buffer)
     (let ((len (/ (buffer-size) 1024))
 	  message-log-max)
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))
-    (nnheader-accept-process-output process)
-    ;; accept-process-output may update status of process to indicate
-    ;; that the server has closed the connection.  This MUST be
-    ;; handled here as the buffer restored by the save-excursion may
-    ;; be the process's former output buffer (i.e. now killed)
-    (or (and process
-	     (memq (process-status process) '(open run)))
-        (nntp-report "Server closed connection"))))
+    (prog1
+	(nnheader-accept-process-output process)
+      ;; accept-process-output may update status of process to indicate
+      ;; that the server has closed the connection.  This MUST be
+      ;; handled here as the buffer restored by the save-excursion may
+      ;; be the process's former output buffer (i.e. now killed)
+      (or (and process
+	       (memq (process-status process) '(open run)))
+          (nntp-report "Server closed connection")))))
 
 (defun nntp-accept-response ()
   "Wait for output from the process that outputs to BUFFER."
