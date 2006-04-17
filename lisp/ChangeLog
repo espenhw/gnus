@@ -2,6 +2,7 @@
 
 	* gnus-art.el (gnus-article-treat-types): Do treatment of
 	text/x-verbatim parts.
+	(gnus-button-patch): New command.
 
 	* ietf-drums.el (ietf-drums-parse-address): Attempt parsing
 	addresses that contain invalid characters.

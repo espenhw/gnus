@@ -7094,6 +7094,15 @@ specified by `gnus-button-alist'."
      (group
       (gnus-button-fetch-group url)))))
 
+(defun gnus-button-patch (library line)
+  "Visit an Emacs Lisp library LIBRARY on line LINE."
+  (interactive)
+  (let ((file (locate-library library)))
+    (unless file
+      (error "Couldn't find library %s" library))
+    (find-file file)
+    (goto-line (string-to-number line))))
+
 (defun gnus-button-handle-man (url)
   "Fetch a man page."
   (gnus-message 9 "`%s' `%s'" gnus-button-man-handler url)
