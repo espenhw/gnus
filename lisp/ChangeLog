@@ -1,5 +1,10 @@
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-forward-make-body-plain): Allow
+	message-forward-ignored-headers to be a list.
+	(message-remove-ignored-headers): Factor out into function.
+	(message-forward-make-body-mml): Use it.
+
 	* imap.el (imap-quote-specials): New function.
 	(imap-login-auth): Quote specials.
 

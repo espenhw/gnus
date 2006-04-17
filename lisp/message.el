@@ -6381,13 +6381,20 @@ Optional DIGEST will use digest to forward."
     (setq e (point))
     (insert
      "\n-------------------- End of forwarded message --------------------\n")
-    (when message-forward-ignored-headers
-      (save-restriction
-	(narrow-to-region b e)
-	(goto-char b)
-	(narrow-to-region (point)
-			  (or (search-forward "\n\n" nil t) (point)))
-	(message-remove-header message-forward-ignored-headers t)))))
+    (message-remove-ignored-headers b e)))
+
+(defun message-remove-ignored-headers (b e)
+  (when message-forward-ignored-headers
+    (save-restriction
+      (narrow-to-region b e)
+      (goto-char b)
+      (narrow-to-region (point)
+			(or (search-forward "\n\n" nil t) (point)))
+      (let ((ignored (if (stringp message-forward-ignored-headers)
+			 (list message-forward-ignored-headers)
+		       message-forward-ignored-headers)))
+	(dolist (elem ignored)
+	  (message-remove-header elem t))))))
 
 (defun message-forward-make-body-mime (forward-buffer)
   (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")
@@ -6429,12 +6436,7 @@ Optional DIGEST will use digest to forward."
     (insert "<#/mml>\n")
     (when (and (not message-forward-decoded-p)
 	       message-forward-ignored-headers)
-      (save-restriction
-	(narrow-to-region b e)
-	(goto-char b)
-	(narrow-to-region (point)
-			  (or (search-forward "\n\n" nil t) (point)))
-	(message-remove-header message-forward-ignored-headers t)))))
+      (message-remove-ignored-headers b e))))
 
 (defun message-forward-make-body-digest-plain (forward-buffer)
   (insert
