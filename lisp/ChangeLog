@@ -1,3 +1,9 @@
+2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-treat-types): Add text/x-patch.
+	(gnus-button-alist): Recognize more diff formats.
+	(gnus-button-patch): Strip directory.
+
 2006-04-17  Reiner Steib  <reinersteib+from-uce@imap.cc>
 
 	* gnus-util.el (gnus-select-frame-set-input-focus): Check for

@@ -1012,7 +1012,8 @@ parts.  When nil, redisplay article."
   '(choice (const :tag "Off" nil)
 	   (const :tag "Header" head)))
 
-(defvar gnus-article-treat-types '("text/plain" "text/x-verbatim")
+(defvar gnus-article-treat-types '("text/plain" "text/x-verbatim"
+				   "text/x-patch")
   "Parts to treat.")
 
 (defvar gnus-inhibit-treatment nil
@@ -6727,7 +6728,9 @@ positives are possible."
     ;; Recognizing patches to .el files.  This is somewhat obscure,
     ;; but considering the percentage of Gnus users who hack Emacs
     ;; Lisp files...
-    ("^--- \\([-a-z0-9]+\\.el\\).*\n.*\n@@ -?\\([0-9]+\\)" 1
+    ("^--- \\([^ .]+\\.el\\).*\n.*\n@@ -?\\([0-9]+\\)" 1
+     (>= gnus-button-message-level 4) gnus-button-patch 1 2)
+    ("^\\*\\*\\* \\([^ .]+\\.el\\).*\n.*\n\\*+\n\\*\\*\\* \\([0-9]+\\)" 1
      (>= gnus-button-message-level 4) gnus-button-patch 1 2)
     ;; MID or mail: To avoid too many false positives we don't try to catch
     ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
@@ -7097,7 +7100,7 @@ specified by `gnus-button-alist'."
 (defun gnus-button-patch (library line)
   "Visit an Emacs Lisp library LIBRARY on line LINE."
   (interactive)
-  (let ((file (locate-library library)))
+  (let ((file (locate-library (file-name-nondirectory library))))
     (unless file
       (error "Couldn't find library %s" library))
     (find-file file)
