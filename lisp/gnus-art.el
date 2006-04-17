@@ -1012,7 +1012,7 @@ parts.  When nil, redisplay article."
   '(choice (const :tag "Off" nil)
 	   (const :tag "Header" head)))
 
-(defvar gnus-article-treat-types '("text/plain")
+(defvar gnus-article-treat-types '("text/plain" "text/x-verbatim")
   "Parts to treat.")
 
 (defvar gnus-inhibit-treatment nil
@@ -6724,6 +6724,11 @@ positives are possible."
     ;; SoWWWAnchor(3iv), XSelectInput(3X11), X(1), X(7)
     ("\\b\\(\\(?:[a-z][-+_.:a-z0-9]+([1-9][X1a-z]*)\\)\\|\\b\\(?:X([1-9])\\)\\)\\W"
      0 (>= gnus-button-man-level 5) gnus-button-handle-man 1)
+    ;; Recognizing patches to .el files.  This is somewhat obscure,
+    ;; but considering the percentage of Gnus users who hack Emacs
+    ;; Lisp files...
+    ("^--- \\([-a-z0-9]+\\.el\\).*\n.*\n@@ -?\\([0-9]+\\)" 1
+     (>= gnus-button-message-level 4) gnus-button-patch 1 2)
     ;; MID or mail: To avoid too many false positives we don't try to catch
     ;; all kind of allowed MIDs or mail addresses.  Domain part must contain
     ;; at least one dot.  TLD must contain two or three chars or be a know TLD
