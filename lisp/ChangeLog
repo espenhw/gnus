@@ -1,5 +1,7 @@
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-expire-articles-now): Clarify prompt. 
+
 	* mm-view.el (mm-inline-text): Supply delsp to flow-fill. 
 
 	* flow-fill.el (fill-flowed): Allow delete-space.

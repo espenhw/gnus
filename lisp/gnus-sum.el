@@ -9724,7 +9724,7 @@ deleted forever, right now."
   (interactive)
   (or gnus-expert-user
       (gnus-yes-or-no-p
-       "Are you really, really, really sure you want to delete all these messages? ")
+       "Are you really, really sure you want to delete all expirable messages? ")
       (error "Phew!"))
   (gnus-summary-expire-articles t))
 
