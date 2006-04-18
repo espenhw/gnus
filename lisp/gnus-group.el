@@ -996,6 +996,7 @@ simple manner.")
 
     (gnus-run-hooks 'gnus-group-menu-hook)))
 
+
 (defvar gnus-group-tool-bar-map nil)
 
 (defun gnus-group-tool-bar-update (&optional symbol value)

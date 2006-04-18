@@ -38,8 +38,8 @@
   (require 'hashcash))
 (require 'canlock)
 (require 'mailheader)
-(require 'nnheader)
 (require 'gmm-utils)
+(require 'nnheader)
 ;; This is apparently necessary even though things are autoloaded.
 ;; Because we dynamically bind mail-abbrev-mode-regexp, we'd better
 ;; require mailabbrev here.

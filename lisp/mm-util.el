@@ -502,7 +502,7 @@ used as the line break code type of the coding system.
 If ALLOW-OVERRIDE is given, use `mm-charset-override-alist' to
 map undesired charset names to their replacement.  This should
 only be used for decoding, not for encoding."
-  ;; OVERRIDE is used (only) in `mm-decode-body'.
+  ;; OVERRIDE is used (only) in `mm-decode-body' and `mm-decode-string'.
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
   (when lbt
