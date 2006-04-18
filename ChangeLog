@@ -1,3 +1,10 @@
+2006-04-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Use "echo *" to clarify the output.
+	(:lisp, :infotest): Avoid "not found" errors
+	(:etc): Remove etc\gnus.  Be more verbose.  Add new smilies.
+	Simplify.
+
 2006-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* etc/Makefile.in (install): Install new smileys.

@@ -1,4 +1,5 @@
-@echo off
+@echo OFF
+REM Change this to ON when debugging this batch file.
 
 rem Written by Frank Schmitt (ich@frank-schmitt.net)
 rem based on the work by David Charlap (shamino@writeme.com)
@@ -17,9 +18,12 @@ rem Clear PWD so emacs doesn't get confused
 set GNUS_PWD_SAVE=%PWD%
 set PWD=
 set ERROR=:
+REM set pause=
 
 if "%1" == "" goto usage
 
+echo * Installing Gnus on your system.  Operating system:
+ver
 rem Emacs 20.7 no longer includes emacs.bat. Use emacs.exe if the batch file is
 rem not present -- this also fixes the problem about too many parameters on Win9x.
 if exist %1\emacs.bat goto ebat
@@ -78,12 +82,13 @@ echo.
 goto lisp
 
 :lisp
+if "%pause%" == "pause" pause
 set EMACSBATCH=call %1\%EMACS% %EMACS_ARGS%
 cd lisp
-attrib -r gnus-load.el
+if exist gnus-load.el attrib -r gnus-load.el
 if exist gnus-load.el del gnus-load.el
 echo.
-echo Stand by while generating autoloads.
+echo * Stand by while generating autoloads.
 echo.
 %EMACSBATCH% -l ./dgnushack.el -f dgnushack-make-cus-load .
 if ErrorLevel 1 set ERROR=make-cus-load
@@ -92,14 +97,14 @@ if ErrorLevel 1 set ERROR=%ERROR%,make-auto-load
 %EMACSBATCH% -l ./dgnushack.el -f dgnushack-make-load
 if ErrorLevel 1 set ERROR=%ERROR%,make-load
 echo.
-echo Stand by while compiling lisp files.
+echo * Stand by while compiling lisp files.
 echo.
 %EMACSBATCH% -l ./dgnushack.el -f dgnushack-compile
 if ErrorLevel 1 set ERROR=%ERROR%,compile
 
 if not "%2" == "/copy" goto infotest
 echo.
-echo Stand by while copying lisp files.
+echo * Stand by while copying lisp files.
 echo.
 if not exist %GNUS_LISP_DIR%\nul mkdir %GNUS_LISP_DIR%
 xcopy /R /Q /Y *.el* %GNUS_LISP_DIR%
@@ -108,12 +113,13 @@ goto infotest
 
 :infotest
 cd ..\texi
-attrib -r sieve
+if exist sieve attrib -r sieve
 if exist sieve del sieve
 
+echo * Checking if makeinfo is available...
 makeinfo sieve.texi
 if exist sieve goto minfo
-REM It seems that makeinfo isn't available
+echo * No makeinfo found, using infohack.el.
 set EMACSINFO=%EMACSBATCH% -l infohack.el -f batch-makeinfo
 echo.
 echo ***************************************************************************
@@ -132,8 +138,9 @@ echo.
 goto info
 
 :info
+if "%pause%" == "pause" pause
 echo.
-echo Stand by while generating info files.
+echo * Stand by while generating info files.
 echo.
 %EMACSINFO% emacs-mime.texi
 if ErrorLevel 1 set ERROR=%ERROR%,emacs-mime.texi
@@ -152,7 +159,7 @@ if not "%2" == "/copy" goto nocopy
 if not exist %GNUS_INFO_DIR%\nul mkdir %GNUS_INFO_DIR%
 
 echo.
-echo Stand by while copying info files.
+echo * Stand by while copying info files.
 echo.
 xcopy /R /Q /Y gnus       %GNUS_INFO_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-gnus-info
@@ -186,28 +193,56 @@ echo ***************************************************************************
 echo.
 
 :etc
+if "%pause%" == "pause" pause
 cd ..\etc
 echo.
-echo Stand by while copying etc files.
+echo * Stand by while copying etc files.
 echo.
-if not exist %GNUS_ETC_DIR%\nul mkdir %GNUS_ETC_DIR%
+REM
+if not exist %GNUS_ETC_DIR% mkdir %GNUS_ETC_DIR%
+echo ** gnus-tut.txt ...
 xcopy /R /Q /Y gnus-tut.txt %GNUS_ETC_DIR%
 if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-tut-txt
-if not exist %GNUS_ETC_DIR%\gnus\nul mkdir %GNUS_ETC_DIR%\gnus
-xcopy /R /Q /Y .\gnus\* %GNUS_ETC_DIR%\gnus\
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-gnus-*
-if not exist %GNUS_ETC_DIR%\images\nul mkdir %GNUS_ETC_DIR%\images
-xcopy /R /Q /Y .\images\*.??? %GNUS_ETC_DIR%\images
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-*
-if not exist %GNUS_ETC_DIR%\images\gnus\nul mkdir %GNUS_ETC_DIR%\images\gnus
-xcopy /R /Q /Y .\images\gnus\* %GNUS_ETC_DIR%\images\gnus\
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-gnus-*
-if not exist %GNUS_ETC_DIR%\images\mail\nul mkdir %GNUS_ETC_DIR%\images\mail
-xcopy /R /Q /Y .\images\mail\* %GNUS_ETC_DIR%\images\mail\
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-mail-*
-if not exist %GNUS_ETC_DIR%\images\smilies\nul mkdir %GNUS_ETC_DIR%\images\smilies
-xcopy /R /Q /Y .\images\smilies\* %GNUS_ETC_DIR%\images\smilies\
-if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-images-smilies-*
+REM
+REM FIXME: Instead of C&P, we should use a FOR loop.
+REM
+set i=images
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=images\mail
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=images\gnus
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=images\smilies
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=images\smilies\grayscale
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=images\smilies\medium
+if not exist %GNUS_ETC_DIR%\%i%\nul mkdir %GNUS_ETC_DIR%\%i%
+echo ** .\%i%\ ...
+xcopy /R /Q /Y .\%i%\*.* %GNUS_ETC_DIR%\%i%\
+if ErrorLevel 1 set ERROR=%ERROR%,copy-etc-%i%
+REM
+set i=
 goto warnings
 
 :nocopy
@@ -285,6 +320,7 @@ goto usage
 :usage
 echo.
 echo ***************************************************************************
+REM echo * Usage: make.bat :[X]Emacs-exe-dir: [/copy] [ ^> inst-log.txt 2^>^&1 ]
 echo * Usage: make.bat :[X]Emacs-exe-dir: [/copy]
 echo *
 echo * where: :[X]Emacs-exe-dir: is the directory your
@@ -293,6 +329,8 @@ echo *           e.g. G:\Programme\XEmacs\XEmacs-21.4.11\i586-pc-win32\
 echo *           or G:\Emacs\bin
 echo *        /copy indicates that the compiled files should be copied to your
 echo *           emacs lisp, info, and etc site directories.
+REM echo *        ^> inst-log.txt 2^>^&1
+REM echo *           Log output to inst-log.txt
 echo *
 echo * Note: If you have Emacs/w3 you should set the environment variable
 echo *       W3DIR to the directory where w3 is installed eg.
