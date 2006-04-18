@@ -9,7 +9,7 @@
 
 2006-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* rfc2231.el (rfc2231-parse-string): Sort the parameters first. 
+	* rfc2231.el (rfc2231-parse-string): Sort the parameters first.
 
 	* message.el (message-forward-make-body-plain): Allow
 	message-forward-ignored-headers to be a list.
@@ -62,23 +62,23 @@
 	(message-put-addresses-in-ecomplete): Fix typo.
 
 	* gnus-sum.el (gnus-summary-limit-to-bodies): New command and
-	keystroke. 
+	keystroke.
 
 	* gnus-art.el (gnus-treatment-function-alist): Change order of
-	newsgroups/generic header folding to avoid double-folding. 
+	newsgroups/generic header folding to avoid double-folding.
 
 	* message.el (message-hidden-headers): Add X-Draft-From.
 
 	* gnus-sum.el (gnus-summary-repeat-search-article-forward): New
-	command. 
-	(gnus-summary-repeat-search-article-backward): New command. 
+	command.
+	(gnus-summary-repeat-search-article-backward): New command.
 
 	* gnus-topic.el (gnus-topic-display-missing-topic): Skip past
 	groups in the parent topic.
 
 2006-04-16  Jo,Ac(Bo Cachopo  <joao.cachopo@inesc-id.pt>  (tiny change)
 
-	* spam.el (spam-necessary-extra-headers): Add X-CRM114-Status. 
+	* spam.el (spam-necessary-extra-headers): Add X-CRM114-Status.
 	(spam-extra-header-to-number): Return the CRM114 number as a
 	number instead of a string.
 
@@ -92,11 +92,11 @@
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-strip-forbidden-properties): Only display on
-	self-insert-command. 
+	self-insert-command.
 
 	* hashcash.el (hashcash-insert-payment-async): Remove dead code;
-	reindent. 
-	(hashcash-insert-payment-async-2): Make sure the buffer is alive. 
+	reindent.
+	(hashcash-insert-payment-async-2): Make sure the buffer is alive.
 
 2006-04-15  NAKAJI Hiroyuki  <nakaji@takamatsu-nct.ac.jp>  (tiny change)
 
@@ -128,29 +128,29 @@
 2006-04-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnagent.el (nnagent-request-set-mark): Silence log file
-	writing. 
+	writing.
 	(nnagent-request-set-mark): Use write-region instead of
-	append-to-file. 
+	append-to-file.
 
 	* gnus-sum.el (gnus-read-header): Fudge article number if using a
 	strange select method.
 
 	* ecomplete.el (ecomplete-display-matches): Get highlightling
-	right. 
+	right.
 	(ecomplete-display-matches): Use literals.
 	(ecomplete-display-matches): Disable message logging.
 
 	* message.el (message-display-abbrev): Small optimization.
 
 	* ecomplete.el (ecomplete-display-matches): Allow automatic
-	display. 
+	display.
 
 	* message.el (message-strip-forbidden-properties): Display
-	abbrevs. 
+	abbrevs.
 	(message-display-abbrev): Get automatic display right.
 
 	* ecomplete.el (ecomplete-display-matches): Use M-n/M-p
-	keystrokes. 
+	keystrokes.
 
 2006-04-13  Romain Francoise  <romain@orebokech.com>
 
