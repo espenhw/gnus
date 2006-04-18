@@ -1514,7 +1514,7 @@ functionality to work."
 		 (const :tag "Never" nil)
 		 (const :tag "Always" t)))
 
-(defcustom message-generate-hashcash nil
+(defcustom message-generate-hashcash t
   "*Whether to generate X-Hashcash: headers.
 You must have the \"hashcash\" binary installed, see `hashcash-path'."
   :group 'message-headers
