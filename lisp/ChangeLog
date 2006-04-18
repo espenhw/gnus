@@ -1,3 +1,8 @@
+2006-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2231.el (rfc2231-parse-string): Decode encoded value after
+	concatenating segments rather than before concatenating them.
+
 2006-04-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el: Move comment to gnus-group-update-tool-bar.

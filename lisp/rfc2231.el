@@ -173,11 +173,7 @@ must never cause a Lisp error."
 			     (point)))))
 		   (t
 		    (error "Invalid header: %s" string)))
-		  (push (list attribute
-			      (if encoded
-				  (rfc2231-decode-encoded-string value)
-				value)
-			      number)
+		  (push (list attribute value number encoded)
 			parameters))))
 	  (error
 	   (setq parameters nil)
@@ -187,16 +183,23 @@ must never cause a Lisp error."
 	;; Now collect and concatenate continuation parameters.
 	(let ((cparams nil)
 	      elem)
-	  (loop for (attribute value part) in (sort parameters
-						    (lambda (e1 e2)
-						      (< (or (caddr e1) 0)
-							 (or (caddr e2) 0))))
+	  (loop for (attribute value part encoded)
+		in (sort parameters (lambda (e1 e2)
+				      (< (or (caddr e1) 0)
+					 (or (caddr e2) 0))))
 		do (if (or (not (setq elem (assq attribute cparams)))
 			   (and (numberp part)
 				(zerop part)))
-		       (push (cons attribute value) cparams)
-		     (setcdr elem (concat (cdr elem) value))))
-	  (cons type (nreverse cparams)))))))
+		       (push (list attribute value encoded) cparams)
+		     (setcar (cdr elem) (concat (cadr elem) value))))
+	  ;; Finally decode encoded values.
+	  (cons type (mapcar
+		      (lambda (elem)
+			(cons (car elem)
+			      (if (nth 2 elem)
+				  (rfc2231-decode-encoded-string (nth 1 elem))
+				(nth 1 elem))))
+		      (nreverse cparams))))))))
 
 (defun rfc2231-decode-encoded-string (string)
   "Decode an RFC2231-encoded string.
