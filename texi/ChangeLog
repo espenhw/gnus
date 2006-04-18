@@ -1,12 +1,16 @@
+2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-refcard.tex: Remove duplicate \def's.  Update date.
+
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (SpamAssassin back end): Fix typo.
 
-	* sieve.texi (Examples): Fix grammar. 
+	* sieve.texi (Examples): Fix grammar.
 
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Searching for Articles): Document M-S and M-R. 
+	* gnus.texi (Searching for Articles): Document M-S and M-R.
 	(Limiting): Document / b.
 
 2006-04-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
