@@ -1,6 +1,7 @@
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-expire-articles-now): Clarify prompt. 
+	(gnus-refer-thread-limit): Increase default to 500.
 
 	* mm-view.el (mm-inline-text): Supply delsp to flow-fill. 
 

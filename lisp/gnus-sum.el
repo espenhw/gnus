@@ -87,7 +87,7 @@ locally cached header entries."
 		 number
 		 (sexp :menu-tag "other" t)))
 
-(defcustom gnus-refer-thread-limit 200
+(defcustom gnus-refer-thread-limit 500
   "*The number of old headers to fetch when doing \\<gnus-summary-mode-map>\\[gnus-summary-refer-thread].
 If t, fetch all the available old headers."
   :group 'gnus-thread
