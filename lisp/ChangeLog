@@ -1,5 +1,8 @@
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-generate-hashcash): Default to non-nil when
+	hashcash is found.
+
 	* gnus-sum.el (gnus-summary-expire-articles-now): Clarify prompt. 
 	(gnus-refer-thread-limit): Increase default to 500.
 
