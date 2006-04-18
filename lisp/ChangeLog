@@ -1,12 +1,16 @@
+2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-generate-hashcash): Honor custom type.
+
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-generate-hashcash): Default to non-nil when
 	hashcash is found.
 
-	* gnus-sum.el (gnus-summary-expire-articles-now): Clarify prompt. 
+	* gnus-sum.el (gnus-summary-expire-articles-now): Clarify prompt.
 	(gnus-refer-thread-limit): Increase default to 500.
 
-	* mm-view.el (mm-inline-text): Supply delsp to flow-fill. 
+	* mm-view.el (mm-inline-text): Supply delsp to flow-fill.
 
 	* flow-fill.el (fill-flowed): Allow delete-space.
 
