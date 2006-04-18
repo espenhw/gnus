@@ -1,3 +1,9 @@
+2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* deuglify.el (gnus-outlook-deuglify-unwrap-min)
+	(gnus-outlook-deuglify-unwrap-max, gnus-outlook-display-hook):
+	Remove autoloads.
+
 2006-04-18  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-generate-hashcash): Default to.
