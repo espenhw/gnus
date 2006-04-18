@@ -24438,7 +24438,7 @@ preprocessed by SpamAssassin, and you want to just use the
 SpamAssassin headers, set @code{spam-use-spamassassin-headers}
 instead.
 
-You should not enable this is you use
+You should not enable this if you use
 @code{spam-use-spamassassin-headers}.
 
 @end defvar
@@ -24448,7 +24448,7 @@ You should not enable this is you use
 Set this variable if your mail is preprocessed by SpamAssassin and
 want @code{spam-split} to split based on the SpamAssassin headers.
 
-You should not enable this is you use @code{spam-use-spamassassin}.
+You should not enable this if you use @code{spam-use-spamassassin}.
 
 @end defvar
 

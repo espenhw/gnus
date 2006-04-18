@@ -1,5 +1,7 @@
 2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.texi (SpamAssassin back end): Fix typo.
+
 	* sieve.texi (Examples): Fix grammar. 
 
 2006-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
