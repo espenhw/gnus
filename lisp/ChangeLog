@@ -1,3 +1,8 @@
+2006-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-cache-save): remove text
+	properties when saving via the temp buffer
+
 2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-generate-hashcash): Honor custom type.

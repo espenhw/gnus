@@ -171,6 +171,7 @@ way."
 	      (standard-output (current-buffer)))
 	  (gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist)
 	  (gnus-registry-cache-whitespace file)
+	  (set-text-properties (point-min) (point-max) nil)
 	  (save-buffer))
       (let ((coding-system-for-write gnus-ding-file-coding-system)
 	    (version-control gnus-backup-startup-file)
