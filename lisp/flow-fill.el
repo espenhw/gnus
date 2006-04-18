@@ -98,7 +98,7 @@ RFC 2646 suggests 66 characters for readability."
       t)))
 
 ;;;###autoload
-(defun fill-flowed (&optional buffer)
+(defun fill-flowed (&optional buffer delete-space)
   (save-excursion
     (set-buffer (or (current-buffer) buffer))
     (goto-char (point-min))
@@ -108,6 +108,8 @@ RFC 2646 suggests 66 characters for readability."
       (forward-line 1))
     (goto-char (point-min))
     (while (re-search-forward " $" nil t)
+      (when delete-space
+	(delete-char -1))
       (when (save-excursion
 	      (beginning-of-line)
 	      (looking-at "^\\(>*\\)\\( ?\\)"))

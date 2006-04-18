@@ -1,3 +1,9 @@
+2006-04-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Supply delsp to flow-fill. 
+
+	* flow-fill.el (fill-flowed): Allow delete-space.
+
 2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* deuglify.el (gnus-outlook-deuglify-unwrap-min)
