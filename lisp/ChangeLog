@@ -1,3 +1,7 @@
+2006-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-inline-text): Use equal instead of equalp.
+
 2006-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-cache-save): remove text

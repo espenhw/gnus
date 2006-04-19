@@ -422,8 +422,8 @@
       (save-restriction
 	(narrow-to-region b (point))
 	(goto-char b)
-	(fill-flowed nil (equalp (cdr (assoc 'delsp (mm-handle-type handle)))
-				 "yes"))
+	(fill-flowed nil (equal (cdr (assoc 'delsp (mm-handle-type handle)))
+				"yes"))
 	(goto-char (point-max))))
     (save-restriction
       (narrow-to-region b (point))
