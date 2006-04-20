@@ -233,6 +233,7 @@ fixed in Emacs after 21.3."
     (autoload 'sort-numeric-fields "sort" nil t)
     (autoload 'sort-subr "sort")
     (autoload 'trace-function-background "trace" nil t)
+    (autoload 'unmorse-region "morse" nil t)
     (autoload 'w3-do-setup "w3")
     (autoload 'w3-prepare-buffer "w3-display")
     (autoload 'w3-region "w3-display" nil t)

@@ -1,3 +1,14 @@
+2006-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-select-frame-set-input-focus): Use
+	select-frame-set-input-focus if it is available in XEmacs; use
+	definition defined in Emacs 22 for old Emacsen.
+
+	* dgnushack.el: Autoload unmorse-region for XEmacs.
+
+	* lpath.el: Bind cursor-in-non-selected-windows and
+	select-frame-set-input-focus for XEmacs.
+
 2006-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-view.el (mm-inline-text): Use equal instead of equalp.
