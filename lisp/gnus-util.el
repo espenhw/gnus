@@ -1570,7 +1570,6 @@ predicate on the elements."
 		(concat codename
 			(when system-v ", ")))
 	      (when system-v system-v)
-	      ", " (if (featurep 'mule) "" "no ") "Mule"
 	      ")"))
      (t emacs-version))))
 
