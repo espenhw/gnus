@@ -1089,6 +1089,16 @@ mail aliases off."
 		 (const :tag "Use ecomplete" ecomplete)
 		 (const :tag "No expansion" nil)))
 
+(defcustom message-self-insert-commands '(self-insert-command)
+  "List of `self-insert-command's used to trigger ecomplete.
+When one of those commands is invoked to enter a character in To or Cc
+header, ecomplete will suggest the candidates of recipients (see also
+`message-mail-alias-type').  If you use some tool to enter non-ASCII
+text and it replaces `self-insert-command' with the other command, e.g.
+`egg-self-insert-char', you may want to add it to this list."
+  :group 'message-various
+  :type '(repeat function))
+
 (defcustom message-auto-save-directory
   (file-name-as-directory (nnheader-concat message-directory "drafts"))
   "*Directory where Message auto-saves buffers if Gnus isn't running.
@@ -2519,7 +2529,7 @@ These properties are essential to work, so we should never strip them."
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
   (when (and (eq message-mail-alias-type 'ecomplete)
-	     (eq this-command 'self-insert-command))
+	     (memq this-command message-self-insert-commands))
     (message-display-abbrev))
   (when (and message-strip-special-text-properties
 	     (message-tamago-not-in-use-p begin))

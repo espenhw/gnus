@@ -1,3 +1,8 @@
+2006-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-self-insert-commands): New variable. 
+	(message-strip-forbidden-properties): Use it.
+
 2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-put-addresses-in-ecomplete): Use a regexp
