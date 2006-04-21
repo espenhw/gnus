@@ -74,20 +74,7 @@ string containing the replacements.
 This is a compatibility function for different Emacsen."
       (replace-regexp-in-string regexp newtext string nil literal)))
    ((fboundp 'replace-in-string)
-    (defalias 'gnus-replace-in-string 'replace-in-string))
-   (t
-    (defun gnus-replace-in-string (string regexp newtext &optional literal)
-      "Replace all matches for REGEXP with NEWTEXT in STRING.
-If LITERAL is non-nil, insert NEWTEXT literally.  Return a new
-string containing the replacements.
-
-This is a compatibility function for different Emacsen."
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
+    (defalias 'gnus-replace-in-string 'replace-in-string))))
 
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
