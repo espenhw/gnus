@@ -23384,7 +23384,7 @@ You must read this section to understand how the Spam package works.
 Do not skip, speed-read, or glance through this section.
 
 Make sure you read the section on the @code{spam.el} sequence of
-events.  See @xref{Spam ELisp Package Sequence of Events}.
+events.  See @xref{Extending the Spam package}.
 
 @cindex spam-initialize
 @vindex spam-use-stat
@@ -23994,6 +23994,7 @@ Processors}).
 * Blackholes::
 * Regular Expressions Header Matching::
 * Bogofilter::
+* SpamAssassin back end::
 * ifile spam filtering::
 * Spam Statistics Filtering::
 * SpamOracle::

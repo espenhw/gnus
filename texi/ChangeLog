@@ -1,3 +1,7 @@
+2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Spam Package Introduction): Fix spam menu and links. 
+
 2006-04-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Spam Statistics Package): Fix typo in @pxref.
