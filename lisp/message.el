@@ -1081,8 +1081,9 @@ the prefix.")
 
 (defcustom message-mail-alias-type 'abbrev
   "*What alias expansion type to use in Message buffers.
-The default is `abbrev', which uses mailabbrev.  nil switches
-mail aliases off."
+The default is `abbrev', which uses mailabbrev.  `ecomplete' uses
+an electric completion mode.  nil switches mail aliases off.
+This can also be a list of values."
   :group 'message
   :link '(custom-manual "(message)Mail Aliases")
   :type '(choice (const :tag "Use Mailabbrev" abbrev)
@@ -2524,11 +2525,16 @@ These properties are essential to work, so we should never strip them."
 		(get-text-property pos 'egg-lang)
 		(get-text-property pos 'egg-start)))))
 
+(defsubst message-mail-alias-type-p (type)
+  (if (atom message-mail-alias-type)
+      (eq message-mail-alias-type type)
+    (memq type message-mail-alias-type)))
+
 (defun message-strip-forbidden-properties (begin end &optional old-length)
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (when (and (eq message-mail-alias-type 'ecomplete)
+  (when (and (message-mail-alias-type-p 'ecomplete)
 	     (memq this-command message-self-insert-commands))
     (message-display-abbrev))
   (when (and message-strip-special-text-properties
@@ -2621,12 +2627,12 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	    nil 'local)
   ;; Allow mail alias things.
   (cond
-   ((eq message-mail-alias-type 'abbrev)
+   ((message-mail-alias-type-p 'abbrev)
     (if (fboundp 'mail-abbrevs-setup)
 	(mail-abbrevs-setup)
       (if (fboundp 'mail-aliases-setup)	; warning avoidance
 	  (mail-aliases-setup))))
-   ((eq message-mail-alias-type 'ecomplete)
+   ((message-mail-alias-type-p 'ecomplete)
     (ecomplete-setup)))
   (unless buffer-file-name
     (message-set-auto-save-file-name))
@@ -3612,7 +3618,7 @@ It should typically alter the sending method in some way or other."
 	(run-hooks 'message-sent-hook))
       (message "Sending...done")
       ;; Do ecomplete address snarfing.
-      (when (eq message-mail-alias-type 'ecomplete)
+      (when (message-mail-alias-type-p 'ecomplete)
 	(message-put-addresses-in-ecomplete))
       ;; Mark the buffer as unmodified and delete auto-save.
       (set-buffer-modified-p nil)
