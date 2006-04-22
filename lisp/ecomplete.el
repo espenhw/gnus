@@ -37,6 +37,11 @@
   :group 'ecomplete
   :type 'file)
 
+(defcustom ecomplete-database-file-coding-system 'iso-2022-7bit
+  "Coding system used for writing the ecomplete database file."
+  :type '(repeat (symbol :tag "Coding system"))
+  :group 'ecomplete)
+
 ;;; Internal variables.
 
 (defvar ecomplete-database nil)
@@ -45,8 +50,9 @@
 (defun ecomplete-setup ()
   (when (file-exists-p ecomplete-database-file)
     (with-temp-buffer
-      (insert-file-contents ecomplete-database-file)
-      (setq ecomplete-database (read (current-buffer))))))
+      (let ((coding-system-for-read ecomplete-database-file-coding-system))
+	(insert-file-contents ecomplete-database-file)
+	(setq ecomplete-database (read (current-buffer)))))))
 
 (defun ecomplete-add-item (type key text)
   (let ((elems (assq type ecomplete-database))
@@ -64,16 +70,18 @@
 
 (defun ecomplete-save ()
   (with-temp-buffer
-    (insert "(")
-    (loop for (type . elems) in ecomplete-database
-	  do
-	  (insert (format "(%s\n" type))
-	  (dolist (entry elems)
-	    (prin1 entry (current-buffer))
-	    (insert "\n"))
-	  (insert ")\n"))
-    (insert ")")
-    (write-region (point-min) (point-max) ecomplete-database-file nil 'silent)))
+    (let ((coding-system-for-write ecomplete-database-file-coding-system))
+      (insert "(")
+      (loop for (type . elems) in ecomplete-database
+	    do
+	    (insert (format "(%s\n" type))
+	    (dolist (entry elems)
+	      (prin1 entry (current-buffer))
+	      (insert "\n"))
+	    (insert ")\n"))
+      (insert ")")
+      (write-region (point-min) (point-max)
+		    ecomplete-database-file nil 'silent))))
 
 (defun ecomplete-get-matches (type match)
   (let* ((elems (cdr (assq type ecomplete-database)))

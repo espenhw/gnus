@@ -1,3 +1,10 @@
+2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* ecomplete.el (ecomplete-database-file-coding-system): New
+	variable. 
+	(ecomplete-save): Use it.
+	(ecomplete-setup): Use it.
+
 2006-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-self-insert-commands): New variable. 
