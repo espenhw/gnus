@@ -1221,6 +1221,12 @@ is run."
   :version "22.1"
   :group 'gnus-various)
 
+(defun kill-empty-logs ()
+  (dolist (buf (list (get-buffer "*Compile-Log*")
+		     (get-buffer "*Compile-Log-Show*")))
+    (if (and buf (= (buffer-size buf) 0))
+	(kill-buffer buf))))
+
 (defun gnus-byte-compile (form)
   "Byte-compile FORM if `gnus-use-byte-compile' is non-nil."
   (if gnus-use-byte-compile
@@ -1233,7 +1239,9 @@ is run."
 	(defalias 'gnus-byte-compile
 	  (lambda (form)
 	    (let ((byte-compile-warnings '(unresolved callargs redefine)))
-	      (byte-compile form))))
+	      (prog1
+		  (byte-compile form)
+		(kill-empty-logs)))))
 	(gnus-byte-compile form))
     form))
 

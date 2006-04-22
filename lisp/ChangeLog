@@ -1,5 +1,13 @@
 2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-util.el (gnus-byte-compile): Use it.
+
+2006-04-22  xyblor  <fake@invalid.email>  (Tiny change.)
+
+	* gnus-util.el (kill-empty-logs): New function.
+
+2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
 	* message.el (message-mail-alias-type): Doc fix.
 	(message-mail-alias-type-p): New function.
 	(message-send): Use it.
