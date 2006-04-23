@@ -1,3 +1,8 @@
+2006-04-23  Andreas Seltenreich  <andreas+ding@gate450.dyndns.org>  (tiny change)
+
+	* nnweb.el (nnweb-google-wash-article): Sync up to new Google
+	HTML. 
+
 2006-04-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-call-script): Message the error
