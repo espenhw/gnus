@@ -678,12 +678,20 @@ If CONFIRM is non-nil, ask for confirmation before removing a file."
     (sleep-for delay)))
 
 (defun mail-source-call-script (script)
-  (let ((background nil))
+  (let ((background nil)
+	(stderr (get-buffer-create " *mail-source-stderr*"))
+	result)
     (when (string-match "& *$" script)
       (setq script (substring script 0 (match-beginning 0))
 	    background 0))
-    (call-process shell-file-name nil background nil
-		  shell-command-switch script)))
+    (setq result
+	  (call-process shell-file-name nil background nil
+			shell-command-switch script))
+    (when (and result
+	       (not (zerop result)))
+      (set-buffer stderr)
+      (message "Mail source error: %s" (buffer-string)))
+    (kill-buffer stderr)))
 
 ;;;
 ;;; Different fetchers
