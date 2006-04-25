@@ -1096,7 +1096,7 @@ When one of those commands is invoked to enter a character in To or Cc
 header, ecomplete will suggest the candidates of recipients (see also
 `message-mail-alias-type').  If you use some tool to enter non-ASCII
 text and it replaces `self-insert-command' with the other command, e.g.
-`egg-self-insert-char', you may want to add it to this list."
+`egg-self-insert-command', you may want to add it to this list."
   :group 'message-various
   :type '(repeat function))
 

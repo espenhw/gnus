@@ -1,5 +1,7 @@
 2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* message.el (message-self-insert-commands): Doc fix.
+
 	* mm-uu.el (mm-uu-pgp-signed-test): Erase prompt.
 	(mm-uu-pgp-encrypted-test): Ditto.
 	(mm-uu-pgp-encrypted-extract-1): Make sure there's a newline
