@@ -12,12 +12,12 @@
 2006-04-23  Andreas Seltenreich  <andreas+ding@gate450.dyndns.org>  (tiny change)
 
 	* nnweb.el (nnweb-google-wash-article): Sync up to new Google
-	HTML. 
+	HTML.
 
 2006-04-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-call-script): Message the error
-	string. 
+	string.
 
 2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -36,13 +36,13 @@
 	(message-strip-forbidden-properties): Ditto.
 
 	* ecomplete.el (ecomplete-database-file-coding-system): New
-	variable. 
+	variable.
 	(ecomplete-save): Use it.
 	(ecomplete-setup): Use it.
 
 2006-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* message.el (message-self-insert-commands): New variable. 
+	* message.el (message-self-insert-commands): New variable.
 	(message-strip-forbidden-properties): Use it.
 
 2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
