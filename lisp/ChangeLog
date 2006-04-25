@@ -1,3 +1,14 @@
+2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-uu.el (mm-uu-pgp-signed-test): Erase prompt.
+	(mm-uu-pgp-encrypted-test): Ditto.
+	(mm-uu-pgp-encrypted-extract-1): Make sure there's a newline
+	between header and body; return application/pgp-encrypted handle
+	if decryption failed; decode decrypted body by charset.
+
+	* mm-decode.el (mm-automatic-display): Don't make application/pgp
+	element match to application/pgp-*.
+
 2006-04-23  Andreas Seltenreich  <andreas+ding@gate450.dyndns.org>  (tiny change)
 
 	* nnweb.el (nnweb-google-wash-article): Sync up to new Google
