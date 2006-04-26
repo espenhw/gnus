@@ -544,12 +544,9 @@ apply the face `mm-uu-extract'."
 							   'gnus-info)
 			"OK")))
 	  (progn
-	    ;; Remove leading blank lines.
-	    (goto-char (point-min))
-	    (when (looking-at "\n+")
-	      (delete-region (point-min) (match-end 0)))
 	    ;; Decode charset.
-	    (when (and charset
+	    (when (and (or charset
+			   (setq charset gnus-newsgroup-charset))
 		       (setq charset (mm-charset-to-coding-system charset))
 		       (not (eq charset 'ascii)))
 	      (mm-decode-coding-region (point-min) (point-max) charset))
