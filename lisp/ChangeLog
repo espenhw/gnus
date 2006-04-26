@@ -1,6 +1,9 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* mml.el (mml-default-directory): New variable.
+	* mml.el: Simplify autoload.
+	(mml-mode): defvar dnd-protocol-alist instead of using
+	symbol-value.
+	(mml-default-directory): New variable.
 	(mml-minibuffer-read-file): Use it.
 
 	* message.el (message-citation-line-format): New variable.

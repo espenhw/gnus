@@ -40,9 +40,7 @@
   (autoload 'message-mark-active-p "message")
   (autoload 'message-info "message")
   (autoload 'fill-flowed-encode "flow-fill")
-  (autoload 'message-posting-charset "message"))
-
-(eval-when-compile
+  (autoload 'message-posting-charset "message")
   (autoload 'dnd-get-local-file-name "dnd"))
 
 (defvar gnus-article-mime-handles)
@@ -54,6 +52,7 @@
 (defvar message-posting-charset)
 (defvar message-required-mail-headers)
 (defvar message-required-news-headers)
+(defvar dnd-protocol-alist)
 
 (defcustom mml-content-type-parameters
   '(name access-type expiration size permission format)
@@ -1006,8 +1005,7 @@ See Info node `(emacs-mime)Composing'.
     (easy-menu-add mml-menu mml-mode-map)
     (when (boundp 'dnd-protocol-alist)
       (set (make-local-variable 'dnd-protocol-alist)
-	   (append mml-dnd-protocol-alist
-		   (symbol-value 'dnd-protocol-alist))))
+	   (append mml-dnd-protocol-alist dnd-protocol-alist)))
     (run-hooks 'mml-mode-hook)))
 
 ;;;
