@@ -868,12 +868,46 @@ the signature is inserted."
 (defcustom message-citation-line-function 'message-insert-citation-line
   "*Function called to insert the \"Whomever writes:\" line.
 
+Predefined functions include `message-insert-citation-line' and
+`message-insert-formated-citation-line' (see the variable
+`message-citation-line-format').
+
 Note that Gnus provides a feature where the reader can click on
 `writes:' to hide the cited text.  If you change this line too much,
 people who read your message will have to change their Gnus
 configuration.  See the variable `gnus-cite-attribution-suffix'."
-  :type 'function
+  :type '(choice
+	  (function-item :tag "plain" message-insert-citation-line)
+	  (function-item :tag "formatted" message-insert-formated-citation-line)
+	  (function :tag "Other"))
   :link '(custom-manual "(message)Insertion Variables")
+  :group 'message-insertion)
+
+(defcustom message-citation-line-format "On %a, %b %d %Y, %n wrote:"
+  "Format of the \"Whomever writes:\" line.
+
+The string is formatted using `format-spec'.  The following
+constructs are replaced:
+
+  %f   The full From, e.g. \"John Doe <john.doe@example.invalid>\".
+  %n   The mail address, e.g. \"john.doe@example.invalid\".
+  %N   The real name if present, e.g.: \"John Doe\", else fall
+       back to the mail address.
+  %F   The first name if present, e.g.: \"John\".
+  %L   The last name if present, e.g.: \"Doe\".
+
+All other format specifiers are passed to `format-time-string'
+which is called using the date from the article your replying to.
+Extracting the first (%F) and last name (%L) is done
+heuristically, so you should always check it yourself.
+
+Please also read the note in the documentation of
+`message-citation-line-function'."
+  :type '(choice (const :tag "Plain" "%f writes:")
+		 (const :tag "Include date" "On %a, %b %d %Y, %n wrote:")
+		 string)
+  :link '(custom-manual "(message)Insertion Variables")
+  :version "23.0" ;; No Gnus
   :group 'message-insertion)
 
 ;;;###autoload
@@ -3426,6 +3460,93 @@ This function uses `mail-citation-hook' if that is non-nil."
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
   (message-cite-original-1 nil))
+
+(defun message-insert-formated-citation-line (&optional from date)
+  "Function that inserts a formated citation line.
+
+See `message-citation-line-format'."
+  ;; The optional args are for testing/debugging.  They will disappear later.
+  ;; Example:
+  ;; (with-temp-buffer
+  ;;   (message-insert-formated-citation-line
+  ;;    "John Doe <john.doe@example.invalid>"
+  ;;    (current-time))
+  ;;   (buffer-string))
+  (when (or message-reply-headers (and from date))
+    (unless from
+      (setq from (mail-header-from message-reply-headers)))
+    (let* ((data (condition-case ()
+		     (funcall (if (boundp gnus-extract-address-components)
+				  gnus-extract-address-components
+				'mail-extract-address-components)
+			      from)
+		   (error nil)))
+	   (name (car data))
+	   (fname name)
+	   (lname name)
+	   (net (car (cdr data)))
+	   (name-or-net (or (car data)
+			    (car (cdr data)) from))
+	   (replydate
+	    (or
+	     date
+	     ;; We need Gnus functionality if the user wants date or time from
+	     ;; the original article:
+	     (when (string-match "%[^EFLn]" message-citation-line-format)
+	       (autoload 'gnus-date-get-time "gnus-util")
+	       (gnus-date-get-time (mail-header-date message-reply-headers)))))
+	   (flist
+	    (let ((i ?A) lst)
+	      (when (stringp name)
+		;; Guess first name and last name:
+		(cond ((string-match
+			"\\`\\(\\w\\|[-.]\\)+ \\(\\w\\|[-.]\\)+\\'" name)
+		       (setq fname (nth 0 (split-string name "[ \t]+"))
+			     lname (nth 1 (split-string name "[ \t]+"))))
+		      ((string-match
+			"\\`\\(\\w\\|[-.]\\)+, \\(\\w\\|[-.]\\)+\\'" name)
+		       (setq fname (nth 1 (split-string name "[ \t,]+"))
+			     lname (nth 0 (split-string name "[ \t,]+"))))
+		      ((string-match
+			"\\`\\(\\w\\|[-.]\\)+\\'" name)
+		       (setq fname name
+			     lname ""))))
+	      ;; The following letters are not used in `format-time-string':
+	      (push ?E lst) (push net lst)
+	      (push ?F lst) (push fname lst)
+	      ;; We might want to use "" instead of "<X>" later.
+	      (push ?J lst) (push "<J>" lst)
+	      (push ?K lst) (push "<K>" lst)
+	      (push ?L lst) (push lname lst)
+	      (push ?N lst) (push "<N>" lst)
+	      (push ?O lst) (push "<O>" lst)
+	      (push ?P lst) (push "<P>" lst)
+	      (push ?Q lst) (push "<Q>" lst)
+	      (push ?f lst) (push "<f>" lst)
+	      (push ?i lst) (push "<i>" lst)
+	      (push ?n lst) (push name-or-net lst)
+	      (push ?o lst) (push "<o>" lst)
+	      (push ?q lst) (push "<q>" lst)
+	      (push ?t lst) (push "<t>" lst)
+	      (push ?v lst) (push "<v>" lst)
+	      ;; Delegate the rest to `format-time-string':
+	      (while (<= i ?z)
+		(when (and (not (memq i lst))
+			   ;; Skip (Z,a)
+			   (or (<= i ?Z)
+			       (>= i ?a)))
+		  (push i lst)
+		  (push (condition-case nil
+			    (progn (format-time-string (format "%%%c" i)
+						       replydate))
+			  (format ">%c<" i))
+			lst))
+		(setq i (1+ i)))
+	      (reverse lst)))
+	   (spec (apply 'format-spec-make flist)))
+      (insert (format-spec message-citation-line-format spec)))
+    (newline)
+    (newline)))
 
 (defun message-cite-original-without-signature ()
   "Cite function in the standard Message manner.

@@ -1,5 +1,10 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-citation-line-format): New variable.
+	(message-insert-formated-citation-line): New function.
+	(message-citation-line-function): Add
+	`message-insert-formated-citation-line' to custom type.
+
 	* mm-decode.el (mm-verify-option): Add gnus-buttonized-mime-types
 	to doc string.
 
