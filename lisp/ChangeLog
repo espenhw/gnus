@@ -1,3 +1,11 @@
+2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-decode.el (mm-verify-option): Add gnus-buttonized-mime-types
+	to doc string.
+
+	* gnus-art.el (gnus-buttonized-mime-types): Add "multipart/signed"
+	depending on mm-verify-option.
+
 2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-self-insert-commands): Doc fix.

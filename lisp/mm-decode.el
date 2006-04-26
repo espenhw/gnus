@@ -436,7 +436,11 @@ If not set, `default-directory' will be used."
 (defcustom mm-verify-option 'never
   "Option of verifying signed parts.
 `never', not verify; `always', always verify;
-`known', only verify known protocols.  Otherwise, ask user."
+`known', only verify known protocols.  Otherwise, ask user.
+
+When set to `always' or `known', you should add
+\"multipart/signed\" to `gnus-buttonized-mime-types' to see
+result of the verification."
   :version "22.1"
   :type '(choice (item always)
 		 (item never)
