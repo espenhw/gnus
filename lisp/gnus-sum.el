@@ -2087,6 +2087,7 @@ increase the score of each group you read."
   "O" gnus-article-save-part-and-strip
   "r" gnus-article-replace-part
   "d" gnus-article-delete-part
+  "t" gnus-article-view-part-as-type
   "j" gnus-article-jump-to-part
   "c" gnus-article-copy-part
   "C" gnus-article-view-part-as-charset
@@ -2234,6 +2235,7 @@ increase the score of each group you read."
 	       ["Repair multipart" gnus-summary-repair-multipart t]
 	       ["Pipe part..." gnus-article-pipe-part t]
 	       ["Inline part" gnus-article-inline-part t]
+	       ["View part as type..." gnus-article-view-part-as-type t]
 	       ["Encrypt body" gnus-article-encrypt-body
 		:active (not (gnus-group-read-only-p))
 	       ,@(if (featurep 'xemacs) nil

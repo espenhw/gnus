@@ -1,5 +1,10 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-mime-map, gnus-summary-make-menu-bar):
+	Add gnus-article-view-part-as-type.
+
+	* gnus-art.el (gnus-article-view-part-as-type): New function.
+
 	* message.el (message-valid-fqdn-regexp): Add TLDs .cat, jobs,
 	.mobi and .travel.  Remove .nato, .bitnet and .uucp.
 

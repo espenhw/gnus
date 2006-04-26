@@ -4859,6 +4859,12 @@ N is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-delete-part t))
 
+(defun gnus-article-view-part-as-type (n)
+  "Choose a MIME media type, and view part N as such.
+N is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-view-part-as-type t))
+
 (defun gnus-article-mime-match-handle-first (condition)
   (if condition
       (let (n)
