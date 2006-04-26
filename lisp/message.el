@@ -471,7 +471,14 @@ If t, use `message-user-organization-file'."
 		 (const :tag "consult file" t)))
 
 ;;;###autoload
-(defcustom message-user-organization-file "/usr/lib/news/organization"
+(defcustom message-user-organization-file
+  (let (orgfile)
+    (dolist (f (list "/etc/organization"
+		     "/etc/news/organization"
+		     "/usr/lib/news/organization"))
+      (when (file-readable-p f)
+	(setq orgfile f)))
+    orgfile)
   "*Local news organization file."
   :type 'file
   :link '(custom-manual "(message)News Headers")

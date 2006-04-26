@@ -1,5 +1,8 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-user-organization-file): Check several
+	locations of the organization file.
+
 	* gnus-sum.el (gnus-summary-mime-map, gnus-summary-make-menu-bar):
 	Add gnus-article-view-part-as-type.
 
