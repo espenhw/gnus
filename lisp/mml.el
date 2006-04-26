@@ -1121,7 +1121,7 @@ See `dnd-protocol-alist' for more information.  When nil, behave
 as in other buffers."
   :type '(choice (repeat (cons (regexp) (function)))
 		 (const :tag "Behave as in other buffers" nil))
-  :version "23.0" ;; No Gnus
+  :version "22.1" ;; Gnus 5.10.9
   :group 'message)
 
 (defcustom mml-dnd-attach-options nil
@@ -1139,7 +1139,7 @@ to specify options."
 		(const type)
 		(const description)
 		(const disposition))))
-  :version "23.0" ;; No Gnus
+  :version "22.1" ;; Gnus 5.10.9
   :group 'message)
 
 (defun mml-attach-file (file &optional type description disposition)

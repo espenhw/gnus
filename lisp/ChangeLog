@@ -5,6 +5,7 @@
 	symbol-value.
 	(mml-default-directory): New variable.
 	(mml-minibuffer-read-file): Use it.
+	(mml-dnd-protocol-alist, mml-dnd-attach-options): Adjust :version.
 
 	* message.el (message-citation-line-format): New variable.
 	(message-insert-formated-citation-line): New function.
