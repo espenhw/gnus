@@ -2,6 +2,15 @@
 
 	* gnus.texi (Spam Package Introduction): Fix spam menu and links. 
 
+2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* pgg.texi (Caching passphrase): Fix markup and typos.  Simplify.
+
+2006-04-26  Sascha Wilde  <wilde@sha-bang.de>
+
+	* pgg.texi (Caching passphrase): Added documentation for
+	pgg-gpg-use-agent.
+
 2006-04-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Spam Statistics Package): Fix typo in @pxref.
