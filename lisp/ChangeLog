@@ -1,5 +1,8 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-valid-fqdn-regexp): Add TLDs .cat, jobs,
+	.mobi and .travel.  Remove .nato, .bitnet and .uucp.
+
 	* mml.el: Simplify autoload.
 	(mml-mode): defvar dnd-protocol-alist instead of using
 	symbol-value.
