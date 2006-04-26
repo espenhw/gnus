@@ -29,6 +29,18 @@
 	* gnus-art.el (gnus-buttonized-mime-types): Add "multipart/signed"
 	depending on mm-verify-option.
 
+2006-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml1991.el (mml1991-pgg-sign): Make sure to load pgg.el before
+	binding pgg-* variables; reimplement the section which prevents
+	MIME header from being signed.
+	(mml1991-pgg-encrypt): Make sure to load pgg.el before binding
+	pgg-text-mode; remove a blank line at the top of body.
+
+	* mm-uu.el (mm-uu-pgp-encrypted-extract-1): Don't remove blank
+	lines at the top of body; use gnus-newsgroup-charset if there's no
+	Charset header.
+
 2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-self-insert-commands): Doc fix.
