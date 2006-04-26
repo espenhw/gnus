@@ -1015,9 +1015,18 @@ See Info node `(emacs-mime)Composing'.
 ;;; inserting stuff to the buffer.
 ;;;
 
+(defcustom mml-default-directory mm-default-directory
+  "The default directory where mml will find files.
+If not set, `default-directory' will be used."
+  :type '(choice directory (const :tag "Default" nil))
+  :version "23.0" ;; No Gnus
+  :group 'message)
+
 (defun mml-minibuffer-read-file (prompt)
   (let* ((completion-ignored-extensions nil)
-	 (file (read-file-name prompt nil nil t)))
+	 (file (read-file-name prompt
+			       (or mml-default-directory default-directory)
+			       nil t)))
     ;; Prevent some common errors.  This is inspired by similar code in
     ;; VM.
     (when (file-directory-p file)

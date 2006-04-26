@@ -1,5 +1,8 @@
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml.el (mml-default-directory): New variable.
+	(mml-minibuffer-read-file): Use it.
+
 	* message.el (message-citation-line-format): New variable.
 	(message-insert-formated-citation-line): New function.
 	(message-citation-line-function): Add
