@@ -134,20 +134,6 @@
 	  (forward-line))
 	(setq pgg-gpg-read-point (point)))))
 
-(eval-and-compile
-  (cond ((and (fboundp 'string-to-multibyte)
-	      (subrp (symbol-function 'string-to-multibyte)))
-	 (defalias 'pgg-string-to-multibyte 'string-to-multibyte))
-	((and (fboundp 'string-as-multibyte)
-	      (subrp (symbol-function 'string-as-multibyte)))
-	 (defun pgg-string-to-multibyte (string) "\
-Return a multibyte string with the same individual chars as string."
-	   (mapconcat
-	    (lambda (ch) (string-as-multibyte (char-to-string ch)))
-	    string "")))
-	(t
-	 (defalias 'pgg-string-to-multibyte 'identity))))
-
 (defun pgg-gpg-process-sentinel (process status)
   (if (buffer-live-p (process-buffer process))
       (save-excursion
@@ -161,8 +147,7 @@ Return a multibyte string with the same individual chars as string."
 	(erase-buffer)
 	(insert-buffer-substring (process-buffer process))
 	;; Read the contents of the output file to pgg-output-buffer.
-	(set-buffer (let ((default-enable-multibyte-characters t))
-		      (get-buffer-create pgg-output-buffer)))
+	(set-buffer (get-buffer-create pgg-output-buffer))
 	(buffer-disable-undo)
 	(erase-buffer)
 	(if (equal status "finished\n")
@@ -170,22 +155,10 @@ Return a multibyte string with the same individual chars as string."
 		   (with-current-buffer (process-buffer process)
 		     pgg-gpg-output-file-name)))
 	      (when (file-exists-p output-file-name)
-		;; Buffer's multibyteness might be turned off after
-		;; inserting file's contents, as the case may be.
 		(let ((coding-system-for-read (if pgg-text-mode
 						  'raw-text
 						'binary)))
 		  (insert-file-contents output-file-name))
-		(when (and (fboundp 'set-buffer-multibyte)
-			   (subrp (symbol-function 'set-buffer-multibyte))
-			   (not enable-multibyte-characters))
-		  (if (zerop (buffer-size))
-		      (set-buffer-multibyte t)
-		    (insert (pgg-string-to-multibyte
-			     (prog1
-				 (buffer-string)
-			       (erase-buffer)
-			       (set-buffer-multibyte t))))))
 		(delete-file output-file-name))))
 	(kill-buffer (process-buffer process)))))
 

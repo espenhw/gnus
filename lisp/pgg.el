@@ -452,8 +452,7 @@ within the region."
 
 (defun pgg-fetch-key (keyserver key)
   "Attempt to fetch a KEY from KEYSERVER for addition to PGP or GnuPG keyring."
-  (with-current-buffer (let ((default-enable-multibyte-characters t))
-			 (get-buffer-create pgg-output-buffer))
+  (with-current-buffer (get-buffer-create pgg-output-buffer)
     (buffer-disable-undo)
     (erase-buffer)
     (let ((proto (if (string-match "^[a-zA-Z\\+\\.\\\\-]+:" keyserver)
