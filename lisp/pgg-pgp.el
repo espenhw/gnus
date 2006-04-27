@@ -73,7 +73,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 	 (errors-buffer pgg-errors-buffer)
 	 (process-connection-type nil)
 	 process status exit-status)
-    (with-current-buffer (get-buffer-create output-buffer)
+    (with-current-buffer (let ((default-enable-multibyte-characters t))
+			   (get-buffer-create output-buffer))
       (buffer-disable-undo)
       (erase-buffer))
     (when passphrase
@@ -117,7 +118,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 (defun pgg-pgp-lookup-key (string &optional type)
   "Search keys associated with STRING."
   (let ((args (list "+batchmode" "+language=en" "-kv" string)))
-    (with-current-buffer (get-buffer-create pgg-output-buffer)
+    (with-current-buffer (let ((default-enable-multibyte-characters t))
+			   (get-buffer-create pgg-output-buffer))
       (buffer-disable-undo)
       (erase-buffer)
       (apply #'call-process pgg-pgp-program nil t nil args)
