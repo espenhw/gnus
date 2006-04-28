@@ -711,6 +711,8 @@ Valid packages include `pgg', `gpg' and `mailcrypt'.")
 	     (buffer-string))))
 	(progn
 	  (erase-buffer)
+	  ;; Treat data which pgg returns as a unibyte string.
+	  (mm-disable-multibyte)
 	  (insert-buffer-substring pgg-output-buffer)
 	  (goto-char (point-min))
 	  (while (search-forward "\r\n" nil t)
