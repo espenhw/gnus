@@ -59,9 +59,6 @@
 
 ;;; Code:
 
-(when (featurep 'xemacs)
-  (require 'timer-funcs))
-
 (eval-when-compile
   (require 'cl))
 

@@ -27,8 +27,6 @@
 
 ;;; Code:
 
-(require 'timer-funcs)
-
 (defalias 'nnheader-cancel-timer 'delete-itimer)
 (defalias 'nnheader-string-as-multibyte 'identity)
 

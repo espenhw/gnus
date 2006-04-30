@@ -35,10 +35,6 @@
 (require 'nntp)
 (require 'nnmail)
 (require 'gnus-util)
-(eval-and-compile
-  (if (featurep 'xemacs)
-      (require 'timer-funcs)
-    (require 'timer)))
 
 (autoload 'parse-time-string "parse-time" nil nil)
 

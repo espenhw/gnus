@@ -39,7 +39,6 @@
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 (require 'wid-edit)
-(require 'timer-funcs)
 
 (defgroup gnus-xmas nil
   "XEmacsoid support for Gnus"

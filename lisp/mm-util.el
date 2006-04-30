@@ -30,6 +30,13 @@
 (require 'mail-prsvr)
 
 (eval-and-compile
+  (if (featurep 'xemacs)
+      (unless (ignore-errors
+		(require 'timer-funcs))
+	(require 'timer))
+    (require 'timer)))
+
+(eval-and-compile
   (mapcar
    (lambda (elem)
      (let ((nfunc (intern (format "mm-%s" (car elem)))))

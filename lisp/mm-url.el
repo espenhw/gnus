@@ -36,11 +36,6 @@
 (require 'mm-util)
 (require 'gnus)
 
-(eval-when-compile
-  (if (featurep 'xemacs)
-      (require 'timer-funcs)
-    (require 'timer)))
-
 (defvar url-current-object)
 (defvar url-package-name)
 (defvar url-package-version)

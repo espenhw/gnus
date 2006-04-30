@@ -886,11 +886,6 @@ See the Gnus manual for details."
 (defvar mail-source-report-new-mail-timer nil)
 (defvar mail-source-report-new-mail-idle-timer nil)
 
-(eval-when-compile
-  (if (featurep 'xemacs)
-      (require 'timer-funcs)
-    (require 'timer)))
-
 (defun mail-source-start-idle-timer ()
   ;; Start our idle timer if necessary, so we delay the check until the
   ;; user isn't typing.
