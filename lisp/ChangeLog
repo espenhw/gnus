@@ -1,5 +1,7 @@
 2006-04-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (hashcash): Require hashcash as normal.
+
 	* ecomplete.el (ecomplete-highlight-match-line): Use
 	point-at-eol. 
 	(ecomplete-highlight-match-line): Use `highlight', because that
