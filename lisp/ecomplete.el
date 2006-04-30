@@ -137,12 +137,12 @@
     (goto-char (point-min))
     (forward-line line)
     (save-restriction
-      (narrow-to-region (point) (line-end-position))
+      (narrow-to-region (point) (point-at-eol))
       (while (not (eobp))
 	;; Put the 'region face on any charactes on this line that
 	;; aren't already highlighted.
 	(unless (get-text-property (point) 'face)
-	  (put-text-property (point) (1+ (point)) 'face 'region))
+	  (put-text-property (point) (1+ (point)) 'face 'highlight))
 	(forward-char 1)))
     (buffer-string)))
 

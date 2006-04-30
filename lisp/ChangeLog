@@ -1,5 +1,12 @@
 2006-04-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* ecomplete.el (ecomplete-highlight-match-line): Use
+	point-at-eol. 
+	(ecomplete-highlight-match-line): Use `highlight', because that
+	face exists in both Emacs and XEmacs.
+
+	* message.el (message-display-abbrev): Use point-at-bol.
+
 	* mail-source.el: Don't require timer/timer-funcs.
 
 	* gnus-async.el: Ditto.
