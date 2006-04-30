@@ -299,7 +299,6 @@ If `mm-url-use-external' is non-nil, use `mm-url-program'."
 	(list url (buffer-size)))
     (mm-url-load-url)
     (let ((name buffer-file-name)
-	  (url-request-extra-headers (list (cons "Connection" "Close")))
 	  (url-package-name (or mm-url-package-name
 				url-package-name))
 	  (url-package-version (or mm-url-package-version
