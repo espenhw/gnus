@@ -1,3 +1,8 @@
+2006-04-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-request-article): Do proper xwfu encoding when
+	fetching articles by message-id.
+
 2006-04-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (hashcash): Require hashcash as normal.
