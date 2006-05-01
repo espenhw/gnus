@@ -171,7 +171,8 @@ Valid types include `google', `dejanews', and `gmane'.")
 		       (when (string-match "^<\\(.*\\)>$" article)
 			 (setq art (match-string 1 article)))
 		       (when (and fetch art)
-			 (setq url (format fetch art))
+			 (setq url (format fetch
+					   (mm-url-form-encode-xwfu art)))
 			 (mm-with-unibyte-current-buffer
 			   (mm-url-insert url))
 			 (if (nnweb-definition 'reference t)
