@@ -1,3 +1,7 @@
+2006-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: No Gnus v0.5 is released.
+
 2006-04-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-request-article): Do proper xwfu encoding when
