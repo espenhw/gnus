@@ -1,5 +1,12 @@
 2006-05-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-from-style, message-signature-separator)
+	(message-user-organization-file, message-send-mail-function)
+	(message-citation-line-function, message-yank-prefix)
+	(message-indent-citation-function, message-signature)
+	(message-signature-file, message-signature-insert-empty-line):
+	Remove autoloads.
+
 	* gnus-art.el (gnus-buttonized-mime-types): Remove
 	"multipart/signed".  Revert 2006-04-26 change.
 

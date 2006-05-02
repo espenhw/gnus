@@ -154,7 +154,6 @@ If this variable is nil, no such courtesy message will be added."
   :group 'message-interface
   :type 'regexp)
 
-;;;###autoload
 (defcustom message-from-style 'default
   "*Specifies how \"From\" headers look.
 
@@ -410,7 +409,6 @@ for `message-cross-post-insert-note'."
 
 ;;; End of variables adopted from `message-utils.el'.
 
-;;;###autoload
 (defcustom message-signature-separator "^-- *$"
   "Regexp matching the signature separator."
   :type 'regexp
@@ -470,7 +468,6 @@ If t, use `message-user-organization-file'."
   :type '(choice string
 		 (const :tag "consult file" t)))
 
-;;;###autoload
 (defcustom message-user-organization-file
   (let (orgfile)
     (dolist (f (list "/etc/organization"
@@ -596,7 +593,6 @@ Done before generating the new subject of a forward."
   :type 'string)
 
 ;; Useful to set in site-init.el
-;;;###autoload
 (defcustom message-send-mail-function
   (let ((program (if (boundp 'sendmail-program)
 		     ;; see paths.el
@@ -871,7 +867,6 @@ the signature is inserted."
   :version "22.1"
   :group 'message-various)
 
-;;;###autoload
 (defcustom message-citation-line-function 'message-insert-citation-line
   "*Function called to insert the \"Whomever writes:\" line.
 
@@ -917,7 +912,6 @@ Please also read the note in the documentation of
   :version "23.0" ;; No Gnus
   :group 'message-insertion)
 
-;;;###autoload
 (defcustom message-yank-prefix "> "
   "*Prefix inserted on the lines of yanked messages.
 Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
@@ -950,7 +944,6 @@ Used by `message-yank-original' via `message-yank-cite'."
   :link '(custom-manual "(message)Insertion Variables")
   :type 'integer)
 
-;;;###autoload
 (defcustom message-cite-function 'message-cite-original
   "*Function for citing an original message.
 Predefined functions include `message-cite-original' and
@@ -963,7 +956,6 @@ Note that these functions use `mail-citation-hook' if that is non-nil."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-;;;###autoload
 (defcustom message-indent-citation-function 'message-indent-citation
   "*Function for modifying a citation just inserted in the mail buffer.
 This can also be a list of functions.  Each function can find the
@@ -973,7 +965,6 @@ point and mark around the citation text as modified."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-;;;###autoload
 (defcustom message-signature t
   "*String to be inserted at the end of the message buffer.
 If t, the `message-signature-file' file will be inserted instead.
@@ -983,7 +974,6 @@ If a form, the result from the form will be used instead."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-;;;###autoload
 (defcustom message-signature-file "~/.signature"
   "*Name of file containing the text inserted at end of message buffer.
 Ignored if the named file doesn't exist.
@@ -992,7 +982,6 @@ If nil, don't insert a signature."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-;;;###autoload
 (defcustom message-signature-insert-empty-line t
   "*If non-nil, insert an empty line before the signature separator."
   :version "22.1"
