@@ -16,7 +16,7 @@
 	* message.el (hashcash): Require hashcash as normal.
 
 	* ecomplete.el (ecomplete-highlight-match-line): Use
-	point-at-eol. 
+	point-at-eol.
 	(ecomplete-highlight-match-line): Use `highlight', because that
 	face exists in both Emacs and XEmacs.
 
@@ -36,7 +36,7 @@
 
 	* mm-util.el: Require timer/timer-funcs.
 
-2006-04-23  Andreas Seltenreich  <andreas+ding@gate450.dyndns.org>  (tiny change)
+2006-04-23  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* mm-url.el (mm-url-insert-file-contents): Don't set Connection:
 	Close.
@@ -140,7 +140,7 @@
 	* mm-decode.el (mm-automatic-display): Don't make application/pgp
 	element match to application/pgp-*.
 
-2006-04-23  Andreas Seltenreich  <andreas+ding@gate450.dyndns.org>  (tiny change)
+2006-04-23  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-google-wash-article): Sync up to new Google
 	HTML.
