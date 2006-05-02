@@ -13,14 +13,15 @@
 	       Info-menu create-image display-graphic-p
 	       display-time-event-handler find-coding-system find-image
 	       image-size image-type-available-p insert-image
-	       line-number-at-pos make-mode-line-mouse-map make-temp-file
-	       propertize put-image replace-regexp-in-string
-	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
-	       sort-coding-systems tool-bar-add-item
-	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
-	       url-generic-parse-url url-http-file-exists-p
-	       url-insert-file-contents vcard-pretty-print w32-focus-frame
-	       w3m-detect-meta-charset w3m-region x-focus-frame))
+	       line-number-at-pos make-mode-line-mouse-map
+	       make-network-process make-temp-file propertize put-image
+	       replace-regexp-in-string rmail-msg-is-pruned
+	       rmail-msg-restore-non-pruned-header sort-coding-systems
+	       tool-bar-add-item tool-bar-add-item-from-menu
+	       tool-bar-local-item-from-menu url-generic-parse-url
+	       url-http-file-exists-p url-insert-file-contents
+	       vcard-pretty-print w32-focus-frame w3m-detect-meta-charset
+	       w3m-region x-focus-frame))
 (maybe-bind '(eudc-protocol
 	      filladapt-mode rmail-insert-mime-forwarded-message-function
 	      w3-meta-charset-content-type-regexp
@@ -50,7 +51,7 @@
 		 events-to-keys font-lock-set-defaults frame-device
 		 get-char-table glyph-height glyph-width ldap-search-entries
 		 mail-aliases-setup make-annotation make-event make-glyph
-		 make-network-process map-extents message-xmas-redefine
+		 map-extents message-xmas-redefine
 		 put-char-table set-extent-property temp-directory
 		 valid-image-instantiator-format-p
 		 w3-coding-system-for-mime-charset w3-do-setup
