@@ -870,8 +870,7 @@ This variable is only used when `gnus-inhibit-mime-unbuttonizing' is nil."
   :group 'gnus-article-mime
   :type '(repeat regexp))
 
-(defcustom gnus-buttonized-mime-types (unless (eq mm-verify-option 'never)
-					'("multipart/signed"))
+(defcustom gnus-buttonized-mime-types nil
   "List of MIME types that should be given buttons when rendered inline.
 If set, this variable overrides `gnus-unbuttonized-mime-types'.
 To see e.g. security buttons you could set this to
