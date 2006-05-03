@@ -4497,8 +4497,10 @@ Deleting parts may malfunction or destroy the article; continue? "))
 	 (def-type (and name (mm-default-file-encoding name))))
     (and def-type (cons def-type 0))))
 
-(defun gnus-mime-view-part-as-type (&optional mime-type)
-  "Choose a MIME media type, and view the part as such."
+(defun gnus-mime-view-part-as-type (&optional mime-type pred)
+  "Choose a MIME media type, and view the part as such.
+If non-nil, PRED is a predicate to use during completion to limit the
+available media-types."
   (interactive)
   (unless mime-type
     (setq mime-type
@@ -4507,7 +4509,7 @@ Deleting parts may malfunction or destroy the article; continue? "))
 	     (format "View as MIME type (default %s): "
 		     (car default))
 	     (mapcar #'list (mailcap-mime-types))
-	     nil nil nil nil
+	     pred nil nil nil
 	     (car default)))))
   (gnus-article-check-buffer)
   (let ((handle (get-text-property (point) 'gnus-data)))
@@ -4707,12 +4709,18 @@ specified charset."
 	 (mm-inlined-types nil)
 	 (mail-parse-charset gnus-newsgroup-charset)
 	 (mail-parse-ignored-charsets
-	  (with-current-buffer gnus-summary-buffer
-	    gnus-newsgroup-ignored-charsets)))
-    (when handle
-      (if (mm-handle-undisplayer handle)
-	  (mm-remove-part handle)
-	(mm-display-part handle)))))
+          (with-current-buffer gnus-summary-buffer
+            gnus-newsgroup-ignored-charsets))
+         (type (mm-handle-media-type handle))
+         (method (mailcap-mime-info type))
+         (mm-enable-external t))
+    (if (not (stringp method))
+	(gnus-mime-view-part-as-type
+	 nil (lambda (type) (stringp (mailcap-mime-info type))))
+      (when handle
+	(if (mm-handle-undisplayer handle)
+	    (mm-remove-part handle)
+	  (mm-display-part handle))))))
 
 (defun gnus-mime-view-part-internally (&optional handle)
   "View the MIME part under point with an internal viewer.
@@ -4727,10 +4735,13 @@ If no internal viewer is available, use an external viewer."
 	  (with-current-buffer gnus-summary-buffer
 	    gnus-newsgroup-ignored-charsets))
 	 (inhibit-read-only t))
-    (when handle
-      (if (mm-handle-undisplayer handle)
-	  (mm-remove-part handle)
-	(mm-display-part handle)))))
+    (if (not (mm-inlinable-p handle))
+        (gnus-mime-view-part-as-type
+         nil (lambda (type) (mm-inlinable-p handle type)))
+      (when handle
+	(if (mm-handle-undisplayer handle)
+	    (mm-remove-part handle)
+	  (mm-display-part handle))))))
 
 (defun gnus-mime-action-on-part (&optional action)
   "Do something with the MIME attachment at \(point\)."
