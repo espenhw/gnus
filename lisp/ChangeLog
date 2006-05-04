@@ -1,3 +1,10 @@
+2006-05-04  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* mm-decode.el (mm-dissect-buffer): Remove spurious double assignment.
+	(mm-copy-to-buffer): Use with-current-buffer.
+	(mm-display-part): Simplify.
+	(mm-inlinable-p): Add optional arg `type'.
+
 2006-05-03  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* gnus-art.el (gnus-mime-view-part-as-type): Add optional PRED
