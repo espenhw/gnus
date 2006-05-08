@@ -1084,9 +1084,15 @@ Use the nov database for the current group if available."
 		(let* ((oldfile (nnml-article-to-file old-number))
 		       (newfile
 			(gnus-replace-in-string
-			 oldfile (concat "\\("
-					 old-number-string
-					 "\\)\\(\\(\\.gz\\)?\\)$")
+			 oldfile
+			 ;; nnml-use-compressed-files might be any string, but
+			 ;; probably it's sufficient to take into account only
+			 ;; "\\.[a-z0-9]+".  Note that we can't only use the
+			 ;; value of nnml-use-compressed-files because old
+			 ;; articles might have been saved with a different
+			 ;; value.
+			 (concat
+			  "\\(" old-number-string "\\)\\(\\(\\.[a-z0-9]+\\)?\\)$")
 			 (concat new-number-string "\\2"))))
 		  (with-current-buffer nntp-server-buffer
 		    (nnmail-find-file oldfile)
