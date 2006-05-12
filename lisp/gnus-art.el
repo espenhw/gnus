@@ -3996,10 +3996,9 @@ commands:
     (setq gnus-article-buffer name)
     (setq gnus-original-article-buffer original)
     (setq gnus-article-mime-handle-alist nil)
-    ;; This might be a variable local to the summary buffer.
-    (unless gnus-single-article-buffer
-      (save-excursion
-	(set-buffer gnus-summary-buffer)
+    (with-current-buffer gnus-summary-buffer
+      ;; This might be a variable local to the summary buffer.
+      (unless gnus-single-article-buffer
 	(setq gnus-article-buffer name)
 	(setq gnus-original-article-buffer original)
 	(gnus-set-global-variables)))

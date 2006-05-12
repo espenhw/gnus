@@ -1,3 +1,16 @@
+2006-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-setup-buffer): Go to summary buffer
+	first to test gnus-single-article-buffer which may be buffer-local.
+
+	* gnus-sum.el (gnus-summary-setup-buffer): Make
+	gnus-single-article-buffer buffer-local and nil in ephemeral
+	group; make gnus-article-buffer, gnus-article-current, and
+	gnus-original-article-buffer always buffer-local.
+	(gnus-summary-exit): Kill article buffer belonging to ephemeral
+	group.
+	(gnus-handle-ephemeral-exit): Don't move to next summary line.
+
 2006-05-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnml.el (nnml-request-compact-group): Compressed files might not

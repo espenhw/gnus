@@ -3352,10 +3352,11 @@ display only a single character."
       (gnus-summary-mode group)
       (when gnus-carpal
 	(gnus-carpal-setup-buffer 'summary))
-      (unless gnus-single-article-buffer
-	(make-local-variable 'gnus-article-buffer)
-	(make-local-variable 'gnus-article-current)
-	(make-local-variable 'gnus-original-article-buffer))
+      (when (gnus-group-quit-config group)
+	(set (make-local-variable 'gnus-single-article-buffer) nil))
+      (make-local-variable 'gnus-article-buffer)
+      (make-local-variable 'gnus-article-current)
+      (make-local-variable 'gnus-original-article-buffer)
       (setq gnus-newsgroup-name group)
       ;; Set any local variables in the group parameters.
       (gnus-summary-set-local-parameters gnus-newsgroup-name)
@@ -6843,6 +6844,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
     (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
+      (gnus-kill-buffer gnus-article-buffer)
       (gnus-kill-buffer gnus-original-article-buffer)
       (setq gnus-article-current nil))
     (when gnus-use-cache
@@ -6981,19 +6983,11 @@ The state which existed when entering the ephemeral is reset."
 	     (gnus-set-global-variables))))
     (if (or (eq (cdr quit-config) 'article)
 	    (eq (cdr quit-config) 'pick))
-	(progn
-	  ;; The current article may be from the ephemeral group
-	  ;; thus it is best that we reload this article
-	  ;;
-	  ;; If we're exiting from a large digest, this can be
-	  ;; extremely slow.  So, it's better not to reload it. -- jh.
-	  ;;(gnus-summary-show-article)
-	  (if (and (boundp 'gnus-pick-mode) (symbol-value 'gnus-pick-mode))
-	      (gnus-configure-windows 'pick 'force)
-	    (gnus-configure-windows (cdr quit-config) 'force)))
+	(if (and (boundp 'gnus-pick-mode) (symbol-value 'gnus-pick-mode))
+	    (gnus-configure-windows 'pick 'force)
+	  (gnus-configure-windows (cdr quit-config) 'force))
       (gnus-configure-windows (cdr quit-config) 'force))
     (when (eq major-mode 'gnus-summary-mode)
-      (gnus-summary-next-subject 1 nil t)
       (gnus-summary-recenter)
       (gnus-summary-position-point))))
 
