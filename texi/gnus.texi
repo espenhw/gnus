@@ -26914,6 +26914,10 @@ though it is not quoted in any way.  The variable
 @code{gnus-cite-unsightly-citation-regexp} matches the start of these
 citations.
 
+The new command @kbd{W Y f}
+(@code{gnus-article-outlook-deuglify-article}) allows deuglifying broken
+Outlook (Express) articles.
+
 @item
 @code{gnus-article-skip-boring}
 
@@ -26927,7 +26931,8 @@ consist of a little new content at the top with a long, untrimmed
 message cited below.
 
 @item
-Smileys (@samp{:-)}, @samp{;-)} etc) are now iconized for Emacs too.
+Smileys (@samp{:-)}, @samp{;-)} etc) are now displayed graphically in
+Emacs too.
 
 Put @code{(setq gnus-treat-display-smileys nil)} in @file{~/.gnus.el} to
 disable it.
@@ -26953,17 +26958,7 @@ recipient's name or the group name posting to for @acronym{NNTP}
 groups.
 
 @item
-@file{deuglify.el} (@code{gnus-article-outlook-deuglify-article})
-
-A new file from Raymond Scholz @email{rscholz@@zonix.de} for deuglifying
-broken Outlook (Express) articles.
-
-@item
-Externalizing and deleting of attachments.
-
-If @code{gnus-gcc-externalize-attachments} or
-@code{message-fcc-externalize-attachments} is non-@code{nil}, attach
-local files as external parts.
+Deleting of attachments.
 
 The command @code{gnus-mime-save-part-and-strip} (bound to @kbd{C-o}
 on @acronym{MIME} buttons) saves a part and replaces the part with an
@@ -27036,6 +27031,13 @@ the nnml back end allows compressed message files.
 @item
 The new option @code{gnus-gcc-mark-as-read} automatically marks
 Gcc articles as read.
+
+@item
+Externalizing of attachments
+
+If @code{gnus-gcc-externalize-attachments} or
+@code{message-fcc-externalize-attachments} is non-@code{nil}, attach
+local files as external parts.
 
 @item
 The envelope sender address can be customized when using Sendmail.
@@ -27175,7 +27177,8 @@ This change was made to avoid conflict with the standard binding of
 @code{back-to-indentation}, which is also useful in message mode.
 
 @item
-The default for @code{message-forward-show-mml} changed to symbol @code{best}.
+The default for @code{message-forward-show-mml} changed to the symbol
+@code{best}.
 
 The behavior for the @code{best} value is to show @acronym{MML} (i.e.,
 convert to @acronym{MIME}) when appropriate.  @acronym{MML} will not be
