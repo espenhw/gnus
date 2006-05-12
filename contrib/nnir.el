@@ -1495,7 +1495,7 @@ form 'backend:name'."
     (cond ((and method (assq key (cddr method)))
 	   (nth 1 (assq key (cddr method))))
 	  ((and nnir-mail-backend
-		(gnus-method-equal method nnir-mail-backend))
+		(gnus-server-equal method nnir-mail-backend))
 	   (symbol-value key))
 	  ((null nnir-mail-backend)
 	   (symbol-value key))
