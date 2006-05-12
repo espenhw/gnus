@@ -1,6 +1,10 @@
+2006-05-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Oort Gnus): Reorder entries in sections.
+
 2006-04-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Spam Package Introduction): Fix spam menu and links. 
+	* gnus.texi (Spam Package Introduction): Fix spam menu and links.
 
 2006-04-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
