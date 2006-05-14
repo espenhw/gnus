@@ -944,11 +944,17 @@ Emacs for Heathens
 @chapter Starting Gnus
 @cindex starting up
 
+If you are haven't used Emacs much before using Gnus, read @ref{Emacs
+for Heathens} first.
+
 @kindex M-x gnus
 @findex gnus
 If your system administrator has set things up properly, starting Gnus
 and reading news is extremely easy---you just type @kbd{M-x gnus} in
-your Emacs.
+your Emacs.  If not, you should customize the variable
+@code{gnus-select-method} as described in @ref{Finding the News}.  For a
+minimal setup for posting should also customize the variables
+@code{user-full-name} and @code{user-mail-address}.
 
 @findex gnus-other-frame
 @kindex M-x gnus-other-frame
@@ -1727,6 +1733,15 @@ long as Gnus is active.
 * Group Highlighting::          Having nice colors in the group buffer.
 @end menu
 
+You can customize the Group Mode tool bar, see @kbd{M-x
+customize-apropos RET gnus-group-tool-bar}.  This feature is only
+available in Emacs.
+
+The tool bar icons are now (de)activated correctly depending on the
+cursor position.  Therefore, moving around in the Group Buffer is
+slower.  You can disable this via the variable
+@code{gnus-group-update-tool-bar}.  Its default value depends on your
+Emacs version.
 
 @node Group Line Specification
 @subsection Group Line Specification
@@ -4516,6 +4531,10 @@ The most common way to a summary buffer is to select a group from the
 group buffer (@pxref{Selecting a Group}).
 
 You can have as many summary buffers open as you wish.
+
+You can customize the Summary Mode tool bar, see @kbd{M-x
+customize-apropos RET gnus-summary-tool-bar}.  This feature is only
+available in Emacs.
 
 @kindex v (Summary)
 @cindex keys, reserved for users (Summary)
@@ -12172,7 +12191,8 @@ So here's a new example:
 The @samp{nnml:.*} rule means that you use the @code{To} address as the
 @code{From} address in all your outgoing replies, which might be handy
 if you fill many roles.
-
+You may also use @code{message-alternative-emails} instead.
+@xref{Message Headers, ,Message Headers, message, Message Manual}.
 
 @node Drafts
 @section Drafts
