@@ -4250,7 +4250,7 @@ General format specifiers can also be used.  See Info node
   gnus-mime-button-menu gnus-mime-button-map "MIME button menu."
   `("MIME Part"
     ,@(mapcar (lambda (c)
-		(vector (caddr c) (car c) :enable t))
+		(vector (caddr c) (car c) :active t))
 	      gnus-mime-button-commands)))
 
 (defun gnus-mime-button-menu (event prefix)
@@ -7578,7 +7578,7 @@ For example:
     ,@(delq nil
 	    (mapcar (lambda (c)
 		      (unless (eq (car c) 'undefined)
-			(vector (caddr c) (car c) :enable t)))
+			(vector (caddr c) (car c) :active t)))
 		    gnus-mime-security-button-commands))))
 
 (defun gnus-mime-security-button-menu (event prefix)

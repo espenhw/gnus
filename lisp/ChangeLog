@@ -1,3 +1,7 @@
+2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (easy-menu-define): Use :active instead of :enable.
+
 2006-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-setup-buffer): Go to summary buffer
