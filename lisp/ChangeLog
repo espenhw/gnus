@@ -1,3 +1,16 @@
+2006-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-save-article-coding-system): New
+	variable.
+	(gnus-summary-save-article): Add optional `decode' argument.  If
+	it is set and gnus-summary-save-article-coding-system is non-nil,
+	save decoded article.
+	(gnus-summary-write-article-file): Save decoded article if
+	gnus-summary-save-article-coding-system is non-nil.
+
+	* ecomplete.el (ecomplete-database-file-coding-system): Fix custom
+	type.
+
 2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (easy-menu-define): Use :active instead of :enable.

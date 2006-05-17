@@ -39,7 +39,7 @@
 
 (defcustom ecomplete-database-file-coding-system 'iso-2022-7bit
   "Coding system used for writing the ecomplete database file."
-  :type '(repeat (symbol :tag "Coding system"))
+  :type '(symbol :tag "Coding system")
   :group 'ecomplete)
 
 ;;; Internal variables.

@@ -11227,7 +11227,18 @@ Argument REVERSE means reverse order."
 
 ;; Summary saving commands.
 
-(defun gnus-summary-save-article (&optional n not-saved)
+(defcustom gnus-summary-save-article-coding-system nil
+  "Coding system used to save a decoded article to a file.
+This is used when the `gnus-summary-write-article-file' command is run.
+The recommended coding systems include `utf-8', `iso-2022-7bit', and so
+forth.  Note that buttonized MIME parts will be lost in a saved file.
+If it is nil, raw articles will be saved."
+  :type '(choice :format "%{%t%}:\n %[Value Menu%] %v"
+		 (const :tag "Save raw articles")
+		 (symbol :tag "Coding system"))
+  :group 'gnus-article-saving)
+
+(defun gnus-summary-save-article (&optional n not-saved decode)
   "Save the current article using the default saver function.
 If N is a positive number, save the N next articles.
 If N is a negative number, save the N previous articles.
@@ -11235,6 +11246,8 @@ If N is nil and any articles have been marked with the process mark,
 save those articles instead.
 The variable `gnus-default-article-saver' specifies the saver function."
   (interactive "P")
+  (unless gnus-summary-save-article-coding-system
+    (setq decode nil))
   (let* ((articles (gnus-summary-work-articles n))
 	 (save-buffer (save-excursion
 			(nnheader-set-temp-buffer " *Gnus Save*")))
@@ -11249,14 +11262,26 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	    (gnus-message 1 "Article %d is unsaveable" article))
 	;; This is a real article.
 	(save-window-excursion
-	  (let ((gnus-display-mime-function nil)
-		(gnus-article-prepare-hook nil))
+	  (let ((gnus-display-mime-function (when decode
+					      gnus-display-mime-function))
+		(gnus-article-prepare-hook (when decode
+					     gnus-article-prepare-hook)))
 	    (gnus-summary-select-article t nil nil article)))
 	(save-excursion
 	  (set-buffer save-buffer)
 	  (erase-buffer)
-	  (insert-buffer-substring gnus-original-article-buffer))
-	(setq file (gnus-article-save save-buffer file num))
+	  (if decode
+	      (progn
+		(insert "X-Coding-System: -*- coding: "
+			(symbol-name gnus-summary-save-article-coding-system)
+			"; -*-\n")
+		(insert-buffer-substring gnus-article-buffer))
+	    (insert-buffer-substring gnus-original-article-buffer)))
+	(let ((mm-text-coding-system-for-write
+	       (if decode
+		   gnus-summary-save-article-coding-system
+		 mm-text-coding-system-for-write)))
+	  (setq file (gnus-article-save save-buffer file num)))
 	(gnus-summary-remove-process-mark article)
 	(unless not-saved
 	  (gnus-summary-set-saved-mark article))))
@@ -11324,7 +11349,7 @@ save those articles instead."
   (interactive "P")
   (require 'gnus-art)
   (let ((gnus-default-article-saver 'gnus-summary-write-to-file))
-    (gnus-summary-save-article arg)))
+    (gnus-summary-save-article arg nil t)))
 
 (defun gnus-summary-save-article-body-file (&optional arg)
   "Append the current article body to a file.
