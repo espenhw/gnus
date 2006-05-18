@@ -1,3 +1,10 @@
+2006-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gmm-utils.el (wid-edit): Require.
+	(defun-gmm): Renamed from `gmm-defun-compat'.
+	(gmm-image-search-load-path): Use it.
+	(gmm-image-load-path-for-library): Use it.  Sync with `mh-compat.el'.
+
 2006-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-save-article-coding-system): New
