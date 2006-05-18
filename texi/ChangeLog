@@ -5389,6 +5389,7 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 ;; Local Variables:
 ;; coding: iso-2022-7bit
+;; fill-column: 79
 ;; End:
 
 ;;; arch-tag: b5708f36-be16-423b-bcca-f70f5fb4781a

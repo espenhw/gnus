@@ -695,6 +695,7 @@
 
 ;; Local Variables:
 ;; coding: iso-2022-7bit
+;; fill-column: 79
 ;; End:
 
 ;;; arch-tag: 60301ba8-b152-41b3-8fb2-173bba77f2a8
