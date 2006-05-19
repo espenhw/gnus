@@ -11308,7 +11308,7 @@ If HEADERS (the symbolic prefix), include the headers, too."
       (gnus-configure-windows 'pipe))))
 
 (defun gnus-summary-save-article-mail (&optional arg)
-  "Append the current article to an mail file.
+  "Append the current article to a Unix mail box file.
 If N is a positive number, save the N next articles.
 If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
