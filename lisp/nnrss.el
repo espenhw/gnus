@@ -576,7 +576,7 @@ which RSS 2.0 allows."
 	  (insert-file-contents file)
 	  (eval-region (point-min) (point-max))))
       (dolist (e nnrss-group-data)
-	(puthash (or (nth 2 e) (nth 6 e)) t nnrss-group-hashtb)
+	(puthash (nth 9 e) t nnrss-group-hashtb)
 	(when (and (car e) (> nnrss-group-min (car e)))
 	  (setq nnrss-group-min (car e)))
 	(when (and (car e) (< nnrss-group-max (car e)))
@@ -690,15 +690,12 @@ which RSS 2.0 allows."
     (dolist (item (nreverse (nnrss-find-el (intern (concat rss-ns "item")) xml)))
       (when (and (listp item)
 		 (string= (concat rss-ns "item") (car item))
-		 (if (setq url (nnrss-decode-entities-string
-				(nnrss-node-text rss-ns 'link (cddr item))))
-		     (not (gethash url nnrss-group-hashtb))
-		   (setq extra (or (nnrss-node-text content-ns 'encoded item)
-				   (nnrss-node-text rss-ns 'description item)))
-		   (not (gethash extra nnrss-group-hashtb))))
+		 (progn (setq hash-index (md5 (gnus-prin1-to-string item)))
+			(not (gethash hash-index nnrss-group-hashtb))))
 	(setq subject (nnrss-node-text rss-ns 'title item))
-	(setq extra (or extra
-			(nnrss-node-text content-ns 'encoded item)
+	(setq url (nnrss-decode-entities-string
+		   (nnrss-node-text rss-ns 'link (cddr item))))
+	(setq extra (or (nnrss-node-text content-ns 'encoded item)
 			(nnrss-node-text rss-ns 'description item)))
 	(if (setq feed-subject (nnrss-node-text dc-ns 'subject item))
 	    (setq extra (concat feed-subject "<br /><br />" extra)))
@@ -740,9 +737,10 @@ which RSS 2.0 allows."
 	  date
 	  (and extra (nnrss-decode-entities-string extra))
 	  enclosure
-	  comments)
+	  comments
+	  hash-index)
 	 nnrss-group-data)
-	(puthash (or url extra) t nnrss-group-hashtb)
+	(puthash hash-index t nnrss-group-hashtb)
 	(setq changed t))
       (setq extra nil))
     (when changed

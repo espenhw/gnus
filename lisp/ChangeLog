@@ -1,3 +1,9 @@
+2006-05-23  Michael Cadilhac  <michael.cadilhac@lrde.org>
+
+	* nnrss.el (nnrss-check-group): Use the md5sum of the whole RSS item as
+	its hash index.  Store this hash in `nnrss-group-data'.
+	(nnrss-read-group-data): Update accordingly.
+
 2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-alist): Improve gnus-button-handle-symbol
