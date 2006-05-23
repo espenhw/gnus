@@ -2708,7 +2708,6 @@ Recurse into multiparts."
 			      (gnus-article-browse-html-parts handle))))))))
     showed))
 
-;; TODO: Key binding
 (defun gnus-article-browse-html-article ()
   "View \"text/html\" parts of the current article with a WWW browser."
   (interactive)

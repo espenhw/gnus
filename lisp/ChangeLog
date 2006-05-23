@@ -8,6 +8,8 @@
 	* gnus-sum.el (gnus-summary-mime-map): Add
 	gnus-article-browse-html-article.
 
+	* gnus-art.el (gnus-article-browse-html-article): Remove comment.
+
 2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-save-article-coding-system): Offer some
