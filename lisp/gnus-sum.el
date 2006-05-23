@@ -2242,6 +2242,7 @@ increase the score of each group you read."
 	       ,@(if (featurep 'xemacs) nil
 		   '(:help "Encrypt the message body on disk"))]
 	       ["View part externally" gnus-article-view-part-externally t]
+	       ["View HTML parts in browser" gnus-article-browse-html-article t]
 	       ["View part with charset..." gnus-article-view-part-as-charset t]
 	       ["Copy part" gnus-article-copy-part t]
 	       ["Save part..." gnus-article-save-part t]

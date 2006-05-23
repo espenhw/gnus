@@ -1,3 +1,8 @@
+2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add
+	gnus-article-browse-html-article.
+
 2006-05-23  Hynek Schlawack  <hynek@ularx.de>
 
 	* gnus-sum.el (gnus-summary-mime-map): Add
