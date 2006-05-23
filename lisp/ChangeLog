@@ -1,3 +1,8 @@
+2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-save-article-coding-system): Offer some
+	suitable coding systems in customize.
+
 2006-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-save-article-mail): Clarify doc string.

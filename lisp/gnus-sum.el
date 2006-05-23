@@ -11234,7 +11234,10 @@ The recommended coding systems include `utf-8', `iso-2022-7bit', and so
 forth.  Note that buttonized MIME parts will be lost in a saved file.
 If it is nil, raw articles will be saved."
   :type '(choice :format "%{%t%}:\n %[Value Menu%] %v"
-		 (const :tag "Save raw articles")
+		 (const :tag "Save raw articles" nil)
+		 (const :tag "UTF-8" utf-8)
+		 (const :tag "iso-2022-7bit" iso-2022-7bit)
+		 (const :tag "Emacs internal" emacs-mule)
 		 (symbol :tag "Coding system"))
   :group 'gnus-article-saving)
 
