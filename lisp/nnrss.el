@@ -658,7 +658,8 @@ which RSS 2.0 allows."
 
 (defun nnrss-check-group (group server)
   (let (file xml subject url extra changed author date feed-subject
-	     enclosure comments rss-ns rdf-ns content-ns dc-ns)
+	     enclosure comments rss-ns rdf-ns content-ns dc-ns
+	     hash-index)
     (if (and nnrss-use-local
 	     (file-exists-p (setq file (expand-file-name
 					(nnrss-translate-file-chars

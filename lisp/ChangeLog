@@ -1,3 +1,7 @@
+2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnrss.el (nnrss-check-group): Bind hash-index.
+
 2006-05-23  Michael Cadilhac  <michael.cadilhac@lrde.org>
 
 	* nnrss.el (nnrss-check-group): Use the md5sum of the whole RSS item as
