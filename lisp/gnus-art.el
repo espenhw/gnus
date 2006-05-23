@@ -6700,7 +6700,7 @@ positives are possible."
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
     ("`\\([a-z][-a-z0-9]+\\.el\\)'"
      1 (>= gnus-button-emacs-level 8) gnus-button-handle-library 1)
-    ("`\\([a-z][a-z0-9]+-[a-z]+-[-a-z]+\\|\\(gnus\\|message\\)-[-a-z]+\\)'"
+    ("`\\([a-z][a-z0-9]+-[a-z0-9]+-[-a-z0-9]*[a-z]\\|\\(gnus\\|message\\)-[-a-z]+\\)'"
      0 (>= gnus-button-emacs-level 8) gnus-button-handle-symbol 1)
     ("`\\([a-z][a-z0-9]+-[a-z]+\\)'"
      0 (>= gnus-button-emacs-level 9) gnus-button-handle-symbol 1)
