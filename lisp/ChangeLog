@@ -1,3 +1,25 @@
+2006-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-default-article-saver): Doc fix.
+	(gnus-article-save-coding-system): Move from gnus-sum.el, rename
+	from gnus-summary-save-article-coding-system, and default to a
+	certain coding system.
+	(gnus-output-to-file): Add coding cookie and encode text according
+	to gnus-article-save-coding-system; don't use mm-append-to-file.
+
+	* gnus-sum.el (gnus-summary-save-article-coding-system): Move to
+	gnus-art.el and rename to gnus-article-save-coding-system.
+	(gnus-summary-save-article): Require gnus-art; don't show all
+	headers if it decodes articles; don't add coding cookie here;
+	don't bind mm-text-coding-system-for-write.
+	(gnus-summary-save-article-file): Save decoded articles.
+	(gnus-summary-write-article-file): When saving many files, use
+	gnus-summary-write-to-file first and gnus-summary-save-in-file
+	thereafter unless gnus-prompt-before-saving is always.
+	(gnus-summary-save-article-body-file): Save decoded articles.
+
+	* lpath.el: Fbind select-safe-coding-system for XEmacs.
+
 2006-05-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnrss.el (nnrss-check-group): Bind hash-index.

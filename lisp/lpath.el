@@ -37,7 +37,8 @@
 		     mail-abbrevs-setup mouse-minibuffer-check mouse-movement-p
 		     mouse-scroll-subr overlay-lists posn-point posn-window
 		     read-event set-buffer-multibyte
-		     select-frame-set-input-focus track-mouse window-edges))
+		     select-frame-set-input-focus select-safe-coding-system
+		     track-mouse window-edges))
       (maybe-bind '(adaptive-fill-first-line-regexp
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment cursor-in-non-selected-windows

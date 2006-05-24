@@ -529,8 +529,8 @@ will be kept while the rest will be deleted before saving."
 
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
   "A function to save articles in your favourite format.
-The function must be interactively callable (in other words, it must
-be an Emacs command).
+The function will be called by way of the `gnus-summary-save-article'
+command, and friends such as `gnus-summary-save-article-rmail'.
 
 Gnus provides the following functions:
 
@@ -550,6 +550,44 @@ Gnus provides the following functions:
 		(function-item gnus-summary-save-in-vm)
 		(function-item gnus-summary-write-to-file)
 		(function)))
+
+(defcustom gnus-article-save-coding-system
+  (or (mm-coding-system-p 'utf-8)
+      (mm-coding-system-p 'iso-2022-7bit)
+      (mm-coding-system-p 'emacs-mule)
+      (mm-coding-system-p 'escape-quoted))
+  "Coding system used to save decoded articles to a file.
+
+The recommended coding systems are `utf-8', `iso-2022-7bit' and so on,
+which can safely encode any characters in text.  This is used by the
+commands including:
+
+* gnus-summary-save-article-file
+* gnus-summary-save-article-body-file
+* gnus-summary-write-article-file
+
+and the functions to which you may set `gnus-default-article-saver':
+
+* gnus-summary-save-in-file
+* gnus-summary-save-body-in-file
+* gnus-summary-write-to-file
+
+Those commands and functions save just text displayed in the article
+buffer to a file if the value of this variable is non-nil.  Note that
+buttonized MIME parts will be lost in a saved file in that case.
+Otherwise, raw articles will be saved."
+  :group 'gnus-article-saving
+  :type `(choice
+	  :format "%{%t%}:\n %[Value Menu%] %v"
+	  (const :tag "Save raw articles" nil)
+	  ,@(delq nil
+		  (mapcar
+		   (lambda (arg) (if (mm-coding-system-p (nth 3 arg)) arg))
+		   '((const :tag "UTF-8" utf-8)
+		     (const :tag "iso-2022-7bit" iso-2022-7bit)
+		     (const :tag "Emacs internal" emacs-mule)
+		     (const :tag "escape-quoted" escape-quoted))))
+	  (symbol :tag "Coding system")))
 
 (defcustom gnus-rmail-save-name 'gnus-plain-save-name
   "A function generating a file name to save articles in Rmail format.
@@ -5445,17 +5483,55 @@ Provided for backwards compatibility."
 ;;; Article savers.
 
 (defun gnus-output-to-file (file-name)
-  "Append the current article to a file named FILE-NAME."
-  (let ((artbuf (current-buffer)))
+  "Append the current article to a file named FILE-NAME.
+If `gnus-article-save-coding-system' is non-nil, it is used to encode
+text and used as the value of the coding cookie which is added to the
+top of a file.  Otherwise, this function saves a raw article without
+the coding cookie."
+  (let* ((artbuf (current-buffer))
+	 (file-name-coding-system nnmail-pathname-coding-system)
+	 (coding gnus-article-save-coding-system)
+	 (coding-system-for-read (if coding
+				     nil ;; Rely on the coding cookie.
+				   mm-text-coding-system))
+	 (coding-system-for-write (or coding
+				      mm-text-coding-system-for-write
+				      mm-text-coding-system))
+	 (exists (file-exists-p file-name)))
     (with-temp-buffer
+      (when exists
+	(insert-file-contents file-name)
+	(goto-char (point-min))
+	;; Remove the existing coding cookie.
+	(when (looking-at "X-Gnus-Coding-System: .+\n\n")
+	  (delete-region (match-beginning 0) (match-end 0))))
+      (goto-char (point-max))
       (insert-buffer-substring artbuf)
       ;; Append newline at end of the buffer as separator, and then
       ;; save it to file.
       (goto-char (point-max))
       (insert "\n")
-      (let ((file-name-coding-system nnmail-pathname-coding-system))
-	(mm-append-to-file (point-min) (point-max) file-name))
-      t)))
+      (when coding
+	;; If the coding system is not suitable to encode the text,
+	;; ask a user for a proper one.
+	(when (fboundp 'select-safe-coding-system)
+	  (setq coding (coding-system-base
+			(save-window-excursion
+			  (select-safe-coding-system (point-min) (point-max)
+						     coding))))
+	  (setq coding-system-for-write
+		(or (cdr (assq coding '((mule-utf-8 . utf-8))))
+		    coding)))
+	(goto-char (point-min))
+	;; Add the coding cookie.
+	(insert (format "X-Gnus-Coding-System: -*- coding: %s; -*-\n\n"
+			coding-system-for-write)))
+      (if exists
+	  (progn
+	    (write-region (point-min) (point-max) file-name nil 'no-message)
+	    (message "Appended to %s" file-name))
+	(write-region (point-min) (point-max) file-name))))
+  t)
 
 (defun gnus-narrow-to-page (&optional arg)
   "Narrow the article buffer to a page.
