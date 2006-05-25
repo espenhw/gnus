@@ -540,7 +540,8 @@ Gnus provides the following functions:
 * gnus-summary-save-in-file (article format)
 * gnus-summary-save-body-in-file (article body)
 * gnus-summary-save-in-vm (use VM's folder format)
-* gnus-summary-write-to-file (article format -- overwrite)."
+* gnus-summary-write-to-file (article format -- overwrite)
+* gnus-summary-write-body-to-file (article body -- overwrite)."
   :group 'gnus-article-saving
   :type '(radio (function-item gnus-summary-save-in-rmail)
 		(function-item gnus-summary-save-in-mail)
@@ -549,13 +550,14 @@ Gnus provides the following functions:
 		(function-item gnus-summary-save-body-in-file)
 		(function-item gnus-summary-save-in-vm)
 		(function-item gnus-summary-write-to-file)
+		(function-item gnus-summary-write-body-to-file)
 		(function)))
 
 (defcustom gnus-article-save-coding-system
-  (or (mm-coding-system-p 'utf-8)
-      (mm-coding-system-p 'iso-2022-7bit)
-      (mm-coding-system-p 'emacs-mule)
-      (mm-coding-system-p 'escape-quoted))
+  (or (and (mm-coding-system-p 'utf-8) 'utf-8)
+      (and (mm-coding-system-p 'iso-2022-7bit) 'iso-2022-7bit)
+      (and (mm-coding-system-p 'emacs-mule) 'emacs-mule)
+      (and (mm-coding-system-p 'escape-quoted) 'escape-quoted))
   "Coding system used to save decoded articles to a file.
 
 The recommended coding systems are `utf-8', `iso-2022-7bit' and so on,
@@ -565,12 +567,14 @@ commands including:
 * gnus-summary-save-article-file
 * gnus-summary-save-article-body-file
 * gnus-summary-write-article-file
+* gnus-summary-write-article-body-file
 
 and the functions to which you may set `gnus-default-article-saver':
 
 * gnus-summary-save-in-file
 * gnus-summary-save-body-in-file
 * gnus-summary-write-to-file
+* gnus-summary-write-body-to-file
 
 Those commands and functions save just text displayed in the article
 buffer to a file if the value of this variable is non-nil.  Note that
@@ -3487,7 +3491,8 @@ This format is defined by the `gnus-article-time-format' variable."
 	(funcall gnus-default-article-saver filename)))))
 
 (defun gnus-read-save-file-name (prompt &optional filename
-					function group headers variable)
+					function group headers variable
+					dir-var)
   (let ((default-name
 	  (funcall function group headers (symbol-value variable)))
 	result)
@@ -3500,6 +3505,10 @@ This format is defined by the `gnus-article-time-format' variable."
 	     default-name)
 	    (filename filename)
 	    (t
+	     (when (symbol-value dir-var)
+	       (setq default-name (expand-file-name
+				   (file-name-nondirectory default-name)
+				   (symbol-value dir-var))))
 	     (let* ((split-name (gnus-get-split-value gnus-split-methods))
 		    (prompt
 		     (format prompt
@@ -3564,7 +3573,11 @@ This format is defined by the `gnus-article-time-format' variable."
 	       ;; Possibly translate some characters.
 	       (nnheader-translate-file-chars file))))))
     (gnus-make-directory (file-name-directory result))
-    (set variable result)))
+    (when variable
+      (set variable result))
+    (when dir-var
+      (set dir-var (file-name-directory result)))
+    result))
 
 (defun gnus-article-archive-name (group)
   "Return the first instance of an \"Archive-name\" in the current buffer."
@@ -3634,9 +3647,13 @@ Directory to save to is default to `gnus-article-save-directory'."
   "Write this article to a file, overwriting it if the file exists.
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
-  (gnus-summary-save-in-file nil t))
+  (setq filename (gnus-read-save-file-name
+		  "Save %s in file" filename
+		  gnus-file-save-name gnus-newsgroup-name
+		  gnus-current-headers nil 'gnus-newsgroup-last-directory))
+  (gnus-summary-save-in-file filename t))
 
-(defun gnus-summary-save-body-in-file (&optional filename)
+(defun gnus-summary-save-body-in-file (&optional filename overwrite)
   "Append this article body to a file.
 Optional argument FILENAME specifies file name.
 The directory to save in defaults to `gnus-article-save-directory'."
@@ -3650,8 +3667,21 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(widen)
 	(when (article-goto-body)
 	  (narrow-to-region (point) (point-max)))
+	(when (and overwrite
+		   (file-exists-p filename))
+	  (delete-file filename))
 	(gnus-output-to-file filename))))
   filename)
+
+(defun gnus-summary-write-body-to-file (&optional filename)
+  "Write this article body to a file, overwriting it if the file exists.
+Optional argument FILENAME specifies file name.
+The directory to save in defaults to `gnus-article-save-directory'."
+  (setq filename (gnus-read-save-file-name
+		  "Save %s body in file" filename
+		  gnus-file-save-name gnus-newsgroup-name
+		  gnus-current-headers nil 'gnus-newsgroup-last-directory))
+  (gnus-summary-save-body-in-file filename t))
 
 (defun gnus-summary-save-in-pipe (&optional command)
   "Pipe this article to subprocess."

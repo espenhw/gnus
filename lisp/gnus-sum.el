@@ -1322,6 +1322,7 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-last-mail nil)
 (defvar gnus-newsgroup-last-folder nil)
 (defvar gnus-newsgroup-last-file nil)
+(defvar gnus-newsgroup-last-directory nil)
 (defvar gnus-newsgroup-auto-expire nil)
 (defvar gnus-newsgroup-active nil)
 
@@ -1437,6 +1438,7 @@ This list will always be a subset of gnus-newsgroup-undownloaded.")
     gnus-newsgroup-begin gnus-newsgroup-end
     gnus-newsgroup-last-rmail gnus-newsgroup-last-mail
     gnus-newsgroup-last-folder gnus-newsgroup-last-file
+    gnus-newsgroup-last-directory
     gnus-newsgroup-auto-expire gnus-newsgroup-unreads
     gnus-newsgroup-unselected gnus-newsgroup-marked
     gnus-newsgroup-spam-marked
@@ -2073,6 +2075,7 @@ increase the score of each group you read."
   "r" gnus-summary-save-article-rmail
   "f" gnus-summary-save-article-file
   "b" gnus-summary-save-article-body-file
+  "B" gnus-summary-write-article-body-file
   "h" gnus-summary-save-article-folder
   "v" gnus-summary-save-article-vm
   "p" gnus-summary-pipe-output
@@ -11229,7 +11232,7 @@ Argument REVERSE means reverse order."
 
 ;; Summary saving commands.
 
-(defun gnus-summary-save-article (&optional n not-saved decode)
+(defun gnus-summary-save-article (&optional n not-saved)
   "Save the current article using the default saver function.
 If N is a positive number, save the N next articles.
 If N is a negative number, save the N previous articles.
@@ -11238,16 +11241,30 @@ save those articles instead.
 The variable `gnus-default-article-saver' specifies the saver function.
 
 If the optional second argument NOT-SAVED is non-nil, articles saved
-will not be marked as saved.  If the optional third argument DECODE is
-non-nil, articles will be decoded before saving."
+will not be marked as saved."
   (interactive "P")
   (require 'gnus-art)
-  (unless gnus-article-save-coding-system
-    (setq decode nil))
   (let* ((articles (gnus-summary-work-articles n))
 	 (save-buffer (save-excursion
 			(nnheader-set-temp-buffer " *Gnus Save*")))
 	 (num (length articles))
+	 (decode (and gnus-article-save-coding-system
+		      (memq gnus-default-article-saver
+			    '(gnus-summary-save-in-file
+			      gnus-summary-save-body-in-file
+			      gnus-summary-write-to-file
+			      gnus-summary-write-body-to-file))))
+	 (gnus-default-article-saver gnus-default-article-saver)
+	 ;; When saving many files using `gnus-summary-write-to-file'
+	 ;; or `gnus-summary-write-body-to-file', use it first and use
+	 ;; `gnus-summary-save-in-file' or `gnus-summary-save-body-in-file'
+	 ;; thereafter unless `gnus-prompt-before-saving' is `always'.
+	 (saver2 (unless (eq gnus-prompt-before-saving 'always)
+		   (cdr (assq gnus-default-article-saver
+			      '((gnus-summary-write-to-file
+				 . gnus-summary-save-in-file)
+				(gnus-summary-write-body-to-file
+				 . gnus-summary-save-body-in-file))))))
 	 header file)
     (dolist (article articles)
       (setq header (gnus-summary-article-header article))
@@ -11262,7 +11279,8 @@ non-nil, articles will be decoded before saving."
 					      gnus-display-mime-function))
 		(gnus-article-prepare-hook (when decode
 					     gnus-article-prepare-hook)))
-	    (gnus-summary-select-article (not decode) nil nil article)))
+	    (gnus-summary-select-article (not decode) nil nil article)
+	    (gnus-summary-goto-subject article)))
 	(save-excursion
 	  (set-buffer save-buffer)
 	  (erase-buffer)
@@ -11272,7 +11290,10 @@ non-nil, articles will be decoded before saving."
 	(setq file (gnus-article-save save-buffer file num))
 	(gnus-summary-remove-process-mark article)
 	(unless not-saved
-	  (gnus-summary-set-saved-mark article))))
+	  (gnus-summary-set-saved-mark article)))
+      (when saver2
+	(setq gnus-default-article-saver saver2
+	      saver2 nil)))
     (gnus-kill-buffer save-buffer)
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)
@@ -11326,7 +11347,7 @@ save those articles instead."
   (interactive "P")
   (require 'gnus-art)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-file))
-    (gnus-summary-save-article arg nil t)))
+    (gnus-summary-save-article arg)))
 
 (defun gnus-summary-write-article-file (&optional arg)
   "Write the current article to a file, deleting the previous file.
@@ -11336,18 +11357,8 @@ If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
   (require 'gnus-art)
-  ;; When saving many files, use `gnus-summary-write-to-file' first
-  ;; and `gnus-summary-save-in-file' thereafter unless
-  ;; `gnus-prompt-before-saving' is `always'.
-  (let ((gnus-default-article-saver
-	 (if (eq gnus-prompt-before-saving 'always)
-	     'gnus-summary-write-to-file
-	   (lambda (&rest args)
-	     (prog1
-		 (apply 'gnus-summary-write-to-file args)
-	       (setq gnus-default-article-saver
-		     'gnus-summary-save-in-file))))))
-    (gnus-summary-save-article arg nil t)))
+  (let ((gnus-default-article-saver 'gnus-summary-write-to-file))
+    (gnus-summary-save-article arg)))
 
 (defun gnus-summary-save-article-body-file (&optional arg)
   "Append the current article body to a file.
@@ -11358,7 +11369,18 @@ save those articles instead."
   (interactive "P")
   (require 'gnus-art)
   (let ((gnus-default-article-saver 'gnus-summary-save-body-in-file))
-    (gnus-summary-save-article arg nil t)))
+    (gnus-summary-save-article arg)))
+
+(defun gnus-summary-write-article-body-file (&optional arg)
+  "Write the current article body to a file, deleting the previous file.
+If N is a positive number, save the N next articles.
+If N is a negative number, save the N previous articles.
+If N is nil and any articles have been marked with the process mark,
+save those articles instead."
+  (interactive "P")
+  (require 'gnus-art)
+  (let ((gnus-default-article-saver 'gnus-summary-write-body-to-file))
+    (gnus-summary-save-article arg)))
 
 (defun gnus-summary-muttprint (&optional arg)
   "Print the current article using Muttprint.

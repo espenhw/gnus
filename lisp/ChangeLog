@@ -1,3 +1,32 @@
+2006-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-default-article-saver): Add
+	gnus-summary-write-body-to-file.
+	(gnus-article-save-coding-system): Don't use coding system object
+	in XEmacs.
+	(gnus-read-save-file-name): Add optional `dir-var' argument which
+	specifies directory in which files are saved; work even if optional
+	`variable' argument is not specified.
+	(gnus-summary-write-to-file): Read file name.
+	(gnus-summary-save-body-in-file): Add optional `overwrite' argument.
+	(gnus-summary-write-body-to-file): New function.
+
+	* gnus-sum.el (gnus-newsgroup-last-directory): New variable.
+	(gnus-summary-local-variables): Add it.
+	(gnus-summary-save-map): Add gnus-summary-write-article-body-file.
+	(gnus-summary-save-article): Remove optional `decode' argument;
+	determine whether to decode articles by the value of
+	gnus-default-article-saver; when saving many files using
+	gnus-summary-write-to-file or gnus-summary-write-body-to-file, use
+	it first and use gnus-summary-save-in-file or
+	gnus-summary-save-body-in-file thereafter unless
+	gnus-prompt-before-saving is always; move point to article which
+	will be saved.
+	(gnus-summary-save-article-file): Revert.
+	(gnus-summary-write-article-file): Revert.
+	(gnus-summary-save-article-body-file): Revert.
+	(gnus-summary-write-article-body-file): New function.
+
 2006-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-default-article-saver): Doc fix.
