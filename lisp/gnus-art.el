@@ -1328,6 +1328,18 @@ predicate.  See Info node `(gnus)Customizing Articles'."
   :link '(custom-manual "(gnus)Customizing Articles")
   :type gnus-article-treat-custom)
 
+(defcustom gnus-article-unfold-long-headers nil
+  "If non-nil, allow unfolding headers even if the header is long.
+If it is a regexp, only long headers matching this regexp are unfolded.
+If it is t, all long headers are unfolded.
+
+This variable has no effect if `gnus-treat-unfold-headers' is nil."
+  :version "23.0" ;; No Gnus
+  :group 'gnus-article-treat
+  :type '(choice (const nil)
+		 (const :tag "all" t)
+		 (regexp)))
+
 (defcustom gnus-treat-fold-headers nil
   "Fold headers.
 Valid values are nil, t, `head', `first', `last', an integer or a
@@ -2135,16 +2147,21 @@ unfolded."
       (while (not (eobp))
 	(save-restriction
 	  (mail-header-narrow-to-field)
-	  (let ((header (buffer-string)))
+	  (let* ((header (buffer-string))
+		 (unfoldable
+		  (or (equal gnus-article-unfold-long-headers t)
+		      (and (stringp gnus-article-unfold-long-headers)
+			   (string-match gnus-article-unfold-long-headers header)))))
 	    (with-temp-buffer
 	      (insert header)
 	      (goto-char (point-min))
 	      (while (re-search-forward "\n[\t ]" nil t)
 		(replace-match " " t t)))
-	    (setq length (- (point-max) (point-min) 1)))
-	  (when (< length (window-width))
-	    (while (re-search-forward "\n[\t ]" nil t)
-	      (replace-match " " t t)))
+	    (setq length (- (point-max) (point-min) 1))
+	    (when (or unfoldable
+		      (< length (window-width)))
+	      (while (re-search-forward "\n[\t ]" nil t)
+		(replace-match " " t t))))
 	  (goto-char (point-max)))))))
 
 (defun gnus-article-treat-fold-headers ()

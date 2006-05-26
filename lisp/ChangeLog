@@ -1,5 +1,8 @@
 2006-05-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-article-unfold-long-headers): New variable.
+	(gnus-article-treat-unfold-headers): Use it.
+
 	* uudecode.el (uudecode-decode-region-external): nil isn't a valid
 	coding system in XEmacs, use binary.
 
