@@ -3300,14 +3300,15 @@ Numeric argument means justify as well."
     (let ((fill-prefix message-yank-prefix))
       (fill-individual-paragraphs (point) (point-max) justifyp))))
 
-(defun message-indent-citation ()
+(defun message-indent-citation (&optional start end yank-only)
   "Modify text just inserted from a message to be cited.
 The inserted text should be the region.
 When this function returns, the region is again around the modified text.
 
 Normally, indent each nonblank line `message-indentation-spaces' spaces.
 However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
-  (let ((start (point)))
+  (unless start (setq start (point)))
+  (unless yank-only
     ;; Remove unwanted headers.
     (when message-ignored-cited-headers
       (let (all-removed)
@@ -3335,21 +3336,21 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
       (insert "\n"))
     (while (and (zerop (forward-line -1))
 		(looking-at "$"))
-      (message-delete-line))
-    ;; Do the indentation.
-    (if (null message-yank-prefix)
-	(indent-rigidly start (mark t) message-indentation-spaces)
-      (save-excursion
-	(goto-char start)
-	(while (< (point) (mark t))
-	  (cond ((looking-at ">")
-		 (insert message-yank-cited-prefix))
-		((looking-at "^$")
-		 (insert message-yank-empty-prefix))
-		(t
-		 (insert message-yank-prefix)))
-	  (forward-line 1))))
-    (goto-char start)))
+      (message-delete-line)))
+  ;; Do the indentation.
+  (if (null message-yank-prefix)
+      (indent-rigidly start (or end (mark t)) message-indentation-spaces)
+    (save-excursion
+      (goto-char start)
+      (while (< (point) (or end (mark t)))
+	(cond ((looking-at ">")
+	       (insert message-yank-cited-prefix))
+	      ((looking-at "^$")
+	       (insert message-yank-empty-prefix))
+	      (t
+	       (insert message-yank-prefix)))
+	(forward-line 1))))
+  (goto-char start))
 
 (defun message-yank-original (&optional arg)
   "Insert the message being replied to, if any.

@@ -338,6 +338,7 @@ NODISPLAY is non-nil, don't redisplay the article buffer."
 
 (defun gnus-outlook-rearrange-article (attr-start)
   "Put the text from ATTR-START to the end of buffer at the top of the article buffer."
+  ;; FIXME: 1.  (*) text/plain          ( ) text/html
   (let ((inhibit-read-only t)
 	(cite-marks gnus-outlook-deuglify-cite-marks))
     (gnus-with-article-buffer
@@ -352,8 +353,18 @@ NODISPLAY is non-nil, don't redisplay the article buffer."
 		    (point-max))))
 	  ;; handle the case where the full quote is below the
 	  ;; signature
-	  (if (< to attr-start)
+	  (when (< to attr-start)
+	    (setq to (point-max)))
+	  (save-excursion
+	    (narrow-to-region attr-start to)
+	    (goto-char attr-start)
+	    (forward-line)
+	    (unless (looking-at ">")
+	      (message-indent-citation (point) (point-max) 'yank-only)
+	      (goto-char (point-max))
+	      (newline)
 	      (setq to (point-max)))
+	    (widen))
 	  (transpose-regions cur attr-start attr-start to))))))
 
 ;; John Doe <john.doe@some.domain> wrote in message

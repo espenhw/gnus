@@ -1,5 +1,11 @@
 2006-05-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* deuglify.el (gnus-outlook-rearrange-article): Add missing citation
+	marks.
+
+	* message.el (message-indent-citation): Add optional arguments to allow
+	using it outside of message buffers.
+
 	* gnus-art.el (gnus-article-unfold-long-headers): New variable.
 	(gnus-article-treat-unfold-headers): Use it.
 	(gnus-article-truncate-lines): New variable.
