@@ -11248,23 +11248,15 @@ will not be marked as saved."
 	 (save-buffer (save-excursion
 			(nnheader-set-temp-buffer " *Gnus Save*")))
 	 (num (length articles))
-	 (decode (and gnus-article-save-coding-system
-		      (memq gnus-default-article-saver
-			    '(gnus-summary-save-in-file
-			      gnus-summary-save-body-in-file
-			      gnus-summary-write-to-file
-			      gnus-summary-write-body-to-file))))
-	 (gnus-default-article-saver gnus-default-article-saver)
-	 ;; When saving many files using `gnus-summary-write-to-file'
-	 ;; or `gnus-summary-write-body-to-file', use it first and use
-	 ;; `gnus-summary-save-in-file' or `gnus-summary-save-body-in-file'
-	 ;; thereafter unless `gnus-prompt-before-saving' is `always'.
+	 ;; Whether to save decoded articles or raw articles.
+	 (decode (when gnus-article-save-coding-system
+		   (get gnus-default-article-saver :decode)))
+	 ;; When saving many articles, use the other function to save
+	 ;; articles other than the first one if it is specified and
+	 ;; `gnus-prompt-before-saving' is not set to `always'.
 	 (saver2 (unless (eq gnus-prompt-before-saving 'always)
-		   (cdr (assq gnus-default-article-saver
-			      '((gnus-summary-write-to-file
-				 . gnus-summary-save-in-file)
-				(gnus-summary-write-body-to-file
-				 . gnus-summary-save-body-in-file))))))
+		   (get gnus-default-article-saver :function)))
+	 (gnus-default-article-saver gnus-default-article-saver)
 	 header file)
     (dolist (article articles)
       (setq header (gnus-summary-article-header article))

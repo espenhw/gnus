@@ -376,10 +376,6 @@ could use `autoload-coding-system' here."
 This function will run when the `un-define' module is loaded under
 XEmacs, and fill the `utf-8' entry in `mm-mime-mule-charset-alist'
 with Mule charsets.  It is completely useless for Emacs."
-  (unless (cdr (delete '(mm-enrich-utf-8-by-mule-ucs)
-		       (assoc "un-define" after-load-alist)))
-    (setq after-load-alist
-	  (delete '("un-define") after-load-alist)))
   (when (boundp 'unicode-basic-translation-charset-order-list)
     (condition-case nil
 	(let ((val (delq

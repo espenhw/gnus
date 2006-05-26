@@ -1,3 +1,23 @@
+2006-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-enrich-utf-8-by-mule-ucs): Don't edit
+	after-load-alist.
+
+	* gnus-art.el (gnus-summary-save-in-file): Use property to specify
+	this function should save decoded articles.
+	(gnus-summary-write-to-file): Use property to specify this function
+	should save decoded articles and specify gnus-summary-save-in-file
+	should be used to save articles other than the first one when saving
+	many articles.
+	(gnus-summary-save-body-in-file): Use property to specify this
+	function should save decoded articles.
+	(gnus-summary-write-body-to-file): Use property to specify this
+	function should save decoded articles and specify
+	gnus-summary-save-body-in-file should be used to save articles other
+	than the first one when saving many articles.
+
+	* gnus-sum.el (gnus-summary-save-article): Simplify.
+
 2006-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-default-article-saver): Add

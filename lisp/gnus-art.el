@@ -3625,6 +3625,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 	  (gnus-output-to-mail filename)))))
   filename)
 
+(put 'gnus-summary-save-in-file :decode t)
 (defun gnus-summary-save-in-file (&optional filename overwrite)
   "Append this article to file.
 Optional argument FILENAME specifies file name.
@@ -3643,6 +3644,8 @@ Directory to save to is default to `gnus-article-save-directory'."
 	(gnus-output-to-file filename))))
   filename)
 
+(put 'gnus-summary-write-to-file :decode t)
+(put 'gnus-summary-write-to-file :function 'gnus-summary-save-in-file)
 (defun gnus-summary-write-to-file (&optional filename)
   "Write this article to a file, overwriting it if the file exists.
 Optional argument FILENAME specifies file name.
@@ -3653,6 +3656,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		  gnus-current-headers nil 'gnus-newsgroup-last-directory))
   (gnus-summary-save-in-file filename t))
 
+(put 'gnus-summary-save-body-in-file :decode t)
 (defun gnus-summary-save-body-in-file (&optional filename overwrite)
   "Append this article body to a file.
 Optional argument FILENAME specifies file name.
@@ -3673,6 +3677,9 @@ The directory to save in defaults to `gnus-article-save-directory'."
 	(gnus-output-to-file filename))))
   filename)
 
+(put 'gnus-summary-write-body-to-file :decode t)
+(put 'gnus-summary-write-body-to-file
+     :function 'gnus-summary-save-body-in-file)
 (defun gnus-summary-write-body-to-file (&optional filename)
   "Write this article body to a file, overwriting it if the file exists.
 Optional argument FILENAME specifies file name.
