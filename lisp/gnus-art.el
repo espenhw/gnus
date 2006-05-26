@@ -2208,6 +2208,29 @@ unfolded."
 	(mail-header-fold-field)
 	(goto-char (point-max))))))
 
+(defcustom gnus-article-truncate-lines truncate-lines
+  "Value of `truncate-lines' in Gnus Article buffer.
+Valid values are nil, t, `head', `first', `last', an integer or a
+predicate.  See Info node `(gnus)Customizing Articles'."
+  :version "23.0" ;; No Gnus
+  :group 'gnus-article
+  ;; :link '(custom-manual "(gnus)Customizing Articles")
+  :type 'boolean)
+
+(defun gnus-article-toggle-truncate-lines (&optional arg)
+  "Toggle whether to fold or truncate long lines in article the buffer.
+If ARG is non-nil and not a number, toggle
+`gnus-article-truncate-lines' too.  If ARG is a number, truncate
+long lines iff arg is positive."
+  (interactive "P")
+  (when (and arg (not (numberp arg)))
+    (setq gnus-article-truncate-lines
+	  (not gnus-article-truncate-lines)))
+  (gnus-with-article-buffer
+    ;; In versions of Emacs 22 (CVS) before 2006-05-26,
+    ;; `toggle-truncate-lines' need an argument.
+    (toggle-truncate-lines)))
+
 (defun gnus-article-treat-body-boundary ()
   "Place a boundary line at the end of the headers."
   (interactive)
@@ -4068,6 +4091,7 @@ commands:
   ;; Prevent recent Emacsen from displaying non-break space as "\ ".
   (set (make-local-variable 'nobreak-char-display) nil)
   (setq cursor-in-non-selected-windows nil)
+  (setq truncate-lines gnus-article-truncate-lines)
   (gnus-set-default-directory)
   (buffer-disable-undo)
   (setq buffer-read-only t

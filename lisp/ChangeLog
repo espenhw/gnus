@@ -2,6 +2,12 @@
 
 	* gnus-art.el (gnus-article-unfold-long-headers): New variable.
 	(gnus-article-treat-unfold-headers): Use it.
+	(gnus-article-truncate-lines): New variable.
+	(gnus-article-mode): Use it.
+	(gnus-article-toggle-truncate-lines): New function.
+
+	* gnus-sum.el (gnus-summary-wash-map, gnus-summary-make-menu-bar): Add
+	gnus-article-toggle-truncate-lines.
 
 	* uudecode.el (uudecode-decode-region-external): nil isn't a valid
 	coding system in XEmacs, use binary.

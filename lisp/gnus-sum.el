@@ -1956,6 +1956,7 @@ increase the score of each group you read."
   "e" gnus-article-emphasize
   "w" gnus-article-fill-cited-article
   "Q" gnus-article-fill-long-lines
+  "L" gnus-article-toggle-truncate-lines
   "C" gnus-article-capitalize-sentences
   "c" gnus-article-remove-cr
   "q" gnus-article-de-quoted-unreadable
@@ -2300,6 +2301,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Emphasis" gnus-article-emphasize t]
 	      ["Word wrap" gnus-article-fill-cited-article t]
 	      ["Fill long lines" gnus-article-fill-long-lines t]
+	      ["Toggle truncate long lines" gnus-article-toggle-truncate-lines t]
 	      ["Capitalize sentences" gnus-article-capitalize-sentences t]
 	      ["Remove CR" gnus-article-remove-cr t]
 	      ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
