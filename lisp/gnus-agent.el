@@ -1727,7 +1727,61 @@ and that there are no duplicates."
 	      (setq prev-num cur)))
 	    (forward-line 1)))))))
 
+(defun gnus-agent-flush-server (&optional server-or-method)
+  "Flush all agent index files for every subscribed group within
+  the given SERVER-OR-METHOD.  When called with nil, the current
+  value of gnus-command-method identifies the server."
+  (let* ((gnus-command-method (if server-or-method
+				  (gnus-server-to-method server-or-method)
+				gnus-command-method))
+	 (alist gnus-newsrc-alist))
+    (while alist
+      (let ((entry (pop alist)))
+	(when (gnus-methods-equal-p gnus-command-method (gnus-info-method entry))
+	  (gnus-agent-flush-group (gnus-info-group entry)))))))	
+
+(defun gnus-agent-flush-group (group)
+  "Flush the agent's index files such that the GROUP no longer
+appears to have any local content.  The actual content, the
+article files, may then be deleted using gnus-agent-expire-group.
+If flushing was a mistake, the gnus-agent-regenerate-group method
+provides an undo mechanism by reconstructing the index files from
+the article files."
+  (interactive
+   (list (let ((def (or (gnus-group-group-name)
+                        gnus-newsgroup-name)))
+           (let ((select (read-string (if def
+                                          (concat "Group Name ("
+                                                  def "): ")
+                                        "Group Name: "))))
+             (if (and (equal "" select)
+                      def)
+                 def
+               select)))))
+
+  (let* ((gnus-command-method (or gnus-command-method
+				  (gnus-find-method-for-group group)))
+	 (overview (gnus-agent-article-name ".overview" group))
+	 (agentview (gnus-agent-article-name ".agentview" group)))
+
+    (if (file-exists-p overview)
+	(delete-file overview))
+    (if (file-exists-p agentview)
+	(delete-file agentview))
+
+    (gnus-agent-update-view-total-fetched-for group nil gnus-command-method)
+    (gnus-agent-update-view-total-fetched-for group t   gnus-command-method)
+
+    ;(gnus-agent-set-local group nil nil)
+    ;(gnus-agent-save-local t)
+    (gnus-agent-save-group-info nil group nil)))
+
 (defun gnus-agent-flush-cache ()
+"Flush the agent's index files such that the group no longer
+appears to have any local content.  The actual content, the
+article files, is then deleted using gnus-agent-expire-group. The
+gnus-agent-regenerate-group method provides an undo mechanism by
+reconstructing the index files from the article files."
   (save-excursion
     (while gnus-agent-buffer-alist
       (set-buffer (cdar gnus-agent-buffer-alist))
@@ -2058,7 +2112,19 @@ doesn't exist, to valid the overview buffer."
 	      (let ((gnus-agent-article-alist alist))
 		(gnus-agent-save-alist gnus-agent-read-agentview)))
 	    alist))
-      (file-error nil))))
+      ((end-of-file file-error)
+       ;; The agentview file is missing. Perform a brute-force
+       ;; reconstruction of its contents.
+       (let* (alist
+	      (file-attributes (directory-files-and-attributes 
+				(gnus-agent-article-name ""
+							 gnus-agent-read-agentview) nil "^[0-9]+$" t)))
+	 (while file-attributes
+	   (let* ((fa (pop file-attributes))
+		  (artnum (string-to-number (nth 0 fa)))
+		  (days (time-to-days (nth 5 fa))))
+	     (push (cons artnum days) alist)))
+	 alist)))))
 
 (defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
@@ -2158,7 +2224,8 @@ modified) original contents, they are first saved to their own file."
             (let (group
                   min
                   max
-                  (cur (current-buffer)))
+                  (cur (current-buffer))
+		  (obarray my-obarray))
               (setq group (read cur)
                     min (read cur)
                     max (read cur))
@@ -2239,7 +2306,9 @@ modified) original contents, they are first saved to their own file."
 
     (if (cond ((and minmax
                     (or (not (eq min (car minmax)))
-                        (not (eq max (cdr minmax)))))
+                        (not (eq max (cdr minmax))))
+		    min
+		    max)
                (setcar minmax min)
                (setcdr minmax max)
                t)
@@ -3805,8 +3874,10 @@ If REREAD is not nil, downloaded articles are marked as unread."
 	   (dir (file-name-directory file))
 	   point
 	   (downloaded (if (file-exists-p dir)
-			   (sort (mapcar (lambda (name) (string-to-number name))
-					 (directory-files dir nil "^[0-9]+$" t))
+			   (sort (delq nil (mapcar (lambda (name) 
+						     (and (not (file-directory-p (nnheader-concat dir name)))
+							  (string-to-number name)))
+						   (directory-files dir nil "^[0-9]+$" t)))
 				 '>)
 			 (progn (gnus-make-directory dir) nil)))
 	   dl nov-arts
@@ -4103,20 +4174,21 @@ modified."
 
 (defun gnus-agent-total-fetched-for (group &optional method no-inhibit)
   "Get the total disk space used by the specified GROUP."
-  (unless gnus-agent-total-fetched-hashtb
-    (setq gnus-agent-total-fetched-hashtb (gnus-make-hashtable 1024)))
+  (unless (equal group "dummy.group")
+    (unless gnus-agent-total-fetched-hashtb
+      (setq gnus-agent-total-fetched-hashtb (gnus-make-hashtable 1024)))
 
-  ;; if null, gnus-agent-group-pathname will calc method.
-  (let* ((gnus-command-method method)
-	 (path (gnus-agent-group-pathname group))
-	 (entry (gnus-gethash path gnus-agent-total-fetched-hashtb)))
-    (if entry
-	(apply '+ entry)
-      (let ((gnus-agent-inhibit-update-total-fetched-for (not no-inhibit)))
-	(+
-	 (gnus-agent-update-view-total-fetched-for  group nil method path)
-	 (gnus-agent-update-view-total-fetched-for  group t   method path)
-	 (gnus-agent-update-files-total-fetched-for group nil method path))))))
+    ;; if null, gnus-agent-group-pathname will calc method.
+    (let* ((gnus-command-method method)
+	   (path (gnus-agent-group-pathname group))
+	   (entry (gnus-gethash path gnus-agent-total-fetched-hashtb)))
+      (if entry
+	  (apply '+ entry)
+	(let ((gnus-agent-inhibit-update-total-fetched-for (not no-inhibit)))
+	  (+
+	   (gnus-agent-update-view-total-fetched-for  group nil method path)
+	   (gnus-agent-update-view-total-fetched-for  group t   method path)
+	   (gnus-agent-update-files-total-fetched-for group nil method path)))))))
 
 (provide 'gnus-agent)
 

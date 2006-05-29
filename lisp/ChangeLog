@@ -1,3 +1,17 @@
+2006-05-29  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-agent.el (Added gnus-agent-flush*) to purge agent info.
+	(gnus-agent-read-agentview): Fixed handling of end-of-file error.
+	(gnus-agent-read-local): All symbols allocated in my-obarray
+	(gnus-agent-set-local): Skip invalid entries (min and/or max is nil).
+	(gnus-agent-regenerate-group): Check numeric names to see if they are
+	messages or groups.
+	(gnus-agent-total-fetched-for): Ignore 'dummy.group' (there should be a
+	better way of do this...)
+
+	* gnus-cache.el (gnus-agent-total-fetched-for): Ignore
+	'dummy.group' (there should be a better way of do this...)
+
 2006-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-save-all-headers): Mention it might be overridden.

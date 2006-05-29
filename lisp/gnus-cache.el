@@ -847,16 +847,17 @@ supported."
 
 (defun gnus-cache-total-fetched-for (group &optional no-inhibit)
   "Get total disk space used by the cache for the specified GROUP."
-  (unless gnus-cache-total-fetched-hashtb
-    (setq gnus-cache-total-fetched-hashtb (gnus-make-hashtable 1024)))
+  (unless (equal group "dummy.group")
+    (unless gnus-cache-total-fetched-hashtb
+      (setq gnus-cache-total-fetched-hashtb (gnus-make-hashtable 1024)))
 
-  (let* ((entry (gnus-gethash group gnus-cache-total-fetched-hashtb)))
-    (if entry
-	(apply '+ entry)
-      (let ((gnus-cache-inhibit-update-total-fetched-for (not no-inhibit)))
-	(+ 
-	 (gnus-cache-update-overview-total-fetched-for group nil)
-	 (gnus-cache-update-file-total-fetched-for     group nil))))))
+    (let* ((entry (gnus-gethash group gnus-cache-total-fetched-hashtb)))
+      (if entry
+	  (apply '+ entry)
+	(let ((gnus-cache-inhibit-update-total-fetched-for (not no-inhibit)))
+	  (+ 
+	   (gnus-cache-update-overview-total-fetched-for group nil)
+	   (gnus-cache-update-file-total-fetched-for     group nil)))))))
 
 (provide 'gnus-cache)
 
