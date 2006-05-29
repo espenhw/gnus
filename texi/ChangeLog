@@ -1,3 +1,7 @@
+2006-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Saving Articles): Addition.
+
 2006-05-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Saving Articles): Clarify gnus-summary-save-article-mail.
