@@ -170,32 +170,12 @@ If FORCE is non-nil, replace the old ones."
 
 (defun gnus-mailing-list-message (address)
   ""
-  (let ((mailto  "")
-	(to ())
-	(subject "None")
-	(body "")
-	)
-    (cond
-     ((string-match "<mailto:\\([^>]*\\)>" address)
-      (let ((args (match-string 1 address)))
-	(cond				; with param
-	 ((string-match "\\(.*\\)\\?\\(.*\\)" args)
-	  (setq mailto (match-string 1 args))
-	  (let ((param (match-string 2 args)))
-	    (if (string-match "subject=\\([^&]*\\)" param)
-		(setq subject (match-string 1 param)))
-	    (if (string-match "body=\\([^&]*\\)" param)
-		(setq body (match-string 1 param)))
-	    (if (string-match "to=\\([^&]*\\)" param)
-		(push (match-string 1 param) to))
-	    ))
-	 (t (setq mailto args)))))	; without param
-
+  (cond
+   ((string-match "<\\(mailto:[^>]*\\)>" address)
+    (require 'gnus-art)
+    (gnus-url-mailto (match-string 1 address)))
      ; other case <http://... to be done.
-     (t nil))
-    (gnus-setup-message 'message (message-mail mailto subject))
-    (insert body)
-    ))
+   (t nil)))
 
 (provide 'gnus-ml)
 

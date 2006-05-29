@@ -1,6 +1,11 @@
+2006-05-29  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus-ml.el (gnus-mailing-list-message): Use gnus-url-mailto instead
+	of doing it manually.
+
 2006-05-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-art.el (gnus-article-toggle-truncate-lines): Fix type in
+	* gnus-art.el (gnus-article-toggle-truncate-lines): Fix typo in
 	comment.
 
 2006-05-29  Kevin Greiner  <kevin.greiner@compsol.cc>
