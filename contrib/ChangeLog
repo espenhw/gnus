@@ -1,3 +1,8 @@
+2006-05-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnir.el (nnir-retrieve-headers): Return correct article numbers when
+	less than the full range is selected.
+
 2006-05-12  Simon Josefsson  <jas@extundo.com>
 
 	* nnir.el: Compare servers using gnus-server-equal, otherwise

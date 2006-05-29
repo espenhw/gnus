@@ -790,7 +790,6 @@ and show thread that contains this article."
 (deffoo nnir-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
     (let ((artlist (copy-sequence articles))
-          (idx 1)
           (art nil)
           (artitem nil)
           (artgroup nil) (artno nil)
@@ -837,7 +836,7 @@ and show thread that contains this article."
           (t (nnheader-report 'nnir "Don't support header type %s." foo)))
        ;; replace article number in original group with article number
         ;; in nnir group
-        (mail-header-set-number novitem idx)
+        (mail-header-set-number novitem art)
         (mail-header-set-from novitem
                               (mail-header-from novitem))
         (mail-header-set-subject
@@ -847,8 +846,7 @@ and show thread that contains this article."
                  (mail-header-subject novitem)))
         ;;-(mail-header-set-extra novitem nil)
         (push novitem novdata)
-        (setq artlist (cdr artlist))
-        (setq idx (1+ idx)))
+        (setq artlist (cdr artlist)))
       (setq novdata (nreverse novdata))
       (set-buffer nntp-server-buffer) (erase-buffer)
       (mapcar 'nnheader-insert-nov novdata)
@@ -1549,7 +1547,7 @@ The Gnus backend/server information is added."
 
 (defun nnir-artlist-artitem-rsv (artlist n)
   "Returns from ARTLIST the Retrieval Status Value of the Nth artitem
-(counting from 1)."
+\(counting from 1)."
   (nnir-artitem-rsv (nnir-artlist-article artlist n)))
 
 ;; unused?
