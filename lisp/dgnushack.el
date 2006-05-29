@@ -232,6 +232,7 @@ fixed in Emacs after 21.3."
     (autoload 'smtpmail-send-it "smtpmail")
     (autoload 'sort-numeric-fields "sort" nil t)
     (autoload 'sort-subr "sort")
+    (autoload 'toggle-truncate-lines "view-less" nil t)
     (autoload 'trace-function-background "trace" nil t)
     (autoload 'unmorse-region "morse" nil t)
     (autoload 'w3-do-setup "w3")

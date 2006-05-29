@@ -502,7 +502,10 @@ be fed to `format-time-string'."
   :group 'gnus-article-washing)
 
 (defcustom gnus-save-all-headers t
-  "*If non-nil, don't remove any headers before saving."
+  "*If non-nil, don't remove any headers before saving.
+This will be overridden by the `:headers' property that the symbol of
+the saver function, which is specified by `gnus-default-article-saver',
+might have."
   :group 'gnus-article-saving
   :type 'boolean)
 
@@ -523,7 +526,10 @@ each invocation of the saving commands."
   "Headers to keep if `gnus-save-all-headers' is nil.
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
-will be kept while the rest will be deleted before saving."
+will be kept while the rest will be deleted before saving.  This and
+`gnus-save-all-headers' will be overridden by the `:headers' property
+that the symbol of the saver function, which is specified by
+`gnus-default-article-saver', might have."
   :group 'gnus-article-saving
   :type 'regexp)
 
@@ -541,7 +547,27 @@ Gnus provides the following functions:
 * gnus-summary-save-body-in-file (article body)
 * gnus-summary-save-in-vm (use VM's folder format)
 * gnus-summary-write-to-file (article format -- overwrite)
-* gnus-summary-write-body-to-file (article body -- overwrite)."
+* gnus-summary-write-body-to-file (article body -- overwrite)
+
+The symbol of each function may have the following properties:
+
+* :decode
+The value non-nil means save decoded articles.  This is meaningful
+only with `gnus-summary-save-in-file', `gnus-summary-save-body-in-file',
+`gnus-summary-write-to-file', and `gnus-summary-write-body-to-file'.
+
+* :function
+The value specifies an alternative function which appends, not
+overwrites, articles to a file.  This implies that when saving many
+articles at a time, `gnus-prompt-before-saving' is bound to t and all
+articles are saved in a single file.  This is meaningful only with
+`gnus-summary-write-to-file' and `gnus-summary-write-body-to-file'.
+
+* :headers
+The value specifies the symbol of a variable of which the value
+specifies headers to be saved.  If it is omitted,
+`gnus-save-all-headers' and `gnus-saved-headers' control what
+headers should be saved."
   :group 'gnus-article-saving
   :type '(radio (function-item gnus-summary-save-in-rmail)
 		(function-item gnus-summary-save-in-mail)
@@ -3503,10 +3529,13 @@ This format is defined by the `gnus-article-time-format' variable."
 
 (defun gnus-article-save (save-buffer file &optional num)
   "Save the currently selected article."
-  (unless gnus-save-all-headers
-    ;; Remove headers according to `gnus-saved-headers'.
+  (when (or (get gnus-default-article-saver :headers)
+	    (not gnus-save-all-headers))
+    ;; Remove headers according to `gnus-saved-headers' or the value
+    ;; of the `:headers' property that the saver function might have.
     (let ((gnus-visible-headers
-	   (or gnus-saved-headers gnus-visible-headers))
+	   (or (symbol-value (get gnus-default-article-saver :headers))
+	       gnus-saved-headers gnus-visible-headers))
 	  (gnus-article-buffer save-buffer))
       (save-excursion
 	(set-buffer save-buffer)
@@ -3666,6 +3695,7 @@ Directory to save to is default to `gnus-article-save-directory'."
   filename)
 
 (put 'gnus-summary-save-in-file :decode t)
+(put 'gnus-summary-save-in-file :headers 'gnus-saved-headers)
 (defun gnus-summary-save-in-file (&optional filename overwrite)
   "Append this article to file.
 Optional argument FILENAME specifies file name.
@@ -3686,6 +3716,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 
 (put 'gnus-summary-write-to-file :decode t)
 (put 'gnus-summary-write-to-file :function 'gnus-summary-save-in-file)
+(put 'gnus-summary-write-to-file :headers 'gnus-saved-headers)
 (defun gnus-summary-write-to-file (&optional filename)
   "Write this article to a file, overwriting it if the file exists.
 Optional argument FILENAME specifies file name.

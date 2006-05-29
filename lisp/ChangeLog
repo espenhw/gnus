@@ -1,3 +1,19 @@
+2006-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-save-all-headers): Mention it might be overridden.
+	(gnus-saved-headers): Ditto.
+	(gnus-default-article-saver): Mention functions may have properties.
+	(gnus-article-save): Override gnus-save-all-headers and
+	gnus-saved-headers by :headers property which saver function may have.
+	(gnus-summary-save-in-file): Add :headers property.
+	(gnus-summary-write-to-file): Ditto.
+
+	* gnus-sum.el (gnus-summary-save-article): Bind
+	gnus-prompt-before-saving to t when saving many articles in a file;
+	always show all headers.
+
+	* dgnushack.el: Autoload toggle-truncate-lines for XEmacs.
+
 2006-05-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* deuglify.el (gnus-outlook-rearrange-article): Add missing citation

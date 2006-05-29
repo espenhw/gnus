@@ -11253,11 +11253,10 @@ will not be marked as saved."
 	 ;; Whether to save decoded articles or raw articles.
 	 (decode (when gnus-article-save-coding-system
 		   (get gnus-default-article-saver :decode)))
-	 ;; When saving many articles, use the other function to save
-	 ;; articles other than the first one if it is specified and
-	 ;; `gnus-prompt-before-saving' is not set to `always'.
-	 (saver2 (unless (eq gnus-prompt-before-saving 'always)
-		   (get gnus-default-article-saver :function)))
+	 ;; When saving many articles in a single file, use the other
+	 ;; function to save articles other than the first one.
+	 (saver2 (get gnus-default-article-saver :function))
+	 (gnus-prompt-before-saving (and saver2 t))
 	 (gnus-default-article-saver gnus-default-article-saver)
 	 header file)
     (dolist (article articles)
@@ -11273,7 +11272,7 @@ will not be marked as saved."
 					      gnus-display-mime-function))
 		(gnus-article-prepare-hook (when decode
 					     gnus-article-prepare-hook)))
-	    (gnus-summary-select-article (not decode) nil nil article)
+	    (gnus-summary-select-article t nil nil article)
 	    (gnus-summary-goto-subject article)))
 	(save-excursion
 	  (set-buffer save-buffer)
