@@ -2254,7 +2254,7 @@ long lines iff arg is positive."
 	  (not gnus-article-truncate-lines)))
   (gnus-with-article-buffer
     ;; In versions of Emacs 22 (CVS) before 2006-05-26,
-    ;; `toggle-truncate-lines' need an argument.
+    ;; `toggle-truncate-lines' needs an argument.
     (toggle-truncate-lines)))
 
 (defun gnus-article-treat-body-boundary ()
