@@ -51,8 +51,7 @@
     "\C-c\C-nu" gnus-mailing-list-unsubscribe
     "\C-c\C-np" gnus-mailing-list-post
     "\C-c\C-no" gnus-mailing-list-owner
-    "\C-c\C-na" gnus-mailing-list-archive
-    ))
+    "\C-c\C-na" gnus-mailing-list-archive))
 
 (defun gnus-mailing-list-make-menu-bar ()
   (unless (boundp 'gnus-mailing-list-menu)
@@ -103,7 +102,8 @@ If FORCE is non-nil, replace the old ones."
       ;; Set up the menu.
       (when (gnus-visual-p 'mailing-list-menu 'menu)
 	(gnus-mailing-list-make-menu-bar))
-      (add-minor-mode 'gnus-mailing-list-mode " Mailing-List" gnus-mailing-list-mode-map)
+      (add-minor-mode 'gnus-mailing-list-mode " Mailing-List"
+		      gnus-mailing-list-mode-map)
       (gnus-run-hooks 'gnus-mailing-list-mode-hook))))
 
 ;;; Commands
@@ -118,7 +118,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-help in this group")))))
 
 (defun gnus-mailing-list-subscribe ()
-  "Subscribe."
+  "Subscribe to mailing list."
   (interactive)
   (let ((list-subscribe
 	 (with-current-buffer gnus-original-article-buffer
@@ -127,7 +127,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-subscribe in this group")))))
 
 (defun gnus-mailing-list-unsubscribe ()
-  "Unsubscribe."
+  "Unsubscribe from mailing list."
   (interactive)
   (let ((list-unsubscribe
 	 (with-current-buffer gnus-original-article-buffer
@@ -145,7 +145,7 @@ If FORCE is non-nil, replace the old ones."
 	  (t (gnus-message 1 "no list-post in this group")))))
 
 (defun gnus-mailing-list-owner ()
-  "Mail to the owner."
+  "Mail to the mailing list owner."
   (interactive)
   (let ((list-owner
 	 (with-current-buffer gnus-original-article-buffer
@@ -169,12 +169,13 @@ If FORCE is non-nil, replace the old ones."
 ;;; Utility functions
 
 (defun gnus-mailing-list-message (address)
-  ""
+  "Send message to ADDRESS.
+ADDRESS is specified by a \"mailto:\" URL."
   (cond
    ((string-match "<\\(mailto:[^>]*\\)>" address)
     (require 'gnus-art)
     (gnus-url-mailto (match-string 1 address)))
-     ; other case <http://... to be done.
+   ;; other case <http://...> to be done.
    (t nil)))
 
 (provide 'gnus-ml)

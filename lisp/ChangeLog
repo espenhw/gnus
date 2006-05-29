@@ -1,3 +1,9 @@
+2006-05-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-ml.el (gnus-mailing-list-subscribe)
+	(gnus-mailing-list-unsubscribe, gnus-mailing-list-owner)
+	(gnus-mailing-list-message): Fix doc strings.
+
 2006-05-29  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* gnus-ml.el (gnus-mailing-list-message): Use gnus-url-mailto instead
