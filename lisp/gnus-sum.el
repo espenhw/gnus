@@ -11256,7 +11256,9 @@ will not be marked as saved."
 	 ;; When saving many articles in a single file, use the other
 	 ;; function to save articles other than the first one.
 	 (saver2 (get gnus-default-article-saver :function))
-	 (gnus-prompt-before-saving (and saver2 t))
+	 (gnus-prompt-before-saving (if saver2
+					t
+				      gnus-prompt-before-saving))
 	 (gnus-default-article-saver gnus-default-article-saver)
 	 header file)
     (dolist (article articles)
