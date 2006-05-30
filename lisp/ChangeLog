@@ -1,3 +1,7 @@
+2006-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (directory-files-and-attributes): Move forward.
+
 2006-05-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-ml.el (gnus-mailing-list-subscribe)
