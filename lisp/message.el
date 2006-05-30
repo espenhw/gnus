@@ -1149,13 +1149,28 @@ If nil, you might be asked to input the charset."
 
 (defcustom message-dont-reply-to-names
   (and (boundp 'rmail-dont-reply-to-names) rmail-dont-reply-to-names)
-  "*A regexp specifying addresses to prune when doing wide replies.
-A value of nil means exclude your own user name only."
+  "*Addresses to prune when doing wide replies.
+This can be a regexp or a list of regexps. Also, a value of nil means
+exclude your own user name only."
   :version "21.1"
   :group 'message
   :link '(custom-manual "(message)Wide Reply")
   :type '(choice (const :tag "Yourself" nil)
-		 regexp))
+		 regexp
+		 (repeat :tag "Regexp List" regexp)))
+
+;; #### FIXME: this might become a generally usefull function at some point
+;; --dlv.
+(defsubst message-dont-reply-to-names ()
+  "Potentially convert a list of regexps into a single one."
+  (cond ((null message-dont-reply-to-names)
+	 nil)
+	((stringp message-dont-reply-to-names)
+	 message-dont-reply-to-names)
+	((listp message-dont-reply-to-names)
+	 (mapconcat (lambda (elt) (concat "\\(" elt "\\)"))
+		    message-dont-reply-to-names
+		    "\\|"))))
 
 (defvar message-shoot-gnksa-feet nil
   "*A list of GNKSA feet you are allowed to shoot.
@@ -6013,7 +6028,7 @@ want to get rid of this query permanently.")))
       (while (string-match "[ \t][ \t]+" recipients)
 	(setq recipients (replace-match " " t t recipients)))
       ;; Remove addresses that match `rmail-dont-reply-to-names'.
-      (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
+      (let ((rmail-dont-reply-to-names (message-dont-reply-to-names)))
 	(setq recipients (rmail-dont-reply-to recipients)))
       ;; Perhaps "Mail-Copies-To: never" removed the only address?
       (if (string-equal recipients "")

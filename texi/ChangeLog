@@ -1,3 +1,8 @@
+2006-05-30  Didier Verna  <didier@xemacs.org>
+
+	* message.texi (Wide Reply): Update documentation of
+	message-dont-reply-to-names (now allowing a list of regexps).
+
 2006-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Saving Articles): Addition.

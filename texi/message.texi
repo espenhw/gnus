@@ -178,7 +178,8 @@ but you can change the behavior to suit your needs by fiddling with the
 
 @vindex message-dont-reply-to-names
 Addresses that match the @code{message-dont-reply-to-names} regular
-expression will be removed from the @code{Cc} header.
+expression (or list of regular expressions) will be removed from the
+@code{Cc} header. A value of @code{nil} means exclude your name only.
 
 @vindex message-wide-reply-confirm-recipients
 If @code{message-wide-reply-confirm-recipients} is non-@code{nil} you
