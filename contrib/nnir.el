@@ -801,6 +801,11 @@ and show thread that contains this article."
 	  server)
       (while (not (null artlist))
         (setq art (car artlist))
+        (or (numberp art)
+            (nnheader-report
+             'nnir
+             "nnir-retrieve-headers doesn't grok message ids: %s"
+             art))
         (setq artitem (nnir-artlist-article nnir-artlist art))
         (setq artrsv (nnir-artitem-rsv artitem))
         (setq artfullgroup (nnir-artitem-group artitem))
@@ -849,22 +854,27 @@ and show thread that contains this article."
 
 (deffoo nnir-request-article (article
                               &optional group server to-buffer)
-  (save-excursion
-    (let* ((artitem (nnir-artlist-article nnir-artlist
-                                          article))
-           (artfullgroup (nnir-artitem-group artitem))
-           (artno (nnir-artitem-number artitem))
-           ;; Bug?
-           ;; Why must we bind nntp-server-buffer here?  It won't
-           ;; work if `buf' is used, say.  (Of course, the set-buffer
-           ;; line below must then be updated, too.)
-           (nntp-server-buffer (or to-buffer nntp-server-buffer)))
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (message "Requesting article %d from group %s"
-               artno artfullgroup)
-      (gnus-request-article artno artfullgroup nntp-server-buffer)
-      (cons artfullgroup artno))))
+  (if (stringp article)
+      (nnheader-report
+       'nnir
+       "nnir-retrieve-headers doesn't grok message ids: %s"
+       article)
+    (save-excursion
+      (let* ((artitem (nnir-artlist-article nnir-artlist
+					    article))
+	     (artfullgroup (nnir-artitem-group artitem))
+	     (artno (nnir-artitem-number artitem))
+	     ;; Bug?
+	     ;; Why must we bind nntp-server-buffer here?  It won't
+	     ;; work if `buf' is used, say.  (Of course, the set-buffer
+	     ;; line below must then be updated, too.)
+	     (nntp-server-buffer (or to-buffer nntp-server-buffer)))
+	(set-buffer nntp-server-buffer)
+	(erase-buffer)
+	(message "Requesting article %d from group %s"
+		 artno artfullgroup)
+	(gnus-request-article artno artfullgroup nntp-server-buffer)
+	(cons artfullgroup artno)))))
 
 
 (nnoo-define-skeleton nnir)
