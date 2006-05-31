@@ -1,3 +1,7 @@
+2006-06-01  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-google-parse-1): Update regexp for author and date.
+
 2006-05-30  Kevin Greiner  <kevin.greiner@compsol.cc>
 
 	* gnus-agent.el (directory-files-and-attributes): Move all the way

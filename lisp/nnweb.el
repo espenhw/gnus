@@ -366,7 +366,7 @@ Valid types include `google', `dejanews', and `gmane'.")
       (mm-url-decode-entities)
       (search-backward " - ")
       (when (looking-at
-	     " - \\([a-zA-Z]+\\) \\([0-9]+\\)\\(?: \\([0-9]\\{4\\}\\)\\)?, [^\n]+by \\([^<\n]+\\)\n")
+	     " - \\([a-zA-Z]+\\) \\([0-9]+\\)\\(?: \\([0-9]\\{4\\}\\)\\)?[^\n]+by ?\n?\\([^<\n]+\\)\n")
 	(setq From (match-string 4)
 	      Date (format "%s %s 00:00:00 %s"
 			   (match-string 1)
