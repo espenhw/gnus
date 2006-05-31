@@ -801,11 +801,6 @@ and show thread that contains this article."
 	  server)
       (while (not (null artlist))
         (setq art (car artlist))
-        (or (numberp art)
-            (nnheader-report
-             'nnir
-             "nnir-retrieve-headers doesn't grok message ids: %s"
-             art))
         (setq artitem (nnir-artlist-article nnir-artlist art))
         (setq artrsv (nnir-artitem-rsv artitem))
         (setq artfullgroup (nnir-artitem-group artitem))

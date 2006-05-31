@@ -1,3 +1,8 @@
+2006-05-31  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnir.el (nnir-retrieve-headers, nnir-request-article): Move check for
+	message-id request.
+
 2006-05-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnir.el (nnir-retrieve-headers): Return correct article numbers when
