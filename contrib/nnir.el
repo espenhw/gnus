@@ -1140,7 +1140,11 @@ Windows NT 4.0."
               dirnam (file-name-directory (match-string 2)))
 
         ;; don't match directories
-        (when (string-match "^[0-9]+\\(\\.gz\\)?$" artno)
+        (when (string-match "^[0-9]+\\(\\.[a-z0-9]+\\)?$" artno)
+	  ;; nnml-use-compressed-files might be any string, but probably this
+	  ;; is sufficient.  Note that we can't only use the value of
+	  ;; nnml-use-compressed-files because old articles might have been
+	  ;; saved with a different value.
           (when (not (null dirnam))
 
 	    ;; maybe limit results to matching groups.

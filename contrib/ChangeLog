@@ -1,3 +1,8 @@
+2006-06-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el (nnir-run-swish++): Compressed files might not have .gz
+	extension.
+
 2006-05-31  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnir.el (nnir-retrieve-headers, nnir-request-article): Move check for
