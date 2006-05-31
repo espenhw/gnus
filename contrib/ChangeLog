@@ -13,7 +13,7 @@
 	* nnir.el: Compare servers using gnus-server-equal, otherwise
 	string methods in nnir-mail-backend won't work.
 
-2006-04-11  Sascha Wilde  <wilde@sha-bang.de>  (tiny patch)
+2006-04-11  Sascha Wilde  <wilde@sha-bang.de>
 
 	* nnir.el (nnir-run-swish++): Allow matching gzipped files.
 
