@@ -259,6 +259,16 @@ NOTES:
 (defvar gnus-headers)
 (defvar gnus-score)
 
+;; Added to support XEmacs
+(eval-and-compile
+  (unless (fboundp 'directory-files-and-attributes)
+    (defun directory-files-and-attributes (directory
+					   &optional full match nosort)
+      (let (result)
+	(dolist (file (directory-files directory full match nosort))
+	  (push (cons file (file-attributes file)) result))
+	(nreverse result)))))
+
 ;;;
 ;;; Setup
 ;;;
@@ -448,16 +458,6 @@ manipulated as follows:
 
 (defsubst gnus-agent-cat-make (name &optional default-agent-predicate)
   (list name `(agent-predicate . ,(or default-agent-predicate 'false))))
-
-;; Added to support XEmacs
-(eval-and-compile
-  (unless (fboundp 'directory-files-and-attributes)
-    (defun directory-files-and-attributes (directory
-					   &optional full match nosort)
-      (let (result)
-	(dolist (file (directory-files directory full match nosort))
-	  (push (cons file (file-attributes file)) result))
-	(nreverse result)))))
 
 ;;; Fetching setup functions.
 
@@ -2123,18 +2123,20 @@ doesn't exist, to valid the overview buffer."
 		(gnus-agent-save-alist gnus-agent-read-agentview)))
 	    alist))
       ((end-of-file file-error)
-       ;; The agentview file is missing. Perform a brute-force
-       ;; reconstruction of its contents.
-       (let* (alist
-	      (file-attributes (directory-files-and-attributes 
-				(gnus-agent-article-name ""
-							 gnus-agent-read-agentview) nil "^[0-9]+$" t)))
-	 (while file-attributes
-	   (let* ((fa (pop file-attributes))
-		  (artnum (string-to-number (nth 0 fa)))
-		  (days (time-to-days (nth 5 fa))))
-	     (push (cons artnum days) alist)))
-	 alist)))))
+       ;; The agentview file is missing. 
+       (condition-case nil
+	   ;; If the agent directory exists, attempt to perform a brute-force
+	   ;; reconstruction of its contents.
+	   (let* (alist
+		  (file-attributes (directory-files-and-attributes 
+				    (gnus-agent-article-name ""
+							     gnus-agent-read-agentview) nil "^[0-9]+$" t)))
+	     (while file-attributes
+	       (let ((fa (pop file-attributes)))
+		 (unless (nth 1 fa)
+		   (push (cons (string-to-number (nth 0 fa)) (time-to-days (nth 5 fa))) alist))))
+	     alist)
+	 (file-error nil))))))
 
 (defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
