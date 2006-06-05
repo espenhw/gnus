@@ -6223,10 +6223,10 @@
 
 2004-07-06  Dan Christensen  <jdc@uwo.ca>
 
-	* gnus-sum.el (gnus-summary-read-group-1): When summary
-	is unthreaded, respect display group parameter.
-	(gnus-articles-to-read): Remove unused reference to
-	display group parameter.
+	* gnus-sum.el (gnus-summary-read-group-1): When summary is unthreaded,
+	respect display group parameter and gnus-summary-expunge-below.
+	(gnus-articles-to-read): Remove unused reference to display group
+	parameter.
 
 2004-07-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
