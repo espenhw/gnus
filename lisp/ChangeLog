@@ -1,3 +1,10 @@
+2006-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-mime-mule-charset-alist): Use unicode-precedence-list
+	to fill the utf-8 entry.
+
+	* lpath.el: Fbind unicode-precedence-list.
+
 2006-06-01  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-google-parse-1): Update regexp for author and date.
