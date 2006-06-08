@@ -816,24 +816,26 @@ and show thread that contains this article."
         ;; NOV data and prepend to `novdata'
         (set-buffer nntp-server-buffer)
 	(nnir-possibly-change-server server)
-        (case (setq foo (gnus-retrieve-headers (list artno) artfullgroup nil))
-          (nov
-           (goto-char (point-min))
-           (setq novitem (nnheader-parse-nov))
-           (unless novitem
-             (pop-to-buffer nntp-server-buffer)
-             (error
-              "nnheader-parse-nov returned nil for article %s in group %s"
-              artno artfullgroup)))
-          (headers
-           (goto-char (point-min))
-           (setq novitem (nnheader-parse-head))
-           (unless novitem
-             (pop-to-buffer nntp-server-buffer)
-             (error
-              "nnheader-parse-head returned nil for article %s in group %s"
-              artno artfullgroup)))
-          (t (nnheader-report 'nnir "Don't support header type %s." foo)))
+        (let ((gnus-override-method
+	       (gnus-server-to-method server)))
+	  (case (setq foo (gnus-retrieve-headers (list artno) artfullgroup nil))
+	    (nov
+	     (goto-char (point-min))
+	     (setq novitem (nnheader-parse-nov))
+	     (unless novitem
+	       (pop-to-buffer nntp-server-buffer)
+	       (error
+		"nnheader-parse-nov returned nil for article %s in group %s"
+		artno artfullgroup)))
+	    (headers
+	     (goto-char (point-min))
+	     (setq novitem (nnheader-parse-head))
+	     (unless novitem
+	       (pop-to-buffer nntp-server-buffer)
+	       (error
+		"nnheader-parse-head returned nil for article %s in group %s"
+		artno artfullgroup)))
+	    (t (nnheader-report 'nnir "Don't support header type %s." foo))))
        ;; replace article number in original group with article number
         ;; in nnir group
         (mail-header-set-number novitem art)

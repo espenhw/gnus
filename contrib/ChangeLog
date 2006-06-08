@@ -1,3 +1,11 @@
+2006-06-08  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnir.el (nnir-retrieve-headers): Bind gnus-override-method before
+	calling gnus-retrieve-headers.  If we hit a group that isn't in
+	gnus-newsrc-hashtb, gnus-find-method-for-group invented a new select
+	method with empty parameters, possibly corrupting
+	gnus-server-method-cache on the next call to gnus-method-to-server.
+
 2006-06-01  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnir.el (nnir-retrieve-headers): Revert last change; we might as well
