@@ -704,16 +704,17 @@ that it is for Namazu, not Glimpse."
 (add-hook 'gnus-group-mode-hook 'nnir-group-mode-hook)
 
 (defmacro nnir-group-server (group)
-  "Return the server for a foreign newsgroup GROUP.
+  "Return the server for a newsgroup GROUP.
 The returned format is as `gnus-server-to-method' needs it.  See
 `gnus-group-real-prefix' and `gnus-group-real-name'."
   `(let ((gname ,group))
      (if (string-match "^\\([^:]+\\):" gname)
-	 (setq gname (match-string 1 gname))
-       nil)
-     (if (string-match "^\\([^+]+\\)\\+\\(.+\\)$" gname)
-	 (format "%s:%s" (match-string 1 gname) (match-string 2 gname))
-       (concat gname ":"))))
+	 (progn
+	   (setq gname (match-string 1 gname))
+	   (if (string-match "^\\([^+]+\\)\\+\\(.+\\)$" gname)
+	       (format "%s:%s" (match-string 1 gname) (match-string 2 gname))
+	     (concat gname ":")))
+       "native")))
 
 ;; Summary mode commands.
 
