@@ -836,8 +836,9 @@ and show thread that contains this article."
 	       (error
 		"nnheader-parse-head returned nil for article %s in group %s"
 		artno artfullgroup)))
-	    (t (nnheader-report 'nnir "Don't support header type %s." foo))))
-       ;; replace article number in original group with article number
+	    (t (error "Unknown header type %s while requesting article %s of group %s"
+		      foo artno artfullgroup))))
+	;; replace article number in original group with article number
         ;; in nnir group
         (mail-header-set-number novitem art)
         (mail-header-set-from novitem
@@ -1506,8 +1507,6 @@ form 'backend:name'."
 	   (nth 1 (assq key (cddr method))))
 	  ((and nnir-mail-backend
 		(gnus-server-equal method nnir-mail-backend))
-	   (symbol-value key))
-	  ((null nnir-mail-backend)
 	   (symbol-value key))
 	  (t nil))))
 ;;     (if method

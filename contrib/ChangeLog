@@ -1,3 +1,10 @@
+2006-06-10  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnir.el (nnir-read-server-parm): Do not unconditionally fall back to
+	global variables if nnir-mail-backend is nil.
+	(nnir-retrieve-headers): Error on void novitem.  It would just result
+	in a more obscure error later.
+
 2006-06-09  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnir.el (nnir-group-server): DTRT when called on native groups.  The
