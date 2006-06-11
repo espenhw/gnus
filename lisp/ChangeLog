@@ -1,3 +1,8 @@
+2006-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-truncate-lines): Default to the value of
+	default-truncate-lines.
+
 2006-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-mime-mule-charset-alist): Use unicode-precedence-list
