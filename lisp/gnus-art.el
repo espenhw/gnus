@@ -2249,10 +2249,20 @@ If ARG is non-nil and not a number, toggle
 `gnus-article-truncate-lines' too.  If ARG is a number, truncate
 long lines iff arg is positive."
   (interactive "P")
-  (when (and arg (not (numberp arg)))
+  (cond
+   ((and (numberp arg) (> arg 0))
+    (setq gnus-article-truncate-lines t))
+   ((numberp arg)
+    (setq gnus-article-truncate-lines nil))
+   (arg
     (setq gnus-article-truncate-lines
-	  (not gnus-article-truncate-lines)))
+	  (not gnus-article-truncate-lines))))
   (gnus-with-article-buffer
+    (cond
+     ((and (numberp arg) (> arg 0))
+      (setq truncate-lines nil))
+     ((numberp arg)
+      (setq truncate-lines t)))
     ;; In versions of Emacs 22 (CVS) before 2006-05-26,
     ;; `toggle-truncate-lines' needs an argument.
     (toggle-truncate-lines)))
