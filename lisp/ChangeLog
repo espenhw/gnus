@@ -1,3 +1,7 @@
+2006-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-display-mime): Make sure body ends with newline.
+
 2006-06-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-article-toggle-truncate-lines): Fix code.
