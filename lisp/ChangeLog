@@ -1,3 +1,9 @@
+2006-06-17  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Don't subscribe
+	unsubscribed groups as if they were killed ones.  It causes duplicate
+	entries in gnus-newsrc-alist.
+
 2006-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-syntax-checks): Doc fix.
