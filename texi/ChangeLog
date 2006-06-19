@@ -1,3 +1,7 @@
+2006-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.texi (News Headers): Update message-syntax-checks section.
+
 2006-05-30  Didier Verna  <didier@xemacs.org>
 
 	* message.texi (Wide Reply): Update documentation of
