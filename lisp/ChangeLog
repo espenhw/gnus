@@ -1,3 +1,19 @@
+2006-06-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-bookmark.el: Fix Copyright, keywords, whitespace, etc.
+	(gnus-bookmark-default-file): Use gnus-directory.
+	(gnus-bookmark-bmenu-file-column, gnus-bookmark-use-annotations):
+	Remove "*" in doc string.
+	(gnus-bookmark-write-file): Simplify.
+	(gnus-bookmark-maybe-sort-alist): Use `when'.
+	(gnus-bookmark-get-bookmark): Fix typo in doc string.
+	(gnus-bookmark-set-bookmark-name, gnus-bookmark-get-bookmark): Add
+	FIXME about Emacs 21 and XEmacs compatibility.
+	(gnus-bookmark-set-bookmark-name): Use `gnus-replace-in-string' for
+	compatibility.
+	(gnus-bookmark-bmenu-mode): Use `gnus-run-mode-hooks' for
+	compatibility.
+
 2006-06-19  Bastien Guerry  <bzg@altern.org>
 
 	* gnus-bookmark.el: New file.

@@ -1,36 +1,36 @@
-;;; gnus-bookmark.el --- Set real bookmarks in Gnus
+;;; gnus-bookmark.el --- Bookmarks in Gnus
 
-;; Copyright 2006 Bastien Guerry
-;;
-;; Author: bzg AT altern DOT org
-;; Version: $Id: gnus-bookmark.el,v 0.5 2006/06/19 10:52:08 guerry Exp guerry $
-;; Keywords: Gnus bookmark
-;; Time-stamp: <2006-06-19 11:54:04 guerry>
-;; X-URL: <http://www.cognition.ens.fr/~guerry/u/gnus-bookmark.el>
+;; Copyright (C) 2006 Free Software Foundation, Inc.
 
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2, or (at
-;; your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;; General Public License for more details.
-;;
+;; Author: Bastien Guerry <bzg AT altern DOT org>
+;; Keywords: news
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+;; GNU General Public License for more details.
+
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
-;; This file implements real bookmarks for Gnus, closely following the
-;; way bookmark.el handles bookmarks.  Most of the code comes from
-;; bookmark.el.
+;; This file implements real bookmarks for Gnus, closely following the way
+;; `bookmark.el' handles bookmarks.  Most of the code comes from
+;; `bookmark.el'.
 ;;
 ;; Set a Gnus bookmark:
 ;; M-x `gnus-bookmark-set' from the summary buffer.
-;; 
+;;
 ;; Jump to a Gnus bookmark:
 ;; M-x `gnus-bookmark-jump'.
 ;;
@@ -49,19 +49,14 @@
 ;; - renaming bookmarks in gnus-bookmark-bmenu-list
 ;; - better (formatted string) display in bmenu-list
 
-;; Put this file into your load-path and the following into your
-;;   ~/.emacs: (require 'gnus-bookmark)
-
-
-;;; History:
-;; 
-;; Started in 04/2006.
+;; - Fix use of `split-string' and `assoc-string' for compatibility with Emacs
+;;   21 and XEmacs 21.4.
+;; - Integrate the `gnus-summary-*-bookmark' functionality
+;; - Initialize defcustoms from corresponding `bookmark.el' variables?
 
 ;;; Code:
 
-(provide 'gnus-bookmark)
-(eval-when-compile
-  (require 'cl))
+(require 'gnus-sum)
 
 ;; FIXME: should avoid using C-c (no?)
 ;; (define-key gnus-summary-mode-map "\C-crm" 'gnus-bookmark-set)
@@ -73,13 +68,14 @@
   "Setting, annotation and jumping to Gnus bookmarks."
   :group 'gnus)
 
-
 (defcustom gnus-bookmark-default-file
-  (concat (getenv "HOME") "/.gnus.bmk")
+  (cond
+   ;; Backward compatibility with previous versions:
+   ((file-exists-p "~/.gnus.bmk") "~/.gnus.bmk")
+   (t (nnheader-concat gnus-directory "bookmarks.el")))
   "The default Gnus bookmarks file."
   :type 'string
   :group 'gnus-bookmark)
-
 
 (defcustom gnus-bookmark-sort-flag t
   "Non-nil means Gnus bookmarks are sorted by bookmark names.
@@ -87,7 +83,6 @@ Otherwise they will be displayed in LIFO order (that is,
 most recently set ones come first, oldest ones come last)."
   :type 'boolean
   :group 'gnus-bookmark)
-
 
 (defcustom gnus-bookmark-bmenu-toggle-infos t
   "Non-nil means show details when listing Gnus bookmarks.
@@ -99,19 +94,16 @@ following in your `.emacs' file:
   :type 'boolean
   :group 'gnus-bookmark)
 
-
 (defcustom gnus-bookmark-bmenu-file-column 30
-  "*Column at which to display details in a buffer listing Gnus bookmarks.
+  "Column at which to display details in a buffer listing Gnus bookmarks.
 You can toggle whether details are shown with \\<gnus-bookmark-bmenu-mode-map>\\[gnus-bookmark-bmenu-toggle-infos]."
   :type 'integer
   :group 'gnus-bookmark)
 
-
 (defcustom gnus-bookmark-use-annotations nil
-  "*If non-nil, ask for an annotation when setting a bookmark."
+  "If non-nil, ask for an annotation when setting a bookmark."
   :type 'boolean
   :group 'gnus-bookmark)
-
 
 (defcustom gnus-bookmark-bookmark-inline-details '(author)
   "Details to be shown with `gnus-bookmark-bmenu-toggle-infos'.
@@ -124,7 +116,6 @@ The default value is \(subject\)."
 		    (const :tag "Group" group)
 		    (const :tag "Message-id" message-id)))
   :group 'gnus-bookmark)
-
 
 (defcustom gnus-bookmark-bookmark-details
   '(author subject date group annotation)
@@ -140,27 +131,22 @@ The default value is \(author subject date group annotation\)."
 		    (const :tag "Annotation" annotation)))
   :group 'gnus-bookmark)
 
-
 (defface gnus-bookmark-menu-heading
   '((t (:inherit font-lock-type-face)))
   "Face used to highlight the heading in Gnus bookmark menu buffers."
   :group 'gnus-bookmark
   :version "22.1")
 
-
 (defconst gnus-bookmark-end-of-version-stamp-marker
   "-*- End Of Bookmark File Format Version Stamp -*-\n"
   "This string marks the end of the version stamp in a Gnus bookmark file.")
-
 
 (defconst gnus-bookmark-file-format-version 0
   "The current version of the format used by bookmark files.
 You should never need to change this.")
 
-
 (defvar gnus-bookmark-after-jump-hook nil
   "Hook run after `gnus-bookmark-jump' jumps to a Gnus bookmark.")
-
 
 (defvar gnus-bookmark-alist ()
   "Association list of Gnus bookmarks and their records.
@@ -211,7 +197,6 @@ So the cdr of each bookmark is an alist too.")
   (gnus-bookmark-bmenu-surreptitiously-rebuild-list)
   (gnus-bookmark-write-file))
 
-
 (defun gnus-bookmark-make-cell
   (group message-id author date subject annotation)
   "Return the record part of a new bookmark, given GROUP MESSAGE-ID AUTHOR DATE SUBJECT and ANNOTATION."
@@ -224,18 +209,19 @@ So the cdr of each bookmark is an alist too.")
 	   (annotation . ,annotation))))
     the-record))
 
-
 (defun gnus-bookmark-set-bookmark-name (group author subject)
   "Set bookmark name from GROUP AUTHOR and SUBJECT."
   (let* ((subject (split-string subject))
-	 (default-name-0
+	 (default-name-0 ;; Should be merged with -1?
+	   ;; FIXME: In Emacs 21 or XEmacs 21.4 split-string accepts only 1-2
+	   ;; args.
 	   (concat (car (reverse (split-string group "[\\.:]" t))) "-"
 		   (car (split-string author)) "-"
 		   (concat (car subject) "-"
 			   (cadr subject))))
 	 (default-name-1
 	   ;; Strip "[]" chars from the bookmark name:
-	   (replace-regexp-in-string "[]_[]" "" default-name-0))
+	   (gnus-replace-in-string default-name-0 "[]_[]" ""))
 	 (name (read-from-minibuffer
 		(format "Set bookmark (%s): " default-name-1)
 		nil nil nil nil
@@ -243,7 +229,6 @@ So the cdr of each bookmark is an alist too.")
     (if (string-equal name "")
 	default-name-1
       name)))
-
 
 (defun gnus-bookmark-write-file ()
   "Write currently defined Gnus bookmarks into `gnus-bookmark-default-file'."
@@ -253,8 +238,7 @@ So the cdr of each bookmark is an alist too.")
       ;; Avoir warnings?
       ;; (message "Saving Gnus bookmarks to file %s..." gnus-bookmark-default-file)
       (set-buffer (get-buffer-create  " *Gnus bookmarks*"))
-      (goto-char (point-min))
-      (delete-region (point-min) (point-max))
+      (erase-buffer)
       (gnus-bookmark-insert-file-format-version-stamp)
       (pp gnus-bookmark-alist (current-buffer))
       (condition-case nil
@@ -267,7 +251,6 @@ So the cdr of each bookmark is an alist too.")
        "Saving Gnus bookmarks to file %s...done"
        gnus-bookmark-default-file))))
 
-
 (defun gnus-bookmark-insert-file-format-version-stamp ()
   "Insert text indicating current version of Gnus bookmark file format."
   (insert
@@ -277,7 +260,6 @@ So the cdr of each bookmark is an alist too.")
           ";;; nevertheless, you probably don't want to edit it.\n"
           ";;; "
           gnus-bookmark-end-of-version-stamp-marker))
-
 
 ;;;###autoload
 (defun gnus-bookmark-jump (&optional bmk-name)
@@ -300,9 +282,7 @@ So the cdr of each bookmark is an alist too.")
 		(gnus-summary-goto-article message-id nil 'force))
 	    (message "Message could not be found."))))))
 
-
 (defvar gnus-bookmark-already-loaded nil)
-
 
 (defun gnus-bookmark-alist-from-buffer ()
   "Return a `gnus-bookmark-alist' from the current buffer.
@@ -316,7 +296,6 @@ affect point."
         (read (current-buffer))
       ;; Else no hope of getting information here.
       (error "Not Gnus bookmark format"))))
-
 
 (defun gnus-bookmark-load (file)
   "Load Gnus bookmarks from FILE (which must be in bookmark format)."
@@ -338,7 +317,6 @@ affect point."
 		       (setq gnus-bookmark-alist blist))
 	      (error "Not Gnus bookmark format")))))))
 
-
 (defun gnus-bookmark-maybe-load-default-file ()
   "Maybe load Gnus bookmarks in `gnus-bookmark-alist'."
   (and (not gnus-bookmark-already-loaded)
@@ -346,16 +324,15 @@ affect point."
        (file-readable-p (expand-file-name gnus-bookmark-default-file))
        (gnus-bookmark-load gnus-bookmark-default-file)))
 
-
 (defun gnus-bookmark-maybe-sort-alist ()
   "Return the gnus-bookmark-alist for display.
-If the gnus-bookmark-sort-flag is non-nil, then return a sorted copy of the alist."
-  (if gnus-bookmark-sort-flag
-      (setq gnus-bookmark-alist
-            (sort (copy-alist gnus-bookmark-alist)
-                  (function
-                   (lambda (x y) (string-lessp (car x) (car y))))))))
-
+If the gnus-bookmark-sort-flag is non-nil, then return a sorted
+copy of the alist."
+  (when gnus-bookmark-sort-flag
+    (setq gnus-bookmark-alist
+	  (sort (copy-alist gnus-bookmark-alist)
+		(function
+		 (lambda (x y) (string-lessp (car x) (car y))))))))
 
 ;;;###autoload
 (defun gnus-bookmark-bmenu-list ()
@@ -405,7 +382,6 @@ deletion, or > if it is flagged for displaying."
     (if gnus-bookmark-bmenu-toggle-infos
 	(gnus-bookmark-bmenu-toggle-infos t))))
 
-
 (defun gnus-bookmark-bmenu-surreptitiously-rebuild-list ()
   "Rebuild the Bookmark List if it exists.
 Don't affect the buffer ring order."
@@ -414,24 +390,21 @@ Don't affect the buffer ring order."
         (save-window-excursion
           (gnus-bookmark-bmenu-list)))))
 
-
 (defun gnus-bookmark-get-annotation (bookmark)
   "Return the annotation of Gnus BOOKMARK, or nil if none."
   (cdr (assq 'annotation (gnus-bookmark-get-bookmark-record bookmark))))
 
-
 (defun gnus-bookmark-get-bookmark (bookmark)
-  "Return the full entry for Gnus BOOKMARK in `guns-bmk-alist'.
+  "Return the full entry for Gnus BOOKMARK in `gnus-bookmark-alist'.
 If BOOKMARK is not a string, return nil."
   (when (stringp bookmark)
+    ;; FIXME: `assoc-string' doesn't exist in Emacs 21 and XEmacs 21.4:
     (assoc-string bookmark gnus-bookmark-alist t)))
-
 
 (defun gnus-bookmark-get-bookmark-record (bookmark)
   "Return the guts of the entry for Gnus BOOKMARK in `gnus-bookmark-alist'.
 That is, all information but the name."
   (car (cdr (gnus-bookmark-get-bookmark bookmark))))
-
 
 (defun gnus-bookmark-name-from-full-record (full-record)
   "Return name of FULL-RECORD \(an alist element instead of a string\)."
@@ -502,7 +475,7 @@ Gnus bookmarks names preceded by a \"*\" have annotations.
   (setq buffer-read-only t)
   (setq major-mode 'gnus-bookmark-bmenu-mode)
   (setq mode-name "Bookmark Menu")
-  (run-mode-hooks 'gnus-bookmark-bmenu-mode-hook))
+  (gnus-run-mode-hooks 'gnus-bookmark-bmenu-mode-hook))
 
 ;; avoid compilation warnings
 (defvar gnus-bookmark-bmenu-toggle-infos nil)
@@ -522,7 +495,6 @@ Optional argument SHOW means show them unconditionally."
    (t
     (gnus-bookmark-bmenu-show-infos)
     (setq gnus-bookmark-bmenu-toggle-infos t))))
-
 
 (defun gnus-bookmark-bmenu-show-infos (&optional force)
   "Show infos in bmenu, maybe FORCE display of infos."
@@ -550,7 +522,6 @@ Optional argument SHOW means show them unconditionally."
               (gnus-bookmark-insert-details bmrk)
               (forward-line 1))))))))
 
-
 (defun gnus-bookmark-insert-details (bmk-name)
   "Insert the details of the article associated with BMK-NAME."
   (let ((start (point)))
@@ -568,7 +539,6 @@ Optional argument SHOW means show them unconditionally."
 	     follow-link t
 	     help-echo "mouse-2: go to this article"))))))
 
-
 (defun gnus-bookmark-kill-line (&optional newline-too)
   "Kill from point to end of line.
 If optional arg NEWLINE-TOO is non-nil, delete the newline too.
@@ -578,7 +548,6 @@ Does not affect the kill ring."
     (if (and newline-too (looking-at "\n"))
         (delete-char 1))))
 
-
 (defun gnus-bookmark-get-details (bmk-name details-list)
   "Get details for a Gnus BMK-NAME depending on DETAILS-LIST."
   (let ((details (cadr (assoc bmk-name gnus-bookmark-alist))))
@@ -586,7 +555,6 @@ Does not affect the kill ring."
      (lambda (info)
        (cdr (assoc info details)))
      details-list " | ")))
-
 
 (defun gnus-bookmark-bmenu-hide-infos (&optional force)
   "Hide infos in bmenu, maybe FORCE."
@@ -624,7 +592,6 @@ Does not affect the kill ring."
                       (cdr gnus-bookmark-bmenu-hidden-bookmarks))
                 (forward-line 1))))))))
 
-
 (defun gnus-bookmark-bmenu-check-position ()
   "Return non-nil if on a line with a bookmark.
 The actual value returned is gnus-bookmark-alist.  Else
@@ -638,7 +605,6 @@ reposition and try again, else return nil."
          gnus-bookmark-alist)
         (t
          gnus-bookmark-alist)))
-
 
 (defun gnus-bookmark-bmenu-bookmark ()
   "Return a string which is bookmark of this line."
@@ -664,7 +630,6 @@ reposition and try again, else return nil."
         (if gnus-bookmark-bmenu-toggle-infos
             (gnus-bookmark-bmenu-toggle-infos t))))))
 
-
 (defun gnus-bookmark-show-details (bookmark)
   "Display the annotation for BOOKMARK in a buffer."
   (let ((record (gnus-bookmark-get-bookmark-record bookmark))
@@ -683,14 +648,12 @@ reposition and try again, else return nil."
 	(goto-char (point-min))
 	(pop-to-buffer old-buf)))))
 
-
 (defun gnus-bookmark-bmenu-show-details ()
   "Show the annotation for the current bookmark in another window."
   (interactive)
   (let ((bookmark (gnus-bookmark-bmenu-bookmark)))
     (if (gnus-bookmark-bmenu-check-position)
 	(gnus-bookmark-show-details bookmark))))
-
 
 (defun gnus-bookmark-bmenu-mark ()
   "Mark bookmark on this line to be displayed by \\<gnus-bookmark-bmenu-mode-map>\\[gnus-bookmark-bmenu-select]."
@@ -702,7 +665,6 @@ reposition and try again, else return nil."
         (insert ?>)
         (forward-line 1)
         (gnus-bookmark-bmenu-check-position))))
-
 
 (defun gnus-bookmark-bmenu-unmark (&optional backup)
   "Cancel all requested operations on bookmark on this line and move down.
@@ -720,7 +682,6 @@ Optional BACKUP means move up."
         (forward-line (if backup -1 1))
         (gnus-bookmark-bmenu-check-position))))
 
-
 (defun gnus-bookmark-bmenu-backup-unmark ()
   "Move up and cancel all requested operations on bookmark on line above."
   (interactive)
@@ -730,7 +691,6 @@ Optional BACKUP means move up."
         (gnus-bookmark-bmenu-unmark)
         (forward-line -1)
         (gnus-bookmark-bmenu-check-position))))
-
 
 (defun gnus-bookmark-bmenu-delete ()
   "Mark Gnus bookmark on this line to be deleted.
@@ -745,7 +705,6 @@ To carry out the deletions that you've marked, use
         (forward-line 1)
         (gnus-bookmark-bmenu-check-position))))
 
-
 (defun gnus-bookmark-bmenu-delete-backwards ()
   "Mark bookmark on this line to be deleted, then move up one line.
 To carry out the deletions that you've marked, use
@@ -756,7 +715,6 @@ To carry out the deletions that you've marked, use
   (if (gnus-bookmark-bmenu-check-position)
       (forward-line 1))
   (gnus-bookmark-bmenu-check-position))
-
 
 (defun gnus-bookmark-bmenu-select ()
   "Select this line's bookmark; also display bookmarks marked with `>'.
@@ -772,7 +730,6 @@ command."
         (gnus-bookmark-jump bmrk)
         (bury-buffer menu))))
 
-
 (defun gnus-bookmark-bmenu-load ()
   "Load the Gnus bookmark file and rebuild the bookmark menu-buffer."
   (interactive)
@@ -781,7 +738,6 @@ command."
         (save-window-excursion
           ;; This will call `gnus-bookmark-bmenu-list'
           (call-interactively 'gnus-bookmark-load)))))
-
 
 (defun gnus-bookmark-bmenu-execute-deletions ()
   "Delete Gnus bookmarks marked with \\<Buffer-menu-mode-map>\\[Buffer-menu-delete] commands."
@@ -818,7 +774,6 @@ command."
     (gnus-bookmark-write-file)
     (message "Deleting bookmarks...done")))
 
-
 (defun gnus-bookmark-delete (bookmark &optional batch)
   "Delete BOOKMARK from the bookmark list.
 Removes only the first instance of a bookmark with that name.  If
@@ -835,14 +790,6 @@ probably because we were called from there."
       nil
     (gnus-bookmark-bmenu-surreptitiously-rebuild-list)))
 
-
-
-;;;;##########################################################################
-;;;;  User Options, Variables
-;;;;##########################################################################
-
-
-
-
+(provide 'gnus-bookmark)
 
 ;;; gnus-bookmark.el ends here
