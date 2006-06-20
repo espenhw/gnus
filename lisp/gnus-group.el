@@ -2069,11 +2069,11 @@ articles in the group."
     (forward-line -1))
   (gnus-group-read-group all t))
 
-(defun gnus-group-quick-select-group (&optional all)
-  "Select the current group \"quickly\".
-This means that no highlighting or scoring will be performed.
-If ALL (the prefix argument) is 0, don't even generate the summary
-buffer.
+(defun gnus-group-quick-select-group (&optional all group)
+  "Select the GROUP \"quickly\".
+This means that no highlighting or scoring will be performed.  If
+ALL (the prefix argument) is 0, don't even generate the summary
+buffer.  If GROUP is nil, use current group.
 
 This might be useful if you want to toggle threading
 before entering the group."
@@ -2084,7 +2084,7 @@ before entering the group."
 	gnus-home-score-file
 	gnus-apply-kill-hook
 	gnus-summary-expunge-below)
-    (gnus-group-read-group all t)))
+    (gnus-group-read-group all t group)))
 
 (defun gnus-group-visible-select-group (&optional all)
   "Select the current group without hiding any articles."

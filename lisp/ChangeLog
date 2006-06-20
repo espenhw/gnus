@@ -1,3 +1,10 @@
+2006-06-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-bookmark.el (gnus-bookmark-jump): Don't mark unrelated articles
+	as read.
+
+	* gnus-group.el (gnus-group-quick-select-group): Add GROUP argument.
+
 2006-06-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-bookmark.el: Fix Copyright, keywords, whitespace, etc.

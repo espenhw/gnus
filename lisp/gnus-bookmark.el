@@ -272,8 +272,10 @@ So the cdr of each bookmark is an alist too.")
 	 (bmk-cell (cadr (assoc bookmark gnus-bookmark-alist)))
 	 (group (cdr (assoc 'group bmk-cell)))
 	 (message-id (cdr (assoc 'message-id bmk-cell))))
-    (require 'gnus)
-    (if group (gnus-fetch-group group))
+    (when group
+      (unless (get-buffer gnus-group-buffer)
+	(gnus-no-server))
+      (gnus-group-quick-select-group 0 group))
     (if message-id
       (or (gnus-summary-goto-article message-id nil 'force)
 	  (if (fboundp 'gnus-summary-insert-cached-articles)
