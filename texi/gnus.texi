@@ -12891,8 +12891,8 @@ server:
 @vindex nntp-server-opened-hook
 @cindex @sc{mode reader}
 @cindex authinfo
-@cindex authentification
-@cindex nntp authentification
+@cindex authentication
+@cindex nntp authentication
 @findex nntp-send-authinfo
 @findex nntp-send-mode-reader
 is run after a connection has been made.  It can be used to send
@@ -16723,7 +16723,7 @@ articles stand out, just like ticked articles, in other @acronym{IMAP}
 clients.  (In other words, Gnus has two ``Tick'' marks and @acronym{IMAP}
 has only one.)
 
-Probably the only reason for frobing this would be if you're trying
+Probably the only reason for frobbing this would be if you're trying
 enable per-user persistent dormant flags, using something like:
 
 @lisp
@@ -21190,7 +21190,7 @@ really don't want to read what he's written:
 @example
 ((&
   ("from" "Lars Ingebrigtsen")
-  (1- ("from" "Reig Eigir Logge")))
+  (1- ("from" "Reig Eigil Logge")))
  -100000)
 @end example
 
@@ -23163,7 +23163,7 @@ words or 3-word combinations thrown into the mix.  Statistical
 analysis of spam works very well in most of the cases, but it can
 classify legitimate e-mail as spam in some cases.  It takes time to
 run the analysis, the full message must be analyzed, and the user has
-to store the database of spam analyses.  Statistical analysis on the
+to store the database of spam analysis.  Statistical analysis on the
 server is gaining popularity.  This has the advantage of letting the
 user Just Read Mail, but has the disadvantage that it's harder to tell
 the server that it has misclassified mail.
@@ -24633,7 +24633,7 @@ can be customized.
 
 @defvar spam-spamoracle-database
 By default, SpamOracle uses the file @file{~/.spamoracle.db} as a database to
-store its analyses.  This is controlled by the variable
+store its analysis.  This is controlled by the variable
 @code{spam-spamoracle-database} which defaults to @code{nil}.  That means
 the default SpamOracle database will be used.  In case you want your
 database to live somewhere special, set
@@ -27680,7 +27680,7 @@ A collection of messages in one file.  The most common digest format is
 specified by RFC 1153.
 
 @item splitting
-@cindex splitting, terminolgy
+@cindex splitting, terminology
 @cindex mail sorting
 @cindex mail filtering (splitting)
 The action of sorting your emails according to certain rules. Sometimes
