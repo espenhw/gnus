@@ -1,3 +1,10 @@
+2006-06-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-hide-headers): Inhibit read-only stuff. 
+
+	* gnus-group.el (gnus-fetch-group): Document ARTICLES and select those
+	articles. 
+
 2006-06-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-cite-reply-above): New variable.

@@ -2124,13 +2124,14 @@ be permanent."
 ;;;###autoload
 (defun gnus-fetch-group (group &optional articles)
   "Start Gnus if necessary and enter GROUP.
+If ARTICLES, display those articles.
 Returns whether the fetching was successful or not."
   (interactive (list (completing-read "Group name: " gnus-active-hashtb
 				      nil nil nil nil
 				      (group-name-at-point))))
   (unless (get-buffer gnus-group-buffer)
     (gnus-no-server))
-  (gnus-group-read-group articles nil group))
+  (gnus-group-read-group (if articles nil t) nil group articles))
 
 ;;;###autoload
 (defun gnus-fetch-group-other-frame (group)
