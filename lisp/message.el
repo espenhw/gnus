@@ -3366,6 +3366,17 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(forward-line 1))))
   (goto-char start))
 
+(defvar message-cite-reply-above nil
+  "If non-nil, start own text above the quote.
+
+Note: Top posting is bad netiquette.  Don't use it unless you
+really must.  You probably want to set variable only for specific
+groups, e.g. using `gnus-posting-styles':
+
+  (eval (set (make-local-variable 'message-cite-reply-above) t))
+
+This variable has no effect in news postings.")
+
 (defun message-yank-original (&optional arg)
   "Insert the message being replied to, if any.
 Puts point before the text and mark after.
@@ -3377,16 +3388,36 @@ This function uses `message-cite-function' to do the actual citing.
 Just \\[universal-argument] as argument means don't indent, insert no
 prefix, and don't delete any headers."
   (interactive "P")
-  (let ((modified (buffer-modified-p)))
+  (let ((modified (buffer-modified-p))
+	body-text)
     (when (and message-reply-buffer
 	       message-cite-function)
+      (when message-cite-reply-above
+	(if (and (not (message-news-p))
+		 (or (eq message-cite-reply-above 'is-evil)
+		     (y-or-n-p "\
+Top posting is bad netiquette.  Please don't top post unless you really must.
+Really top post? ")))
+	    (save-excursion
+	      (setq body-text
+		    (buffer-substring (message-goto-body)
+				      (point-max)))
+	      (delete-region (message-goto-body) (point-max)))
+	  (set (make-local-variable 'message-cite-reply-above) nil)))
       (delete-windows-on message-reply-buffer t)
       (push-mark (save-excursion
 		   (insert-buffer-substring message-reply-buffer)
 		   (point)))
       (unless arg
 	(funcall message-cite-function))
-      (message-exchange-point-and-mark)
+      (if message-cite-reply-above
+	  (progn
+	    (message-goto-body)
+	    (insert body-text)
+	    (newline)
+	    (message-goto-body)
+	    (message-exchange-point-and-mark))
+	(message-exchange-point-and-mark))
       (unless (bolp)
 	(insert ?\n))
       (unless modified
