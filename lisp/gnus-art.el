@@ -6700,7 +6700,10 @@ address, `ask' if unsure and `invalid' if the string is invalid."
   "Call function FUN on argument ARG.
 Both FUN and ARG are supposed to be strings.  ARG will be passed
 as a symbol to FUN."
-  (funcall (intern fun) (intern arg)))
+  (funcall (intern fun)
+	   (if (string-match "^customize-apropos" fun)
+	       arg
+	     (intern arg))))
 
 (defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[Ff]1>?\\)")
 

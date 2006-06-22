@@ -1,9 +1,14 @@
+2006-06-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-handle-custom): Support
+	`customize-apropos*'.
+
 2006-06-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-art.el (article-hide-headers): Inhibit read-only stuff. 
+	* gnus-art.el (article-hide-headers): Inhibit read-only stuff.
 
 	* gnus-group.el (gnus-fetch-group): Document ARTICLES and select those
-	articles. 
+	articles.
 
 2006-06-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
