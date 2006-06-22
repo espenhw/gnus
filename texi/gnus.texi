@@ -15064,7 +15064,7 @@ Translate all @samp{TAB} characters into @samp{SPACE} characters.
 @cindex Pegasus
 Some mail user agents (e.g. Eudora and Pegasus) produces broken
 @code{References} headers, but correct @code{In-Reply-To} headers.  This
-function will get rid of the @code{References} headers if the header
+function will get rid of the @code{References} header if the headers
 contain a line matching the regular expression
 @code{nnmail-broken-references-mailers}.
 
