@@ -1,5 +1,10 @@
 2006-06-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnmail.el (nnmail-broken-references-mailers): New variable.
+	(nnmail-ignore-broken-references): New function generalizing
+	nnmail-fix-eudora-headers.
+	(nnmail-fix-eudora-headers): Now obsolete.
+
 	* gnus-art.el (gnus-button-handle-custom): Support
 	`customize-apropos*'.
 

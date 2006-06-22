@@ -1280,10 +1280,20 @@ Return the number of characters in the body."
   "Translate TAB characters into SPACE characters."
   (subst-char-in-region (point-min) (point-max) ?\t ?  t))
 
-(defun nnmail-fix-eudora-headers ()
-  "Eudora has a broken References line, but an OK In-Reply-To."
+(defcustom nnmail-broken-references-mailers
+  "^X-Mailer:.*\\(Eudora\\|Pegasus\\)"
+  "Header line matching mailer producing bogus References lines.
+See `nnmail-ignore-broken-references'."
+  :group 'nnmail-prepare
+  :version "23.0" ;; No Gnus
+  :type 'regexp)
+
+(defun nnmail-ignore-broken-references ()
+  "Ignore the References line and use In-Reply-To
+
+Eudora has a broken References line, but an OK In-Reply-To."
   (goto-char (point-min))
-  (when (re-search-forward "^X-Mailer:.*Eudora" nil t)
+  (when (re-search-forward nnmail-broken-references-mailers nil t)
     (goto-char (point-min))
     (when (re-search-forward "^References:" nil t)
       (beginning-of-line)
@@ -1292,8 +1302,11 @@ Return the number of characters in the body."
     (when (re-search-forward "^\\(In-Reply-To:[^\n]+\\)\n[ \t]+" nil t)
       (replace-match "\\1" t))))
 
+(defalias 'nnmail-fix-eudora-headers 'nnmail-ignore-broken-references)
+(make-obsolete 'nnmail-fix-eudora-headers 'nnmail-ignore-broken-references)
+
 (custom-add-option 'nnmail-prepare-incoming-header-hook
-		   'nnmail-fix-eudora-headers)
+		   'nnmail-ignore-broken-references)
 
 ;;; Utility functions
 
