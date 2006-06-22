@@ -15057,12 +15057,16 @@ This can also be done non-destructively with
 @findex nnmail-remove-tabs
 Translate all @samp{TAB} characters into @samp{SPACE} characters.
 
-@item nnmail-fix-eudora-headers
-@findex nnmail-fix-eudora-headers
+@item nnmail-ignore-broken-references
+@findex nnmail-ignore-broken-references
+@c @findex nnmail-fix-eudora-headers
 @cindex Eudora
-Eudora produces broken @code{References} headers, but OK
-@code{In-Reply-To} headers.  This function will get rid of the
-@code{References} headers.
+@cindex Pegasus
+Some mail user agents (e.g. Eudora and Pegasus) produces broken
+@code{References} headers, but correct @code{In-Reply-To} headers.  This
+function will get rid of the @code{References} headers if the header
+contain a line matching the regular expression
+@code{nnmail-broken-references-mailers}.
 
 @end table
 
@@ -26803,7 +26807,7 @@ Gnus is now able to take out spam from your mail and news streams
 using a wide variety of programs and filter rules.  Among the supported
 methods are RBL blocklists, bogofilter and white/blacklists.  Hooks
 for easy use of external packages such as SpamAssassin and Hashcash
-are also new.  @xref{Thwarting Email Spam}.
+are also new.  @ref{Thwarting Email Spam} and @ref{Spam Package}.
 @c FIXME: @xref{Spam Package}?.  Should this be under Misc?
 
 @item

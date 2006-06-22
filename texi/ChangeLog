@@ -1,3 +1,8 @@
+2006-06-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Washing Mail): Add nnmail-ignore-broken-references and
+	nnmail-broken-references-mailers instead of nnmail-fix-eudora-headers.
+
 2006-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi (News Headers): Update message-syntax-checks section.
