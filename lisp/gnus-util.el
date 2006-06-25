@@ -596,8 +596,10 @@ If N, return the Nth ancestor instead."
 For example, (gnus-group-server \"nnimap+yxa:INBOX.foo\") would
 yield \"nnimap:yxa\"."
   `(let ((gname ,group))
-     (if (string-match "^\\([^+]+\\).\\([^:]+\\):" gname)
-	 (format "%s:%s" (match-string 1 gname) (match-string 2 gname))
+     (if (string-match "^\\([^:+]+\\)\\(?:\\+\\([^:]*\\)\\)?:" gname)
+	 (format "%s:%s" (match-string 1 gname) (or
+						 (match-string 2 gname)
+						 ""))
        (format "%s:%s" (car gnus-select-method) (cadr gnus-select-method)))))
 
 (defun gnus-make-sort-function (funs)

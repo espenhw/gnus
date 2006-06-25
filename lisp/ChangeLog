@@ -1,3 +1,13 @@
+2006-06-25  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus.el (gnus-find-method-for-group): On killed/unknown groups, try
+	looking up the method using GROUP's prefix before inventing a new one.
+	It is used on killed/unknown groups in various places where returning
+	an all-new method isn't expected by the caller.
+
+	* gnus-util.el (gnus-group-server): Fix for empty virtual server names
+	and match semantics of gnus-group-real-prefix.
+
 2006-06-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnmail.el (nnmail-broken-references-mailers): New variable.
