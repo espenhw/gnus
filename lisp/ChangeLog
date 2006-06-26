@@ -1,5 +1,8 @@
 2006-06-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-diary.el (gnus-user-format-function-d)
+	(gnus-user-format-function-D): Autoload.
+
 	* imap.el (Commentary): Fix typo.
 
 	* gnus-util.el (kill-empty-logs, gnus-byte-compile): Remove anonymous
