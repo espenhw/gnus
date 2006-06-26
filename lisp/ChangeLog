@@ -1,5 +1,7 @@
 2006-06-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* imap.el (Commentary): Fix typo.
+
 	* gnus-util.el (kill-empty-logs, gnus-byte-compile): Remove anonymous
 	2006-04-22 contribution.
 

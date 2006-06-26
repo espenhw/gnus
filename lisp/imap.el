@@ -80,7 +80,7 @@
 ;; LOGINDISABLED) (with use of external library starttls.el and
 ;; program starttls), and the GSSAPI / kerberos V4 sections of RFC1731
 ;; (with use of external program `imtest'), RFC2971 (ID).  It also
-;; take advantage the UNSELECT extension in Cyrus IMAPD.
+;; takes advantage of the UNSELECT extension in Cyrus IMAPD.
 ;;
 ;; Without the work of John McClary Prevost and Jim Radford this library
 ;; would not have seen the light of day.  Many thanks.
