@@ -1,5 +1,10 @@
 2006-06-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
+	* gnus.el (gnus-valid-select-methods): Revert last change for nnweb.
+	It didn't really fix the bogosity I'm seeing with solid web groups.
+
+2006-06-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
 	* gnus.el (gnus-valid-select-methods): Declare nnweb with 'address.
 	Since revision 6.95 (2003-01-05) of gnus-group.el, solid web groups are
 	created using server names.  If we use the feature without declaring
