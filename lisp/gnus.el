@@ -1667,7 +1667,7 @@ slower."
     ("nndraft" post-mail)
     ("nnfolder" mail respool address)
     ("nngateway" post-mail address prompt-address physical-address)
-    ("nnweb" none)
+    ("nnweb" address)
     ("nngoogle" post)
     ("nnslashdot" post)
     ("nnultimate" none)

@@ -438,7 +438,8 @@ Valid types include `google', `dejanews', and `gmane'.")
     "?"
     (mm-url-encode-www-form-urlencoded
      `(("q" . ,search)
-       ("num" . "100")
+       ("num" . ,(number-to-string
+		  (min 100 nnweb-max-hits)))
        ("hq" . "")
        ("hl" . "en")
        ("lr" . "")

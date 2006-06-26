@@ -1,3 +1,13 @@
+2006-06-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus.el (gnus-valid-select-methods): Declare nnweb with 'address.
+	Since revision 6.95 (2003-01-05) of gnus-group.el, solid web groups are
+	created using server names.  If we use the feature without declaring
+	it, Gnus does not properly manage server and group state.
+
+	* nnweb.el (nnweb-google-search): Respect nnweb-max-hits as upper
+	bound.
+
 2006-06-25  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* gnus.el (gnus-find-method-for-group): On killed/unknown groups, try
