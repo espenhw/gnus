@@ -3228,7 +3228,7 @@ sort in reverse order."
 (defun gnus-group-sort-by-unread (info1 info2)
   "Sort by number of unread articles."
   (let ((n1 (gnus-group-unread (gnus-info-group info1)))
-	(n2 (gnus-group-unread (gnus-info-group info1))))
+	(n2 (gnus-group-unread (gnus-info-group info2))))
     (< (or (and (numberp n1) n1) 0)
        (or (and (numberp n2) n2) 0))))
 

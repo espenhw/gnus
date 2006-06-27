@@ -1,3 +1,8 @@
+2006-06-27  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus-group.el (gnus-group-sort-by-unread): Fix typo.  Reported by
+	Kenneth Jacker <khj@be.cs.appstate.edu>.
+
 2006-06-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-diary.el (gnus-user-format-function-d)
