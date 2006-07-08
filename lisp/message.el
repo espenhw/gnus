@@ -3502,6 +3502,7 @@ This function uses `mail-citation-hook' if that is non-nil."
 	(undo-boundary)
 	(delete-region (point) (mark t))
 	(insert "> [Quoted text removed due to X-No-Archive]\n")
+	(push-mark)
 	(forward-line -1)))))
 
 (defun message-cite-original ()
