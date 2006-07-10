@@ -902,8 +902,7 @@ Whether the passphrase is cached at all is controlled by
 ;;; epg wrapper
 
 (eval-and-compile
-  (autoload 'epg-make-context "epg")
-  (autoload 'epa-select-keys "epa"))
+  (autoload 'epg-make-context "epg"))
 
 (eval-when-compile
   (defvar epg-user-id-alist)
@@ -956,9 +955,10 @@ Whether the passphrase is cached at all is controlled by
 	 mm-security-handle 'gnus-info "Corrupted")
 	(throw 'error handle))
       (setq context (epg-make-context))
-      (epg-context-set-passphrase-callback
-       context
-       #'mml2015-epg-passphrase-callback)
+      (if mml2015-cache-passphrase
+	  (epg-context-set-passphrase-callback
+	   context
+	   #'mml2015-epg-passphrase-callback))
       (condition-case error
 	  (setq plain (epg-decrypt-string context (mm-get-part child))
 		mml2015-epg-secret-key-id-list nil)
@@ -1002,9 +1002,10 @@ Whether the passphrase is cached at all is controlled by
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
 	plain)
-    (epg-context-set-passphrase-callback
-     context
-     #'mml2015-epg-passphrase-callback)
+    (if mml2015-cache-passphrase
+	(epg-context-set-passphrase-callback
+	 context
+	 #'mml2015-epg-passphrase-callback))
     (condition-case error
 	(setq plain (epg-decrypt-string context (buffer-string))
 	      mml2015-epg-secret-key-id-list nil)
@@ -1106,9 +1107,10 @@ If no one is selected, default secret key is used.  "
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
-    (epg-context-set-passphrase-callback
-     context
-     #'mml2015-epg-passphrase-callback)
+    (if mml2015-cache-passphrase
+	(epg-context-set-passphrase-callback
+	 context
+	 #'mml2015-epg-passphrase-callback))
     (condition-case error
 	(setq signature (epg-sign-string context (buffer-string) t)
 	      mml2015-epg-secret-key-id-list nil)
@@ -1154,15 +1156,17 @@ If no one is selected, symmetric encryption will be performed.  "
 				    (message-options-get 'message-recipients)
 				    "[ \f\t\n\r\v,]+"))))
       (setq recipients
-	    (epg-list-keys context
-			   (split-string
-			    (message-options-get 'message-recipients)
-			    "[ \f\t\n\r\v,]+"))))
+	    (mapcar (lambda (name)
+		      (car (epg-list-keys context name)))
+		    (split-string
+		     (message-options-get 'message-recipients)
+		     "[ \f\t\n\r\v,]+"))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
-    (epg-context-set-passphrase-callback
-     context
-     #'mml2015-epg-passphrase-callback)
+    (if mml2015-cache-passphrase
+	(epg-context-set-passphrase-callback
+	 context
+	 #'mml2015-epg-passphrase-callback))
     (condition-case error
 	(setq cipher
 	      (epg-encrypt-string context (buffer-string) recipients sign)

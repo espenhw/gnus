@@ -32,6 +32,8 @@
   (require 'cl)
   (require 'mm-util))
 
+(require 'password)
+
 (defvar mc-pgp-always-sign)
 
 (autoload 'quoted-printable-decode-region "qp")
@@ -358,9 +360,10 @@ If no one is selected, default secret key is used.  "
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
-    (epg-context-set-passphrase-callback
-     context
-     #'mml1991-epg-passphrase-callback)
+    (if mml1991-cache-passphrase
+	(epg-context-set-passphrase-callback
+	 context
+	 #'mml1991-epg-passphrase-callback))
     ;; Don't sign headers.
     (goto-char (point-min))
     (when (re-search-forward "^$" nil t)
@@ -426,9 +429,10 @@ If no one is selected, symmetric encryption will be performed.  "
 		     "[ \f\t\n\r\v,]+"))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
-    (epg-context-set-passphrase-callback
-     context
-     #'mml1991-epg-passphrase-callback)
+    (if mml1991-cache-passphrase
+	(epg-context-set-passphrase-callback
+	 context
+	 #'mml1991-epg-passphrase-callback))
     (condition-case error
 	(setq cipher
 	      (epg-encrypt-string context (buffer-string) recipients sign)
