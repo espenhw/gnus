@@ -1,3 +1,14 @@
+2006-07-10  Daiki Ueno <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-verbose): New variable.
+	(mml2015-cache-passphrase): Ditto.
+	(mml2015-passphrase-cache-expiry): Ditto.
+	(mml2015-function-alist): Add epg.
+	(mml2015-epg-passphrase-callback, mml2015-epg-decrypt)
+	(mml2015-epg-clear-decrypt, mml2015-epg-verify)
+	(mml2015-epg-clear-verify, mml2015-epg-sign, mml2015-epg-encrypt): New
+	functions.
+
 2006-07-08  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* message.el (message-cite-original-1): Preserve region when removing
