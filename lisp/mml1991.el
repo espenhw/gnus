@@ -46,8 +46,21 @@
     (gpg mml1991-gpg-sign
 	 mml1991-gpg-encrypt)
     (pgg mml1991-pgg-sign
-	 mml1991-pgg-encrypt))
+	 mml1991-pgg-encrypt)
+    (epg mml1991-epg-sign
+	 mml1991-epg-encrypt))
   "Alist of PGP functions.")
+
+(defvar mml1991-verbose nil
+  "If non-nil, ask the user about the current operation more verbosely.")
+
+(defvar mml1991-cache-passphrase t
+  "If t, cache passphrase.")
+
+(defvar mml1991-passphrase-cache-expiry 16
+  "How many seconds the passphrase is cached.
+Whether the passphrase is cached at all is controlled by
+`mml1991-cache-passphrase'.")
 
 ;;; mailcrypt wrapper
 
@@ -288,6 +301,146 @@
   (delete-region (point-min) (point-max))
   (insert "\n")
   (insert-buffer-substring pgg-output-buffer)
+  t)
+
+;; epg wrapper
+
+(eval-and-compile
+  (autoload 'epg-make-context "epg"))
+
+(eval-when-compile
+  (defvar epg-user-id-alist)
+  (autoload 'epg-passphrase-callback-function "epg")
+  (autoload 'epa-select-keys "epa")
+  (autoload 'epg-list-keys "epg")
+
+  (autoload 'epg-context-set-armor "epg")
+  (autoload 'epg-context-set-textmode "epg")
+
+  (autoload 'epg-context-set-signers "epg")
+  (autoload 'epg-context-set-passphrase-callback "epg")
+
+  (autoload 'epg-sign-string "epg")
+  (autoload 'epg-encrypt-string "epg"))
+
+(defvar mml1991-epg-secret-key-id-list nil)
+
+(defun mml1991-epg-passphrase-callback (context key-id ignore)
+  (if (eq key-id 'SYM)
+      (epg-passphrase-callback-function context key-id nil)
+    (let* ((entry (assoc key-id epg-user-id-alist))
+	   (passphrase
+	    (password-read
+	     (format "GnuPG passphrase for %s: "
+		     (if entry
+			 (cdr entry)
+		       key-id))
+	     (if (eq key-id 'PIN)
+		 "PIN"
+	       key-id))))
+      (when passphrase
+	(let ((password-cache-expiry mml1991-passphrase-cache-expiry))
+	  (password-cache-add key-id passphrase))
+	(setq mml1991-epg-secret-key-id-list
+	      (cons key-id mml1991-epg-secret-key-id-list))
+	(copy-sequence passphrase)))))
+
+(defun mml1991-epg-sign (cont)
+  (let ((context (epg-make-context))
+	headers cte signers signature)
+    (if mml1991-verbose
+	(setq signers (epa-select-keys context "Select keys for signing.
+If no one is selected, default secret key is used.  "
+				       nil t))
+      (setq signers (list (car (epg-list-keys
+				context
+				(message-options-get 'mml-sender) t)))))
+    (epg-context-set-armor context t)
+    (epg-context-set-textmode context t)
+    (epg-context-set-signers context signers)
+    (epg-context-set-passphrase-callback
+     context
+     #'mml1991-epg-passphrase-callback)
+    ;; Don't sign headers.
+    (goto-char (point-min))
+    (when (re-search-forward "^$" nil t)
+      (setq headers (buffer-substring (point-min) (point)))
+      (save-restriction
+	(narrow-to-region (point-min) (point))
+	(setq cte (mail-fetch-field "content-transfer-encoding")))
+      (forward-line 1)
+      (delete-region (point-min) (point))
+      (when cte
+	(setq cte (intern (downcase cte)))
+	(mm-decode-content-transfer-encoding cte)))
+    (condition-case error
+	(setq signature (epg-sign-string context (buffer-string) 'clear)
+	      mml1991-epg-secret-key-id-list nil)
+      (error
+       (while mml1991-epg-secret-key-id-list
+	 (password-cache-remove (car mml1991-epg-secret-key-id-list))
+	 (setq mml1991-epg-secret-key-id-list
+	       (cdr mml1991-epg-secret-key-id-list)))
+       (signal (car error) (cdr error))))
+    (delete-region (point-min) (point-max))
+    (mm-with-unibyte-current-buffer
+      (insert signature)
+      (goto-char (point-min))
+      (while (re-search-forward "\r+$" nil t)
+	(replace-match "" t t))
+      (when cte
+	(mm-encode-content-transfer-encoding cte))
+      (goto-char (point-min))
+      (when headers
+	(insert headers))
+      (insert "\n"))
+    t))
+
+(defun mml1991-epg-encrypt (cont &optional sign)
+  (goto-char (point-min))
+  (when (re-search-forward "^$" nil t)
+    (let ((cte (save-restriction
+		 (narrow-to-region (point-min) (point))
+		 (mail-fetch-field "content-transfer-encoding"))))
+      ;; Strip MIME headers since it will be ASCII armoured.
+      (forward-line 1)
+      (delete-region (point-min) (point))
+      (when cte
+	(mm-decode-content-transfer-encoding (intern (downcase cte))))))
+  (let ((context (epg-make-context))
+	recipients cipher)
+    (if (or mml1991-verbose
+	    (null (message-options-get 'message-recipients)))
+	(setq recipients
+	      (epa-select-keys context "Select recipients for encryption.
+If no one is selected, symmetric encryption will be performed.  "
+			       (if (message-options-get 'message-recipients)
+				   (split-string
+				    (message-options-get 'message-recipients)
+				    "[ \f\t\n\r\v,]+"))))
+      (setq recipients
+	    (mapcar (lambda (name)
+		      (car (epg-list-keys context name)))
+		    (split-string
+		     (message-options-get 'message-recipients)
+		     "[ \f\t\n\r\v,]+"))))
+    (epg-context-set-armor context t)
+    (epg-context-set-textmode context t)
+    (epg-context-set-passphrase-callback
+     context
+     #'mml1991-epg-passphrase-callback)
+    (condition-case error
+	(setq cipher
+	      (epg-encrypt-string context (buffer-string) recipients sign)
+	      mml1991-epg-secret-key-id-list nil)
+      (error
+       (while mml1991-epg-secret-key-id-list
+	 (password-cache-remove (car mml1991-epg-secret-key-id-list))
+	 (setq mml1991-epg-secret-key-id-list
+	       (cdr mml1991-epg-secret-key-id-list)))
+       (signal (car error) (cdr error))))
+    (delete-region (point-min) (point-max))
+    (insert "\n" cipher))
   t)
 
 ;;;###autoload

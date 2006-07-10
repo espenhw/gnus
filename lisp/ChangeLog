@@ -1,5 +1,11 @@
 2006-07-10  Daiki Ueno <ueno@unixuser.org>
 
+	* mml1991.el (mml1991-function-alist): Add epg.
+	(mml1991-epg-passphrase-callback, mml1991-epg-sign)
+	(mml1991-epg-encrypt): New functions.
+
+2006-07-10  Daiki Ueno <ueno@unixuser.org>
+
 	* mml2015.el (mml2015-verbose): New variable.
 	(mml2015-cache-passphrase): Ditto.
 	(mml2015-passphrase-cache-expiry): Ditto.
