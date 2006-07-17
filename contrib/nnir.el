@@ -1,10 +1,16 @@
 ;;; nnir.el --- search mail with various search engines -*- coding: iso-8859-1 -*-
-;; Copyright (C) 1998 Kai Groﬂjohann
+
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Kai Groﬂjohann <grossjohann@ls6.cs.uni-dortmund.de>
-;; Keywords: news, mail, searching, ir, glimpse, wais, hyrex
+;; Swish-e and Swish++ backends by: 
+;;   Christoph Conrad <christoph.conrad@gmx.de>.
+;; Imap backend by: Simon Josefsson <jas@pdc.kth.se>.
 
-;; This file is not part of GNU Emacs.
+;; Keywords: news mail searching ir
+
+;; This file is part of GNU Emacs.
 
 ;; This is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,7 +37,7 @@
 ;; with your ideas.
 
 ;; What does it do?  Well, it allows you to index your mail using some
-;; search engine (freeWAIS-sf, Glimpse and others -- see later),
+;; search engine (freeWAIS-sf, swish-e and others -- see later),
 ;; then type `G G' in the Group buffer and issue a query to the search
 ;; engine.  You will then get a buffer which shows all articles
 ;; matching the query, sorted by Retrieval Status Value (score).
@@ -55,7 +61,6 @@
 ;;   others doesn't support nnfolder.
 ;; * It can only search the mail backend's which are supported by one
 ;;   search engine, because of different query languages.
-;; * There are restrictions to the Glimpse setup.
 ;; * There are restrictions to the Wais setup.
 ;; * There are restrictions to the imap setup.
 ;; * gnus-summary-nnir-goto-thread: Fetches whole group first, before
@@ -156,18 +161,7 @@
 ;; this prefix.  It defaults to `$HOME/Mail/' (note the trailing
 ;; slash).
 
-;; 2. Glimpse
-;;
-;; The code expects you to have one Glimpse index which contains all
-;; your mail files.  The Lisp setup involves setting the
-;; `nnir-glimpse-*' variables.  The most difficult to understand
-;; variable is probably `nnir-glimpse-remove-prefix', it corresponds
-;; to `nnir-wais-remove-prefix', see above.  The `nnir-glimpse-home'
-;; variable should be set to the value of the `-H' option which allows
-;; one to search this Glimpse index.  I have indexed my whole home
-;; directory with Glimpse, so I assume a default of `$HOME'.
-
-;; 3. Namazu
+;; 2. Namazu
 ;;
 ;; The Namazu backend requires you to have one directory containing all
 ;; index files, this is controlled by the `nnir-namazu-index-directory'
@@ -211,7 +205,7 @@
 ;; For maximum searching efficiency I have a cron job set to run this
 ;; command every four hours.
 
-;; 4. HyREX
+;; 3. HyREX
 ;;
 ;; The HyREX backend requires you to have one directory from where all
 ;; your relative paths are to, if you use them. This directory must be
@@ -242,7 +236,7 @@
 ;; the second element should be the article number, and the third
 ;; element should be the Retrieval Status Value (RSV) as returned from
 ;; the search engine.  An RSV is the score assigned to the document by
-;; the search engine.  For Boolean search engines like Glimpse, the
+;; the search engine.  For Boolean search engines, the
 ;; RSV is always 1000 (or 1 or 100, or whatever you like).
 
 ;; The sorting order of the articles in the summary buffer created by
@@ -261,8 +255,6 @@
 
 ;; Todo, or future ideas:
 
-;; * Make it so that Glimpse can also be called without `-F'.
-;;
 ;; * It should be possible to restrict search to certain groups.
 ;;
 ;; * There is currently no error checking.
@@ -330,12 +322,8 @@
 ;;; Developer Extension Variable:
 
 (defvar nnir-engines
-  `((glimpse nnir-run-glimpse
-             ((group . "Group spec: ")))
-    (wais    nnir-run-waissearch
+  `((wais    nnir-run-waissearch
              ())
-    (excite  nnir-run-excite-search
-	     ())
     (imap    nnir-run-imap
              ((criteria 
 	       "Search in: "                      ; Prompt
@@ -376,7 +364,7 @@ Add an entry here when adding a new search engine.")
 ;;; User Customizable Variables:
 
 (defgroup nnir nil
-  "Search nnmh and nnml groups in Gnus with Glimpse, freeWAIS-sf, or EWS."
+  "Search nnmh and nnml groups in Gnus with swish-e, freeWAIS-sf, or EWS."
   :group 'gnus)
 
 ;; Mail backend.
@@ -407,47 +395,6 @@ settings of `nnir-search-engine'."
   :type '(sexp)
   :group 'nnir)
 
-;; Glimpse engine.
-
-(defcustom nnir-glimpse-program "glimpse"
-  "*Name of Glimpse executable."
-  :type '(string)
-  :group 'nnir)
-
-(defcustom nnir-glimpse-home (getenv "HOME")
-  "*Value of `-H' glimpse option.
-`~' and environment variables must be expanded, see the functions
-`expand-file-name' and `substitute-in-file-name'."
-  :type '(directory)
-  :group 'nnir)
-
-(defcustom nnir-glimpse-remove-prefix (concat (getenv "HOME") "/Mail/")
-  "*The prefix to remove from each file name returned by Glimpse
-in order to get a group name (albeit with / instead of .).  This is a
-regular expression.
-
-For example, suppose that Glimpse returns file names such as
-\"/home/john/Mail/mail/misc/42\".  For this example, use the following
-setting:  (setq nnir-glimpse-remove-prefix \"/home/john/Mail/\")
-Note the trailing slash.  Removing this prefix gives \"mail/misc/42\".
-`nnir' knows to remove the \"/42\" and to replace \"/\" with \".\" to
-arrive at the correct group name, \"mail.misc\"."
-  :type '(regexp)
-  :group 'nnir)
-
-(defcustom nnir-glimpse-additional-switches '("-i")
-  "*A list of strings, to be given as additional arguments to glimpse.
-The switches `-H', `-W', `-l' and `-y' are always used -- calling
-glimpse without them does not make sense in our situation.
-Suggested elements to put here are `-i' and `-w'.
-
-Note that this should be a list.  Ie, do NOT use the following:
-    (setq nnir-glimpse-additional-switches \"-i -w\") ; wrong!
-Instead, use this:
-    (setq nnir-glimpse-additional-switches '(\"-i\" \"-w\"))"
-  :type '(repeat (string))
-  :group 'nnir)
-
 ;; freeWAIS-sf.
 
 (defcustom nnir-wais-program "waissearch"
@@ -470,36 +417,14 @@ The string given here is passed to `waissearch -d' as-is."
 in order to get a group name (albeit with / instead of .).  This is a
 regular expression.
 
-This variable is similar to `nnir-glimpse-remove-prefix', only for Wais,
-not Glimpse."
+For example, suppose that Wais returns file names such as
+\"/home/john/Mail/mail/misc/42\".  For this example, use the following
+setting:  (setq nnir-wais-remove-prefix \"/home/john/Mail/\")
+Note the trailing slash.  Removing this prefix gives \"mail/misc/42\".
+`nnir' knows to remove the \"/42\" and to replace \"/\" with \".\" to
+arrive at the correct group name, \"mail.misc\"."
   :type '(regexp)
   :group 'nnir)
-
-;; EWS (Excite for Web Servers) engine.
-
-(defcustom nnir-excite-aquery-program "aquery.pl"
-  "*Name of the EWS query program.  Should be `aquery.pl' or a path to same."
-  :type '(string)
-  :group 'nnir)
-
-(defcustom nnir-excite-collection "Mail"
-  "*Name of the EWS collection to search."
-  :type '(string)
-  :group 'nnir)
-
-(defcustom nnir-excite-remove-prefix (concat (getenv "HOME") "/Mail/")
-  "*The prefix to remove from each file name returned by EWS
-in order to get a group name (albeit with / instead of .).  This is a
-regular expression.
-
-This variable is very similar to `nnir-glimpse-remove-prefix', except
-that it is for EWS, not Glimpse."
-  :type '(regexp)
-  :group 'nnir)
-
-;; Swish++.  Next three variables Copyright (C) 2000, 2001 Christoph
-;; Conrad <christoph.conrad@gmx.de>.
-;; Swish++ home page: http://homepage.mac.com/pauljlucas/software/swish/
 
 (defcustom nnir-swish++-configuration-file
   (expand-file-name "~/Mail/swish++.conf")
@@ -527,8 +452,8 @@ Instead, use this:
 in order to get a group name (albeit with / instead of .).  This is a
 regular expression.
 
-This variable is very similar to `nnir-glimpse-remove-prefix', except
-that it is for swish++, not Glimpse."
+This variable is very similar to `nnir-wais-remove-prefix', except
+that it is for swish++, not Wais."
   :type '(regexp)
   :group 'nnir)
 
@@ -537,7 +462,6 @@ that it is for swish++, not Glimpse."
 ;; New version: http://www.boe.es/swish-e
 ;; Variables `nnir-swish-e-index-file', `nnir-swish-e-program' and
 ;; `nnir-swish-e-additional-switches'
-;; Copyright (C) 2000 Christoph Conrad <christoph.conrad@gmx.de>.
 
 (make-obsolete-variable 'nnir-swish-e-index-file
 			'nnir-swish-e-index-files)
@@ -580,8 +504,8 @@ This could be a server parameter."
 in order to get a group name (albeit with / instead of .).  This is a
 regular expression.
 
-This variable is very similar to `nnir-glimpse-remove-prefix', except
-that it is for swish-e, not Glimpse.
+This variable is very similar to `nnir-wais-remove-prefix', except
+that it is for swish-e, not Wais.
 
 This could be a server parameter."
   :type '(regexp)
@@ -649,8 +573,8 @@ Instead, use this:
   "*The prefix to remove from each file name returned by Namazu
 in order to get a group name (albeit with / instead of .).
 
-This variable is very similar to `nnir-glimpse-remove-prefix', except
-that it is for Namazu, not Glimpse."
+This variable is very similar to `nnir-wais-remove-prefix', except
+that it is for Namazu, not Wais."
   :type '(directory)
   :group 'nnir)
 
@@ -885,77 +809,6 @@ and show thread that contains this article."
 
 ;;; Search Engine Interfaces:
 
-;; Glimpse interface.
-(defun nnir-run-glimpse (query server &optional group)
-  "Run given query against glimpse.  Returns a vector of (group name, file name)
-pairs (also vectors, actually)."
-  (save-excursion
-    (let ((artlist nil)
-          (groupspec (cdr (assq 'group query)))
-          (qstring (cdr (assq 'query query)))
-	  (prefix (nnir-read-server-parm 'nnir-glimpse-remove-prefix server))
-	  artno dirnam)
-      (when (and group groupspec)
-        (error (concat "It does not make sense to use a group spec"
-                       " with process-marked groups.")))
-      (when group
-        (setq groupspec (gnus-group-real-name group)))
-      (set-buffer (get-buffer-create nnir-tmp-buffer))
-      (erase-buffer)
-      (if groupspec
-          (message "Doing glimpse query %s on %s..." query groupspec)
-        (message "Doing glimpse query %s..." query))
-      (let* ((cp-list
-              `( ,nnir-glimpse-program
-                 nil                    ; input from /dev/null
-                 t                      ; output
-                 nil                    ; don't redisplay
-                 "-H" ,(nnir-read-server-parm 'nnir-glimpse-home server) ; search home dir
-                 "-W"                   ; match pattern in file
-                 "-l" "-y"              ; misc options
-                 ,@(nnir-read-server-parm 'nnir-glimpse-additional-switches server)
-                 "-F" ,prefix           ; restrict output to mail
-                 ,qstring               ; the query, in glimpse format
-		 ))
-             (exitstatus
-              (progn
-                (message "%s args: %s" nnir-glimpse-program
-                         (mapconcat 'identity (cddddr cp-list) " "))
-                (apply 'call-process cp-list))))
-        (unless (or (null exitstatus)
-                    (zerop exitstatus))
-          (nnheader-report 'nnir "Couldn't run glimpse: %s" exitstatus)
-          ;; Glimpse failure reason is in this buffer, show it if
-          ;; the user wants it.
-          (when (> gnus-verbose 6)
-            (display-buffer nnir-tmp-buffer))))
-      (when groupspec
-        (keep-lines groupspec))
-      (if groupspec
-          (message "Doing glimpse query %s on %s...done" query groupspec)
-        (message "Doing glimpse query %s...done" query))
-      (sit-for 0)
-      ;; remove superfluous stuff from glimpse output
-      (goto-char (point-min))
-      (delete-non-matching-lines "/[0-9]+$")
-      ;;(delete-matching-lines "\\.overview~?$")
-      (goto-char (point-min))
-      (while (re-search-forward (concat "^" prefix "\\(.+\\)" "/\\([0-9]\\)+$") nil t)
-	;; replace / with . in group names
-        (setq dirnam (substitute ?. ?/ (match-string 1))
-	      artno  (match-string 2))
-	(push (vector (nnir-group-full-name dirnam server)
-		      (string-to-int artno)) artlist))
-
-      (sort* artlist
-             (function (lambda (x y)
-                         (if (string-lessp (nnir-artitem-group x)
-                                           (nnir-artitem-group y))
-                             t
-                           (< (nnir-artitem-number x)
-                              (nnir-artitem-number y))))))
-      )))
-
 ;; freeWAIS-sf interface.
 (defun nnir-run-waissearch (query server &optional group)
   "Run given query agains waissearch.  Returns vector of (group name, file name)
@@ -1001,50 +854,7 @@ pairs (also vectors, actually)."
                                 (> (nnir-artitem-rsv x)
                                    (nnir-artitem-rsv y)))))))))
 
-;; EWS (Excite for Web Servers) interface
-(defun nnir-run-excite-search (query server &optional group)
-  "Run a given query against EWS.  Returns vector of (group name, file name)
-pairs (also vectors, actually)."
-  (when group
-    (error "Searching specific groups not implemented for EWS."))
-  (save-excursion
-    (let ((qstring (cdr (assq 'query query)))
-	  (prefix (nnir-read-server-parm 'nnir-excite-remove-prefix server))
-	  artlist group article-num article)
-      (setq nnir-current-query query)
-      (set-buffer (get-buffer-create nnir-tmp-buffer))
-      (erase-buffer)
-      (message "Doing EWS query %s..." qstring)
-      (call-process nnir-excite-aquery-program
-		    nil			; input from /dev/null
-		    t			; output to current buffer
-		    nil			; don't redisplay
-		    (nnir-read-server-parm 'nnir-excite-collection server)
-		    (if (string= (substring qstring 0 1) "(")
-			qstring
-		      (format "(concept %s)" qstring)))
-      (message "Gathering query output...")
-
-      (goto-char (point-min))
-      (while (re-search-forward
-	      "^[0-9]+\\s-[0-9]+\\s-[0-9]+\\s-\\(\\S-*\\)" nil t)
-	(setq article (match-string 1))
-	(unless (string-match
-		 (concat "^" (regexp-quote prefix)
-			 "\\(.*\\)/\\([0-9]+\\)") article)
-	  (nnheader-report 'nnir "Dir name %s doesn't contain prefix %s"
-			   article prefix))
-	(setq group (substitute ?. ?/ (match-string 1 article)))
-	(setq group (nnir-group-full-name group server))
-	(setq article-num (match-string 2 article))
-	(setq artlist (vconcat artlist (vector (vector group
-						       (string-to-int article-num)
-						       1000)))))
-      (message "Gathering query output...done")
-      artlist)))
-
-;; IMAP interface.  The following function is Copyright (C) 1998 Simon
-;; Josefsson <jas@pdc.kth.se>.
+;; IMAP interface.
 ;; todo:
 ;; nnir invokes this two (2) times???!
 ;; we should not use nnimap at all but open our own server connection
@@ -1081,8 +891,7 @@ pairs (also vectors, actually)."
         (quit nil))
       (reverse artlist))))
 
-;; Swish++ interface.  The following function is Copyright (C) 2000,
-;; 2001 Christoph Conrad <christoph.conrad@gmx.de>.
+;; Swish++ interface.
 ;; -cc- Todo
 ;; Search by
 ;; - group
@@ -1192,8 +1001,7 @@ Windows NT 4.0."
                                 (> (nnir-artitem-rsv x)
                                    (nnir-artitem-rsv y)))))))))
 
-;; Swish-E interface.  The following function is Copyright (C) 2000,
-;; 2001 by Christoph Conrad <christoph.conrad@gmx.de>.
+;; Swish-E interface.
 (defun nnir-run-swish-e (query server &optional group)
   "Run given query against swish-e.
 Returns a vector of (group name, file name) pairs (also vectors,

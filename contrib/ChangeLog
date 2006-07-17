@@ -1,4 +1,10 @@
-2006-06-15  Chong Yidong  <cyd@stupidchicken.com>
+2006-07-17  Sascha Wilde  <wilde@sha-bang.de>
+
+	* nnir.el: Removed support for non free backends glimpse and excite.
+	Changed and updated copyright to Free Software Foundation.  Moved all
+	authors to head.
+
+006-06-15  Chong Yidong  <cyd@stupidchicken.com>
 
 	* sendmail.el (mail-send): Search explicitly for
 	mail-header-separator when checking for corrupted header lines.
