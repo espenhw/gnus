@@ -5453,7 +5453,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq gnus-newsgroup-auto-expire
 	    (gnus-group-auto-expirable-p group))
       ;; Set up the article buffer now, if necessary.
-      (unless gnus-single-article-buffer
+      (unless (and gnus-single-article-buffer
+		   (equal gnus-article-buffer "*Article*"))
 	(gnus-article-setup-buffer))
       ;; First and last article in this newsgroup.
       (when gnus-newsgroup-headers
