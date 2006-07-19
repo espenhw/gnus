@@ -1,3 +1,8 @@
+2006-07-17  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-delete-article): Don't use TAB in doc
+	string.
+
 2006-07-16  NAKAJI Hiroyuki  <nakaji@heimat.jp>  (tiny change)
 
 	* mm-util.el (mm-charset-synonym-alist): Map windows-31j to cp932.
