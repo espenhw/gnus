@@ -980,8 +980,8 @@
 
 2006-04-04  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
-	* nnweb.el (nnweb-google-create-mapping): Update regexp.  Some
-	whitespace was matched into the url, which broke browsing hits
+	* nnweb.el (nnweb-google-create-mapping): Update regexp.
+	Some whitespace was matched into the url, which broke browsing hits
 	> 100 when mm-url-use-external was nil.
 
 2006-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
@@ -1012,8 +1012,7 @@
 
 2006-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-group.el (gnus-group-update-tool-bar): Add :initialize and
-	:set.
+	* gnus-group.el (gnus-group-update-tool-bar): Add :initialize and :set.
 
 2006-03-29  Daiki Ueno  <ueno@unixuser.org>
 
@@ -1157,8 +1156,8 @@
 
 2006-03-15  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
-	* gnus-art.el (gnus-article-only-boring-p): Bind
-	inhibit-point-motion-hooks to avoid infinite loop when entering
+	* gnus-art.el (gnus-article-only-boring-p):
+	Bind inhibit-point-motion-hooks to avoid infinite loop when entering
 	intangible text.  Reported by Ralf Wachinger
 	<rwnewsmampfer@geekmail.de>.
 
@@ -1287,8 +1286,7 @@
 
 2006-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* mm-decode.el (mm-get-part): Don't use
-	mm-with-unibyte-current-buffer.
+	* mm-decode.el (mm-get-part): Don't use mm-with-unibyte-current-buffer.
 
 	* gnus-sum.el (gnus-summary-set-display-table): Don't nix out
 	characters 160 through 255 in Emacs 23.
@@ -1709,8 +1707,8 @@
 
 2006-02-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* spam-report.el (spam-report-gmane-use-article-number): Improve
-	doc string.
+	* spam-report.el (spam-report-gmane-use-article-number):
+	Improve doc string.
 	(spam-report-gmane-internal): Check if a suitable header was found
 	in the article.
 
@@ -1745,21 +1743,18 @@
 	* nnweb.el (nnweb-group-alist): Use defvar instead of defvoo,
 	there's only one active file for all servers.
 	(nnweb-request-scan): Make sure nnweb-articles is initialized on
-	solid groups.  Gnus might have used a FAST request to select the
-	group.
+	solid groups.  Gnus might have used a FAST request to select the group.
 	(nnweb-request-group, nnweb-google-parse-1): Don't keep nnweb-type
 	and nnweb-search redundantly in the active file.
-	(nnweb-request-list): Don't list bogus groups.  There can only be
-	one.
+	(nnweb-request-list): Don't list bogus groups.  There can only be one.
 	(nnweb-request-create-group): Don't use ARGS.
 	(nnweb-possibly-change-server, nnweb-request-group): Remove some
 	initialisations.  Let nnoo do the work.
 
 2006-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* mm-uu.el (mm-uu-emacs-sources-extract): Say the part has been
-	decoded.
-	(mm-uu-diff-extract): Ditto.
+	* mm-uu.el (mm-uu-emacs-sources-extract, mm-uu-diff-extract):
+	Say the part has been decoded.
 
 	* mm-view.el (mm-display-inline-fontify): Get decoded part rightly.
 
