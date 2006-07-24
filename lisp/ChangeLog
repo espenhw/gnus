@@ -4,6 +4,13 @@
 	letters from the end.  Thanks to "David Smith" <davidsmith@acm.org> and
 	andreas@altroot.de (Andreas V,Av(Bgele)
 
+2006-07-19  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* mm-url.el (mm-url-insert-file-contents): Inhibit Connection: close
+	workaround for the url package included with Emacs.
+
+	* nnweb.el (nnweb-google-create-mapping): Update regexp.
+
 2006-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-select-newsgroup): Setup the article buffer
