@@ -28,6 +28,7 @@
 
 (require 'mml-smime)
 (eval-when-compile (require 'cl))
+(require 'password)
 (autoload 'mml2015-sign "mml2015")
 (autoload 'mml2015-encrypt "mml2015")
 (autoload 'mml1991-sign "mml1991")
@@ -95,6 +96,23 @@ details."
 			       (string :tag "User defined"))
 		       (choice (const :tag "Separate" separate)
 			       (const :tag "Combined" combined)))))
+
+(defcustom mml-secure-verbose nil
+  "If non-nil, ask the user about the current operation more verbosely."
+  :group 'message
+  :type 'boolean)
+
+(defcustom mml-secure-cache-passphrase password-cache
+  "If t, cache passphrase."
+  :group 'message
+  :type 'boolean)
+
+(defcustom mml-secure-passphrase-cache-expiry password-cache-expiry
+  "How many seconds the passphrase is cached.
+Whether the passphrase is cached at all is controlled by
+`mml-secure-cache-passphrase'."
+  :group 'message
+  :type 'integer)
 
 ;;; Configuration/helper functions
 

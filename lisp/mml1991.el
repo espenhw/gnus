@@ -32,7 +32,7 @@
   (require 'cl)
   (require 'mm-util))
 
-(require 'password)
+(require 'mml-sec)
 
 (defvar mc-pgp-always-sign)
 
@@ -53,13 +53,13 @@
 	 mml1991-epg-encrypt))
   "Alist of PGP functions.")
 
-(defvar mml1991-verbose nil
+(defvar mml1991-verbose mml-secure-verbose
   "If non-nil, ask the user about the current operation more verbosely.")
 
-(defvar mml1991-cache-passphrase t
+(defvar mml1991-cache-passphrase mml-secure-cache-passphrase
   "If t, cache passphrase.")
 
-(defvar mml1991-passphrase-cache-expiry 16
+(defvar mml1991-passphrase-cache-expiry mml-secure-passphrase-cache-expiry
   "How many seconds the passphrase is cached.
 Whether the passphrase is cached at all is controlled by
 `mml1991-cache-passphrase'.")
@@ -315,15 +315,18 @@ Whether the passphrase is cached at all is controlled by
   (autoload 'epg-passphrase-callback-function "epg")
   (autoload 'epa-select-keys "epa")
   (autoload 'epg-list-keys "epg")
-
   (autoload 'epg-context-set-armor "epg")
   (autoload 'epg-context-set-textmode "epg")
-
   (autoload 'epg-context-set-signers "epg")
   (autoload 'epg-context-set-passphrase-callback "epg")
-
   (autoload 'epg-sign-string "epg")
   (autoload 'epg-encrypt-string "epg"))
+
+(eval-when-compile
+  (defvar password-cache-expiry)
+  (autoload 'password-read "password")
+  (autoload 'password-cache-add "password")
+  (autoload 'password-cache-remove "password"))
 
 (defvar mml1991-epg-secret-key-id-list nil)
 

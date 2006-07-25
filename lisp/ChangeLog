@@ -1,3 +1,24 @@
+2006-07-25  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el: Require mml-sec instead of password.
+	(mml2015-verbose): Inherit the default value from mml-secure-verbose.
+	(mml2015-cache-passphrase): Inherit the default value from
+	mml-secure-cache-passphrase.
+	(mml2015-passphrase-cache-expiry): Inherit the default value from
+	mml-secure-passphrase-cache-expiry.
+
+	* mml1991.el: Require mml-sec instead of password.
+	(mml1991-verbose): Inherit the default value from mml-secure-verbose.
+	(mml1991-cache-passphrase): Inherit the default value from
+	mml-secure-cache-passphrase.
+	(mml1991-passphrase-cache-expiry): Inherit the default value from
+	mml-secure-passphrase-cache-expiry.
+
+	* mml-sec.el: Require password.
+	(mml-secure-verbose): New user option.
+	(mml-secure-cache-passphrase): New user option.
+	(mml-secure-passphrase-cache-expiry): New user option.
+
 2006-07-24  Daiki Ueno  <ueno@unixuser.org>
 
 	* pgg-def.el (pgg-truncate-key-identifier): Truncate the key ID to 8

@@ -34,7 +34,7 @@
 (require 'mm-decode)
 (require 'mm-util)
 (require 'mml)
-(require 'password)
+(require 'mml-sec)
 
 (defvar mc-pgp-always-sign)
 
@@ -103,17 +103,17 @@ Valid packages include `pgg', `gpg' and `mailcrypt'.")
   :type '(repeat (cons (regexp :tag "GnuPG output regexp")
 		       (boolean :tag "Trust key"))))
 
-(defcustom mml2015-verbose nil
+(defcustom mml2015-verbose mml-secure-verbose
   "If non-nil, ask the user about the current operation more verbosely."
   :group 'mime-security
   :type 'boolean)
 
-(defcustom mml2015-cache-passphrase t
+(defcustom mml2015-cache-passphrase mml-secure-cache-passphrase
   "If t, cache passphrase."
   :group 'mime-security
   :type 'boolean)
 
-(defcustom mml2015-passphrase-cache-expiry 16
+(defcustom mml2015-passphrase-cache-expiry mml-secure-passphrase-cache-expiry
   "How many seconds the passphrase is cached.
 Whether the passphrase is cached at all is controlled by
 `mml2015-cache-passphrase'."
@@ -921,6 +921,12 @@ Whether the passphrase is cached at all is controlled by
   (autoload 'epg-encrypt-string "epg")
   (autoload 'epg-passphrase-callback-function "epg")
   (autoload 'epg-context-set-passphrase-callback "epg"))
+
+(eval-when-compile
+  (defvar password-cache-expiry)
+  (autoload 'password-read "password")
+  (autoload 'password-cache-add "password")
+  (autoload 'password-cache-remove "password"))
 
 (defvar mml2015-epg-secret-key-id-list nil)
 
