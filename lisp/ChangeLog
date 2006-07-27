@@ -1,3 +1,8 @@
+2006-07-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnheader.el (nnheader-insert-head): Make it work even if the file
+	uses CRLF for the line-break code.
+
 2006-07-25  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el: Require mml-sec instead of password.
