@@ -1117,10 +1117,14 @@ Whether the passphrase is cached at all is controlled by
 	(setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
 				       mml2015-signers t))
-      (setq signers (mapcar (lambda (name)
-			      (car (epg-list-keys context name t)))
-			    (or mml2015-signers
-				(list (message-options-get 'mml-sender))))))
+      (if mml2015-signers
+	  (setq signers (mapcar (lambda (name)
+				  (car (epg-list-keys context name t)))
+				mml2015-signers))
+	(setq signers (list (car (epg-list-keys
+				  context
+				  (message-options-get 'mml-sender)
+				  t))))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
@@ -1174,24 +1178,33 @@ If no one is selected, symmetric encryption will be performed.  "
       (setq recipients
 	    (mapcar (lambda (name)
 		      (car (epg-list-keys context name)))
-		    (split-string
-		     (message-options-get 'message-recipients)
-		     "[ \f\t\n\r\v,]+"))))
+		    (if (message-options-get 'message-recipients)
+			(split-string
+			 (message-options-get 'message-recipients)
+			 "[ \f\t\n\r\v,]+")))))
     (if mml2015-encrypt-to-self
-	(setq recipients
-	      (nconc recipients
-		     (mapcar (lambda (name)
-			       (car (epg-list-keys context name)))
-			     mml2015-signers))))
+	(if mml2015-signers
+	    (setq recipients
+		  (nconc recipients
+			 (mapcar (lambda (name)
+				   (car (epg-list-keys context name)))
+				 mml2015-signers)))
+	  (setq recipients
+		(nconc recipients
+		       (list (car (epg-list-keys context nil t)))))))
     (when sign
       (if mml2015-verbose
 	  (setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
 					 mml2015-signers t))
-	(setq signers (mapcar (lambda (name)
-				(car (epg-list-keys context name t)))
-			      (or mml2015-signers
-				  (list (message-options-get 'mml-sender))))))
+	(if mml2015-signers
+	    (setq signers (mapcar (lambda (name)
+				    (car (epg-list-keys context name t)))
+				  mml2015-signers))
+	  (setq signers (list (car (epg-list-keys
+				    context
+				    (message-options-get 'mml-sender)
+				    t))))))
       (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)

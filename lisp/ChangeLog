@@ -1,5 +1,13 @@
 2006-07-28  Daiki Ueno  <ueno@unixuser.org>
 
+	* mml2015.el (mml2015-epg-sign): If mml2015-signers is not set, use the
+	first matching secret key.
+	(mml2015-epg-encrypt): Ditto.
+
+	* mml1991.el (mml1991-epg-sign): If mml1991-signers is not set, use the
+	first matching secret key.
+	(mml1991-epg-encrypt): Ditto.
+
 	* mml2015.el (mml2015-encrypt-to-self): New user option.
 	(mml2015-epg-encrypt): Append mml2015-signers to recipients list if
 	mml2015-epg-encrypt-to-self is set.

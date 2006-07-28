@@ -363,10 +363,14 @@ Whether the passphrase is cached at all is controlled by
 	(setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
 				       mml1991-signers t))
-      (setq signers (mapcar (lambda (name)
-			      (car (epg-list-keys context name t)))
-			    (or mml1991-signers
-				(list (message-options-get 'mml-sender))))))
+      (if mml1991-signers
+	  (setq signers (mapcar (lambda (name)
+				  (car (epg-list-keys context name t)))
+				mml1991-signers))
+	(setq signers (list (car (epg-list-keys
+				  context
+				  (message-options-get 'mml-sender)
+				  t))))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
@@ -422,8 +426,7 @@ If no one is selected, default secret key is used.  "
 	(mm-decode-content-transfer-encoding (intern (downcase cte))))))
   (let ((context (epg-make-context))
 	recipients cipher signers)
-    (if (or mml1991-verbose
-	    (null (message-options-get 'message-recipients)))
+    (if mml1991-verbose
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "
@@ -434,24 +437,33 @@ If no one is selected, symmetric encryption will be performed.  "
       (setq recipients
 	    (mapcar (lambda (name)
 		      (car (epg-list-keys context name)))
-		    (split-string
-		     (message-options-get 'message-recipients)
-		     "[ \f\t\n\r\v,]+"))))
+		    (if (message-options-get 'message-recipients)
+			(split-string
+			 (message-options-get 'message-recipients)
+			 "[ \f\t\n\r\v,]+")))))
     (if mml1991-encrypt-to-self
-	(setq recipients
-	      (nconc recipients
-		     (mapcar (lambda (name)
-			       (car (epg-list-keys context name)))
-			     mml1991-signers))))
+	(if mml1991-signers
+	    (setq recipients
+		  (nconc recipients
+			 (mapcar (lambda (name)
+				   (car (epg-list-keys context name)))
+				 mml1991-signers)))
+	  (setq recipients
+		(nconc recipients
+		       (list (car (epg-list-keys context nil t)))))))
     (when sign
       (if mml1991-verbose
 	  (setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
 					 mml1991-signers t))
-	(setq signers (mapcar (lambda (name)
-				(car (epg-list-keys context name t)))
-			      (or mml1991-signers
-				  (list (message-options-get 'mml-sender))))))
+	(if mml1991-signers
+	    (setq signers (mapcar (lambda (name)
+				    (car (epg-list-keys context name t)))
+				  mml1991-signers))
+	  (setq signers (list (car (epg-list-keys
+				    context
+				    (message-options-get 'mml-sender)
+				    t))))))
       (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
