@@ -1,3 +1,7 @@
+2006-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnheader.el (nnheader-insert-head): Make it work with Mac as well.
+
 2006-07-28  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-sign): If mml2015-signers is not set, use the
