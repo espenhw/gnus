@@ -64,6 +64,9 @@
 Whether the passphrase is cached at all is controlled by
 `mml1991-cache-passphrase'.")
 
+(defvar mml1991-signers nil
+  "A list of key ID which will be used to sign a message.")
+
 ;;; mailcrypt wrapper
 
 (eval-and-compile
@@ -356,10 +359,11 @@ Whether the passphrase is cached at all is controlled by
     (if mml1991-verbose
 	(setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
-				       nil t))
-      (setq signers (list (car (epg-list-keys
-				context
-				(message-options-get 'mml-sender) t)))))
+				       mml1991-signers t))
+      (setq signers (mapcar (lambda (name)
+			      (car (epg-list-keys context name t)))
+			    (or mml1991-signers
+				(list (message-options-get 'mml-sender))))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
@@ -414,7 +418,7 @@ If no one is selected, default secret key is used.  "
       (when cte
 	(mm-decode-content-transfer-encoding (intern (downcase cte))))))
   (let ((context (epg-make-context))
-	recipients cipher)
+	recipients cipher signers)
     (if (or mml1991-verbose
 	    (null (message-options-get 'message-recipients)))
 	(setq recipients
@@ -430,6 +434,16 @@ If no one is selected, symmetric encryption will be performed.  "
 		    (split-string
 		     (message-options-get 'message-recipients)
 		     "[ \f\t\n\r\v,]+"))))
+    (when sign
+      (if mml1991-verbose
+	  (setq signers (epa-select-keys context "Select keys for signing.
+If no one is selected, default secret key is used.  "
+					 mml1991-signers t))
+	(setq signers (mapcar (lambda (name)
+				(car (epg-list-keys context name t)))
+			      (or mml1991-signers
+				  (list (message-options-get 'mml-sender))))))
+      (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (if mml1991-cache-passphrase

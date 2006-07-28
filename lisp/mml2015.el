@@ -120,6 +120,11 @@ Whether the passphrase is cached at all is controlled by
   :group 'mime-security
   :type 'integer)
 
+(defcustom mml2015-signers nil
+  "A list of key ID which will be used to sign a message."
+  :group 'mime-security
+  :type '(repeat (string :tag "Key ID")))
+
 ;;; mailcrypt wrapper
 
 (eval-and-compile
@@ -1106,10 +1111,11 @@ Whether the passphrase is cached at all is controlled by
     (if mml2015-verbose
 	(setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
-				       nil t))
-      (setq signers (list (car (epg-list-keys
-				context
-				(message-options-get 'mml-sender) t)))))
+				       mml2015-signers t))
+      (setq signers (mapcar (lambda (name)
+			      (car (epg-list-keys context name t)))
+			    (or mml2015-signers
+				(list (message-options-get 'mml-sender))))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
@@ -1150,10 +1156,9 @@ If no one is selected, default secret key is used.  "
 (defun mml2015-epg-encrypt (cont &optional sign)
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
-	recipients cipher
+	recipients cipher signers
 	(boundary (mml-compute-boundary cont)))
-    (if (or mml2015-verbose
-	    (null (message-options-get 'message-recipients)))
+    (if mml2015-verbose
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "
@@ -1167,6 +1172,16 @@ If no one is selected, symmetric encryption will be performed.  "
 		    (split-string
 		     (message-options-get 'message-recipients)
 		     "[ \f\t\n\r\v,]+"))))
+    (when sign
+      (if mml2015-verbose
+	  (setq signers (epa-select-keys context "Select keys for signing.
+If no one is selected, default secret key is used.  "
+				       mml2015-signers t))
+	(setq signers (mapcar (lambda (name)
+				(car (epg-list-keys context name t)))
+			      (or mml2015-signers
+				  (list (message-options-get 'mml-sender))))))
+      (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (if mml2015-cache-passphrase
