@@ -121,9 +121,14 @@ Whether the passphrase is cached at all is controlled by
   :type 'integer)
 
 (defcustom mml2015-signers nil
-  "A list of key ID which will be used to sign a message."
+  "A list of your own key ID which will be used to sign a message."
   :group 'mime-security
   :type '(repeat (string :tag "Key ID")))
+
+(defcustom mml2015-encrypt-to-self nil
+  "If t, add your own key ID to recipient list when encryption."
+  :group 'mime-security
+  :type 'boolean)
 
 ;;; mailcrypt wrapper
 
@@ -1172,11 +1177,17 @@ If no one is selected, symmetric encryption will be performed.  "
 		    (split-string
 		     (message-options-get 'message-recipients)
 		     "[ \f\t\n\r\v,]+"))))
+    (if mml2015-encrypt-to-self
+	(setq recipients
+	      (nconc recipients
+		     (mapcar (lambda (name)
+			       (car (epg-list-keys context name)))
+			     mml2015-signers))))
     (when sign
       (if mml2015-verbose
 	  (setq signers (epa-select-keys context "Select keys for signing.
 If no one is selected, default secret key is used.  "
-				       mml2015-signers t))
+					 mml2015-signers t))
 	(setq signers (mapcar (lambda (name)
 				(car (epg-list-keys context name t)))
 			      (or mml2015-signers

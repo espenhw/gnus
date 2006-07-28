@@ -65,7 +65,10 @@ Whether the passphrase is cached at all is controlled by
 `mml1991-cache-passphrase'.")
 
 (defvar mml1991-signers nil
-  "A list of key ID which will be used to sign a message.")
+  "A list of your own key ID which will be used to sign a message.")
+
+(defvar mml1991-encrypt-to-self nil
+  "If t, add your own key ID to recipient list when encryption.")
 
 ;;; mailcrypt wrapper
 
@@ -434,6 +437,12 @@ If no one is selected, symmetric encryption will be performed.  "
 		    (split-string
 		     (message-options-get 'message-recipients)
 		     "[ \f\t\n\r\v,]+"))))
+    (if mml1991-encrypt-to-self
+	(setq recipients
+	      (nconc recipients
+		     (mapcar (lambda (name)
+			       (car (epg-list-keys context name)))
+			     mml1991-signers))))
     (when sign
       (if mml1991-verbose
 	  (setq signers (epa-select-keys context "Select keys for signing.
