@@ -84,7 +84,7 @@ or `libgr-progs', for instance."
 	   (let ((coding-system-for-read 'raw-text)
 		 ;; At least "icontopbm" doesn't work with Windows because
 		 ;; the line-break code is converted into CRLF by default.
-		 (coding-system-for-write 'raw-text-unix))
+		 (coding-system-for-write 'binary))
 	     (and (eq 0 (apply 'call-process-region (point-min) (point-max)
 			       "uncompface"
 			       'delete '(t nil) nil))

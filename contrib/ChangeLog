@@ -1,5 +1,9 @@
 2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* compface.el (uncompface): Use binary rather than raw-text-unix.
+
+2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* compface.el (uncompface): Make sure the eol conversion doesn't take
 	place when communicating with the external programs.  Reported by
 	ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
