@@ -1,3 +1,9 @@
+2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* compface.el (uncompface): Make sure the eol conversion doesn't take
+	place when communicating with the external programs.  Reported by
+	ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
+
 2006-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheader.el (nnheader-insert-head): Fix typo in comment.
