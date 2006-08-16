@@ -1,3 +1,7 @@
+2006-07-24  Richard Stallman  <rms@gnu.org>
+
+	* pgg.texi: Move periods and commas inside quotes.
+
 2006-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Oort Gnus): Mention that the Lisp files are now installed

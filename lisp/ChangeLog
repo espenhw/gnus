@@ -1,3 +1,8 @@
+2006-08-13  Romain Francoise  <romain@orebokech.com>
+
+	* mm-extern.el (mm-extern-mail-server): End `y-or-n-p' prompt with a
+	space.
+
 2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* compface.el (uncompface): Use binary rather than raw-text-unix.
@@ -90,6 +95,12 @@
 
 	* gnus-sum.el (gnus-select-newsgroup): Setup the article buffer
 	correctly.  This fixes a bug caused by the 2006-05-12 change.
+
+2006-07-18  Karl Fogel  <kfogel@red-bean.com>
+
+	* nnmail.el (nnmail-article-group): If splitting raises an error, give
+	some information about the error when saying that the `bogus' mail
+	group will be used.
 
 2006-07-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -506,8 +517,7 @@
 
 2006-05-03  Stefan Monnier  <monnier@iro.umontreal.ca>
 
-	* gnus-art.el (gnus-mime-view-part-as-type): Add optional PRED
-	argument.
+	* gnus-art.el (gnus-mime-view-part-as-type): Add optional PRED arg.
 	(gnus-mime-view-part-externally, gnus-mime-view-part-internally):
 	Try harder to show the attachment internally or externally using
 	gnus-mime-view-part-as-type.
@@ -709,13 +719,13 @@
 
 2006-04-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-util.el (gnus-replace-in-string): Prefer
-	replace-regexp-in-string over of replace-in-string.
+	* gnus-util.el (gnus-replace-in-string):
+	Prefer replace-regexp-in-string over of replace-in-string.
 
 2006-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-util.el (gnus-select-frame-set-input-focus): Use
-	select-frame-set-input-focus if it is available in XEmacs; use
+	* gnus-util.el (gnus-select-frame-set-input-focus):
+	Use select-frame-set-input-focus if it is available in XEmacs; use
 	definition defined in Emacs 22 for old Emacsen.
 
 	* dgnushack.el: Autoload unmorse-region for XEmacs.
@@ -1205,8 +1215,8 @@
 
 	* gnus-agent.el (gnus-agent-queue-mail): Fix custom tag for `t'.
 
-	* spam.el (spam-mark-new-messages-in-spam-group-as-spam): Add
-	comment on version.
+	* spam.el (spam-mark-new-messages-in-spam-group-as-spam):
+	Add comment on version.
 
 2006-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -1251,8 +1261,8 @@
 
 	* gnus-art.el (gnus-article-only-boring-p):
 	Bind inhibit-point-motion-hooks to avoid infinite loop when entering
-	intangible text.  Reported by Ralf Wachinger
-	<rwnewsmampfer@geekmail.de>.
+	intangible text.
+	Reported by Ralf Wachinger <rwnewsmampfer@geekmail.de>.
 
 2006-03-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -1262,8 +1272,8 @@
 2006-03-14  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-unique-id): Don't use message-number-base36
-	if (user-uid) is a float.  Reported by Bjorn Solberg
-	<bjorn_ding1@hekneby.org>.
+	if (user-uid) is a float.
+	Reported by Bjorn Solberg <bjorn_ding1@hekneby.org>.
 
 2006-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
