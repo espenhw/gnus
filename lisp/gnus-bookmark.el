@@ -440,9 +440,9 @@ That is, all information but the name."
     nil
   (setq gnus-bookmark-bmenu-mode-map (make-keymap))
   (suppress-keymap gnus-bookmark-bmenu-mode-map t)
-  (define-key gnus-bookmark-bmenu-mode-map "q" (if (featurep 'xemacs)
-						   'bury-buffer
-						 'quit-window))
+  (define-key gnus-bookmark-bmenu-mode-map "q" (if (fboundp 'quit-window)
+						   'quit-window
+						 'bury-buffer))
   (define-key gnus-bookmark-bmenu-mode-map "\C-m" 'gnus-bookmark-bmenu-select)
   (define-key gnus-bookmark-bmenu-mode-map "v" 'gnus-bookmark-bmenu-select)
   (define-key gnus-bookmark-bmenu-mode-map "d" 'gnus-bookmark-bmenu-delete)

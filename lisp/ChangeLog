@@ -14,8 +14,9 @@
 	(gnus-bookmark-jump): Make completing-read work with XEmacs; activate
 	group before selecting it.
 	(gnus-bookmark-get-bookmark): Use assoc instead of assoc-string.
-	(gnus-bookmark-bmenu-mode-map): Bind `q' to bury-buffer in XEmacs;
-	use gnus-mouse-2 and bind it to gnus-bookmark-bmenu-select-by-mouse.
+	(gnus-bookmark-bmenu-mode-map): Bind `q' to bury-buffer instead of
+	quit-window if it is not available; use gnus-mouse-2 and bind it to
+	gnus-bookmark-bmenu-select-by-mouse.
 	(gnus-bookmark-show-details): Remove unused variable `details-list'.
 	(gnus-bookmark-bmenu-select-by-mouse): New function.
 
