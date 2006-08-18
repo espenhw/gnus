@@ -49,8 +49,6 @@
 ;; - renaming bookmarks in gnus-bookmark-bmenu-list
 ;; - better (formatted string) display in bmenu-list
 
-;; - Fix use of `split-string' and `assoc-string' for compatibility with Emacs
-;;   21 and XEmacs 21.4.
 ;; - Integrate the `gnus-summary-*-bookmark' functionality
 ;; - Initialize defcustoms from corresponding `bookmark.el' variables?
 
@@ -75,6 +73,13 @@
    (t (nnheader-concat gnus-directory "bookmarks.el")))
   "The default Gnus bookmarks file."
   :type 'string
+  :group 'gnus-bookmark)
+
+(defcustom gnus-bookmark-file-coding-system
+  (if (mm-coding-system-p 'iso-2022-7bit)
+      'iso-2022-7bit)
+  "Coding system used for writing Gnus bookmark files."
+  :type '(symbol :tag "Coding system")
   :group 'gnus-bookmark)
 
 (defcustom gnus-bookmark-sort-flag t
@@ -166,6 +171,17 @@ where each BMK is of the form
 
 So the cdr of each bookmark is an alist too.")
 
+(defmacro gnus-bookmark-mouse-available-p ()
+  "Return non-nil if a mouse is available."
+  (if (featurep 'xemacs)
+      '(and (eq (device-class) 'color) (device-on-window-system-p))
+    '(and (display-color-p) (display-mouse-p))))
+
+(defun gnus-bookmark-remove-properties (string)
+  "Remove all text properties from STRING."
+  (set-text-properties 0 (length string) nil string)
+  string)
+
 ;;;###autoload
 (defun gnus-bookmark-set ()
   "Set a bookmark for this article."
@@ -190,7 +206,7 @@ So the cdr of each bookmark is an alist too.")
       ;; Set the bookmark list
       (setq gnus-bookmark-alist
 	    (cons
-	     (list bmk-name
+	     (list (gnus-bookmark-remove-properties bmk-name)
 		   (gnus-bookmark-make-cell
 		    group message-id author date subject annotation))
 	     gnus-bookmark-alist))))
@@ -201,24 +217,21 @@ So the cdr of each bookmark is an alist too.")
   (group message-id author date subject annotation)
   "Return the record part of a new bookmark, given GROUP MESSAGE-ID AUTHOR DATE SUBJECT and ANNOTATION."
   (let ((the-record
-	 `((group . ,group)
-	   (message-id . ,message-id)
-	   (author . ,author)
-	   (date . ,date)
-	   (subject . ,subject)
-	   (annotation . ,annotation))))
+	 `((group . ,(gnus-bookmark-remove-properties group))
+	   (message-id . ,(gnus-bookmark-remove-properties message-id))
+	   (author . ,(gnus-bookmark-remove-properties author))
+	   (date . ,(gnus-bookmark-remove-properties date))
+	   (subject . ,(gnus-bookmark-remove-properties subject))
+	   (annotation . ,(gnus-bookmark-remove-properties annotation)))))
     the-record))
 
 (defun gnus-bookmark-set-bookmark-name (group author subject)
   "Set bookmark name from GROUP AUTHOR and SUBJECT."
   (let* ((subject (split-string subject))
 	 (default-name-0 ;; Should be merged with -1?
-	   ;; FIXME: In Emacs 21 or XEmacs 21.4 split-string accepts only 1-2
-	   ;; args.
-	   (concat (car (reverse (split-string group "[\\.:]" t))) "-"
-		   (car (split-string author)) "-"
-		   (concat (car subject) "-"
-			   (cadr subject))))
+	   (concat (car (nreverse (delete "" (split-string group "[\\.:]"))))
+		   "-" (car (split-string author))
+		   "-" (car subject) "-" (cadr subject)))
 	 (default-name-1
 	   ;; Strip "[]" chars from the bookmark name:
 	   (gnus-replace-in-string default-name-0 "[]_[]" ""))
@@ -242,8 +255,9 @@ So the cdr of each bookmark is an alist too.")
       (gnus-bookmark-insert-file-format-version-stamp)
       (pp gnus-bookmark-alist (current-buffer))
       (condition-case nil
-	  (write-region (point-min) (point-max)
-			gnus-bookmark-default-file)
+	  (let ((coding-system-for-write gnus-bookmark-file-coding-system))
+	    (write-region (point-min) (point-max)
+			  gnus-bookmark-default-file))
 	(file-error (message "Can't write %s"
 			     gnus-bookmark-default-file)))
       (kill-buffer (current-buffer))
@@ -254,8 +268,13 @@ So the cdr of each bookmark is an alist too.")
 (defun gnus-bookmark-insert-file-format-version-stamp ()
   "Insert text indicating current version of Gnus bookmark file format."
   (insert
-   (format ";;;; Gnus Bookmark Format Version %d ;;;;\n"
-           gnus-bookmark-file-format-version))
+   (format ";;;; Gnus Bookmark Format Version %d %s;;;;\n"
+	   gnus-bookmark-file-format-version
+	   (if gnus-bookmark-file-coding-system
+	       (concat "-*- coding: "
+		       (symbol-name gnus-bookmark-file-coding-system)
+		       "; -*- ")
+	     "")))
   (insert ";;; This format is meant to be slightly human-readable;\n"
           ";;; nevertheless, you probably don't want to edit it.\n"
           ";;; "
@@ -268,13 +287,14 @@ So the cdr of each bookmark is an alist too.")
   (gnus-bookmark-maybe-load-default-file)
   (let* ((bookmark (or bmk-name
 	  (completing-read "Jump to bookmarked article: "
-			   (mapcar 'car gnus-bookmark-alist))))
+			   gnus-bookmark-alist)))
 	 (bmk-cell (cadr (assoc bookmark gnus-bookmark-alist)))
 	 (group (cdr (assoc 'group bmk-cell)))
 	 (message-id (cdr (assoc 'message-id bmk-cell))))
     (when group
       (unless (get-buffer gnus-group-buffer)
 	(gnus-no-server))
+      (gnus-activate-group group)
       (gnus-group-quick-select-group 0 group))
     (if message-id
       (or (gnus-summary-goto-article message-id nil 'force)
@@ -366,15 +386,16 @@ deletion, or > if it is flagged for displaying."
            (insert "  "))
 	 (let ((start (point)))
 	   (insert (gnus-bookmark-name-from-full-record full-record))
-	   (if (and (display-color-p) (display-mouse-p))
+	   (if (gnus-bookmark-mouse-available-p)
 	       (add-text-properties
 		start
 		(save-excursion (re-search-backward
 				 "[^ \t]")
 				(1+ (point)))
-		'(mouse-face highlight
+		`(mouse-face highlight
 		  follow-link t
-		  help-echo "mouse-2: go to this article")))
+		  help-echo ,(format "%s: go to this article"
+				     (aref gnus-mouse-2 0)))))
 	   (insert "\n")
 	   )))
      gnus-bookmark-alist)
@@ -400,8 +421,7 @@ Don't affect the buffer ring order."
   "Return the full entry for Gnus BOOKMARK in `gnus-bookmark-alist'.
 If BOOKMARK is not a string, return nil."
   (when (stringp bookmark)
-    ;; FIXME: `assoc-string' doesn't exist in Emacs 21 and XEmacs 21.4:
-    (assoc-string bookmark gnus-bookmark-alist t)))
+    (assoc bookmark gnus-bookmark-alist)))
 
 (defun gnus-bookmark-get-bookmark-record (bookmark)
   "Return the guts of the entry for Gnus BOOKMARK in `gnus-bookmark-alist'.
@@ -420,7 +440,9 @@ That is, all information but the name."
     nil
   (setq gnus-bookmark-bmenu-mode-map (make-keymap))
   (suppress-keymap gnus-bookmark-bmenu-mode-map t)
-  (define-key gnus-bookmark-bmenu-mode-map "q" 'quit-window)
+  (define-key gnus-bookmark-bmenu-mode-map "q" (if (featurep 'xemacs)
+						   'bury-buffer
+						 'quit-window))
   (define-key gnus-bookmark-bmenu-mode-map "\C-m" 'gnus-bookmark-bmenu-select)
   (define-key gnus-bookmark-bmenu-mode-map "v" 'gnus-bookmark-bmenu-select)
   (define-key gnus-bookmark-bmenu-mode-map "d" 'gnus-bookmark-bmenu-delete)
@@ -438,7 +460,8 @@ That is, all information but the name."
   (define-key gnus-bookmark-bmenu-mode-map "s" 'gnus-bookmark-bmenu-save)
   (define-key gnus-bookmark-bmenu-mode-map "t" 'gnus-bookmark-bmenu-toggle-infos)
   (define-key gnus-bookmark-bmenu-mode-map "a" 'gnus-bookmark-bmenu-show-details)
-  (define-key gnus-bookmark-bmenu-mode-map [mouse-2] 'gnus-bookmark-bmenu-select))
+  (define-key gnus-bookmark-bmenu-mode-map gnus-mouse-2
+    'gnus-bookmark-bmenu-select-by-mouse))
 
 ;; Bookmark Buffer Menu mode is suitable only for specially formatted
 ;; data.
@@ -515,7 +538,7 @@ Optional argument SHOW means show them unconditionally."
 	      (let ((start (save-excursion (end-of-line) (point))))
 		(move-to-column gnus-bookmark-bmenu-file-column t)
 		;; Strip off `mouse-face' from the white spaces region.
-		(if (and (display-color-p) (display-mouse-p))
+		(if (gnus-bookmark-mouse-available-p)
 		    (remove-text-properties start (point)
 					    '(mouse-face nil help-echo nil))))
 	      (delete-region (point) (progn (end-of-line) (point)))
@@ -531,15 +554,16 @@ Optional argument SHOW means show them unconditionally."
 	(insert (gnus-bookmark-get-details
 		 bmk-name
 		 gnus-bookmark-bookmark-inline-details))
-      (if (and (display-color-p) (display-mouse-p))
+      (if (gnus-bookmark-mouse-available-p)
 	  (add-text-properties
 	   start
 	   (save-excursion (re-search-backward
 			    "[^ \t]")
 					       (1+ (point)))
-	   '(mouse-face highlight
+	   `(mouse-face highlight
 	     follow-link t
-	     help-echo "mouse-2: go to this article"))))))
+	     help-echo ,(format "%s: go to this article"
+				(aref gnus-mouse-2 0))))))))
 
 (defun gnus-bookmark-kill-line (&optional newline-too)
   "Kill from point to end of line.
@@ -580,16 +604,17 @@ Does not affect the kill ring."
                 (gnus-bookmark-kill-line)
 		(let ((start (point)))
 		  (insert (car gnus-bookmark-bmenu-hidden-bookmarks))
-		  (if (and (display-color-p) (display-mouse-p))
+		  (if (gnus-bookmark-mouse-available-p)
 		      (add-text-properties
 		       start
 		       (save-excursion (re-search-backward
 					"[^ \t]")
 				       (1+ (point)))
-		       '(mouse-face highlight
+		       `(mouse-face highlight
 			 follow-link t
 			 help-echo
-			 "mouse-2: go to this bookmark in other window"))))
+			 ,(format "%s: go to this bookmark in other window"
+				  (aref gnus-mouse-2 0))))))
                 (setq gnus-bookmark-bmenu-hidden-bookmarks
                       (cdr gnus-bookmark-bmenu-hidden-bookmarks))
                 (forward-line 1))))))))
@@ -634,8 +659,7 @@ reposition and try again, else return nil."
 
 (defun gnus-bookmark-show-details (bookmark)
   "Display the annotation for BOOKMARK in a buffer."
-  (let ((record (gnus-bookmark-get-bookmark-record bookmark))
-	(details-list gnus-bookmark-bookmark-details))
+  (let ((record (gnus-bookmark-get-bookmark-record bookmark)))
     (save-excursion
       (let ((old-buf (current-buffer)))
 	(pop-to-buffer (get-buffer-create "*Gnus Bookmark Annotation*") t)
@@ -731,6 +755,11 @@ command."
         (delete-other-windows)
         (gnus-bookmark-jump bmrk)
         (bury-buffer menu))))
+
+(defun gnus-bookmark-bmenu-select-by-mouse (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (gnus-bookmark-bmenu-select))
 
 (defun gnus-bookmark-bmenu-load ()
   "Load the Gnus bookmark file and rebuild the bookmark menu-buffer."

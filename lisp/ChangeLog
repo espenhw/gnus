@@ -1,3 +1,24 @@
+2006-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-bookmark.el (gnus-bookmark-file-coding-system): New variable.
+	(gnus-bookmark-mouse-available-p): New macro.
+	(gnus-bookmark-bmenu-list): Use it; use gnus-mouse-2.
+	(gnus-bookmark-bmenu-show-infos): Use it.
+	(gnus-bookmark-insert-details): Use it; use gnus-mouse-2.
+	(gnus-bookmark-bmenu-hide-infos): Ditto.
+	(gnus-bookmark-remove-properties): New function.
+	(gnus-bookmark-set, gnus-bookmark-make-cell): Use it.
+	(gnus-bookmark-set-bookmark-name): Don't use 2nd arg of split-string.
+	(gnus-bookmark-write-file): Bind coding-system-for-write.
+	(gnus-bookmark-insert-file-format-version-stamp): Add coding cookie.
+	(gnus-bookmark-jump): Make completing-read work with XEmacs; activate
+	group before selecting it.
+	(gnus-bookmark-get-bookmark): Use assoc instead of assoc-string.
+	(gnus-bookmark-bmenu-mode-map): Bind `q' to bury-buffer in XEmacs;
+	use gnus-mouse-2 and bind it to gnus-bookmark-bmenu-select-by-mouse.
+	(gnus-bookmark-show-details): Remove unused variable `details-list'.
+	(gnus-bookmark-bmenu-select-by-mouse): New function.
+
 2006-08-13  Romain Francoise  <romain@orebokech.com>
 
 	* mm-extern.el (mm-extern-mail-server): End `y-or-n-p' prompt with a
