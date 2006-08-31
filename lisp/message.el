@@ -3257,17 +3257,17 @@ text was killed."
      (substring table ?a (+ ?a n))
      (substring table (+ ?a 26) 255))))
 
-(defun message-caesar-buffer-body (&optional rotnum)
+(defun message-caesar-buffer-body (&optional rotnum wide)
   "Caesar rotate all letters in the current buffer by 13 places.
 Used to encode/decode possibly offensive messages (commonly in rec.humor).
 With prefix arg, specifies the number of places to rotate each letter forward.
-Mail and USENET news headers are not rotated."
+Mail and USENET news headers are not rotated unless WIDE is non-nil."
   (interactive (if current-prefix-arg
 		   (list (prefix-numeric-value current-prefix-arg))
 		 (list nil)))
   (save-excursion
     (save-restriction
-      (when (message-goto-body)
+      (when (and (not wide) (message-goto-body))
 	(narrow-to-region (point) (point-max)))
       (message-caesar-region (point-min) (point-max) rotnum))))
 

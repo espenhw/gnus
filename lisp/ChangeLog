@@ -1,5 +1,9 @@
 2006-08-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-caesar-buffer-body): Allow rotating headers.
+
+	* gnus-sum.el (gnus-summary-caesar-message): Allow rotating headers.
+
 	* message.el (message-insert-formated-citation-line): Fix %f.
 	Reported by Torsten Bronger <bronger@physik.rwth-aachen.de> .
 

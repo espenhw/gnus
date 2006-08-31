@@ -9164,8 +9164,8 @@ If ARG is a negative number, hide the unwanted header lines."
 
 (defun gnus-summary-caesar-message (&optional arg)
   "Caesar rotate the current article by 13.
-The numerical prefix specifies how many places to rotate each letter
-forward."
+With a non-numerical prefix, also rotate headers.  A numerical
+prefix specifies how many places to rotate each letter forward."
   (interactive "P")
   (gnus-summary-select-article)
   (let ((mail-header-separator ""))
@@ -9174,7 +9174,9 @@ forward."
 	(widen)
 	(let ((start (window-start))
 	      buffer-read-only)
-	  (message-caesar-buffer-body arg)
+	  (if (equal arg '(4))
+	      (message-caesar-buffer-body nil t)
+	    (message-caesar-buffer-body arg))
 	  (set-window-start (get-buffer-window (current-buffer)) start)))))
   ;; Create buttons and stuff...
   (gnus-treat-article nil))
