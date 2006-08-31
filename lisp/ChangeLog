@@ -1,3 +1,8 @@
+2006-08-31  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-insert-formated-citation-line): Fix %f.
+	Reported by Torsten Bronger <bronger@physik.rwth-aachen.de> .
+
 2006-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-bookmark.el (gnus-bookmark-file-coding-system): New variable.

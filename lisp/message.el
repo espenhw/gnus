@@ -3570,7 +3570,7 @@ See `message-citation-line-format'."
 	      (push ?O lst) (push "<O>" lst)
 	      (push ?P lst) (push "<P>" lst)
 	      (push ?Q lst) (push "<Q>" lst)
-	      (push ?f lst) (push "<f>" lst)
+	      (push ?f lst) (push from lst)
 	      (push ?i lst) (push "<i>" lst)
 	      (push ?n lst) (push name-or-net lst)
 	      (push ?o lst) (push "<o>" lst)
