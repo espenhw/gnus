@@ -1,5 +1,10 @@
 2006-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings):
+	Use standard-syntax-table.
+
+2006-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-art.el (gnus-decode-address-function): New variable.
 	(article-decode-encoded-words): Use it to decode headers which are
 	assumed to contain addresses.

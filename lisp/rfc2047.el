@@ -150,30 +150,31 @@ matching ENCODABLE-REGEXP."
   (goto-char (point-min))
   (let ((tspecials (concat "[" ietf-drums-tspecials "]"))
 	beg)
-    (while (search-forward "\"" nil t)
-      (unless (eq (char-before) ?\\)
-	(setq beg (match-end 0))
-	(goto-char (match-beginning 0))
-	(condition-case nil
-	    (progn
-	      (forward-sexp)
-	      (save-restriction
-		(narrow-to-region beg (1- (point)))
-		(goto-char beg)
-		(unless (and encodable-regexp
-			     (re-search-forward encodable-regexp nil t))
-		  (while (re-search-forward tspecials nil 'move)
-		    (unless (and (eq (char-before) ?\\) ;; Already quoted.
-				 (looking-at tspecials))
-		      (goto-char (match-beginning 0))
-		      (unless (or (eq (char-before) ?\\)
-				  (and rfc2047-encode-encoded-words
-				       (eq (char-after) ??)
-				       (eq (char-before) ?=)))
-			(insert "\\")))
-		    (forward-char)))))
-	  (error
-	   (goto-char beg)))))))
+    (with-syntax-table (standard-syntax-table)
+      (while (search-forward "\"" nil t)
+	(unless (eq (char-before) ?\\)
+	  (setq beg (match-end 0))
+	  (goto-char (match-beginning 0))
+	  (condition-case nil
+	      (progn
+		(forward-sexp)
+		(save-restriction
+		  (narrow-to-region beg (1- (point)))
+		  (goto-char beg)
+		  (unless (and encodable-regexp
+			       (re-search-forward encodable-regexp nil t))
+		    (while (re-search-forward tspecials nil 'move)
+		      (unless (and (eq (char-before) ?\\) ;; Already quoted.
+				   (looking-at tspecials))
+			(goto-char (match-beginning 0))
+			(unless (or (eq (char-before) ?\\)
+				    (and rfc2047-encode-encoded-words
+					 (eq (char-after) ??)
+					 (eq (char-before) ?=)))
+			  (insert "\\")))
+		      (forward-char)))))
+	    (error
+	     (goto-char beg))))))))
 
 (defvar rfc2047-encoding-type 'address-mime
   "The type of encoding done by `rfc2047-encode-region'.
@@ -353,9 +354,8 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  (rfc2047-encode start (point))
 		(goto-char end))))
 	;; `address-mime' case -- take care of quoted words, comments.
+	(rfc2047-quote-special-characters-in-quoted-strings encodable-regexp)
 	(with-syntax-table rfc2047-syntax-table
-	  (rfc2047-quote-special-characters-in-quoted-strings
-	   encodable-regexp)
 	  (goto-char (point-min))
 	  (condition-case err		; in case of unbalanced quotes
 	      ;; Look for rfc2822-style: sequences of atoms, quoted
