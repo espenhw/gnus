@@ -1052,7 +1052,11 @@ which it may alter in any way."
   :group 'gnus-summary)
 
 (defvar gnus-decode-encoded-word-function 'mail-decode-encoded-word-string
-  "Variable that says which function should be used to decode a string with encoded words.")
+  "Function used to decode a string with encoded words.")
+
+(defvar gnus-decode-encoded-address-function
+  'mail-decode-encoded-address-string
+  "Function used to decode addresses with encoded words.")
 
 (defcustom gnus-extra-headers '(To Newsgroups)
   "*Extra headers to parse."
@@ -1061,7 +1065,7 @@ which it may alter in any way."
   :type '(repeat symbol))
 
 (defcustom gnus-ignored-from-addresses
-  (and user-mail-address  
+  (and user-mail-address
        (not (string= user-mail-address ""))
        (regexp-quote user-mail-address))
   "*Regexp of From headers that may be suppressed in favor of To headers."
@@ -3535,7 +3539,7 @@ buffer that was in action when the last article was fetched."
 	      (concat gnus-summary-to-prefix
 		      (inline
 			(gnus-summary-extract-address-component
-			 (funcall gnus-decode-encoded-word-function to)))))
+			 (funcall gnus-decode-encoded-address-function to)))))
 	     ((setq newsgroups
 		    (or
 		     (cdr (assq 'Newsgroups extra-headers))
@@ -4283,7 +4287,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		   (error x))
 		 (condition-case ()	; from
 		     (gnus-remove-odd-characters
-		      (funcall gnus-decode-encoded-word-function
+		      (funcall gnus-decode-encoded-address-function
 			       (setq x (nnheader-nov-field))))
 		   (error x))
 		 (nnheader-nov-field)	; date
@@ -6075,7 +6079,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nfrom:" nil t)
-		  (funcall gnus-decode-encoded-word-function
+		  (funcall gnus-decode-encoded-address-function
 			   (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
@@ -8629,10 +8633,11 @@ to guess what the document format is."
 	;; the parent article.
 	(when (setq to-address (or (gnus-fetch-field "reply-to")
 				   (gnus-fetch-field "from")))
-	  (setq params (append
-			(list (cons 'to-address
-				    (funcall gnus-decode-encoded-word-function
-					     to-address))))))
+	  (setq params
+		(append
+		 (list (cons 'to-address
+			     (funcall gnus-decode-encoded-address-function
+				      to-address))))))
 	(setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
 	(insert-buffer-substring gnus-original-article-buffer)
 	;; Remove lines that may lead nndoc to misinterpret the
