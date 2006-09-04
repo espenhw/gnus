@@ -2531,6 +2531,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		   (memq (char-after) '(?\t ? )))))
 	(save-restriction
 	  (narrow-to-region start (point))
+	  (goto-char start)
 	  (if (looking-at "\
 \\(?:Resent-\\)?\\(?:From\\|Cc\\|To\\|Bcc\\|\\(?:In-\\)?Reply-To\\|Sender\
 \\|Mail-Followup-To\\|Mail-Copies-To\\|Approved\\):")
