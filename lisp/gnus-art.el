@@ -2524,17 +2524,21 @@ If PROMPT (the prefix), prompt for a coding system to use."
       (article-narrow-to-head)
       (while (not (eobp))
 	(setq start (point))
-	(if (prog1
-		(looking-at "\
+	(while (progn
+		 (forward-line)
+		 (if (eobp)
+		     nil
+		   (memq (char-after) '(?\t ? )))))
+	(save-restriction
+	  (narrow-to-region start (point))
+	  (if (looking-at "\
 \\(?:Resent-\\)?\\(?:From\\|Cc\\|To\\|Bcc\\|\\(?:In-\\)?Reply-To\\|Sender\
 \\|Mail-Followup-To\\|Mail-Copies-To\\|Approved\\):")
-	      (while (progn
-		       (forward-line)
-		       (if (eobp)
-			   nil
-			 (memq (char-after) '(?\t ? ))))))
-	    (funcall gnus-decode-address-function start (point))
-	  (funcall gnus-decode-header-function start (point)))))))
+	      (funcall gnus-decode-address-function start (point))
+	    (funcall gnus-decode-header-function start (point)))
+	  ;; `gnus-decode-*-function' uses `decode-coding-region' which
+	  ;; moves the point to `start' in XEmacs.
+	  (goto-char (point-max)))))))
 
 (defun article-decode-group-name ()
   "Decode group names in `Newsgroups:'."
