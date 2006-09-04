@@ -2535,8 +2535,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	  (if (looking-at "\
 \\(?:Resent-\\)?\\(?:From\\|Cc\\|To\\|Bcc\\|\\(?:In-\\)?Reply-To\\|Sender\
 \\|Mail-Followup-To\\|Mail-Copies-To\\|Approved\\):")
-	      (funcall gnus-decode-address-function start (point))
-	    (funcall gnus-decode-header-function start (point)))
+	      (funcall gnus-decode-address-function start (point-max))
+	    (funcall gnus-decode-header-function start (point-max)))
 	  ;; `gnus-decode-*-function' uses `decode-coding-region' which
 	  ;; moves the point to `start' in XEmacs.
 	  (goto-char (point-max)))))))
