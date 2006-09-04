@@ -2519,27 +2519,23 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			   (error))
 			 gnus-newsgroup-ignored-charsets))
 	(inhibit-read-only t)
-	start)
-    (save-restriction
-      (article-narrow-to-head)
-      (while (not (eobp))
-	(setq start (point))
-	(while (progn
-		 (forward-line)
-		 (if (eobp)
-		     nil
-		   (memq (char-after) '(?\t ? )))))
-	(save-restriction
-	  (narrow-to-region start (point))
-	  (goto-char start)
-	  (if (looking-at "\
+	end start)
+    (goto-char (point-min))
+    (when (search-forward "\n\n" nil 'move)
+      (forward-line -1))
+    (setq end (point))
+    (while (not (bobp))
+      (while (progn
+	       (forward-line -1)
+	       (and (not (bobp))
+		    (memq (char-after) '(?\t ? )))))
+      (setq start (point))
+      (if (looking-at "\
 \\(?:Resent-\\)?\\(?:From\\|Cc\\|To\\|Bcc\\|\\(?:In-\\)?Reply-To\\|Sender\
 \\|Mail-Followup-To\\|Mail-Copies-To\\|Approved\\):")
-	      (funcall gnus-decode-address-function start (point-max))
-	    (funcall gnus-decode-header-function start (point-max)))
-	  ;; `gnus-decode-*-function' uses `decode-coding-region' which
-	  ;; moves the point to `start' in XEmacs.
-	  (goto-char (point-max)))))))
+	  (funcall gnus-decode-address-function start end)
+	(funcall gnus-decode-header-function start end))
+      (goto-char (setq end start)))))
 
 (defun article-decode-group-name ()
   "Decode group names in `Newsgroups:'."
