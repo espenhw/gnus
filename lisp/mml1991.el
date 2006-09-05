@@ -433,6 +433,7 @@ If no one is selected, default secret key is used.  "
 	      (message-options-get 'message-recipients)
 	      "[ \f\t\n\r\v,]+")))
 	cipher signers config)
+    ;; We should remove this check if epg-0.0.6 is released.
     (if (and (condition-case nil
 		 (require 'epg-config)
 	       (error))
