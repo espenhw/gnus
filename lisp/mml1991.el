@@ -3,7 +3,7 @@
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
 ;;   2005, 2006 Free Software Foundation, Inc.
 
-;; Author: Sascha Lüdecke <sascha@meta-x.de>,
+;; Author: Sascha Ldecke <sascha@meta-x.de>,
 ;;	Simon Josefsson <simon@josefsson.org> (Mailcrypt interface, Gnus glue)
 ;; Keywords PGP
 
@@ -326,7 +326,9 @@ Whether the passphrase is cached at all is controlled by
   (autoload 'epg-context-set-signers "epg")
   (autoload 'epg-context-set-passphrase-callback "epg")
   (autoload 'epg-sign-string "epg")
-  (autoload 'epg-encrypt-string "epg"))
+  (autoload 'epg-encrypt-string "epg")
+  (autoload 'epg-configuration "epg-config")
+  (autoload 'epg-expand-group "epg-config"))
 
 (eval-when-compile
   (defvar password-cache-expiry)
@@ -425,22 +427,32 @@ If no one is selected, default secret key is used.  "
       (when cte
 	(mm-decode-content-transfer-encoding (intern (downcase cte))))))
   (let ((context (epg-make-context))
-	recipients cipher signers)
+	(recipients
+	 (if (message-options-get 'message-recipients)
+	     (split-string
+	      (message-options-get 'message-recipients)
+	      "[ \f\t\n\r\v,]+")))
+	cipher signers config)
+    (if (and (condition-case nil
+		 (require 'epg-config)
+	       (error))
+	     (functionp #'epg-expand-group))
+	(setq config (epg-configuration)
+	      recipients
+	      (apply #'nconc
+		     (mapcar (lambda (recipient)
+			       (or (epg-expand-group config recipient)
+				   (list recipient)))
+			     recipients))))
     (if mml1991-verbose
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "
-			       (if (message-options-get 'message-recipients)
-				   (split-string
-				    (message-options-get 'message-recipients)
-				    "[ \f\t\n\r\v,]+"))))
+			       recipients))
       (setq recipients
-	    (mapcar (lambda (name)
-		      (car (epg-list-keys context name)))
-		    (if (message-options-get 'message-recipients)
-			(split-string
-			 (message-options-get 'message-recipients)
-			 "[ \f\t\n\r\v,]+")))))
+	    (delq nil (mapcar (lambda (name)
+				(car (epg-list-keys context name)))
+			      recipients))))
     (if mml1991-encrypt-to-self
 	(if mml1991-signers
 	    (setq recipients

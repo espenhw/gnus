@@ -930,7 +930,9 @@ Whether the passphrase is cached at all is controlled by
   (autoload 'epg-sign-string "epg")
   (autoload 'epg-encrypt-string "epg")
   (autoload 'epg-passphrase-callback-function "epg")
-  (autoload 'epg-context-set-passphrase-callback "epg"))
+  (autoload 'epg-context-set-passphrase-callback "epg")
+  (autoload 'epg-configuration "epg-config")
+  (autoload 'epg-expand-group "epg-config"))
 
 (eval-when-compile
   (defvar password-cache-expiry)
@@ -1165,23 +1167,33 @@ If no one is selected, default secret key is used.  "
 (defun mml2015-epg-encrypt (cont &optional sign)
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
-	recipients cipher signers
+	(recipients
+	 (if (message-options-get 'message-recipients)
+	     (split-string
+	      (message-options-get 'message-recipients)
+	      "[ \f\t\n\r\v,]+")))
+	cipher signers config
 	(boundary (mml-compute-boundary cont)))
+    (if (and (condition-case nil
+		 (require 'epg-config)
+	       (error))
+	     (functionp #'epg-expand-group))
+	(setq config (epg-configuration)
+	      recipients
+	      (apply #'nconc
+		     (mapcar (lambda (recipient)
+			       (or (epg-expand-group config recipient)
+				   (list recipient)))
+			     recipients))))
     (if mml2015-verbose
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "
-			       (if (message-options-get 'message-recipients)
-				   (split-string
-				    (message-options-get 'message-recipients)
-				    "[ \f\t\n\r\v,]+"))))
+			       recipients))
       (setq recipients
-	    (mapcar (lambda (name)
-		      (car (epg-list-keys context name)))
-		    (if (message-options-get 'message-recipients)
-			(split-string
-			 (message-options-get 'message-recipients)
-			 "[ \f\t\n\r\v,]+")))))
+	    (delq nil (mapcar (lambda (name)
+				(car (epg-list-keys context name)))
+			      recipients))))
     (if mml2015-encrypt-to-self
 	(if mml2015-signers
 	    (setq recipients
