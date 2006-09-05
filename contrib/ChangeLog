@@ -1,3 +1,7 @@
+2006-09-04  Chong Yidong  <cyd@stupidchicken.com>
+
+	* sendmail.el (sendmail-program): Moved here from pathe.el.
+
 2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* compface.el (uncompface): Use binary rather than raw-text-unix.
