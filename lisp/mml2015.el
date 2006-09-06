@@ -39,6 +39,12 @@
 (defvar mc-pgp-always-sign)
 
 (defvar mml2015-use (or
+		     (condition-case nil
+			 (progn
+			   (require 'epg-config)
+			   (epg-check-configuration (epg-configuration))
+			   t)
+		       (error))
 		     (progn
 		       (ignore-errors
 			;; Avoid the "Recursive load suspected" error
@@ -59,7 +65,7 @@
 				 (fboundp 'mc-cleanup-recipient-headers)
 				 'mailcrypt)))
   "The package used for PGP/MIME.
-Valid packages include `pgg', `gpg' and `mailcrypt'.")
+Valid packages include `epg', `pgg', `gpg' and `mailcrypt'.")
 
 ;; Something is not RFC2015.
 (defvar mml2015-function-alist
