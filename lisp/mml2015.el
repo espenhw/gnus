@@ -43,7 +43,7 @@
 			 (progn
 			   (require 'epg-config)
 			   (epg-check-configuration (epg-configuration))
-			   t)
+			   'epg)
 		       (error))
 		     (progn
 		       (ignore-errors
