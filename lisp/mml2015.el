@@ -1122,11 +1122,7 @@ If no one is selected, default secret key is used.  "
       (if mml2015-signers
 	  (setq signers (mapcar (lambda (name)
 				  (car (epg-list-keys context name t)))
-				mml2015-signers))
-	(setq signers (list (car (epg-list-keys
-				  context
-				  (message-options-get 'mml-sender)
-				  t))))))
+				mml2015-signers))))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
@@ -1213,11 +1209,7 @@ If no one is selected, default secret key is used.  "
 	(if mml2015-signers
 	    (setq signers (mapcar (lambda (name)
 				    (car (epg-list-keys context name t)))
-				  mml2015-signers))
-	  (setq signers (list (car (epg-list-keys
-				    context
-				    (message-options-get 'mml-sender)
-				    t))))))
+				  mml2015-signers))))
       (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
