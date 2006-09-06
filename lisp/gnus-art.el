@@ -4151,13 +4151,9 @@ commands:
   (mm-enable-multibyte)
   (gnus-run-mode-hooks 'gnus-article-mode-hook))
 
-;; Internal variables.  Are `gnus-button-regexp' and `gnus-button-last' used
-;; at all?
-(defvar gnus-button-regexp nil)
 (defvar gnus-button-marker-list nil
-  "Regexp matching any of the regexps from `gnus-button-alist'.")
-(defvar gnus-button-last nil
-  "The value of `gnus-button-alist' when `gnus-button-regexp' was build.")
+  "Regexp matching any of the regexps from `gnus-button-alist'.
+Internal variable.")
 
 (defun gnus-article-setup-buffer ()
   "Initialize the article buffer."
