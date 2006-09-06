@@ -1632,13 +1632,6 @@ This requires GNU Libidn, and by default only enabled if it is found."
   '("January" "February" "March" "April" "May" "June" "July" "August"
     "September" "October" "November" "December"))
 
-(defvar gnus-button-regexp nil)
-(defvar gnus-button-marker-list nil)
-;; Regexp matching any of the regexps from `gnus-button-alist'.
-
-(defvar gnus-button-last nil)
-;; The value of `gnus-button-alist' when `gnus-button-regexp' was build.
-
 (defvar article-goto-body-goes-to-point-min-p nil)
 (defvar gnus-article-wash-types nil)
 (defvar gnus-article-emphasis-alist nil)
@@ -4157,6 +4150,14 @@ commands:
   (set-syntax-table gnus-article-mode-syntax-table)
   (mm-enable-multibyte)
   (gnus-run-mode-hooks 'gnus-article-mode-hook))
+
+;; Internal variables.  Are `gnus-button-regexp' and `gnus-button-last' used
+;; at all?
+(defvar gnus-button-regexp nil)
+(defvar gnus-button-marker-list nil
+  "Regexp matching any of the regexps from `gnus-button-alist'.")
+(defvar gnus-button-last nil
+  "The value of `gnus-button-alist' when `gnus-button-regexp' was build.")
 
 (defun gnus-article-setup-buffer ()
   "Initialize the article buffer."
