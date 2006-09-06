@@ -1,3 +1,7 @@
+2006-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind epg-check-configuration.
+
 2006-09-06  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-use): Doc fix, mention epg.

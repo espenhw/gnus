@@ -11,9 +11,9 @@
 
 (maybe-fbind '(Info-directory
 	       Info-menu create-image display-graphic-p
-	       display-time-event-handler find-coding-system find-image
-	       image-size image-type-available-p insert-image
-	       line-number-at-pos make-mode-line-mouse-map
+	       display-time-event-handler epg-check-configuration
+	       find-coding-system find-image image-size image-type-available-p
+	       insert-image line-number-at-pos make-mode-line-mouse-map
 	       make-network-process make-temp-file propertize put-image
 	       replace-regexp-in-string rmail-msg-is-pruned
 	       rmail-msg-restore-non-pruned-header sort-coding-systems
