@@ -163,7 +163,7 @@ matching ENCODABLE-REGEXP."
 		  (goto-char beg)
 		  (unless (and encodable-regexp
 			       (re-search-forward encodable-regexp nil t))
-		    (while (re-search-forward tspecials nil 'move)
+		    (while (re-search-forward tspecials nil t)
 		      (unless (and (eq (char-before) ?\\) ;; Already quoted.
 				   (looking-at tspecials))
 			(goto-char (match-beginning 0))
@@ -171,8 +171,9 @@ matching ENCODABLE-REGEXP."
 				    (and rfc2047-encode-encoded-words
 					 (eq (char-after) ??)
 					 (eq (char-before) ?=)))
-			  (insert "\\")))
-		      (forward-char)))))
+			  (insert "\\")))))
+		  (goto-char (point-max)))
+		(forward-char))
 	    (error
 	     (goto-char beg))))))))
 
