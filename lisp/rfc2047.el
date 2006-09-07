@@ -171,7 +171,8 @@ matching ENCODABLE-REGEXP."
 				    (and rfc2047-encode-encoded-words
 					 (eq (char-after) ??)
 					 (eq (char-before) ?=)))
-			  (insert "\\")))))
+			  (insert "\\"))
+			(forward-char))))
 		  (goto-char (point-max)))
 		(forward-char))
 	    (error
