@@ -1,7 +1,7 @@
 2006-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings):
-	Fix the way to find boundaries of quoted strings.
+	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings): Fix
+	backslashes handling and the way to find boundaries of quoted strings.
 
 2006-09-07  Daiki Ueno  <ueno@unixuser.org>
 
