@@ -457,9 +457,7 @@ If no one is selected, symmetric encryption will be performed.  "
 			 (mapcar (lambda (name)
 				   (car (epg-list-keys context name)))
 				 mml1991-signers)))
-	  (setq recipients
-		(nconc recipients
-		       (list (car (epg-list-keys context nil t)))))))
+	  (error "mml1991-signers not set")))
     (when sign
       (if mml1991-verbose
 	  (setq signers (epa-select-keys context "Select keys for signing.
