@@ -2,6 +2,7 @@
 
 	* pop3.el (pop3-leave-mail-on-server): Mention problem of duplicate
 	mails in the doc string.  Add some URLs in comment.
+	(pop3-movemail): Warn about pop3-leave-mail-on-server.
 
 2006-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
