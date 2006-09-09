@@ -89,8 +89,12 @@ If `pop3-leave-mail-on-server' is non-nil the mail is to be left
 on the POP server after fetching.  Note that POP servers maintain
 no state information between sessions, so what the client
 believes is there and what is actually there may not match up.
-If they do not, then the whole thing can fall apart and leave you
-with a corrupt mailbox."
+If they do not, then you may get duplicate mails or the whole
+thing can fall apart and leave you with a corrupt mailbox."
+  ;; We can't use the UILD support from XEmacs mail-lib or cvs.m17n.org:
+  ;; http://thread.gmane.org/v9lld8fml4.fsf@marauder.physik.uni-ulm.de
+  ;; http://thread.gmane.org/b9yy8hzy9ej.fsf@jpl.org
+  ;; Any volunteer to re-implement this?
   :version "22.1" ;; Oort Gnus
   :type 'boolean
   :group 'pop3)
@@ -167,6 +171,11 @@ Shorter values mean quicker response, but are more CPU intensive.")
             (pop3-dele process n))
 	  (setq n (+ 1 n))
 	  (if pop3-debug (sit-for 1) (sit-for 0.1))) ; why?
+      (when (and pop3-leave-mail-on-server
+		 (> n 1))
+	(message "pop3.el doesn't support UIDL.  Setting `pop3-leave-mail-on-server'
+to %s might not give the result you'd expect." pop3-leave-mail-on-server)
+	(sit-for 1))
       (pop3-quit process))
     (kill-buffer crashbuf))
   t)

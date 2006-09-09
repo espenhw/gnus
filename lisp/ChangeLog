@@ -1,3 +1,8 @@
+2006-09-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* pop3.el (pop3-leave-mail-on-server): Mention problem of duplicate
+	mails in the doc string.  Add some URLs in comment.
+
 2006-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings): Fix
@@ -5273,7 +5278,7 @@
 2004-11-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* pop3.el (pop3-leave-mail-on-server): Don't quote nil in
-	docstrings.
+	doc string.  Improve doc string.
 
 2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
