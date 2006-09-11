@@ -6432,9 +6432,9 @@ articles younger than that number of days.
 @item / n
 @kindex / n (Summary)
 @findex gnus-summary-limit-to-articles
-Limit the summary buffer to the current article
-(@code{gnus-summary-limit-to-articles}).  Uses the process/prefix
-convention (@pxref{Process/Prefix}).
+With prefix @samp{n}, limit the summary buffer to the next @samp{n}
+articles.  If not given a prefix, use the process marked articles
+instead.  (@code{gnus-summary-limit-to-articles}).
 
 @item / w
 @kindex / w (Summary)
@@ -22716,7 +22716,7 @@ The variable that controls this is the
 @code{gnus-article-x-face-command} variable.  If this variable is a
 string, this string will be executed in a sub-shell.  If it is a
 function, this function will be called with the face as the argument.
-If the @code{gnus-article-x-face-too-ugly} (which is a regexp) matches
+If @code{gnus-article-x-face-too-ugly} (which is a regexp) matches
 the @code{From} header, the face will not be shown.
 
 (Note: @code{x-face} is used in the variable/function names, not

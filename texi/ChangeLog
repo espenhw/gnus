@@ -2,6 +2,8 @@
 
 	* gnus.texi (Mail Source Specifiers): Mention problem of duplicate
 	mails with pop3-leave-mail-on-server.  Fix wording.
+	(Limiting): Improve gnus-summary-limit-to-articles.
+	(X-Face): Fix typo.
 
 2006-07-24  Richard Stallman  <rms@gnu.org>
 
