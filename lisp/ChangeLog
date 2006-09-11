@@ -1,3 +1,9 @@
+2006-09-11  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-clear-decrypt): Don't append verify results
+	to the gnus-info.  This fixes a bug of inline-PGP message verification.
+	Reported by Michael Piotrowski <mxp@dynalabs.de>.
+
 2006-09-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* pop3.el (pop3-leave-mail-on-server): Mention problem of duplicate

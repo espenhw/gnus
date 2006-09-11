@@ -1053,14 +1053,13 @@ Whether the passphrase is cached at all is controlled by
       (goto-char (point-min))
       (while (search-forward "\r\n" nil t)
 	(replace-match "\n" t t))
+      (mm-set-handle-multipart-parameter
+       mm-security-handle 'gnus-info "OK")
       (if (epg-context-result-for context 'verify)
 	  (mm-set-handle-multipart-parameter
-	   mm-security-handle 'gnus-info
-	   (concat "OK\n"
-		   (epg-verify-result-to-string
-		    (epg-context-result-for context 'verify))))
-	(mm-set-handle-multipart-parameter
-	 mm-security-handle 'gnus-info "OK")))))
+	   mm-security-handle 'gnus-details
+	   (epg-verify-result-to-string
+	    (epg-context-result-for context 'verify)))))))
 
 (defun mml2015-epg-verify (handle ctl)
   (catch 'error
