@@ -42,7 +42,7 @@
 
 2006-09-06  Daiki Ueno  <ueno@unixuser.org>
 
-	* mml1991.el (mml1991-epg-sign): Don't lookup a private kye by
+	* mml1991.el (mml1991-epg-sign): Don't lookup a private key by
 	message-sender.
 	(mml1991-epg-encrypt): Ditto.
 	* mml2015.el (mml2015-epg-sign): Don't lookup a private key by
