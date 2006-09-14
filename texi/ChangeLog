@@ -1,3 +1,9 @@
+2006-09-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Addition for `mm-fill-flowed'.
+
+	* gnus.texi (Oort Gnus): Add @xref for `mm-fill-flowed'.
+
 2006-09-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail Source Specifiers): Mention problem of duplicate
