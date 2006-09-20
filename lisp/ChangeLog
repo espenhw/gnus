@@ -1,3 +1,7 @@
+2006-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el: Autoload browse-url-of-file for XEmacs.
+
 2006-09-20  Steve Youngs  <steve@sxemacs.org>
 
 	* gnus-art.el (gnus-article-browse-html-parts): They're files, so use
