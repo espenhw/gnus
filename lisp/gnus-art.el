@@ -5171,6 +5171,9 @@ N is the numerical prefix."
 		;; Exclude a newline.
 		(1- (point))
 	      (point)))
+    (when gnus-article-button-face
+      (gnus-overlay-put (gnus-make-overlay b e)
+                        'face gnus-article-button-face))
     (widget-convert-button
      'link b e
      :mime-handle handle
@@ -7924,6 +7927,9 @@ For example:
 		;; Exclude a newline.
 		(1- (point))
 	      (point)))
+    (when gnus-article-button-face
+      (gnus-overlay-put (gnus-make-overlay b e)
+                        'face gnus-article-button-face))
     (widget-convert-button
      'link b e
      :mime-handle handle

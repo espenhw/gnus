@@ -1,3 +1,8 @@
+2006-09-20  Maxime Edouard Robert Froumentin  <max@lapin-bleu.net>
+
+	(gnus-insert-mime-button, gnus-insert-mime-security-button): Apply
+	gnus-article-button-face to MIME and security buttons.
+
 2006-09-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-url-regexp): Try to make the value more
