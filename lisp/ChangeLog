@@ -1,3 +1,8 @@
+2006-09-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-url-regexp): Try to make the value more
+	readable.
+
 2006-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload browse-url-of-file for XEmacs.
