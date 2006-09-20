@@ -2826,7 +2826,7 @@ Recurse into multiparts."
 		 (add-hook 'gnus-exit-gnus-hook
 			   (lambda  ()
 			     (gnus-article-browse-delete-temp-files t)))
-		 (browse-url tmp-file)
+		 (browse-url-of-file tmp-file)
 		 (setq showed t)))
 	      ;; If multipart, recurse
 	      ((and (stringp (car handle))

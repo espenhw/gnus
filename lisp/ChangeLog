@@ -1,3 +1,8 @@
+2006-09-20  Steve Youngs  <steve@sxemacs.org>
+
+	* gnus-art.el (gnus-article-browse-html-parts): They're files, so use
+	`browse-url-of-file' instead of `browse-url'.
+
 2006-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-cite-original-1): Use nobody by default for the
