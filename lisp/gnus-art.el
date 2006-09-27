@@ -7498,20 +7498,18 @@ specified by `gnus-button-alist'."
     map))
 
 (defun gnus-insert-prev-page-button ()
-  (let ((b (point))
-        (e (point))
+  (let ((b (point)) e
 	(inhibit-read-only t))
     (gnus-eval-format
      gnus-prev-page-line-format nil
      `(keymap ,gnus-prev-page-map
-	       gnus-prev t
-	        gnus-callback gnus-article-button-prev-page
-		 article-type annotation))
-    (setq e 
-          (if (bolp)
-              ;; Exclude a newline.
-              (1- (point))
-            (point)))
+	      gnus-prev t
+	      gnus-callback gnus-article-button-prev-page
+	      article-type annotation))
+    (setq e (if (bolp)
+		;; Exclude a newline.
+		(1- (point))
+	      (point)))
     (when gnus-article-button-face
       (gnus-overlay-put (gnus-make-overlay b e)
                         'face gnus-article-button-face))
@@ -7537,19 +7535,17 @@ specified by `gnus-button-alist'."
     (select-window win)))
 
 (defun gnus-insert-next-page-button ()
-  (let ((b (point))
-        (e (point))
+  (let ((b (point)) e
 	(inhibit-read-only t))
     (gnus-eval-format gnus-next-page-line-format nil
-		            `(keymap ,gnus-next-page-map
+		      `(keymap ,gnus-next-page-map
                                gnus-next t
                                gnus-callback gnus-article-button-next-page
                                article-type annotation))
-    (setq e 
-          (if (bolp)
-              ;; Exclude a newline.
-              (1- (point))
-            (point)))
+    (setq e (if (bolp)
+		;; Exclude a newline.
+		(1- (point))
+	      (point)))
     (when gnus-article-button-face
       (gnus-overlay-put (gnus-make-overlay b e)
                         'face gnus-article-button-face))
