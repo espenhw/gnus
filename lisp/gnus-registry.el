@@ -171,7 +171,6 @@ way."
 	      (standard-output (current-buffer)))
 	  (gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist)
 	  (gnus-registry-cache-whitespace file)
-	  (set-text-properties (point-min) (point-max) nil)
 	  (save-buffer))
       (let ((coding-system-for-write gnus-ding-file-coding-system)
 	    (version-control gnus-backup-startup-file)
@@ -242,10 +241,12 @@ way."
       ;; remove empty entries
       (when gnus-registry-clean-empty
 	(gnus-registry-clean-empty-function))
-      ;; now trim the registry appropriately
-      (setq gnus-registry-alist (gnus-registry-trim
-				 (gnus-hashtable-to-alist
-				  gnus-registry-hashtb)))
+      ;; now trim and clean text properties from the registry appropriately
+      (setq gnus-registry-alist 
+	    (gnus-registry-remove-alist-text-properties
+	     (gnus-registry-trim
+	      (gnus-hashtable-to-alist
+	       gnus-registry-hashtb))))
       ;; really save
       (gnus-registry-cache-save)
       (setq gnus-registry-entry-caching caching)
@@ -260,7 +261,7 @@ way."
        (when (stringp key)
 	 (dolist (group (gnus-registry-fetch-groups key))
 	   (when (gnus-parameter-registry-ignore group)
-	     (gnus-message 
+	     (gnus-message
 	      10 
 	      "gnus-registry: deleted ignored group %s from key %s"
 	      group key)
@@ -273,8 +274,7 @@ way."
 		  (gnus-registry-fetch-group key)
 		  ;; TODO: look for specific extra data here!
 		  ;; in this example, we look for 'label
-		  (gnus-registry-fetch-extra key 'label)
-		  (stringp key))
+		  (gnus-registry-fetch-extra key 'label))
 	   (incf count)
 	   (gnus-registry-delete-id key))
 	 
@@ -292,6 +292,17 @@ way."
   (gnus-registry-cache-read)
   (setq gnus-registry-hashtb (gnus-alist-to-hashtable gnus-registry-alist))
   (setq gnus-registry-dirty nil))
+
+(defun gnus-registry-remove-alist-text-properties (v)
+  "Remove text properties from all strings in alist."
+  (if (stringp v)
+      (gnus-string-remove-all-properties v)
+    (if (and (listp v) (listp (cdr v)))
+	(mapcar 'gnus-registry-remove-alist-text-properties v)
+      (if (and (listp v) (stringp (cdr v)))
+	  (cons (gnus-registry-remove-alist-text-properties (car v))
+		(gnus-registry-remove-alist-text-properties (cdr v)))
+      v))))
 
 (defun gnus-registry-trim (alist)
   "Trim alist to size, using gnus-registry-max-entries.
@@ -321,9 +332,10 @@ Also, drop all gnus-registry-ignored-groups matches."
 
 (defun gnus-registry-action (action data-header from &optional to method)
   (let* ((id (mail-header-id data-header))
-	 (subject (gnus-registry-simplify-subject
-		   (mail-header-subject data-header)))
-	 (sender (mail-header-from data-header))
+	 (subject (gnus-string-remove-all-properties
+		   (gnus-registry-simplify-subject
+		    (mail-header-subject data-header))))
+	 (sender (gnus-string-remove-all-properties (mail-header-from data-header)))
 	 (from (gnus-group-guess-full-name-from-command-method from))
 	 (to (if to (gnus-group-guess-full-name-from-command-method to) nil))
 	 (to-name (if to to "the Bit Bucket"))
@@ -395,9 +407,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		  references))
 
       ;; else: there were no references, now try the extra tracking
-      (let ((sender (message-fetch-field "from"))
-	    (subject (gnus-registry-simplify-subject
-		      (message-fetch-field "subject")))
+      (let ((sender (gnus-string-remove-all-properties(message-fetch-field "from")))
+	    (subject (gnus-string-remove-all-properties
+		      (gnus-registry-simplify-subject
+		       (message-fetch-field "subject"))))
 	    (single-match t))
 	(when (and single-match
 		   (gnus-registry-track-sender-p)
@@ -509,17 +522,19 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   "Fetch the Subject quickly, using the internal gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
-      (gnus-registry-simplify-subject
-       (mail-header-subject (gnus-data-header
-			     (assoc article (gnus-data-list nil)))))
+      (gnus-string-remove-all-properties
+       (gnus-registry-simplify-subject
+	(mail-header-subject (gnus-data-header
+			      (assoc article (gnus-data-list nil))))))
     nil))
 
 (defun gnus-registry-fetch-sender-fast (article)
   "Fetch the Sender quickly, using the internal gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
-      (mail-header-from (gnus-data-header
-			 (assoc article (gnus-data-list nil))))
+      (gnus-string-remove-all-properties
+       (mail-header-from (gnus-data-header
+			  (assoc article (gnus-data-list nil)))))
     nil))
 
 (defun gnus-registry-grep-in-list (word list)
@@ -591,8 +606,9 @@ The message must have at least one group name."
 (defun gnus-registry-store-extra-entry (id key value)
   "Put a specific entry in the extras field of the registry entry for id."
   (let* ((extra (gnus-registry-fetch-extra id))
-	 (alist (cons (cons key value)
-		 (gnus-assq-delete-all key (gnus-registry-fetch-extra id)))))
+	 (alist (gnus-registry-remove-alist-text-properties 
+		 (cons (cons key value)
+		       (gnus-assq-delete-all key (gnus-registry-fetch-extra id))))))
     (gnus-registry-store-extra id alist)))
 
 (defun gnus-registry-fetch-group (id)

@@ -1,3 +1,19 @@
+2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-save, gnus-registry-cache-save)
+	(gnus-registry-remove-alist-text-properties, gnus-registry-action)
+	(gnus-registry-split-fancy-with-parent)
+	(gnus-registry-fetch-simplified-message-subject-fast)
+	(gnus-registry-fetch-sender-fast, gnus-registry-store-extra-entry):
+	remove text properties on ingress into the registry and when it's saved
+	(gnus-registry-clean-empty-function): fixed bug with cleaning the
+	registry from entries with no groups
+
+2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-util.el (gnus-string-remove-all-properties): utility function to
+	remove string properties
+
 2006-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-draft.el (gnus-draft-mode): Don't call `mml-mode'.

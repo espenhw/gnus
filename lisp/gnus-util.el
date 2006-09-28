@@ -1206,6 +1206,11 @@ Return the modified alist."
 	(remove-text-properties start end properties object))
     t))
 
+(defun gnus-string-remove-all-properties (string)
+  (let ((s string))
+    (set-text-properties 0 (length string) nil string)
+    s))
+
 ;; This might use `compare-strings' to reduce consing in the
 ;; case-insensitive case, but it has to cope with null args.
 ;; (`string-equal' uses symbol print names.)
