@@ -1,3 +1,7 @@
+2006-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-draft.el (gnus-draft-mode): Don't call `mml-mode'.
+
 2006-09-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-insert-prev-page-button)
