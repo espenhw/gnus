@@ -1,3 +1,8 @@
+2006-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-util.el (gnus-string-remove-all-properties): fix to ignore
+	non-string data (needs to be done in the registry too)
+
 2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-save, gnus-registry-cache-save)
