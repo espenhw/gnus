@@ -1207,11 +1207,11 @@ Return the modified alist."
     t))
 
 (defun gnus-string-remove-all-properties (string)
-  (if (stringp string)
+  (condition-case ()
       (let ((s string))
 	(set-text-properties 0 (length string) nil string)
 	s)
-    string))
+    (error string)))
 
 ;; This might use `compare-strings' to reduce consing in the
 ;; case-insensitive case, but it has to cope with null args.
