@@ -42,6 +42,10 @@
 	* gnus-art.el (gnus-insert-prev-page-button)
 	(gnus-insert-next-page-button): Apply gnus-article-button-face.
 
+2006-09-25  Chong Yidong  <cyd@stupidchicken.com>
+
+	* gnus-demon.el (gnus-demon): Use with-local-quit to avoid hangs.
+
 2006-09-20  Maxime Edouard Robert Froumentin  <max@lapin-bleu.net>
 
 	(gnus-insert-mime-button, gnus-insert-mime-security-button): Apply
