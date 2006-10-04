@@ -1,3 +1,8 @@
+2006-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Clarify
+	gnus-summary-limit-to-articles.
+
 2006-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-with-local-quit): New macro.

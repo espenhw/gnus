@@ -2534,7 +2534,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Unseen" gnus-summary-limit-to-unseen t]
 	 ["Replied" gnus-summary-limit-to-replied t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
-	 ["Next articles" gnus-summary-limit-to-articles t]
+	 ["Next or process marked articles" gnus-summary-limit-to-articles t]
 	 ["Pop limit" gnus-summary-pop-limit t]
 	 ["Show dormant" gnus-summary-limit-include-dormant t]
 	 ["Hide childless dormant"
