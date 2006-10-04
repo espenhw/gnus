@@ -990,6 +990,7 @@ See `find-file-noselect' for the arguments."
 	 (after-insert-file-functions nil)
 	 (enable-local-eval nil)
 	 (coding-system-for-read nnheader-file-coding-system)
+	 (version-control 'never)
 	 (ffh (if (boundp 'find-file-hook)
 		  'find-file-hook
 		'find-file-hooks))

@@ -1,5 +1,7 @@
 2006-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnheader.el (nnheader-find-file-noselect): Inhibit version-control.
+
 	* message.el (message-replacement-char): New variable.
 	(message-fix-before-sending): Use it.
 	(message-simplify-subject): New function to remove duplicate code.
