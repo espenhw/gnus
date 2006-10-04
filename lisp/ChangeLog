@@ -1,7 +1,7 @@
 2006-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-util.el (mm-charset-synonym-alist, mm-charset-override-alist): Add
-	iso-8859-8/windows-1255 (Hebrew) and iso-8859-9/windows-1254.
+	iso-8859-8/windows-1255 and iso-8859-9/windows-1254.
 
 	* nnheader.el (nnheader-find-file-noselect): Inhibit version-control.
 
