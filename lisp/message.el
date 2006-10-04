@@ -6131,6 +6131,23 @@ want to get rid of this query permanently.")))
 	(push (cons 'Cc recipients) follow-to)))
     follow-to))
 
+(defun message-simplify-subject (subject &optional functions)
+  "Retunr simplified SUBJECT."
+  (unless functions
+    ;; Simplify fully:
+    (setq functions '(message-strip-list-identifiers
+		      message-strip-subject-re
+		      message-strip-subject-trailing-was)))
+  (when (and (memq 'message-strip-list-identifiers functions)
+	     gnus-list-identifiers)
+    (setq subject (message-strip-list-identifiers subject)))
+  (when (memq 'message-strip-subject-re functions)
+    (setq subject (concat "Re: " (message-strip-subject-re subject))))
+  (when (and (memq 'message-strip-subject-trailing-was functions)
+	     message-subject-trailing-was-query)
+    (setq subject (message-strip-subject-trailing-was subject)))
+  subject)
+
 ;;;###autoload
 (defun message-reply (&optional to-address wide)
   "Start editing a reply to the article in the current buffer."
@@ -6160,11 +6177,9 @@ want to get rid of this query permanently.")))
 	    date (message-fetch-field "date")
 	    from (or (message-fetch-field "from") "nobody")
 	    subject (or (message-fetch-field "subject") "none"))
-      (when gnus-list-identifiers
-	(setq subject (message-strip-list-identifiers subject)))
-      (setq subject (concat "Re: " (message-strip-subject-re subject)))
-      (when message-subject-trailing-was-query
-	(setq subject (message-strip-subject-trailing-was subject)))
+
+      ;; Strip list identifiers, "Re: ", and "was:"
+      (setq subject (message-simplify-subject subject))
 
       (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
 		 (string-match "<[^>]+>" gnus-warning))
@@ -6234,11 +6249,8 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 		 (let ((case-fold-search t))
 		   (string-match "world" distribution)))
 	(setq distribution nil))
-      (if gnus-list-identifiers
-	  (setq subject (message-strip-list-identifiers subject)))
-      (setq subject (concat "Re: " (message-strip-subject-re subject)))
-      (when message-subject-trailing-was-query
-	(setq subject (message-strip-subject-trailing-was subject)))
+      ;; Strip list identifiers, "Re: ", and "was:"
+      (setq subject (message-simplify-subject subject))
       (widen))
 
     (message-pop-to-buffer (message-buffer-name "followup" from newsgroups))

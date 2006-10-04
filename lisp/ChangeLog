@@ -2,6 +2,8 @@
 
 	* message.el (message-replacement-char): New variable.
 	(message-fix-before-sending): Use it.
+	(message-simplify-subject): New function to remove duplicate code.
+	(message-reply, message-followup): Use it.
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Clarify
 	gnus-summary-limit-to-articles.
