@@ -208,12 +208,22 @@ the alias.  Else windows-NUMBER is used."
     ;; BIG-5HKSCS is similar to, but different than, BIG-5.
     ,@(unless (mm-coding-system-p 'big5-hkscs)
 	'((big5-hkscs . big5)))
-    ;; Windows-1252 is actually a superset of Latin-1.  See also
-    ;; `gnus-article-dumbquotes-map'.
+    ;; Windows-1252 is actually a superset of iso-8859-1 (West Europe).  See
+    ;; also `gnus-article-dumbquotes-map'.
     ,@(unless (mm-coding-system-p 'windows-1252)
 	(if (mm-coding-system-p 'cp1252)
 	    '((windows-1252 . cp1252))
 	  '((windows-1252 . iso-8859-1))))
+    ;; Windows-1254 is a superset of iso-8859-9 (Turkish).
+    ,@(unless (mm-coding-system-p 'windows-1254)
+	(if (mm-coding-system-p 'cp1254)
+	    '((windows-1254 . cp1254))
+	  '((windows-1254 . iso-8859-9))))
+    ;; Windows-1255 is a superset of iso-8859-8 (Hebrew).
+    ,@(unless (mm-coding-system-p 'windows-1255)
+	(if (mm-coding-system-p 'cp1255)
+	    '((windows-1255 . cp1255))
+	  '((windows-1255 . iso-8859-8))))
     ;; Windows-1250 is a variant of Latin-2 heavily used by Microsoft
     ;; Outlook users in Czech republic. Use this to allow reading of their
     ;; e-mails. cp1250 should be defined by M-x codepage-setup.
@@ -237,7 +247,9 @@ the alias.  Else windows-NUMBER is used."
   "A mapping from unknown or invalid charset names to the real charset names.")
 
 (defcustom mm-charset-override-alist
-  `((iso-8859-1 . windows-1252))
+  '((iso-8859-1 . windows-1252)
+    (iso-8859-8 . windows-1255)
+    (iso-8859-9 . windows-1254))
   "A mapping from undesired charset names to their replacement.
 
 You may add pairs like (iso-8859-1 . windows-1252) here,
@@ -245,6 +257,8 @@ i.e. treat iso-8859-1 as windows-1252.  windows-1252 is a
 superset of iso-8859-1."
   :type '(list (set :inline t
 		    (const (iso-8859-1 . windows-1252))
+		    (const (iso-8859-8 . windows-1255))
+		    (const (iso-8859-9 . windows-1254))
 		    (const (undecided  . windows-1252)))
 	       (repeat :inline t
 		       :tag "Other options"

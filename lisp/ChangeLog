@@ -1,5 +1,8 @@
 2006-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-charset-synonym-alist, mm-charset-override-alist): Add
+	iso-8859-8/windows-1255 (Hebrew) and iso-8859-9/windows-1254.
+
 	* nnheader.el (nnheader-find-file-noselect): Inhibit version-control.
 
 	* message.el (message-replacement-char): New variable.
@@ -1154,6 +1157,8 @@
 	keystrokes.
 
 2006-04-13  Romain Francoise  <romain@orebokech.com>
+
+	TODO: Backport to v5-10!
 
 	* gnus-util.el (gnus-alist-to-hashtable, gnus-hashtable-to-alist):
 	Moved here (and renamed) from gnus-registry.el.
