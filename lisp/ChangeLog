@@ -1,5 +1,8 @@
 2006-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-replacement-char): New variable.
+	(message-fix-before-sending): Use it.
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Clarify
 	gnus-summary-limit-to-articles.
 

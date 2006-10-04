@@ -3842,6 +3842,14 @@ not have PROP."
 	(setq start next)))
     (nreverse regions)))
 
+(defcustom message-replacement-char "."
+  "Replacement character used instead of unprintable or not decodable chars."
+  :group 'message-various
+  :version "23.0" ;; No Gnus
+  :type '(choice string
+		 (const ".")
+		 (const "?")))
+
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
   ;; Make sure there's a newline at the end of the message.
@@ -3891,8 +3899,10 @@ not have PROP."
 	(setq choice
 	      (gnus-multiple-choice
 	       "Non-printable characters found.  Continue sending?"
-	       '((?d "Remove non-printable characters and send")
-		 (?r "Replace non-printable characters with dots and send")
+	       `((?d "Remove non-printable characters and send")
+		 (?r ,(format
+		       "Replace non-printable characters with \"%s\" and send"
+		       message-replacement-char))
 		 (?i "Ignore non-printable characters and send")
 		 (?e "Continue editing"))))
 	(if (eq choice ?e)
@@ -3915,7 +3925,7 @@ not have PROP."
 		(message-kill-all-overlays)
 	      (delete-char 1)
 	      (when (eq choice ?r)
-		(insert "."))))
+		(insert message-replacement-char))))
 	  (forward-char)
 	  (skip-chars-forward mm-7bit-chars))))))
 
