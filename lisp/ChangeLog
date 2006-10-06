@@ -349,13 +349,13 @@
 
 	* gnus-start.el (gnus-subscribe-options-newsgroup-method): Doc fix.
 
-2006-07-10  Daiki Ueno <ueno@unixuser.org>
+2006-07-10  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml1991.el (mml1991-function-alist): Add epg.
 	(mml1991-epg-passphrase-callback, mml1991-epg-sign)
 	(mml1991-epg-encrypt): New functions.
 
-2006-07-10  Daiki Ueno <ueno@unixuser.org>
+2006-07-10  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-verbose): New variable.
 	(mml2015-cache-passphrase): Ditto.
@@ -772,7 +772,7 @@
 
 	* gnus.el (gnus-version-number): Bump version.
 
-2006-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+2006-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.5 is released.
 
@@ -1602,7 +1602,7 @@
 	handle is multipart when calling it recursively.
 	(mm-w3m-cid-retrieve): Display warning if retrieving fails.
 
-2006-03-03  Daniel Pittman <daniel@rimspace.net>
+2006-03-03  Daniel Pittman  <daniel@rimspace.net>
 
 	* nnimap.el (nnimap-request-update-info-internal): Optimize.
 	Don't `gnus-uncompress-range' to avoid excessive memory usage.
@@ -1854,7 +1854,7 @@
 	LIBRARY, IMAGE and PATH.  Don't modify paths.  Don't use
 	*-image-load-path-called-flag.
 
-2006-02-21  Milan Zamazal <pdm@brailcom.org>
+2006-02-21  Milan Zamazal  <pdm@brailcom.org>
 
 	* mm-view.el (mm-view-pkcs7-verify): Implement using smime.el.
 
@@ -4081,7 +4081,7 @@
 	process-kill-without-query.
 	(starttls-open-stream): Ditto.
 
-2005-05-31  Ulf Stegemann <ulf@zeitform.de>  (tiny change)
+2005-05-31  Ulf Stegemann  <ulf@zeitform.de>  (tiny change)
 
 	* smime.el (smime-cert-by-ldap-1): Don't use
 	replace-regexp-in-string.
@@ -4301,7 +4301,7 @@
 	* nntp.el: Autoload format-spec instead of format; use
 	eval-and-compile to evaluate autoload forms.
 
-2005-05-09  Georg C. F. Greve <greve@gnu.org>  (tiny change)
+2005-05-09  Georg C. F. Greve  <greve@gnu.org>  (tiny change)
 
 	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): Fix PIN caching.
 
@@ -4309,7 +4309,7 @@
 
 	* gnus.el (gnus-version-number): Bump version.
 
-2005-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+2005-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.3 is released.
 
@@ -5583,7 +5583,7 @@
 	checkdoc cleanup.
 	(html2text-get-attr, html2text-fix-paragraph): Simplify code.
 
-2004-11-01  Alfred M. Szmidt <ams@kemisten.nu>  (tiny change)
+2004-11-01  Alfred M. Szmidt  <ams@kemisten.nu>  (tiny change)
 
 	* html2text.el (html2text-format-tag-list): Add "strong" and "em".
 
@@ -6443,7 +6443,7 @@
 	* nnimap.el (nnimap-authinfo-file, nnimap-prune-cache):
 	Add :group 'nnimap.
 
-2004-08-30  Andreas Schwab <schwab@suse.de>
+2004-08-30  Andreas Schwab  <schwab@suse.de>
 
 	* rfc2231.el (rfc2231-parse-string): Restore whitespace syntax for
 	?* and ?\;.
@@ -6479,12 +6479,12 @@
 	* gnus-sum.el (gnus-summary-make-menu-bar): Avoid the
 	"Unrecognized menu descriptor" error in XEmacs.
 
-2004-08-26  Stefan Wiens <s.wi@gmx.net>  (tiny change)
+2004-08-26  Stefan Wiens  <s.wi@gmx.net>  (tiny change)
 
 	* gnus-sum.el (gnus-read-header): Don't remove a header for the
 	parent article of a sparse article in the thread hashtb.
 
-2004-08-26  David Hedbor <dhedbor@real.com>  (tiny change)
+2004-08-26  David Hedbor  <dhedbor@real.com>  (tiny change)
 
 	* nnmail.el (nnmail-split-lowercase-expanded): New user option.
 	(nnmail-expand-newtext): Lowercase expanded entries if
@@ -7144,7 +7144,7 @@
 	(rfc2047-decode): Treat the ascii coding-system as raw-text by
 	default.
 
-2004-05-25  Anand Mitra <mitramc@yahoo.com>  (tiny change)
+2004-05-25  Anand Mitra  <mitramc@yahoo.com>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-delete-article): invoke hook with
 	correct data.
@@ -7589,7 +7589,7 @@
 
 	* gnus.el (gnus-version-number): Bump.
 
-2004-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+2004-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.2 is released.
 
@@ -9516,11 +9516,11 @@
 
 	* gnus.el (gnus-version-number): Bump version.
 
-2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+2004-01-04  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.1 is released.
 
-2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+2004-01-04  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.0 is released.
 
