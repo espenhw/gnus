@@ -230,7 +230,7 @@
   so one could do things like limiting on, to do whatever one likes with
   these articles.
 
-* A possibility to add notes to messages. If thouse could include links
+* A possibility to add notes to messages. If those could include links
   to other (stored) messages this would be very practical.
 
 * Allow article editing in groups which do not support it, but
@@ -342,7 +342,7 @@
 * Allow a user-defined picons directory for personal groups.
 
 * Annotations as discussed last autumn. Be able to make comments to
-  articles for all bakends. The comments amybe should go into a
+  articles for all backends. The comments maybe should go into a
   seperate "backend", like nndraft.
 
 * Catchup on a topic and all its subtopics. I.e. do "c y" when on a
