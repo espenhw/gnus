@@ -401,6 +401,21 @@ If mode is nil, use `major-mode' of the curent buffer."
 		 (string-match "^\\(.+\\)-mode$" mode)
 		 (match-string 1 mode))))))
 
+(defun gmm-write-region (start end filename &optional append visit
+			       lockname mustbenew)
+  "Compatibility function for `write-region'.
+
+In XEmacs, the seventh argument of `write-region' specifies the
+coding-system."
+  (if (and mustbenew
+	   (or (featurep 'xemacs)
+	       (= emacs-major-version 20)))
+      (if (file-exists-p file)
+	  (signal 'file-already-exists
+		  (list "File exists" file))
+	(write-region start end file append visit lockname))
+    (write-region start end file append visit lockname mustbenew)))
+
 (provide 'gmm-utils)
 
 ;; arch-tag: e0b60920-2ce6-40c1-bfc0-cadbbe26b602
