@@ -5346,10 +5346,14 @@
 2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-hidden-headers): Default to "^References:".
-	From Reiner Steib <Reiner.Steib@gmx.de>; improve customization type.
-	(message-strip-forbidden-properties): Remove check for obsolete
-	`message-hidden' text property, hidden headers are not accessible
-	in the buffer anymore.  From Romain Francoise on January 11, 2004.
+	Improve customization type.  Suggested by Reiner Steib
+	<Reiner.Steib@gmx.de>.
+
+2004-11-25  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-strip-forbidden-properties): Remove check for
+	obsolete `message-hidden' text property, hidden headers are not
+	accessible in the buffer anymore.
 
 2004-11-22  Romain Francoise  <romain@orebokech.com>
 
@@ -5470,10 +5474,9 @@
 	"Args out of range" error.  Reported by Arnaud Giersch
 	<arnaud.giersch@free.fr>.
 
-2004-11-07  Jesper Harder  <harder@ifa.au.dk>
+2004-11-07  Stefan Wiens  <s.wi@gmx.net>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-clear-local-variables): Use symbolp.
-	From Stefan Wiens <s.wi@gmx.net>.
 
 2004-11-04  Richard M. Stallman  <rms@gnu.org>
 
@@ -6570,11 +6573,10 @@
 	* gnus-art.el (gnus-button-alist): Improve
 	`gnus-button-handle-library' entry.
 
-2004-08-19  Paul Jarc  <prj@po.cwru.edu>
+2004-08-19  Sebastian Freundt  <hroptatyr@gna.org>  (tiny change)
 
 	* nnmaildir.el (nnmaildir--emlink-p, nnmaildir--enoent-p): Use
 	downcase, since XEmacs capitalizes error messages differently.
-	From Sebastian Freundt <hroptatyr@gna.org>.
 
 2004-08-18  Jesper Harder  <harder@ifa.au.dk>
 
@@ -7176,17 +7178,16 @@
 	(spam-summary-prepare-exit): invoke spam-group-processor-p
 	properly now
 
-	* spam-report.el (spam-report-resend-to, spam-report-resend):
-	start with resend-to set to nil, and then ask the user if
-	necessary.  From Daniel Pittman <daniel@rimspace.net>.
-
 	* gnus.el (spam-resend-to): new group/topic parameter
 	(spam-process): move the OBSOLETE processors to the end of the
 	choices.
 
-	* spam-report.el (spam-report-resend): spam-report-resend takes a
-	list of articles, not separate article numbers.  From Daniel
-	Pittman <daniel@rimspace.net>.
+2004-05-24  Daniel Pittman  <daniel@rimspace.net>
+
+	* spam-report.el (spam-report-resend-to, spam-report-resend): Start
+	with resend-to set to nil, and then ask the user if necessary.
+	(spam-report-resend): spam-report-resend takes a list of articles, not
+	separate article numbers.
 
 2004-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -7714,6 +7715,8 @@
 	(gnus-group-browse-foreign-server): do.
 
 2004-04-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	FIXME: Make separate entries for each person.
 
 	From Dan Christensen <jdc@uwo.ca>, asjo@koldfront.dk (Adam
 	Sj,Ax(Bgren), Wes Hardaker <wes@hardakers.net>, and Michael Shields
@@ -8588,11 +8591,10 @@
 	cache if there's the grouplens stuff.
 	(gnus-parse-simple-format): Replace %l with the empty string.
 
-2004-01-27  Steve Youngs  <sryoungs@bigpond.net.au>
+2004-01-27  Jerry James  <james@xemacs.org>  (tiny change)
 
 	* gnus-spec.el (gnus-parse-simple-format): Fix setq value
 	omission.
-	From Jerry James  <james@xemacs.org>
 
 2004-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -8755,15 +8757,7 @@
 	(spam-stat-buffer-words-with-scores): Don't narrow and change
 	syntax table here.  Reported by Andrew Cohen <cohen@andy.bu.edu>.
 
-2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>
-
-	* spam.el (gnus-summary-mode-map): make spam-generic-score the
-	default scoring function
-	(spam-generic-score): calls spam-spamassassin-score if
-	spam-use-spamassassin or spam-use-spamassassin-headers is on;
-	spam-bogofilter-score otherwise.
-
-	From Hubert Chan <hubert@uhoreg.ca>:
+2004-01-20  Hubert Chan <hubert@uhoreg.ca>:
 
 	* spam.el (spam-use-spamassassin, spam-use-spamassassin-headers)
 	(spam-install-hooks, spam-spamassassin, spam-spamassassin-path)
@@ -8784,12 +8778,21 @@
 	(spam-assassin-register-ham-routine): add SpamAssassin support
 	(spam-bogofilter-score): fix to show article before scoring
 
+2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (gnus-summary-mode-map): make spam-generic-score the
+	default scoring function
+	(spam-generic-score): calls spam-spamassassin-score if
+	spam-use-spamassassin or spam-use-spamassassin-headers is on;
+	spam-bogofilter-score otherwise.
+
 	* gnus.el (spam-process, spam-autodetect-methods): add
 	spamassassin and spamassassin-headers
 
+2004-01-20  Nevin Kapur  <nkapur@cs.caltech.edu>
+
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent):
-	Suppress unnecessary messages.  From Nevin Kapur
-	<nkapur@cs.caltech.edu>.
+	Suppress unnecessary messages.
 
 2004-01-20  Jesper Harder  <harder@ifa.au.dk>
 
@@ -8841,11 +8844,13 @@
 	Suggested by ARISAWA Akihiro <ari@mbf.sphere.ne.jp>.
 	(mm-w3m-cid-retrieve): Simplify.
 
-2004-01-14  Kai Grossjohann  <kai@emptydomain.de>
+2004-01-14  Vasily Korytov  <deskpot@myrealbox.com>
 
 	* message.el (message-kill-to-signature): Allow prefix arg to
-	specify number of lines to keep before signature.  From Vasily
-	Korytov.
+	specify number of lines to keep before signature.
+
+2004-01-14  Kai Grossjohann  <kai@emptydomain.de>
+
 	(message-kill-to-signature): Change docstring.
 
 2004-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
