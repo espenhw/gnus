@@ -1,3 +1,7 @@
+2006-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gmm-utils.el (gmm-write-region): Fix variable name.
+
 2006-10-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gmm-utils.el (gmm-write-region): New function based on compatibility

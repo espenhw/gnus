@@ -410,11 +410,11 @@ coding-system."
   (if (and mustbenew
 	   (or (featurep 'xemacs)
 	       (= emacs-major-version 20)))
-      (if (file-exists-p file)
+      (if (file-exists-p filename)
 	  (signal 'file-already-exists
-		  (list "File exists" file))
-	(write-region start end file append visit lockname))
-    (write-region start end file append visit lockname mustbenew)))
+		  (list "File exists" filename))
+	(write-region start end filename append visit lockname))
+    (write-region start end filename append visit lockname mustbenew)))
 
 (provide 'gmm-utils)
 
