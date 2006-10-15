@@ -1119,8 +1119,9 @@ If SUFFIX is non-nil, add that at the end of the file name."
 			     (setq file (concat file suffix)))
 			 (if dir-flag
 			     (make-directory file)
-			   ;; NOTE: This is unsafe if XEmacs users don't use a
-			   ;; secure temp directory.
+			   ;; NOTE: This is unsafe if Emacs 20
+			   ;; users and XEmacs users don't use
+			   ;; a secure temp directory.
 			   (gmm-write-region "" nil file nil 'silent
 					     nil 'excl))
 			 nil)

@@ -324,7 +324,7 @@ Also, drop all gnus-registry-ignored-groups matches."
       (setq alist
 	    (nthcdr
 	     trim-length
-	     (sort alist 
+	     (sort alist
 		   (lambda (a b)
 		     (time-less-p
 		      (or (cdr (gethash (car a) timehash)) '(0 0 0))
