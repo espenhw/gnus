@@ -1,3 +1,9 @@
+2006-10-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use
+	ietf-drums-parse-address instead of gnus-extract-address-components.
+	Reported by Damien Elmes <damien@repose.cx>.
+
 2006-10-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* mm-uu.el (mm-uu-pgp-signed-extract-1): Use RFC 2440 definition of

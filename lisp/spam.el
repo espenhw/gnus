@@ -43,6 +43,7 @@
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'spam-report))
 (eval-when-compile (require 'hashcash))
+(eval-when-compile (require 'ietf-drums))
 
 (require 'gnus-sum)
 
@@ -2080,12 +2081,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       "Enter an address into the BBDB; implies ham (non-spam) sender"
       (dolist (from addresses)
 	(when (stringp from)
-	  (let* ((parsed-address (gnus-extract-address-components from))
-		 (name (or (nth 0 parsed-address) "Ham Sender"))
+	  (let* ((parsed-address (ietf-drums-parse-address from))
+		 (name (or (nth 1 parsed-address) "Ham Sender"))
 		 (remove-function (if remove
 				      'bbdb-delete-record-internal
 				    'ignore))
-		 (net-address (nth 1 parsed-address))
+		 (net-address (nth 0 parsed-address))
 		 (record (and net-address
 			      (bbdb-search-simple nil net-address))))
 	    (when net-address
@@ -2129,7 +2130,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		   bbdb-hashtable))))
 	    (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
 	(when who
-	  (setq who (nth 1 (gnus-extract-address-components who)))
+	  (setq who (car (ietf-drums-parse-address who)))
 	  (if
 	      (if spam-cache-lookups
 		  (intern-soft (downcase who) bbdb-cache)
@@ -2379,7 +2380,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
 	  (unless (zerop (length address))
-	    (let ((pure-address (nth 1 (gnus-extract-address-components address))))
+	    (let ((pure-address (car (ietf-drums-parse-address address))))
 	      (push (or pure-address address) contents)))))
       (nreverse contents))))
 
