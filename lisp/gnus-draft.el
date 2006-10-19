@@ -105,7 +105,9 @@
       (save-restriction
 	(message-narrow-to-headers)
 	(message-remove-header "date")))
-    (save-buffer)
+    (let ((message-draft-headers
+	   (delq 'Date (copy-sequence message-draft-headers))))
+      (save-buffer))
     (let ((gnus-verbose-backends nil))
       (gnus-request-expire-articles (list article) group t))
     (push

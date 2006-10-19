@@ -208,7 +208,7 @@ Also see `message-required-news-headers' and
   :link '(custom-manual "(message)Message Headers")
   :type '(repeat sexp))
 
-(defcustom message-draft-headers '(References From)
+(defcustom message-draft-headers '(References From Date)
   "*Headers to be generated when saving a draft message."
   :version "22.1"
   :group 'message-news
@@ -5825,7 +5825,7 @@ between beginning of field and beginning of line."
 
 (defun message-headers-to-generate (headers included-headers excluded-headers)
   "Return a list that includes all headers from HEADERS.
-If INCLUDED-HEADERS is a list, just include those headers.  If if is
+If INCLUDED-HEADERS is a list, just include those headers.  If it is
 t, include all headers.  In any case, headers from EXCLUDED-HEADERS
 are not included."
   (let ((result nil)

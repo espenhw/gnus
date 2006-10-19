@@ -495,24 +495,23 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (defun gnus-registry-wash-for-keywords (&optional force)
   (interactive)
   (let ((id (gnus-registry-fetch-message-id-fast gnus-current-article))
-	words)
-    (if (or (not (gnus-registry-fetch-extra id 'keywords)) 
+	word words)
+    (if (or (not (gnus-registry-fetch-extra id 'keywords))
 	    force)
-      (save-excursion
-	(set-buffer gnus-article-buffer)
-	(let (words)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
 	  (article-goto-body)
 	  (save-window-excursion
 	    (save-restriction
 	      (narrow-to-region (point) (point-max))
 	      (with-syntax-table gnus-adaptive-word-syntax-table
 		(while (re-search-forward "\\b\\w+\\b" nil t)
-		  (setq word (gnus-registry-remove-alist-text-properties 
+		  (setq word (gnus-registry-remove-alist-text-properties
 			      (downcase (buffer-substring
 					 (match-beginning 0) (match-end 0)))))
 		  (if (> (length word) 3)
 		      (push word words))))))
-	  (gnus-registry-store-extra-entry id 'keywords words))))))
+	  (gnus-registry-store-extra-entry id 'keywords words)))))
 
 (defun gnus-registry-find-keywords (keyword)
   (interactive "skeyword: ")
