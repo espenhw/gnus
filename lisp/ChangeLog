@@ -1,3 +1,8 @@
+2006-10-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use
+	car-safe to avoid bad parses
+
 2006-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-make-doc-group): Work for non-ASCII group

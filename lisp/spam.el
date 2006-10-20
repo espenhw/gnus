@@ -2082,11 +2082,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (dolist (from addresses)
 	(when (stringp from)
 	  (let* ((parsed-address (ietf-drums-parse-address from))
-		 (name (or (nth 1 parsed-address) "Ham Sender"))
+		 (name (or (car-safe (cdr-safe parsed-address)) "Ham Sender"))
 		 (remove-function (if remove
 				      'bbdb-delete-record-internal
 				    'ignore))
-		 (net-address (nth 0 parsed-address))
+		 (net-address (car-safe parsed-address))
 		 (record (and net-address
 			      (bbdb-search-simple nil net-address))))
 	    (when net-address
@@ -2129,8 +2129,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     (intern (downcase (symbol-name symbol)) bbdb-cache))
 		   bbdb-hashtable))))
 	    (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
+	  (setq who (car-safe (ietf-drums-parse-address who)))
 	(when who
-	  (setq who (car (ietf-drums-parse-address who)))
 	  (if
 	      (if spam-cache-lookups
 		  (intern-soft (downcase who) bbdb-cache)
@@ -2380,7 +2380,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
 	  (unless (zerop (length address))
-	    (let ((pure-address (car (ietf-drums-parse-address address))))
+	    (let ((pure-address (car-safe (ietf-drums-parse-address address))))
 	      (push (or pure-address address) contents)))))
       (nreverse contents))))
 
