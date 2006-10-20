@@ -1,3 +1,10 @@
+2006-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-make-doc-group): Work for non-ASCII group
+	names.
+
+	* gnus-sum.el (gnus-select-newsgroup): Decode group name.
+
 2006-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-draft.el (gnus-draft-edit-message): Make sure to remove Date
