@@ -884,7 +884,7 @@ configuration.  See the variable `gnus-cite-attribution-suffix'."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-(defcustom message-citation-line-format "On %a, %b %d %Y, %n wrote:"
+(defcustom message-citation-line-format "On %a, %b %d %Y, %N wrote:"
   "Format of the \"Whomever writes:\" line.
 
 The string is formatted using `format-spec'.  The following
@@ -3540,7 +3540,7 @@ See `message-citation-line-format'."
 	     date
 	     ;; We need Gnus functionality if the user wants date or time from
 	     ;; the original article:
-	     (when (string-match "%[^EFLn]" message-citation-line-format)
+	     (when (string-match "%[^fnNFL]" message-citation-line-format)
 	       (autoload 'gnus-date-get-time "gnus-util")
 	       (gnus-date-get-time (mail-header-date message-reply-headers)))))
 	   (flist
@@ -3560,19 +3560,19 @@ See `message-citation-line-format'."
 		       (setq fname name
 			     lname ""))))
 	      ;; The following letters are not used in `format-time-string':
-	      (push ?E lst) (push net lst)
+	      (push ?E lst) (push "<E>" lst)
 	      (push ?F lst) (push fname lst)
 	      ;; We might want to use "" instead of "<X>" later.
 	      (push ?J lst) (push "<J>" lst)
 	      (push ?K lst) (push "<K>" lst)
 	      (push ?L lst) (push lname lst)
-	      (push ?N lst) (push "<N>" lst)
+	      (push ?N lst) (push name-or-net lst)
 	      (push ?O lst) (push "<O>" lst)
 	      (push ?P lst) (push "<P>" lst)
 	      (push ?Q lst) (push "<Q>" lst)
 	      (push ?f lst) (push from lst)
 	      (push ?i lst) (push "<i>" lst)
-	      (push ?n lst) (push name-or-net lst)
+	      (push ?n lst) (push net lst)
 	      (push ?o lst) (push "<o>" lst)
 	      (push ?q lst) (push "<q>" lst)
 	      (push ?t lst) (push "<t>" lst)

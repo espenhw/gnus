@@ -1,3 +1,9 @@
+2006-10-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-citation-line-format)
+	(message-insert-formated-citation-line): Fix implementation of %E, %N
+	and %n according to the doc string.
+
 2006-10-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use
