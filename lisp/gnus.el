@@ -279,10 +279,6 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Various Various")
   :group 'gnus)
 
-(defgroup gnus-mime nil
-  "Variables for controlling the Gnus MIME interface."
-  :group 'gnus)
-
 (defgroup gnus-exit nil
   "Exiting Gnus."
   :link '(custom-manual "(gnus)Exiting Gnus")
@@ -1239,6 +1235,7 @@ used to 899, you would say something along these lines:
   :group 'gnus-server
   :type 'file)
 
+;;;###autoload
 (defun gnus-getenv-nntpserver ()
   "Find default nntp server.
 Check the NNTPSERVER environment variable and the
@@ -1250,6 +1247,7 @@ Check the NNTPSERVER environment variable and the
 	     (when (re-search-forward "[^ \t\n\r]+" nil t)
 	       (match-string 0))))))
 
+;;;###autoload
 (defcustom gnus-select-method
   (condition-case nil
       (nconc
