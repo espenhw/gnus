@@ -1,3 +1,7 @@
+2006-10-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el (gnus-getenv-nntpserver, gnus-select-method): Autoload.
+
 2006-10-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-citation-line-format)
