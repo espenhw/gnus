@@ -1,5 +1,11 @@
 2006-10-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-codepage-iso-8859-list, mm-codepage-ibm-list): New
+	variables.
+	(mm-setup-codepage-iso-8859, mm-setup-codepage-ibm): New functions.
+	(mm-charset-synonym-alist): Move some entries to
+	mm-codepage-iso-8859-list.
+
 	* gnus.el (gnus-getenv-nntpserver, gnus-select-method): Autoload.
 
 2006-10-23  Reiner Steib  <Reiner.Steib@gmx.de>
