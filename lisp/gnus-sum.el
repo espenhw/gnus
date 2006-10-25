@@ -9338,16 +9338,16 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		(to-method (gnus-find-method-for-group
 			    to-newsgroup))
 		(move-is-internal (gnus-method-equal from-method to-method)))
-	 (gnus-request-move-article
-	  article			; Article to move
-	  gnus-newsgroup-name		; From newsgroup
-	  (nth 1 (gnus-find-method-for-group
-		  gnus-newsgroup-name)) ; Server
-	  (list 'gnus-request-accept-article
-		to-newsgroup (list 'quote select-method)
-		(not articles) t)	; Accept form
-	  (not articles)		; Only save nov last time
-	  move-is-internal)))		; is this move internal?
+	   (gnus-request-move-article
+	    article			; Article to move
+	    gnus-newsgroup-name		; From newsgroup
+	    (nth 1 (gnus-find-method-for-group
+		    gnus-newsgroup-name)) ; Server
+	    (list 'gnus-request-accept-article
+		  to-newsgroup (list 'quote select-method)
+		  (not articles) t)	; Accept form
+	    (not articles)		; Only save nov last time
+	    move-is-internal)))		; is this move internal?
 	;; Copy the article.
 	((eq action 'copy)
 	 (save-excursion
@@ -9380,7 +9380,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	     (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	     (when (consp (setq art-group
 				(gnus-request-accept-article
-				 to-newsgroup select-method (not articles))))
+				 to-newsgroup select-method (not articles) t)))
 	       (setq new-xref (concat new-xref " " (car art-group)
 				      ":"
 				      (number-to-string (cdr art-group))))
@@ -9388,7 +9388,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	       ;; it and replace the new article.
 	       (nnheader-replace-header "Xref" new-xref)
 	       (gnus-request-replace-article
-		(cdr art-group) to-newsgroup (current-buffer))
+		(cdr art-group) to-newsgroup (current-buffer) t)
 	       art-group))))))
       (cond
        ((not art-group)
@@ -9484,7 +9484,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	      (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	      (nnheader-replace-header "Xref" new-xref)
 	      (gnus-request-replace-article
-	       article gnus-newsgroup-name (current-buffer))))
+	       article gnus-newsgroup-name (current-buffer) t)))
 
 	  ;; run the move/copy/crosspost/respool hook
 	  (run-hook-with-args 'gnus-summary-article-move-hook
@@ -9497,7 +9497,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 
 	;;;!!!Why is this necessary?
 	(set-buffer gnus-summary-buffer)
-	
+
 	(gnus-summary-goto-subject article)
 	(when (eq action 'move)
 	  (gnus-summary-mark-article article gnus-canceled-mark))))
@@ -9509,7 +9509,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
       (set-buffer gnus-group-buffer)
       (let ((gnus-group-marked to-groups))
 	(gnus-group-get-new-news-this-group nil t)))
-    
+
     (gnus-kill-buffer copy-buf)
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)))

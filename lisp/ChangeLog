@@ -1,3 +1,7 @@
+2006-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-move-article): Use no-encode for `B B'.
+
 2006-10-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-util.el (mm-codepage-iso-8859-list, mm-codepage-ibm-list): New
