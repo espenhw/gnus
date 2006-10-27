@@ -1,3 +1,9 @@
+2006-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-parse-address): new function for better parsing,
+	catching errors, etc.
+	(spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use it
+
 2006-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-view.el: Add interactive arg to html2text autoload.
