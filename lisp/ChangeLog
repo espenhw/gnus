@@ -5,9 +5,9 @@
 
 2006-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-parse-address): new function for better parsing,
+	* spam.el (spam-parse-address): New function for better parsing,
 	catching errors, etc.
-	(spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use it
+	(spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): Use it.
 
 2006-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -35,8 +35,8 @@
 
 2006-10-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use
-	car-safe to avoid bad parses
+	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): Use
+	car-safe to avoid bad parses.
 
 2006-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -61,12 +61,12 @@
 2006-10-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-wash-for-keywords)
-	(gnus-registry-find-keywords): new functions to allow easy searching of
-	articles that are in the registry
+	(gnus-registry-find-keywords): New functions to allow easy searching of
+	articles that are in the registry.
 
 2006-10-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): use
+	* spam.el (spam-check-BBDB, spam-enter-ham-BBDB, spam-parse-list): Use
 	ietf-drums-parse-address instead of gnus-extract-address-components.
 	Reported by Damien Elmes <damien@repose.cx>.
 
