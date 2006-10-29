@@ -5832,8 +5832,9 @@ If WHERE is `summary', the summary mode line format will be used."
 	(let* ((mformat (symbol-value
 			 (intern
 			  (format "gnus-%s-mode-line-format-spec" where))))
-	       (gnus-tmp-group-name (gnus-group-decoded-name
-				     gnus-newsgroup-name))
+	       (gnus-tmp-group-name (gnus-mode-string-quote
+				     (gnus-group-decoded-name
+				      gnus-newsgroup-name)))
 	       (gnus-tmp-article-number (or gnus-current-article 0))
 	       (gnus-tmp-unread gnus-newsgroup-unreads)
 	       (gnus-tmp-unread-and-unticked (length gnus-newsgroup-unreads))
