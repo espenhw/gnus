@@ -1,3 +1,9 @@
+2006-11-03  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-diary.el (gnus-diary-delay-format-function):
+	* nndiary.el (nndiary-reminders):
+	* nnsoup.el (nnsoup-always-save): Use "non-nil" in docstrings.
+
 2006-11-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (article-hide-boring-headers): Fetch date from
@@ -7,6 +13,16 @@
 2006-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* html2text.el (html2text-format-tags): Avoid infloop on open tags.
+
+2006-10-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-util.el (mm-codepage-iso-8859-list, mm-codepage-ibm-list):
+	New variables.
+	(mm-setup-codepage-iso-8859, mm-setup-codepage-ibm): New functions.
+	(mm-charset-synonym-alist): Move some entries to
+	mm-codepage-iso-8859-list.
+	(mm-charset-synonym-alist, mm-charset-override-alist): Add
+	iso-8859-8/windows-1255 and iso-8859-9/windows-1254.
 
 2006-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
