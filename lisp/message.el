@@ -1898,6 +1898,75 @@ see `message-narrow-to-headers-or-head'."
       (substring subject (match-end 0))
     subject))
 
+(defun message-strip-subject-encoded-words (subject)
+  "Fix non-decodable words in SUBJECT."
+  ;; Cf. `gnus-simplify-subject-fully'.
+  (let ((case-fold-search t)
+	(replacement-chars (format "[%s%s%s]"
+				   message-replacement-char
+				   message-replacement-char
+				   message-replacement-char))
+	(have-marker
+	 (with-temp-buffer
+	   (insert subject)
+	   (goto-char (point-min))
+	   (search-forward "=?" nil t)))
+	;; (subj-encoded (rfc2047-encode-string subject))
+	;; (encodable (rfc2047-encodable-p))
+	cs-string cs-coding q-or-b ;; word rest
+	word-beg word-end)
+    (if (not have-marker)
+	subject
+      (with-temp-buffer
+	(insert subject)
+	(goto-char (point-min))
+	(while (re-search-forward
+		"=\\?\\([^?]+\\)\\?\\([QB]\\)\\?\\([^?]+\\)\\(\\?=\\)" nil t)
+	  (setq cs-string (downcase (match-string 1))
+		q-or-b    (match-string 2)
+		;; text      (match-string 3)
+		;; rest      (match-string 4)
+		word-beg (match-beginning 0)
+		word-end (match-end 0))
+	  (if (and (mm-coding-system-p (intern cs-string))
+		   (y-or-n-p
+		    (format
+		     "Double encoded subject?  Decode using charset %s? "
+		     cs-string)))
+	      (setq cs-coding (intern cs-string))
+	    (setq cs-coding
+		  (mm-read-coding-system
+		   ;; Would DEFAULT-CODING-SYSTEM make sense?
+		   (format "\
+Given charset `%s' in Subject is bogus.  Hit RET to replace
+non-decodable characters with \"%s\" or enter replacement
+charset: " cs-string message-replacement-char))))
+	  (if cs-coding
+	      (replace-match (concat "=?" (symbol-name cs-coding)
+				     "?\\2?\\3\\4\\5"))
+	    (save-excursion
+	      (goto-char word-beg)
+	      (re-search-forward "=\\?\\([^?]+\\)\\?\\([QB]\\)\\?" word-end t)
+	      (replace-match "")
+	      ;; QP or base64
+	      (if (string-match "\\`Q\\'" q-or-b)
+		  ;; QP
+		  (progn
+		    (message "Replacing non-decodable characters with \"%s\"."
+			     message-replacement-char)
+		    (while (re-search-forward "\\(=[A-F0-9][A-F0-9]\\)+"
+					      word-end t)
+		      (replace-match message-replacement-char)))
+		;; base64
+		(message "Replacing non-decodable characters with \"%s\"."
+			 replacement-chars)
+		(re-search-forward "[^?]+" word-end t)
+		(replace-match replacement-chars))
+	      (re-search-forward "\\?=")
+	      (replace-match ""))))
+	(rfc2047-decode-region (point-min) (point-max))
+	(buffer-string)))))
+
 ;;; Start of functions adopted from `message-utils.el'.
 
 (defun message-strip-subject-trailing-was (subject)
@@ -6131,13 +6200,29 @@ want to get rid of this query permanently.")))
 	(push (cons 'Cc recipients) follow-to)))
     follow-to))
 
+(defcustom message-simplify-subject-functions
+  '(message-strip-list-identifiers
+    message-strip-subject-re
+    message-strip-subject-trailing-was
+    ;; Needs some more testing before it is enabled by default:
+    ;; message-strip-subject-encoded-words
+    )
+  "List of functions taking a string argument that simplify subjects.
+The functions are applied when replying to a message.
+
+Useful functions to put in this list include:
+`message-strip-list-identifiers', `message-strip-subject-re',
+`message-strip-subject-trailing-was', and
+`message-strip-subject-encoded-words'."
+  :version "22.1" ;; Gnus 5.10.9
+  :group 'message-various
+  :type '(repeat function))
+
 (defun message-simplify-subject (subject &optional functions)
-  "Retunr simplified SUBJECT."
+  "Return simplified SUBJECT."
   (unless functions
     ;; Simplify fully:
-    (setq functions '(message-strip-list-identifiers
-		      message-strip-subject-re
-		      message-strip-subject-trailing-was)))
+    (setq functions message-simplify-subject-functions))
   (when (and (memq 'message-strip-list-identifiers functions)
 	     gnus-list-identifiers)
     (setq subject (message-strip-list-identifiers subject)))
@@ -6146,6 +6231,8 @@ want to get rid of this query permanently.")))
   (when (and (memq 'message-strip-subject-trailing-was functions)
 	     message-subject-trailing-was-query)
     (setq subject (message-strip-subject-trailing-was subject)))
+  (when (memq 'message-strip-subject-encoded-words functions)
+    (setq subject (message-strip-subject-encoded-words subject)))
   subject)
 
 ;;;###autoload
