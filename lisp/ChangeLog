@@ -1,3 +1,9 @@
+2006-11-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-strip-subject-encoded-words): Reformat prompt.
+	(message-simplify-subject-functions): Enable
+	message-strip-subject-encoded-words by default.
+
 2006-11-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-strip-subject-encoded-words): New function

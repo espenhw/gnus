@@ -1939,8 +1939,8 @@ see `message-narrow-to-headers-or-head'."
 		   ;; Would DEFAULT-CODING-SYSTEM make sense?
 		   (format "\
 Given charset `%s' in Subject is bogus.  Hit RET to replace
-non-decodable characters with \"%s\" or enter replacement
-charset: " cs-string message-replacement-char))))
+non-decodable characters with \"%s\" or enter replacement charset: "
+			   cs-string message-replacement-char))))
 	  (if cs-coding
 	      (replace-match (concat "=?" (symbol-name cs-coding)
 				     "?\\2?\\3\\4\\5"))
@@ -6204,9 +6204,7 @@ want to get rid of this query permanently.")))
   '(message-strip-list-identifiers
     message-strip-subject-re
     message-strip-subject-trailing-was
-    ;; Needs some more testing before it is enabled by default:
-    ;; message-strip-subject-encoded-words
-    )
+    message-strip-subject-encoded-words)
   "List of functions taking a string argument that simplify subjects.
 The functions are applied when replying to a message.
 
