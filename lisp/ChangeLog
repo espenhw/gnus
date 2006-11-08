@@ -1,3 +1,8 @@
+2006-11-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-strip-subject-encoded-words): Allow _not_ to
+	decode encoded words.
+
 2006-11-08  Wolfgang Jenkner  <wjenkner@inode.at>  (tiny change)
 
 	* gnus-sum.el (gnus-summary-catchup): Use gnus-sorted-intersection

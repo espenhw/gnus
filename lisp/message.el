@@ -1901,69 +1901,76 @@ see `message-narrow-to-headers-or-head'."
 (defun message-strip-subject-encoded-words (subject)
   "Fix non-decodable words in SUBJECT."
   ;; Cf. `gnus-simplify-subject-fully'.
-  (let ((case-fold-search t)
-	(replacement-chars (format "[%s%s%s]"
-				   message-replacement-char
-				   message-replacement-char
-				   message-replacement-char))
-	(have-marker
-	 (with-temp-buffer
-	   (insert subject)
-	   (goto-char (point-min))
-	   (search-forward "=?" nil t)))
-	;; (subj-encoded (rfc2047-encode-string subject))
-	;; (encodable (rfc2047-encodable-p))
-	cs-string cs-coding q-or-b ;; word rest
-	word-beg word-end)
-    (if (not have-marker)
+  (let* ((case-fold-search t)
+	 (replacement-chars (format "[%s%s%s]"
+				    message-replacement-char
+				    message-replacement-char
+				    message-replacement-char))
+	 (enc-word-re "=\\?\\([^?]+\\)\\?\\([QB]\\)\\?\\([^?]+\\)\\(\\?=\\)")
+	 cs-string
+	 (have-marker
+	  (with-temp-buffer
+	    (insert subject)
+	    (goto-char (point-min))
+	    (when (re-search-forward enc-word-re nil t)
+	      (setq cs-string (match-string 1)))))
+	 cs-coding q-or-b word-beg word-end)
+    (if (or (not have-marker) ;; No encoded word found...
+	    ;; ... or double encoding was correct:
+	    (and (stringp cs-string)
+		 (setq cs-string (downcase cs-string))
+		 (mm-coding-system-p (intern cs-string))
+		 (not (prog1
+			  (y-or-n-p
+			   (format "\
+Subject \"%s\" contains encoded words?  Decode again? "
+				   subject))
+			(setq cs-coding (intern cs-string))))))
 	subject
       (with-temp-buffer
 	(insert subject)
 	(goto-char (point-min))
-	(while (re-search-forward
-		"=\\?\\([^?]+\\)\\?\\([QB]\\)\\?\\([^?]+\\)\\(\\?=\\)" nil t)
+	(while (re-search-forward enc-word-re nil t)
 	  (setq cs-string (downcase (match-string 1))
 		q-or-b    (match-string 2)
-		;; text      (match-string 3)
-		;; rest      (match-string 4)
 		word-beg (match-beginning 0)
 		word-end (match-end 0))
-	  (if (and (mm-coding-system-p (intern cs-string))
-		   (y-or-n-p
-		    (format
-		     "Double encoded subject?  Decode using charset %s? "
-		     cs-string)))
-	      (setq cs-coding (intern cs-string))
+	  (setq cs-coding
+		(if (mm-coding-system-p (intern cs-string))
+		    (setq cs-coding (intern cs-string))
+		  nil))
+	  ;; No double encoded subject? => bogus charset.
+	  (unless cs-coding
 	    (setq cs-coding
 		  (mm-read-coding-system
 		   ;; Would DEFAULT-CODING-SYSTEM make sense?
 		   (format "\
 Given charset `%s' in Subject is bogus.  Hit RET to replace
 non-decodable characters with \"%s\" or enter replacement charset: "
-			   cs-string message-replacement-char))))
-	  (if cs-coding
-	      (replace-match (concat "=?" (symbol-name cs-coding)
-				     "?\\2?\\3\\4\\5"))
-	    (save-excursion
-	      (goto-char word-beg)
-	      (re-search-forward "=\\?\\([^?]+\\)\\?\\([QB]\\)\\?" word-end t)
-	      (replace-match "")
-	      ;; QP or base64
-	      (if (string-match "\\`Q\\'" q-or-b)
-		  ;; QP
-		  (progn
-		    (message "Replacing non-decodable characters with \"%s\"."
-			     message-replacement-char)
-		    (while (re-search-forward "\\(=[A-F0-9][A-F0-9]\\)+"
-					      word-end t)
-		      (replace-match message-replacement-char)))
-		;; base64
-		(message "Replacing non-decodable characters with \"%s\"."
-			 replacement-chars)
-		(re-search-forward "[^?]+" word-end t)
-		(replace-match replacement-chars))
-	      (re-search-forward "\\?=")
-	      (replace-match ""))))
+			   cs-string message-replacement-char)))
+	    (if cs-coding
+		(replace-match (concat "=?" (symbol-name cs-coding)
+				       "?\\2?\\3\\4\\5"))
+	      (save-excursion
+		(goto-char word-beg)
+		(re-search-forward "=\\?\\([^?]+\\)\\?\\([QB]\\)\\?" word-end t)
+		(replace-match "")
+		;; QP or base64
+		(if (string-match "\\`Q\\'" q-or-b)
+		    ;; QP
+		    (progn
+		      (message "Replacing non-decodable characters with \"%s\"."
+			       message-replacement-char)
+		      (while (re-search-forward "\\(=[A-F0-9][A-F0-9]\\)+"
+						word-end t)
+			(replace-match message-replacement-char)))
+		  ;; base64
+		  (message "Replacing non-decodable characters with \"%s\"."
+			   replacement-chars)
+		  (re-search-forward "[^?]+" word-end t)
+		  (replace-match replacement-chars))
+		(re-search-forward "\\?=")
+		(replace-match "")))))
 	(rfc2047-decode-region (point-min) (point-max))
 	(buffer-string)))))
 
