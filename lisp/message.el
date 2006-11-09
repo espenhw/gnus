@@ -1898,6 +1898,10 @@ see `message-narrow-to-headers-or-head'."
       (substring subject (match-end 0))
     subject))
 
+;; FIXME: We also should call `message-strip-subject-encoded-words'
+;; when forwarding.  Probably in `message-make-forward-subject' and
+;; `message-forward-make-body'.
+
 (defun message-strip-subject-encoded-words (subject)
   "Fix non-decodable words in SUBJECT."
   ;; Cf. `gnus-simplify-subject-fully'.
@@ -1923,7 +1927,8 @@ see `message-narrow-to-headers-or-head'."
 		 (not (prog1
 			  (y-or-n-p
 			   (format "\
-Subject \"%s\" contains encoded words?  Decode again? "
+Subject \"%s\"
+contains an encoded word.  Decode again? "
 				   subject))
 			(setq cs-coding (intern cs-string))))))
 	subject

@@ -1,7 +1,7 @@
 2006-11-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-strip-subject-encoded-words): Allow _not_ to
-	decode encoded words.
+	decode encoded words.  Improve prompt.  Add comment about forwarding.
 
 2006-11-08  Wolfgang Jenkner  <wjenkner@inode.at>  (tiny change)
 
