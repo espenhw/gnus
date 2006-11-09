@@ -2,6 +2,7 @@
 
 	* message.el (message-strip-subject-encoded-words): Allow _not_ to
 	decode encoded words.  Improve prompt.  Add comment about forwarding.
+	(message-replacement-char): Move up.
 
 2006-11-08  Wolfgang Jenkner  <wjenkner@inode.at>  (tiny change)
 

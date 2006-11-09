@@ -1898,6 +1898,14 @@ see `message-narrow-to-headers-or-head'."
       (substring subject (match-end 0))
     subject))
 
+(defcustom message-replacement-char "."
+  "Replacement character used instead of unprintable or not decodable chars."
+  :group 'message-various
+  :version "22.1" ;; Gnus 5.10.9
+  :type '(choice string
+		 (const ".")
+		 (const "?")))
+
 ;; FIXME: We also should call `message-strip-subject-encoded-words'
 ;; when forwarding.  Probably in `message-make-forward-subject' and
 ;; `message-forward-make-body'.
@@ -1927,8 +1935,8 @@ see `message-narrow-to-headers-or-head'."
 		 (not (prog1
 			  (y-or-n-p
 			   (format "\
-Subject \"%s\"
-contains an encoded word.  Decode again? "
+Decoded Subject \"%s\"
+contains a valid encoded word.  Decode again? "
 				   subject))
 			(setq cs-coding (intern cs-string))))))
 	subject
@@ -1948,11 +1956,12 @@ contains an encoded word.  Decode again? "
 	  (unless cs-coding
 	    (setq cs-coding
 		  (mm-read-coding-system
-		   ;; Would DEFAULT-CODING-SYSTEM make sense?
 		   (format "\
-Given charset `%s' in Subject is bogus.  Hit RET to replace
-non-decodable characters with \"%s\" or enter replacement charset: "
-			   cs-string message-replacement-char)))
+Decoded Subject \"%s\"
+contains an encoded word.  The charset `%s' is unknown or invalid.
+Hit RET to replace non-decodable characters with \"%s\" or enter replacement
+charset: "
+			   subject cs-string message-replacement-char)))
 	    (if cs-coding
 		(replace-match (concat "=?" (symbol-name cs-coding)
 				       "?\\2?\\3\\4\\5"))
@@ -3922,14 +3931,6 @@ not have PROP."
 	(push (cons start (or next end)) regions)
 	(setq start next)))
     (nreverse regions)))
-
-(defcustom message-replacement-char "."
-  "Replacement character used instead of unprintable or not decodable chars."
-  :group 'message-various
-  :version "23.0" ;; No Gnus
-  :type '(choice string
-		 (const ".")
-		 (const "?")))
 
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
