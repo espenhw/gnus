@@ -254,6 +254,7 @@ to insert Cancel-Lock headers.")
 (defvoo nntp-last-command nil)
 (defvoo nntp-authinfo-password nil)
 (defvoo nntp-authinfo-user nil)
+(defvoo nntp-authinfo-force nil)
 
 (defvar nntp-connection-list nil)
 
@@ -1116,7 +1117,7 @@ If SEND-IF-FORCE, only send authinfo to the server if the
 .authinfo file has the FORCE token."
   (let* ((list (netrc-parse nntp-authinfo-file))
 	 (alist (netrc-machine list nntp-address "nntp"))
-	 (force (netrc-get alist "force"))
+	 (force (or (netrc-get alist "force") nntp-authinfo-force))
 	 (user (or (netrc-get alist "login") nntp-authinfo-user))
 	 (passwd (netrc-get alist "password")))
     (when (or (not send-if-force)

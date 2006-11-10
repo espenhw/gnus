@@ -1,3 +1,8 @@
+2006-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-authinfo-force): New variable.
+	(nntp-send-authinfo): Use it.
+
 2006-11-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-strip-subject-encoded-words): Allow _not_ to
