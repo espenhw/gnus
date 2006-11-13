@@ -131,8 +131,13 @@ Whether the passphrase is cached at all is controlled by
   :group 'mime-security
   :type '(repeat (string :tag "Key ID")))
 
-(defcustom mml2015-encrypt-to-self nil
+(defcustom mml2015-encrypt-to-self t
   "If t, add your own key ID to recipient list when encryption."
+  :group 'mime-security
+  :type 'boolean)
+
+(defcustom mml2015-always-trust t
+  "If t, GnuPG skip key validation on encryption."
   :group 'mime-security
   :type 'boolean)
 
@@ -1217,7 +1222,8 @@ If no one is selected, default secret key is used.  "
 	 #'mml2015-epg-passphrase-callback))
     (condition-case error
 	(setq cipher
-	      (epg-encrypt-string context (buffer-string) recipients sign)
+	      (epg-encrypt-string context (buffer-string) recipients sign
+				  mml2015-always-trust)
 	      mml2015-epg-secret-key-id-list nil)
       (error
        (while mml2015-epg-secret-key-id-list
