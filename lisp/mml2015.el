@@ -131,7 +131,7 @@ Whether the passphrase is cached at all is controlled by
   :group 'mime-security
   :type '(repeat (string :tag "Key ID")))
 
-(defcustom mml2015-encrypt-to-self t
+(defcustom mml2015-encrypt-to-self nil
   "If t, add your own key ID to recipient list when encryption."
   :group 'mime-security
   :type 'boolean)
@@ -1180,45 +1180,54 @@ If no one is selected, default secret key is used.  "
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
 	(config (epg-configuration))
-	(recipients (split-string
+	(recipients (message-options-get 'mml2015-epg-recipients))
+	cipher signers
+	(boundary (mml-compute-boundary cont)))
+    (unless recipients
+      (setq recipients
+	    (apply #'nconc
+		   (mapcar
+		    (lambda (recipient)
+		      (or (epg-expand-group config recipient)
+			  (list recipient)))
+		    (split-string
 		     (or (message-options-get 'message-recipients)
 			 (message-options-set 'message-recipients
 					      (read-string "Recipients: ")))
-		     "[ \f\t\n\r\v,]+"))
-	cipher signers
-	(boundary (mml-compute-boundary cont)))
-    (setq recipients (apply #'nconc
-			    (mapcar
-			     (lambda (recipient)
-			       (or (epg-expand-group config recipient)
-				   (list recipient)))
-			     recipients)))
-    (if mml2015-verbose
-	(setq recipients
-	      (epa-select-keys context "Select recipients for encryption.
-If no one is selected, symmetric encryption will be performed.  "
-			       recipients))
-      (setq recipients
-	    (delq nil (mapcar (lambda (name)
-				(car (epg-list-keys context name)))
-			      recipients))))
-    (if mml2015-encrypt-to-self
-	(if mml2015-signers
-	    (setq recipients
-		  (nconc recipients
-			 (mapcar (lambda (name)
-				   (car (epg-list-keys context name)))
-				 mml2015-signers)))
-	  (error "mml2015-signers not set")))
-    (when sign
+		     "[ \f\t\n\r\v,]+"))))
       (if mml2015-verbose
-	  (setq signers (epa-select-keys context "Select keys for signing.
+	  (setq recipients
+		(epa-select-keys context "\
+Select recipients for encryption.
+If no one is selected, symmetric encryption will be performed.  "
+				 recipients))
+	(setq recipients
+	      (delq nil (mapcar (lambda (name)
+				  (car (epg-list-keys context name)))
+				recipients))))
+      (if mml2015-encrypt-to-self
+	  (if mml2015-signers
+	      (setq recipients
+		    (nconc recipients
+			   (mapcar (lambda (name)
+				     (car (epg-list-keys context name)))
+				   mml2015-signers)))
+	    (error "mml2015-signers not set")))
+      (message-options-set 'message-recipients recipients))
+    (when sign
+      (setq signers
+	    (or (message-options-get 'mml2015-epg-signers)
+		(message-options-set
+		 'mml2015-epg-signers
+		 (if mml2015-verbose
+		     (epa-select-keys context "\
+Select keys for signing.
 If no one is selected, default secret key is used.  "
-					 mml2015-signers t))
-	(if mml2015-signers
-	    (setq signers (mapcar (lambda (name)
-				    (car (epg-list-keys context name t)))
-				  mml2015-signers))))
+				      mml2015-signers t)
+		   (if mml2015-signers
+		       (mapcar (lambda (name)
+				 (car (epg-list-keys context name t)))
+			       mml2015-signers))))))
       (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
