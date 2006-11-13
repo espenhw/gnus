@@ -1213,7 +1213,7 @@ If no one is selected, symmetric encryption will be performed.  "
 				     (car (epg-list-keys context name)))
 				   mml2015-signers)))
 	    (error "mml2015-signers not set")))
-      (message-options-set 'message-recipients recipients))
+      (message-options-set 'mml2015-epg-recipients recipients))
     (when sign
       (setq signers
 	    (or (message-options-get 'mml2015-epg-signers)
