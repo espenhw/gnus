@@ -1,5 +1,10 @@
 2006-11-13  Daiki Ueno  <ueno@unixuser.org>
 
+	* mml2015.el (mml2015-epg-sign): Save the signing keys in
+	message-options.
+
+2006-11-13  Daiki Ueno  <ueno@unixuser.org>
+
 	* mml2015.el (mml2015-epg-encrypt): Removed backward compatibility for
 	EasyPG (< 0.0.6).
 	(mml2015-encrypt-to-self): Turn on by default.

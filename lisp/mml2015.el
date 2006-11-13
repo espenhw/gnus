@@ -963,7 +963,10 @@ Whether the passphrase is cached at all is controlled by
 		 "Passphrase for PIN: "
 	       (if (setq entry (assoc key-id epg-user-id-alist))
 		   (format "Passphrase for %s %s: " key-id (cdr entry))
-		 (format "Passphrase for %s: " key-id))))))
+		 (format "Passphrase for %s: " key-id)))
+	     (if (eq key-id 'PIN)
+		 "PIN"
+	       key-id))))
       (when passphrase
 	(let ((password-cache-expiry mml2015-passphrase-cache-expiry))
 	  (password-cache-add key-id passphrase))
@@ -1119,18 +1122,23 @@ Whether the passphrase is cached at all is controlled by
 	  (epg-context-result-for context 'verify))))))
 
 (defun mml2015-epg-sign (cont)
-  (let ((inhibit-redisplay t)
+  (let* ((inhibit-redisplay t)
 	(context (epg-make-context))
 	(boundary (mml-compute-boundary cont))
-	signers	signature micalg)
-    (if mml2015-verbose
-	(setq signers (epa-select-keys context "Select keys for signing.
+	(signers
+	 (or (message-options-get 'mml2015-epg-signers)
+	     (message-options-set
+	      'mml2015-epg-signers
+	      (if mml2015-verbose
+		  (epa-select-keys context "\
+Select keys for signing.
 If no one is selected, default secret key is used.  "
-				       mml2015-signers t))
-      (if mml2015-signers
-	  (setq signers (mapcar (lambda (name)
-				  (car (epg-list-keys context name t)))
-				mml2015-signers))))
+				   mml2015-signers t)
+		(if mml2015-signers
+		    (mapcar (lambda (name)
+			      (car (epg-list-keys context name t)))
+			    mml2015-signers))))))
+	signature micalg)
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
     (epg-context-set-signers context signers)
