@@ -956,16 +956,14 @@ Whether the passphrase is cached at all is controlled by
 (defun mml2015-epg-passphrase-callback (context key-id ignore)
   (if (eq key-id 'SYM)
       (epg-passphrase-callback-function context key-id nil)
-    (let* ((entry (assoc key-id epg-user-id-alist))
+    (let* (entry
 	   (passphrase
 	    (password-read
-	     (format "GnuPG passphrase for %s: "
-		     (if entry
-			 (cdr entry)
-		       key-id))
 	     (if (eq key-id 'PIN)
-		 "PIN"
-	       key-id))))
+		 "Passphrase for PIN: "
+	       (if (setq entry (assoc key-id epg-user-id-alist))
+		   (format "Passphrase for %s %s: " key-id (cdr entry))
+		 (format "Passphrase for %s: " key-id))))))
       (when passphrase
 	(let ((password-cache-expiry mml2015-passphrase-cache-expiry))
 	  (password-cache-add key-id passphrase))

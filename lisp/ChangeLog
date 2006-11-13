@@ -4,6 +4,8 @@
 	EasyPG (< 0.0.6).
 	(mml2015-encrypt-to-self): Turn on by default.
 	(mml2015-always-trust): New user option.
+	(mml2015-epg-passphrase-callback): Display key ID on the passphrase
+	prompt.
 
 2006-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
