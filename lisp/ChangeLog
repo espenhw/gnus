@@ -1,3 +1,8 @@
+2006-11-13  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-encrypt): Removed backward compatibility for
+	EasyPG (< 0.0.6).
+
 2006-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-authinfo-force): New variable.

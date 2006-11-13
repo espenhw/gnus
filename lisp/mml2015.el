@@ -1168,25 +1168,20 @@ If no one is selected, default secret key is used.  "
 (defun mml2015-epg-encrypt (cont &optional sign)
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
-	(recipients
-	 (if (message-options-get 'message-recipients)
-	     (split-string
-	      (message-options-get 'message-recipients)
-	      "[ \f\t\n\r\v,]+")))
-	cipher signers config
+	(config (epg-configuration))
+	(recipients (split-string
+		     (or (message-options-get 'message-recipients)
+			 (message-options-set 'message-recipients
+					      (read-string "Recipients: ")))
+		     "[ \f\t\n\r\v,]+"))
+	cipher signers
 	(boundary (mml-compute-boundary cont)))
-    ;; We should remove this check if epg-0.0.6 is released.
-    (if (and (condition-case nil
-		 (require 'epg-config)
-	       (error))
-	     (functionp #'epg-expand-group))
-	(setq config (epg-configuration)
-	      recipients
-	      (apply #'nconc
-		     (mapcar (lambda (recipient)
+    (setq recipients (apply #'nconc
+			    (mapcar
+			     (lambda (recipient)
 			       (or (epg-expand-group config recipient)
 				   (list recipient)))
-			     recipients))))
+			     recipients)))
     (if mml2015-verbose
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
