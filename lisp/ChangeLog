@@ -1,3 +1,10 @@
+2006-11-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el (gnus-start): Move custom group up.
+	(gnus-select-method): Don't autoload, but make it available for
+	`customize-variable'.
+	(gnus-getenv-nntpserver): Don't autoload.
+
 2006-11-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: reverted to 7.82 (removed changes since 2006-10-16)
