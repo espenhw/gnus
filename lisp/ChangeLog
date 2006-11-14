@@ -1,5 +1,8 @@
 2006-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-util.el (gnus-extract-address-components): Work with address in
+	which the name portion contains @.
+
 	* lpath.el: Fbind custom-autoload.
 
 2006-11-14  Reiner Steib  <Reiner.Steib@gmx.de>
