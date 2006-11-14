@@ -1,3 +1,7 @@
+2006-11-14  Daiki Ueno  <ueno@p360>
+
+	* mml2015.el: Autoload epa-select-keys when compiling.
+
 2006-11-13  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-sign): Save the signing keys in

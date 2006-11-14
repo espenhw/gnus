@@ -943,7 +943,8 @@ Whether the passphrase is cached at all is controlled by
   (autoload 'epg-passphrase-callback-function "epg")
   (autoload 'epg-context-set-passphrase-callback "epg")
   (autoload 'epg-configuration "epg-config")
-  (autoload 'epg-expand-group "epg-config"))
+  (autoload 'epg-expand-group "epg-config")
+  (autoload 'epa-select-keys "epa"))
 
 (eval-when-compile
   (defvar password-cache-expiry)
