@@ -761,6 +761,14 @@ If this is nil, use `user-mail-address'.  If it is the symbol
   :link '(custom-manual "(message)Mail Variables")
   :group 'message-sending)
 
+(defcustom message-sendmail-extra-arguments nil
+  "Additional arguments to `sendmail-program'."
+  ;; E.g. '("-a" "account") for msmtp
+  :version "23.0" ;; No Gnus
+  :type '(repeat string)
+  ;; :link '(custom-manual "(message)Mail Variables")
+  :group 'message-sending)
+
 ;; qmail-related stuff
 (defcustom message-qmail-inject-program "/var/qmail/bin/qmail-inject"
   "Location of the qmail-inject program."
@@ -4282,6 +4290,7 @@ If you always want Gnus to send messages in one piece, set
 				     "/usr/ucblib/sendmail")
 				    (t "fakemail"))
 			      nil errbuf nil "-oi")
+			message-sendmail-extra-arguments
 			;; Always specify who from,
 			;; since some systems have broken sendmails.
 			;; But some systems are more broken with -f, so
