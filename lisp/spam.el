@@ -43,7 +43,6 @@
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'spam-report))
 (eval-when-compile (require 'hashcash))
-(eval-when-compile (require 'ietf-drums))
 
 (require 'gnus-sum)
 
@@ -708,12 +707,6 @@ finds ham or spam.")
 ;;}}}
 
 ;;{{{ convenience functions
-
-;;; function to wrap address parsing, uses the ietf-drums-parse-address interface
-(defun spam-parse-address (who)
-  (condition-case nil
-      (ietf-drums-parse-address who)
-    (error nil)))
 
 (defun spam-clear-cache (symbol)
   "Clear the spam-caches entry for a check."
@@ -2087,12 +2080,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       "Enter an address into the BBDB; implies ham (non-spam) sender"
       (dolist (from addresses)
 	(when (stringp from)
-	  (let* ((parsed-address (spam-parse-address from))
-		 (name (or (car-safe (cdr-safe parsed-address)) "Ham Sender"))
+	  (let* ((parsed-address (gnus-extract-address-components from))
+		 (name (or (nth 0 parsed-address) "Ham Sender"))
 		 (remove-function (if remove
 				      'bbdb-delete-record-internal
 				    'ignore))
-		 (net-address (car-safe parsed-address))
+		 (net-address (nth 1 parsed-address))
 		 (record (and net-address
 			      (bbdb-search-simple nil net-address))))
 	    (when net-address
@@ -2135,8 +2128,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     (intern (downcase (symbol-name symbol)) bbdb-cache))
 		   bbdb-hashtable))))
 	    (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
-	  (setq who (car-safe (spam-parse-address who)))
 	(when who
+	  (setq who (nth 1 (gnus-extract-address-components who)))
 	  (if
 	      (if spam-cache-lookups
 		  (intern-soft (downcase who) bbdb-cache)
@@ -2386,7 +2379,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
 	  (unless (zerop (length address))
-	    (let ((pure-address (car-safe (spam-parse-address address))))
+	    (let ((pure-address (nth 1 (gnus-extract-address-components address))))
 	      (push (or pure-address address) contents)))))
       (nreverse contents))))
 
