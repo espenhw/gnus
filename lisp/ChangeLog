@@ -1,3 +1,11 @@
+2006-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-generate-mime-1): Use mm-string-as-unibyte instead of
+	mm-with-unibyte-current-buffer to make string unibyte.
+
+	* mm-decode.el (mm-insert-part): Use mm-string-to-multibyte instead of
+	mm-string-as-multibyte.
+
 2006-11-14  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-sign): Prefix "pgp-" to a micalg value.
