@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'mml-smime)
 (eval-when-compile (require 'cl))
 (require 'password)
 (autoload 'mml2015-sign "mml2015")
@@ -34,12 +35,6 @@
 (autoload 'mml1991-encrypt "mml1991")
 (autoload 'message-goto-body "message")
 (autoload 'mml-insert-tag "mml")
-(autoload 'mml-smime-sign "mml-smime")
-(autoload 'mml-smime-encrypt "mml-smime")
-(autoload 'mml-smime-sign-query "mml-smime")
-(autoload 'mml-smime-encrypt-query "mml-smime")
-(autoload 'mml-smime-verify "mml-smime")
-(autoload 'mml-smime-verify-test "mml-smime")
 
 (defvar mml-sign-alist
   '(("smime"     mml-smime-sign-buffer     mml-smime-sign-query)
