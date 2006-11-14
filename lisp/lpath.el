@@ -10,7 +10,7 @@
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
 (maybe-fbind '(Info-directory
-	       Info-menu create-image display-graphic-p
+	       Info-menu create-image custom-autoload display-graphic-p
 	       display-time-event-handler epg-check-configuration
 	       find-coding-system find-image image-size image-type-available-p
 	       insert-image line-number-at-pos make-mode-line-mouse-map
