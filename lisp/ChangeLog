@@ -1,3 +1,8 @@
+2006-11-14  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-sign): Prefix "pgp-" to a micalg value.
+	Reported by Werner Koch <wk@gnupg.org>.
+
 2006-11-14  Daiki Ueno  <ueno@p360>
 
 	* mml2015.el: Autoload epa-select-keys when compiling.

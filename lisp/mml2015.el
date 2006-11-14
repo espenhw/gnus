@@ -1163,7 +1163,7 @@ If no one is selected, default secret key is used.  "
     (insert (format "Content-Type: multipart/signed; boundary=\"%s\";\n"
 		    boundary))
     (if micalg
-	(insert (format "\tmicalg=%s; "
+	(insert (format "\tmicalg=pgp-%s; "
 			(downcase
 			 (cdr (assq micalg
 				    epg-digest-algorithm-alist))))))
