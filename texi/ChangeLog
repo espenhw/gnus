@@ -1,3 +1,7 @@
+2006-11-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Mail Headers): Document `opportunistic'.
+
 2006-10-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* gnus.texi (Other modes): Fix typo.  Add alternative index entry for
