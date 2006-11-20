@@ -1,3 +1,9 @@
+2006-11-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-generate-hashcash): Expand range of values to
+	include `opportunistic'.
+	(message-send-mail): Use it.
+
 2006-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-extract-address-components): Work with address in

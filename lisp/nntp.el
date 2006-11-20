@@ -1205,7 +1205,7 @@ password contained in '~/.nntp-authinfo'."
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
 	    (quit
-	     (message "Quit opening connection")
+	     (message "Quit opening connection to %s" nntp-address)
 	     (nntp-kill-buffer pbuffer)
 	     (signal 'quit nil)
 	     nil))))

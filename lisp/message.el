@@ -1579,10 +1579,16 @@ functionality to work."
 
 (defcustom message-generate-hashcash (if (executable-find "hashcash") t)
   "*Whether to generate X-Hashcash: headers.
+If `t', always generate hashcash headers.  If `opportunistic',
+only generate hashcash headers if it can be done without the user
+waiting (i.e., only asynchronously).
+
 You must have the \"hashcash\" binary installed, see `hashcash-path'."
   :group 'message-headers
   :link '(custom-manual "(message)Mail Headers")
-  :type 'boolean)
+  :type '(choice (const :tag "Always" t)
+		 (const :tag "Never" nil)
+		 (const :tag "Opportunistic" 'opportunistic)))
 
 ;;; Internal variables.
 
@@ -4128,7 +4134,8 @@ not have PROP."
 	      (gnus-setup-posting-charset nil)
 	    message-posting-charset))
 	 (headers message-required-mail-headers))
-    (when message-generate-hashcash
+    (when (and message-generate-hashcash
+	       (not (eq message-generate-hashcash 'opportunistic)))
       (message "Generating hashcash...")
       ;; Wait for calculations already started to finish...
       (hashcash-wait-async)
