@@ -1498,8 +1498,8 @@ buffers that are initialized as mail.
 @vindex message-generate-hashcash
 Variable that indicates whether @samp{X-Hashcash} headers
 should be computed for the message.  @xref{Hashcash, ,Hashcash,gnus,
-The Gnus Manual}.  If @symbol{opportunistic}, only generate the
-headers when it doesn't lead to the user having to wait.
+The Gnus Manual}.  If @code{opportunistic}, only generate the headers
+when it doesn't lead to the user having to wait.
 
 @end table
 
