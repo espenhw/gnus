@@ -1,3 +1,7 @@
+2006-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-string-to-multibyte): Alias to identity in XEmacs.
+
 2006-11-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-generate-hashcash): Expand range of values to
