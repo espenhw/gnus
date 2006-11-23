@@ -1,3 +1,7 @@
+2006-11-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (query-dns): Protect against "Process dns deleted" strings. 
+
 2006-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-string-to-multibyte): Alias to identity in XEmacs.
