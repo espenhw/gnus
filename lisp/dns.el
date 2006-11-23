@@ -408,7 +408,9 @@ If REVERSEP, look up an IP address."
 		     (>= (buffer-size) 2))
 	    (goto-char (point-min))
 	    (delete-region (point) (+ (point) 2)))
-	  (when (>= (buffer-size) 2)
+	  (when (and (>= (buffer-size) 2)
+		     ;; We had a time-out.
+		     (> times 0))
 	    (let ((result (dns-read (buffer-string))))
 	      (if fullp
 		  result
