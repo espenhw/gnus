@@ -1,3 +1,9 @@
+2006-11-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-limit-to-headers): New command and
+	keystroke. 
+	(gnus-summary-limit-to-bodies): Implement headersp.
+
 2006-11-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* dns.el (query-dns): Protect against "Process dns deleted" strings. 

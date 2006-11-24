@@ -1852,6 +1852,7 @@ increase the score of each group you read."
   "/" gnus-summary-limit-to-subject
   "n" gnus-summary-limit-to-articles
   "b" gnus-summary-limit-to-bodies
+  "h" gnus-summary-limit-to-headers
   "w" gnus-summary-pop-limit
   "s" gnus-summary-limit-to-subject
   "a" gnus-summary-limit-to-author
@@ -8013,7 +8014,13 @@ If ALL is non-nil, limit strictly to unread articles."
 	   gnus-duplicate-mark gnus-souped-mark)
      'reverse)))
 
-(defun gnus-summary-limit-to-bodies (match &optional reverse)
+(defun gnus-summary-limit-to-headers (match &optional reverse)
+  "Limit the summary buffer to articles that have headers that match MATCH.
+If REVERSE (the prefix), limit to articles that don't match."
+  (interactive "sMatch headers (regexp): \nP")
+  (gnus-summary-limit-to-bodies match reverse t))
+
+(defun gnus-summary-limit-to-bodies (match &optional reverse headersp)
   "Limit the summary buffer to articles that have bodies that match MATCH.
 If REVERSE (the prefix), limit to articles that don't match."
   (interactive "sMatch body (regexp): \nP")
@@ -8034,7 +8041,9 @@ If REVERSE (the prefix), limit to articles that don't match."
 	(set-buffer gnus-article-buffer)
 	(article-goto-body)
 	(let* ((case-fold-search t)
-	       (found (re-search-forward match nil t)))
+	       (found (if headersp
+			  (re-search-backward match nil t)
+			(re-search-forward match nil t))))
 	  (when (or (and found
 			 (not reverse))
 		    (and (not found)
