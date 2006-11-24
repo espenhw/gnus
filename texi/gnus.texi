@@ -6543,6 +6543,12 @@ certain regexp (@code{gnus-summary-limit-to-bodies}).  If given a
 prefix, reverse the limit.  This command is quite slow since it
 requires selecting each article to find the matches.
 
+@item / h
+@kindex / h (Summary)
+@findex gnus-summary-limit-to-headers
+Like the previous command, only limit to headers instead
+(@code{gnus-summary-limit-to-headers}).
+
 @end table
 
 

@@ -1,3 +1,7 @@
+2006-11-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Limiting): Add gnus-summary-limit-to-headers. 
+
 2006-11-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Mail Headers): Document `opportunistic'.
