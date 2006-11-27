@@ -135,7 +135,7 @@ for the groups to be sorted.  Pre-made functions include
 `gnus-group-sort-by-score', `gnus-group-sort-by-method',
 `gnus-group-sort-by-server', and `gnus-group-sort-by-rank'.
 
-This variable can also be a list of sorting functions.	In that case,
+This variable can also be a list of sorting functions.  In that case,
 the most significant sort function should be the last function in the
 list."
   :group 'gnus-group-listing
@@ -197,7 +197,7 @@ with some simple extensions.
 
 Note that this format specification is not always respected.  For
 reasons of efficiency, when listing killed groups, this specification
-is ignored altogether.	If the spec is changed considerably, your
+is ignored altogether.  If the spec is changed considerably, your
 output may end up looking strange when listing both alive and killed
 groups.
 
@@ -1131,7 +1131,7 @@ When FORCE, rebuild the tool bar."
 
 All normal editing commands are switched off.
 \\<gnus-group-mode-map>
-The group buffer lists (some of) the groups available.	For instance,
+The group buffer lists (some of) the groups available.  For instance,
 `\\[gnus-group-list-groups]' will list all subscribed groups with unread articles, while `\\[gnus-group-list-zombies]'
 lists all zombie groups.
 
@@ -2028,7 +2028,7 @@ and with point over the group in question."
 If the prefix argument ALL is non-nil, already read articles become
 readable.  IF ALL is a number, fetch this number of articles.  If the
 optional argument NO-ARTICLE is non-nil, no article will be
-auto-selected upon group entry.	 If GROUP is non-nil, fetch that
+auto-selected upon group entry.  If GROUP is non-nil, fetch that
 group."
   (interactive "P")
   (let ((no-display (eq all 0))
@@ -2898,7 +2898,7 @@ Given a prefix, create a full group."
 (defun gnus-group-make-directory-group (dir)
   "Create an nndir group.
 The user will be prompted for a directory.  The contents of this
-directory will be used as a newsgroup.	The directory should contain
+directory will be used as a newsgroup.  The directory should contain
 mail messages or news articles in files that have numeric names."
   (interactive
    (list (read-file-name "Create group from directory: ")))
@@ -3570,7 +3570,7 @@ group line."
 
 (defun gnus-group-transpose-groups (n)
   "Move the current newsgroup up N places.
-If given a negative prefix, move down instead.	The difference between
+If given a negative prefix, move down instead.  The difference between
 N and the number of steps taken is returned."
   (interactive "p")
   (unless (gnus-group-group-name)
@@ -4283,7 +4283,7 @@ and the second element is the address."
 	(unless entry
 	  (error "Trying to change non-existent group %s" method-only-group))
 	;; We have received parts of the actual group info - either the
-	;; select method or the group parameters.	 We first check
+	;; select method or the group parameters.  We first check
 	;; whether we have to extend the info, and if so, do that.
 	(let ((len (length info))
 	      (total (if (eq part 'method) 5 6)))
