@@ -1,5 +1,8 @@
 2006-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nneething.el (nneething-decode-file-name): Replace
+	decode-coding-string with mm-decode-coding-string.
+
 	* gnus-int.el (gnus-open-server): Say failed server's name.
 
 2006-11-24  Stefan Monnier  <monnier@iro.umontreal.ca>
