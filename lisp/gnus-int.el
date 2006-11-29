@@ -209,11 +209,12 @@ If it is down, start it up (again)."
   "Open a connection to GNUS-COMMAND-METHOD."
   (when (stringp gnus-command-method)
     (setq gnus-command-method (gnus-server-to-method gnus-command-method)))
-  (let ((elem (assoc gnus-command-method gnus-opened-servers)))
+  (let ((elem (assoc gnus-command-method gnus-opened-servers))
+	(server (gnus-method-to-server-name gnus-command-method)))
     ;; If this method was previously denied, we just return nil.
     (if (eq (nth 1 elem) 'denied)
 	(progn
-	  (gnus-message 1 "Denied server")
+	  (gnus-message 1 "Denied server %s" server)
 	  nil)
       ;; Open the server.
       (let* ((open-server-function (gnus-get-function gnus-command-method 'open-server))
@@ -224,11 +225,11 @@ If it is down, start it up (again)."
                           (nthcdr 2 gnus-command-method))
                (error
                 (gnus-message 1 (format
-                                 "Unable to open server due to: %s"
-                                 (error-message-string err)))
+                                 "Unable to open server %s due to: %s"
+                                 server (error-message-string err)))
                 nil)
                (quit
-                (gnus-message 1 "Quit trying to open server")
+                (gnus-message 1 "Quit trying to open server %s" server)
                 nil)))
             open-offline)
 	;; If this hasn't been opened before, we add it to the list.
@@ -253,9 +254,9 @@ If it is down, start it up (again)."
                              ((and
 			       (not gnus-batch-mode)
 			       (gnus-y-or-n-p
-				(format "Unable to open %s:%s, go offline? "
-					(car gnus-command-method)
-					(cadr gnus-command-method))))
+				(format
+				 "Unable to open server %s, go offline? "
+				 server)))
                               (setq open-offline t)
                               'offline)
                              (t

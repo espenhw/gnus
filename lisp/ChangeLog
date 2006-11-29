@@ -1,3 +1,7 @@
+2006-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-int.el (gnus-open-server): Say failed server's name.
+
 2006-11-24  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* pgg-pgp.el (pgg-pgp-process-region): Change `args' from a list of
@@ -25,12 +29,12 @@
 2006-11-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-limit-to-headers): New command and
-	keystroke. 
+	keystroke.
 	(gnus-summary-limit-to-bodies): Implement headersp.
 
 2006-11-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* dns.el (query-dns): Protect against "Process dns deleted" strings. 
+	* dns.el (query-dns): Protect against "Process dns deleted" strings.
 
 2006-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
