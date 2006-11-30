@@ -6802,6 +6802,58 @@ Optional DIGEST will use digest to forward."
       (message-forward-make-body-digest-mime forward-buffer)
     (message-forward-make-body-digest-plain forward-buffer)))
 
+(eval-and-compile
+  (autoload 'mm-uu-dissect-text-parts "mm-uu")
+  (autoload 'mm-uu-dissect "mm-uu"))
+
+(defun message-signed-or-encrypted-p (&optional dont-emulate-mime handles)
+  "Say whether the current buffer contains signed or encrypted message.
+If DONT-EMULATE-MIME is nil, this function does the MIME emulation on
+messages that don't conform to PGP/MIME described in RFC2015.  HANDLES
+is for the internal use."
+  (unless handles
+    (if (setq handles (mm-dissect-buffer nil t))
+	(unless dont-emulate-mime
+	  (mm-uu-dissect-text-parts handles))
+      (unless dont-emulate-mime
+	(setq handles (mm-uu-dissect)))))
+  ;; Check text/plain message in which there is a signed or encrypted
+  ;; body that has been encoded by B or Q.
+  (unless (or handles dont-emulate-mime)
+    (let ((cur (current-buffer)))
+      (with-temp-buffer
+	(insert-buffer-substring cur)
+	(when (setq handles (mm-dissect-buffer t t))
+	  (if (and (prog1
+		       (bufferp (car handles))
+		     (mm-destroy-parts handles))
+		   (equal (mm-handle-media-type handles) "text/plain"))
+	      (progn
+		(mm-decode-content-transfer-encoding
+		 (mm-handle-encoding handles))
+		(setq handles (mm-uu-dissect)))
+	    (setq handles nil))))))
+  (when handles
+    (prog1
+	(catch 'found
+	  (dolist (handle (if (stringp (car handles))
+			      (if (member (car handles)
+					  '("multipart/signed"
+					    "multipart/encrypted"))
+				  (throw 'found t)
+				(cdr handles))
+			    (list handles)))
+	    (if (stringp (car handle))
+		(when (message-signed-or-encrypted-p dont-emulate-mime handle)
+		  (throw 'found t))
+	      (when (and (bufferp (car handle))
+			 (equal (mm-handle-media-type handle)
+				"message/rfc822"))
+		(with-current-buffer (mm-handle-buffer handle)
+		  (when (message-signed-or-encrypted-p dont-emulate-mime)
+		    (throw 'found t)))))))
+      (mm-destroy-parts handles))))
+
 ;;;###autoload
 (defun message-forward-make-body (forward-buffer &optional digest)
   ;; Put point where we want it before inserting the forwarded
@@ -6814,11 +6866,13 @@ Optional DIGEST will use digest to forward."
     (if message-forward-as-mime
 	(if (and message-forward-show-mml
 		 (not (and (eq message-forward-show-mml 'best)
+			   ;; Use the raw form in the body if it contains
+			   ;; signed or encrypted message so as not to be
+			   ;; destroyed by re-encoding.
 			   (with-current-buffer forward-buffer
-			     (goto-char (point-min))
-			     (re-search-forward
-			      "Content-Type: *multipart/\\(signed\\|encrypted\\)"
-			      nil t)))))
+			     (condition-case nil
+				 (message-signed-or-encrypted-p)
+			       (error t))))))
 	    (message-forward-make-body-mml forward-buffer)
 	  (message-forward-make-body-mime forward-buffer))
       (message-forward-make-body-plain forward-buffer)))
