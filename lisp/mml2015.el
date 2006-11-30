@@ -834,7 +834,7 @@ Whether the passphrase is cached at all is controlled by
     (if (condition-case err
 	    (prog1
 		(mm-with-unibyte-buffer
-		  (insert (encode-coding-string text coding-system))
+		  (insert (mm-encode-coding-string text coding-system))
 		  (pgg-verify-region (point-min) (point-max) nil t))
 	      (goto-char (point-min))
 	      (while (search-forward "\r\n" nil t)
@@ -1103,8 +1103,8 @@ Whether the passphrase is cached at all is controlled by
 (defun mml2015-epg-clear-verify ()
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
-	(signature (encode-coding-string (buffer-string)
-					 buffer-file-coding-system))
+	(signature (mm-encode-coding-string (buffer-string)
+					    buffer-file-coding-system))
 	plain)
     (condition-case error
 	(setq plain (epg-verify-string context signature))
