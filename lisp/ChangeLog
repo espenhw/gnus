@@ -1,5 +1,10 @@
 2006-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* message.el (message-signed-or-encrypted-p): Bind mm-decrypt-option
+	and mm-verify-option to never.
+
+2006-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* message.el (message-signed-or-encrypted-p): New function.
 	(message-forward-make-body): Use it.
 

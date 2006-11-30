@@ -6812,15 +6812,19 @@ If DONT-EMULATE-MIME is nil, this function does the MIME emulation on
 messages that don't conform to PGP/MIME described in RFC2015.  HANDLES
 is for the internal use."
   (unless handles
-    (if (setq handles (mm-dissect-buffer nil t))
+    (let ((mm-decrypt-option 'never)
+	  (mm-verify-option 'never))
+      (if (setq handles (mm-dissect-buffer nil t))
+	  (unless dont-emulate-mime
+	    (mm-uu-dissect-text-parts handles))
 	(unless dont-emulate-mime
-	  (mm-uu-dissect-text-parts handles))
-      (unless dont-emulate-mime
-	(setq handles (mm-uu-dissect)))))
+	  (setq handles (mm-uu-dissect))))))
   ;; Check text/plain message in which there is a signed or encrypted
   ;; body that has been encoded by B or Q.
   (unless (or handles dont-emulate-mime)
-    (let ((cur (current-buffer)))
+    (let ((cur (current-buffer))
+	  (mm-decrypt-option 'never)
+	  (mm-verify-option 'never))
       (with-temp-buffer
 	(insert-buffer-substring cur)
 	(when (setq handles (mm-dissect-buffer t t))
