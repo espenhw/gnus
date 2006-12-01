@@ -2,6 +2,7 @@
 
 	* nnweb.el (nnweb-gmane-create-mapping): Use the article number from
 	the headers when creating the mapping to avoid mismappings. 
+	(nnweb-gmane-create-mapping): Always nix out old mapping.
 
 2006-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
