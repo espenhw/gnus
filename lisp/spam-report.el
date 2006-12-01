@@ -129,6 +129,7 @@ Reports is as ham when HAM is set."
   "Report ARTICLES as spam through Gmane."
   (interactive (gnus-summary-work-articles current-prefix-arg))
   (dolist (article articles)
+    (message "Reporting %s" article)
     (spam-report-gmane-internal nil article)))
 
 ;; `spam-report-gmane' was an interactive entry point, so we should provide an
@@ -224,7 +225,11 @@ This is initialized based on `user-mail-address'."
       (process-send-string
        tcp-connection
        (format "GET %s HTTP/1.1\nUser-Agent: %s\nHost: %s\n\n"
-	       report spam-report-user-agent host)))))
+	       report spam-report-user-agent host))
+      ;; Wait until we get something so we don't DOS the host. 
+      (while (and (memq (process-status tcp-connection) '(open run))
+		  (zerop (buffer-size)))
+	(accept-process-output tcp-connection)))))
 
 ;;;###autoload
 (defun spam-report-process-queue (&optional file keep)
