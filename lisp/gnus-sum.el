@@ -6566,9 +6566,10 @@ displayed, no centering will be performed."
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(let ((top-pos (save-excursion (forward-line (- top)) (point))))
+	  (message "%s" top-pos)
 	  (if (> bottom top-pos)
 	      ;; Keep the second line from the top visible
-	      (set-window-start window top-pos t)
+	      (set-window-start window top-pos)
 	    ;; Try to keep the bottom line visible; if it's partially
 	    ;; obscured, either scroll one more line to make it fully
 	    ;; visible, or revert to using TOP-POS.
@@ -7908,6 +7909,27 @@ To and Cc headers are checked.  You need to include them in
 	       (error "Found no matches for \"%s\"" recipient))
 	     (gnus-summary-limit articles))
       (gnus-summary-position-point))))
+
+(defun gnus-summary-limit-strange-charsets-predicate (header)
+  (let ((string (concat (mail-header-subject header)
+			(mail-header-from header)))
+	charset found)
+    (dotimes (i (1- (length string)))
+      (setq charset (format "%s" (char-charset (aref string (1+ i)))))
+      (when (string-match "unicode\\|big\\|japanese" charset)
+	(setq found t)))
+    found))
+
+(defun gnus-summary-limit-to-predicate (predicate)
+  "Limit to articles where PREDICATE returns non-nil.
+PREDICATE will be called with the header structures of the
+articles."
+  (let ((articles nil)
+	(case-fold-search t))
+    (dolist (header gnus-newsgroup-headers)
+      (when (funcall predicate header)
+	(push (mail-header-number header) articles)))
+    (gnus-summary-limit (nreverse articles))))
 
 (defun gnus-summary-limit-to-age (age &optional younger-p)
   "Limit the summary buffer to articles that are older than (or equal) AGE days.

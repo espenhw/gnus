@@ -523,7 +523,9 @@ Valid types include `google', `dejanews', and `gmane'.")
     "?"
     (mm-url-encode-www-form-urlencoded
      `(("query" . ,search)
-       ("HITSPERPAGE" . ,(number-to-string nnweb-max-hits))))))
+       ("HITSPERPAGE" . ,(number-to-string nnweb-max-hits))
+       ;;("TOPDOC" . "500")
+       ))))
   (setq buffer-file-name nil)
   (set-buffer-multibyte t)
   (mm-decode-coding-region (point-min) (point-max) 'utf-8)
