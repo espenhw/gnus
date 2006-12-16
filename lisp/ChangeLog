@@ -3,6 +3,14 @@
 	* nnweb.el (nnweb-gmane-create-mapping): Keep the mapping stable for
 	solid groups.
 
+2006-12-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* legacy-gnus-agent.el: Add Copyright notice.
+
+2006-12-12  Chong Yidong  <cyd@stupidchicken.com>
+
+	* gnus-sum.el (gnus-make-thread-indent-array): Fix last change.
+
 2006-12-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnweb.el (nnweb-gmane-search): Placeholder TOPDOC setting.
