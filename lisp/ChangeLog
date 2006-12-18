@@ -2,6 +2,8 @@
 
 	* spam.el (spam-necessary-extra-headers): make
 	spam-use-regex-headers trigger all the extra headers
+	(spam-extra-header-to-number): don't require spam-use-crm114 for
+	header sorting
 
 2006-12-14  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
 

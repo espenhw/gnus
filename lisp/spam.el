@@ -1182,10 +1182,6 @@ backends)."
   ".*\\b\\(?:score\\|hits\\)=\\(-?[0-9.]+\\)"
   "Regexp matching SpamAssassin score header.
 The first group must match the number.")
-;; "score" for Spamassassin 3.0 or later:
-;; X-Spam-Status: Yes, score=13.1 required=5.0 tests=DNS_FROM_RFC_ABUSE,
-;; 	[...],UNDISC_RECIPS autolearn=disabled version=3.0.3
-
 
 (defun spam-extra-header-to-number (header headers)
   "Transform an extra HEADER to a number, using list of HEADERS.
@@ -1199,7 +1195,7 @@ Note this has to be fast."
                              spam-spamassassin-score-regexp
                              "\\1")))
          ;; for CRM checking, it's probably faster to just do the string match
-         ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header-content))
+         ((string-match "( pR: \\([0-9.-]+\\)" header-content)
           (string-to-number (match-string 1 header-content)))
          ((eq header 'X-Bogosity)
           (string-to-number (gnus-replace-in-string
