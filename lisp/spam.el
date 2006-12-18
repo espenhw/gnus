@@ -1154,9 +1154,11 @@ backends)."
 	      spam-use-spamassassin-headers
 	      spam-use-regex-headers)
       (push 'X-Spam-Status list))
-    (when spam-use-bogofilter
+    (when (or spam-use-bogofilter
+	      spam-use-regex-headers)
       (push 'X-Bogosity list))
-    (when spam-use-crm114
+    (when (or spam-use-crm114
+	      spam-use-regex-headers)
       (push 'X-CRM114-Status list))
     list))
 
