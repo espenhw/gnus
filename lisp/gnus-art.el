@@ -4213,6 +4213,8 @@ Internal variable.")
 	(set-buffer (gnus-get-buffer-create name))
 	(gnus-article-mode)
 	(make-local-variable 'gnus-summary-buffer)
+	(setq gnus-summary-buffer
+	      (gnus-summary-buffer-name gnus-newsgroup-name))
 	(gnus-summary-set-local-parameters gnus-newsgroup-name)
 	(current-buffer)))))
 

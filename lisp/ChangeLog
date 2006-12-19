@@ -1,3 +1,9 @@
+2006-12-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-setup-buffer): Actually set the local
+	version of gnus-summary-buffer to something, so that we can use two
+	article buffers at the same time.
+
 2006-12-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-necessary-extra-headers): make
