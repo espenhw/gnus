@@ -35,6 +35,8 @@
 
 	* gnus-sum.el (gnus-summary-recenter): Force setting the window start
 	to make it work reliably in CVS Emacs.
+	(gnus-summary-limit-strange-charsets-predicate)
+	(gnus-summary-limit-to-predicate): New functions.
 
 2006-12-08  Chong Yidong  <cyd@stupidchicken.com>
 
