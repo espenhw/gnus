@@ -1196,7 +1196,7 @@ Note this has to be fast."
                              "\\1")))
          ;; for CRM checking, it's probably faster to just do the string match
          ((string-match "( pR: \\([0-9.-]+\\)" header-content)
-          (string-to-number (match-string 1 header-content)))
+          (- (string-to-number (match-string 1 header-content))))
          ((eq header 'X-Bogosity)
           (string-to-number (gnus-replace-in-string
                              (gnus-replace-in-string
