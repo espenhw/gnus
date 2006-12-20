@@ -11,12 +11,12 @@
 
 2006-12-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-necessary-extra-headers): make
-	spam-use-regex-headers trigger all the extra headers
-	(spam-extra-header-to-number): don't require spam-use-crm114 for
-	header sorting
+	* spam.el (spam-necessary-extra-headers): Make spam-use-regex-headers
+	trigger all the extra headers.
+	(spam-extra-header-to-number): Don't require spam-use-crm114 for header
+	sorting.
 
-2006-12-14  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>  (tiny change)
+2006-12-14  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-gmane-create-mapping): Keep the mapping stable for
 	solid groups.
@@ -61,7 +61,7 @@
 	DOS-ing the recipient.
 
 	* nnweb.el (nnweb-gmane-create-mapping): Use the article number from
-	the headers when creating the mapping to avoid mismappings. 
+	the headers when creating the mapping to avoid mismappings.
 	(nnweb-gmane-create-mapping): Always nix out old mapping.
 
 2006-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
