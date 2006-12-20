@@ -6597,7 +6597,6 @@ displayed, no centering will be performed."
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
 	(let ((top-pos (save-excursion (forward-line (- top)) (point))))
-	  (message "%s" top-pos)
 	  (if (> bottom top-pos)
 	      ;; Keep the second line from the top visible
 	      (set-window-start window top-pos)
