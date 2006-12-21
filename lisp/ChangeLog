@@ -1,3 +1,7 @@
+2006-12-21  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* message.el (message-generate-hashcash): Fix custom type.
+
 2006-12-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-recenter): Remove debug messages.
@@ -1737,8 +1741,7 @@
 
 2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
-	* message.el (message-resend): Bind message-generate-hashcash to
-	to nil.
+	* message.el (message-resend): Bind message-generate-hashcash to nil.
 
 2006-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 

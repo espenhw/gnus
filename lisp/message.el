@@ -1588,7 +1588,7 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
   :link '(custom-manual "(message)Mail Headers")
   :type '(choice (const :tag "Always" t)
 		 (const :tag "Never" nil)
-		 (const :tag "Opportunistic" 'opportunistic)))
+		 (const :tag "Opportunistic" opportunistic)))
 
 ;;; Internal variables.
 
