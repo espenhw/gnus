@@ -1,3 +1,10 @@
+2006-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-fetch): Replace buffer's contents with the decoded
+	one after turning on the buffer's multibyteness instead of decoding
+	them directly in the unibyte buffer that causes unexpected conversion
+	in Emacs 23 (unicode).
+
 2006-12-21  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* message.el (message-generate-hashcash): Fix custom type.
