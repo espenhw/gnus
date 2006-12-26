@@ -289,6 +289,15 @@ If nil, the address field will always be empty after invoking
   :group 'gnus-message
   :type 'boolean)
 
+(defcustom gnus-message-highlight-citation (fboundp 'font-lock-add-keywords)
+  "Enable highlighting of different citation levels in message-mode."
+  :version "23.0" ;; No Gnus
+  :group 'gnus-cite
+  :group 'gnus-message
+  :type 'boolean)
+
+(autoload 'gnus-message-citation-mode "gnus-msg" nil t)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -422,6 +431,9 @@ Thank you for your help in stamping out bugs.
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
 	 (set (make-local-variable 'gnus-newsgroup-name) ,group)
+	 ;; Enable highlighting of different citation levels
+	 (when gnus-message-highlight-citation
+	   (gnus-message-citation-mode 1))
 	 (gnus-run-hooks 'gnus-message-setup-hook)
 	 (if (eq major-mode 'message-mode)
 	     (let ((mbl1 mml-buffer-list))

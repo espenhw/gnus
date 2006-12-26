@@ -1180,14 +1180,6 @@ positive."
   "Turn on `gnus-message-citation-mode'."
   (gnus-message-citation-mode -1))
 
-;; (add-hook 'gnus-message-setup-hook 'turn-on-gnus-message-citation-mode)
-(defcustom gnus-message-highlight-citation (fboundp 'font-lock-add-keywords)
-  "Enable highlighting of different citation levels in message-mode."
-  :version "23.0" ;; No Gnus
-  :group 'gnus-cite
-  :group 'gnus-message
-  :type 'boolean)
-
 (gnus-ems-redefine)
 
 (provide 'gnus-cite)
