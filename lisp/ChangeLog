@@ -1,5 +1,7 @@
 2006-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-msg.el (gnus-message-citation-mode): Fix autoload.
+
 	* gnus-cite.el (gnus-message-highlight-citation): Move to gnus-msg.el.
 
 	* gnus-msg.el (gnus-setup-message): Add gnus-message-citation-mode.

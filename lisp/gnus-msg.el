@@ -289,14 +289,16 @@ If nil, the address field will always be empty after invoking
   :group 'gnus-message
   :type 'boolean)
 
-(defcustom gnus-message-highlight-citation (fboundp 'font-lock-add-keywords)
+(defcustom gnus-message-highlight-citation
+  (and t ;; gnus-treat-highlight-citation ;; gnus-cite dependency
+       (fboundp 'font-lock-add-keywords))
   "Enable highlighting of different citation levels in message-mode."
   :version "23.0" ;; No Gnus
   :group 'gnus-cite
   :group 'gnus-message
   :type 'boolean)
 
-(autoload 'gnus-message-citation-mode "gnus-msg" nil t)
+(autoload 'gnus-message-citation-mode "gnus-cite" nil t)
 
 ;;; Internal variables.
 
