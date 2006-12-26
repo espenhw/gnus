@@ -1,3 +1,16 @@
+2006-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-cite.el: Adjust Oliver's code to Gnus namespace.  Add some
+	checks to make it compile with XEmacs.
+	(gnus-message-citation-mode): New minor mode.
+	(gnus-message-max-citation-depth, gnus-message-citation-keywords)
+	(gnus-message-highlight-citation): New variables.
+	(gnus-message-search-citation-line)
+	(gnus-message-add-citation-keywords)
+	(gnus-message-remove-citation-keywords)
+	(turn-on-gnus-message-citation-mode)
+	(turn-off-gnus-message-citation-mode): New functions.
+
 2006-12-26  Oliver Scholz  <epameinondas@gmx.de>
 
 	* gnus-cite.el: Enable highlighting of different citation levels in
