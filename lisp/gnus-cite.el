@@ -1100,6 +1100,85 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  (setq found t)))
       found)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; From: Oliver Scholz <alkibia...@gmx.de>
+;; Subject: Re: Farblich verschiedene Quoteebenen beim antworten
+;; Newsgroups: de.comm.software.gnus
+;; Date: Fri, 30 May 2003 15:46:56 +0200
+;; Message-ID: <uk7c8o8bz.fsf@ID-87814.user.dfncis.de>
+
+(eval-when-compile
+  (require 'gnus-cite)
+  (require 'message))
+
+(defconst egoge-max-citation-depth
+  (eval-when-compile
+    (length gnus-cite-face-list))
+  "Maximum supported level of citation.")
+
+(defun egoge-search-citation-line (limit)
+  "Search for a cited line and set match data accordingly.
+Returns nil if there is no such line before LIMIT, t otherwise."
+  (when (re-search-forward (eval-when-compile
+			     (concat "^\\(?:"
+				     message-cite-prefix-regexp
+				     "\\)"))
+			   limit t)
+    (let ((cdepth
+	   (length (apply 'concat
+			  (split-string
+			   (match-string-no-properties 0)
+			   "[ \t [:alnum:]]+"))))
+	  (mlist (make-list (* (1+ egoge-max-citation-depth)
+			       2)
+			    0)))
+      (setcar (nthcdr (* cdepth 2) mlist)
+	      (line-beginning-position))
+      (setcar (nthcdr (1+ (* cdepth 2)) mlist)
+	      (line-end-position))
+      (set-match-data mlist))
+    t))
+
+(defvar egoge-citation-x-keywords
+  (eval-when-compile
+    `((egoge-search-citation-line
+       ,@(let ((list nil)
+	       (count 1))
+	   (require 'gnus-cite)
+	   (dolist (face gnus-cite-face-list (nreverse list))
+	     (push (list count (list 'quote face) 'prepend) list)
+	     (setq count (1+ count)))))))
+  "Keywords for highlighting different levels of message citations.")
+
+(defun egoge-add-citation-keywords ()
+  "Add font-lock for nested citations to current buffer."
+  (font-lock-add-keywords nil egoge-citation-x-keywords))
+
+(defun egoge-remove-citation-keywords ()
+  "Remove font-lock for nested citations from current buffer."
+  (font-lock-remove-keywords nil egoge-citation-x-keywords))
+
+(define-minor-mode egoge-citation-x-mode
+  "Toggle egoge-citation-x-mode' in current buffer.
+This buffer local minor mode provides additional font-lock support for
+nested citations.
+With prefix ARG, turn `egoge-citation-x-mode' on if and only if ARG is
+positive."
+  nil "" nil
+  (if egoge-citation-x-mode
+      (egoge-add-citation-keywords)
+    (egoge-remove-citation-keywords))
+  (font-lock-fontify-buffer))
+
+(defun egoge-turn-on-citation-x ()
+  "Turn on `egoge-citation-x-mode'."
+  (egoge-citation-x-mode 1))
+
+;; (add-hook 'message-mode-hook 'egoge-turn-on-citation-x)
+
+;; End of Message-ID: <uk7c8o8bz.fsf@ID-87814.user.dfncis.de>
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (gnus-ems-redefine)
 
 (provide 'gnus-cite)
