@@ -1,3 +1,9 @@
+2006-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Add gnus-message-highlight-citation.
+
+	* gnus.texi (Mail and Post): Add gnus-message-highlight-citation.
+
 2006-12-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Hiding Headers): Document that `long-to' and `many-to'
@@ -10,7 +16,7 @@
 
 2006-11-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Limiting): Add gnus-summary-limit-to-headers. 
+	* gnus.texi (Limiting): Add gnus-summary-limit-to-headers.
 
 2006-11-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -121,8 +121,9 @@ See @code{gnus-mime-replace-part} and @code{gnus-article-replace-part}.
 @item
 The option @code{mm-fill-flowed} can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
-inline @acronym{PGP} signed messages.
-@xref{Flowed text, ,Flowed text, emacs-mime, The Emacs MIME Manual}.
+inline @acronym{PGP} signed messages.  @xref{Flowed text, ,Flowed text,
+emacs-mime, The Emacs MIME Manual}.  (New in Gnus 5.10.7)
+@c This entry is also present in the node "Oort Gnus".
 
 @end itemize
 
@@ -145,6 +146,9 @@ empty lines are prefixed in cited text.  @xref{Insertion Variables,
 The @code{References} header is hidden by default.  To make all
 headers visible, use @code{(setq message-hidden-headers nil)}.
 @xref{Message Headers, ,Message Headers, message, Message Manual}.
+
+@item You can highlight different levels of citations like in the
+article buffer.  See @code{gnus-message-highlight-citation}.
 @end itemize
 
 @item Changes in back ends

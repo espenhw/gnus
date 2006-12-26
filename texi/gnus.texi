@@ -11945,6 +11945,9 @@ you're in, you could say something like the following:
 
 Modify to suit your needs.
 
+If @code{gnus-message-highlight-citation} is t, different levels of
+citations are highlighted like in Gnus article buffers also in message
+mode buffers.
 
 @node Archived Messages
 @section Archived Messages
