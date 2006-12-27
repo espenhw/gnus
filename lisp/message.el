@@ -1703,7 +1703,7 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
 (defvar message-send-mail-real-function nil
   "Internal send mail function.")
 
-(defvar message-bogus-system-names "^localhost\\."
+(defvar message-bogus-system-names "^localhost\\.\\|\\.local$"
   "The regexp of bogus system names.")
 
 (defcustom message-valid-fqdn-regexp
@@ -5297,8 +5297,8 @@ give as trustworthy answer as possible."
 	   (stringp message-user-fqdn)
 	   (string-match message-valid-fqdn-regexp message-user-fqdn)
 	   (not (string-match message-bogus-system-names message-user-fqdn)))
+      ;; `message-user-fqdn' seems to be valid
       message-user-fqdn)
-     ;; `message-user-fqdn' seems to be valid
      ((and (string-match message-valid-fqdn-regexp system-name)
 	   (not (string-match message-bogus-system-names system-name)))
       ;; `system-name' returned the right result.

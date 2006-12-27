@@ -1409,12 +1409,11 @@ predicate.  See Info node `(gnus)Customizing Articles'."
 
 (defcustom gnus-treat-display-x-face
   (and (not noninteractive)
-       (or (and (fboundp 'image-type-available-p)
-		(image-type-available-p 'xbm)
-		(string-match "^0x" (shell-command-to-string "uncompface"))
-		(executable-find "icontopbm"))
-	   (and (featurep 'xemacs)
-		(featurep 'xface)))
+       (gnus-image-type-available-p 'xbm)
+       (if (featurep 'xemacs)
+	   (featurep 'xface)
+	 (and (string-match "^0x" (shell-command-to-string "uncompface"))
+	      (executable-find "icontopbm")))
        'head)
   "Display X-Face headers.
 Valid values are nil, t, `head', `first', `last', an integer or a
@@ -1446,10 +1445,7 @@ node `(gnus)X-Face' for details."
 
 (defcustom gnus-treat-display-face
   (and (not noninteractive)
-       (or (and (fboundp 'image-type-available-p)
-		(image-type-available-p 'png))
-	   (and (featurep 'xemacs)
-		(featurep 'png)))
+       (gnus-image-type-available-p 'png)
        'head)
   "Display Face headers.
 Valid values are nil, t, `head', `first', `last', an integer or a
@@ -1462,12 +1458,7 @@ node `(gnus)X-Face' for details."
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-display-face 'highlight t)
 
-(defcustom gnus-treat-display-smileys
-  (if (or (and (featurep 'xemacs)
-	       (featurep 'xpm))
-	  (and (fboundp 'image-type-available-p)
-	       (image-type-available-p 'pbm)))
-      t nil)
+(defcustom gnus-treat-display-smileys (gnus-image-type-available-p 'xpm)
   "Display smileys.
 Valid values are nil, t, `head', `first', `last', an integer or a
 predicate.  See Info node `(gnus)Customizing Articles' and Info

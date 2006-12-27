@@ -2839,6 +2839,7 @@ doesn't accept articles.
 
 @item auto-expire
 @cindex auto-expire
+@cindex expiring mail
 If the group parameter has an element that looks like @code{(auto-expire
 . t)}, all articles read will be marked as expirable.  For an
 alternative approach, @pxref{Expiring Mail}.
@@ -2847,6 +2848,7 @@ See also @code{gnus-auto-expirable-newsgroups}.
 
 @item total-expire
 @cindex total-expire
+@cindex expiring mail
 If the group parameter has an element that looks like
 @code{(total-expire . t)}, all read articles will be put through the
 expiry process, even if they are not marked as expirable.  Use with
@@ -3477,6 +3479,7 @@ zombies.
 @item C-c C-x
 @kindex C-c C-x (Group)
 @findex gnus-group-expire-articles
+@cindex expiring mail
 Run all expirable articles in the current group through the expiry
 process (if any) (@code{gnus-group-expire-articles}).  That is, delete
 all expirable articles in the group that have been around for a while.
@@ -3485,6 +3488,7 @@ all expirable articles in the group that have been around for a while.
 @item C-c C-M-x
 @kindex C-c C-M-x (Group)
 @findex gnus-group-expire-all-groups
+@cindex expiring mail
 Run all expirable articles in all groups through the expiry process
 (@code{gnus-group-expire-all-groups}).
 
@@ -3845,6 +3849,7 @@ sub-topics unless given a prefix.
 @item C-c C-x
 @kindex C-c C-x (Topic)
 @findex gnus-topic-expire-articles
+@cindex expiring mail
 Run all expirable articles in the current group or topic through the
 expiry process (if any)
 (@code{gnus-topic-expire-articles}).  (@pxref{Expiring Mail}).
@@ -10214,6 +10219,7 @@ process/prefix convention (@pxref{Process/Prefix}).
 @item B e
 @kindex B e (Summary)
 @findex gnus-summary-expire-articles
+@cindex expiring mail
 Run all expirable articles in the current group through the expiry
 process (@code{gnus-summary-expire-articles}).  That is, delete all
 expirable articles in the group that have been around for a while.
@@ -10222,6 +10228,7 @@ expirable articles in the group that have been around for a while.
 @item B C-M-e
 @kindex B C-M-e (Summary)
 @findex gnus-summary-expire-articles-now
+@cindex expiring mail
 Delete all the expirable articles in the group
 (@code{gnus-summary-expire-articles-now}).  This means that @strong{all}
 articles eligible for expiry in the current group will
@@ -14803,6 +14810,7 @@ using the new mail back end.
 @node Expiring Mail
 @subsection Expiring Mail
 @cindex article expiry
+@cindex expiring mail
 
 Traditional mail readers have a tendency to remove mail articles when
 you mark them as read, in some way.  Gnus takes a fundamentally
@@ -16761,6 +16769,7 @@ as ticked for other users.
 @item nnimap-expunge-search-string
 @cindex expunging
 @vindex nnimap-expunge-search-string
+@cindex expiring @acronym{IMAP} mail
 
 This variable contain the @acronym{IMAP} search command sent to server when
 searching for articles eligible for expiring.  The default is
@@ -16771,6 +16780,10 @@ Probably the only useful value to change this to is
 @code{"UID %s NOT SENTSINCE %s"}, which makes nnimap use the Date: in
 messages instead of the internal article date.  See section 6.4.4 of
 RFC 2060 for more information on valid strings.
+
+However, if @code{nnimap-search-uids-not-since-is-evil} 
+is true, the command is @code{"UID NOT SINCE @var{date}"},
+regardless of this variable.
 
 @item nnimap-authinfo-file
 @vindex nnimap-authinfo-file
@@ -16796,6 +16809,47 @@ convenience, Gnus will accept @code{port imaps} as a synonym of
 Unselect mailboxes before looking for new mail in them.  Some servers
 seem to need this under some circumstances; it was reported that
 Courier 1.7.1 did.
+
+@item nnimap-nov-is-evil
+@vindex nnimap-nov-is-evil
+@cindex Courier @acronym{IMAP} server
+@cindex @acronym{NOV}
+
+Never generate or use a local @acronym{NOV} database. Defaults to the
+value of @code{gnus-agent}.
+
+Using a @acronym{NOV} database usually makes header fetching much
+faster, but it uses the @code{UID SEARCH UID} command, which is very
+slow on some servers (notably some versions of Courier). Since the Gnus
+Agent caches the information in the @acronym{NOV} database without using
+the slow command, this variable defaults to true if the Agent is in use,
+and false otherwise.
+
+@item nnimap-search-uids-not-since-is-evil
+@vindex nnimap-search-uids-not-since-is-evil
+@cindex Courier @acronym{IMAP} server
+@cindex expiring @acronym{IMAP} mail
+
+Avoid the @code{UID SEARCH UID @var{message numbers} NOT SINCE
+@var{date}} command, which is slow on some @acronym{IMAP} servers
+(notably, some versions of Courier). Instead, use @code{UID SEARCH SINCE
+@var{date}} and prune the list of expirable articles within Gnus.
+
+When Gnus expires your mail (@pxref{Expiring Mail}), it starts with a
+list of expirable articles and asks the IMAP server questions like ``Of
+these articles, which ones are older than a week?'' While this seems
+like a perfectly reasonable question, some IMAP servers take a long time
+to answer it, since they seemingly go looking into every old article to
+see if it is one of the expirable ones. Curiously, the question ``Of
+@emph{all} articles, which ones are newer than a week?'' seems to be
+much faster to answer, so setting this variable causes Gnus to ask this
+question and figure out the answer to the real question itself.
+
+This problem can really sneak up on you: when you first configure Gnus,
+everything works fine, but once you accumulate a couple thousand
+messages, you start cursing Gnus for being so slow. On the other hand,
+if you get a lot of email within a week, setting this variable will
+cause a lot of network traffic between Gnus and the IMAP server.
 
 @end table
 
@@ -16984,7 +17038,7 @@ splitting function that analyzes the body to split the article.
 
 @node Expiring in IMAP
 @subsection Expiring in IMAP
-@cindex expiring imap mail
+@cindex expiring @acronym{IMAP} mail
 
 Even though @code{nnimap} is not a proper @code{nnmail} derived back
 end, it supports most features in regular expiring (@pxref{Expiring
@@ -17002,6 +17056,9 @@ the @code{gnus-expire} mark properly, although other clients may allow
 you to view client specific flags on the message.  It also means that
 your server must support permanent storage of client specific flags on
 messages.  Most do, fortunately.
+
+If expiring @acronym{IMAP} mail seems very slow, try setting the server
+variable @code{nnimap-search-uids-not-since-is-evil}.
 
 @table @code
 
@@ -19287,7 +19344,7 @@ sense if you are using a nntp or nnimap back end.
 @findex gnus-agent-expire-group
 @cindex agent expiry
 @cindex Gnus agent expiry
-@cindex expiry
+@cindex expiry, in Gnus agent
 
 The Agent back end, @code{nnagent}, doesn't handle expiry.  Well, at
 least it doesn't handle it like other back ends.  Instead, there are
@@ -23904,9 +23961,6 @@ From Ted Zlatanov <tzz@@lifelogs.com>.
 ;; @r{see @file{gnus-registry.el} for more information}
 (gnus-registry-initialize)
 (spam-initialize)
-
-;; @r{I like @kbd{C-s} for marking spam}
-(define-key gnus-summary-mode-map "\C-s" 'gnus-summary-mark-as-spam)
 
 (setq
  spam-log-to-registry t     ; @r{for spam autodetection}
