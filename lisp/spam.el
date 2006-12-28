@@ -414,21 +414,21 @@ Only meaningful if you enable `spam-use-regex-body'."
   "Spam ifile configuration."
   :group 'spam)
 
+(define-obsolete-variable-alias 'spam-ifile-path 'spam-ifile-program)
+;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-ifile-program (executable-find "ifile")
   "Name of the ifile program."
   :type '(choice (file :tag "Location of ifile")
 		 (const :tag "ifile is not installed"))
   :group 'spam-ifile)
-(make-obsolete-variable 'spam-ifile-path 'spam-ifile-program)
-;; "22.1" ;; Gnus 5.10.9
 
+(define-obsolete-variable-alias 'spam-ifile-database-path 'spam-ifile-database)
+;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-ifile-database nil
   "File name of the ifile database."
   :type '(choice (file :tag "Location of the ifile database")
 		 (const :tag "Use the default"))
   :group 'spam-ifile)
-(make-obsolete-variable 'spam-ifile-database-path 'spam-ifile-database)
-;; "22.1" ;; Gnus 5.10.9
 
 (defcustom spam-ifile-spam-category "spam"
   "Name of the spam ifile category."
@@ -453,13 +453,13 @@ your main source of newsgroup names."
   "Spam bogofilter configuration."
   :group 'spam)
 
+(define-obsolete-variable-alias 'spam-bogofilter-path 'spam-bogofilter-program)
+;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-bogofilter-program (executable-find "bogofilter")
   "Name of the Bogofilter program."
   :type '(choice (file :tag "Location of bogofilter")
 		 (const :tag "Bogofilter is not installed"))
   :group 'spam-bogofilter)
-(make-obsolete-variable 'spam-bogofilter-path 'spam-bogofilter-program)
-;; "22.1" ;; Gnus 5.10.9
 
 (defvar spam-bogofilter-valid 'unknown "Is the bogofilter version valid?")
 
@@ -505,8 +505,10 @@ When nil, use the default location."
   "Spam bsfilter configuration."
   :group 'spam)
 
-(defcustom spam-bsfilter-path (executable-find "bsfilter")
-  "File path of the Bsfilter executable program."
+(define-obsolete-variable-alias 'spam-bsfilter-path 'spam-bsfilter-program)
+;; "22.1" ;; Gnus 5.10.9
+(defcustom spam-bsfilter-program (executable-find "bsfilter")
+  "Name of the Bsfilter program."
   :type '(choice (file :tag "Location of bsfilter")
 		 (const :tag "Bsfilter is not installed"))
   :group 'spam-bsfilter)
@@ -569,8 +571,10 @@ When nil, use the default spamoracle database."
   "Spam SpamAssassin configuration."
   :group 'spam)
 
-(defcustom spam-spamassassin-path (executable-find "spamassassin")
-  "File path of the spamassassin executable program.
+(define-obsolete-variable-alias 'spam-spamassassin-path
+  'spam-spamassassin-program) ;; "22.1" ;; Gnus 5.10.9
+(defcustom spam-assassin-program (executable-find "spamassassin")
+  "Name of the spamassassin program.
 Hint: set this to \"spamc\" if you have spamd running.  See the spamc and
 spamd man pages for more information on these programs."
   :type '(choice (file :tag "Location of spamc")
@@ -599,8 +603,10 @@ identification"
   :type 'string
   :group 'spam-spamassassin)
 
-(defcustom spam-sa-learn-path (executable-find "sa-learn")
-  "File path of the sa-learn executable program."
+(define-obsolete-variable-alias 'spam-sa-learn-path 'spam-sa-learn-program)
+;; "22.1" ;; Gnus 5.10.9
+(defcustom spam-sa-learn-program (executable-find "sa-learn")
+  "Name of the sa-learn program."
   :type '(choice (file :tag "Location of spamassassin")
 		 (const :tag "spamassassin is not installed"))
   :group 'spam-spamassassin)
@@ -2653,7 +2659,7 @@ REMOVE not nil, remove the ADDRESSES."
 	(save-excursion
 	  (set-buffer article-buffer-name)
 	  (apply 'call-process-region
-		 (point-min) (point-max) spam-spamassassin-path
+		 (point-min) (point-max) spam-assassin-program
 		 nil temp-buffer-name nil spam-spamassassin-arguments))
 	;; check the return now (we're back in the temp buffer)
 	(goto-char (point-min))
@@ -2697,7 +2703,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  ;; call sa-learn on all messages at the same time
 	  (apply 'call-process-region
 		 (point-min) (point-max)
-		 spam-sa-learn-path
+		 spam-sa-learn-program
 		 nil nil nil "--mbox"
 		 (if spam-sa-learn-rebuild
 		     (list action)
@@ -2753,7 +2759,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  (set-buffer article-buffer-name)
 	  (apply 'call-process-region
 		 (point-min) (point-max)
-		 spam-bsfilter-path
+		 spam-bsfilter-program
 		 nil temp-buffer-name nil
 		 "--pipe"
 		 "--insert-flag"
@@ -2781,7 +2787,7 @@ REMOVE not nil, remove the ADDRESSES."
 	  (insert article-string)
 	  (apply 'call-process-region
 		 (point-min) (point-max)
-		 spam-bsfilter-path
+		 spam-bsfilter-program
 		 nil nil nil switch
 		 "--update"
 		 (when spam-bsfilter-database-directory
