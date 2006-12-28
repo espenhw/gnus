@@ -414,7 +414,7 @@ Only meaningful if you enable `spam-use-regex-body'."
   "Spam ifile configuration."
   :group 'spam)
 
-(define-obsolete-variable-alias 'spam-ifile-path 'spam-ifile-program)
+(make-obsolete-variable 'spam-ifile-path 'spam-ifile-program)
 ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-ifile-program (executable-find "ifile")
   "Name of the ifile program."
@@ -422,7 +422,7 @@ Only meaningful if you enable `spam-use-regex-body'."
 		 (const :tag "ifile is not installed"))
   :group 'spam-ifile)
 
-(define-obsolete-variable-alias 'spam-ifile-database-path 'spam-ifile-database)
+(make-obsolete-variable 'spam-ifile-database-path 'spam-ifile-database)
 ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-ifile-database nil
   "File name of the ifile database."
@@ -453,7 +453,7 @@ your main source of newsgroup names."
   "Spam bogofilter configuration."
   :group 'spam)
 
-(define-obsolete-variable-alias 'spam-bogofilter-path 'spam-bogofilter-program)
+(make-obsolete-variable 'spam-bogofilter-path 'spam-bogofilter-program)
 ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-bogofilter-program (executable-find "bogofilter")
   "Name of the Bogofilter program."
@@ -505,7 +505,7 @@ When nil, use the default location."
   "Spam bsfilter configuration."
   :group 'spam)
 
-(define-obsolete-variable-alias 'spam-bsfilter-path 'spam-bsfilter-program)
+(make-obsolete-variable 'spam-bsfilter-path 'spam-bsfilter-program)
 ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-bsfilter-program (executable-find "bsfilter")
   "Name of the Bsfilter program."
@@ -571,7 +571,7 @@ When nil, use the default spamoracle database."
   "Spam SpamAssassin configuration."
   :group 'spam)
 
-(define-obsolete-variable-alias 'spam-spamassassin-path
+(make-obsolete-variable 'spam-spamassassin-path
   'spam-spamassassin-program) ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-assassin-program (executable-find "spamassassin")
   "Name of the spamassassin program.
@@ -603,7 +603,7 @@ identification"
   :type 'string
   :group 'spam-spamassassin)
 
-(define-obsolete-variable-alias 'spam-sa-learn-path 'spam-sa-learn-program)
+(make-obsolete-variable 'spam-sa-learn-path 'spam-sa-learn-program)
 ;; "22.1" ;; Gnus 5.10.9
 (defcustom spam-sa-learn-program (executable-find "sa-learn")
   "Name of the sa-learn program."
