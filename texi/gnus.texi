@@ -11952,6 +11952,7 @@ you're in, you could say something like the following:
 
 Modify to suit your needs.
 
+@vindex gnus-message-highlight-citation
 If @code{gnus-message-highlight-citation} is t, different levels of
 citations are highlighted like in Gnus article buffers also in message
 mode buffers.
@@ -24550,7 +24551,7 @@ You should not enable this if you use @code{spam-use-spamassassin}.
 
 @end defvar
 
-@defvar spam-spamassassin-path
+@defvar spam-spamassassin-program
 
 This variable points to the SpamAssassin executable.  If you have
 @code{spamd} running, you can set this variable to the @code{spamc}
@@ -24595,7 +24596,7 @@ The actual string used is irrelevant, but you probably want to leave
 the default value of @samp{spam}.
 @end defvar
 
-@defvar spam-ifile-database-path
+@defvar spam-ifile-database
 
 This is the filename for the ifile database.  It is not specified by
 default, so ifile will use its own default database name.
