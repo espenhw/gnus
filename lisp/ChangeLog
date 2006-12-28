@@ -1,3 +1,8 @@
+2006-12-28  Daiki Ueno  <ueno@unixuser.org>
+
+	* password.el (password-cache-remove): Use clear-string to burn
+	password, if available.
+
 2006-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-message-citation-mode): Fix autoload.

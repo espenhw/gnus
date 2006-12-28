@@ -113,7 +113,9 @@ that a password is invalid, so that `password-read' query the
 user again."
   (let ((password (symbol-value (intern-soft key password-data))))
     (when password
-      (fillarray password ?_)
+      (if (fboundp 'clear-string)
+	  (clear-string password)
+	(fillarray password ?_))
       (unintern key password-data))))
 
 (defun password-cache-add (key password)
