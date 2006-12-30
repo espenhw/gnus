@@ -6407,6 +6407,13 @@ Limit the summary buffer to articles that match some recipient
 (@code{gnus-summary-limit-to-recipient}).  If given a prefix, exclude
 matching articles.
 
+@item / S
+@kindex / S (Summary)
+@findex gnus-summary-limit-to-singletons
+Limit the summary buffer to articles that aren't part of any displayed
+threads (@code{gnus-summary-limit-to-singletons}).  If given a prefix,
+limit to articles that are part of displayed threads.
+
 @item / x
 @kindex / x (Summary)
 @findex gnus-summary-limit-to-extra
