@@ -8118,7 +8118,7 @@ If REVERSE (the prefix), limit to articles that don't match."
 If THREADSP (the prefix), limit to articles that are in threads."
   (interactive "P")
   (let ((articles nil)
-	thead-articles
+	thread-articles
 	threads)
     (dolist (thread gnus-newsgroup-threads)
       (if (stringp (car thread))

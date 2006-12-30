@@ -2,6 +2,7 @@
 
 	* gnus-sum.el (gnus-summary-limit-to-singletons): New command and
 	keystroke. 
+	(gnus-summary-limit-to-singletons): Fix typo.
 
 	* spam-report.el (spam-report-gmane-internal): Fall back on Xref if all
 	else fails.
