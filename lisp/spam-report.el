@@ -163,7 +163,11 @@ Reports is as ham when HAM is set."
 	    (setq field (or (gnus-fetch-field "X-Report-Spam")
 			    (gnus-fetch-field "X-Report-Unspam")
 			    (gnus-fetch-field "Archived-At")))
-	    (when (stringp field)
+	    (if (not (stringp field))
+		(if (and (setq field (gnus-fetch-field "Xref"))
+			 (string-match "[^ ]+ +\\([^ ]+\\)" field))
+		    (setq report (match-string 1 field)
+			  host rpt-host))
 	      (setq host
 		    (progn
 		      (string-match
@@ -171,7 +175,8 @@ Reports is as ham when HAM is set."
 			       "\\(/[^:/]+[:/][0-9]+\\)")
 		       field)
 		      (match-string 1 field)))
-	      (setq report (match-string 2 field))
+	      (setq report (match-string 2 field)))
+	    (when host
 	      (when (string-equal "permalink.gmane.org" host)
 		(setq host rpt-host)
 		(setq report (gnus-replace-in-string
