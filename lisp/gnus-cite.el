@@ -1159,19 +1159,20 @@ Returns nil if there is no such line before LIMIT, t otherwise."
       (font-lock-remove-keywords nil gnus-message-citation-keywords)
     (gnus-message 1 "`font-lock-remove-keywords' not supported.")))
 
-(define-minor-mode gnus-message-citation-mode
-  "Toggle `gnus-message-citation-mode' in current buffer.
+(unless (featurep 'xemacs)
+  (define-minor-mode gnus-message-citation-mode
+    "Toggle `gnus-message-citation-mode' in current buffer.
 This buffer local minor mode provides additional font-lock support for
 nested citations.
 With prefix ARG, turn `gnus-message-citation-mode' on if and only if ARG is
 positive."
-  nil ;; init-value
-  ""  ;; lighter
-  nil ;; keymap
-  (if gnus-message-citation-mode
-      (gnus-message-add-citation-keywords)
-    (gnus-message-remove-citation-keywords))
-  (font-lock-fontify-buffer))
+    nil ;; init-value
+    ""  ;; lighter
+    nil ;; keymap
+    (if gnus-message-citation-mode
+	(gnus-message-add-citation-keywords)
+      (gnus-message-remove-citation-keywords))
+    (font-lock-fontify-buffer)))
 
 (defun turn-on-gnus-message-citation-mode ()
   "Turn on `gnus-message-citation-mode'."
