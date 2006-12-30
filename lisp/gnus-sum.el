@@ -1873,6 +1873,7 @@ increase the score of each group you read."
   "C" gnus-summary-limit-mark-excluded-as-read
   "o" gnus-summary-insert-old-articles
   "N" gnus-summary-insert-new-articles
+  "S" gnus-summary-limit-to-singletons
   "r" gnus-summary-limit-to-replied
   "R" gnus-summary-limit-to-recipient)
 
@@ -2534,6 +2535,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Unseen" gnus-summary-limit-to-unseen t]
+	 ["Signletons" gnus-summary-limit-to-singletons t]
 	 ["Replied" gnus-summary-limit-to-replied t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Next or process marked articles" gnus-summary-limit-to-articles t]
@@ -8111,6 +8113,30 @@ If REVERSE (the prefix), limit to articles that don't match."
       (gnus-summary-limit articles)))
   (gnus-summary-position-point))
 
+(defun gnus-summary-limit-to-singletons (&optional threadsp)
+  "Limit the summary buffer to articles that aren't part on any thread.
+If THREADSP (the prefix), limit to articles that are in threads."
+  (interactive "P")
+  (let ((articles nil)
+	thead-articles
+	threads)
+    (dolist (thread gnus-newsgroup-threads)
+      (if (stringp (car thread))
+	  (dolist (thread (cdr thread))
+	    (push thread threads))
+	(push thread threads)))
+    (dolist (thread threads)
+      (setq thread-articles (gnus-articles-in-thread thread))
+      (when (or (and threadsp
+		     (> (length thread-articles) 1))
+		(and (not threadsp)
+		     (= (length thread-articles) 1)))
+	(setq articles (nconc thread-articles articles))))
+    (if (not articles)
+	(message "No messages matched")
+      (gnus-summary-limit articles))
+    (gnus-summary-position-point)))
+	  
 (defun gnus-summary-limit-to-replied (&optional unreplied)
   "Limit the summary buffer to replied articles.
 If UNREPLIED (the prefix), limit to unreplied articles."
