@@ -6,6 +6,11 @@
 
 	* gnus-cite.el (gnus-message-citation-mode): Don't define in XEmacs.
 
+2006-12-29  Jouni K. Sepp,Ad(Bnen  <jks@iki.fi>
+
+	* nnimap.el (nnimap-expunge-search-string): Mention
+	nnimap-search-uids-not-since-is-evil in docstring.
+
 2006-12-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el: Revert to make-obsolete-variable because
@@ -23,6 +28,9 @@
 	variable names.
 
 2006-12-28  Daiki Ueno  <ueno@unixuser.org>
+
+	* gnus-sum.el (gnus-summary-next-article): Make sure we are in the
+	summary buffer.
 
 	* password.el (password-cache-remove): Use clear-string to burn
 	password, if available.
@@ -3371,7 +3379,7 @@
 	whitespace removed in revision 7.8.  Use concatenated string to
 	protect trailing whitespace.
 
-2005-10-27  Jouni K Seppanen  <jks@iki.fi>
+2005-10-27  Jouni K. Sepp,Ad(Bnen  <jks@iki.fi>
 
 	* nnimap.el (nnimap-search-uids-not-since-is-evil): Add variable.
 	(nnimap-request-expire-articles): Use it to avoid sending 'UID
