@@ -82,6 +82,10 @@ using dns-mode.
 @kbd{/ r} (@code{gnus-summary-limit-to-replied}) and @kbd{/ R}
 (@code{gnus-summary-limit-to-recipient}).  @xref{Limiting}.
 
+@item You can now fetch all ticked articles from the server using
+@kbd{Y t} (@code{gnus-summary-insert-ticked-articles}).  @xref{Summary
+Generation Commands}.
+
 @item Gnus supports a new sort command in the Summary buffer:
 @kbd{C-c C-s C-t} (@code{gnus-summary-sort-by-recipient}).  @xref{Summary
 Sorting}.

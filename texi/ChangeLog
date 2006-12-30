@@ -1,3 +1,8 @@
+2006-12-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus.texi (Summary Generation Commands):
+	* gnus-news.texi: Add gnus-summary-insert-ticked-articles.
+
 2006-12-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Customizing Articles): Add index entries for all

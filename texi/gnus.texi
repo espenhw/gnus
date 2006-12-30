@@ -10569,6 +10569,12 @@ Pull all cached articles (for the current group) into the summary buffer
 Pull all dormant articles (for the current group) into the summary buffer
 (@code{gnus-summary-insert-dormant-articles}).
 
+@item Y t
+@kindex Y t (Summary)
+@findex gnus-summary-insert-ticked-articles
+Pull all ticked articles (for the current group) into the summary buffer
+(@code{gnus-summary-insert-ticked-articles}).
+
 @end table
 
 
