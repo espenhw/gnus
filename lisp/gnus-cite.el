@@ -1178,7 +1178,7 @@ positive."
   "Turn on `gnus-message-citation-mode'."
   (gnus-message-citation-mode 1))
 (defun turn-off-gnus-message-citation-mode ()
-  "Turn on `gnus-message-citation-mode'."
+  "Turn off `gnus-message-citation-mode'."
   (gnus-message-citation-mode -1))
 
 (gnus-ems-redefine)
