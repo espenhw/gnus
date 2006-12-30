@@ -1,3 +1,9 @@
+2006-12-30  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus-sum.el (gnus-summary-insert-ticked-articles): New command.
+	(gnus-summary-make-menu-bar, gnus-summary-buffer-map): Bind it.
+	(gnus-summary-insert-dormant-articles): Fix typo in message.
+
 2006-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-message-highlight-citation): Ensure default to be

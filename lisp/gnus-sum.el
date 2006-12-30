@@ -1915,7 +1915,8 @@ increase the score of each group you read."
 (gnus-define-keys (gnus-summary-buffer-map "Y" gnus-summary-mode-map)
   "g" gnus-summary-prepare
   "c" gnus-summary-insert-cached-articles
-  "d" gnus-summary-insert-dormant-articles)
+  "d" gnus-summary-insert-dormant-articles
+  "t" gnus-summary-insert-ticked-articles)
 
 (gnus-define-keys (gnus-summary-exit-map "Z" gnus-summary-mode-map)
   "c" gnus-summary-catchup-and-exit
@@ -2616,6 +2617,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Regenerate" gnus-summary-prepare t]
 	 ["Insert cached articles" gnus-summary-insert-cached-articles t]
 	 ["Insert dormant articles" gnus-summary-insert-dormant-articles t]
+	 ["Insert ticked articles" gnus-summary-insert-ticked-articles t]
 	 ["Toggle threading" gnus-summary-toggle-threads t])
 	["See old articles" gnus-summary-insert-old-articles t]
 	["See new articles" gnus-summary-insert-new-articles t]
@@ -8202,8 +8204,16 @@ article."
   (interactive)
   (let ((gnus-verbose (max 6 gnus-verbose)))
     (if (not gnus-newsgroup-dormant)
-	(gnus-message 3 "No cached articles for this group")
+	(gnus-message 3 "No dormant articles for this group")
       (gnus-summary-goto-subjects gnus-newsgroup-dormant))))
+
+(defun gnus-summary-insert-ticked-articles ()
+  "Insert ticked articles for this group into the current buffer."
+  (interactive)
+  (let ((gnus-verbose (max 6 gnus-verbose)))
+    (if (not gnus-newsgroup-marked)
+	(gnus-message 3 "No ticked articles for this group")
+      (gnus-summary-goto-subjects gnus-newsgroup-marked))))
 
 (defun gnus-summary-limit-include-dormant ()
   "Display all the hidden articles that are marked as dormant.
