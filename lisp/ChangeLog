@@ -1,3 +1,16 @@
+2006-12-31  Steve Youngs  <steve@sxemacs.org>
+
+	* gnus-cite.el: Load easy-mmode at compile time for (S)XEmacs to get
+	`define-minor-mode' macro definition expanded properly.
+	(gnus-message-citation-mode): This is now OK for (S)XEmacs so don't
+	exclude it there.
+
+	* gnus-msg.el (gnus-message-highlight-citation): Revert Reiner's patch
+	of 2006-12-30.  The default is nil on (S)XEmacs already because of the
+	`fboundp' test.
+	(gnus-message-citation-mode): Revert Reiner's patch of 2006-12-30.
+	This is OK to autoload in (S)XEmacs now.
+
 2006-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-limit-to-singletons): New command and
