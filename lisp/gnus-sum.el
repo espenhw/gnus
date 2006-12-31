@@ -2535,7 +2535,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Unseen" gnus-summary-limit-to-unseen t]
-	 ["Signletons" gnus-summary-limit-to-singletons t]
+	 ["Singletons" gnus-summary-limit-to-singletons t]
 	 ["Replied" gnus-summary-limit-to-replied t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Next or process marked articles" gnus-summary-limit-to-articles t]
