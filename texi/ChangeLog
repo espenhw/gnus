@@ -43,6 +43,16 @@
 	(IMAP): Document nnimap-search-uids-not-since-is-evil and
 	nnimap-nov-is-evil.
 
+2006-12-24  Chong Yidong  <cyd@stupidchicken.com>
+
+	* pgg.texi (Caching passphrase): Default for pgg-gpg-use-agent changed
+	to t.
+	(Prerequisites): Add explanation about gpg-agent.
+
+2006-12-17  Sascha Wilde  <wilde@sha-bang.de>
+
+	* pgg.texi: Added short note on gpg-agent to the introduction.
+
 2006-12-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Hiding Headers): Document that `long-to' and `many-to'
