@@ -1,3 +1,10 @@
+2007-01-01  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnweb.el (nnweb-gmane-create-mapping): Put back code to merge the
+	headers read from disk with the ones newly found in the current search.
+	This should no longer cause problems, because the article numbers in
+	Gmane's `nov.php' output are ignored since the previous change.
+
 2007-01-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind clear-string and cp-supported-codepages; don't fbind

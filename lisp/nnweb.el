@@ -502,7 +502,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 	  (forward-line 1)))
       (nnheader-message 7 "Searching Gmane...done")
       (setq nnweb-articles
-	    (sort map 'car-less-than-car)))))
+	    (sort (nconc nnweb-articles map) 'car-less-than-car)))))
 
 (defun nnweb-gmane-wash-article ()
   (let ((case-fold-search t))
