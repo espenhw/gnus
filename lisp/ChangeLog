@@ -165,8 +165,8 @@
 
 2006-12-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-extra-header-to-number): CRM114 spam score should be
-	negated to be consistent with the others we handle
+	* spam.el (spam-extra-header-to-number): CRM114 spam score is
+	negated to be consistent with the others we handle.
 
 2006-12-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -326,7 +326,7 @@
 
 2006-11-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el: reverted to 7.82 (removed changes since 2006-10-16)
+	* spam.el: Revert to 7.82 (removed changes since 2006-10-16).
 
 2006-11-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -543,12 +543,13 @@
 
 2006-10-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-util.el (gnus-string-remove-all-properties): another fix
+	* gnus-util.el (gnus-string-remove-all-properties): Another fix to
+	ignore non-string data.
 
 2006-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-util.el (gnus-string-remove-all-properties): fix to ignore
-	non-string data (needs to be done in the registry too)
+	* gnus-util.el (gnus-string-remove-all-properties): Fix to ignore
+	non-string data (needs to be done in the registry too).
 
 2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -557,14 +558,14 @@
 	(gnus-registry-split-fancy-with-parent)
 	(gnus-registry-fetch-simplified-message-subject-fast)
 	(gnus-registry-fetch-sender-fast, gnus-registry-store-extra-entry):
-	remove text properties on ingress into the registry and when it's saved
-	(gnus-registry-clean-empty-function): fixed bug with cleaning the
-	registry from entries with no groups
+	Remove text properties on ingress into the registry and when it's saved.
+	(gnus-registry-clean-empty-function): Fix bug with cleaning the
+	registry from entries with no groups.
 
 2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-util.el (gnus-string-remove-all-properties): utility function to
-	remove string properties
+	* gnus-util.el (gnus-string-remove-all-properties): Add utility
+	function toremove string properties.
 
 2006-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -1495,8 +1496,8 @@
 
 2006-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-cache-save): remove text
-	properties when saving via the temp buffer
+	* gnus-registry.el (gnus-registry-cache-save): Remove text
+	properties when saving via the temp buffer.
 
 2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -3807,13 +3808,13 @@
 2005-09-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-gmane, spam-report-gmane-register-routine)
-	(spam-report-gmane-unregister-routine): added support for gmane
-	unregistration
+	(spam-report-gmane-unregister-routine): Add support for gmane
+	unregistration.
 
 	* spam-report.el (spam-report-gmane-unspam)
-	(spam-report-gmane-spam): new wrappers around spam-report-gmane
-	(spam-report-gmane): changed to take a single article and do
-	unspam registration
+	(spam-report-gmane-spam): Add new wrappers around spam-report-gmane.
+	(spam-report-gmane): Chang to take a single article and do
+	unspam registration.
 
 2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -3828,12 +3829,12 @@
 
 2005-09-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-start.el (gnus-activate-group): if the server is nil, don't
-	fail hard
+	* gnus-start.el (gnus-activate-group): If the server is nil, don't
+	fail hard.
 
-	* spam-report.el: better Keywords line
+	* spam-report.el: Add better Keywords line.
 
-	* spam.el: added Maintainer and better Keywords line
+	* spam.el: Add Maintainer and better Keywords line.
 
 2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -4887,9 +4888,9 @@
 
 2005-04-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* message.el (message-kill-buffer-query-if-modified): new variable
-	so the user can kill a modified message buffer quickly
-	(message-kill-buffer): use it.
+	* message.el (message-kill-buffer-query-if-modified): Add new variable
+	so the user can kill a modified message buffer quickly.
+	(message-kill-buffer): Use it.
 
 2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -4932,15 +4933,15 @@
 
 	* gnus-registry.el (gnus-registry-clean-empty-function)
 	(gnus-registry-trim, gnus-registry-fetch-groups)
-	(gnus-registry-delete-group): now groups that match
-	`gnus-registry-ignored-groups' will be removed from the registry
+	(gnus-registry-delete-group): Groups that match
+	`gnus-registry-ignored-groups' are removed from the registry
 	entries, not just ignored for splitting.  This helps clean up the
 	registry.  Also, `gnus-registry-fetch-groups' is a convenient way
 	to get all the groups a message ID is in.
 
 	* spam-stat.el (spam-stat-split-fancy-spam-threshold)
-	(spam-stat-split-fancy): changed "threshhold" to "threshold"
-	(spam-stat-score-buffer-user-functions): added :number custom type
+	(spam-stat-split-fancy): Change "threshhold" to "threshold"
+	(spam-stat-score-buffer-user-functions): Add :number custom type.
 
 2005-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5115,37 +5116,37 @@
 
 2005-03-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-sum.el (gnus-summary-move-article): pass move-is-internal
+	* gnus-sum.el (gnus-summary-move-article): Pass move-is-internal
 	parameter to invoked gnus-request-move-article; remove the
 	redundant gnus-sum-hint-move-is-internal variable; apply the marks
-	all at once instead of once per article
-	(gnus-summary-remove-process-mark): accept a list of articles as
-	well as a single article for processing
+	all at once instead of once per article.
+	(gnus-summary-remove-process-mark): Accept a list of articles as
+	well as a single article for processing.
 
-	* gnus-int.el (gnus-request-move-article): add move-is-internal parameter
+	* gnus-int.el (gnus-request-move-article): Add move-is-internal parameter.
 
-	* nnml.el (nnml-request-move-article): add move-is-internal parameter
+	* nnml.el (nnml-request-move-article): Add move-is-internal parameter.
 
-	* nnmh.el (nnmh-request-move-article): add move-is-internal parameter
+	* nnmh.el (nnmh-request-move-article): Add move-is-internal parameter.
 
-	* nnmbox.el (nnmbox-request-move-article): add move-is-internal parameter
+	* nnmbox.el (nnmbox-request-move-article): Add move-is-internal parameter.
 
-	* nnmaildir.el (nnmaildir-request-move-article): add move-is-internal parameter
+	* nnmaildir.el (nnmaildir-request-move-article): Add move-is-internal parameter.
 
-	* nnimap.el (nnimap-request-move-article): add move-is-internal
-	parameter and remove the gnus-sum-hint-move-is-internal variable
+	* nnimap.el (nnimap-request-move-article): Add move-is-internal
+	parameter and remove the gnus-sum-hint-move-is-internal variable.
 
-	* nnfolder.el (nnfolder-request-move-article): add move-is-internal parameter
+	* nnfolder.el (nnfolder-request-move-article): Add move-is-internal parameter.
 
-	* nndraft.el (nndraft-request-move-article): add move-is-internal parameter
+	* nndraft.el (nndraft-request-move-article): Add move-is-internal parameter.
 
-	* nndiary.el (nndiary-request-move-article): add move-is-internal parameter
+	* nndiary.el (nndiary-request-move-article): Add move-is-internal parameter.
 
-	* nndb.el (nndb-request-move-article): add move-is-internal parameter
+	* nndb.el (nndb-request-move-article): Add move-is-internal parameter.
 
-	* nnbabyl.el (nnbabyl-request-move-article): add move-is-internal parameter
+	* nnbabyl.el (nnbabyl-request-move-article): Add move-is-internal parameter.
 
-	* nnagent.el (nnagent-request-move-article): add move-is-internal parameter
+	* nnagent.el (nnagent-request-move-article): Add move-is-internal parameter.
 
 2005-03-01  Stefan Monnier  <monnier@iro.umontreal.ca>
 
@@ -5168,14 +5169,14 @@
 
 2005-02-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-sum.el (gnus-summary-move-article): set
+	* gnus-sum.el (gnus-summary-move-article): Set
 	gnus-sum-hint-move-is-internal for gnus-request-move-article and
 	whatever it calls (right now, only nnimap-request-move article
-	respects it)
+	respects it).
 
-	* nnimap.el (nnimap-request-move-article): when
+	* nnimap.el (nnimap-request-move-article): When
 	gnus-sum-hint-move-is-internal is set, don't do the extra
-	nnimap-request-article
+	nnimap-request-article.
 
 2005-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -5250,9 +5251,9 @@
 
 2005-02-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-delete-group): Minor bug fix.
+	* gnus-registry.el (gnus-registry-delete-group): Add minor bug fix.
 
-	* gnus.el (gnus-install-group-spam-parameters): Doc fix.
+	* gnus.el (gnus-install-group-spam-parameters): Add minor doc fix.
 
 2005-02-15  Simon Josefsson  <jas@extundo.com>
 
@@ -5266,8 +5267,8 @@
 
 2005-02-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.el (spam-contents): improve docs for spam-contents
-	parameter in its variable incarnation
+	* gnus.el (spam-contents): Improve docs for spam-contents
+	parameter in its variable incarnation.
 
 2005-02-14  Simon Josefsson  <jas@extundo.com>
 
@@ -5327,8 +5328,8 @@
 
 2005-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-delete-group): small bug leaves
-	an ID in the registry even if it has no groups
+	* gnus-registry.el (gnus-registry-delete-group): Fix bug: leaves
+	an ID in the registry even if it has no groups.
 
 2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5628,8 +5629,8 @@
 
 2004-12-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-check-BBDB): don't get the symbol-value of an
-	imaginary variable
+	* spam.el (spam-check-BBDB): Don't get the symbol-value of an
+	imaginary variable.
 
 2004-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5638,9 +5639,9 @@
 
 2004-12-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-check-BBDB): fix the BBDB caching code to use
+	* spam.el (spam-check-BBDB): Fix the BBDB caching code to use
 	downcased symbol names; make a new cache instead of reusing
-	bbdb-hashtable
+	bbdb-hashtable.
 
 2004-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5789,14 +5790,14 @@
 
 2004-12-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): remove the
+	* spam.el (spam-summary-prepare-exit): Remove the
 	gnus-summary-limit pop for now, it has problems with ham marks for
-	me
+	me.
 
 2004-11-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): use gnus-summary-limit
-	correctly
+	* spam.el (spam-summary-prepare-exit): Use gnus-summary-limit
+	correctly.
 
 2004-11-28  Carl Henrik Lunde  <chlunde+bugs+@ping.uio.no>  (tiny change)
 
@@ -5804,10 +5805,10 @@
 
 2004-11-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-art.el (gnus-split-methods): reformat comments
+	* gnus-art.el (gnus-split-methods): Reformat comments.
 
-	* spam.el (spam-summary-prepare-exit): remove article limits
-	before exiting the summary buffer
+	* spam.el (spam-summary-prepare-exit): Remove article limits
+	before exiting the summary buffer.
 
 2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6113,16 +6114,16 @@
 
 2004-10-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-hashtb): create the registry
-	when package is loaded
+	* gnus-registry.el (gnus-registry-hashtb): Create the registry
+	when package is loaded.
 
-	* spam.el (spam-summary-score-preferred-header): global preference
+	* spam.el (spam-summary-score-preferred-header): Add global preference
 	for people who want to override the default SpamAssassin over
-	Bogofilter preference (when both are set)
-	(spam-necessary-extra-headers): add spam-use-bogofilter as an option
-	(spam-user-format-function-S): check spam-summary-score-preferred-header
-	(spam-extra-header-to-number): add X-Bogosity header parsing
-	(spam-user-format-function-S): format the score correctly
+	Bogofilter preference (when both are set).
+	(spam-necessary-extra-headers): Add spam-use-bogofilter as an option.
+	(spam-user-format-function-S): Check spam-summary-score-preferred-header.
+	(spam-extra-header-to-number): Add X-Bogosity header parsing.
+	(spam-user-format-function-S): Format the score correctly.
 
 2004-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6152,7 +6153,7 @@
 
 2004-10-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* nnimap.el (nnimap-open-connection): fixed prog1/prog2 bug
+	* nnimap.el (nnimap-open-connection): Fix prog1/prog2 bug.
 
 2004-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6179,11 +6180,11 @@
 
 2004-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* nnimap.el (nnimap-remove-server-from-buffer-alist): new function
-	to remove a server from the nnimap-server-buffer-alist
-	(nnimap-open-connection, nnimap-close-server): use it
+	* nnimap.el (nnimap-remove-server-from-buffer-alist): Add function
+	to remove a server from the nnimap-server-buffer-alist.
+	(nnimap-open-connection, nnimap-close-server): Use it.
 
-	* gnus-encrypt.el: removed in favor of encrypt.el
+	* gnus-encrypt.el: Remove file in favor of encrypt.el.
 
 2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6202,15 +6203,15 @@
 
 2004-10-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-util.el (gnus-split-references): accept a nil references
-	string and go on blissfully
+	* gnus-util.el (gnus-split-references): Accept a nil references
+	string and go on blissfully.
 
-	* gnus-registry.el (gnus-registry-split-fancy-with-parent): catch
-	cases where the references string is non-nil but has no references
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Catch
+	cases where the references string is non-nil but has no references.
 
-	* encrypt.el: add autoload tags
+	* encrypt.el: Add autoload tags.
 
-	* spam.el (spam-resolve-registrations-routine): remove article
+	* spam.el (spam-resolve-registrations-routine): Remove article
 	from unregistration list too.  Reported by David Hanak
 	<dhanak@isis.vanderbilt.edu>
 
@@ -6227,20 +6228,20 @@
 
 2004-10-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* encrypt.el: add autoload cookies
+	* encrypt.el: Add autoload cookies.
 
 	* spam.el (spam-backend-article-list-property)
 	(spam-backend-get-article-todo-list)
 	(spam-backend-put-article-todo-list, )
 	(spam-summary-prepare-exit, spam-resolve-registrations-routine):
-	resolve registrations separately
-	(spam-register-routine): format comments
-	(spam-unregister-routine, spam-register-routine): always call with
-	specific-articles, no default list
-	(spam-summary-prepare-exit): use the spam-classifications function
+	Resolve registrations separately.
+	(spam-register-routine): Format comments.
+	(spam-unregister-routine, spam-register-routine): Always call with
+	specific-articles, no default list.
+	(spam-summary-prepare-exit): Use the spam-classifications function.
 
-	* netrc.el (autoload, netrc-parse): use encrypt.el instead of
-	gnus-encrypt.el
+	* netrc.el (autoload, netrc-parse): Use encrypt.el instead of
+	gnus-encrypt.el.
 
 	* encrypt.el: copied from gnus-encrypt.el
 
@@ -6262,15 +6263,15 @@
 
 2004-10-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-register-routine): move comment
-	(spam-verify-bogofilter): we use 'unknown for the initial
-	spam-bogofilter-valid state, not 'never
+	* spam.el (spam-register-routine): Move comment.
+	(spam-verify-bogofilter): Use 'unknown for the initial
+	spam-bogofilter-valid state, not 'never.
 
-	* netrc.el (netrc-machine-user-or-password): convenience wrapper
-	for netrc-machine
+	* netrc.el (netrc-machine-user-or-password): Add convenience wrapper
+	for netrc-machine.
 
-	* nnimap.el (nnimap-open-connection): use
-	netrc-machine-user-or-password
+	* nnimap.el (nnimap-open-connection): Use
+	netrc-machine-user-or-password.
 
 2004-10-17  Richard M. Stallman  <rms@gnu.org>
 
@@ -6501,7 +6502,7 @@
 
 2004-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-verify-bogofilter): -V, not -sV option
+	* spam.el (spam-verify-bogofilter): Use -V, not -sV option.
 
 2004-09-28  Kevin Greiner  <kgreiner@compsol.cc>
 
@@ -6513,10 +6514,10 @@
 
 2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-verify-bogofilter): new function
+	* spam.el (spam-verify-bogofilter): Add new function.
 	(spam-check-bogofilter)
-	(spam-bogofilter-register-with-bogofilter): use it
-	(spam-verify-bogofilter): small fixes
+	(spam-bogofilter-register-with-bogofilter): Use it.
+	(spam-verify-bogofilter): Add small fixes.
 
 2004-09-28  Simon Josefsson  <jas@extundo.com>
 
@@ -6524,18 +6525,18 @@
 
 2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-split-fancy-with-parent): use
-	gnus-extract-references instead of gnus-split-references
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Use
+	gnus-extract-references instead of gnus-split-references.
 
-	* gnus-util.el (gnus-extract-references): new function, analogous
+	* gnus-util.el (gnus-extract-references): Add new function, analogous
 	to gnus-split-references but extracts only the message-ID without
-	anything extra
+	anything extra.
 
 	* hashcash.el (hashcash-generate-payment)
-	(hashcash-check-payment): do the right thing if hashcash-path is
-	nil (because the hashcash program could not be found)
+	(hashcash-check-payment): Do the right thing if hashcash-path is
+	nil (because the hashcash program could not be found).
 
-	* spam.el (spam-use-hashcash): remove comment
+	* spam.el (spam-use-hashcash): Remove comment.
 
 2004-09-27  Jesper Harder  <harder@ifa.au.dk>
 
@@ -6814,8 +6815,8 @@
 
 2004-09-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-trim): watch out for negatives
-	in gnus-registry-trim
+	* gnus-registry.el (gnus-registry-trim): Watch out for negatives
+	in gnus-registry-trim.
 
 2004-09-13  Simon Josefsson  <jas@extundo.com>
 
@@ -7113,8 +7114,8 @@
 
 2004-08-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* nnimap.el (nnimap-open-connection): add 'imaps' synonym to
-	'imap' for netrc parsing
+	* nnimap.el (nnimap-open-connection): Add 'imaps' synonym to
+	'imap' for netrc parsing.
 
 2004-08-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -7135,7 +7136,7 @@
 2004-08-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-encrypt.el (gnus-encrypt-insert-file-contents)
-	(gnus-encrypt-write-file-contents): the password key is the file
+	(gnus-encrypt-write-file-contents): Make the password key the file
 	name PLUS the cipher, not just the cipher.  Also remove failed
 	passwords from the cache.
 
@@ -7151,18 +7152,18 @@
 
 2004-08-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-split-fancy-with-parent): try
-	to append in-reply-to: data to the references: header
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Rry
+	to append in-reply-to: data to the references: header.
 
-	* netrc.el: removed old encryption support, autoload gnus-encrypt.el
-	(netrc-parse): use gnus-encrypt.el functions
+	* netrc.el: Remove old encryption support, autoload gnus-encrypt.el
+	(netrc-parse): use gnus-encrypt.el functions.
 
-	* gnus-encrypt.el: new file for encryption support; currently
-	does only a few GPG ciphers and an internal XOR cipher
+	* gnus-encrypt.el: Add new file for encryption support; currently
+	does only a few GPG ciphers and an internal XOR cipher.
 
-	* password.el: add comments on using password-read-and-add
-	(password-read-and-add): new function to read and add the
-	password to the cache at once
+	* password.el: Add comments on using password-read-and-add.
+	(password-read-and-add): Add function to read and add the
+	password to the cache at once.
 
 2004-07-28  Simon Josefsson  <jas@extundo.com>
 
@@ -7275,8 +7276,8 @@
 
 2004-06-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-trim): don't allow a negative
-	trim value
+	* gnus-registry.el (gnus-registry-trim): Don't allow a negative
+	trim value.
 
 2004-01-25  Paul Jarc  <prj@po.cwru.edu>
 
@@ -7361,29 +7362,29 @@
 
 2004-06-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el: section markers changed, TODO list revised
-	(spam-backends): new master list of all installed backends
-	(spam-summary-exit-behavior): new variable to determine how
-	messages moves are done at summary exit
+	* spam.el: Change section markers, revise TODO list.
+	(spam-backends): Make new master list of all installed backends.
+	(spam-summary-exit-behavior): Add new variable to determine how
+	messages moves are done at summary exit.
 	(spam-move-spam-nonspam-groups-only)
 	(spam-process-ham-in-nonham-groups)
-	(spam-process-ham-in-spam-groups): variables removed, the
+	(spam-process-ham-in-spam-groups): Remove variables, the
 	spam-summary-exit-behavior variable should be used to manage this
-	behavior
-	(spam-old-ham-articles, spam-old-spam-articles): removed
-	(spam-old-articles): new variable, replacing spam-old-ham-articles
-	and spam-old-spam-articles
+	behavior.
+	(spam-old-ham-articles, spam-old-spam-articles): Remove.
+	(spam-old-articles): Add variable, replacing spam-old-ham-articles
+	and spam-old-spam-articles.
 	(spam-use-copy, spam-use-move, spam-use-gmane, spam-use-resend):
-	empty variables, placeholders for the backends they represent
-	(spam-set-difference): moved, unchanged
-	(spam-list-of-processors): variable OBSOLETE, not used anymore
-	unless the user has a processor variable
+	Add empty variables, placeholders for the backends they represent.
+	(spam-set-difference): Move, unchanged.
+	(spam-list-of-processors): Declare OBSOLETE, not used anymore
+	unless the user has a processor variable.
 	(spam-classifications, spam-classification-valid-p)
 	(spam-backend-properties, spam-backend-property-valid-p)
 	(spam-backend-function-type-valid-p)
-	(spam-process-type-valid-p, spam-list-articles): helper functions
+	(spam-process-type-valid-p, spam-list-articles): Add helper functions.
 	(spam-report-articles-gmane, spam-report-articles-resend):
-	functions removed, they are not needed
+	Remove functions, they are not needed.
 	(spam-install-backend-super, spam-backend-list)
 	(spam-backend-check, spam-backend-valid-p, spam-backend-info)
 	(spam-backend-function, spam-backend-ham-registration-function)
@@ -7394,43 +7395,43 @@
 	(spam-install-backend-alias, spam-install-checkonly-backend)
 	(spam-install-mover-backend, spam-install-nocheck-backend)
 	(spam-install-backend, spam-install-statistical-backend)
-	(spam-install-statistical-checkonly-backend): backend installation
-	support
-	(spam-summary-prepare-exit): rewritten to use the new backend code
-	(spam-group-processor-p): use the new backend code and respect the
-	summary exit behavior
-	(spam-mark-spam-as-expired-and-move-routine): removed
-	(spam-summary-prepare): changed to use the new spam-old-articles
-	variable
+	(spam-install-statistical-checkonly-backend): Add backend installation
+	support.
+	(spam-summary-prepare-exit): Rewrite to use the new backend code.
+	(spam-group-processor-p): Use the new backend code and respect the
+	summary exit behavior.
+	(spam-mark-spam-as-expired-and-move-routine): Remove.
+	(spam-summary-prepare): Change to use the new spam-old-articles
+	variable.
 	(spam-copy-or-move-routine, spam-copy-spam-routine)
 	(spam-move-spam-routine, spam-copy-ham-routine)
-	(spam-move-ham-routine): new code to copy/move ham or spam
-	(spam-fetch-field-fast): doc and code improved, plus it allows the
-	'number request
-	(spam-list-of-checks, spam-list-of-statistical-checks): variables
-	removed, no longer used
-	(spam-split, spam-find-spam): use the new backend code
-	(spam-registration-functions): variable removed, no longer used
-	(spam-unregister-routine): convenience wrapper
+	(spam-move-ham-routine): Add code to copy/move ham or spam.
+	(spam-fetch-field-fast): Improve doc and code, plus allow the
+	'number request.
+	(spam-list-of-checks, spam-list-of-statistical-checks): Remove
+	variables.
+	(spam-split, spam-find-spam): Use the new backend code.
+	(spam-registration-functions): Remove variable.
+	(spam-unregister-routine): Add convenience wrapper.
 	(spam-log-undo-registration, spam-register-routine)
 	(spam-log-processing-to-registry)
-	(spam-log-unregistration-needed-p): renamed "check" to "backend"
-	where possible
+	(spam-log-unregistration-needed-p): Rename "check" to "backend"
+	where possible.
 	(spam-check-gmane-xref, spam-check-regex-headers)
 	(spam-check-blackholes, spam-check-stat, spam-check-ifile, spam-check-BBDB)
 	(spam-check-whitelist, spam-check-blacklist)
 	(spam-check-bogofilter-headers, spam-check-spamoracle)
 	(spam-check-spamassassin-headers, spam-check-bsfilter-headers)
-	(spam-check-crm114-headers): use the spam-split-group that
-	spam-split prepares, no need to determine it every time
+	(spam-check-crm114-headers): Use the spam-split-group that
+	spam-split prepares, no need to determine it every time.
 
-	* nnimap.el (nnimap-retrieve-headers-progress): add the message number to
-	the nnheader-parse-naked-head call
+	* nnimap.el (nnimap-retrieve-headers-progress): Add the message number to
+	the nnheader-parse-naked-head call.
 
-	* nnheader.el (nnheader-generate-fake-message-id): fix indentation
+	* nnheader.el (nnheader-generate-fake-message-id): Fix indentation.
 
-	* gnus-sum.el (gnus-nov-parse-line): add the message number to
-	the nnheader-nov-read-message-id call
+	* gnus-sum.el (gnus-nov-parse-line): Add the message number to
+	the nnheader-nov-read-message-id call.
 
 2004-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -7480,14 +7481,14 @@
 
 2004-06-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* nnheader.el (nnheader-generate-fake-message-id): accept a
+	* nnheader.el (nnheader-generate-fake-message-id): Accept a
 	number and build a fake message ID localized to a group and
-	article number (so it's repeatable from that point on)
-	(nnheader-fake-message-id-p): change regex to accomodate new fake
-	ID format
+	article number (so it's repeatable from that point on).
+	(nnheader-fake-message-id-p): Change regex to accomodate new fake
+	ID format.
 
-	* gnus-sum.el (gnus-get-newsgroup-headers): call
-	nnheader-generate-fake-message-id with the article number
+	* gnus-sum.el (gnus-get-newsgroup-headers): Call
+	nnheader-generate-fake-message-id with the article number.
 
 2004-06-12  YAGI Tatsuya  <ynyaaa@ybb.ne.jp>  (tiny change)
 
@@ -7548,16 +7549,16 @@
 2004-06-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-report-articles-resend)
-	(spam-report-resend-register-routine): allow ham reporting
-	(spam-report-resend-register-ham-routine): simple wrapper
-	(spam-registration-functions): add ham resending functions
-	(spam-list-of-processors): add ham resend processor
+	(spam-report-resend-register-routine): Allow ham reporting.
+	(spam-report-resend-register-ham-routine): Add wrapper.
+	(spam-registration-functions): Add ham resending functions.
+	(spam-list-of-processors): Add ham resend processor.
 
-	* gnus.el (ham-resend-to): new group parameter
-	(spam-process): add ham resend option
+	* gnus.el (ham-resend-to): Add new group parameter.
+	(spam-process): Add ham resend option.
 
-	* spam-report.el (spam-report-resend): allow reporting ham
-	(spam-report-resend-ham): simple wrapper
+	* spam-report.el (spam-report-resend): Allow reporting ham.
+	(spam-report-resend-ham): Add wrapper.
 
 2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -7577,12 +7578,12 @@
 
 2004-06-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* assistant.el (assistant-node-name): new convenience function
-	(assistant-render-text, assistant-render-node): error handling,
-	plus handle multiple next nodes
-	(assistant-find-next-node): commented out for now
-	(assistant-find-next-nodes): new function, returns list of next
-	nodes
+	* assistant.el (assistant-node-name): Add convenience function.
+	(assistant-render-text, assistant-render-node): Add error handling,
+	plus handle multiple next nodes.
+	(assistant-find-next-node): Comment out for now.
+	(assistant-find-next-nodes): Add function, returns list of next
+	nodes.
 
 2004-06-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -7590,7 +7591,7 @@
 
 2004-05-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* assistant.el (assistant-render-text, assistant-eval): add :set
+	* assistant.el (assistant-render-text, assistant-eval): Add :set
 	widget type, which is different because it takes and returns a
 	list.  Much hilarity ensues.
 
@@ -7609,21 +7610,21 @@
 
 2004-05-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* assistant.el (assistant-render-text): trying to add a :set
-	widget, more to come...
+	* assistant.el (assistant-render-text): Try to add a :set
+	widget, more to come.
 
-	* spam.el (spam-group-spam-contents-p): handle empty groupname
-	strings
+	* spam.el (spam-group-spam-contents-p): Handle empty groupname
+	strings.
 	(spam-report-articles-resend)
-	(spam-register-routine): do registration iff any articles warrant
+	(spam-register-routine): Do registration iff any articles warrant
 	it.
-	(spam-summary-prepare-exit): changed log message for nil group
-	destinations
+	(spam-summary-prepare-exit): Change log message for nil group
+	destinations.
 
 2004-05-27  Daniel Pittman  <daniel@rimspace.net>
 
-	* spam.el (spam-report-resend-register-routine): allow
-	spam-report-resend-to to be a group parameter or a global value
+	* spam.el (spam-report-resend-register-routine): Allow
+	spam-report-resend-to to be a group parameter or a global value.
 
 2004-05-26  Simon Josefsson  <jas@extundo.com>
 
@@ -7650,7 +7651,7 @@
 
 2004-05-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-mark-new-messages-in-spam-group-as-spam): New
+	* spam.el (spam-mark-new-messages-in-spam-group-as-spam): Add
 	variable.
 	(spam-mark-junk-as-spam-routine): Use it.  Allow to disable
 	assigning the spam-mark to new messages.
@@ -7674,8 +7675,8 @@
 
 2004-05-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-list-of-processors): use nil for nonexistent processors
-	(spam-group-processor-p): fixed function so it works properly
+	* spam.el (spam-list-of-processors): Use nil for nonexistent processors.
+	(spam-group-processor-p): Fix function.
 	(spam-group-processor-multiple-p)
 	(spam-group-spam-processor-report-gmane-p)
 	(spam-group-spam-processor-report-resend-p)
@@ -7691,16 +7692,16 @@
 	(spam-group-ham-processor-whitelist-p)
 	(spam-group-ham-processor-BBDB-p)
 	(spam-group-ham-processor-spamoracle-p)
-	(spam-group-ham-processor-copy-p): functions removed with some
-	prejudice against unneeded code
+	(spam-group-ham-processor-copy-p): Remove functions with some
+	prejudice against unneeded code.
 	(spam-report-articles-resend)
-	(spam-report-resend-register-routine): allow the group/topic
-	spam-resend-to value to override spam-report-resend-to
-	(spam-summary-prepare-exit): invoke spam-group-processor-p
-	properly now
+	(spam-report-resend-register-routine): Allow the group/topic
+	spam-resend-to value to override spam-report-resend-to.
+	(spam-summary-prepare-exit): Invoke spam-group-processor-p
+	properly now.
 
-	* gnus.el (spam-resend-to): new group/topic parameter
-	(spam-process): move the OBSOLETE processors to the end of the
+	* gnus.el (spam-resend-to): Add group/topic parameter.
+	(spam-process): Move the OBSOLETE processors to the end of the
 	choices.
 
 2004-05-24  Daniel Pittman  <daniel@rimspace.net>
@@ -7795,24 +7796,24 @@
 	(spam-crm114-register-spam-routine)
 	(spam-crm114-unregister-spam-routine)
 	(spam-crm114-register-ham-routine)
-	(spam-crm114-unregister-ham-routine): add CRM114 support.  From
+	(spam-crm114-unregister-ham-routine): Add CRM114 support.  From
 	asjo@koldfront.dk (Adam Sj,Ax(Bgren).
 
-	* gnus.el: added spam-use-crm114
+	* gnus.el: Add spam-use-crm114.
 
 	* spam.el (spam-list-of-processors, spam-registration-functions):
-	add spam-use-resend
-	(spam-group-spam-processor-report-resend-p): utility wrapper
-	(spam-report-articles-gmane): doc fix
+	Add spam-use-resend.
+	(spam-group-spam-processor-report-resend-p): Add utility wrapper.
+	(spam-report-articles-gmane): Add doc fix.
 	(spam-report-articles-resend,
-	spam-report-resend-register-routine): wrappers around
-	spam-report-resend-to
+	spam-report-resend-register-routine): Add wrappers around
+	spam-report-resend-to.
 
 	* spam-report.el (spam-report-resend-to, spam-report-resend):
-	support for resending spam
-	(spam-report-gmane): line length >80 fix
+	Add support for resending spam.
+	(spam-report-gmane): Fix line length >80.
 
-	* gnus.el (spam-process): add spam-use-resend
+	* gnus.el (spam-process): Add spam-use-resend.
 
 2004-05-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -7962,8 +7963,8 @@
 
 2004-05-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): fix messages, so they show
-	only when there is spam or ham to be processed
+	* spam.el (spam-summary-prepare-exit): Fix messages, so they show
+	only when there is spam or ham to be processed.
 
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -8030,13 +8031,13 @@
 
 2004-05-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): oops, forgot (length)
+	* spam.el (spam-summary-prepare-exit): Fixed (length).
 
 2004-05-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): only produce "marking spam
+	* spam.el (spam-summary-prepare-exit): Fix to produce "marking spam
 	as expired without moving it" message when there are spam
-	messages left
+	messages left.
 
 2004-05-14  Nelson Ferreira  <nelson.ferreira@verizon.net>  (tiny change)
 
@@ -8172,14 +8173,14 @@
 
 	* gnus-registry.el (gnus-registry-cache-whitespace)
 	(gnus-registry-action, gnus-registry-spool-action)
-	(gnus-registry-split-fancy-with-parent): changed message levels
-	from 5 to 3 or 7, as needed
+	(gnus-registry-split-fancy-with-parent): Change message levels
+	from 5 to 3 or 7, as needed.
 
 	* spam.el (spam-summary-prepare-exit)
 	(spam-mark-junk-as-spam-routine, spam-fetch-field-fast)
 	(spam-split, spam-find-spam, spam-log-undo-registration)
-	(spam-check-blackholes, spam-enter-ham-BBDB): changed message
-	level from 5 to 6
+	(spam-check-blackholes, spam-enter-ham-BBDB): Changed message
+	level from 5 to 6.
 
 2004-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -8243,21 +8244,22 @@
 	Sj,Ax(Bgren), Wes Hardaker <wes@hardakers.net>, and Michael Shields
 	<shields@msrl.com>:
 
-	* spam.el (spam-necessary-extra-headers): get the extra headers we
-	may need for spam sorting and scoring
-	(spam-user-format-function-S): a user format function suitable for
-	general use
-	(spam-article-sort-by-spam-status): sorting function for summary
-	sorting
-	(spam-extra-header-to-number): get a score from a header
-	(spam-summary-score): get a numeric score from the headers
-	(spam-generic-score): oops, function doc in wrong place
-	(spam-initialize): take symbols when it's run, and install the
-	extra headers that spam-necessary-extra-headers thinks we need
+	* spam.el (spam-necessary-extra-headers): Get the extra headers we
+	may need for spam sorting and scoring.
+	(spam-user-format-function-S): Add user format function suitable for
+	general use.
+	(spam-article-sort-by-spam-status): Add sorting function for summary
+	sorting.
+	(spam-extra-header-to-number): Add function to get a score from a header.
+	(spam-summary-score): Add function to  get a numeric score from the
+	headers.
+	(spam-generic-score): Fixed function doc, was in wrong place.
+	(spam-initialize): Take symbols when it's run, and install the
+	extra headers that spam-necessary-extra-headers thinks we need.
 
 2004-04-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): logic and message fix.
+	* spam.el (spam-summary-prepare-exit): Add logic and message fix.
 	Reported by bojohan+news@dd.chalmers.se (Johan Bockg,Ae(Brd).
 
 2004-04-17  Jesper Harder  <harder@ifa.au.dk>
@@ -8272,13 +8274,13 @@
 
 2004-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): simplified logic
-	(spam-fetch-article-header): read the article header if it's not
-	available
-	(spam-list-articles): simplified logic
-	(spam-filelist-register-routine): found bug with unregister-list
+	* spam.el (spam-summary-prepare-exit): Simplify logic.
+	(spam-fetch-article-header): Read the article header if it's not
+	available.
+	(spam-list-articles): Simplify logic.
+	(spam-filelist-register-routine): Fix bug with unregister-list.
 
-	* gnus-registry.el: clarified comments at beginning
+	* gnus-registry.el: Fix comments at beginning.
 
 2004-04-16  Jesper Harder  <harder@ifa.au.dk>
 
@@ -8316,18 +8318,18 @@
 	* spam.el (spam-fetch-field-fast, spam-generate-fake-headers)
 	(spam-find-spam, spam-log-processing-to-registry)
 	(spam-log-registered-p, spam-log-unregistration-needed-p)
-	(spam-log-undo-registration): use gnus-message instead of
-	gnus-error, none of these errors are fatal
+	(spam-log-undo-registration): Use gnus-message instead of
+	gnus-error, none of these errors are fatal.
 
 	* gnus-registry.el (gnus-registry-clean-empty-function)
-	(gnus-registry-clean-empty): remove only empty entries without
-	extra data
+	(gnus-registry-clean-empty): Remove only empty entries without
+	extra data.
 
 2004-04-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam-stat.el (spam-stat-buffer-change-to-spam)
-	(spam-stat-buffer-change-to-non-spam): change (error) to
-	(gnus-message 8) invocation
+	(spam-stat-buffer-change-to-non-spam): Change (error) to
+	(gnus-message 8) invocation.
 
 2004-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -8454,15 +8456,15 @@
 
 2004-04-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-set-difference): new function to replace
-	gnus-set-difference in spam.el
-	(spam-summary-prepare-exit): use spam-set-difference
+	* spam.el (spam-set-difference): Add function to replace
+	gnus-set-difference in spam.el.
+	(spam-summary-prepare-exit): Use spam-set-difference.
 
 2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-cache-file): updated to use
-	gnus-dribble-directory OR gnus-home-directory OR ~
-	(gnus-registry-split-fancy-with-parent): fixed doc
+	* gnus-registry.el (gnus-registry-cache-file): Update to use
+	gnus-dribble-directory OR gnus-home-directory OR ~.
+	(gnus-registry-split-fancy-with-parent): Fix doc.
 
 2004-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -8651,18 +8653,18 @@
 
 2004-03-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-use-gmane-xref): new backend
-	(spam-gmane-xref-spam-group): variable to control the name of the
-	Gmane spam group
+	* spam.el (spam-use-gmane-xref): Add new backend.
+	(spam-gmane-xref-spam-group): Add variable to control the name of the
+	Gmane spam group.
 	(spam-blackhole-servers, spam-blackhole-good-server-regex)
 	(spam-regex-headers-spam, spam-regex-headers-ham)
-	(spam-regex-body-spam, spam-regex-body-ham): clarified docs
-	(spam-list-of-checks): added spam-use-gmane-xref to list of
-	backends and checks
-	(spam-check-gmane-xref): function for spam-use-gmane-xref
+	(spam-regex-body-spam, spam-regex-body-ham): Clarify docs.
+	(spam-list-of-checks): Add spam-use-gmane-xref to list of
+	backends and checks.
+	(spam-check-gmane-xref): Add function for spam-use-gmane-xref.
 
-	* gnus.el (spam-autodetect-methods): add spam-use-gmane-xref as
-	an autodetect method
+	* gnus.el (spam-autodetect-methods): Add spam-use-gmane-xref as
+	an autodetect method.
 
 2004-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
@@ -8833,10 +8835,10 @@
 
 2004-02-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-summary-prepare-exit): gnus-set-difference needs
-	to be run with new-articles as LIST1, not LIST2
-	(spam-registration-functions): add spam-use-ham-copy as a nil
-	registration backend
+	* spam.el (spam-summary-prepare-exit): Fix gnus-set-difference: needs
+	to be run with new-articles as LIST1, not LIST2.
+	(spam-registration-functions): Add spam-use-ham-copy as a nil
+	registration backend.
 
 2004-02-26  Jesper Harder  <harder@ifa.au.dk>
 
@@ -8952,11 +8954,11 @@
 	* spam-report.el (spam-report-unplug-agent)
 	(spam-report-plug-agent, spam-report-deagentize)
 	(spam-report-agentize, spam-report-url-ping-temp-agent-function):
-	support for the Agent in spam-report: when unplugged, report to a
-	file; when plugged, submit all the requests
+	Add support for the Agent in spam-report: when unplugged, report to a
+	file; when plugged, submit all the requests.
 
-	* spam.el (spam-register-routine): improved message about
-	registration
+	* spam.el (spam-register-routine): Fix message about
+	registration.
 
 2004-02-09  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9012,7 +9014,7 @@
 	* spam.el (spam-register-routine)
 	(spam-log-processing-to-registry, spam-log-registered-p)
 	(spam-log-unregistration-needed-p, spam-log-undo-registration):
-	change "check" to "spam-check" for semi-clarity
+	Change "check" to "spam-check" for semi-clarity.
 
 2004-02-05  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9063,7 +9065,7 @@
 
 2004-02-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-list-of-processors): fixed spamassassin variable names
+	* spam.el (spam-list-of-processors): Fix spamassassin variable names.
 
 2004-02-03  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9082,8 +9084,8 @@
 
 2004-02-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-list-of-checks): added spam-use-BBDB-eclusive to
-	the list of checks
+	* spam.el (spam-list-of-checks): Add spam-use-BBDB-eclusive to
+	the list of checks.
 
 2004-01-31  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9098,7 +9100,7 @@
 2004-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-spamassassin-register-ham-routine)
-	(spam-spamassassin-register-spam-routine): fixed function names
+	(spam-spamassassin-register-spam-routine): Fix function names.
 
 2004-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -9301,14 +9303,14 @@
 
 2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (gnus-summary-mode-map): make spam-generic-score the
-	default scoring function
-	(spam-generic-score): calls spam-spamassassin-score if
+	* spam.el (gnus-summary-mode-map): Make spam-generic-score the
+	default scoring function.
+	(spam-generic-score): Call spam-spamassassin-score if
 	spam-use-spamassassin or spam-use-spamassassin-headers is on;
 	spam-bogofilter-score otherwise.
 
-	* gnus.el (spam-process, spam-autodetect-methods): add
-	spamassassin and spamassassin-headers
+	* gnus.el (spam-process, spam-autodetect-methods): Add
+	spamassassin and spamassassin-headers.
 
 2004-01-20  Nevin Kapur  <nkapur@cs.caltech.edu>
 
@@ -9412,9 +9414,9 @@
 
 2004-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-get-article-as-string): updated to use
-	gnus-request-article-this-buffer, much simpler
-	(spam-get-article-as-buffer): removed
+	* spam.el (spam-get-article-as-string): Update to use
+	gnus-request-article-this-buffer, much simpler.
+	(spam-get-article-as-buffer): Remove.
 
 2004-01-12  Kai Grossjohann  <kai.grossjohann@mci.com>
 
@@ -9509,13 +9511,13 @@
 
 2004-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-generate-fake-headers): rewrite to be simpler,
-	also under 80 char limit, and call gnus-error if needed
-	(spam-fetch-article-header): finally fixed - it was a
-	buffer-local variable (gnus-newsgroup-data)
-	(spam-find-spam): use spam-generate-fake-headers, forget about
-	spam-insert-fake-headers
-	(spam-insert-fake-headers): removed
+	* spam.el (spam-generate-fake-headers): Rewrite to be simpler,
+	also under 80 char limit, and call gnus-error if needed.
+	(spam-fetch-article-header): Fix - it was a
+	buffer-local variable (gnus-newsgroup-data).
+	(spam-find-spam): Use spam-generate-fake-headers, forget about
+	spam-insert-fake-headers.
+	(spam-insert-fake-headers): Remove.
 
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9531,9 +9533,9 @@
 	* spam.el (spam-fetch-field-fast, spam-fetch-field-from-fast)
 	(spam-fetch-field-subject-fast)
 	(spam-fetch-field-message-id-fast, spam-generate-fake-headers)
-	(spam-fetch-article-header): new functions to deal with Gnus
-	internals for fast retrieval of article header data
-	(spam-initialize): put spam-find-spam in the gnus-summary-prepared-hook
+	(spam-fetch-article-header): Add functions to deal with Gnus
+	internals for fast retrieval of article header data.
+	(spam-initialize): Put spam-find-spam in the gnus-summary-prepared-hook.
 
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9591,17 +9593,17 @@
 	(spam-group-ham-mark-p, spam-group-spam-mark-p)
 	(spam-group-ham-marks, spam-group-spam-marks)
 	(spam-group-spam-contents-p, spam-group-ham-contents-p)
-	(spam-list-of-processors, spam-list-of-statistical-checks): doc
-	fix, also add spam-use-blackholes to the statistical checks
-	(spam-fetch-field-fast): new interface to fetching fields, may
-	become a macro
+	(spam-list-of-processors, spam-list-of-statistical-checks): Fix doc,
+	also add spam-use-blackholes to the statistical checks.
+	(spam-fetch-field-fast): Add interface to fetching fields, may
+	become a macro.
 	(spam-fetch-field-from-fast, spam-fetch-field-subject-fast)
-	(spam-fetch-field-message-id-fast): use spam-fetch-field-fast
-	(spam-insert-fake-headers): fake an article when needed
-	(spam-find-spam): fake article when possible
+	(spam-fetch-field-message-id-fast): Use spam-fetch-field-fast.
+	(spam-insert-fake-headers): Fake an article when needed.
+	(spam-find-spam): Fake article when possible.
 	(spam-check-blackholes, spam-check-BBDB, spam-from-listed-p)
-	(spam-check-bogofilter-headers): use message-fetch-field instead
-	of nnmail-fetch-field
+	(spam-check-bogofilter-headers): Use message-fetch-field instead
+	of nnmail-fetch-field.
 
 2004-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -9609,30 +9611,30 @@
 
 2004-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-split): do not require spam-use-CHECK to be
+	* spam.el (spam-split): Do not require spam-use-CHECK to be
 	enabled if that check is passed to spam-split explicitly; also
 	fix so 'spam doesn't get converted to spam-split-group when
-	spam-split-symbolic-return is t
-	(spam-find-spam): find registrations of the article and use those
+	spam-split-symbolic-return is t.
+	(spam-find-spam): Find registrations of the article and use those
 	instead of re-running spam-split to find the spam/ham
-	classification of the article
+	classification of the article.
 	(spam-log-processing-to-registry, spam-log-registered-p)
 	(spam-log-unregistration-needed-p, spam-log-undo-registration):
-	use gnus-error instead of gnus-message
-	(spam-log-registration-type): new function to determine the
+	Use gnus-error instead of gnus-message.
+	(spam-log-registration-type): Add function to determine the
 	classification of a message based on registry entries; will
-	return nil if both 'spam and 'ham are found
-	(spam-check-BBDB): expand all the BBDB macros here so we can have
-	a reasonably fast local cache without the loading errors
-	(spam-cache-lookups): set to t by default
-	(spam-find-spam): don't try to guess spam-cache-lookups
-	(spam-enter-whitelist, spam-enter-blacklist): also clear the
-	spam-caches entry
-	(spam-filelist-build-cache, spam-filelist-check-cache): better
-	caching of whitelist/blacklist entries
-	(spam-check-whitelist, spam-check-blacklist): invoke
-	spam-from-listed-p with a type, not a cache variable
-	(spam-from-listed-p): wrap around spam-filelist-check-cache
+	return nil if both 'spam and 'ham are found.
+	(spam-check-BBDB): Expand all the BBDB macros here so we can have
+	a reasonably fast local cache without the loading errors.
+	(spam-cache-lookups): Set to t by default.
+	(spam-find-spam): Don't try to guess spam-cache-lookups.
+	(spam-enter-whitelist, spam-enter-blacklist): Clear the
+	spam-caches entry.
+	(spam-filelist-build-cache, spam-filelist-check-cache): Fix
+	caching of whitelist/blacklist entries.
+	(spam-check-whitelist, spam-check-blacklist): Invoke
+	spam-from-listed-p with a type, not a cache variable.
+	(spam-from-listed-p): Wrap around spam-filelist-check-cache.
 
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
@@ -9700,14 +9702,13 @@
 2004-01-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-cache-lookups, spam-caches, spam-clear-cache):
-	first attempt at some caching support (done for BBDB only now)
-	(spam-find-spam): set spam-cache-lookups if there are more than 2
-	addresses to be checked
-	(spam-clear-cache-BBDB): new function, to be invoked by
-	bbdb-change-hook, and triggering spam-clear-cache of 'spam-use-BBDB
-	(spam-check-BBDB): check and use the caches, if
-	spam-cache-lookups is on
-	remove superfluous (provide)
+	Make attempt at some caching support (done for BBDB only now).
+	(spam-find-spam): Set spam-cache-lookups if there are more than 2
+	addresses to be checked.
+	(spam-clear-cache-BBDB): Add function, to be invoked by
+	bbdb-change-hook, and triggering spam-clear-cache of 'spam-use-BBDB.
+	(spam-check-BBDB): Check and use the caches, if
+	spam-cache-lookups is on, remove superfluous (provide).
 
 2004-01-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -9823,20 +9824,20 @@
 
 2004-01-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* netrc.el: autoload password-read
-	(netrc): new configuration group
-	(netrc-encoding-method, netrc-openssl-path): configuration
+	* netrc.el: Autoload password-read.
+	(netrc): Add configuration group.
+	(netrc-encoding-method, netrc-openssl-path): Add
 	variables for encoding and decoding of files with symmetric
-	ciphers
-	(netrc-encode): assistant function to encode a file with
-	netrc-encoding-method
-	(netrc-parse): added interactive parameter, added optional
+	ciphers.
+	(netrc-encode): Add assistant function to encode a file with
+	netrc-encoding-method.
+	(netrc-parse): Add interactive parameter, added optional
 	decoding if netrc-encoding-method is non-nil but otherwise
-	behavior is standard
+	behavior is standard.
 	(netrc-encrypting-method, netrc-encrypt, netrc-parse):
-	s/encode/encrypt/ everywhere
+	Do s/encode/encrypt/ everywhere.
 
-	* spam.el: remove executable-find autoload
+	* spam.el: Remove executable-find autoload.
 
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
