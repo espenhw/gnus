@@ -565,7 +565,7 @@
 2006-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-util.el (gnus-string-remove-all-properties): Add utility
-	function toremove string properties.
+	function to remove string properties.
 
 2006-09-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -3813,8 +3813,8 @@
 
 	* spam-report.el (spam-report-gmane-unspam)
 	(spam-report-gmane-spam): Add new wrappers around spam-report-gmane.
-	(spam-report-gmane): Chang to take a single article and do
-	unspam registration.
+	(spam-report-gmane): Change to take a single article and do unspam
+	registration.
 
 2005-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -5123,30 +5123,38 @@
 	(gnus-summary-remove-process-mark): Accept a list of articles as
 	well as a single article for processing.
 
-	* gnus-int.el (gnus-request-move-article): Add move-is-internal parameter.
+	* gnus-int.el (gnus-request-move-article): Add move-is-internal
+	parameter.
 
 	* nnml.el (nnml-request-move-article): Add move-is-internal parameter.
 
 	* nnmh.el (nnmh-request-move-article): Add move-is-internal parameter.
 
-	* nnmbox.el (nnmbox-request-move-article): Add move-is-internal parameter.
+	* nnmbox.el (nnmbox-request-move-article): Add move-is-internal
+	parameter.
 
-	* nnmaildir.el (nnmaildir-request-move-article): Add move-is-internal parameter.
+	* nnmaildir.el (nnmaildir-request-move-article): Add move-is-internal
+	parameter.
 
 	* nnimap.el (nnimap-request-move-article): Add move-is-internal
 	parameter and remove the gnus-sum-hint-move-is-internal variable.
 
-	* nnfolder.el (nnfolder-request-move-article): Add move-is-internal parameter.
+	* nnfolder.el (nnfolder-request-move-article): Add move-is-internal
+	parameter.
 
-	* nndraft.el (nndraft-request-move-article): Add move-is-internal parameter.
+	* nndraft.el (nndraft-request-move-article): Add move-is-internal
+	parameter.
 
-	* nndiary.el (nndiary-request-move-article): Add move-is-internal parameter.
+	* nndiary.el (nndiary-request-move-article): Add move-is-internal
+	parameter.
 
 	* nndb.el (nndb-request-move-article): Add move-is-internal parameter.
 
-	* nnbabyl.el (nnbabyl-request-move-article): Add move-is-internal parameter.
+	* nnbabyl.el (nnbabyl-request-move-article): Add move-is-internal
+	parameter.
 
-	* nnagent.el (nnagent-request-move-article): Add move-is-internal parameter.
+	* nnagent.el (nnagent-request-move-article): Add move-is-internal
+	parameter.
 
 2005-03-01  Stefan Monnier  <monnier@iro.umontreal.ca>
 
@@ -6121,7 +6129,8 @@
 	for people who want to override the default SpamAssassin over
 	Bogofilter preference (when both are set).
 	(spam-necessary-extra-headers): Add spam-use-bogofilter as an option.
-	(spam-user-format-function-S): Check spam-summary-score-preferred-header.
+	(spam-user-format-function-S): Check
+	spam-summary-score-preferred-header.
 	(spam-extra-header-to-number): Add X-Bogosity header parsing.
 	(spam-user-format-function-S): Format the score correctly.
 
@@ -7152,11 +7161,11 @@
 
 2004-08-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Rry
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Try
 	to append in-reply-to: data to the references: header.
 
 	* netrc.el: Remove old encryption support, autoload gnus-encrypt.el
-	(netrc-parse): use gnus-encrypt.el functions.
+	(netrc-parse): Use gnus-encrypt.el functions.
 
 	* gnus-encrypt.el: Add new file for encryption support; currently
 	does only a few GPG ciphers and an internal XOR cipher.
@@ -7418,15 +7427,15 @@
 	(spam-log-unregistration-needed-p): Rename "check" to "backend"
 	where possible.
 	(spam-check-gmane-xref, spam-check-regex-headers)
-	(spam-check-blackholes, spam-check-stat, spam-check-ifile, spam-check-BBDB)
-	(spam-check-whitelist, spam-check-blacklist)
+	(spam-check-blackholes, spam-check-stat, spam-check-ifile)
+	(spam-check-BBDB, spam-check-whitelist, spam-check-blacklist)
 	(spam-check-bogofilter-headers, spam-check-spamoracle)
 	(spam-check-spamassassin-headers, spam-check-bsfilter-headers)
 	(spam-check-crm114-headers): Use the spam-split-group that
 	spam-split prepares, no need to determine it every time.
 
-	* nnimap.el (nnimap-retrieve-headers-progress): Add the message number to
-	the nnheader-parse-naked-head call.
+	* nnimap.el (nnimap-retrieve-headers-progress): Add the message number
+	to the nnheader-parse-naked-head call.
 
 	* nnheader.el (nnheader-generate-fake-message-id): Fix indentation.
 
@@ -8250,7 +8259,8 @@
 	general use.
 	(spam-article-sort-by-spam-status): Add sorting function for summary
 	sorting.
-	(spam-extra-header-to-number): Add function to get a score from a header.
+	(spam-extra-header-to-number): Add function to get a score from a
+	header.
 	(spam-summary-score): Add function to  get a numeric score from the
 	headers.
 	(spam-generic-score): Fixed function doc, was in wrong place.
