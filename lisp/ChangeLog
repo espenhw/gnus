@@ -1,3 +1,7 @@
+2007-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam-report.el (spam-report-gmane-spam): Remove redundant message.
+
 2007-01-01  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-gmane-create-mapping): Put back code to merge the

@@ -129,7 +129,6 @@ Reports is as ham when HAM is set."
   "Report ARTICLES as spam through Gmane."
   (interactive (gnus-summary-work-articles current-prefix-arg))
   (dolist (article articles)
-    (message "Reporting %s" article)
     (spam-report-gmane-internal nil article)))
 
 ;; `spam-report-gmane' was an interactive entry point, so we should provide an
