@@ -1229,9 +1229,9 @@ If no one is selected, symmetric encryption will be performed.  "
 					     recipient)))
 			  (error "No public key for %s" recipient))
 			recipient-keys)
-		      recipients))))
-      (unless recipients
-	(error "No recipient specified"))
+		      recipients)))
+	(unless recipients
+	  (error "No recipient specified")))
       (message-options-set 'mml2015-epg-recipients recipients))
     (when sign
       (setq signers
