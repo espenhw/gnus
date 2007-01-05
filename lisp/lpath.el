@@ -70,9 +70,10 @@
 		 pgg-parse-crc24-string))
   (unless (featurep 'file-coding)
     (maybe-fbind '(coding-system-base
-		   coding-system-list coding-system-p decode-coding-region
-		   decode-coding-string detect-coding-region
-		   encode-coding-region encode-coding-string))))
+		   coding-system-change-eol-conversion coding-system-list
+		   coding-system-p decode-coding-region decode-coding-string
+		   detect-coding-region encode-coding-region
+		   encode-coding-string))))
 
 (defun nnkiboze-score-file (a)
   )

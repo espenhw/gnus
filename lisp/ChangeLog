@@ -9,6 +9,10 @@
 	This should no longer cause problems, because the article numbers in
 	Gmane's `nov.php' output are ignored since the previous change.
 
+2007-01-02  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gmm-utils.el (gmm-tool-bar-style): Fix custom type.
+
 2007-01-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind clear-string and cp-supported-codepages; don't fbind
