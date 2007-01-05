@@ -1126,6 +1126,7 @@ Whether the passphrase is cached at all is controlled by
   (let* ((inhibit-redisplay t)
 	(context (epg-make-context))
 	(boundary (mml-compute-boundary cont))
+	signer-keys
 	(signers
 	 (or (message-options-get 'mml2015-epg-signers)
 	     (message-options-set
@@ -1136,9 +1137,19 @@ Select keys for signing.
 If no one is selected, default secret key is used.  "
 				   mml2015-signers t)
 		(if mml2015-signers
-		    (mapcar (lambda (name)
-			      (car (epg-list-keys context name t)))
-			    mml2015-signers))))))
+		    (apply #'nconc
+			   (mapcar
+			    (lambda (signer)
+			      (setq signer-keys
+				    (epg-list-keys context signer t))
+			      (unless (or signer-keys
+					  (y-or-n-p
+					   (format
+					    "No secret key for %s; skip it? "
+					    signer)))
+				(error "No secret key for %s" signer))
+			      signer-keys)
+			    mml2015-signers)))))))
 	signature micalg)
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)
@@ -1183,19 +1194,24 @@ If no one is selected, default secret key is used.  "
 	(config (epg-configuration))
 	(recipients (message-options-get 'mml2015-epg-recipients))
 	cipher signers
-	(boundary (mml-compute-boundary cont)))
+	(boundary (mml-compute-boundary cont))
+	recipient-keys signer-keys)
     (unless recipients
       (setq recipients
 	    (apply #'nconc
 		   (mapcar
 		    (lambda (recipient)
 		      (or (epg-expand-group config recipient)
-			  (list recipient)))
+			  (list (concat "<" recipient ">"))))
 		    (split-string
 		     (or (message-options-get 'message-recipients)
 			 (message-options-set 'message-recipients
 					      (read-string "Recipients: ")))
 		     "[ \f\t\n\r\v,]+"))))
+      (when mml2015-encrypt-to-self
+	(unless mml2015-signers
+	  (error "mml2015-signers not set"))
+	(setq recipients (nconc recipients mml2015-signers)))
       (if mml2015-verbose
 	  (setq recipients
 		(epa-select-keys context "\
@@ -1203,17 +1219,19 @@ Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "
 				 recipients))
 	(setq recipients
-	      (delq nil (mapcar (lambda (name)
-				  (car (epg-list-keys context name)))
-				recipients))))
-      (if mml2015-encrypt-to-self
-	  (if mml2015-signers
-	      (setq recipients
-		    (nconc recipients
-			   (mapcar (lambda (name)
-				     (car (epg-list-keys context name)))
-				   mml2015-signers)))
-	    (error "mml2015-signers not set")))
+	      (apply #'nconc
+		     (mapcar
+		      (lambda (recipient)
+			(setq recipient-keys (epg-list-keys context recipient))
+			(unless (or recipient-keys
+				    (y-or-n-p
+				     (format "No public key for %s; skip it? "
+					     recipient)))
+			  (error "No public key for %s" recipient))
+			recipient-keys)
+		      recipients))))
+      (unless recipients
+	(error "No recipient specified"))
       (message-options-set 'mml2015-epg-recipients recipients))
     (when sign
       (setq signers
@@ -1226,9 +1244,19 @@ Select keys for signing.
 If no one is selected, default secret key is used.  "
 				      mml2015-signers t)
 		   (if mml2015-signers
-		       (mapcar (lambda (name)
-				 (car (epg-list-keys context name t)))
-			       mml2015-signers))))))
+		       (apply #'nconc
+			      (mapcar
+			       (lambda (signer)
+				 (setq signer-keys
+				       (epg-list-keys context signer t))
+				 (unless (or signer-keys
+					     (y-or-n-p
+					      (format
+					       "No secret key for %s; skip it? "
+					       signer)))
+				   (error "No secret key for %s" signer))
+				 signer-keys)
+			       mml2015-signers)))))))
       (epg-context-set-signers context signers))
     (epg-context-set-armor context t)
     (epg-context-set-textmode context t)

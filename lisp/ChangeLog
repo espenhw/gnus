@@ -1,3 +1,10 @@
+2007-01-05  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-sign): Ask user whether to skip or abort if
+	no signing key is found.
+	(mml2015-epg-encrypt): Ask user whether to skip or abort if
+	no encrypting and/or signing key is found.
+
 2007-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam-report.el (spam-report-gmane-spam): Remove redundant message.
