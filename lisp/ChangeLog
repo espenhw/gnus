@@ -1,3 +1,8 @@
+2007-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-soup.el (gnus-soup): New custom group.  Make user variables
+	customizable.
+
 2007-01-05  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-sign): Ask user whether to skip or abort if
