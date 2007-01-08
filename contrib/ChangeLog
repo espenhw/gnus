@@ -1,3 +1,7 @@
+2007-01-06  Simon Josefsson  <simon@josefsson.org>
+
+	* README: Mention that smtpmail.el doesn't work on XEmacs.
+
 2006-11-24  Eli Zaretskii  <eliz@gnu.org>
 
 	* smtpmail.el (smtpmail-send-it):

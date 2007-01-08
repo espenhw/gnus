@@ -46,7 +46,8 @@ smtpmail.el
 	Copies of the corresponding files from the Emacs lisp/mail/
 	directory, to provide features (occasionally) needed by Gnus which
 	may not be provided by the versions of these files in older Emacs
-	distributions.
+	distributions.  XEmacs users should NOT use this, since it doesn't
+	work.  See the XEmacs mail-lib module instead.
 
 ssl.el
 
