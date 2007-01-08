@@ -142,13 +142,30 @@ Reports is as ham when HAM is set."
 		 (string-match spam-report-gmane-regex gnus-newsgroup-name)))
     (let ((rpt-host (if unspam "unspam.gmane.org" "spam.gmane.org")))
       (gnus-message 6 "Reporting article %d to %s..." article rpt-host)
-      (if spam-report-gmane-use-article-number
-	  (spam-report-url-ping
-	   rpt-host
-	   (format "/%s:%d"
-		   (gnus-group-real-name gnus-newsgroup-name)
-		   article))
+      (cond
+       ;; Special-case nnweb groups -- these have the URL to use in
+       ;; the Xref headers.
+       ((eq (car (gnus-find-method-for-group gnus-newsgroup-name)) 'nnweb)
+	(spam-report-url-ping
+	 rpt-host
+	 (concat
+	  "/"
+	  (gnus-replace-in-string
+	   (gnus-replace-in-string
+	    (gnus-replace-in-string
+	     (mail-header-xref (gnus-summary-article-header article))
+	     "/raw" ":silent")
+	    "^.*article.gmane.org/" "")
+	   "/" ":"))))
+       (spam-report-gmane-use-article-number
+	(spam-report-url-ping
+	 rpt-host
+	 (format "/%s:%d"
+		 (gnus-group-real-name gnus-newsgroup-name)
+		 article)))
+       (t
 	(with-current-buffer nntp-server-buffer
+	  (erase-buffer)
 	  (gnus-request-head article gnus-newsgroup-name)
 	  (let ((case-fold-search t)
 		field host report url)
@@ -165,7 +182,7 @@ Reports is as ham when HAM is set."
 	    (if (not (stringp field))
 		(if (and (setq field (gnus-fetch-field "Xref"))
 			 (string-match "[^ ]+ +\\([^ ]+\\)" field))
-		    (setq report (match-string 1 field)
+		    (setq report (concat "/" (match-string 1 field))
 			  host rpt-host))
 	      (setq host
 		    (progn
@@ -186,7 +203,7 @@ Reports is as ham when HAM is set."
 		 3 "Could not find a spam report header in article %d..."
 		 article)
 	      (gnus-message 7 "Reporting article through URL %s..." url)
-	      (spam-report-url-ping host report))))))))
+	      (spam-report-url-ping host report)))))))))
 
 (defun spam-report-url-ping (host report)
   "Ping a host through HTTP, addressing a specific GET resource using
