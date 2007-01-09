@@ -1,3 +1,8 @@
+2007-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-unfollowed-groups)
+	(gnus-registry-split-fancy-with-parent): Fix documentation.
+
 2007-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* spam-report.el (spam-report-gmane-internal): Speed up spam reporting

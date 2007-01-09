@@ -77,8 +77,11 @@
   "*The article registry by Message ID.")
 
 (defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")
-  "List of groups that gnus-registry-split-fancy-with-parent won't follow.
-The group names are matched, they don't have to be fully qualified."
+  "List of groups that gnus-registry-split-fancy-with-parent won't return.
+The group names are matched, they don't have to be fully
+qualified.  This parameter tells the Registry 'never split a
+message into a group that matches one of these, regardless of
+references.'"
   :group 'gnus-registry
   :type '(repeat string))
 
@@ -376,8 +379,11 @@ This function tracks ALL backends, unlike
 messages.
 
 For a message to be split, it looks for the parent message in the
-References or In-Reply-To header and then looks in the registry to
-see which group that message was put in.  This group is returned.
+References or In-Reply-To header and then looks in the registry
+to see which group that message was put in.  This group is
+returned, unless it matches one of the entries in
+gnus-registry-unfollowed-groups or
+nnmail-split-fancy-with-parent-ignore-groups.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (let* ((refstr (or (message-fetch-field "references") "")) ; guarantee string
