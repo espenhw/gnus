@@ -1,6 +1,11 @@
+2007-01-13  Romain Francoise  <romain@orebokech.com>
+
+	* nnml.el (nnml-use-compressed-files): Fix typo in docstring.
+	Update copyright.
+
 2007-01-13  Patric Mueller  <bhaak@bigfoot.com>  (tiny change)
 
-	* gnus-sum.el (gnus-summary-reparent-children): Fix type in doc string.
+	* gnus-sum.el (gnus-summary-reparent-children): Fix typo in docstring.
 
 2007-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 

@@ -1,7 +1,7 @@
 ;;; nnml.el --- mail spool access for Gnus
 
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-;;   2004, 2005, 2006 Free Software Foundation, Inc.
+;;   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 ;; Authors: Didier Verna <didier@xemacs.org> (adding compaction)
 ;;	Simon Josefsson <simon@josefsson.org> (adding MARKS)
@@ -88,7 +88,7 @@ marks file will be regenerated properly by Gnus.")
   "If non-nil, allow using compressed message files.
 
 If it is a string, use it as the file extension which specifies
-the comression program.  You can set it to \".bz2\" if your Emacs
+the compression program.  You can set it to \".bz2\" if your Emacs
 supports auto-compression using the bzip2 program.  A value of t
 is equivalent to \".gz\".")
 
