@@ -1,3 +1,7 @@
+2007-01-13  Patric Mueller  <bhaak@bigfoot.com>  (tiny change)
+
+	* gnus-sum.el (gnus-summary-reparent-children): Fix type in doc string.
+
 2007-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-unfollowed-groups)
