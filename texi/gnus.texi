@@ -10,7 +10,7 @@
 
 @copying
 Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000, 2001,
-2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -15467,7 +15467,7 @@ If non-@code{nil}, @code{nnml} will allow using compressed message
 files.  This requires @code{auto-compression-mode} to be enabled
 (@pxref{Compressed Files, ,Compressed Files, emacs, The Emacs Manual}).
 If the value of @code{nnml-use-compressed-files} is a string, it is used
-as the file extension specifying the comression program.  You can set it
+as the file extension specifying the compression program.  You can set it
 to @samp{.bz2} if your Emacs supports it.  A value of @code{t} is
 equivalent to @samp{.gz}.
 
