@@ -422,6 +422,12 @@ If nil, the user will be asked for a duration."
   :group 'gnus-score-various
   :type 'boolean)
 
+(defcustom gnus-score-fast-scoring nil
+  "If non-nil, no scoring on headers or body is done."
+  :group 'gnus-score-various
+  :version "23.0" ;; No Gnus
+  :type 'boolean)
+
 
 
 ;; Internal variables.
@@ -1541,8 +1547,11 @@ If FORMAT, also format the current score file."
 					(length (gnus-score-get header score)))
 				      scores)))
 		;; Call the scoring function for this type of "header".
-		(when (setq new (funcall (nth 2 entry) scores header
-					 now expire trace))
+		(when (if (and gnus-score-fast-scoring
+			       (> 0 (nth 1 (assoc header gnus-header-index))))
+			  nil
+			(setq new (funcall (nth 2 entry) scores header
+					   now expire trace)))
 		  (push new news))))
 	    (when (gnus-buffer-live-p gnus-summary-buffer)
 	      (let ((scored gnus-newsgroup-scored))
