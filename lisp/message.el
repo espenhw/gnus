@@ -3600,14 +3600,21 @@ This function uses `mail-citation-hook' if that is non-nil."
 	(unless (bolp)
 	  (insert "\n"))
 	(funcall message-citation-line-function))
-      (when (and x-no-archive
-		 (not message-cite-articles-with-x-no-archive)
-		 (string-match "yes" x-no-archive))
-	(undo-boundary)
-	(delete-region (point) (mark t))
-	(insert "> [Quoted text removed due to X-No-Archive]\n")
-	(push-mark)
-	(forward-line -1)))))
+      (if (and x-no-archive
+	       (not message-cite-articles-with-x-no-archive)
+	       (string-match "yes" x-no-archive))
+	  (progn
+	    (undo-boundary)
+	    (delete-region (point) (mark t))
+	    (insert "> [Quoted text removed due to X-No-Archive]\n")
+	    (push-mark)
+	    (forward-line -1))
+	;; FIXME: Doesn't handle first attribution line correctly.  Probably
+	;; font-lock looks for "\n\n" to find start of mail message.
+	(when (and (boundp 'gnus-message-highlight-citation)
+		   gnus-message-highlight-citation
+		   (fboundp 'gnus-article-highlight-citation))
+	  (gnus-article-highlight-citation nil t))))))
 
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
@@ -5195,14 +5202,14 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
 	   (concat message-user-path "!" login-name))
 	  (t login-name))))
 
-(defun message-make-from ()
+(defun message-make-from (&optional name address )
   "Make a From header."
   (let* ((style message-from-style)
-	 (login (message-make-address))
-	 (fullname
-	  (or (and (boundp 'user-full-name)
-		   user-full-name)
-	      (user-full-name))))
+	 (login (or address (message-make-address)))
+	 (fullname (or name
+		       (and (boundp 'user-full-name)
+			    user-full-name)
+		       (user-full-name))))
     (when (string= fullname "&")
       (setq fullname (user-login-name)))
     (with-temp-buffer
@@ -6094,7 +6101,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 
 (defun message-get-reply-headers (wide &optional to-address address-headers)
   (let (follow-to mct never-mct to cc author mft recipients extra)
-    ;; Find all relevant headers we need.
+  ;; Find all relevant headers we need.
     (save-restriction
       (message-narrow-to-headers-or-head)
       ;; Gmane renames "To".  Look at "Original-To", too, if it is present in

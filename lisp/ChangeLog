@@ -1,5 +1,8 @@
 2007-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-cite-original-1): Call
+	gnus-article-highlight-citation if requested.
+
 	* gnus-cite.el (gnus-article-highlight-citation): Add SAME-BUFFER arg.
 
 	* gnus-art.el (gnus-article-browse-html-article): Add warning about web
