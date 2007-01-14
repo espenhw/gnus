@@ -370,7 +370,7 @@ in a boring face, then the pages will be skipped."
 
 ;;; Commands:
 
-(defun gnus-article-highlight-citation (&optional force)
+(defun gnus-article-highlight-citation (&optional force keep-buffer)
   "Highlight cited text.
 Each citation in the article will be highlighted with a different face.
 The faces are taken from `gnus-cite-face-list'.
@@ -384,7 +384,8 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
   (interactive (list 'force))
   (save-excursion
-    (set-buffer gnus-article-buffer)
+    (unless keep-buffer
+      (set-buffer gnus-article-buffer))
     (gnus-cite-parse-maybe force)
     (let ((buffer-read-only nil)
 	  (alist gnus-cite-prefix-alist)

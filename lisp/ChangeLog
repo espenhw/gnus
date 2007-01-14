@@ -1,5 +1,7 @@
 2007-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-cite.el (gnus-article-highlight-citation): Add KEEP-BUFFER arg.
+
 	* gnus-art.el (gnus-article-browse-html-article): Add warning about web
 	bugs to doc string.
 	(gnus-button-alist): Add mid\\|message-id.
