@@ -2821,6 +2821,7 @@ Recurse into multiparts."
 		 (add-hook 'gnus-exit-gnus-hook
 			   (lambda  ()
 			     (gnus-article-browse-delete-temp-files t)))
+		 ;; FIXME: Warn if there's an <img> tag?
 		 (browse-url-of-file tmp-file)
 		 (setq showed t)))
 	      ;; If multipart, recurse
@@ -2831,8 +2832,16 @@ Recurse into multiparts."
 			      (gnus-article-browse-html-parts handle))))))))
     showed))
 
+;; FIXME: Documentation in texi/gnus.texi missing.
 (defun gnus-article-browse-html-article ()
-  "View \"text/html\" parts of the current article with a WWW browser."
+  "View \"text/html\" parts of the current article with a WWW browser.
+
+Warning: Spammers use links to images in HTML articles to verify
+whether you have read the message.  As
+`gnus-article-browse-html-article' passes the unmodified HTML
+content to the browser without eliminatin these \"web bugs\" you
+should only use it for mails from trusted senders."
+  ;; Cf. `mm-w3m-safe-url-regexp'
   (interactive)
   (save-window-excursion
     ;; Open raw article and select the buffer
@@ -6460,7 +6469,15 @@ groups."
    "nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)"
    "\\(//[-a-z0-9_.]+:[0-9]*\\)?"
    (if (string-match "[[:digit:]]" "1") ;; Support POSIX?
-       "[-a-z0-9_=!?#$@~%&*+\\/:;.,[:word:]]+[-a-z0-9_=#$@~%&*+\\/[:word:]]"
+       (let ((chars "-a-z0-9_=#$@~%&*+\\/[:word:]")
+	     (punct "!?:;.,"))
+	 (concat
+	  "\\(?:"
+	  ;; Match paired parentheses, e.g. in WikiPedia URLs:
+	  "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)" "[" chars "]"
+	  "\\|"
+	  "[" chars punct     "]+" "[" chars "]"
+	  "\\)"))
      (concat ;; XEmacs 21.4 doesn't support POSIX.
       "\\([-a-z0-9_=!?#$@~%&*+\\/:;.,]\\|\\w\\)+"
       "\\([-a-z0-9_=#$@~%&*+\\/]\\|\\w\\)"))
@@ -6866,6 +6883,8 @@ positives are possible."
     ("\\bmid:\\(//\\)?\\([^'\">\n\t ]+@[^'\">\n\t /]+\\)"
      0 (>= gnus-button-message-level 0) gnus-button-message-id 2)
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)"
+     2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
+    ("\\b\\(mid\\|message-id\\):? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)"
      2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 2)
@@ -7404,8 +7423,13 @@ specified by `gnus-button-alist'."
   (with-current-buffer gnus-summary-buffer
     (gnus-summary-refer-article message-id)))
 
-(defun gnus-button-fetch-group (address)
+(defun gnus-button-fetch-group (address &rest ignore)
   "Fetch GROUP specified by ADDRESS."
+  (when (string-match "\\`\\(nntp\\|news\\):\\(//\\)?\\(.*\\)\\'"
+		      address)
+    ;; Allow to use `gnus-button-fetch-group' in `browse-url-browser-function'
+    ;; for nntp:// and news://
+    (setq address (match-string 3 address)))
   (if (not (string-match "[:/]" address))
       ;; This is just a simple group url.
       (gnus-group-read-ephemeral-group address gnus-select-method)

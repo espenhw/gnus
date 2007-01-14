@@ -1,5 +1,13 @@
 2007-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-article-browse-html-article): Add warning about web
+	bugs to doc string.
+	(gnus-button-alist): Add mid\\|message-id.
+	(gnus-button-fetch-group): Extend for use in
+	`browse-url-browser-function'.
+	(gnus-button-url-regexp): Try to catch URL with parentheses as in
+	WikiPedia URL.
+
 	* gnus-sum.el (gnus-summary-reparent-children): Another doc string fix.
 	Suggested by Simon Krahnke <overlord@gmx.li>.
 
