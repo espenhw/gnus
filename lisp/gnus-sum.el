@@ -10992,7 +10992,7 @@ is non-nil or the Subject: of both articles are the same."
 
 (defun gnus-summary-reparent-children (parent children)
   "Make PARENT the parent of CHILDREN.
-When called interactively, PARENT is current article and CHILDREN
+When called interactively, PARENT is the current article and CHILDREN
 are the process-marked articles."
   (interactive
    (list (gnus-summary-article-number)

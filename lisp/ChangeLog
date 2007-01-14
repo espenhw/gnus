@@ -1,3 +1,8 @@
+2007-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-reparent-children): Another doc string fix.
+	Suggested by Simon Krahnke <overlord@gmx.li>.
+
 2007-01-13  Romain Francoise  <romain@orebokech.com>
 
 	* nnml.el (nnml-use-compressed-files): Fix typo in docstring.
@@ -5,7 +10,7 @@
 
 2007-01-13  Patric Mueller  <bhaak@bigfoot.com>  (tiny change)
 
-	* gnus-sum.el (gnus-summary-reparent-children): Fix typo in docstring.
+	* gnus-sum.el (gnus-summary-reparent-children): Fix typo in doc string.
 
 2007-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
