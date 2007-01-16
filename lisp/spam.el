@@ -528,7 +528,7 @@ When nil, use the default location."
   :type 'string
   :group 'spam-bsfilter)
 
-(defcustom spam-bsfilter-ham-switch "--add-ham"
+(defcustom spam-bsfilter-ham-switch "--add-clean"
   "The switch that Bsfilter uses to register ham messages."
   :type 'string
   :group 'spam-bsfilter)
