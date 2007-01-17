@@ -28,6 +28,27 @@
 ;;; grouping declarations and documentation relating to each
 ;;; particular aspect.
 
+;;; Use in Gnus like this:
+;;; (setq
+;;;   nnimap-authinfo-file "~/.authinfo.enc"
+;;;   nntp-authinfo-file "~/.authinfo.enc"
+;;;   smtpmail-auth-credentials "~/.authinfo.enc"
+;;;   ;; using the AES256 cipher, feel free to use your own favorite
+;;;   encrypt-file-alist (quote (("~/.authinfo.enc" (gpg "AES256"))))
+;;;   password-cache-expiry 600)
+
+;;; Then write ~/.authinfo.enc:
+
+;;; 1) open the old authinfo
+;;; C-x C-f ~/.authinfo
+
+;;; 2) write the new authinfo.enc
+;;; M-x encrypt-file-contents ~/.authinfo.enc
+
+;;; 3) verify the new authinfo is correct (this will show the contents in the minibuffer)
+;;; M-: (encrypt-get-file-contents "~/.authinfo.enc")
+
+
 ;;; Code:
 
 ;; autoload password
@@ -108,8 +129,8 @@ Format example:
 			       (symbol-name method) cipher file))
 	 (passphrase
 	  (password-read-and-add
-	   (format "%s password for cipher %s? "
-		   (symbol-name method) cipher)
+	   (format "%s password for cipher %s (file %s)? "
+		   file (symbol-name method) cipher)
 	   password-key))
 	  (buffer-file-coding-system 'binary)
 	 (coding-system-for-read 'binary)
@@ -151,38 +172,40 @@ Format example:
 
 (defun encrypt-write-file-contents (file &optional model)
   "Encrypt the current buffer to FILE, then continue normally."
-  (interactive "fFile to write: ")
-  (let* ((model (or model (encrypt-find-model file)))
-	 (method (nth 0 model))
-	 (cipher (nth 1 model))
-	 (password-key (format "encrypt-password-%s-%s %s"
-			       (symbol-name method) cipher file))
-	 (passphrase
-	  (password-read
-	   (format "%s password for cipher %s? "
-		   (symbol-name method) cipher)
-	   password-key))
-	 outdata)
+  (interactive "sFile to write: ")
+  (setq model (or model (encrypt-find-model file)))
+  (if model
+      (let* ((method (nth 0 model))
+	     (cipher (nth 1 model))
+	     (password-key (format "encrypt-password-%s-%s %s"
+				   (symbol-name method) cipher file))
+	     (passphrase
+	      (password-read
+	       (format "%s password for cipher %s? "
+		       (symbol-name method) cipher)
+	       password-key))
+	     outdata)
 
-    (cond
-     ((eq method 'gpg)
-      (setq outdata (encrypt-gpg-encode-buffer passphrase cipher)))
-     ((eq method 'encrypt-xor)
-      (setq outdata (encrypt-xor-encode-buffer passphrase cipher))))
+	(cond
+	 ((eq method 'gpg)
+	  (setq outdata (encrypt-gpg-encode-buffer passphrase cipher)))
+	 ((eq method 'encrypt-xor)
+	  (setq outdata (encrypt-xor-encode-buffer passphrase cipher))))
 
-    (if outdata
-	(progn
-	  (message "%s was encrypted with %s (cipher %s)"
-		   file (symbol-name method) cipher)
-	  (delete-region (point-min) (point-max))
-	  (goto-char (point-min))
-	  (insert outdata)
-	  ;; do not confirm overwrites
-	  (write-file file nil))
-      ;; the decryption failed, alas
-      (password-cache-remove password-key)
-      (gnus-error 5 "%s was NOT encrypted with %s (cipher %s)"
-		  file (symbol-name method) cipher))))
+	(if outdata
+	    (progn
+	      (message "%s was encrypted with %s (cipher %s)"
+		       file (symbol-name method) cipher)
+	      (delete-region (point-min) (point-max))
+	      (goto-char (point-min))
+	      (insert outdata)
+	      ;; do not confirm overwrites
+	      (write-file file nil))
+	  ;; the decryption failed, alas
+	  (password-cache-remove password-key)
+	  (gnus-error 5 "%s was NOT encrypted with %s (cipher %s)"
+		      file (symbol-name method) cipher)))
+    (gnus-error 1 "%s has no associated encryption model!  See encrypt-file-alist." file)))
 
 (defun encrypt-xor-encode-buffer (passphrase cipher)
   (encrypt-xor-process-buffer passphrase cipher t))

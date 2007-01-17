@@ -1,3 +1,12 @@
+2007-01-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* encrypt.el (encrypt-insert-file-contents): Add better prompt
+	to mention filename.
+	Add comments at beginning regarding usage.
+	(encrypt-write-file-contents): Change interactive so a string is
+	acceptable.  If the file has no associated model, show an error instead
+	of a nonsense prompt.
+
 2007-01-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* spam.el (spam-bsfilter-ham-switch): Fix typo.
