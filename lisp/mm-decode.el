@@ -1210,17 +1210,13 @@ PROMPT overrides the default one used to ask user for a file name."
 (defun mm-save-part-to-file (handle file)
   (mm-with-unibyte-buffer
     (mm-insert-part handle)
-    (let ((coding-system-for-write 'binary)
-	  (current-file-modes (default-file-modes))
+    (let ((current-file-modes (default-file-modes)))
+      (set-default-file-modes mm-attachment-file-modes)
+      (unwind-protect
 	  ;; Don't re-compress .gz & al.  Arguably we should make
 	  ;; `file-name-handler-alist' nil, but that would chop
 	  ;; ange-ftp, which is reasonable to use here.
-	  (inhibit-file-name-operation 'write-region)
-	  (inhibit-file-name-handlers
-	   (cons 'jka-compr-handler inhibit-file-name-handlers)))
-      (set-default-file-modes mm-attachment-file-modes)
-      (unwind-protect
-	  (write-region (point-min) (point-max) file)
+	  (mm-write-region (point-min) (point-max) file nil nil nil 'binary t)
 	(set-default-file-modes current-file-modes)))))
 
 (defun mm-pipe-part (handle)

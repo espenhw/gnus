@@ -1,3 +1,8 @@
+2007-01-22  Daiki Ueno  <ueno@unixuser.org>
+
+	* mm-decode.el (mm-save-part-to-file): Use `mm-write-region' instead of
+	`write-region' to respect `mm-inhibit-file-name-handlers'.
+
 2007-01-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* encrypt.el (encrypt-insert-file-contents): Add better prompt
