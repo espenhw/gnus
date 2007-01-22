@@ -1,5 +1,7 @@
 2007-01-22  Daiki Ueno  <ueno@unixuser.org>
 
+	* mm-util.el (mm-inhibit-file-name-handlers): Add epa-file-handler.
+
 	* mm-decode.el (mm-save-part-to-file): Use `mm-write-region' instead of
 	`write-region' to respect `mm-inhibit-file-name-handlers'.
 
