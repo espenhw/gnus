@@ -38,7 +38,8 @@
 		     mouse-scroll-subr overlay-lists posn-point posn-window
 		     read-event set-buffer-multibyte
 		     select-frame-set-input-focus select-safe-coding-system
-		     timer-set-function track-mouse window-edges))
+		     string-as-multibyte timer-set-function track-mouse
+		     window-edges))
       (maybe-bind '(adaptive-fill-first-line-regexp
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment cursor-in-non-selected-windows
