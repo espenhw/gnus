@@ -1,3 +1,10 @@
+2007-01-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-home-score-file, gnus-home-adapt-file): Fix
+	custom choice.
+
+	* gnus-art.el (gnus-signature-limit): Fix custom choice.
+
 2007-01-22  Daiki Ueno  <ueno@unixuser.org>
 
 	* mm-util.el (mm-inhibit-file-name-handlers): Add epa-file-handler.
@@ -18,6 +25,16 @@
 
 	* spam.el (spam-bsfilter-ham-switch): Fix typo.
 	Thanks to Yoshihiko Yamada for kind notification of this typo.
+
+2007-01-12  Kenichi Handa  <handa@m17n.org>
+
+	* uudecode.el (uudecode-decode-region-internal): Make it work in a
+	multibyte buffer.
+
+2007-01-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnsoup.el (nnsoup-directory, nnsoup-packer, nnsoup-packet-directory):
+	Use gnus-home-directory instead of "~/" or "$HOME".
 
 2007-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
 

@@ -252,7 +252,7 @@ This can also be a list of the above values."
   :type '(choice (const nil)
 		 (integer :value 200)
 		 (number :value 4.0)
-		 (function :value fun)
+		 function
 		 (regexp :value ".*"))
   :group 'gnus-article-signature)
 
