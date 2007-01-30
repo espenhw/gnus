@@ -1,3 +1,8 @@
+2007-01-28  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* gnus.texi (Batching Agents): Fix example.  Reported by Tassilo Horn
+	<tassilo@member.fsf.org>.
+
 2007-01-13  Romain Francoise  <romain@orebokech.com>
 
 	* gnus.texi (Mail Spool): Fix typo.
