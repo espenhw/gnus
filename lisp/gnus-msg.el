@@ -290,8 +290,7 @@ If nil, the address field will always be empty after invoking
   :type 'boolean)
 
 (defcustom gnus-message-highlight-citation
-  (and t ;; gnus-treat-highlight-citation ;; gnus-cite dependency
-       (fboundp 'font-lock-add-keywords))
+  t ;; gnus-treat-highlight-citation ;; gnus-cite dependency
   "Enable highlighting of different citation levels in message-mode."
   :version "23.0" ;; No Gnus
   :group 'gnus-cite

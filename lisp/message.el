@@ -583,7 +583,13 @@ Done before generating the new subject of a forward."
   :version "22.1"
   :group 'message-insertion
   :link '(custom-manual "(message)Insertion Variables")
-  :type 'regexp)
+  :type 'regexp
+  :set (lambda (symbol value)
+	 (prog1
+	     (custom-set-default symbol value)
+	   (if (boundp 'gnus-message-cite-prefix-regexp)
+	       (setq gnus-message-cite-prefix-regexp
+		     (concat "^\\(?:" value "\\)"))))))
 
 (defcustom message-cancel-message "I am canceling my own article.\n"
   "Message to be inserted in the cancel message."

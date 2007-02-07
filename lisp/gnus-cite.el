@@ -304,7 +304,12 @@ When there are citations from multiple articles in the same message,
 Gnus will try to give each citation from each article its own face.
 This should make it easier to see who wrote what."
   :group 'gnus-cite
-  :type '(repeat face))
+  :type '(repeat face)
+  :set (lambda (symbol value)
+	 (prog1
+	     (custom-set-default symbol value)
+	   (if (boundp 'gnus-message-max-citation-depth)
+	       (setq gnus-message-max-citation-depth (length value))))))
 
 (defcustom gnus-cite-hide-percentage 50
   "Only hide excess citation if above this percentage of the body."
@@ -1106,37 +1111,31 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 
 ;; Highlighting of different citation levels in message-mode.
-;;
-;; Known bugs:
-;;
-;; - XEmacs compatibility: `font-lock-add-keywords' is missing in XEmacs.
-;;
-;; - message-cite-prefix should not be fontified.
+;; - message-cite-prefix will be overridden if this is enabled.
 
-(defconst gnus-message-max-citation-depth
+(defvar gnus-message-max-citation-depth
   (length gnus-cite-face-list)
   "Maximum supported level of citation.")
+
+(defvar gnus-message-cite-prefix-regexp
+  (concat "^\\(?:" message-cite-prefix-regexp "\\)"))
 
 (defun gnus-message-search-citation-line (limit)
   "Search for a cited line and set match data accordingly.
 Returns nil if there is no such line before LIMIT, t otherwise."
-  (when (re-search-forward (eval-when-compile
-			     (concat "^\\(?:"
-				     message-cite-prefix-regexp
-				     "\\)"))
-			   limit t)
-    (let ((cdepth
-	   (length (apply 'concat
-			  (split-string
-			   (match-string-no-properties 0)
-			   "[ \t [:alnum:]]+"))))
-	  (mlist (make-list (* (1+ gnus-message-max-citation-depth)
-			       2)
-			    0)))
-      (setcar (nthcdr (* cdepth 2) mlist)
-	      (line-beginning-position))
-      (setcar (nthcdr (1+ (* cdepth 2)) mlist)
-	      (line-end-position))
+  (when (re-search-forward gnus-message-cite-prefix-regexp limit t)
+    (let ((cdepth (min (length (apply 'concat
+				      (split-string
+				       (match-string-no-properties 0)
+				       "[ \t [:alnum:]]+")))
+		       gnus-message-max-citation-depth))
+	  (mlist (make-list (* (1+ gnus-message-max-citation-depth) 2) nil))
+	  (start (line-beginning-position))
+	  (end (line-end-position)))
+      (setcar mlist start)
+      (setcar (cdr mlist) end)
+      (setcar (nthcdr (* cdepth 2) mlist) start)
+      (setcar (nthcdr (1+ (* cdepth 2)) mlist) end)
       (set-match-data mlist))
     t))
 
@@ -1147,21 +1146,51 @@ Returns nil if there is no such line before LIMIT, t otherwise."
 	     (count 1))
 	 ;; (require 'gnus-cite)
 	 (dolist (face gnus-cite-face-list (nreverse list))
-	   (push (list count (list 'quote face) 'prepend) list)
+	   (push (list count (list 'quote face) 'prepend t) list)
 	   (setq count (1+ count)))))) ;;
   "Keywords for highlighting different levels of message citations.")
+
+(eval-when-compile
+  (autoload 'font-lock-compile-keywords "font-lock")
+  (defvar font-lock-keywords)
+  (unless (fboundp 'font-lock-add-keywords)
+    (autoload 'font-lock-add-keywords "font-lock"))
+  (unless (fboundp 'font-lock-remove-keywords)
+    (autoload 'font-lock-remove-keywords "font-lock")))
 
 (defun gnus-message-add-citation-keywords ()
   "Add font-lock for nested citations to current buffer."
   (if (fboundp 'font-lock-add-keywords)
-      (font-lock-add-keywords nil gnus-message-citation-keywords)
-    (gnus-message 1 "`font-lock-add-keywords' not supported.")))
+      (font-lock-add-keywords nil gnus-message-citation-keywords 'append)
+    (font-lock-set-defaults)
+    (let ((was-compiled (eq (car font-lock-keywords) t)))
+      (setq font-lock-keywords (copy-sequence (if was-compiled
+						  (cadr font-lock-keywords)
+						font-lock-keywords)))
+      (dolist (keyword gnus-message-citation-keywords)
+	(setq font-lock-keywords (delete keyword font-lock-keywords)))
+      (let ((old (if (eq (car-safe font-lock-keywords) t)
+		     (cdr font-lock-keywords)
+		   font-lock-keywords)))
+	(setq font-lock-keywords (append old gnus-message-citation-keywords)))
+      (if was-compiled
+	  (setq font-lock-keywords
+		(font-lock-compile-keywords font-lock-keywords))))))
 
 (defun gnus-message-remove-citation-keywords ()
   "Remove font-lock for nested citations from current buffer."
   (if (fboundp 'font-lock-remove-keywords)
       (font-lock-remove-keywords nil gnus-message-citation-keywords)
-    (gnus-message 1 "`font-lock-remove-keywords' not supported.")))
+    (font-lock-set-defaults)
+    (let ((was-compiled (eq (car font-lock-keywords) t)))
+      (if was-compiled
+	  (setq font-lock-keywords (cadr font-lock-keywords)))
+      (setq font-lock-keywords (copy-sequence font-lock-keywords))
+      (dolist (keyword gnus-message-citation-keywords)
+	(setq font-lock-keywords (delete keyword font-lock-keywords)))
+      (if was-compiled
+	  (setq font-lock-keywords
+		(font-lock-compile-keywords font-lock-keywords))))))
 
 (define-minor-mode gnus-message-citation-mode
   "Toggle `gnus-message-citation-mode' in current buffer.
