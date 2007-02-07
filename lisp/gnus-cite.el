@@ -297,7 +297,7 @@ It is merged with the face for the cited text belonging to the attribution."
 
 (defcustom gnus-cite-face-list
   '(gnus-cite-1 gnus-cite-2 gnus-cite-3 gnus-cite-4 gnus-cite-5 gnus-cite-6
-    gnus-cite-7 gnus-cite-8 gnus-cite-9 gnus-cite-10 gnus-cite-11)
+		gnus-cite-7 gnus-cite-8 gnus-cite-9 gnus-cite-10 gnus-cite-11)
   "*List of faces used for highlighting citations.
 
 When there are citations from multiple articles in the same message,
@@ -315,7 +315,7 @@ This should make it easier to see who wrote what."
 		     `((gnus-message-search-citation-line
 			,@(let ((list nil)
 				(count 1))
-			    (dolist (face gnus-cite-face-list (nreverse list))
+			    (dolist (face value (nreverse list))
 			      (push (list count (list 'quote face) 'prepend t)
 				    list)
 			      (setq count (1+ count)))))))))))
