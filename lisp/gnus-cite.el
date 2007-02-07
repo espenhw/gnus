@@ -309,7 +309,16 @@ This should make it easier to see who wrote what."
 	 (prog1
 	     (custom-set-default symbol value)
 	   (if (boundp 'gnus-message-max-citation-depth)
-	       (setq gnus-message-max-citation-depth (length value))))))
+	       (setq gnus-message-max-citation-depth (length value)))
+	   (if (boundp 'gnus-message-citation-keywords)
+	       (setq gnus-message-citation-keywords
+		     `((gnus-message-search-citation-line
+			,@(let ((list nil)
+				(count 1))
+			    (dolist (face gnus-cite-face-list (nreverse list))
+			      (push (list count (list 'quote face) 'prepend t)
+				    list)
+			      (setq count (1+ count)))))))))))
 
 (defcustom gnus-cite-hide-percentage 50
   "Only hide excess citation if above this percentage of the body."

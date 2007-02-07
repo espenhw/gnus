@@ -1,7 +1,7 @@
 2007-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-cite.el (gnus-cite-face-list): Set the value of
-	gnus-message-max-citation-depth.
+	* gnus-cite.el (gnus-cite-face-list): Set the values of
+	gnus-message-max-citation-depth and gnus-message-citation-keywords.
 	(gnus-message-max-citation-depth): Use defvar rather than defconst.
 	(gnus-message-cite-prefix-regexp): New variable.
 	(gnus-message-search-citation-line): Use it; protect against long
