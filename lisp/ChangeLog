@@ -1,3 +1,11 @@
+2007-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-cite.el (gnus-test-font-lock-add-keywords): New function.
+	(gnus-message-add-citation-keywords)
+	(gnus-message-remove-citation-keywords): Use it; fix the emulating
+	versions of font-lock-add-keywords and font-lock-remove-keywords to
+	work with XEmacs correctly.
+
 2007-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (gnus-cite-face-list): Set the values of
