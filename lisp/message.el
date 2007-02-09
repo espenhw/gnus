@@ -3606,21 +3606,14 @@ This function uses `mail-citation-hook' if that is non-nil."
 	(unless (bolp)
 	  (insert "\n"))
 	(funcall message-citation-line-function))
-      (if (and x-no-archive
-	       (not message-cite-articles-with-x-no-archive)
-	       (string-match "yes" x-no-archive))
-	  (progn
-	    (undo-boundary)
-	    (delete-region (point) (mark t))
-	    (insert "> [Quoted text removed due to X-No-Archive]\n")
-	    (push-mark)
-	    (forward-line -1))
-	;; FIXME: Doesn't handle first attribution line correctly.  Probably
-	;; font-lock looks for "\n\n" to find start of mail message.
-	(when (and (boundp 'gnus-message-highlight-citation)
-		   gnus-message-highlight-citation
-		   (fboundp 'gnus-article-highlight-citation))
-	  (gnus-article-highlight-citation nil t))))))
+      (when (and x-no-archive
+		 (not message-cite-articles-with-x-no-archive)
+		 (string-match "yes" x-no-archive))
+	(undo-boundary)
+	(delete-region (point) (mark t))
+	(insert "> [Quoted text removed due to X-No-Archive]\n")
+	(push-mark)
+	(forward-line -1)))))
 
 (defun message-cite-original ()
   "Cite function in the standard Message manner."

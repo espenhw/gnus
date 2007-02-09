@@ -1,3 +1,11 @@
+2007-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-cite-original-1): Don't call
+	gnus-article-highlight-citation.
+
+	* gnus-cite.el (gnus-cite-parse): Work with two or more MS-type
+	citations; fix line count.
+
 2007-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (gnus-test-font-lock-add-keywords): New function.

@@ -821,13 +821,24 @@ See also the documentation for `gnus-article-highlight-citation'."
       (setq line (1+ line)))
     ;; Horrible special case for some Microsoft mailers.
     (goto-char (point-min))
-    (when (re-search-forward gnus-cite-unsightly-citation-regexp max t)
-      (setq begin (count-lines (point-min) (point)))
-      (setq end (count-lines (point-min) max))
-      (setq entry nil)
-      (while (< begin end)
-	(push begin entry)
-	(setq begin (1+ begin)))
+    (setq start t begin nil entry nil)
+    (while start
+      ;; Assume this search ends up at the beginning of a line.
+      (if (re-search-forward gnus-cite-unsightly-citation-regexp max t)
+	  (progn
+	    (when (number-or-marker-p start)
+	      (setq begin (count-lines (point-min) start)
+		    end (count-lines (point-min) (match-beginning 0))))
+	    (setq start (match-end 0)))
+	(when (number-or-marker-p start)
+	  (setq begin (count-lines (point-min) start)
+		end (count-lines (point-min) max)))
+	(setq start nil))
+      (when begin
+	(while (< begin end)
+	  ;; Need to do 1+ because we're in the bol.
+	  (push (setq begin (1+ begin)) entry))))
+    (when entry
       (push (cons "" entry) alist))
     ;; We got all the potential prefixes.  Now create
     ;; `gnus-cite-prefix-alist' containing the oldest prefix for each
