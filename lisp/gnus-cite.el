@@ -1171,68 +1171,9 @@ Returns nil if there is no such line before LIMIT, t otherwise."
   "Keywords for highlighting different levels of message citations.")
 
 (eval-when-compile
-  (autoload 'font-lock-add-keywords "font-lock")
-  (autoload 'font-lock-compile-keyword "font-lock")
-  (autoload 'font-lock-compile-keywords "font-lock")
-  (autoload 'font-lock-remove-keywords "font-lock")
-  (defvar font-lock-keywords))
-
-(defun gnus-test-font-lock-add-keywords ()
-  "Return non-nil if `font-lock-add-keywords' seems to work.
-Emacs uses the `(t KEYWORDS COMPILED...)' form for compiled keywords
-while Emacs uses the `(t COMPILED...)' form.  In some version(s) of
-XEmacs, `font-lock-add-keywords' and `font-lock-remove-keywords' assume
-the form of the Emacs style for compiled keywords mistakenly."
-  (if (featurep 'xemacs)
-      (progn
-	(require 'font-lock)
-	(if (fboundp 'font-lock-add-keywords)
-	    (let ((default-major-mode 'fundamental-mode))
-	      (with-temp-buffer
-		(let ((font-lock-keywords '(t (x) (y)))
-		      font-lock-auto-fontify font-lock-mode-enable-list)
-		  (ignore-errors
-		    (font-lock-add-keywords nil '((z)))
-		    (assq 'y (cdr-safe font-lock-keywords))))))))
-    t))
-
-(defun gnus-message-add-citation-keywords ()
-  "Add font-lock for nested citations to current buffer."
-  (if (gnus-test-font-lock-add-keywords)
-      (font-lock-add-keywords nil gnus-message-citation-keywords 'append)
-    (font-lock-set-defaults)
-    (let ((was-compiled (eq (car font-lock-keywords) t)))
-      (setq font-lock-keywords (copy-sequence (if was-compiled
-						  (cdr font-lock-keywords)
-						font-lock-keywords)))
-      (dolist (keyword gnus-message-citation-keywords)
-	(setq font-lock-keywords
-	      (delete (font-lock-compile-keyword keyword)
-		      (delete keyword font-lock-keywords))))
-      (let ((old (if (eq (car-safe font-lock-keywords) t)
-		     (cdr font-lock-keywords)
-		   font-lock-keywords)))
-	(setq font-lock-keywords (append old gnus-message-citation-keywords)))
-      (if was-compiled
-	  (setq font-lock-keywords
-		(font-lock-compile-keywords font-lock-keywords))))))
-
-(defun gnus-message-remove-citation-keywords ()
-  "Remove font-lock for nested citations from current buffer."
-  (if (gnus-test-font-lock-add-keywords)
-      (font-lock-remove-keywords nil gnus-message-citation-keywords)
-    (font-lock-set-defaults)
-    (let ((was-compiled (eq (car font-lock-keywords) t)))
-      (if was-compiled
-	  (setq font-lock-keywords (cdr font-lock-keywords)))
-      (setq font-lock-keywords (copy-sequence font-lock-keywords))
-      (dolist (keyword gnus-message-citation-keywords)
-	(setq font-lock-keywords
-	      (delete (font-lock-compile-keyword keyword)
-		      (delete keyword font-lock-keywords))))
-      (if was-compiled
-	  (setq font-lock-keywords
-		(font-lock-compile-keywords font-lock-keywords))))))
+  (defvar font-lock-defaults-computed)
+  (defvar font-lock-keywords)
+  (defvar font-lock-set-defaults))
 
 (define-minor-mode gnus-message-citation-mode
   "Toggle `gnus-message-citation-mode' in current buffer.
@@ -1243,10 +1184,34 @@ positive."
   nil ;; init-value
   "" ;; lighter
   nil ;; keymap
-  (if gnus-message-citation-mode
-      (gnus-message-add-citation-keywords)
-    (gnus-message-remove-citation-keywords))
-  (font-lock-fontify-buffer))
+  (when (eq major-mode 'message-mode)
+    (let ((defaults (car (if (featurep 'xemacs)
+			     (get 'message-mode 'font-lock-defaults)
+			   font-lock-defaults)))
+	  default keywords)
+      (while defaults
+	(setq default (if (consp defaults)
+			  (pop defaults)
+			(prog1
+			    defaults
+			  (setq defaults nil))))
+	(if gnus-message-citation-mode
+	    ;; `gnus-message-citation-keywords' should be the last
+	    ;; elements of the keywords because the others are unlikely
+	    ;; to have the OVERRIDE flags -- XEmacs applies a keyword
+	    ;; having no OVERRIDE flag to matched text even if it has
+	    ;; already other faces, while Emacs doesn't.
+	    (set (make-local-variable default)
+		 (append (default-value default)
+			 gnus-message-citation-keywords))
+	  (kill-local-variable default))))
+    ;; Force `font-lock-set-defaults' to update `font-lock-keywords'.
+    (if (featurep 'xemacs)
+	(setq font-lock-defaults-computed nil
+	      font-lock-keywords nil)
+      (setq font-lock-set-defaults nil))
+    (font-lock-set-defaults)
+    (font-lock-fontify-buffer)))
 
 (defun turn-on-gnus-message-citation-mode ()
   "Turn on `gnus-message-citation-mode'."
