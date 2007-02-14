@@ -480,18 +480,18 @@ be restored and the command retried."
 				wait-for nnheader-callback-function)
 	  ;; If nothing to wait for, still remove possibly echo'ed commands.
 	  ;; We don't have echos if nntp-open-connection-function
-	  ;; is `nntp-open-network-stream', so we skip this in that case.
+	  ;; is `nntp-open-network-stream' or `nntp-open-ssl-stream',
+	  ;; so we skip this in that cases.
 	  (unless (or wait-for
-		      (equal nntp-open-connection-function
-			     'nntp-open-network-stream))
+		      (memq nntp-open-connection-function
+			    '(nntp-open-network-stream nntp-open-ssl-stream)))
 	    (nntp-accept-response)
 	    (save-excursion
 	      (set-buffer buffer)
 	      (goto-char pos)
 	      (if (looking-at (regexp-quote command))
 		  (delete-region pos (progn (forward-line 1)
-					    (point-at-bol))))
-	      )))
+					    (point-at-bol)))))))
       (nnheader-report 'nntp "Couldn't open connection to %s."
 		       nntp-address))))
 

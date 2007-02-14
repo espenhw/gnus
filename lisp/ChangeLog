@@ -1,3 +1,8 @@
+2007-02-14  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
+
+	* nntp.el (nntp-send-command): Don't wait for echoes when
+	nntp-open-ssl-stream is used.
+
 2007-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (gnus-test-font-lock-add-keywords)
