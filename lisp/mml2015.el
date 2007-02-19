@@ -524,9 +524,8 @@ Whether the passphrase is cached at all is controlled by
       (with-temp-buffer
 	(setq message (current-buffer))
 	(insert part)
-	;; Convert <LF> to <CR><LF> in verify mode.  Sign and
-	;; clearsign use --textmode. The conversion is not necessary.
-	;; In clearverify, the conversion is not necessary either.
+	;; Convert <LF> to <CR><LF> in signed text.  If --textmode is
+	;; specified when signing, the conversion is not necessary.
 	(goto-char (point-min))
 	(end-of-line)
 	(while (not (eobp))
@@ -783,9 +782,8 @@ Whether the passphrase is cached at all is controlled by
 	  handle)
       (with-temp-buffer
 	(insert part)
-	;; Convert <LF> to <CR><LF> in verify mode.  Sign and
-	;; clearsign use --textmode. The conversion is not necessary.
-	;; In clearverify, the conversion is not necessary either.
+	;; Convert <LF> to <CR><LF> in signed text.  If --textmode is
+	;; specified when signing, the conversion is not necessary.
 	(goto-char (point-min))
 	(end-of-line)
 	(while (not (eobp))
