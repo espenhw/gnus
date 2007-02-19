@@ -70,6 +70,46 @@ These parameters are generated in Content-Disposition header if exists."
   :type '(repeat (symbol :tag "Parameter"))
   :group 'message)
 
+(defcustom mml-content-disposition-alist
+  '((text (rtf . "attachment") (t . "inline"))
+    (t . "attachment"))
+  "Alist of MIME types or regexps matching file names and default dispositions.
+Each element should be one of the following three forms:
+
+  (REGEXP . DISPOSITION)
+  (SUPERTYPE (SUBTYPE . DISPOSITION) (SUBTYPE . DISPOSITION)...)
+  (TYPE . DISPOSITION)
+
+Where REGEXP is a string which matches the file name (if any) of an
+attachment, SUPERTYPE, SUBTYPE and TYPE should be symbols which are a
+MIME supertype (e.g., text), a MIME subtype (e.g., plain) and a MIME
+type (e.g., text/plain) respectively, and DISPOSITION should be either
+the string \"attachment\" or the string \"inline\".  The value t for
+SUPERTYPE, SUBTYPE or TYPE matches any of those types.  The first
+match found will be used."
+  :version "23.0" ;; No Gnus
+  :type (let ((dispositions '(radio :format "DISPOSITION: %v"
+				    :value "attachment"
+				    (const :format "%v " "attachment")
+				    (const :format "%v\n" "inline"))))
+	  `(repeat
+	    :offset 0
+	    (choice :format "%[Value Menu%]%v"
+		    (cons :tag "(REGEXP . DISPOSITION)" :extra-offset 4
+			  (regexp :tag "REGEXP" :value ".*")
+			  ,dispositions)
+		    (cons :tag "(SUPERTYPE (SUBTYPE . DISPOSITION)...)"
+			  :indent 0
+			  (symbol :tag "    SUPERTYPE" :value text)
+			  (repeat :format "%v%i\n" :offset 0 :extra-offset 4
+				  (cons :format "%v" :extra-offset 5
+					(symbol :tag "SUBTYPE" :value t)
+					,dispositions)))
+		    (cons :tag "(TYPE . DISPOSITION)" :extra-offset 4
+			  (symbol :tag "TYPE" :value t)
+			  ,dispositions))))
+  :group 'message)
+
 (defcustom mml-insert-mime-headers-always nil
   "If non-nil, always put Content-Type: text/plain at top of empty parts.
 It is necessary to work against a bug in certain clients."
@@ -667,6 +707,30 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	    "")
 	  mml-base-boundary))
 
+(defun mml-content-disposition (type &optional filename)
+  "Return a default disposition name suitable to TYPE or FILENAME."
+  (let ((defs mml-content-disposition-alist)
+	disposition def types)
+    (while (and (not disposition) defs)
+      (setq def (pop defs))
+      (cond ((stringp (car def))
+	     (when (and filename
+			(string-match (car def) filename))
+	       (setq disposition (cdr def))))
+	    ((consp (cdr def))
+	     (when (string= (car (setq types (split-string type "/")))
+			    (car def))
+	       (setq type (cadr types)
+		     types (cdr def))
+	       (while (and (not disposition) types)
+		 (setq def (pop types))
+		 (when (or (eq (car def) t) (string= type (car def)))
+		   (setq disposition (cdr def))))))
+	    (t
+	     (when (or (eq (car def) t) (string= type (car def)))
+	       (setq disposition (cdr def))))))
+    (or disposition "attachment")))
+
 (defun mml-insert-mime-headers (cont type charset encoding flowed)
   (let (parameters id disposition description)
     (setq parameters
@@ -697,7 +761,9 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	   cont mml-content-disposition-parameters))
     (when (or (setq disposition (cdr (assq 'disposition cont)))
 	      parameters)
-      (insert "Content-Disposition: " (or disposition "inline"))
+      (insert "Content-Disposition: "
+	      (or disposition
+		  (mml-content-disposition type (cdr (assq 'filename cont)))))
       (when parameters
 	(mml-insert-parameter-string
 	 cont mml-content-disposition-parameters))
@@ -1056,16 +1122,13 @@ If not set, `default-directory' will be used."
       (setq description nil))
     description))
 
-(defun mml-minibuffer-read-disposition (type &optional default)
-  (unless default (setq default
-                        (if (and (string-match "\\`text/" type)
-                                 (not (string-match "\\`text/rtf\\'" type)))
-                            "inline"
-                          "attachment")))
+(defun mml-minibuffer-read-disposition (type &optional default filename)
+  (unless default
+    (setq default (mml-content-disposition type filename)))
   (let ((disposition (completing-read
-                      (format "Disposition (default %s): " default)
-                      '(("attachment") ("inline") (""))
-                      nil t nil nil default)))
+		      (format "Disposition (default %s): " default)
+		      '(("attachment") ("inline") (""))
+		      nil t nil nil default)))
     (if (not (equal disposition ""))
 	disposition
       default)))
@@ -1157,7 +1220,7 @@ body) or \"attachment\" (separate from the body)."
    (let* ((file (mml-minibuffer-read-file "Attach file: "))
 	  (type (mml-minibuffer-read-type file))
 	  (description (mml-minibuffer-read-description))
-	  (disposition (mml-minibuffer-read-disposition type)))
+	  (disposition (mml-minibuffer-read-disposition type nil file)))
      (list file type description disposition)))
   (save-excursion
     (unless (message-in-body-p) (goto-char (point-max)))
@@ -1188,7 +1251,7 @@ Ask for type, description or disposition according to
 	(when (memq 'description mml-dnd-attach-options)
 	  (setq description (mml-minibuffer-read-description)))
 	(when (memq 'disposition mml-dnd-attach-options)
-	  (setq disposition (mml-minibuffer-read-disposition type)))
+	  (setq disposition (mml-minibuffer-read-disposition type nil file)))
 	(mml-attach-file file type description disposition)))))
 
 (defun mml-attach-buffer (buffer &optional type description)

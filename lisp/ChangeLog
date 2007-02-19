@@ -1,3 +1,10 @@
+2007-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-content-disposition-alist): New user option.
+	(mml-content-disposition): New function.
+	(mml-insert-mime-headers, mml-minibuffer-read-disposition): Use it.
+	(mml-attach-file, mml-dnd-attach-file): Pass file name to it.
+
 2007-02-19  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-verify): Convert LF to CRLF before signature
