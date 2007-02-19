@@ -1071,7 +1071,7 @@ Whether the passphrase is cached at all is controlled by
 (defun mml2015-epg-verify (handle ctl)
   (catch 'error
     (let ((inhibit-redisplay t)
-	  context plain signature-file part signature)
+	  context plain signature-file part signature (index 0))
       (when (or (null (setq part (mm-find-raw-part-by-type
 				  ctl (or (mm-handle-multipart-ctl-parameter
 					   ctl 'protocol)
@@ -1083,6 +1083,11 @@ Whether the passphrase is cached at all is controlled by
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info "Corrupted")
 	(throw 'error handle))
+      (while (string-match "\r?\n" part index)
+	(if (eq (aref part (match-beginning 0)) ?\r)
+	    (setq index (match-end 0))
+	  (setq part (replace-match "\r\n" t t part)
+		index (1+ (match-end 0)))))
       (setq context (epg-make-context))
       (condition-case error
 	  (setq plain (epg-verify-string context (mm-get-part signature) part))

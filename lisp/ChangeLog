@@ -1,3 +1,8 @@
+2007-02-19  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-verify): Convert LF to CRLF before signature
+	verification.
+
 2007-02-15  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnweb.el (nnweb-google-parse-1): Fix date parsing to also match on
