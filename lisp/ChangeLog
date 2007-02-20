@@ -1,3 +1,7 @@
+2007-02-20  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-verify): Simplified.
+
 2007-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-content-disposition-alist): New user option.
