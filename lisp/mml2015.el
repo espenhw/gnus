@@ -1081,7 +1081,7 @@ Whether the passphrase is cached at all is controlled by
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info "Corrupted")
 	(throw 'error handle))
-      (setq part (mm-replace-in-string part "\n" "\r\n")
+      (setq part (mm-replace-in-string part "\n" "\r\n" t)
 	    signature (mm-get-part signature)
 	    context (epg-make-context))
       (condition-case error
