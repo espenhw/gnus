@@ -1,3 +1,9 @@
+2007-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-never-echoes-commands)
+	(nntp-open-connection-functions-never-echo-commands): New variables.
+	(nntp-send-command): Use them.
+
 2007-02-20  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-verify): Simplified.
