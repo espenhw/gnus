@@ -13175,6 +13175,7 @@ example.  The default value is @code{nil}.  Note that the
 overrides the @code{nil} value of this variable.
 
 @item nntp-open-connection-functions-never-echo-commands
+@vindex nntp-open-connection-functions-never-echo-commands
 List of functions that never echo commands.  Add or set a function which
 you set to @code{nntp-open-connection-function} to this list if it does
 not echo commands.  Note that a non-@code{nil} value of the
