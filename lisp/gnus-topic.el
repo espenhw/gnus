@@ -378,31 +378,36 @@ If RECURSIVE is t, return groups in its subtopics too."
      (format "(gnus-topic-set-parameters %S '%S)" topic parameters))))
 
 (defun gnus-group-topic-parameters (group)
-  "Compute the group parameters for GROUP taking into account inheritance from topics."
+  "Compute the group parameters for GROUP in topic mode.
+Possibly inherit parameters from topics above GROUP."
   (let ((params-list (copy-sequence (gnus-group-get-parameter group))))
     (save-excursion
-      (nconc params-list
-	     (gnus-topic-hierarchical-parameters
-	      ;; First we try to go to the group within the group
-	      ;; buffer and find the topic for the group that way.
-	      ;; This hopefully copes well with groups that are in
-	      ;; more than one topic.  Failing that (i.e. when the
-	      ;; group isn't visible in the group buffer) we find a
-	      ;; topic for the group via gnus-group-topic.
-	      (or (and (gnus-group-goto-group group)
-		       (gnus-current-topic))
-		  (gnus-group-topic group)))))))
+      (gnus-topic-hierarchical-parameters
+       ;; First we try to go to the group within the group buffer and find the
+       ;; topic for the group that way. This hopefully copes well with groups
+       ;; that are in more than one topic. Failing that (i.e. when the group
+       ;; isn't visible in the group buffer) we find a topic for the group via
+       ;; gnus-group-topic.
+       (or (and (gnus-group-goto-group group)
+		(gnus-current-topic))
+	   (gnus-group-topic group))
+       params-list))))
 
-(defun gnus-topic-hierarchical-parameters (topic)
-  "Return a topic list computed for TOPIC."
-  (let ((params-list (nreverse (mapcar 'gnus-topic-parameters
-				       (gnus-current-topics topic))))
+(defun gnus-topic-hierarchical-parameters (topic &optional group-params-list)
+  "Compute the topic parameters for TOPIC.
+Possibly inherit parameters from topics above TOPIC.
+If optional argument GROUP-PARAMS-LIST is non-nil, use it as the basis for
+inheritance."
+  (let ((params-list
+	 ;; We probably have lots of nil elements here, so we remove them.
+	 ;; Probably faster than doing this "properly".
+	 (delq nil (cons group-params-list
+			 (mapcar 'gnus-topic-parameters
+				 (gnus-current-topics topic)))))
 	param out params)
-    ;; We probably have lots of nil elements here, so
-    ;; we remove them.  Probably faster than doing this "properly".
-    (setq params-list (delq nil params-list))
     ;; Now we have all the parameters, so we go through them
     ;; and do inheritance in the obvious way.
+    (setq params-list (nreverse params-list))
     (while (setq params (pop params-list))
       (while (setq param (pop params))
 	(when (atom param)

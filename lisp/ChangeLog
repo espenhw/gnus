@@ -1,3 +1,11 @@
+2007-02-27  Didier Verna  <didier@xemacs.org>
+
+	Include the group parameters as well as the topic ones in the
+	inheritance filter process.
+	* gnus-topic.el (gnus-topic-hierarchical-parameters): New optional
+	argument GROUP-PARAMS-LIST.
+	* gnus-topic.el (gnus-group-topic-parameters): Use it.
+
 2007-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-never-echoes-commands)
@@ -1750,9 +1758,9 @@
 	(rfc2231-parse-string): Allow concatanation of parameters that
 	aren't contiguous.  The test case is
 	  (mail-header-parse-content-type "message/external-body;
-            name*0*=us-ascii''~%2ffoo%2fbar%2fbaz%2fxyzzy%2f;
-            access-type=LOCAL-FILE;
-            name*1*=plugh%2fhello-sailor%2fbing.pdf")
+	    name*0*=us-ascii''~%2ffoo%2fbar%2fbaz%2fxyzzy%2f;
+	    access-type=LOCAL-FILE;
+	    name*1*=plugh%2fhello-sailor%2fbing.pdf")
 
 2006-04-17  Stefan Monnier  <monnier@iro.umontreal.ca>
 
@@ -7963,7 +7971,7 @@
 
 2004-05-20  Danny Siu  <dsiu@adobe.com>
 
-        * gnus-sum.el (gnus-summary-recenter): Summery buffer was not auto
+	* gnus-sum.el (gnus-summary-recenter): Summery buffer was not auto
 	centered even when gnus-auto-center-summary is t
 
 2004-05-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
