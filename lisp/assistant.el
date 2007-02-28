@@ -77,7 +77,7 @@
 		    (forward-line 1)))
 	      (skip-chars-forward " \t")
 	      (prog1
-		  (buffer-substring (point) (line-end-position))
+		  (buffer-substring (point) (point-at-eol))
 		(forward-line 1))))
       (push (list command (assistant-reader command value))
 	    results))

@@ -169,7 +169,7 @@ MODE can be \"login\" or \"password\", suitable for passing to
       (with-temp-buffer
 	(insert-file-contents netrc-services-file)
 	(while (search-forward "#" nil t)
-	  (delete-region (1- (point)) (line-end-position)))
+	  (delete-region (1- (point)) (point-at-eol)))
 	(goto-char (point-min))
 	(while (re-search-forward
 		"^ *\\([^ \n\t]+\\)[ \t]+\\([0-9]+\\)/\\([^ \t\n]+\\)" nil t)
