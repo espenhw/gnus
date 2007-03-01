@@ -1,3 +1,14 @@
+2007-02-24  Chris Moore  <dooglus@gmail.com>
+
+	* pgg-pgp5.el (pgg-pgp5-encrypt-region):
+	* pgg-pgp.el (pgg-pgp-encrypt-region):
+	* pgg-gpg.el (pgg-gpg-encrypt-region):
+	Check pgg-encrypt-for-me if no other recipients.
+
+2007-02-24  John Paul Wallington  <jpw@pobox.com>
+
+	* net/tls.el (tls-certtool-program): Fix custom type.
+
 2007-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (gnus-message-search-citation-line): Use point-at-bol

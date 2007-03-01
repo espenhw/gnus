@@ -245,7 +245,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	   '("--armor" "--always-trust" "--encrypt")
 	   (if pgg-text-mode '("--textmode"))
 	   (if sign (list "--sign" "--local-user" pgg-gpg-user-id))
-	   (if recipients
+	   (if (or recipients pgg-encrypt-for-me)
 	       (apply #'nconc
 		      (mapcar (lambda (rcpt)
 				(list pgg-gpg-recipient-argument rcpt))
