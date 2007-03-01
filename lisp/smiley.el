@@ -110,10 +110,10 @@ is nil, use `smiley-style'."
     ("\\(:-|\\)\\W" 1 "indifferent")
     ("\\(:-[/\\]\\)\\W" 1 "wry")
     ("\\(:-(\\)\\W" 1 "sad")
+    ("\\(X-)\\)\\W" 1 "dead")
     ("\\(:-{\\)\\W" 1 "frown")
     ("\\(>:-)\\)\\W" 1 "evil")
     ("\\(;-(\\)\\W" 1 "cry")
-    ("\\(X-)\\)\\W" 1 "dead")
     ("\\(:-D\\)\\W" 1 "grin")
     ;; "smile" must be come after "evil"
     ("\\(\\^?:-?)\\)\\W" 1 "smile"))

@@ -89,8 +89,8 @@
 
 2006-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus.texi (X-Face): Clarify.  Say which programs are required on
-	Windows.
+	* gnus.texi (X-Face): Clarify.  Say which programs are required
+	on Windows.
 
 2006-11-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -215,11 +215,10 @@
 	* gnus.texi (Spam Statistics Package): Fix typo in @pxref.
 	(Splitting mail using spam-stat): Fix @xref.
 
-2006-04-20  Chong Yidong <cyd@stupidchicken.com>
+2006-04-20  Chong Yidong  <cyd@stupidchicken.com>
 
-	* gnus.texi (Spam Package): Major revision of the text.  Previouly
-	this node was "Filtering Spam Using The Spam ELisp Package".
-
+	* gnus.texi (Spam Package): Major revision of the text.
+	Previouly this node was "Filtering Spam Using The Spam ELisp Package".
 2006-04-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-refcard.tex: Remove duplicate \def's.  Update date.
