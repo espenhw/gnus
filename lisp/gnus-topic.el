@@ -407,14 +407,21 @@ inheritance."
 	param out params)
     ;; Now we have all the parameters, so we go through them
     ;; and do inheritance in the obvious way.
-    (setq params-list (nreverse params-list))
-    (while (setq params (pop params-list))
-      (while (setq param (pop params))
-	(when (atom param)
-	  (setq param (cons param t)))
-	;; Override any old versions of this param.
-	(gnus-pull (car param) out)
-	(push param out)))
+    (let (posting-style)
+      (while (setq params (pop params-list))
+	(while (setq param (pop params))
+	  (when (atom param)
+	    (setq param (cons param t)))
+	  (cond ((eq (car param) 'posting-style)
+		 (let ((param (cdr param))
+		       elt)
+		   (while (setq elt (pop param))
+		     (unless (assoc (car elt) posting-style)
+		       (push elt posting-style)))))
+		(t
+		 (unless (assq (car param) out)
+		   (push param out))))))
+      (and posting-style (push (cons 'posting-style posting-style) out)))
     ;; Return the resulting parameter list.
     out))
 

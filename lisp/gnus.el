@@ -1030,23 +1030,23 @@ be set in `.emacs' instead."
    (t
     (insert
      (format "              %s
-          _    ___ _             _
-          _ ___ __ ___  __    _ ___
-          __   _     ___    __  ___
-              _           ___     _
-             _  _ __             _
-             ___   __            _
-                   __           _
-                    _      _   _
-                   _      _    _
-                      _  _    _
-                  __  ___
-                 _   _ _     _
-                _   _
-              _    _
-             _    _
-            _
-          __
+	  _    ___ _             _
+	  _ ___ __ ___  __    _ ___
+	  __   _     ___    __  ___
+	      _           ___     _
+	     _  _ __             _
+	     ___   __            _
+		   __           _
+		    _      _   _
+		   _      _    _
+		      _  _    _
+		  __  ___
+		 _   _ _     _
+		_   _
+	      _    _
+	     _    _
+	    _
+	  __
 
 "
 	     ""))
@@ -3506,27 +3506,27 @@ that that variable is buffer-local to the summary buffers."
 
     ;; Perhaps it is already in the cache.
     (mapc (lambda (name-method)
-            (if (equal (cdr name-method) method)
-                (throw 'server-name (car name-method))))
-          gnus-server-method-cache)
+	    (if (equal (cdr name-method) method)
+		(throw 'server-name (car name-method))))
+	  gnus-server-method-cache)
 
     (mapc
      (lambda (server-alist)
        (mapc (lambda (name-method)
-               (when (gnus-methods-equal-p (cdr name-method) method)
-                 (unless (member name-method gnus-server-method-cache)
-                   (push name-method gnus-server-method-cache))
-                 (throw 'server-name (car name-method))))
-             server-alist))
+	       (when (gnus-methods-equal-p (cdr name-method) method)
+		 (unless (member name-method gnus-server-method-cache)
+		   (push name-method gnus-server-method-cache))
+		 (throw 'server-name (car name-method))))
+	     server-alist))
      (list gnus-server-alist
 	   gnus-predefined-server-alist))
 
     (let* ((name (if (member (cadr method) '(nil ""))
-                     (format "%s" (car method))
-                   (format "%s:%s" (car method) (cadr method))))
-           (name-method (cons name method)))
+		     (format "%s" (car method))
+		   (format "%s:%s" (car method) (cadr method))))
+	   (name-method (cons name method)))
       (unless (member name-method gnus-server-method-cache)
-        (push name-method gnus-server-method-cache))
+	(push name-method gnus-server-method-cache))
       name)))
 
 (defsubst gnus-server-to-method (server)
@@ -3556,24 +3556,24 @@ that that variable is buffer-local to the summary buffers."
 						       (cadar servers)))))
 		  (pop servers))
 		(car servers))
-              ;; This could be some sort of foreign server that I
-              ;; simply haven't opened (yet).  Do a brute-force scan
-              ;; of the entire gnus-newsrc-alist for the server name
-              ;; of every method.  As a side-effect, loads the
-              ;; gnus-server-method-cache so this only happens once,
-              ;; if at all.
-              (let (match)
-                (mapcar
-                 (lambda (info)
-                   (let ((info-method (gnus-info-method info)))
-                     (unless (stringp info-method)
-                       (let ((info-server (gnus-method-to-server info-method)))
-                         (when (equal server info-server)
-                           (setq match info-method))))))
-                 (cdr gnus-newsrc-alist))
-                match))))
-        (when result
-          (push (cons server result) gnus-server-method-cache))
+	      ;; This could be some sort of foreign server that I
+	      ;; simply haven't opened (yet).  Do a brute-force scan
+	      ;; of the entire gnus-newsrc-alist for the server name
+	      ;; of every method.  As a side-effect, loads the
+	      ;; gnus-server-method-cache so this only happens once,
+	      ;; if at all.
+	      (let (match)
+		(mapcar
+		 (lambda (info)
+		   (let ((info-method (gnus-info-method info)))
+		     (unless (stringp info-method)
+		       (let ((info-server (gnus-method-to-server info-method)))
+			 (when (equal server info-server)
+			   (setq match info-method))))))
+		 (cdr gnus-newsrc-alist))
+		match))))
+	(when result
+	  (push (cons server result) gnus-server-method-cache))
 	result)))
 
 (defsubst gnus-server-get-method (group method)
@@ -3840,7 +3840,7 @@ The function `gnus-group-find-parameter' will do that for you."
     (if simple-results
 	;; Found results; return them.
 	(car simple-results)
-      ;; We didn't found it there, try `gnus-parameters'.
+      ;; We didn't find it there, try `gnus-parameters'.
       (let ((result nil)
 	    (head nil)
 	    (tail gnus-parameters))
@@ -4127,12 +4127,12 @@ If NEWSGROUP is nil, return the global kill file name instead."
       (and (not group)
 	   gnus-select-method)
       (and (not (gnus-group-entry group))
- 	   ;; Killed or otherwise unknown group.
- 	   (or
- 	    ;; If we know a virtual server by that name, return its method.
- 	    (gnus-server-to-method (gnus-group-server group))
- 	    ;; Guess a new method as last resort.
- 	    (gnus-group-name-to-method group)))
+	   ;; Killed or otherwise unknown group.
+	   (or
+	    ;; If we know a virtual server by that name, return its method.
+	    (gnus-server-to-method (gnus-group-server group))
+	    ;; Guess a new method as last resort.
+	    (gnus-group-name-to-method group)))
       (let ((info (or info (gnus-get-info group)))
 	    method)
 	(if (or (not info)
@@ -4238,10 +4238,10 @@ Allow completion over sensible values."
   "Say whether METHOD is covered by the agent."
   (or (eq (car gnus-agent-method-p-cache) method)
       (setq gnus-agent-method-p-cache
-            (cons method
-                  (member (if (stringp method)
-                              method
-                            (gnus-method-to-server method)) gnus-agent-covered-methods))))
+	    (cons method
+		  (member (if (stringp method)
+			      method
+			    (gnus-method-to-server method)) gnus-agent-covered-methods))))
   (cdr gnus-agent-method-p-cache))
 
 (defun gnus-online (method)

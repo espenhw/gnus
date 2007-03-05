@@ -1,3 +1,9 @@
+2007-03-05  Didier Verna  <didier@xemacs.org>
+
+	* gnus-topic.el (gnus-topic-hierarchical-parameters): Perform merging
+	instead of just inheritance for posting styles.
+	* gnus.el (gnus-group-fast-parameter): Fix typo in comment.
+
 2007-02-24  Chris Moore  <dooglus@gmail.com>
 
 	* pgg-pgp5.el (pgg-pgp5-encrypt-region):
