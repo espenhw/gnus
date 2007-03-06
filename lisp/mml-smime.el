@@ -306,7 +306,6 @@ Whether the passphrase is cached at all is controlled by
   (defvar epg-digest-algorithm-alist)
   (defvar inhibit-redisplay)
   (autoload 'epg-context-set-armor "epg")
-  (autoload 'epg-context-set-textmode "epg")
   (autoload 'epg-context-set-signers "epg")
   (autoload 'epg-context-result-for "epg")
   (autoload 'epg-new-signature-digest-algorithm "epg")
@@ -397,7 +396,10 @@ If no one is selected, default secret key is used.  "
 	 context
 	 #'mml-smime-epg-passphrase-callback))
     (condition-case error
-	(setq signature (epg-sign-string context (buffer-string) t)
+	(setq signature (epg-sign-string context
+					 (mm-replace-in-string (buffer-string)
+							       "\n" "\r\n")
+					 t)
 	      mml-smime-epg-secret-key-id-list nil)
       (error
        (while mml-smime-epg-secret-key-id-list
@@ -515,7 +517,8 @@ Content-Disposition: attachment; filename=smime.p7m
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info "Corrupted")
 	(throw 'error handle))
-      (setq context (epg-make-context 'CMS))
+      (setq part (mm-replace-in-string part "\n" "\r\n" t)
+	    context (epg-make-context 'CMS))
       (condition-case error
 	  (setq plain (epg-verify-string context (mm-get-part signature) part))
 	(error
