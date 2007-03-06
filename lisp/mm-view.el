@@ -30,6 +30,7 @@
 (require 'mailcap)
 (require 'mm-bodies)
 (require 'mm-decode)
+(require 'smime)
 
 (eval-and-compile
   (autoload 'gnus-article-prepare-display "gnus-art")

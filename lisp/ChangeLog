@@ -1,3 +1,11 @@
+2007-03-06  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml-smime.el (mml-smime-use): New variable; default to use openssl.
+	(mml-smime-function-alist): New variable; add epg as the backend.
+	* mml-sec.el (mml-smime-sign): Don't require mml-smime, autoload
+	mml-smime- functions instead.
+	* mm-view.el: Require smime.
+
 2007-03-05  Didier Verna  <didier@xemacs.org>
 
 	* gnus-topic.el (gnus-topic-hierarchical-parameters): Perform merging
