@@ -3480,7 +3480,7 @@
 
 	* flow-fill.el (fill-flowed): Bind adaptive-fill-mode to nil.
 
-2005-11-16  Boris Samorodov  <bsam@ipt.ru>  (tiny patch)
+2005-11-16  Boris Samorodov  <bsam@ipt.ru>  (tiny change)
 
 	* imap.el (imap-kerberos4-open): Ignore SSL stuff.
 
@@ -4347,7 +4347,7 @@
 	(gnus-decode-header-function, gnus-newsgroup-name):
 	* spam-stat.el (gnus-original-article-buffer): Add defvars.
 
-2005-08-22  Karl Chen  <quarl@cs.berkeley.edu>  (tiny change)
+2005-08-22  Karl Chen  <quarl@cs.berkeley.edu>
 
 	* gnus-art.el (gnus-treatment-function-alist): Move date-lapsed to
 	the end of the date treatments.
