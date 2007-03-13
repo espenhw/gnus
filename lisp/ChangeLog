@@ -1,7 +1,8 @@
 2007-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (font-lock-set-defaults): Autoload it for Emacs.
-	(gnus-message-citation-mode): Require font-lock for XEmacs.
+	(gnus-message-citation-mode): Require font-lock for XEmacs; make sure
+	to turn font-lock on when turning gnus-message-citation-mode on.
 
 2007-03-06  Daiki Ueno  <ueno@unixuser.org>
 

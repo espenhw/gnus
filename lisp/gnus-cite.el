@@ -1183,8 +1183,10 @@ Returns nil if there is no such line before LIMIT, t otherwise."
   "Toggle `gnus-message-citation-mode' in current buffer.
 This buffer local minor mode provides additional font-lock support for
 nested citations.
-With prefix ARG, turn `gnus-message-citation-mode' on if and only if ARG is
-positive."
+With prefix ARG, turn `gnus-message-citation-mode' on if and only if ARG
+is positive.
+Automatically turn `font-lock-mode' on when `gnus-message-citation-mode'
+is turned on."
   nil ;; init-value
   "" ;; lighter
   nil ;; keymap
@@ -1217,7 +1219,10 @@ positive."
 		font-lock-keywords nil))
       (setq font-lock-set-defaults nil))
     (font-lock-set-defaults)
-    (font-lock-fontify-buffer)))
+    (cond ((symbol-value 'font-lock-mode)
+	   (font-lock-fontify-buffer))
+	  (gnus-message-citation-mode
+	   (font-lock-mode 1)))))
 
 (defun turn-on-gnus-message-citation-mode ()
   "Turn on `gnus-message-citation-mode'."
