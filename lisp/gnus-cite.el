@@ -1175,6 +1175,10 @@ Returns nil if there is no such line before LIMIT, t otherwise."
   (defvar font-lock-keywords)
   (defvar font-lock-set-defaults))
 
+(eval-and-compile
+  (unless (featurep 'xemacs)
+    (autoload 'font-lock-set-defaults "font-lock")))
+
 (define-minor-mode gnus-message-citation-mode
   "Toggle `gnus-message-citation-mode' in current buffer.
 This buffer local minor mode provides additional font-lock support for
@@ -1207,8 +1211,10 @@ positive."
 	  (kill-local-variable default))))
     ;; Force `font-lock-set-defaults' to update `font-lock-keywords'.
     (if (featurep 'xemacs)
-	(setq font-lock-defaults-computed nil
-	      font-lock-keywords nil)
+	(progn
+	  (require 'font-lock)
+	  (setq font-lock-defaults-computed nil
+		font-lock-keywords nil))
       (setq font-lock-set-defaults nil))
     (font-lock-set-defaults)
     (font-lock-fontify-buffer)))

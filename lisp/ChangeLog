@@ -1,3 +1,8 @@
+2007-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-cite.el (font-lock-set-defaults): Autoload it for Emacs.
+	(gnus-message-citation-mode): Require font-lock for XEmacs.
+
 2007-03-06  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml-smime.el (mml-smime-use): New variable; default to use openssl.
