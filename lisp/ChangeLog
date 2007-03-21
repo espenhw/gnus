@@ -1,3 +1,8 @@
+2007-03-20  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* message.el (message-required-news-headers):
+	* gnus-util.el (gnus-intern-safe): Fix typo in docstring.
+
 2007-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-generate-new-buffers): Change the meaning of the

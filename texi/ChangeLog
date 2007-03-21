@@ -3,6 +3,10 @@
 	* message.texi (Message Buffers): Update documentation for
 	message-generate-new-buffers.
 
+2007-03-15  Daiki Ueno  <ueno@unixuser.org>
+
+	* pgg.texi (Caching passphrase): Describe pgg-passphrase-coding-system.
+
 2007-03-11  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* gnus.texi (Mail and Post): Update documentation for gnus-user-agent.

@@ -223,7 +223,7 @@ Also see `message-required-news-headers' and
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
 Message-ID.  Organization, Lines, In-Reply-To, Expires, and
-User-Agent are optional.  If don't you want message to insert some
+User-Agent are optional.  If you don't want message to insert some
 header, remove it from this list."
   :group 'message-news
   :group 'message-headers

@@ -2233,6 +2233,8 @@ type, the To address and the group name (any of these may be
 @code{nil}).  The function should return the new buffer name.
 @end table
 
+The default value is @code{unique}.
+
 @item message-max-buffers
 @vindex message-max-buffers
 This variable says how many old message buffers to keep.  If there are
