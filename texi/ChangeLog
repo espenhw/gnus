@@ -1,3 +1,7 @@
+2007-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi, message.texi: Bump No Gnus version.
+
 2007-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.texi (Message Buffers): Update documentation for
