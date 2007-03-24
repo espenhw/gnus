@@ -240,6 +240,12 @@
 		    (throw 'continue t)
 		  (error "Stop!"))))))))
 
+(defcustom gnus-draft-setup-hook nil
+  "Hook run after setting up a draft buffer."
+  :group 'gnus-message
+  :version "23.0" ;; No Gnus
+  :type 'hook)
+
 ;;; Utility functions
 
 ;;;!!!If this is byte-compiled, it fails miserably.
@@ -287,7 +293,8 @@
 		(gnus-add-mark ,(car ga) 'replied ,article)
 		(gnus-request-set-mark ,(car ga) (list (list (list ,article)
 							     'add '(reply)))))
-	     'send)))))))
+	     'send))))
+      (run-hooks 'gnus-draft-setup-hook))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

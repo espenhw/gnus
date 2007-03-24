@@ -1,5 +1,8 @@
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-draft.el (gnus-draft-setup-hook): New hook.
+	(gnus-draft-setup): Run it.
+
 	* gnus-score.el (gnus-inhibit-slow-scoring): New variable, renamed from
 	gnus-score-fast-scoring.  Allow regexp.
 	(gnus-score-headers): Use it.
