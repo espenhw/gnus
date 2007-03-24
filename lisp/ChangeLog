@@ -1,7 +1,7 @@
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus-score.el (gnus-score-fast-scoring): New variable.  Allows to
-	skip scoring on headers or body.
+	* gnus-score.el (gnus-inhibit-slow-scoring): New variable, renamed from
+	gnus-score-fast-scoring.  Allow regexp.
 	(gnus-score-headers): Use it.
 
 	* gnus-util.el (gnus-emacs-version): Include "no MULE" in no-MULE
