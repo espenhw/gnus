@@ -72,7 +72,7 @@
 (if (featurep 'xemacs)
     (error "Please use `smtpmail.el' from the mail-lib package.")
   (when (>= emacs-major-version 22)
-    (error "Please `smtpmail.el' bundled with Emacs.")))
+    (error "Please use `smtpmail.el' bundled with Emacs.")))
 
 (require 'sendmail)
 (autoload 'starttls-open-stream "starttls")
