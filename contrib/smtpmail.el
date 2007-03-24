@@ -68,6 +68,12 @@
 
 ;;; Code:
 
+;; This version of `smtpmail.el' should only be used with Emacs 21.
+(if (featurep 'xemacs)
+    (error "Please use `smtpmail.el' from the mail-lib package.")
+  (when (>= emacs-major-version 22)
+    (error "Please `smtpmail.el' bundled with Emacs.")))
+
 (require 'sendmail)
 (autoload 'starttls-open-stream "starttls")
 (autoload 'starttls-negotiate "starttls")
@@ -248,7 +254,13 @@ This is relative to `smtpmail-queue-dir'.")
 	  ;; buffer, otherwise any write-region invocations (e.g., in
 	  ;; mail-do-fcc below) will annoy with asking for a suitable
 	  ;; encoding.
-	  (set-buffer-file-coding-system smtpmail-code-conv-from nil t)
+	  ;; (set-buffer-file-coding-system smtpmail-code-conv-from nil t)
+	  ;; This file (`gnus/contrib/smtpmail.el') is only useful for Emacs
+	  ;; which doesn't support the thried argument (NOMODIFY) of
+	  ;; `set-buffer-file-coding-system'.
+	  (set-buffer-file-coding-system smtpmail-code-conv-from nil)
+	  (set-buffer-modified-p nil)
+	  (force-mode-line-update)
 	  (insert-buffer-substring mailbuf)
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
@@ -394,7 +406,7 @@ This is relative to `smtpmail-queue-dir'.")
 		(make-directory smtpmail-queue-dir t))
 	      (with-current-buffer buffer-data
 		(erase-buffer)
-		(set-buffer-file-coding-system smtpmail-code-conv-from nil t)
+		(set-buffer-file-coding-system smtpmail-code-conv-from nil)
 		(insert-buffer-substring tembuf)
 		(write-file file-data)
 		(set-buffer buffer-elisp)

@@ -1,3 +1,9 @@
+2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* smtpmail.el: Signal an error when used with Emacs 22+ or XEmacs.
+	(smtpmail-send-it): Remove NOMODIFY argument of
+	`set-buffer-file-coding-system' for compatibility with Emacs 21.
+
 2007-01-06  Simon Josefsson  <simon@josefsson.org>
 
 	* README: Mention that smtpmail.el doesn't work on XEmacs.
