@@ -254,9 +254,9 @@ This is relative to `smtpmail-queue-dir'.")
 	  ;; buffer, otherwise any write-region invocations (e.g., in
 	  ;; mail-do-fcc below) will annoy with asking for a suitable
 	  ;; encoding.
-	  ;; (set-buffer-file-coding-system smtpmail-code-conv-from nil t)
+	  ;;
 	  ;; This file (`gnus/contrib/smtpmail.el') is only useful for Emacs
-	  ;; which doesn't support the thried argument (NOMODIFY) of
+	  ;; which doesn't support the third argument (NOMODIFY) of
 	  ;; `set-buffer-file-coding-system'.
 	  (set-buffer-file-coding-system smtpmail-code-conv-from nil)
 	  (set-buffer-modified-p nil)
