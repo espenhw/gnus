@@ -2839,7 +2839,7 @@ Recurse into multiparts."
 Warning: Spammers use links to images in HTML articles to verify
 whether you have read the message.  As
 `gnus-article-browse-html-article' passes the unmodified HTML
-content to the browser without eliminatin these \"web bugs\" you
+content to the browser without eliminating these \"web bugs\" you
 should only use it for mails from trusted senders."
   ;; Cf. `mm-w3m-safe-url-regexp'
   (interactive)
@@ -6473,7 +6473,7 @@ groups."
 	     (punct "!?:;.,"))
 	 (concat
 	  "\\(?:"
-	  ;; Match paired parentheses, e.g. in WikiPedia URLs:
+	  ;; Match paired parentheses, e.g. in Wikipedia URLs:
 	  "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)" "[" chars "]"
 	  "\\|"
 	  "[" chars punct     "]+" "[" chars "]"
@@ -6953,7 +6953,7 @@ positives are possible."
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("`\\(\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'"
+    ("`\\(\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'"
      ;; Unlike the other regexps we really have to require quoting
      ;; here to determine where it ends.
      1 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-key 3)
