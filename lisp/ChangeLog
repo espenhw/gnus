@@ -1,5 +1,8 @@
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-util.el (gnus-emacs-version): Include "no MULE" in no-MULE
+	XEmacs.
+
 	* gnus-art.el (gnus-article-browse-html-article): Fix typo in doc
 	string.
 	(gnus-button-alist): Also catch `<f1> k ...'.

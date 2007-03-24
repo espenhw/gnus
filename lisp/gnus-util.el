@@ -1578,13 +1578,16 @@ predicate on the elements."
      ((or (featurep 'sxemacs) (featurep 'xemacs))
       ;; XEmacs or SXEmacs:
       (concat emacsname "/" emacs-program-version
-	      " ("
-	      (when (and (memq 'codename lst)
-			 codename)
-		(concat codename
-			(when system-v ", ")))
-	      (when system-v system-v)
-	      ")"))
+	      (let (plst)
+		(when (memq 'codename lst)
+		  (push codename plst))
+		(when system-v
+		  (push system-v plst))
+		(unless (featurep 'mule)
+		  (push "no MULE" plst))
+		(when (> (length plst) 0)
+		  (concat
+		   " (" (mapconcat 'identity (reverse plst) ", ") ")")))))
      (t emacs-version))))
 
 (defun gnus-rename-file (old-path new-path &optional trim)
