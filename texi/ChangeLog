@@ -1,3 +1,10 @@
+2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.el (gnus-news-header-disclaimer, gnus-news-trailer): Switch
+	to standard GPL text for license.  Update copyright for years from
+	Emacs 21 to present (mainly adding 2001).  Text taken from Glenn
+	Morris' change to GNUS-NEWS in Emacs / v5-10.
+
 2007-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi, message.texi: Bump No Gnus version.
