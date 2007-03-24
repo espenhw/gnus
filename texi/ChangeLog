@@ -1,5 +1,7 @@
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi (Scoring On Other Headers): Add gnus-inhibit-slow-scoring.
+
 	* gnus-news.el (gnus-news-header-disclaimer, gnus-news-trailer): Switch
 	to standard GPL text for license.  Update copyright for years from
 	Emacs 21 to present (mainly adding 2001).  Text taken from Glenn

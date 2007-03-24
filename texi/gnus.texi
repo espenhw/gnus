@@ -21006,6 +21006,13 @@ so: @kbd{I e s p To RET <your name> RET}.
 
 See?  Simple.
 
+@vindex gnus-inhibit-slow-scoring
+You can inhibit scoring the slow scoring on headers or body by setting
+the variable @code{gnus-inhibit-slow-scoring}.  If
+@code{gnus-inhibit-slow-scoring} is regexp, slow scoring is inhibited if
+the group matches the regexp.  If it is t, slow scoring on it is
+inhibited for all groups.
+
 
 @node Scoring Tips
 @section Scoring Tips
