@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; Copyright (C) 2003, 2004, 2005 Free Software Foundation
+;; Copyright (C) 2003, 2004, 2005, 2007 Free Software Foundation
 
 ;; Written by: Paul Foley <mycroft@actrix.gen.nz> (1997-2002)
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
@@ -164,7 +164,8 @@ For example, you may want to set this to '(\"-Z2\") to reduce header length."
 (defun hashcash-generate-payment-async (str val callback)
   "Generate a hashcash payment by finding a VAL-bit collison on STR.
 Return immediately.  Call CALLBACK with process and result when ready."
-  (if (> val 0)
+  (if (and (> val 0)
+	   hashcash-path)
       (let ((process (apply 'start-process "hashcash" nil
 			    hashcash-path "-m" "-q"
 			    "-b" (number-to-string val) str
@@ -174,7 +175,7 @@ Return immediately.  Call CALLBACK with process and result when ready."
 				      hashcash-process-alist))
 	(set-process-filter process `(lambda (process output)
 				       (funcall ,callback process output))))
-    (funcall callback nil)))
+    (funcall callback nil nil)))
 
 (defun hashcash-check-payment (token str val)
   "Check the validity of a hashcash payment."

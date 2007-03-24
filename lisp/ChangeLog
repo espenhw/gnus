@@ -1,3 +1,9 @@
+2007-03-24  Simon Josefsson  <simon@josefsson.org>
+
+	* hashcash.el (hashcash-generate-payment-async): Don't crash if
+	hashcash-path is nil.  Don't call callback with incorrect number of
+	parameters if val is 0.
+
 2007-03-20  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* message.el (message-required-news-headers):
