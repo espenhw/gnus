@@ -422,11 +422,17 @@ If nil, the user will be asked for a duration."
   :group 'gnus-score-various
   :type 'boolean)
 
-(defcustom gnus-score-fast-scoring nil
-  "If non-nil, no scoring on headers or body is done."
+(defcustom gnus-inhibit-slow-scoring nil
+  "Inhibit slow scoring, e.g. scoring on headers or body.
+
+If a regexp, scoring on headers or body is inhibited if the group
+matches the regexp.  If it is t, scoring on headers or body is
+inhibited for all groups."
   :group 'gnus-score-various
   :version "23.0" ;; No Gnus
-  :type 'boolean)
+  :type '(choice (const :tag "All" nil)
+		 (const :tag "None" t)
+		 regexp))
 
 
 
@@ -1547,9 +1553,19 @@ If FORMAT, also format the current score file."
 					(length (gnus-score-get header score)))
 				      scores)))
 		;; Call the scoring function for this type of "header".
-		(when (if (and gnus-score-fast-scoring
+		(when (if (and gnus-inhibit-slow-scoring
+			       (if (and (stringp gnus-inhibit-slow-scoring)
+					;; Always true here?
+					;; (stringp gnus-newsgroup-name)
+					(string-match gnus-inhibit-slow-scoring
+						      gnus-newsgroup-name))
+				   t
+				 nil)
 			       (> 0 (nth 1 (assoc header gnus-header-index))))
-			  nil
+			  (progn
+			    (gnus-message
+			     7 "Scoring on headers or body skipped.")
+			    nil)
 			(setq new (funcall (nth 2 entry) scores header
 					   now expire trace)))
 		  (push new news))))
