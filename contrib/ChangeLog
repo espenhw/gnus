@@ -4,6 +4,12 @@
 	(smtpmail-send-it): Remove NOMODIFY argument of
 	`set-buffer-file-coding-system' for compatibility with Emacs 21.
 
+2007-02-20  Juanma Barranquero  <lekktu@gmail.com>
+
+	* smtpmail.el (smtpmail-smtp-service, smtpmail-queue-index-file):
+	Fix typos in docstrings.
+	(smtpmail-local-domain, smtpmail-queue-mail): Doc fixes.
+
 2007-01-06  Simon Josefsson  <simon@josefsson.org>
 
 	* README: Mention that smtpmail.el doesn't work on XEmacs.
