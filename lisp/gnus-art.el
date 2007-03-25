@@ -4221,17 +4221,19 @@ Internal variable.")
 ;; Set article window start at LINE, where LINE is the number of lines
 ;; from the head of the article.
 (defun gnus-article-set-window-start (&optional line)
-  (set-window-start
-   (gnus-get-buffer-window gnus-article-buffer t)
-   (save-excursion
-     (set-buffer gnus-article-buffer)
-     (goto-char (point-min))
-     (if (not line)
-	 (point-min)
-       (gnus-message 6 "Moved to bookmark")
-       (search-forward "\n\n" nil t)
-       (forward-line line)
-       (point)))))
+  (let ((article-window (gnus-get-buffer-window gnus-article-buffer t)))
+    (when article-window
+      (set-window-start
+       article-window
+       (save-excursion
+	 (set-buffer gnus-article-buffer)
+	 (goto-char (point-min))
+	 (if (not line)
+	     (point-min)
+	   (gnus-message 6 "Moved to bookmark")
+	   (search-forward "\n\n" nil t)
+	   (forward-line line)
+	   (point)))))))
 
 (defun gnus-article-prepare (article &optional all-headers header)
   "Prepare ARTICLE in article mode buffer.
