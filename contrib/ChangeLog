@@ -1,3 +1,9 @@
+2007-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* nnir.el (gnus-group-make-nnir-group): Put a message-unique-id into
+	names of ephemeral groups to avoid gnus-backlog related caching
+	problems on repeated searches.
+
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* smtpmail.el: Signal an error when used with Emacs 22+ or XEmacs.

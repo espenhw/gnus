@@ -294,6 +294,7 @@
 (require 'nnoo)
 (require 'gnus-group)
 (require 'gnus-sum)
+(require 'message)
 (eval-and-compile
   (require 'gnus-util))
 (eval-when-compile
@@ -610,6 +611,7 @@ that it is for Namazu, not Wais."
     (if extra-parms
         (setq parms (nnir-read-parms query))
       (setq parms (list (cons 'query query))))
+    (add-to-list 'parms (cons 'unique-id (message-unique-id)) t)
     (gnus-group-read-ephemeral-group
      (concat "nnir:" (prin1-to-string parms)) '(nnir "") t
      (cons (current-buffer)
