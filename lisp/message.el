@@ -7652,7 +7652,7 @@ From headers in the original article."
 
 (defun message-put-addresses-in-ecomplete ()
   (dolist (header '("to" "cc" "from" "reply-to"))
-    (let ((value (message-fetch-field header)))
+    (let ((value (message-field-value header)))
       (dolist (string (mail-header-parse-addresses value 'raw))
 	(setq string
 	      (gnus-replace-in-string
