@@ -509,7 +509,7 @@ Summary Buffer
 * Mail Group Commands::         Some commands can only be used in mail groups.
 * Various Summary Stuff::       What didn't fit anywhere else.
 * Exiting the Summary Buffer::  Returning to the Group buffer,
-                                or reselecting the current group.
+				or reselecting the current group.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
 * Security::                    Decrypt and Verify.
@@ -837,7 +837,7 @@ Image Enhancements
 * X-Face::                      Display a funky, teensy black-and-white image.
 * Face::                        Display a funkier, teensier colored image.
 * Smileys::                     Show all those happy faces the way they were
-                                  meant to be shown.
+				  meant to be shown.
 * Picons::                      How to display pictures of what you're reading.
 * XVarious::                    Other XEmacsy Gnusey variables.
 
@@ -1945,23 +1945,23 @@ background is dark:
 (cond (window-system
        (setq custom-background-mode 'light)
        (defface my-group-face-1
-         '((t (:foreground "Red" :bold t))) "First group face")
+	 '((t (:foreground "Red" :bold t))) "First group face")
        (defface my-group-face-2
-         '((t (:foreground "DarkSeaGreen4" :bold t)))
-         "Second group face")
+	 '((t (:foreground "DarkSeaGreen4" :bold t)))
+	 "Second group face")
        (defface my-group-face-3
-         '((t (:foreground "Green4" :bold t))) "Third group face")
+	 '((t (:foreground "Green4" :bold t))) "Third group face")
        (defface my-group-face-4
-         '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
+	 '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
        (defface my-group-face-5
-         '((t (:foreground "Blue" :bold t))) "Fifth group face")))
+	 '((t (:foreground "Blue" :bold t))) "Fifth group face")))
 
 (setq gnus-group-highlight
       '(((> unread 200) . my-group-face-1)
-        ((and (< level 3) (zerop unread)) . my-group-face-2)
-        ((< level 3) . my-group-face-3)
-        ((zerop unread) . my-group-face-4)
-        (t . my-group-face-5)))
+	((and (< level 3) (zerop unread)) . my-group-face-2)
+	((< level 3) . my-group-face-3)
+	((zerop unread) . my-group-face-4)
+	(t . my-group-face-5)))
 @end lisp
 
 Also @pxref{Faces and Fonts}.
@@ -2978,6 +2978,15 @@ like this in the group parameters:
   (signature "Funky Signature"))
 @end example
 
+If you're using topics to organize your group buffer
+(@pxref{Group Topics}), note that posting styles can also be set in
+the topics parameters. Posting styles in topic parameters apply to all
+groups in this topic. More precisely, the posting-style settings for a
+group result from the hierarchical merging of all posting-style
+entries in the parameters of this group and all the topics it belongs
+to.
+
+
 @item post-method
 @cindex post-method
 If it is set, the value is used as the method for posting message
@@ -3005,7 +3014,7 @@ Commands}) the following Sieve code is generated:
 
 @example
 if address "sender" "sieve-admin@@extundo.com" @{
-        fileinto "INBOX.list.sieve";
+	fileinto "INBOX.list.sieve";
 @}
 @end example
 
@@ -3016,7 +3025,7 @@ like the following is generated:
 
 @example
 if address "sender" ["name@@one.org", "else@@two.org"] @{
-        fileinto "INBOX.list.sieve";
+	fileinto "INBOX.list.sieve";
 @}
 @end example
 
@@ -3102,22 +3111,22 @@ For example:
 @lisp
 (setq gnus-parameters
       '(("mail\\..*"
-         (gnus-show-threads nil)
-         (gnus-use-scoring nil)
-         (gnus-summary-line-format
-          "%U%R%z%I%(%[%d:%ub%-23,23f%]%) %s\n")
-         (gcc-self . t)
-         (display . all))
+	 (gnus-show-threads nil)
+	 (gnus-use-scoring nil)
+	 (gnus-summary-line-format
+	  "%U%R%z%I%(%[%d:%ub%-23,23f%]%) %s\n")
+	 (gcc-self . t)
+	 (display . all))
 
-        ("^nnimap:\\(foo.bar\\)$"
-         (to-group . "\\1"))
+	("^nnimap:\\(foo.bar\\)$"
+	 (to-group . "\\1"))
 
-        ("mail\\.me"
-         (gnus-use-scoring  t))
+	("mail\\.me"
+	 (gnus-use-scoring  t))
 
-        ("list\\..*"
-         (total-expire . t)
-         (broken-reply-to . t))))
+	("list\\..*"
+	 (total-expire . t)
+	 (broken-reply-to . t))))
 @end lisp
 
 String value of parameters will be subjected to regexp substitution, as
@@ -4410,7 +4419,7 @@ This will result in lines looking like:
 
 @example
 *        0: mail.ding                                19961002T012943
-         0: custom                                   19961002T012713
+	 0: custom                                   19961002T012713
 @end example
 
 As you can see, the date is displayed in compact ISO 8601 format.  This
@@ -4432,7 +4441,7 @@ trick:
 (defun gnus-user-format-function-d (headers)
   (let ((time (gnus-group-timestamp gnus-tmp-group)))
     (if time
-        (format-time-string "%b %d  %H:%M" time)
+	(format-time-string "%b %d  %H:%M" time)
       "")))
 @end lisp
 
@@ -4500,8 +4509,8 @@ except that the line containing the call to @code{stop} is removed.)
 
 @example
 if address "sender" "owner-ding@@hpc.uh.edu" @{
-        fileinto "INBOX.ding";
-        stop;
+	fileinto "INBOX.ding";
+	stop;
 @}
 @end example
 
@@ -4581,7 +4590,7 @@ function or better use it as a prefix key.  For example:
 * Mail Group Commands::         Some commands can only be used in mail groups.
 * Various Summary Stuff::       What didn't fit anywhere else.
 * Exiting the Summary Buffer::  Returning to the Group buffer,
-                                or reselecting the current group.
+				or reselecting the current group.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
 * Security::                    Decrypt and Verify.
@@ -5313,7 +5322,7 @@ encoded in the @code{cn-gb-2312} charset.  If you have
 @lisp
 (setq gnus-summary-show-article-charset-alist
       '((1 . cn-gb-2312)
-        (2 . big5)))
+	(2 . big5)))
 @end lisp
 
 then you can say @kbd{C-u 1 g} to get the same effect.
@@ -6727,19 +6736,19 @@ as 10, you might consider setting this variable to something sensible:
       (concat
        "\\`\\[?\\("
        (mapconcat
-        'identity
-        '("looking"
-          "wanted" "followup" "summary\\( of\\)?"
-          "help" "query" "problem" "question"
-          "answer" "reference" "announce"
-          "How can I" "How to" "Comparison of"
-          ;; ...
-          )
-        "\\|")
+	'identity
+	'("looking"
+	  "wanted" "followup" "summary\\( of\\)?"
+	  "help" "query" "problem" "question"
+	  "answer" "reference" "announce"
+	  "How can I" "How to" "Comparison of"
+	  ;; ...
+	  )
+	"\\|")
        "\\)\\s *\\("
        (mapconcat 'identity
-                  '("for" "for reference" "with" "about")
-                  "\\|")
+		  '("for" "for reference" "with" "about")
+		  "\\|")
        "\\)?\\]?:?[ \t]*"))
 @end lisp
 
@@ -6900,7 +6909,7 @@ Here's an example:
 @lisp
 (setq gnus-thread-hide-subtree
       '(or gnus-article-unread-p
-           gnus-article-unseen-p))
+	   gnus-article-unseen-p))
 @end lisp
 
 (It's a pretty nonsensical example, since all unseen articles are also
@@ -6971,7 +6980,7 @@ meaningful.  Here's one example:
 (defun my-alter-message-id (header)
   (let ((id (mail-header-id header)))
     (when (string-match
-           "\\(<[^<>@@]*\\)\\.?cygnus\\..*@@\\([^<>@@]*>\\)" id)
+	   "\\(<[^<>@@]*\\)\\.?cygnus\\..*@@\\([^<>@@]*>\\)" id)
       (mail-header-set-id
        (concat (match-string 1 id) "@@" (match-string 2 id))
        header))))
@@ -7171,8 +7180,8 @@ by number, you could do something like:
 @lisp
 (setq gnus-thread-sort-functions
       '(gnus-thread-sort-by-number
-        gnus-thread-sort-by-subject
-        (not gnus-thread-sort-by-total-score)))
+	gnus-thread-sort-by-subject
+	(not gnus-thread-sort-by-total-score)))
 @end lisp
 
 The threads that have highest score will be displayed first in the
@@ -7187,7 +7196,7 @@ say something like:
 @lisp
 (setq gnus-thread-sort-functions
       '((not gnus-thread-sort-by-number)
-        gnus-thread-sort-by-score))
+	gnus-thread-sort-by-score))
 @end lisp
 
 @vindex gnus-thread-score-function
@@ -7220,7 +7229,7 @@ say something like:
 @lisp
 (setq gnus-article-sort-functions
       '(gnus-article-sort-by-number
-        gnus-article-sort-by-subject))
+	gnus-article-sort-by-subject))
 @end lisp
 
 You can define group specific sorting via @code{gnus-parameters},
@@ -7292,7 +7301,7 @@ than 100 lines, you could say something like:
   "Return non-nil for short, unread articles."
   (and (gnus-data-unread-p data)
        (< (mail-header-lines (gnus-data-header data))
-          100)))
+	  100)))
 
 (setq gnus-async-prefetch-article-p 'my-async-short-unread-p)
 @end lisp
@@ -7760,7 +7769,7 @@ following will do just that:
 
 (setq gnus-split-methods
       '((gnus-article-archive-name)
-        (my-save-name)))
+	(my-save-name)))
 @end lisp
 
 
@@ -7992,8 +8001,8 @@ variables are of the form
 
 @lisp
       (list '(regexp1 command2)
-            '(regexp2 command2)
-            ...)
+	    '(regexp2 command2)
+	    ...)
 @end lisp
 
 @table @code
@@ -8361,7 +8370,7 @@ highlighting.
 @lisp
 (setq gnus-emphasis-alist
       '(("_\\(\\w+\\)_" 0 1 gnus-emphasis-underline)
-        ("\\*\\(\\w+\\)\\*" 0 1 gnus-emphasis-bold)))
+	("\\*\\(\\w+\\)\\*" 0 1 gnus-emphasis-bold)))
 @end lisp
 
 @cindex slash
@@ -9117,8 +9126,8 @@ variable @code{gnus-parameters}:
 ;; @r{increase @code{gnus-button-*-level} in some groups:}
 (setq gnus-parameters
       '(("\\<\\(emacs\\|gnus\\)\\>" (gnus-button-emacs-level 10))
-        ("\\<unix\\>"               (gnus-button-man-level 10))
-        ("\\<tex\\>"                (gnus-button-tex-level 10))))
+	("\\<unix\\>"               (gnus-button-man-level 10))
+	("\\<tex\\>"                (gnus-button-tex-level 10))))
 @end lisp
 
 @table @code
@@ -9345,12 +9354,12 @@ from the end of the body towards the beginning.)  One likely value is:
 @lisp
 (setq gnus-signature-separator
       '("^-- $"         ; @r{The standard}
-        "^-- *$"        ; @r{A common mangling}
-        "^-------*$"    ; @r{Many people just use a looong}
-                        ; @r{line of dashes.  Shame!}
-        "^ *--------*$" ; @r{Double-shame!}
-        "^________*$"   ; @r{Underscores are also popular}
-        "^========*$")) ; @r{Pervert!}
+	"^-- *$"        ; @r{A common mangling}
+	"^-------*$"    ; @r{Many people just use a looong}
+			; @r{line of dashes.  Shame!}
+	"^ *--------*$" ; @r{Double-shame!}
+	"^________*$"   ; @r{Underscores are also popular}
+	"^========*$")) ; @r{Pervert!}
 @end lisp
 
 The more permissive you are, the more likely it is that you'll get false
@@ -9596,7 +9605,7 @@ Here's an example function the does the latter:
     (with-temp-buffer
       (insert (mm-get-part handle))
       (write-region (point-min) (point-max)
-                    (read-file-name "Save jpeg to: ")))))
+		    (read-file-name "Save jpeg to: ")))))
 (setq gnus-article-mime-part-function
       'my-save-all-jpeg-parts)
 @end lisp
@@ -9655,8 +9664,8 @@ such unenlightened users, you can make live easier by adding
 @lisp
 (setq mm-file-name-rewrite-functions
       '(mm-file-name-trim-whitespace
-        mm-file-name-collapse-whitespace
-        mm-file-name-replace-whitespace))
+	mm-file-name-collapse-whitespace
+	mm-file-name-replace-whitespace))
 @end lisp
 
 @noindent
@@ -9733,7 +9742,7 @@ charset, you can choose what charset to use by saying the following:
 
 @lisp
 (put-charset-property 'cyrillic-iso8859-5
-                      'preferred-coding-system 'koi8-r)
+		      'preferred-coding-system 'koi8-r)
 @end lisp
 
 This means that Russian will be encoded using @code{koi8-r} instead of
@@ -9928,7 +9937,7 @@ then ask Google if that fails:
 @lisp
 (setq gnus-refer-article-method
       '(current
-        (nnweb "google" (nnweb-type google))))
+	(nnweb "google" (nnweb-type google))))
 @end lisp
 
 Most of the mail back ends support fetching by @code{Message-ID}, but
@@ -10149,7 +10158,7 @@ at all times:
 
 @lisp
 (add-hook 'gnus-configure-windows-hook
-          'gnus-tree-perhaps-minimize)
+	  'gnus-tree-perhaps-minimize)
 @end lisp
 
 @item gnus-generate-tree-function
@@ -10186,8 +10195,8 @@ Here's the same thread displayed in a vertical tree buffer:
 [odd] [Jan] [odd] (***)                   [Jor]
   |           |     |--\
 [Gun]       [Eri] [Eri] [odd]
-                          |
-                        [Paa]
+			  |
+			[Paa]
 @end group
 @end example
 
@@ -10202,10 +10211,10 @@ following to your @file{~/.gnus.el} file:
 (gnus-add-configuration
  '(article
    (vertical 1.0
-             (horizontal 0.25
-                         (summary 0.75 point)
-                         (tree 1.0))
-             (article 1.0))))
+	     (horizontal 0.25
+			 (summary 0.75 point)
+			 (tree 1.0))
+	     (article 1.0))))
 @end lisp
 
 @xref{Window Layout}.
@@ -10363,8 +10372,8 @@ suggestions you find reasonable.  (Note that
 @lisp
 (setq gnus-move-split-methods
       '(("^From:.*Lars Magne" "nnml:junk")
-        ("^Subject:.*gnus" "nnfolder:important")
-        (".*" "nnml:misc")))
+	("^Subject:.*gnus" "nnfolder:important")
+	(".*" "nnml:misc")))
 @end lisp
 
 
@@ -10461,7 +10470,7 @@ buffers.  For example:
 @lisp
 (setq gnus-newsgroup-variables
       '(message-use-followup-to
-        (gnus-visible-headers .
+	(gnus-visible-headers .
  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
 @end lisp
 
@@ -11962,7 +11971,7 @@ mainly from that server), you can set it permanently as follows:
 @lisp
 (setq mail-source-primary-source
       '(pop :server "pop3.mail.server"
-            :password "secret"))
+	    :password "secret"))
 @end lisp
 
 @noindent
@@ -11971,11 +11980,11 @@ Otherwise, bind it dynamically only when performing the
 
 @lisp
 (add-hook 'message-send-mail-hook
-          (lambda ()
-            (let ((mail-source-primary-source
-                   '(pop :server "pop3.mail.server"
-                         :password "secret")))
-              (mail-source-touch-pop))))
+	  (lambda ()
+	    (let ((mail-source-primary-source
+		   '(pop :server "pop3.mail.server"
+			 :password "secret")))
+	      (mail-source-touch-pop))))
 @end lisp
 
 @node Mail and Post
@@ -12028,13 +12037,13 @@ you're in, you could say something like the following:
 
 @lisp
 (add-hook 'gnus-select-group-hook
-          (lambda ()
-            (cond
-             ((string-match
-               "^de\\." (gnus-group-real-name gnus-newsgroup-name))
-              (ispell-change-dictionary "deutsch"))
-             (t
-              (ispell-change-dictionary "english")))))
+	  (lambda ()
+	    (cond
+	     ((string-match
+	       "^de\\." (gnus-group-real-name gnus-newsgroup-name))
+	      (ispell-change-dictionary "deutsch"))
+	     (t
+	      (ispell-change-dictionary "english")))))
 @end lisp
 
 Modify to suit your needs.
@@ -12065,10 +12074,10 @@ use to store sent messages.  The default is:
 
 @lisp
 (nnfolder "archive"
-          (nnfolder-directory   "~/Mail/archive")
-          (nnfolder-active-file "~/Mail/archive/active")
-          (nnfolder-get-new-mail nil)
-          (nnfolder-inhibit-expiry t))
+	  (nnfolder-directory   "~/Mail/archive")
+	  (nnfolder-active-file "~/Mail/archive/active")
+	  (nnfolder-get-new-mail nil)
+	  (nnfolder-inhibit-expiry t))
 @end lisp
 
 You can, however, use any mail select method (@code{nnml},
@@ -12079,9 +12088,9 @@ directory chosen, you could say something like:
 @lisp
 (setq gnus-message-archive-method
       '(nnfolder "archive"
-                 (nnfolder-inhibit-expiry t)
-                 (nnfolder-active-file "~/News/sent-mail/active")
-                 (nnfolder-directory "~/News/sent-mail/")))
+		 (nnfolder-inhibit-expiry t)
+		 (nnfolder-active-file "~/News/sent-mail/active")
+		 (nnfolder-directory "~/News/sent-mail/")))
 @end lisp
 
 @vindex gnus-message-archive-group
@@ -12132,16 +12141,16 @@ Save to different groups based on what group you are in:
 @lisp
 (setq gnus-message-archive-group
       '(("^alt" "sent-to-alt")
-        ("mail" "sent-to-mail")
-        (".*" "sent-to-misc")))
+	("mail" "sent-to-mail")
+	(".*" "sent-to-misc")))
 @end lisp
 
 More complex stuff:
 @lisp
 (setq gnus-message-archive-group
       '((if (message-news-p)
-            "misc-news"
-          "misc-mail")))
+	    "misc-news"
+	  "misc-mail")))
 @end lisp
 
 How about storing all news messages in one file, but storing all mail
@@ -12150,8 +12159,8 @@ messages in one file per month:
 @lisp
 (setq gnus-message-archive-group
       '((if (message-news-p)
-            "misc-news"
-          (concat "mail." (format-time-string "%Y-%m")))))
+	    "misc-news"
+	  (concat "mail." (format-time-string "%Y-%m")))))
 @end lisp
 
 @c (XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to
@@ -12303,33 +12312,33 @@ So here's a new example:
 @lisp
 (setq gnus-posting-styles
       '((".*"
-         (signature-file "~/.signature")
-         (name "User Name")
-         (x-face-file "~/.xface")
-         (x-url (getenv "WWW_HOME"))
-         (organization "People's Front Against MWM"))
-        ("^rec.humor"
-         (signature my-funny-signature-randomizer))
-        ((equal (system-name) "gnarly")  ;; @r{A form}
-         (signature my-quote-randomizer))
-        (message-news-p        ;; @r{A function symbol}
-         (signature my-news-signature))
-        (window-system         ;; @r{A value symbol}
-         ("X-Window-System" (format "%s" window-system)))
-        ;; @r{If I'm replying to Larsi, set the Organization header.}
-        ((header "from" "larsi.*org")
-         (Organization "Somewhere, Inc."))
-        ((posting-from-work-p) ;; @r{A user defined function}
-         (signature-file "~/.work-signature")
-         (address "user@@bar.foo")
-         (body "You are fired.\n\nSincerely, your boss.")
-         (organization "Important Work, Inc"))
-        ("nnml:.*"
-         (From (save-excursion
-                 (set-buffer gnus-article-buffer)
-                 (message-fetch-field "to"))))
-        ("^nn.+:"
-         (signature-file "~/.mail-signature"))))
+	 (signature-file "~/.signature")
+	 (name "User Name")
+	 (x-face-file "~/.xface")
+	 (x-url (getenv "WWW_HOME"))
+	 (organization "People's Front Against MWM"))
+	("^rec.humor"
+	 (signature my-funny-signature-randomizer))
+	((equal (system-name) "gnarly")  ;; @r{A form}
+	 (signature my-quote-randomizer))
+	(message-news-p        ;; @r{A function symbol}
+	 (signature my-news-signature))
+	(window-system         ;; @r{A value symbol}
+	 ("X-Window-System" (format "%s" window-system)))
+	;; @r{If I'm replying to Larsi, set the Organization header.}
+	((header "from" "larsi.*org")
+	 (Organization "Somewhere, Inc."))
+	((posting-from-work-p) ;; @r{A user defined function}
+	 (signature-file "~/.work-signature")
+	 (address "user@@bar.foo")
+	 (body "You are fired.\n\nSincerely, your boss.")
+	 (organization "Important Work, Inc"))
+	("nnml:.*"
+	 (From (save-excursion
+		 (set-buffer gnus-article-buffer)
+		 (message-fetch-field "to"))))
+	("^nn.+:"
+	 (signature-file "~/.mail-signature"))))
 @end lisp
 
 The @samp{nnml:.*} rule means that you use the @code{To} address as the
@@ -12792,12 +12801,12 @@ an indirect connection:
 (setq gnus-select-method
       '(nntp "indirect"
 	     (nntp-address "news.server.example")
-             (nntp-via-user-name "intermediate_user_name")
-             (nntp-via-address "intermediate.host.example")
-             (nntp-via-rlogin-command "ssh")
-             (nntp-end-of-line "\n")
-             (nntp-via-rlogin-command-switches ("-C" "-t" "-e" "none"))
-             (nntp-open-connection-function nntp-open-via-rlogin-and-telnet)))
+	     (nntp-via-user-name "intermediate_user_name")
+	     (nntp-via-address "intermediate.host.example")
+	     (nntp-via-rlogin-command "ssh")
+	     (nntp-end-of-line "\n")
+	     (nntp-via-rlogin-command-switches ("-C" "-t" "-e" "none"))
+	     (nntp-open-connection-function nntp-open-via-rlogin-and-telnet)))
 @end lisp
 
 If you're behind a firewall, but have direct access to the outside world
@@ -12843,8 +12852,8 @@ Change that to:
 
 @lisp
 (nnml "cache"
-         (nnml-directory "~/News/cache/")
-         (nnml-active-file "~/News/cache/active"))
+	 (nnml-directory "~/News/cache/")
+	 (nnml-active-file "~/News/cache/active"))
 @end lisp
 
 Type @kbd{C-c C-c} to return to the server buffer.  If you now press
@@ -13091,7 +13100,7 @@ The default value is
 @lisp
 '(("nntpd 1\\.5\\.11t"
    (remove-hook 'nntp-server-opened-hook
-                'nntp-send-mode-reader)))
+		'nntp-send-mode-reader)))
 @end lisp
 
 This ensures that Gnus doesn't send the @code{MODE READER} command to
@@ -13691,8 +13700,8 @@ You will probably want to split the mail into several groups, though:
 @lisp
 (setq nnmail-split-methods
       '(("junk" "^From:.*Lars Ingebrigtsen")
-        ("crazy" "^Subject:.*die\\|^Organization:.*flabby")
-        ("other" "")))
+	("crazy" "^Subject:.*die\\|^Organization:.*flabby")
+	("other" "")))
 @end lisp
 
 This will result in three new @code{nnml} mail groups being created:
@@ -13960,7 +13969,7 @@ An example directory mail source:
 
 @lisp
 (directory :path "/home/user-name/procmail-dir/"
-           :suffix ".prcml")
+	   :suffix ".prcml")
 @end lisp
 
 @item pop
@@ -14101,12 +14110,12 @@ Two example maildir mail sources:
 
 @lisp
 (maildir :path "/home/user-name/Maildir/"
-         :subdirs ("cur" "new"))
+	 :subdirs ("cur" "new"))
 @end lisp
 
 @lisp
 (maildir :path "/user@@remotehost.org:~/Maildir/"
-         :subdirs ("new"))
+	 :subdirs ("new"))
 @end lisp
 
 @item imap
@@ -14242,8 +14251,8 @@ An example webmail source:
 
 @lisp
 (webmail :subtype 'hotmail
-         :user "user-name"
-         :password "secret")
+	 :user "user-name"
+	 :password "secret")
 @end lisp
 @end table
 
@@ -14262,8 +14271,8 @@ example:
 @lisp
 (setq mail-sources
       '((directory :path "/home/pavel/.Spool/"
-                   :suffix ""
-                   :plugged t)))
+		   :suffix ""
+		   :plugged t)))
 @end lisp
 
 Gnus will then fetch your mail even when you are unplugged.  This is
@@ -14281,7 +14290,7 @@ consider the following mail-source setting:
 
 @lisp
 (setq mail-sources '((pop :user "jrl"
-                          :server "pophost" :function fetchfunc)))
+			  :server "pophost" :function fetchfunc)))
 @end lisp
 
 While the function @code{fetchfunc} is executing, the symbol @code{user}
@@ -14371,8 +14380,8 @@ If you want to fetch mail both from your local spool as well as a
 @lisp
 (setq mail-sources
       '((file)
-        (pop :server "pop3.mail.server"
-             :password "secret")))
+	(pop :server "pop3.mail.server"
+	     :password "secret")))
 @end lisp
 
 Or, if you don't want to use any of the keyword defaults:
@@ -14380,10 +14389,10 @@ Or, if you don't want to use any of the keyword defaults:
 @lisp
 (setq mail-sources
       '((file :path "/var/spool/mail/user-name")
-        (pop :server "pop3.mail.server"
-             :user "user-name"
-             :port "pop3"
-             :password "secret")))
+	(pop :server "pop3.mail.server"
+	     :user "user-name"
+	     :port "pop3"
+	     :password "secret")))
 @end lisp
 
 
@@ -14434,10 +14443,10 @@ default file modes the new mail files get:
 
 @lisp
 (add-hook 'nnmail-pre-get-new-mail-hook
-          (lambda () (set-default-file-modes 511)))
+	  (lambda () (set-default-file-modes 511)))
 
 (add-hook 'nnmail-post-get-new-mail-hook
-          (lambda () (set-default-file-modes 551)))
+	  (lambda () (set-default-file-modes 551)))
 @end lisp
 
 @item nnmail-use-long-file-names
@@ -14491,12 +14500,12 @@ Let's look at an example value of this variable first:
 ;; @r{the ordinary groups.  Warnings are put in a separate group}
 ;; @r{from real errors.}
 (| ("from" mail (| ("subject" "warn.*" "mail.warning")
-                   "mail.misc"))
+		   "mail.misc"))
    ;; @r{Non-error messages are crossposted to all relevant}
    ;; @r{groups, but we don't crosspost between the group for the}
    ;; @r{(ding) list and the group for other (ding) related mail.}
    (& (| (any "ding@@ifi\\.uio\\.no" "ding.list")
-         ("subject" "ding" "ding.misc"))
+	 ("subject" "ding" "ding.misc"))
       ;; @r{Other mailing lists@dots{}}
       (any "procmail@@informatik\\.rwth-aachen\\.de" "procmail.list")
       (any "SmartList@@informatik\\.rwth-aachen\\.de" "SmartList.list")
@@ -14569,7 +14578,7 @@ body of the messages:
       (widen)
       (goto-char (point-min))
       (when (re-search-forward "Some.*string" nil t)
-        "string.group"))))
+	"string.group"))))
 @end lisp
 
 The buffer is narrowed to the message in question when @var{function}
@@ -14701,8 +14710,8 @@ using the colon feature, like so:
       nnmail-cache-accepted-message-ids t
       nnmail-split-fancy
       '(| (: nnmail-split-fancy-with-parent)
-          ;; @r{other splits go here}
-        ))
+	  ;; @r{other splits go here}
+	))
 @end lisp
 
 This feature works as follows: when @code{nnmail-treat-duplicates} is
@@ -14806,7 +14815,7 @@ behave as if @code{nnmail-split-fancy} had been selected and variable
 @lisp
 (| (& (any "\\(bar@@femail\\.com\\|.*@@femail\\.com\\)" "mail.bar")
       (any "\\(foo@@nowhere\\.gov\\|foo@@localhost\\|foo-redist@@home\\)"
-           - "bugs-foo" - "rambling-foo" "mail.foo"))
+	   - "bugs-foo" - "rambling-foo" "mail.foo"))
    "mail.others")
 @end lisp
 
@@ -14980,7 +14989,7 @@ automatically, you can put something like the following in your
 @vindex gnus-mark-article-hook
 @lisp
 (remove-hook 'gnus-mark-article-hook
-             'gnus-summary-mark-read-and-unread-as-read)
+	     'gnus-summary-mark-read-and-unread-as-read)
 (add-hook 'gnus-mark-article-hook 'gnus-summary-mark-unread-as-read)
 @end lisp
 
@@ -15022,13 +15031,13 @@ everywhere else:
 (setq nnmail-expiry-wait-function
       (lambda (group)
        (cond ((string= group "mail.private")
-               31)
-             ((string= group "mail.junk")
-               1)
-             ((string= group "important")
-               'never)
-             (t
-               6))))
+	       31)
+	     ((string= group "mail.junk")
+	       1)
+	     ((string= group "important")
+	       'never)
+	     (t
+	       6))))
 @end lisp
 
 The group names this function is fed are ``unadorned'' group
@@ -15071,8 +15080,8 @@ expire mail to groups according to the variable
  (setq nnmail-expiry-target 'nnmail-fancy-expiry-target
        nnmail-fancy-expiry-targets
        '((to-from "boss" "nnfolder:Work")
-         ("subject" "IMPORTANT" "nnfolder:IMPORTANT.%Y.%b")
-         ("from" ".*" "nnfolder:Archive-%Y")))
+	 ("subject" "IMPORTANT" "nnfolder:IMPORTANT.%Y.%b")
+	 ("from" ".*" "nnfolder:Archive-%Y")))
 @end lisp
 
 With this setup, any mail that has @code{IMPORTANT} in its Subject
@@ -15252,19 +15261,19 @@ methods:
 @lisp
 (setq nnmail-split-fancy
       '(| ;; @r{Messages duplicates go to a separate group.}
-        ("gnus-warning" "duplicat\\(e\\|ion\\) of message" "duplicate")
-        ;; @r{Message from daemons, postmaster, and the like to another.}
-        (any mail "mail.misc")
-        ;; @r{Other rules.}
-        [...] ))
+	("gnus-warning" "duplicat\\(e\\|ion\\) of message" "duplicate")
+	;; @r{Message from daemons, postmaster, and the like to another.}
+	(any mail "mail.misc")
+	;; @r{Other rules.}
+	[...] ))
 @end lisp
 @noindent
 Or something like:
 @lisp
 (setq nnmail-split-methods
       '(("duplicates" "^Gnus-Warning:.*duplicate")
-        ;; @r{Other rules.}
-        [...]))
+	;; @r{Other rules.}
+	[...]))
 @end lisp
 
 Here's a neat feature: If you know that the recipient reads her mail
@@ -16513,7 +16522,7 @@ the summary buffer.
 
 (defun gnus-user-format-function-X (header)
   (let ((descr
-         (assq nnrss-description-field (mail-header-extra header))))
+	 (assq nnrss-description-field (mail-header-extra header))))
     (if descr (concat "\n\t" (cdr descr)) "")))
 @end lisp
 
@@ -16526,14 +16535,14 @@ summary buffer.
 (defun browse-nnrss-url( arg )
   (interactive "p")
   (let ((url (assq nnrss-url-field
-                   (mail-header-extra
-                    (gnus-data-header
-                     (assq (gnus-summary-article-number)
-                           gnus-newsgroup-data))))))
+		   (mail-header-extra
+		    (gnus-data-header
+		     (assq (gnus-summary-article-number)
+			   gnus-newsgroup-data))))))
     (if url
-        (progn
-          (browse-url (cdr url))
-          (gnus-summary-mark-as-read-forward 1))
+	(progn
+	  (browse-url (cdr url))
+	  (gnus-summary-mark-as-read-forward 1))
       (gnus-summary-scroll-up arg))))
 
 (eval-after-load "gnus"
@@ -16590,8 +16599,8 @@ browser like Netscape).  Here's one way:
     (defun w3-fetch (&optional url target)
       (interactive (list (w3-read-url-with-default)))
       (if (eq major-mode 'gnus-article-mode)
-          (browse-url url)
-        (w3-fetch-orig url target)))))
+	  (browse-url url)
+	(w3-fetch-orig url target)))))
 @end lisp
 
 Put that in your @file{.emacs} file, and hitting links in W3-rendered
@@ -16634,25 +16643,25 @@ see below.)
 @lisp
 (setq gnus-secondary-select-methods
       '((nnimap "simpleserver") ; @r{no special configuration}
-        ; @r{perhaps a ssh port forwarded server:}
-        (nnimap "dolk"
-                (nnimap-address "localhost")
-                (nnimap-server-port 1430))
-        ; @r{a UW server running on localhost}
-        (nnimap "barbar"
-                (nnimap-server-port 143)
-                (nnimap-address "localhost")
-                (nnimap-list-pattern ("INBOX" "mail/*")))
-        ; @r{anonymous public cyrus server:}
-        (nnimap "cyrus.andrew.cmu.edu"
-                (nnimap-authenticator anonymous)
-                (nnimap-list-pattern "archive.*")
-                (nnimap-stream network))
-        ; @r{a ssl server on a non-standard port:}
-        (nnimap "vic20"
-                (nnimap-address "vic20.somewhere.com")
-                (nnimap-server-port 9930)
-                (nnimap-stream ssl))))
+	; @r{perhaps a ssh port forwarded server:}
+	(nnimap "dolk"
+		(nnimap-address "localhost")
+		(nnimap-server-port 1430))
+	; @r{a UW server running on localhost}
+	(nnimap "barbar"
+		(nnimap-server-port 143)
+		(nnimap-address "localhost")
+		(nnimap-list-pattern ("INBOX" "mail/*")))
+	; @r{anonymous public cyrus server:}
+	(nnimap "cyrus.andrew.cmu.edu"
+		(nnimap-authenticator anonymous)
+		(nnimap-list-pattern "archive.*")
+		(nnimap-stream network))
+	; @r{a ssl server on a non-standard port:}
+	(nnimap "vic20"
+		(nnimap-address "vic20.somewhere.com")
+		(nnimap-server-port 9930)
+		(nnimap-stream ssl))))
 @end lisp
 
 After defining the new server, you can subscribe to groups on the
@@ -16679,7 +16688,7 @@ Note that this should be an integer, example server specification:
 
 @lisp
 (nnimap "mail.server.com"
-        (nnimap-server-port 4711))
+	(nnimap-server-port 4711))
 @end lisp
 
 @item nnimap-list-pattern
@@ -16699,8 +16708,8 @@ Example server specification:
 
 @lisp
 (nnimap "mail.server.com"
-        (nnimap-list-pattern ("INBOX" "Mail/*" "alt.sex.*"
-                               ("~friend/Mail/" . "list/*"))))
+	(nnimap-list-pattern ("INBOX" "Mail/*" "alt.sex.*"
+			       ("~friend/Mail/" . "list/*"))))
 @end lisp
 
 @item nnimap-stream
@@ -16715,7 +16724,7 @@ Example server specification:
 
 @lisp
 (nnimap "mail.server.com"
-        (nnimap-stream ssl))
+	(nnimap-stream ssl))
 @end lisp
 
 Please note that the value of @code{nnimap-stream} is a symbol!
@@ -16790,7 +16799,7 @@ Example server specification:
 
 @lisp
 (nnimap "mail.server.com"
-        (nnimap-authenticator anonymous))
+	(nnimap-authenticator anonymous))
 @end lisp
 
 Please note that the value of @code{nnimap-authenticator} is a symbol!
@@ -16864,9 +16873,9 @@ enable per-user persistent dormant flags, using something like:
 
 @lisp
 (setcdr (assq 'dormant nnimap-mark-to-flag-alist)
-        (format "gnus-dormant-%s" (user-login-name)))
+	(format "gnus-dormant-%s" (user-login-name)))
 (setcdr (assq 'dormant nnimap-mark-to-predicate-alist)
-        (format "KEYWORD gnus-dormant-%s" (user-login-name)))
+	(format "KEYWORD gnus-dormant-%s" (user-login-name)))
 @end lisp
 
 In this case, you would not want the per-user dormant flag showing up
@@ -16887,7 +16896,7 @@ Probably the only useful value to change this to is
 messages instead of the internal article date.  See section 6.4.4 of
 RFC 2060 for more information on valid strings.
 
-However, if @code{nnimap-search-uids-not-since-is-evil} 
+However, if @code{nnimap-search-uids-not-since-is-evil}
 is true, this variable has no effect since the search logic
 is reversed, as described below.
 
@@ -17032,9 +17041,9 @@ Neither did I, we need examples.
 @lisp
 (setq nnimap-split-rule
       '(("INBOX.nnimap"
-         "^Sender: owner-nnimap@@vic20.globalcom.se")
-        ("INBOX.junk"    "^Subject:.*MAKE MONEY")
-        ("INBOX.private" "")))
+	 "^Sender: owner-nnimap@@vic20.globalcom.se")
+	("INBOX.junk"    "^Subject:.*MAKE MONEY")
+	("INBOX.private" "")))
 @end lisp
 
 This will put all articles from the nnimap mailing list into mailbox
@@ -17081,10 +17090,10 @@ the syntax of this variable have been extended along the lines of:
 @lisp
 (setq nnimap-split-rule
       '(("my1server"    (".*" (("ding"    "ding@@gnus.org")
-                               ("junk"    "From:.*Simon"))))
-        ("my2server"    ("INBOX" nnimap-split-fancy))
-        ("my[34]server" (".*" (("private" "To:.*Simon")
-                               ("junk"    my-junk-func))))))
+			       ("junk"    "From:.*Simon"))))
+	("my2server"    ("INBOX" nnimap-split-fancy))
+	("my[34]server" (".*" (("private" "To:.*Simon")
+			       ("junk"    my-junk-func))))))
 @end lisp
 
 The virtual server name is in fact a regexp, so that the same rules
@@ -18034,9 +18043,9 @@ Here's an example:
 @lisp
 (setq gnus-post-method
       '(nngateway
-        "mail2news@@replay.com"
-        (nngateway-header-transformation
-         nngateway-mail2news-header-transformation)))
+	"mail2news@@replay.com"
+	(nngateway-header-transformation
+	 nngateway-mail2news-header-transformation)))
 @end lisp
 
 So, to use this, simply say something like:
@@ -18939,7 +18948,7 @@ wherever.
 (require 'gnus-agent)
 (setq  gnus-category-predicate-alist
   (append gnus-category-predicate-alist
-         '((old . my-article-old-p))))
+	 '((old . my-article-old-p))))
 @end lisp
 
 and simply specify your predicate as:
@@ -19018,9 +19027,9 @@ Group/Topic Parameter specification
 
 @lisp
 (agent-score ("from"
-                   ("Lars Ingebrigtsen" 1000000 nil s))
-             ("lines"
-                   (500 -100 nil <)))
+		   ("Lars Ingebrigtsen" 1000000 nil s))
+	     ("lines"
+		   (500 -100 nil <)))
 @end lisp
 
 Again, note the omission of the outermost parenthesis here.
@@ -20359,7 +20368,7 @@ Anyway, if you'd like to dig into it yourself, here's an example:
  (files "/hom/larsi/News/gnu.SCORE")
  (exclude-files "all.SCORE")
  (local (gnus-newsgroup-auto-expire t)
-        (gnus-summary-make-false-root empty))
+	(gnus-summary-make-false-root empty))
  (eval (ding)))
 @end lisp
 
@@ -20572,8 +20581,8 @@ will only follow a few of the threads, also want to see any new threads.
 You can do this with the following two score file entries:
 
 @example
-        (orphan -500)
-        (mark-and-expunge -100)
+	(orphan -500)
+	(mark-and-expunge -100)
 @end example
 
 When you enter the group the first time, you will only see the new
@@ -20772,9 +20781,9 @@ each instance of a word should add given a mark.
 @lisp
 (setq gnus-default-adaptive-word-score-alist
       `((,gnus-read-mark . 30)
-        (,gnus-catchup-mark . -10)
-        (,gnus-killed-mark . -20)
-        (,gnus-del-mark . -15)))
+	(,gnus-catchup-mark . -10)
+	(,gnus-killed-mark . -20)
+	(,gnus-del-mark . -15)))
 @end lisp
 
 This is the default value.  If you have adaption on words enabled, every
@@ -20903,8 +20912,8 @@ their own home score files:
 (setq gnus-home-score-file
       ;; @r{All groups that match the regexp @code{"\\.emacs"}}
       '(("\\.emacs" "emacs.SCORE")
-        ;; @r{All the comp groups in one score file}
-        ("^comp" "comp.SCORE")))
+	;; @r{All the comp groups in one score file}
+	("^comp" "comp.SCORE")))
 @end lisp
 
 @vindex gnus-home-adapt-file
@@ -21109,7 +21118,7 @@ say this:
 @lisp
 (setq gnus-global-score-files
       '("/ftp@@ftp.gnus.org:/pub/larsi/ding/score/soc.motss.SCORE"
-        "/ftp@@ftp.some-where:/pub/score/"))
+	"/ftp@@ftp.some-where:/pub/score/"))
 @end lisp
 
 @findex gnus-score-search-global-directories
@@ -21487,17 +21496,17 @@ function:
   "Decay SCORE according to `gnus-score-decay-constant'
 and `gnus-score-decay-scale'."
   (let ((n (- score
-              (* (if (< score 0) -1 1)
-                 (min (abs score)
-                      (max gnus-score-decay-constant
-                           (* (abs score)
-                              gnus-score-decay-scale)))))))
+	      (* (if (< score 0) -1 1)
+		 (min (abs score)
+		      (max gnus-score-decay-constant
+			   (* (abs score)
+			      gnus-score-decay-scale)))))))
     (if (and (featurep 'xemacs)
-             ;; XEmacs' floor can handle only the floating point
-             ;; number below the half of the maximum integer.
-             (> (abs n) (lsh -1 -2)))
-        (string-to-number
-         (car (split-string (number-to-string n) "\\.")))
+	     ;; XEmacs' floor can handle only the floating point
+	     ;; number below the half of the maximum integer.
+	     (> (abs n) (lsh -1 -2)))
+	(string-to-number
+	 (car (split-string (number-to-string n) "\\.")))
       (floor n))))
 @end lisp
 
@@ -22005,9 +22014,9 @@ buffer should be given.  Here's an excerpt of this variable:
 
 @lisp
 ((group (vertical 1.0 (group 1.0 point)
-                      (if gnus-carpal (group-carpal 4))))
+		      (if gnus-carpal (group-carpal 4))))
  (article (vertical 1.0 (summary 0.25 point)
-                        (article 1.0))))
+			(article 1.0))))
 @end lisp
 
 This is an alist.  The @dfn{key} is a symbol that names some action or
@@ -22020,7 +22029,7 @@ should occupy.  To take the @code{article} split as an example -
 
 @lisp
 (article (vertical 1.0 (summary 0.25 point)
-                       (article 1.0)))
+		       (article 1.0)))
 @end lisp
 
 This @dfn{split} says that the summary buffer should occupy 25% of upper
@@ -22042,9 +22051,9 @@ Here's a more complicated example:
 
 @lisp
 (article (vertical 1.0 (group 4)
-                       (summary 0.25 point)
-                       (if gnus-carpal (summary-carpal 4))
-                       (article 1.0)))
+		       (summary 0.25 point)
+		       (if gnus-carpal (summary-carpal 4))
+		       (article 1.0)))
 @end lisp
 
 If the size spec is an integer instead of a floating point number,
@@ -22062,13 +22071,13 @@ Not complicated enough for you?  Well, try this on for size:
 
 @lisp
 (article (horizontal 1.0
-             (vertical 0.5
-                 (group 1.0)
-                 (gnus-carpal 4))
-             (vertical 1.0
-                 (summary 0.25 point)
-                 (summary-carpal 4)
-                 (article 1.0))))
+	     (vertical 0.5
+		 (group 1.0)
+		 (gnus-carpal 4))
+	     (vertical 1.0
+		 (summary 0.25 point)
+		 (summary-carpal 4)
+		 (article 1.0))))
 @end lisp
 
 Whoops.  Two buffers with the mystery 100% tag.  And what's that
@@ -22141,8 +22150,8 @@ configuration list.
     (vertical 1.0
       (article 1.0)
       (horizontal 4
-        (group 1.0)
-        (article 10)))))
+	(group 1.0)
+	(article 10)))))
 @end lisp
 
 You might want to have several frames as well.  No prob---just use the
@@ -22151,13 +22160,13 @@ You might want to have several frames as well.  No prob---just use the
 @lisp
 (gnus-configure-frame
  '(frame 1.0
-         (vertical 1.0
-                   (summary 0.25 point frame-focus)
-                   (article 1.0))
-         (vertical ((height . 5) (width . 15)
-                    (user-position . t)
-                    (left . -1) (top . 1))
-                   (picon 1.0))))
+	 (vertical 1.0
+		   (summary 0.25 point frame-focus)
+		   (article 1.0))
+	 (vertical ((height . 5) (width . 15)
+		    (user-position . t)
+		    (left . -1) (top . 1))
+		   (picon 1.0))))
 
 @end lisp
 
@@ -22180,11 +22189,11 @@ might be used:
 
 @lisp
 (message (horizontal 1.0
-                     (vertical 1.0 (message 1.0 point))
-                     (vertical 0.24
-                               (if (buffer-live-p gnus-summary-buffer)
-                                   '(summary 0.5))
-                               (group 1.0))))
+		     (vertical 1.0 (message 1.0 point))
+		     (vertical 0.24
+			       (if (buffer-live-p gnus-summary-buffer)
+				   '(summary 0.5))
+			       (group 1.0))))
 @end lisp
 
 One common desire for a multiple frame split is to have a separate frame
@@ -22194,12 +22203,12 @@ accomplish that, something like the following can be done:
 @lisp
 (message
   (frame 1.0
-         (if (not (buffer-live-p gnus-summary-buffer))
-             (car (cdr (assoc 'group gnus-buffer-configuration)))
-           (car (cdr (assoc 'summary gnus-buffer-configuration))))
-         (vertical ((user-position . t) (top . 1) (left . 1)
-                    (name . "Message"))
-                   (message 1.0 point))))
+	 (if (not (buffer-live-p gnus-summary-buffer))
+	     (car (cdr (assoc 'group gnus-buffer-configuration)))
+	   (car (cdr (assoc 'summary gnus-buffer-configuration))))
+	 (vertical ((user-position . t) (top . 1) (left . 1)
+		    (name . "Message"))
+		   (message 1.0 point))))
 @end lisp
 
 @findex gnus-add-configuration
@@ -22211,9 +22220,9 @@ you want to change the @code{article} setting, you could say:
 @lisp
 (gnus-add-configuration
  '(article (vertical 1.0
-               (group 4)
-               (summary .25 point)
-               (article 1.0))))
+	       (group 4)
+	       (summary .25 point)
+	       (article 1.0))))
 @end lisp
 
 You'd typically stick these @code{gnus-add-configuration} calls in your
@@ -22254,16 +22263,16 @@ between summary buffer (top one-sixth) and article buffer (bottom).
 (gnus-add-configuration
  '(article
    (horizontal 1.0
-               (vertical 25 (group 1.0))
-               (vertical 1.0
-                         (summary 0.16 point)
-                         (article 1.0)))))
+	       (vertical 25 (group 1.0))
+	       (vertical 1.0
+			 (summary 0.16 point)
+			 (article 1.0)))))
 
 (gnus-add-configuration
  '(summary
    (horizontal 1.0
-               (vertical 25 (group 1.0))
-               (vertical 1.0 (summary 1.0 point)))))
+	       (vertical 25 (group 1.0))
+	       (vertical 1.0 (summary 1.0 point)))))
 @end lisp
 
 @end itemize
@@ -22333,11 +22342,11 @@ this variable:
 @c Hook written by Francesco Potorti` <pot@cnuce.cnr.it>
 @lisp
 (add-hook 'display-time-hook
-          (lambda () (setq gnus-mode-non-string-length
-                           (+ 21
-                              (if line-number-mode 5 0)
-                              (if column-number-mode 4 0)
-                              (length display-time-string)))))
+	  (lambda () (setq gnus-mode-non-string-length
+			   (+ 21
+			      (if line-number-mode 5 0)
+			      (if column-number-mode 4 0)
+			      (length display-time-string)))))
 @end lisp
 
 If this variable is @code{nil} (which is the default), the mode line
@@ -22931,12 +22940,12 @@ XEmacs.  Here are examples:
 ;; Specify the altitude of Face and X-Face images in the From header.
 (setq gnus-face-properties-alist
       '((pbm . (:face gnus-x-face :ascent 80))
-        (png . (:ascent 80))))
+	(png . (:ascent 80))))
 
 ;; Show Face and X-Face images as pressed buttons.
 (setq gnus-face-properties-alist
       '((pbm . (:face gnus-x-face :relief -2))
-        (png . (:relief -2))))
+	(png . (:relief -2))))
 @end lisp
 
 @pxref{Image Descriptors, ,Image Descriptors, elisp, The Emacs Lisp
@@ -22981,7 +22990,7 @@ like the following in your @file{~/.gnus.el} file:
 @lisp
 (setq message-required-news-headers
       (nconc message-required-news-headers
-             (list '(X-Face . gnus-random-x-face))))
+	     (list '(X-Face . gnus-random-x-face))))
 @end lisp
 
 Using the last function would be something like this:
@@ -22989,9 +22998,9 @@ Using the last function would be something like this:
 @lisp
 (setq message-required-news-headers
       (nconc message-required-news-headers
-             (list '(X-Face . (lambda ()
-                                (gnus-x-face-from-file
-                                 "~/My-face.gif"))))))
+	     (list '(X-Face . (lambda ()
+				(gnus-x-face-from-file
+				 "~/My-face.gif"))))))
 @end lisp
 
 
@@ -23040,8 +23049,8 @@ following in your @file{~/.gnus.el} file:
 @lisp
 (setq message-required-news-headers
       (nconc message-required-news-headers
-             (list '(Face . (lambda ()
-                              (gnus-face-from-file "~/face.jpg"))))))
+	     (list '(Face . (lambda ()
+			      (gnus-face-from-file "~/face.jpg"))))))
 @end lisp
 
 
@@ -23403,8 +23412,8 @@ Then put the following split rule in @code{nnmail-split-fancy}
 (...
  (to "larsi@@trym.ifi.uio.no"
      (| ("subject" "re:.*" "misc")
-        ("references" ".*@@.*" "misc")
-        "spam"))
+	("references" ".*@@.*" "misc")
+	"spam"))
  ...)
 @end lisp
 
@@ -23468,10 +23477,10 @@ Specifiers}) follow.
 @lisp
 (setq mail-sources
       '((file :prescript "formail -bs spamassassin < /var/mail/%u")
-        (pop :user "jrl"
-             :server "pophost"
-             :postscript
-             "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
+	(pop :user "jrl"
+	     :server "pophost"
+	     :postscript
+	     "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
 @end lisp
 
 Once you manage to process your incoming spool somehow, thus making
@@ -23480,7 +23489,7 @@ filter it out.  Using normal split methods (@pxref{Splitting Mail}):
 
 @lisp
 (setq nnmail-split-methods '(("spam"  "^X-Spam-Flag: YES")
-                             ...))
+			     ...))
 @end lisp
 
 Or using fancy split methods (@pxref{Fancy Mail Splitting}):
@@ -23488,7 +23497,7 @@ Or using fancy split methods (@pxref{Fancy Mail Splitting}):
 @lisp
 (setq nnmail-split-methods 'nnmail-split-fancy
       nnmail-split-fancy '(| ("X-Spam-Flag" "YES" "spam")
-                             ...))
+			     ...))
 @end lisp
 
 Some people might not like the idea of piping the mail through various
@@ -23498,14 +23507,14 @@ call the external tools during splitting.  Example fancy split method:
 
 @lisp
 (setq nnmail-split-fancy '(| (: kevin-spamassassin)
-                             ...))
+			     ...))
 (defun kevin-spamassassin ()
   (save-excursion
     (save-restriction
       (widen)
       (if (eq 1 (call-process-region (point-min) (point-max)
-                                     "spamc" nil nil nil "-c"))
-          "spam"))))
+				     "spamc" nil nil nil "-c"))
+	  "spam"))))
 @end lisp
 
 Note that with the nnimap back end, message bodies will not be
@@ -23813,10 +23822,10 @@ ends, and the following split rule:
 
 @example
  nnimap-split-fancy '(|
-                      (any "ding" "ding")
-                      (: spam-split)
-                      ;; @r{default mailbox}
-                      "mail")
+		      (any "ding" "ding")
+		      (: spam-split)
+		      ;; @r{default mailbox}
+		      "mail")
 @end example
 
 @noindent
@@ -23835,13 +23844,13 @@ done by passing a parameter to @code{spam-split}:
 @example
 nnimap-split-fancy
       '(|
-        ;; @r{spam detected by @code{spam-use-regex-headers} goes to @samp{regex-spam}}
-        (: spam-split "regex-spam" 'spam-use-regex-headers)
-        (any "ding" "ding")
-        ;; @r{all other spam detected by spam-split goes to @code{spam-split-group}}
-        (: spam-split)
-        ;; @r{default mailbox}
-        "mail")
+	;; @r{spam detected by @code{spam-use-regex-headers} goes to @samp{regex-spam}}
+	(: spam-split "regex-spam" 'spam-use-regex-headers)
+	(any "ding" "ding")
+	;; @r{all other spam detected by spam-split goes to @code{spam-split-group}}
+	(: spam-split)
+	;; @r{default mailbox}
+	"mail")
 @end example
 
 @noindent
@@ -24089,15 +24098,15 @@ From Ted Zlatanov <tzz@@lifelogs.com>.
  nnimap-split-rule 'nnimap-split-fancy
  ;; @r{understand what this does before you copy it to your own setup!}
  nnimap-split-fancy '(|
-                      ;; @r{trace references to parents and put in their group}
-                      (: gnus-registry-split-fancy-with-parent)
-                      ;; @r{this will catch server-side SpamAssassin tags}
-                      (: spam-split 'spam-use-regex-headers)
-                      (any "ding" "ding")
-                      ;; @r{note that spam by default will go to @samp{spam}}
-                      (: spam-split)
-                      ;; @r{default mailbox}
-                      "mail"))
+		      ;; @r{trace references to parents and put in their group}
+		      (: gnus-registry-split-fancy-with-parent)
+		      ;; @r{this will catch server-side SpamAssassin tags}
+		      (: spam-split 'spam-use-regex-headers)
+		      (any "ding" "ding")
+		      ;; @r{note that spam by default will go to @samp{spam}}
+		      (: spam-split)
+		      ;; @r{default mailbox}
+		      "mail"))
 
 ;; @r{my parameters, set with @kbd{G p}}
 
@@ -24132,7 +24141,7 @@ From Ted Zlatanov <tzz@@lifelogs.com>.
  ;; @r{also to my @samp{nnimap+mail.lifelogs.com:trainham} folder for training}
 
  (ham-process-destination "nnimap+mail.lifelogs.com:mail"
-                          "nnimap+mail.lifelogs.com:trainham")
+			  "nnimap+mail.lifelogs.com:trainham")
  ;; @r{in this group, only @samp{!} marks are ham}
  (ham-marks
   (gnus-ticked-mark))
@@ -24882,7 +24891,7 @@ messages.
 @example
  ((spam-contents gnus-group-spam-classification-ham)
   (spam-process ((ham spam-use-spamoracle)
-                 (spam spam-use-spamoracle))))
+		 (spam spam-use-spamoracle))))
 @end example
 For this group the @code{spam-use-spamoracle} is installed for both
 ham and spam processing.  If the group contains spam message
@@ -25177,7 +25186,7 @@ spam or it should go into @samp{mail.misc}.  If it is spam, then
 @lisp
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
-          "mail.misc"))
+	  "mail.misc"))
 @end lisp
 
 @defvar spam-stat-split-fancy-spam-group
@@ -25191,8 +25200,8 @@ expression are considered potential spam.
 @lisp
 (setq nnmail-split-fancy
       `(| ("Subject" "\\bspam-stat\\b" "mail.emacs")
-          (: spam-stat-split-fancy)
-          "mail.misc"))
+	  (: spam-stat-split-fancy)
+	  "mail.misc"))
 @end lisp
 
 If you want to filter for spam first, then you must be careful when
@@ -25204,8 +25213,8 @@ mails, when creating the dictionary!
 @lisp
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
-          ("Subject" "\\bspam-stat\\b" "mail.emacs")
-          "mail.misc"))
+	  ("Subject" "\\bspam-stat\\b" "mail.emacs")
+	  "mail.misc"))
 @end lisp
 
 You can combine this with traditional filtering.  Here, we move all
@@ -25218,9 +25227,9 @@ dictionary!
 @lisp
 (setq nnmail-split-fancy
       `(| ("Content-Type" "text/html" "mail.spam.filtered")
-          (: spam-stat-split-fancy)
-          ("Subject" "\\bspam-stat\\b" "mail.emacs")
-          "mail.misc"))
+	  (: spam-stat-split-fancy)
+	  ("Subject" "\\bspam-stat\\b" "mail.emacs")
+	  "mail.misc"))
 @end lisp
 
 
@@ -26868,7 +26877,7 @@ this now has changed to
 @lisp
 (setq mail-sources
       '((directory :path "~/mail/incoming/"
-                   :suffix ".in")))
+		   :suffix ".in")))
 @end lisp
 
 @xref{Mail Source Specifiers}.
@@ -27047,10 +27056,10 @@ parameters, a'la:
 @lisp
 (setq gnus-parameters
       '(("mail\\..*"
-         (gnus-show-threads nil)
-         (gnus-use-scoring nil))
-        ("^nnimap:\\(foo.bar\\)$"
-         (to-group . "\\1"))))
+	 (gnus-show-threads nil)
+	 (gnus-use-scoring nil))
+	("^nnimap:\\(foo.bar\\)$"
+	 (to-group . "\\1"))))
 @end lisp
 
 @item
@@ -27371,7 +27380,7 @@ Add a new format of match like
 The old format like the lines below is obsolete, but still accepted.
 @lisp
 (header "to" "larsi.*org"
-        (Organization "Somewhere, Inc."))
+	(Organization "Somewhere, Inc."))
 @end lisp
 
 @item
@@ -29022,17 +29031,17 @@ Below is a slightly shortened version of the @code{nndir} back end.
 
 (deffoo nndir-open-server (server &optional defs)
   (setq nndir-directory
-        (or (cadr (assq 'nndir-directory defs))
-            server))
+	(or (cadr (assq 'nndir-directory defs))
+	    server))
   (unless (assq 'nndir-directory defs)
     (push `(nndir-directory ,server) defs))
   (push `(nndir-current-group
-          ,(file-name-nondirectory
-            (directory-file-name nndir-directory)))
-        defs)
+	  ,(file-name-nondirectory
+	    (directory-file-name nndir-directory)))
+	defs)
   (push `(nndir-top-directory
-          ,(file-name-directory (directory-file-name nndir-directory)))
-        defs)
+	  ,(file-name-directory (directory-file-name nndir-directory)))
+	defs)
   (nnoo-change-server 'nndir server defs))
 
 (nnoo-map-functions nndir
@@ -29178,26 +29187,26 @@ number-rule     = "(" quote number-header quote space *number-match ")"
 date-rule       = "(" quote date-header quote space *date-match ")"
 quote           = <ascii 34>
 string-header   = "subject" / "from" / "references" / "message-id" /
-                  "xref" / "body" / "head" / "all" / "followup"
+		  "xref" / "body" / "head" / "all" / "followup"
 number-header   = "lines" / "chars"
 date-header     = "date"
 string-match    = "(" quote <string> quote [ "" / [ space score [ "" /
-                  space date [ "" / [ space string-match-t ] ] ] ] ] ")"
+		  space date [ "" / [ space string-match-t ] ] ] ] ] ")"
 score           = "nil" / <integer>
 date            = "nil" / <natural number>
 string-match-t  = "nil" / "s" / "substring" / "S" / "Substring" /
-                  "r" / "regex" / "R" / "Regex" /
-                  "e" / "exact" / "E" / "Exact" /
-                  "f" / "fuzzy" / "F" / "Fuzzy"
+		  "r" / "regex" / "R" / "Regex" /
+		  "e" / "exact" / "E" / "Exact" /
+		  "f" / "fuzzy" / "F" / "Fuzzy"
 number-match    = "(" <integer> [ "" / [ space score [ "" /
-                  space date [ "" / [ space number-match-t ] ] ] ] ] ")"
+		  space date [ "" / [ space number-match-t ] ] ] ] ] ")"
 number-match-t  = "nil" / "=" / "<" / ">" / ">=" / "<="
 date-match      = "(" quote <string> quote [ "" / [ space score [ "" /
-                  space date [ "" / [ space date-match-t ] ] ] ] ")"
+		  space date [ "" / [ space date-match-t ] ] ] ] ")"
 date-match-t    = "nil" / "at" / "before" / "after"
 atom            = "(" [ required-atom / optional-atom ] ")"
 required-atom   = mark / expunge / mark-and-expunge / files /
-                  exclude-files / read-only / touched
+		  exclude-files / read-only / touched
 optional-atom   = adapt / local / eval
 mark            = "mark" space nil-or-number
 nil-or-number   = "nil" / <integer>
@@ -29320,7 +29329,7 @@ range           = simple-range / normal-range
 simple-range    = "(" number " . " number ")"
 normal-range    = "(" start-contents ")"
 contents        = "" / simple-range *[ " " contents ] /
-                  number *[ " " contents ]
+		  number *[ " " contents ]
 @end example
 
 Gnus currently uses ranges to keep track of read articles and article
@@ -29345,9 +29354,9 @@ second is a more complex one:
 ("no.group" 5 ((1 . 54324)))
 
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
-                ((tick (15 . 19)) (replied 3 6 (19 . 3)))
-                (nnml "")
-                ((auto-expire . t) (to-address . "ding@@gnus.org")))
+		((tick (15 . 19)) (replied 3 6 (19 . 3)))
+		(nnml "")
+		((auto-expire . t) (to-address . "ding@@gnus.org")))
 @end example
 
 The first element is the @dfn{group name}---as Gnus knows the group,
@@ -29368,8 +29377,8 @@ Here's a BNF definition of the group info format:
 
 @example
 info          = "(" group space ralevel space read
-                [ "" / [ space marks-list [ "" / [ space method [ "" /
-                space parameters ] ] ] ] ] ")"
+		[ "" / [ space marks-list [ "" / [ space method [ "" /
+		space parameters ] ] ] ] ] ")"
 group         = quote <string> quote
 ralevel       = rank / level
 level         = <integer in the range of 1 to inf>

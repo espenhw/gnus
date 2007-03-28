@@ -1,3 +1,8 @@
+2007-03-28  Didier Verna  <didier@xemacs.org>
+
+	* gnus.texi (Group Parameters): Document the posting-style merging
+	process in topic-mode.
+
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Scoring On Other Headers): Add gnus-inhibit-slow-scoring.
@@ -3706,7 +3711,7 @@
 2001-12-03 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* infohack.el (infohack): To process write-protected files safely,
-      	make this buffer be writable after `find-file'.
+	make this buffer be writable after `find-file'.
 	From TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 2001-12-03 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -4243,7 +4248,7 @@
 2001-07-25 22:22:22  Raymond Scholz  <rscholz@zonix.de>
 
 	* gnus.texi (Fancy Mail Splitting): New variable
-        nnmail-split-fancy-with-parent-ignore-groups
+	nnmail-split-fancy-with-parent-ignore-groups
 
 2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -5296,7 +5301,7 @@
 
 1999-07-06 05:37:46  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
-        * gnus.texi (Fancy Mail Splitting): Document RESTRICT.
+	* gnus.texi (Fancy Mail Splitting): Document RESTRICT.
 
 1999-07-07 10:26:59  Robin S. Socha  <robin@socha.net>
 
@@ -5389,7 +5394,7 @@
 1999-02-26 20:54:34  Jason R. Mastaler  <jason@4b.org>
 
 	* gnus.texi (Article Date): Added joke by Colin Rafferty
- 	(colin@xemacs.org).
+	(colin@xemacs.org).
 
 1999-02-26 08:26:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
