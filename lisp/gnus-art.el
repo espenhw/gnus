@@ -1416,9 +1416,9 @@ predicate.  See Info node `(gnus)Customizing Articles'."
 	      (executable-find "icontopbm")))
        'head)
   "Display X-Face headers.
-Valid values are nil, t, `head', `first', `last', an integer or a
-predicate.  See Info node `(gnus)Customizing Articles' and Info
-node `(gnus)X-Face' for details."
+Valid values are nil and `head'.
+See Info node `(gnus)Customizing Articles' and Info node
+`(gnus)X-Face' for details."
   :group 'gnus-article-treat
   :version "21.1"
   :link '(custom-manual "(gnus)Customizing Articles")
