@@ -1,3 +1,7 @@
+2007-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi: Untabify.
+
 2007-03-28  Didier Verna  <didier@xemacs.org>
 
 	* gnus.texi (Group Parameters): Document the posting-style merging
