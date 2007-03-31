@@ -1,5 +1,8 @@
 2007-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-fill-column): New variable.
+	(message-mode): Use it.  Add comment on a possible new hook.
+
 	* nnmail.el (nnmail-spool-file): Mark as obsolete.
 	(nnmail-get-new-mail): Reformat.
 
