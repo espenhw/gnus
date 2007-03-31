@@ -10,8 +10,8 @@
 
 2007-03-25  Kevin Greiner  <kevin.greiner@compsol.cc>
 
-	* gnus-art.el (gnus-article-set-window-start): Do nothing when the 
-	article buffer does not have a window.  This may not be the best 
+	* gnus-art.el (gnus-article-set-window-start): Do nothing when the
+	article buffer does not have a window.  This may not be the best
 	solution but is certainly better than setting the start of the null,
 	that is the current, window.
 
