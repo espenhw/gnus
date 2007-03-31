@@ -7,6 +7,20 @@
 	* gnus.texi (Group Parameters): Document the posting-style merging
 	process in topic-mode.
 
+2007-03-26  Richard Stallman  <rms@gnu.org>
+
+	* pgg.texi (Caching passphrase): Clean up previous change.
+
+2007-03-25  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	* gnus.texi (Setting Process Marks): Fix typo.
+
+2007-03-24  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	* gnus.texi (Splitting Mail): Reword "splitting"-as-adj to be -as-noun.
+
+	* gnus.texi (Mail Source Specifiers): Fix typo.
+
 2007-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Scoring On Other Headers): Add gnus-inhibit-slow-scoring.

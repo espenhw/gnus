@@ -1,3 +1,8 @@
+2007-03-27  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	* message.el (message-yank-original): Fix bug:
+	Don't switch point and mark unnecessarily.
+
 2007-03-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-put-addresses-in-ecomplete): Only fetch headers
@@ -42,6 +47,15 @@
 
 	* message.el (message-required-news-headers):
 	* gnus-util.el (gnus-intern-safe): Fix typo in docstring.
+
+2007-03-18  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	* tls.el (open-tls-stream): In handshake-waiting loop,
+	don't wait more if there is output available to process.
+
+2007-03-17  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	* tls.el (tls-program): Doc fix.
 
 2007-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -91,7 +105,7 @@
 
 2007-02-24  John Paul Wallington  <jpw@pobox.com>
 
-	* net/tls.el (tls-certtool-program): Fix custom type.
+	* tls.el (tls-certtool-program): Fix custom type.
 
 2007-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -6641,7 +6655,7 @@
 
 2004-10-12  Simon Josefsson  <jas@extundo.com>
 
-	* net/tls.el (tls-certtool-program): New variable.
+	* tls.el (tls-certtool-program): New variable.
 	(tls-certificate-information): New function, based on
 	ssl-certificate-information.
 
