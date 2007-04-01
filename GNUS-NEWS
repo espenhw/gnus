@@ -62,6 +62,10 @@ using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
 (`gnus-summary-limit-to-replied') and `/ R'
 (`gnus-summary-limit-to-recipient').  *Note Limiting::.
 
+** You can now fetch all ticked articles from the server using `Y t'
+(`gnus-summary-insert-ticked-articles').  *Note Summary Generation
+Commands::.
+
 ** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
 (`gnus-summary-sort-by-recipient').  *Note Summary Sorting::.
 
@@ -122,6 +126,11 @@ use `(setq message-hidden-headers nil)'.  *Note Message Headers:
 
 ** You can highlight different levels of citations like in the article
 buffer.  See `gnus-message-highlight-citation'.
+
+** `auto-fill-mode' is enabled by default in Message mode.  See
+`message-fill-column'.  *Note Message Headers: (message)Various Message
+Variables.
+
 
 
 * Changes in back ends
