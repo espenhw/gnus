@@ -153,6 +153,11 @@ headers visible, use @code{(setq message-hidden-headers nil)}.
 
 @item You can highlight different levels of citations like in the
 article buffer.  See @code{gnus-message-highlight-citation}.
+
+@item @code{auto-fill-mode} is enabled by default in Message mode.
+See @code{message-fill-column}.  @xref{Various Message Variables, ,
+Message Headers, message, Message Manual}.
+
 @end itemize
 
 @item Changes in back ends

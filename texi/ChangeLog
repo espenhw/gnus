@@ -1,5 +1,11 @@
 2007-04-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-faq.texi ([5.2]): Adjust for message-fill-column.
+
+	* gnus-news.texi: Add message-fill-column.
+
+	* message.texi (Various Message Variables): Add message-fill-column.
+
 	* gnus-news.el (gnus-news-header-disclaimer): Add newlines.
 
 2007-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
