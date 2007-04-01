@@ -33,7 +33,7 @@ Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005,
 See the end of the file for license conditions.
 
 Please send Gnus bug reports to bugs@gnus.org.
-For older news, see Gnus info node \"New Features\".")
+For older news, see Gnus info node \"New Features\".\n\n")
 
 (defvar gnus-news-trailer
 "
