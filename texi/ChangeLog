@@ -8,6 +8,10 @@
 
 	* gnus-news.el (gnus-news-header-disclaimer): Add newlines.
 
+2007-03-31  Eli Zaretskii  <eliz@gnu.org>
+
+	* emacs-mime.texi (Non-MIME): Postscript -> PostScript.
+
 2007-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi: Untabify.

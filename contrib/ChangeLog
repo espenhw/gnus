@@ -1,3 +1,8 @@
+2007-04-06  Chong Yidong  <cyd@stupidchicken.com>
+
+	* sendmail.el (mail-text, mail-mode): Revert extant pieces of
+	1995-05-19 doc changes.
+
 2007-03-26  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* nnir.el (gnus-group-make-nnir-group): Put a message-unique-id into
