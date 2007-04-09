@@ -3550,20 +3550,21 @@ Really top post? ")))
       (delete-windows-on message-reply-buffer t)
       (push-mark (save-excursion
 		   (insert-buffer-substring message-reply-buffer)
+		   (unless (bolp)
+		     (insert ?\n))
 		   (point)))
       (unless arg
-	(funcall message-cite-function))
-      (if message-cite-reply-above
-	  (progn
-	    (message-goto-body)
-	    (insert body-text)
-	    (newline)
-	    (message-goto-body)
-	    (message-exchange-point-and-mark))
-	(unless (< (point) (mark-marker))
-	  (message-exchange-point-and-mark)))
-      (unless (bolp)
-	(insert ?\n))
+	(funcall message-cite-function)
+	(unless (eq (char-before (mark t)) ?\n)
+	  (let ((pt (point)))
+	    (goto-char (mark t))
+	    (insert-before-markers ?\n)
+	    (goto-char pt))))
+      (when message-cite-reply-above
+	(message-goto-body)
+	(insert body-text)
+	(insert (if (bolp) "\n" "\n\n"))
+	(message-goto-body))
       ;; Add a `message-setup-very-last-hook' here?
       ;; Add `gnus-article-highlight-citation' here?
       (unless modified
