@@ -1,3 +1,8 @@
+2007-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-inews-yank-articles): Use
+	message-exchange-point-and-mark instead of exchange-point-and-mark.
+
 2007-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-yank-original): Make sure cited text ends with
