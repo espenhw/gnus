@@ -1,3 +1,10 @@
+2007-04-11  Didier Verna  <didier@xemacs.org>
+
+	* gnus.texi (Group Line Specification):
+	* gnus.texi (Misc Group Stuff):
+	* gnus.texi (Server Commands): Document the group compaction feature.
+	* gnus-news.texi: Ditto.
+
 2007-04-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-faq.texi ([5.2]): Adjust for message-fill-column.

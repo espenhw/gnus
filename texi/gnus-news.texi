@@ -190,6 +190,15 @@ supported.  @xref{RSS}.
 
 @item The nnml back end allows other compression programs beside @file{gzip}
 for compressed message files.  @xref{Mail Spool}.
+
+@item The nnml back end supports group compaction.
+
+This feature, accessible via the functions
+@code{gnus-group-compact-group} (@kbd{G z} in the group buffer) and
+@code{gnus-server-compact-server} (@kbd{z} in the server buffer)
+renumbers all articles in a group, starting from 1 and removing gaps.
+As a consequence, you get a correct total article count (until
+messages are deleted again).
 @end itemize
 
 @item Appearance

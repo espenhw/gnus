@@ -1821,8 +1821,15 @@ the true unread message count is not possible efficiently.  For
 hysterical raisins, even the mail back ends, where the true number of
 unread messages might be available efficiently, use the same limited
 interface.  To remove this restriction from Gnus means that the back
-end interface has to be changed, which is not an easy job.  If you
-want to work on this, please contact the Gnus mailing list.
+end interface has to be changed, which is not an easy job.
+
+The nnml backend @pxref{Mail Spool} has a feature called ``group
+compaction'' which circumvents this deficiency: the idea is to
+renumber all articles from 1, removing all gaps between numbers, hence
+getting a correct total count.  Other backends may support this in the
+future.  In order to keep your total article count relatively up to
+date, you might want to compact your groups (or even directly your
+server) from time to time. @xref{Misc Group Stuff}, @xref{Server Commands}.
 
 @item y
 Number of unread, unticked, non-dormant articles.
@@ -4191,6 +4198,15 @@ This is useful for ``posting'' messages to mail groups without actually
 sending them over the network: they're just saved directly to the group
 in question.  The corresponding back end must have a request-post method
 for this to work though.
+
+@item G z
+@kindex G z (Group)
+@findex gnus-group-compact-group
+
+Compact the group under point (@code{gnus-group-compact-group}).
+Currently implemented only in nnml @pxref{Mail Spool}.  This removes
+gaps between article numbers, hence getting a correct total article
+count.
 
 @end table
 
@@ -12713,6 +12729,15 @@ servers.
 Request that the server regenerate all its data structures
 (@code{gnus-server-regenerate-server}).  This can be useful if you have
 a mail back end that has gotten out of sync.
+
+@item z
+@kindex z (Server)
+@findex gnus-server-compact-server
+
+Compact all groups in the server under point
+(@code{gnus-server-compact-server}).  Currently implemented only in
+nnml @pxref{Mail Spool}.  This removes gaps between article numbers,
+hence getting a correct total article count.
 
 @end table
 

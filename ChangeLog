@@ -1,3 +1,7 @@
+2007-04-11  Didier Verna  <didier@xemacs.org>
+
+	* GNUS-NEWS: Generated.
+
 2007-04-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Generated.
@@ -398,7 +402,7 @@
 	* GNUS-NEWS: Added Article Buttons.  Added Upgrading (from Simon
 	Josefsson).  Add gnus-mime-delete-part, markup fixes and some
 	other corrections.  Mention Gnus FAQ.
-	
+
 
 2003-04-30  Jesper Harder  <harder@ifa.au.dk>
 
@@ -450,19 +454,19 @@
 
 	* GNUS-NEWS: Add IDNA.  Add TLS.  Fix USEFOR reference.
 
-2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
-	
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net>
+
 	* make.bat: Redone from scratch; supports both Emacs and XEmacs
 	now; correctly generate gnus-load.el; check for errors; use
 	makeinfo if available, infohack.el if it isn't; be less verbose
 	when copying files; copy files from etc/gnus and etc/smilies, too
 
-2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
-	
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net>
+
 	* make-x.bat: Removed, make.bat does its job now.
 
-2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
-	
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net>
+
 	* etc/gnus-tut.txt: Include Gnus FAQ from http://my.gnus.org.
 
 2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
@@ -538,9 +542,9 @@
 2002-02-22  Steve Youngs  <youngs@xemacs.org>
 
 	* aclocal.m4 (AC_PATH_LISPDIR): Default to
-	.../site-packages/lisp/gnus for XEmacs. 
+	.../site-packages/lisp/gnus for XEmacs.
 	(AC_PATH_ETCDIR): Default to .../site-packages/etc/gnus for
-	XEmacs. 
+	XEmacs.
 
 2002-02-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -550,7 +554,7 @@
 
 	* etc/gnus/oort.xface (X-Face): Oort X-Face from
 	Raymond Scholz <ray-2002@zonix.de>.
-	
+
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* etc/gnus/describe-group.xpm: Set pixels of first line to
@@ -607,14 +611,14 @@
 	Contributed by Kim F. Storm <storm@cua.dk>.
 
 2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
-	From Frank Schmitt <ich@Frank-Schmitt.net>. 
-	
+	From Frank Schmitt <ich@Frank-Schmitt.net>.
+
 	* make-x.bat: Use correct directory structure for XEmacs on Windows.
 
 2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (uninstall): Add.
-	
+
 	* etc/Makefile.in (uninstall): Add.
 
 2001-09-27 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>

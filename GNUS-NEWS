@@ -54,7 +54,7 @@ querying the user about whether to do so.
 
 ** International host names (IDNA) can now be decoded inside article bodies
 using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
-(<http://www.gnu.org/software/libidn/>) has been installed.
+(`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus now displays DNS master files sent as text/dns using dns-mode.
 
@@ -160,6 +160,14 @@ names for the `nnrss' groups are also supported.  *Note RSS::.
 
 ** The nnml back end allows other compression programs beside `gzip' for
 compressed message files.  *Note Mail Spool::.
+
+** The nnml back end supports group compaction.
+
+This feature, accessible via the functions `gnus-group-compact-group'
+(`G z' in the group buffer) and `gnus-server-compact-server' (`z' in the
+server buffer) renumbers all articles in a group, starting from 1 and
+removing gaps.  As a consequence, you get a correct total article count
+(until messages are deleted again).
 
 
 * Appearance
