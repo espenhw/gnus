@@ -1972,7 +1972,17 @@ If this variable is @code{nil}, no signature will be inserted at all.
 @item message-signature-file
 @vindex message-signature-file
 File containing the signature to be inserted at the end of the buffer.
+If a path is specified, the value of
+@code{message-signature-directory} is ignored, even if set.
 The default is @file{~/.signature}.
+
+@item message-signature-directory
+@vindex message-signature-directory
+Name of directory containing signature files.  Comes in handy if you
+have many such files, handled via Gnus posting styles for instance.
+If @code{nil} (the default), @code{message-signature-file} is expected
+to specify the directory if needed.
+
 
 @item message-signature-insert-empty-line
 @vindex message-signature-insert-empty-line

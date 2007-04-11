@@ -1,5 +1,12 @@
 2007-04-11  Didier Verna  <didier@xemacs.org>
 
+	New user option: message-signature-directory.
+	* gnus-news.texi: Advertise it.
+	* message.texi (Insertion Variables): Document it.
+	* gnus.texi (Posting Styles): Ditto.
+
+2007-04-11  Didier Verna  <didier@xemacs.org>
+
 	* gnus.texi (Group Line Specification):
 	* gnus.texi (Misc Group Stuff):
 	* gnus.texi (Server Commands): Document the group compaction feature.

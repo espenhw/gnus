@@ -1881,6 +1881,11 @@ this is a reply."
 	    ;; Translate obsolescent value.
 	    (cond
 	     ((eq element 'signature-file)
+	      (if (and message-signature-directory
+		       ;; don't actually use the signature directory
+		       ;; if message-signature-file contains a path.
+		       (not (file-name-directory v)))
+		  (setq v (nnheader-concat message-signature-directory v)))
 	      (setq element 'signature
 		    filep t))
 	     ((eq element 'x-face-file)

@@ -12299,6 +12299,9 @@ name can be one of:
 @item @code{body}
 @end itemize
 
+Note that the @code{signature-file} attribute honors the variable
+@code{message-signature-directory}.
+
 The attribute name can also be a string or a symbol.  In that case,
 this will be used as a header name, and the value will be inserted in
 the headers of the article; if the value is @code{nil}, the header

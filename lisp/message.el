@@ -301,7 +301,7 @@ used."
   :version "22.1"
   :type '(choice (const :tag "never" nil)
 		 (const :tag "always strip" t)
-                 (const ask))
+		 (const ask))
   :link '(custom-manual "(message)Message Headers")
   :group 'message-various)
 
@@ -851,9 +851,9 @@ will not have a visible effect for those headers."
   :group 'message-headers
   :link '(custom-manual "(message)Message Headers")
   :type '(choice (const :tag "None" nil)
-                 (const :tag "References" '(references))
-                 (const :tag "All" t)
-                 (repeat (sexp :tag "Header"))))
+		 (const :tag "References" '(references))
+		 (const :tag "All" t)
+		 (repeat (sexp :tag "Header"))))
 
 (defcustom message-fill-column 72
   "Column beyond which automatic line-wrapping should happen.
@@ -862,7 +862,7 @@ auto-fill in message buffers."
   :group 'message-various
   ;; :link '(custom-manual "(message)Message Headers")
   :type '(choice (const :tag "Don't turn on auto fill" nil)
-                 (integer)))
+		 (integer)))
 
 (defcustom message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
@@ -1019,8 +1019,20 @@ If a form, the result from the form will be used instead."
 (defcustom message-signature-file "~/.signature"
   "*Name of file containing the text inserted at end of message buffer.
 Ignored if the named file doesn't exist.
-If nil, don't insert a signature."
+If nil, don't insert a signature.
+If a path is specified, the value of `message-signature-directory' is ignored,
+even if set."
   :type '(choice file (const :tags "None" nil))
+  :link '(custom-manual "(message)Insertion Variables")
+  :group 'message-insertion)
+
+(defcustom message-signature-directory nil
+  "*Name of directory containing signature files.
+Comes in handy if you have many such files, handled via posting styles for
+instance.
+If nil, `message-signature-file' is expected to specify the directory if
+needed."
+  :type '(choice string (const :tags "None" nil))
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
@@ -1224,7 +1236,7 @@ candidates:
 `quoted-text-only'  Allow you to post quoted text only;
 `multiple-copies'   Allow you to post multiple copies;
 `cancel-messages'   Allow you to cancel or supersede messages from
-                    your other email addresses.")
+		    your other email addresses.")
 
 (defsubst message-gnksa-enable-p (feature)
   (or (not (listp message-shoot-gnksa-feet))
@@ -2744,7 +2756,7 @@ C-c C-f  move to a header field (and create it if there isn't):
 	 C-c C-f C-w  move to Fcc	C-c C-f C-r  move to Reply-To
 	 C-c C-f C-u  move to Summary	C-c C-f C-n  move to Newsgroups
 	 C-c C-f C-k  move to Keywords	C-c C-f C-d  move to Distribution
-         C-c C-f C-o  move to From (\"Originator\")
+	 C-c C-f C-o  move to From (\"Originator\")
 	 C-c C-f C-f  move to Followup-To
 	 C-c C-f C-m  move to Mail-Followup-To
 	 C-c C-f C-e  move to Expires
@@ -3015,11 +3027,11 @@ If the original author requested not to be sent mail, don't insert unless the
 prefix FORCE is given."
   (interactive "P")
   (let* ((mct (message-fetch-reply-field "mail-copies-to"))
-         (dont (and mct (or (equal (downcase mct) "never")
+	 (dont (and mct (or (equal (downcase mct) "never")
 			    (equal (downcase mct) "nobody"))))
-         (to (or (message-fetch-reply-field "mail-reply-to")
-                 (message-fetch-reply-field "reply-to")
-                 (message-fetch-reply-field "from"))))
+	 (to (or (message-fetch-reply-field "mail-reply-to")
+		 (message-fetch-reply-field "reply-to")
+		 (message-fetch-reply-field "from"))))
     (when (and dont to)
       (message
        (if force
@@ -3059,21 +3071,21 @@ or in the synonym headers, defined by `message-header-synonyms'."
   ;; (mail-strip-quoted-names "Foo Bar <foo@bar>, bla@fasel (Bla Fasel)")
   (dolist (header headers)
     (let* ((header-name (symbol-name (car header)))
-           (new-header (cdr header))
-           (synonyms (loop for synonym in message-header-synonyms
+	   (new-header (cdr header))
+	   (synonyms (loop for synonym in message-header-synonyms
 			   when (memq (car header) synonym) return synonym))
-           (old-header
-            (loop for synonym in synonyms
+	   (old-header
+	    (loop for synonym in synonyms
 		  for old-header = (mail-fetch-field (symbol-name synonym))
 		  when (and old-header (string-match new-header old-header))
 		  return synonym)))
       (if old-header
-          (message "already have `%s' in `%s'" new-header old-header)
+	  (message "already have `%s' in `%s'" new-header old-header)
 	(when (and (message-position-on-field header-name)
-                   (setq old-header (mail-fetch-field header-name))
-                   (not (string-match "\\` *\\'" old-header)))
+		   (setq old-header (mail-fetch-field header-name))
+		   (not (string-match "\\` *\\'" old-header)))
 	  (insert ", "))
-        (insert new-header)))))
+	(insert new-header)))))
 
 (defun message-widen-reply ()
   "Widen the reply to include maximum recipients."
@@ -3279,13 +3291,21 @@ Message buffers and is not meant to be called directly."
 	   ((listp message-signature)
 	    (eval message-signature))
 	   (t message-signature)))
-	 (signature
+	 signature-file)
+    (setq signature
 	  (cond ((stringp signature)
 		 signature)
-		((and (eq t signature)
-		      message-signature-file
-		      (file-exists-p message-signature-file))
-		 signature))))
+		((and (eq t signature) message-signature-file)
+		 (setq signature-file
+		       (if (and message-signature-directory
+				;; don't actually use the signature directory
+				;; if message-signature-file contains a path.
+				(not (file-name-directory
+				      message-signature-file)))
+			   (nnheader-concat message-signature-directory
+					    message-signature-file)
+			 message-signature-file))
+		 (file-exists-p signature-file))))
     (when signature
       (goto-char (point-max))
       ;; Insert the signature.
@@ -3295,7 +3315,7 @@ Message buffers and is not meant to be called directly."
 	(insert "\n"))
       (insert "-- \n")
       (if (eq signature t)
-	  (insert-file-contents message-signature-file)
+	  (insert-file-contents signature-file)
 	(insert signature))
       (goto-char (point-max))
       (or (bolp) (insert "\n")))))
@@ -4405,9 +4425,9 @@ to find out how to use this."
 	 ;; free for -inject-arguments -- a big win for the user and for us
 	 ;; since we don't have to play that double-guessing game and the user
 	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
-         (if (functionp message-qmail-inject-args)
-             (funcall message-qmail-inject-args)
-           message-qmail-inject-args)))
+	 (if (functionp message-qmail-inject-args)
+	     (funcall message-qmail-inject-args)
+	   message-qmail-inject-args)))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
     (0 nil)
@@ -5285,15 +5305,15 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
 		       (string-match "[\\()]" tmp)))))
 	(insert fullname)
 	(goto-char (point-min))
- 	;; Look for a character that cannot appear unquoted
- 	;; according to RFC 822.
- 	(when (re-search-forward "[^- !#-'*+/-9=?A-Z^-~]" nil 1)
- 	  ;; Quote fullname, escaping specials.
- 	  (goto-char (point-min))
- 	  (insert "\"")
- 	  (while (re-search-forward "[\"\\]" nil 1)
- 	    (replace-match "\\\\\\&" t))
- 	  (insert "\""))
+	;; Look for a character that cannot appear unquoted
+	;; according to RFC 822.
+	(when (re-search-forward "[^- !#-'*+/-9=?A-Z^-~]" nil 1)
+	  ;; Quote fullname, escaping specials.
+	  (goto-char (point-min))
+	  (insert "\"")
+	  (while (re-search-forward "[\"\\]" nil 1)
+	    (replace-match "\\\\\\&" t))
+	  (insert "\""))
 	(insert " <" login ">"))
        (t				; 'parens or default
 	(insert login " (")

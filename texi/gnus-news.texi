@@ -158,6 +158,9 @@ article buffer.  See @code{gnus-message-highlight-citation}.
 See @code{message-fill-column}.  @xref{Various Message Variables, ,
 Message Headers, message, Message Manual}.
 
+@item You can now store signature files in a special directory
+named @code{message-signature-directory}.
+
 @end itemize
 
 @item Changes in back ends

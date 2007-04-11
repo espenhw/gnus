@@ -1,3 +1,11 @@
+2007-04-11  Didier Verna  <didier@xemacs.org>
+
+	New user option: message-signature-directory.
+	* gnus-msg.el (gnus-configure-posting-styles): Support it.
+	* message.el (message-insert-signature): Ditto.
+	* message.el (message-signature-file): Doc update.
+	* message.el (message-signature-directory): New.
+
 2007-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-inews-yank-articles): Use
