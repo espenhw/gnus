@@ -1823,7 +1823,7 @@ unread messages might be available efficiently, use the same limited
 interface.  To remove this restriction from Gnus means that the back
 end interface has to be changed, which is not an easy job.
 
-The nnml backend @pxref{Mail Spool} has a feature called ``group
+The nnml backend (@pxref{Mail Spool}) has a feature called ``group
 compaction'' which circumvents this deficiency: the idea is to
 renumber all articles from 1, removing all gaps between numbers, hence
 getting a correct total count.  Other backends may support this in the
@@ -4204,7 +4204,7 @@ for this to work though.
 @findex gnus-group-compact-group
 
 Compact the group under point (@code{gnus-group-compact-group}).
-Currently implemented only in nnml @pxref{Mail Spool}.  This removes
+Currently implemented only in nnml (@pxref{Mail Spool}).  This removes
 gaps between article numbers, hence getting a correct total article
 count.
 
@@ -12739,7 +12739,7 @@ a mail back end that has gotten out of sync.
 
 Compact all groups in the server under point
 (@code{gnus-server-compact-server}).  Currently implemented only in
-nnml @pxref{Mail Spool}.  This removes gaps between article numbers,
+nnml (@pxref{Mail Spool}).  This removes gaps between article numbers,
 hence getting a correct total article count.
 
 @end table

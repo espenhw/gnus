@@ -1,3 +1,8 @@
+2007-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Group Line Specification, Misc Group Stuff)
+	(Server Commands): Parenthesize @pxref{Mail Spool}.
+
 2007-04-11  Didier Verna  <didier@xemacs.org>
 
 	New user option: message-signature-directory.
