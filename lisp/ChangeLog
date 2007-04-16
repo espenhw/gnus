@@ -1,3 +1,9 @@
+2007-04-16  Didier Verna  <didier@xemacs.org>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Handle
+	message-signature-directory properly with :file syntax. Reported by
+	"Leo".
+
 2007-04-11  Didier Verna  <didier@xemacs.org>
 
 	New user option: message-signature-directory.

@@ -1881,16 +1881,18 @@ this is a reply."
 	    ;; Translate obsolescent value.
 	    (cond
 	     ((eq element 'signature-file)
-	      (if (and message-signature-directory
-		       ;; don't actually use the signature directory
-		       ;; if message-signature-file contains a path.
-		       (not (file-name-directory v)))
-		  (setq v (nnheader-concat message-signature-directory v)))
 	      (setq element 'signature
 		    filep t))
 	     ((eq element 'x-face-file)
 	      (setq element 'x-face
 		    filep t)))
+	    ;; Post-processing for the signature posting-style:
+	    (and (eq element 'signature) filep
+		 message-signature-directory
+		 ;; don't actually use the signature directory
+		 ;; if message-signature-file contains a path.
+		 (not (file-name-directory v))
+		 (setq v (nnheader-concat message-signature-directory v)))
 	    ;; Get the contents of file elems.
 	    (when (and filep v)
 	      (setq v (with-temp-buffer
