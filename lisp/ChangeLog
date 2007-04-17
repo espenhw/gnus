@@ -1,3 +1,8 @@
+2007-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Pull articles processed
+	from gnus-newsgroup-processable.
+
 2007-04-16  Didier Verna  <didier@xemacs.org>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Handle

@@ -481,22 +481,25 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (if (and n (not (numberp n)))
 	(setq message-forward-as-mime (not message-forward-as-mime)
 	      n nil))
-    (let ((gnus-article-reply (gnus-summary-work-articles n))
-	  gnus-newsgroup-processable)
+    (let ((gnus-article-reply (gnus-summary-work-articles n)))
       (when (and (not n)
 		 (= (length gnus-article-reply) 1))
 	;; The case where neither a number of articles nor a region is
 	;; specified.
 	(gnus-summary-top-thread)
 	(setq gnus-article-reply (nreverse (gnus-uu-find-articles-matching))))
-      ;; Specify articles to be forwarded.  Note that they should be
-      ;; reversed; see `gnus-uu-get-list-of-articles'.
-      (setq gnus-newsgroup-processable (reverse gnus-article-reply))
       (gnus-setup-message 'forward
 	(setq gnus-uu-digest-from-subject nil)
 	(setq gnus-uu-digest-buffer
 	      (gnus-get-buffer-create " *gnus-uu-forward*"))
-	(gnus-uu-decode-save n file)
+	;; Specify articles to be forwarded.  Note that they should be
+	;; reversed; see `gnus-uu-get-list-of-articles'.
+	(let ((gnus-newsgroup-processable (reverse gnus-article-reply)))
+	  (gnus-uu-decode-save n file)
+	  (setq gnus-article-reply gnus-newsgroup-processable))
+	;; Restore the value of `gnus-newsgroup-processable' to which
+	;; it should be set when it is not `let'-bound.
+	(setq gnus-newsgroup-processable (reverse gnus-article-reply))
 	(switch-to-buffer gnus-uu-digest-buffer)
 	(let ((fs gnus-uu-digest-from-subject))
 	  (when fs
