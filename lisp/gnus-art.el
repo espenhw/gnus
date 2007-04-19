@@ -4847,6 +4847,21 @@ Compressed files like .gz and .bz2 are decompressed."
 	   (mm-string-to-multibyte contents)))
 	(goto-char b)))))
 
+(defun gnus-mime-strip-charset-parameters (handle)
+  "Strip charset parameters from HANDLE."
+  (if (stringp (car handle))
+      (mapc #'gnus-mime-strip-charset-parameters (cdr handle))
+    (let* ((type (mm-handle-type (if (equal (mm-handle-media-type handle)
+					    "message/external-body")
+				     (progn
+				       (unless (mm-handle-cache handle)
+					 (mm-extern-cache-contents handle))
+				       (mm-handle-cache handle))
+				   handle)))
+	   (charset (assq 'charset (cdr type))))
+      (when charset
+	(delq charset type)))))
+
 (defun gnus-mime-view-part-as-charset (&optional handle arg)
   "Insert the MIME part under point into the current buffer using the
 specified charset."
@@ -4855,7 +4870,7 @@ specified charset."
   (let ((handle (or handle (get-text-property (point) 'gnus-data)))
 	(fun (get-text-property (point) 'gnus-callback))
 	(gnus-newsgroup-ignored-charsets 'gnus-all)
-	gnus-newsgroup-charset type charset)
+	gnus-newsgroup-charset form preferred parts)
     (when handle
       (if (mm-handle-undisplayer handle)
 	  (mm-remove-part handle))
@@ -4863,17 +4878,24 @@ specified charset."
 	(setq gnus-newsgroup-charset
 	      (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 		  (mm-read-coding-system "Charset: ")))
-	;; Strip the charset parameter from `handle'.
-	(setq type (mm-handle-type
-		    (if (equal (mm-handle-media-type handle)
-			       "message/external-body")
-			(progn
-			  (unless (mm-handle-cache handle)
-			    (mm-extern-cache-contents handle))
-			  (mm-handle-cache handle))
-		      handle))
-	      charset (assq 'charset (cdr type)))
-	(delq charset type)
+	(gnus-mime-strip-charset-parameters handle)
+	(when (and (consp (setq form (cdr-safe fun)))
+		   (setq form (ignore-errors
+				(assq 'gnus-mime-display-alternative form)))
+		   (setq preferred (caddr form))
+		   (progn
+		     (when (eq (car preferred) 'quote)
+		       (setq preferred (cadr preferred)))
+		     (not (equal preferred
+				 (get-text-property (point) 'gnus-data))))
+		   (setq parts (get-text-property (point) 'gnus-part))
+		   (setq parts (cdr (assq parts
+					  gnus-article-mime-handle-alist)))
+		   (equal (mm-handle-media-type parts) "multipart/alternative")
+		   (setq parts (reverse (cdr parts))))
+	  (setcar (cddr form)
+		  (list 'quote (or (cadr (member preferred parts))
+				   (car parts)))))
 	(funcall fun handle)))))
 
 (defun gnus-mime-view-part-externally (&optional handle)
