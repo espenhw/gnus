@@ -831,7 +831,9 @@ header line with the old Message-ID."
 	       (set-buffer ,gnus-summary-buffer)
 	       (gnus-cache-possibly-remove-article ,article nil nil nil t)
 	       (gnus-summary-mark-as-read ,article gnus-canceled-mark)))))
-       message-send-actions))))
+       message-send-actions)
+      (gnus-inews-insert-archive-gcc)
+      (gnus-inews-insert-gcc))))
 
 
 
