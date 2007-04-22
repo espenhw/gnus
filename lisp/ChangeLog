@@ -1,3 +1,8 @@
+2007-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* dgnushack.el (with-syntax-table): XEmacs bug has been fixed.  Add
+	URL.
+
 2007-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-summary-supersede-article): Add Gcc header.
@@ -67,8 +72,8 @@
 
 2007-03-27  Thien-Thi Nguyen  <ttn@gnu.org>
 
-	* message.el (message-yank-original): Fix bug:
-	Don't switch point and mark unnecessarily.
+	* message.el (message-yank-original): Don't switch point and mark
+	unnecessarily to put point and mark as documented.
 
 2007-03-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

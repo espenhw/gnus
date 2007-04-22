@@ -151,6 +151,11 @@ fixed in Emacs after 21.3."
 ;;
 ;; http://thread.gmane.org/gmane.emacs.xemacs.beta/20519
 ;; Subject: XEmacs 21.5 and Gnus fancy splitting.
+;;
+;; Should be fixed in XEmacs (March 2007).
+;; http://thread.gmane.org/gmane.emacs.xemacs.patches/8124
+;; When should we remove this workaround?
+;;
 (when (and (featurep 'xemacs)
 	   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
 	     (modify-syntax-entry ?= " " table)
