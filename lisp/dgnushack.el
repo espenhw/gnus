@@ -1,6 +1,6 @@
 ;;; dgnushack.el --- a hack to set the load path for byte-compiling
 ;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2003,
-;; 2004, 2005
+;; 2004, 2005, 2006, 2007
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -118,12 +118,15 @@ than subr.el."
 	ad-do-it))))
 
 (when (and (not (featurep 'xemacs))
-	   (byte-optimize-form '(and (> 0 1) foo) t))
+	   (byte-optimize-form
+	    '(and (> 0 1)
+		  (message "This should not appear in the byte-code."))
+	    t))
   (defadvice byte-optimize-form-code-walker
     (around fix-bug-in-and/or-forms (form for-effect) activate)
     "Optimize the rest of the and/or forms.
 It has been fixed in XEmacs before releasing 21.4 and also has been
-fixed in Emacs after 21.3."
+fixed in Emacs 22."
     (if (and for-effect (memq (car-safe form) '(and or)))
 	(let ((fn (car form))
 	      (backwards (reverse (cdr form))))

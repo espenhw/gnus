@@ -1,3 +1,9 @@
+2007-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (byte-optimize-form-code-walker): Fix the form which was
+	not helpful to Emacs 21.1 and 21.2 for detecting a bug that does not
+	optimize and/or forms properly.
+
 2007-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* dgnushack.el (with-syntax-table): XEmacs bug has been fixed.  Add
