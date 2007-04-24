@@ -8144,7 +8144,7 @@ If THREADSP (the prefix), limit to articles that are in threads."
 	(message "No messages matched")
       (gnus-summary-limit articles))
     (gnus-summary-position-point)))
-	  
+
 (defun gnus-summary-limit-to-replied (&optional unreplied)
   "Limit the summary buffer to replied articles.
 If UNREPLIED (the prefix), limit to unreplied articles."

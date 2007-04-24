@@ -504,7 +504,7 @@ ARGS are passed to `message'."
 (defun gnus-extract-references (references)
   "Return a list of Message-IDs in REFERENCES (in In-Reply-To
   format), trimmed to only contain the Message-IDs."
-  (let ((ids (gnus-split-references references)) 
+  (let ((ids (gnus-split-references references))
 	refs)
     (dolist (id ids)
       (when (string-match "<[^<>]+>" id)

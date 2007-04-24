@@ -1,3 +1,8 @@
+2007-04-24  Didier Verna  <didier@xemacs.org>
+
+	* gnus-sum.el:
+	* gnus-utils.el: Fix some trailing whitespaces.
+
 2007-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-summary-resend-message-edit): Add Gcc header.
