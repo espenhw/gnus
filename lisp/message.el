@@ -50,6 +50,7 @@
 (require 'mml)
 (require 'rfc822)
 (require 'ecomplete)
+(require 'gnus-util)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -1213,18 +1214,8 @@ exclude your own user name only."
 		 regexp
 		 (repeat :tag "Regexp List" regexp)))
 
-;; #### FIXME: this might become a generally usefull function at some point
-;; --dlv.
 (defsubst message-dont-reply-to-names ()
-  "Potentially convert a list of regexps into a single one."
-  (cond ((null message-dont-reply-to-names)
-	 nil)
-	((stringp message-dont-reply-to-names)
-	 message-dont-reply-to-names)
-	((listp message-dont-reply-to-names)
-	 (mapconcat (lambda (elt) (concat "\\(" elt "\\)"))
-		    message-dont-reply-to-names
-		    "\\|"))))
+  (gnus-orify-regexp message-dont-reply-to-names))
 
 (defvar message-shoot-gnksa-feet nil
   "*A list of GNKSA feet you are allowed to shoot.

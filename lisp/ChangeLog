@@ -1,5 +1,14 @@
 2007-04-24  Didier Verna  <didier@xemacs.org>
 
+	Improve the type of gnus-ignored-from-addresses.
+	* gnus-util.el (gnus-orify-regexp): New function.
+	* message.el (gnus-util): Require it.
+	* message.el (message-dont-reply-to-names): Use gnus-orify-regexp.
+	* gnus-sum.el (gnus-ignored-from-addresses): New function.
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Use it.
+
+2007-04-24  Didier Verna  <didier@xemacs.org>
+
 	* gnus-sum.el:
 	* gnus-utils.el: Fix some trailing whitespaces.
 
