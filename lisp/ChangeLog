@@ -1,3 +1,11 @@
+2007-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-charset-synonym-alist): Defcustom.
+
+2007-04-25  NAKAJI Hiroyuki  <nakaji@jp.freebsd.org>  (tiny change)
+
+	* mm-util.el (mm-charset-synonym-alist): Map iso8859-1 to iso-8859-1.
+
 2007-04-24  Didier Verna  <didier@xemacs.org>
 
 	Improve the type of gnus-ignored-from-addresses.

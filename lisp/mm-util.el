@@ -204,7 +204,7 @@ the alias.  Else windows-NUMBER is used."
 	       (mm-coding-system-p cp))
       (add-to-list 'mm-charset-synonym-alist (cons alias cp)))))
 
-(defvar mm-charset-synonym-alist
+(defcustom mm-charset-synonym-alist
   `(
     ;; Not in XEmacs, but it's not a proper MIME charset anyhow.
     ,@(unless (mm-coding-system-p 'x-ctext)
@@ -229,10 +229,24 @@ the alias.  Else windows-NUMBER is used."
     ,@(when (and (not (mm-coding-system-p 'windows-31j))
 		 (mm-coding-system-p 'cp932))
 	'((windows-31j . cp932)))
+    ;; ISO8859-1 is ISO-8859-1
+    ,@(when (and (not (mm-coding-system-p 'iso8859-1))
+		 (mm-coding-system-p 'iso-8859-1))
+	'((iso8859-1 . iso-8859-1)))
     )
   "A mapping from unknown or invalid charset names to the real charset names.
 
-See `mm-codepage-iso-8859-list' and `mm-codepage-ibm-list'.")
+See `mm-codepage-iso-8859-list' and `mm-codepage-ibm-list'."
+  :type '(repeat
+	  :convert-widget (lambda (widget)
+			    (apply 'widget-convert (widget-type widget)
+				   (eval (car (widget-get widget :args)))))
+	  `((cons :format "%v"
+		  (symbol :tag "Synonym")
+		  ,(if (get 'coding-system 'widget-type)
+		       'coding-system
+		     '(symbol :tag "Coding system")))))
+  :group 'mime)
 
 (defcustom mm-codepage-iso-8859-list
   (list 1250 ;; Windows-1250 is a variant of Latin-2 heavily used by Microsoft
