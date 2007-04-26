@@ -246,6 +246,7 @@ See `mm-codepage-iso-8859-list' and `mm-codepage-ibm-list'."
 		  ,(if (get 'coding-system 'widget-type)
 		       'coding-system
 		     '(symbol :tag "Coding system")))))
+  :version "21.1"
   :group 'mime)
 
 (defcustom mm-codepage-iso-8859-list
