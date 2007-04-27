@@ -76,17 +76,6 @@ This is a compatibility function for different Emacsen."
    ((fboundp 'replace-in-string)
     (defalias 'gnus-replace-in-string 'replace-in-string))))
 
-(defun gnus-orify-regexp (regexp)
-  "Potentially convert a list of regexps into a single one."
-  (cond ((null regexp)
-	 nil)
-	((stringp regexp)
-	 regexp)
-	((listp regexp)
-	 (mapconcat (lambda (elt) (concat "\\(" elt "\\)"))
-		    regexp
-		    "\\|"))))
-
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
   (and (boundp variable)

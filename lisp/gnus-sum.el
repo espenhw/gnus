@@ -1084,7 +1084,7 @@ This can be a regexp or a list of regexps."
 		 (repeat :tag "Regexp List" regexp)))
 
 (defsubst gnus-ignored-from-addresses ()
-  (gnus-orify-regexp gnus-ignored-from-addresses))
+  (gmm-regexp-concat gnus-ignored-from-addresses))
 
 (defcustom gnus-summary-to-prefix "-> "
   "*String prefixed to the To field in the summary line when

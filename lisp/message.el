@@ -50,7 +50,7 @@
 (require 'mml)
 (require 'rfc822)
 (require 'ecomplete)
-(require 'gnus-util)
+
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -1215,7 +1215,7 @@ exclude your own user name only."
 		 (repeat :tag "Regexp List" regexp)))
 
 (defsubst message-dont-reply-to-names ()
-  (gnus-orify-regexp message-dont-reply-to-names))
+  (gmm-regexp-concat message-dont-reply-to-names))
 
 (defvar message-shoot-gnksa-feet nil
   "*A list of GNKSA feet you are allowed to shoot.
