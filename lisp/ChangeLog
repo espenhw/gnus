@@ -1,3 +1,7 @@
+2007-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump version.
+
 2007-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: No Gnus v0.6 is released.
