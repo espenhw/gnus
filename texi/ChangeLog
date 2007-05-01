@@ -2,6 +2,10 @@
 
 	* gnus.texi (Article Highlighting): Clarify gnus-cite-parse-max-size.
 
+2007-04-15  Chong Yidong  <cyd@stupidchicken.com>
+
+	* gnus.texi, message.texi, pgg.texi, sieve.texi: Include GFDL.
+
 2007-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Group Line Specification, Misc Group Stuff)

@@ -73,6 +73,11 @@
 	(mm-inline-text-html-render-with-w3m-standalone)
 	(mm-inline-render-with-function): Use mail-parse-charset by default.
 
+2007-04-18  Levin Du  <zslevin@gmail.com>  (tiny change)
+
+	* calendar/parse-time.el (parse-time-string-chars): Check if CHAR
+	is less than the length of parse-time-syntax.
+
 2007-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-uu.el (gnus-uu-digest-mail-forward): Pull articles processed
