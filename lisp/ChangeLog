@@ -1,3 +1,7 @@
+2007-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: No Gnus v0.6 is released.
+
 2007-04-27  Didier Verna  <didier@xemacs.org>
 
 	* gnus-util.el (gnus-orify-regexp): Moved and renamed to ...
