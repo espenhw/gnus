@@ -1,3 +1,7 @@
+2007-05-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Running NNDiary): Use ~/.gnus.el instead of gnusrc.
+
 2007-05-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi, message.texi: Bump version number.

@@ -18386,7 +18386,7 @@ things to do:
 @itemize @bullet
 @item
 Allow @code{nndiary} to retrieve new mail by itself.  Put the following
-line in your @file{gnusrc} file:
+line in your @file{~/.gnus.el} file:
 
 @lisp
 (setq nndiary-get-new-mail t)
@@ -18466,7 +18466,7 @@ so on) would be rather boring.  Fortunately, there is a library called
 @code{gnus-diary} written on top of @code{nndiary}, that does many
 useful things for you.
 
-  In order to use it, add the following line to your @file{gnusrc} file:
+  In order to use it, add the following line to your @file{~/.gnus.el} file:
 
 @lisp
 (require 'gnus-diary)
