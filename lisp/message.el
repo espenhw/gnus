@@ -928,7 +928,7 @@ configuration.  See the variable `gnus-cite-attribution-suffix'."
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
 
-(defcustom message-citation-line-format "On %a, %b %d %Y, %N wrote:"
+(defcustom message-citation-line-format "On %a, %b %d %Y, %N wrote:\n"
   "Format of the \"Whomever writes:\" line.
 
 The string is formatted using `format-spec'.  The following
@@ -3751,7 +3751,6 @@ See `message-citation-line-format'."
 	      (reverse lst)))
 	   (spec (apply 'format-spec-make flist)))
       (insert (format-spec message-citation-line-format spec)))
-    (newline)
     (newline)))
 
 (defun message-cite-original-without-signature ()

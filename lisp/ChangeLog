@@ -1,3 +1,9 @@
+2007-05-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-insert-formated-citation-line): Remove newline.
+	(message-citation-line-format): Add final \n here so that the user can
+	avoid a blank line.
+
 2007-05-03  Dan Christensen  <jdc@uwo.ca>
 
 	* nndoc.el (nndoc-type-alist, nndoc-lanl-gov-announce-type-p)
