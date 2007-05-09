@@ -10630,6 +10630,28 @@ whenever you see a message that is a collection of other messages of
 some format, you @kbd{C-d} and read these messages in a more convenient
 fashion.
 
+@vindex gnus-auto-select-on-ephemeral-exit
+The variable @code{gnus-auto-select-on-ephemeral-exit} controls what
+article should be selected after exiting a digest group.  Valid values
+include:
+
+@table @code
+@item next
+Select the next article.
+
+@item next-unread
+Select the next unread article.
+
+@item next-noselect
+Move the cursor to the next article.  This is the default.
+
+@item next-unread-noselect
+Move the cursor to the next unread article.
+@end table
+
+If it has any other value or there is no next (unread) article, the
+article selected before entering to the digest group will appear.
+
 @item C-M-d
 @kindex C-M-d (Summary)
 @findex gnus-summary-read-document
