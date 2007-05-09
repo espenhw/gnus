@@ -370,6 +370,28 @@ the first unread article."
   :group 'gnus-summary-maneuvering
   :type 'boolean)
 
+(defcustom gnus-auto-select-on-ephemeral-exit 'next-noselect
+  "What article should be selected after exiting an ephemeral group.
+Valid values include:
+
+`next'
+  Select the next article.
+`next-unread'
+  Select the next unread article.
+`next-noselect'
+  Move the cursor to the next article.  This is the default.
+`next-unread-noselect'
+  Move the cursor to the next unread article.
+
+If it has any other value or there is no next (unread) article, the
+article selected before entering to the ephemeral group will appear."
+  :version "23.0" ;; No Gnus
+  :group 'gnus-summary-maneuvering
+  :type '(choice :format "%{%t%}:\n %[Value Menu%] %v"
+		 (const next) (const next-unread)
+		 (const next-noselect) (const next-unread-noselect)
+		 (sexp :tag "other" :value nil)))
+
 (defcustom gnus-auto-goto-ignores 'unfetched
   "*Says how to handle unfetched articles when maneuvering.
 
@@ -7051,6 +7073,21 @@ The state which existed when entering the ephemeral is reset."
 	  (gnus-configure-windows (cdr quit-config) 'force))
       (gnus-configure-windows (cdr quit-config) 'force))
     (when (eq major-mode 'gnus-summary-mode)
+      (if (memq gnus-auto-select-on-ephemeral-exit '(next-noselect
+						     next-unread-noselect))
+	  (when (zerop (cond ((eq gnus-auto-select-on-ephemeral-exit
+				  'next-noselect)
+			      (gnus-summary-next-subject 1 nil t))
+			     ((eq gnus-auto-select-on-ephemeral-exit
+				  'next-unread-noselect)
+			      (gnus-summary-next-subject 1 t t))))
+	    ;; Hide the article buffer which displays the article different
+	    ;; from the one that the cursor points to in the summary buffer.
+	    (gnus-configure-windows 'summary 'force))
+	(cond ((eq gnus-auto-select-on-ephemeral-exit 'next)
+	       (gnus-summary-next-subject 1))
+	      ((eq gnus-auto-select-on-ephemeral-exit 'next-unread)
+	       (gnus-summary-next-subject 1 t))))
       (gnus-summary-recenter)
       (gnus-summary-position-point))))
 
