@@ -4143,7 +4143,8 @@ commands:
   (make-local-variable 'gnus-article-image-alist)
   (make-local-variable 'gnus-article-charset)
   (make-local-variable 'gnus-article-ignored-charsets)
-  ;; Prevent recent Emacsen from displaying non-break space as "\ ".
+  ;; Prevent Emacs 22 from displaying non-break space with `nobreak-space'
+  ;; face.
   (set (make-local-variable 'nobreak-char-display) nil)
   (setq cursor-in-non-selected-windows nil)
   (setq truncate-lines gnus-article-truncate-lines)
