@@ -146,37 +146,50 @@ This is either `base64' or `quoted-printable'."
 							   encodable-regexp)
   "Quote special characters with `\\'s in quoted strings.
 Quoting will not be done in a quoted string if it contains characters
-matching ENCODABLE-REGEXP."
+matching ENCODABLE-REGEXP or it is within parentheses."
   (goto-char (point-min))
   (let ((tspecials (concat "[" ietf-drums-tspecials "]"))
+	(start (point))
 	beg end)
     (with-syntax-table (standard-syntax-table)
-      (while (search-forward "\"" nil t)
-	(setq beg (match-beginning 0))
-	(unless (eq (char-before beg) ?\\)
-	  (goto-char beg)
-	  (setq beg (1+ beg))
-	  (condition-case nil
-	      (progn
-		(forward-sexp)
-		(setq end (1- (point)))
-		(goto-char beg)
-		(if (and encodable-regexp
-			 (re-search-forward encodable-regexp end t))
-		    (goto-char (1+ end))
-		  (save-restriction
-		    (narrow-to-region beg end)
-		    (while (re-search-forward tspecials nil 'move)
-		      (if (eq (char-before) ?\\)
-			  (if (looking-at tspecials) ;; Already quoted.
-			      (forward-char)
-			    (insert "\\"))
-			(goto-char (match-beginning 0))
-			(insert "\\")
-			(forward-char))))
-		  (forward-char)))
-	    (error
-	     (goto-char beg))))))))
+      (while (not (eobp))
+	(if (ignore-errors
+	      (forward-list 1)
+	      (eq (char-before) ?\)))
+	    (forward-list -1)
+	  (goto-char (point-max)))
+	(save-restriction
+	  (narrow-to-region start (point))
+	  (goto-char start)
+	  (while (search-forward "\"" nil t)
+	    (setq beg (match-beginning 0))
+	    (unless (eq (char-before beg) ?\\)
+	      (goto-char beg)
+	      (setq beg (1+ beg))
+	      (condition-case nil
+		  (progn
+		    (forward-sexp)
+		    (setq end (1- (point)))
+		    (goto-char beg)
+		    (if (and encodable-regexp
+			     (re-search-forward encodable-regexp end t))
+			(goto-char (1+ end))
+		      (save-restriction
+			(narrow-to-region beg end)
+			(while (re-search-forward tspecials nil 'move)
+			  (if (eq (char-before) ?\\)
+			      (if (looking-at tspecials) ;; Already quoted.
+				  (forward-char)
+				(insert "\\"))
+			    (goto-char (match-beginning 0))
+			    (insert "\\")
+			    (forward-char))))
+		      (forward-char)))
+		(error
+		 (goto-char beg)))))
+	  (goto-char (point-max)))
+	(forward-list 1)
+	(setq start (point))))))
 
 (defvar rfc2047-encoding-type 'address-mime
   "The type of encoding done by `rfc2047-encode-region'.

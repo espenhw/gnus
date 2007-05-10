@@ -1,3 +1,8 @@
+2007-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings):
+	Don't quote characters that are within parentheses.
+
 2007-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-auto-select-on-ephemeral-exit): New variable.
