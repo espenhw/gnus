@@ -293,25 +293,30 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 (deffoo nnfolder-request-group (group &optional server dont-check)
   (nnfolder-possibly-change-group group server t)
   (save-excursion
-    (if (not (assoc group nnfolder-group-alist))
-	(nnheader-report 'nnfolder "No such group: %s" group)
-      (if dont-check
-	  (progn
-	    (nnheader-report 'nnfolder "Selected group %s" group)
-	    t)
-	(let* ((active (assoc group nnfolder-group-alist))
-	       (group (car active))
-	       (range (cadr active)))
-	  (cond
-	   ((null active)
-	    (nnheader-report 'nnfolder "No such group: %s" group))
-	   ((null nnfolder-current-group)
-	    (nnheader-report 'nnfolder "Empty group: %s" group))
-	   (t
-	    (nnheader-report 'nnfolder "Selected group %s" group)
-	    (nnheader-insert "211 %d %d %d %s\n"
-			     (1+ (- (cdr range) (car range)))
-			     (car range) (cdr range) group))))))))
+    (cond ((not (assoc group nnfolder-group-alist))
+	   (nnheader-report 'nnfolder "No such group: %s" group))
+	  ((file-directory-p (nnfolder-group-pathname group))
+	   (nnheader-report 'nnfolder "%s is a directory"
+			    (file-name-as-directory
+			     (let ((nnmail-pathname-coding-system nil))
+			       (nnfolder-group-pathname group)))))
+	  (dont-check
+	   (nnheader-report 'nnfolder "Selected group %s" group)
+	   t)
+	  (t
+	   (let* ((active (assoc group nnfolder-group-alist))
+		  (group (car active))
+		  (range (cadr active)))
+	     (cond
+	      ((null active)
+	       (nnheader-report 'nnfolder "No such group: %s" group))
+	      ((null nnfolder-current-group)
+	       (nnheader-report 'nnfolder "Empty group: %s" group))
+	      (t
+	       (nnheader-report 'nnfolder "Selected group %s" group)
+	       (nnheader-insert "211 %d %d %d %s\n"
+				(1+ (- (cdr range) (car range)))
+				(car range) (cdr range) group))))))))
 
 (deffoo nnfolder-request-scan (&optional group server)
   (nnfolder-possibly-change-group nil server)
@@ -371,13 +376,21 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 (deffoo nnfolder-request-create-group (group &optional server args)
   (nnfolder-possibly-change-group nil server)
   (nnmail-activate 'nnfolder)
-  (when (and group
-	     (not (assoc group nnfolder-group-alist)))
-    (push (list group (cons 1 0)) nnfolder-group-alist)
-    (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
-    (save-current-buffer
-      (nnfolder-read-folder group)))
-  t)
+  (cond ((zerop (length group))
+	 (nnheader-report 'nnfolder "Invalid (empty) group name"))
+	((file-directory-p (nnfolder-group-pathname group))
+	 (nnheader-report 'nnfolder "%s is a directory"
+			  (file-name-as-directory
+			   (let ((nnmail-pathname-coding-system nil))
+			     (nnfolder-group-pathname group)))))
+	((assoc group nnfolder-group-alist)
+	 t)
+	(t
+	 (push (list group (cons 1 0)) nnfolder-group-alist)
+	 (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
+	 (save-current-buffer
+	   (nnfolder-read-folder group))
+	 t)))
 
 (deffoo nnfolder-request-list (&optional server)
   (nnfolder-possibly-change-group nil server)
@@ -416,16 +429,17 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
       ;; The article numbers are increasing, so this result is sorted.
 	(nreverse numbers)))))
 
-(deffoo nnfolder-request-expire-articles
-    (articles newsgroup &optional server force)
+(deffoo nnfolder-request-expire-articles (articles newsgroup
+						   &optional server force)
   (nnfolder-possibly-change-group newsgroup server)
-  (let* ((is-old t)
-	 ;; The articles we have deleted so far.
-	 (deleted-articles nil)
-	 ;; The articles that really exist and will
-	 ;; be expired if they are old enough.
-	 (maybe-expirable
-	  (gnus-sorted-intersection articles (nnfolder-existing-articles))))
+  (let ((is-old t)
+	;; The articles we have deleted so far.
+	(deleted-articles nil)
+	;; The articles that really exist and will
+	;; be expired if they are old enough.
+	(maybe-expirable
+	 (gnus-sorted-intersection articles (nnfolder-existing-articles)))
+	target)
     (nnmail-activate 'nnfolder)
 
     (save-excursion
@@ -445,21 +459,28 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 		       (buffer-substring
 			(point) (progn (end-of-line) (point)))
 		       force nnfolder-inhibit-expiry))
-	    (unless (eq nnmail-expiry-target 'delete)
+	    (setq target nnmail-expiry-target)
+	    (unless (eq target 'delete)
 	      (with-temp-buffer
 		(nnfolder-request-article (car maybe-expirable)
 					  newsgroup server (current-buffer))
 		(let ((nnfolder-current-directory nil))
-		  (nnmail-expiry-target-group
-		   nnmail-expiry-target newsgroup)))
+		  (when (functionp target)
+		    (setq target (funcall target newsgroup)))
+		  (if (and target
+			   (or (gnus-request-group target)
+			       (gnus-request-create-group target)))
+		      (nnmail-expiry-target-group target newsgroup)
+		    (setq target nil))))
 	      (nnfolder-possibly-change-group newsgroup server))
-	    (nnheader-message 5 "Deleting article %d in %s..."
-			      (car maybe-expirable) newsgroup)
-	    (nnfolder-delete-mail)
-	    (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
-	      (nnfolder-nov-delete-article newsgroup (car maybe-expirable)))
-	    ;; Must remember which articles were actually deleted
-	    (push (car maybe-expirable) deleted-articles)))
+	    (when target
+	      (nnheader-message 5 "Deleting article %d in %s..."
+				(car maybe-expirable) newsgroup)
+	      (nnfolder-delete-mail)
+	      (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+		(nnfolder-nov-delete-article newsgroup (car maybe-expirable)))
+	      ;; Must remember which articles were actually deleted
+	      (push (car maybe-expirable) deleted-articles))))
 	(setq maybe-expirable (cdr maybe-expirable)))
       (unless nnfolder-inhibit-expiry
 	(nnheader-message 5 "Deleting articles...done"))

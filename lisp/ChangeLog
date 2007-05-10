@@ -1,5 +1,15 @@
 2007-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nnfolder.el (nnfolder-request-group, nnfolder-request-create-group):
+	Check if group is not a directory.
+	(nnfolder-request-expire-articles): Don't delete articles if the target
+	group is not available.
+
+	* nnml.el (nnml-request-create-group): Properly check if group is not a
+	file.
+	(nnml-request-expire-articles): Don't delete articles if the target
+	group is not available.
+
 	* rfc2047.el (rfc2047-quote-special-characters-in-quoted-strings):
 	Don't quote characters that are within parentheses.
 

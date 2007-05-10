@@ -265,12 +265,16 @@ non-nil.")
   (nnml-possibly-change-directory nil server)
   (nnmail-activate 'nnml)
   (cond
+   ((let ((file (directory-file-name
+		 (nnmail-group-pathname group nnml-directory))))
+      (and (file-exists-p file)
+	   (not (file-directory-p file))))
+    (nnheader-report 'nnml "%s is a file"
+		     (directory-file-name
+		      (let ((nnmail-pathname-coding-system nil))
+			(nnmail-group-pathname group nnml-directory)))))
    ((assoc group nnml-group-alist)
     t)
-   ((and (file-exists-p (nnmail-group-pathname group nnml-directory))
-	 (not (file-directory-p (nnmail-group-pathname group nnml-directory))))
-    (nnheader-report 'nnml "%s is a file"
-		     (nnmail-group-pathname group nnml-directory)))
    (t
     (let (active)
       (push (list group (setq active (cons 1 0)))
@@ -304,7 +308,7 @@ non-nil.")
   (let ((active-articles
 	 (nnml-directory-articles nnml-current-directory))
 	(is-old t)
-	article rest mod-time number)
+	article rest mod-time number target)
     (nnmail-activate 'nnml)
 
     (setq active-articles (sort active-articles '<))
@@ -321,23 +325,33 @@ non-nil.")
 						      nnml-inhibit-expiry)))
 	  (progn
 	    ;; Allow a special target group.
-	    (unless (eq nnmail-expiry-target 'delete)
+	    (setq target nnmail-expiry-target)
+	    (unless (eq target 'delete)
 	      (with-temp-buffer
 		(nnml-request-article number group server (current-buffer))
 		(let (nnml-current-directory
 		      nnml-current-group
 		      nnml-article-file-alist)
-		  (nnmail-expiry-target-group nnmail-expiry-target group)))
+		  (when (functionp target)
+		    (setq target (funcall target group)))
+		  (if (and target
+			   (or (gnus-request-group target)
+			       (gnus-request-create-group target)))
+		      (nnmail-expiry-target-group target group)
+		    (setq target nil))))
 	      ;; Maybe directory is changed during nnmail-expiry-target-group.
 	      (nnml-possibly-change-directory group server))
-	    (nnheader-message 5 "Deleting article %s in %s"
-			      number group)
-	    (condition-case ()
-		(funcall nnmail-delete-file-function article)
-	      (file-error
-	       (push number rest)))
-	    (setq active-articles (delq number active-articles))
-	    (nnml-nov-delete-article group number))
+	    (if target
+		(progn
+		  (nnheader-message 5 "Deleting article %s in %s"
+				    number group)
+		  (condition-case ()
+		      (funcall nnmail-delete-file-function article)
+		    (file-error
+		     (push number rest)))
+		  (setq active-articles (delq number active-articles))
+		  (nnml-nov-delete-article group number))
+	      (push number rest)))
 	(push number rest)))
     (let ((active (nth 1 (assoc group nnml-group-alist))))
       (when active
