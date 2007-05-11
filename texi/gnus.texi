@@ -2087,6 +2087,11 @@ commands will move to the next group, not the next unread group.  Even
 the commands that say they move to the next unread group.  The default
 is @code{t}.
 
+@vindex gnus-summary-next-group-on-exit
+If @code{gnus-summary-next-group-on-exit} is @code{t}, when a summary is
+exited, the point in the group buffer is moved to the next unread group.
+Otherwise, the point is set to the group just exited.  The default is
+@code{t}.
 
 @node Selecting a Group
 @section Selecting a Group
