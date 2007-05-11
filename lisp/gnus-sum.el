@@ -62,6 +62,14 @@ it will be killed sometime later."
   :group 'gnus-summary-exit
   :type 'boolean)
 
+(defcustom gnus-summary-next-group-on-exit t
+  "If non-nil, go to the next unread newsgroup on summary exit.
+See `gnus-group-goto-unread'."
+  :link '(custom-manual "(gnus)Group Maneuvering")
+  :group 'gnus-summary-exit
+  :version "23.0" ;; No Gnus
+  :type 'boolean)
+
 (defcustom gnus-fetch-old-headers nil
   "*Non-nil means that Gnus will try to build threads by grabbing old headers.
 If an unread article in the group refers to an older, already
@@ -6955,6 +6963,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (gnus-group-jump-to-group group))
     (gnus-run-hooks 'gnus-summary-exit-hook)
     (unless (or quit-config
+		(not gnus-summary-next-group-on-exit)
 		;; If this group has disappeared from the summary
 		;; buffer, don't skip forwards.
 		(not (string= group (gnus-group-group-name))))
