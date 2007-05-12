@@ -1,3 +1,9 @@
+2007-05-12  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
+
+	* gnus-sum.el (gnus-articles-to-read)
+	(gnus-summary-insert-old-articles): Don't truncate group name for
+	`read-string'.
+
 2007-05-11  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
 	* gnus-sum.el (gnus-summary-next-group-on-exit): New variable.  Tell if, on

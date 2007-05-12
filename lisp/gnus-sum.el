@@ -5664,9 +5664,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 			  (read-string
 			   (format
 			    "How many articles from %s (%s %d): "
-			    (gnus-limit-string
-			     (gnus-group-decoded-name gnus-newsgroup-name)
-			     35)
+			    (gnus-group-decoded-name gnus-newsgroup-name)
 			    (if initial "max" "default")
 			    number)
 			   (if initial
@@ -12291,8 +12289,7 @@ If ALL is a number, fetch this number of articles."
 		      (read-string
 		       (format
 			"How many articles from %s (%s %d): "
-			(gnus-limit-string
-			 (gnus-group-decoded-name gnus-newsgroup-name) 35)
+			(gnus-group-decoded-name gnus-newsgroup-name)
 			(if initial "max" "default")
 			len)
 		       (if initial
