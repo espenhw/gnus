@@ -4,6 +4,11 @@
 	(gnus-summary-insert-old-articles): Don't truncate group name for
 	`read-string'.
 
+	* gnus-util.el (gnus-limit-string): Delete this function.
+
+	* gnus-sum.el (gnus-simplify-subject-fully): Use
+	`truncate-string-to-width' instead.
+
 2007-05-11  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
 	* gnus-sum.el (gnus-summary-next-group-on-exit): New variable.  Tell if, on

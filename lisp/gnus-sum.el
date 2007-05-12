@@ -1708,8 +1708,8 @@ See `gnus-simplify-buffer-fuzzy' for details."
    ((eq gnus-summary-gather-subject-limit 'fuzzy)
     (gnus-simplify-subject-fuzzy subject))
    ((numberp gnus-summary-gather-subject-limit)
-    (gnus-limit-string (gnus-simplify-subject-re subject)
-		       gnus-summary-gather-subject-limit))
+    (truncate-string-to-width (gnus-simplify-subject-re subject)
+			      gnus-summary-gather-subject-limit))
    (t
     subject)))
 

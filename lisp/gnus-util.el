@@ -109,15 +109,6 @@ This is a compatibility function for different Emacsen."
 	 (set symbol nil))
      symbol))
 
-;; Added by Geoffrey T. Dairiki <dairiki@u.washington.edu>.  A safe way
-;; to limit the length of a string.  This function is necessary since
-;; `(substr "abc" 0 30)' pukes with "Args out of range".
-;; Fixme: Why not `truncate-string-to-width'?
-(defsubst gnus-limit-string (str width)
-  (if (> (length str) width)
-      (substring str 0 width)
-    str))
-
 (defsubst gnus-goto-char (point)
   (and point (goto-char point)))
 
