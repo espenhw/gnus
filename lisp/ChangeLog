@@ -1,3 +1,9 @@
+2007-05-22  Kevin Ryde  <user42@zip.com.au>
+
+	* message.el (message-font-lock-keywords): Use message-header-xheader
+	face for "X-Foo", its apparent intended purpose.  Move "X-" pattern
+	ahead of the anything pattern, to get it recognised.
+
 2007-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload ad-add-advice for XEmacs.  bbdb-com.el that

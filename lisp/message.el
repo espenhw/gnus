@@ -1444,13 +1444,13 @@ starting with `not' and followed by regexps."
        (1 'message-header-name)
        (2 'message-header-newsgroups nil t))
       (,(message-font-lock-make-header-matcher
+	 (concat "^\\(X-[A-Za-z0-9-]+:\\|In-Reply-To:\\)" content))
+       (1 'message-header-name)
+       (2 'message-header-xheader))
+      (,(message-font-lock-make-header-matcher
 	 (concat "^\\([A-Z][^: \n\t]+:\\)" content))
        (1 'message-header-name)
        (2 'message-header-other nil t))
-      (,(message-font-lock-make-header-matcher
-	 (concat "^\\(X-[A-Za-z0-9-]+:\\|In-Reply-To:\\)" content))
-       (1 'message-header-name)
-       (2 'message-header-name))
       ,@(if (and mail-header-separator
 		 (not (equal mail-header-separator "")))
 	    `((,(concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
