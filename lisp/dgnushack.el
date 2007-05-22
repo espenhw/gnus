@@ -204,6 +204,7 @@ fixed in Emacs 22."
       (autoload 'defadvice "advice" nil nil 'macro))
     (autoload 'Info-directory "info" nil t)
     (autoload 'Info-menu "info" nil t)
+    (autoload 'ad-add-advice "advice")
     (autoload 'annotations-at "annotations")
     (autoload 'apropos "apropos" nil t)
     (autoload 'apropos-command "apropos" nil t)
