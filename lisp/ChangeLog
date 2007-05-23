@@ -1,3 +1,8 @@
+2007-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-image-fit-p): Return t if image size is just the
+	same as window size.
+
 2007-05-22  Kevin Ryde  <user42@zip.com.au>
 
 	* message.el (message-font-lock-keywords): Use message-header-xheader
