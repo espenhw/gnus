@@ -250,7 +250,7 @@ it O(n).  If p is small, then the default is probably faster."
   :type 'boolean
   :group 'nnimap)
 
-(defvoo nnimap-need-unselect-to-notice-new-mail nil
+(defvoo nnimap-need-unselect-to-notice-new-mail t
   "Unselect mailboxes before looking for new mail in them.
 Some servers seem to need this under some circumstances.")
 

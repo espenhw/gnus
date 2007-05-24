@@ -1,3 +1,8 @@
+2007-05-24  Simon Josefsson  <simon@josefsson.org>
+
+	* nnimap.el (nnimap-need-unselect-to-notice-new-mail): Change default
+	to t as an experiment.  Suggested by Greg Troxel <gdt@work.lexort.com>.
+
 2007-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-narrow-to-headers-or-head): Ignore
