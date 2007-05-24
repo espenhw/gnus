@@ -2371,16 +2371,12 @@ Point is left at the beginning of the narrowed-to region."
   (widen)
   (narrow-to-region
    (goto-char (point-min))
-   (let ((end (if (search-forward "\n\n" nil t)
-		  (prog1
-		      (1- (point))
-		    (goto-char (point-min)))
-		(point-max))))
-     (if (re-search-forward
-	  (concat "^" (regexp-quote mail-header-separator) "\n")
-	  end t)
-	 (match-beginning 0)
-       end)))
+   (if (re-search-forward (concat "\\(\n\\)\n\\|^\\("
+				  (regexp-quote mail-header-separator)
+				  "\n\\)")
+			  nil t)
+       (or (match-end 1) (match-beginning 2))
+     (point-max)))
   (goto-char (point-min)))
 
 (defun message-news-p ()
