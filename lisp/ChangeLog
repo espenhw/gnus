@@ -1,3 +1,8 @@
+2007-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-narrow-to-headers-or-head): Ignore
+	mail-header-separator in the body.
+
 2007-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-image-fit-p): Return t if image size is just the
