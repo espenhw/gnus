@@ -1,3 +1,8 @@
+2007-05-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-decode.el (mm-file-name-rewrite-functions): Make it customizable.
+	Improve doc string.
+
 2007-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-header-from, gnus-header-subject, gnus-header-name)

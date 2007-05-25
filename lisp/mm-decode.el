@@ -364,20 +364,34 @@ enables you to choose manually one of two types those mails include."
   :type 'boolean
   :group 'mime-display)
 
-(defvar mm-file-name-rewrite-functions
+(defcustom mm-file-name-rewrite-functions
   '(mm-file-name-delete-control mm-file-name-delete-gotchas)
-  "*List of functions used for rewriting file names of MIME parts.
+  "List of functions used for rewriting file names of MIME parts.
 Each function takes a file name as input and returns a file name.
 
-Ready-made functions include
-`mm-file-name-delete-control'
-`mm-file-name-delete-gotchas'
-`mm-file-name-delete-whitespace',
-`mm-file-name-trim-whitespace',
-`mm-file-name-collapse-whitespace',
-`mm-file-name-replace-whitespace',
-`capitalize', `downcase', `upcase', and
-`upcase-initials'.")
+Ready-made functions include `mm-file-name-delete-control',
+`mm-file-name-delete-gotchas' (you should not remove these two
+functions), `mm-file-name-delete-whitespace',
+`mm-file-name-trim-whitespace', `mm-file-name-collapse-whitespace',
+`mm-file-name-replace-whitespace', `capitalize', `downcase',
+`upcase', and `upcase-initials'."
+  :type '(list (set :inline t
+		    (const mm-file-name-delete-control)
+		    (const mm-file-name-delete-gotchas)
+		    (const mm-file-name-delete-whitespace)
+		    (const mm-file-name-trim-whitespace)
+		    (const mm-file-name-collapse-whitespace)
+		    (const mm-file-name-replace-whitespace)
+		    (const capitalize)
+		    (const downcase)
+		    (const upcase)
+		    (const upcase-initials)
+	       (repeat :inline t
+		       :tag "Function"
+		       function)))
+  :version "23.0" ;; No Gnus
+  :group 'mime-display)
+
 
 (defvar mm-path-name-rewrite-functions nil
   "*List of functions for rewriting the full file names of MIME parts.
