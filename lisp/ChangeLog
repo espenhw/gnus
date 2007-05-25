@@ -1,3 +1,18 @@
+2007-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-header-from, gnus-header-subject, gnus-header-name)
+	(gnus-header-content)
+	* gnus-cite.el (gnus-cite-10)
+	* gnus-srvr.el (gnus-server-closed)
+	* gnus.el (gnus-group-mail-1, gnus-group-mail-1-empty)
+	(gnus-group-mail-2, gnus-group-mail-2-empty, gnus-group-mail-3)
+	(gnus-group-mail-3-empty, gnus-group-mail-low)
+	(gnus-group-mail-low-empty, gnus-splash)
+	* message.el (message-header-to, message-header-cc)
+	(message-header-subject, message-header-other, message-header-name)
+	(message-header-xheader, message-separator, message-cited-text)
+	(message-mml): Lighten colors of faces used for dark background.
+
 2007-05-24  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-need-unselect-to-notice-new-mail): Change default

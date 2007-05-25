@@ -271,7 +271,7 @@ It is merged with the face for the cited text belonging to the attribution."
 
 (defface gnus-cite-10 '((((class color)
 			  (background dark))
-			 (:foreground "medium purple"))
+			 (:foreground "plum1"))
 			(((class color)
 			  (background light))
 			 (:foreground "medium purple"))

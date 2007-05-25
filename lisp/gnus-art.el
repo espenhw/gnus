@@ -763,7 +763,7 @@ Obsolete; use the face `gnus-signature' for customizations instead."
 (defface gnus-header-from
   '((((class color)
       (background dark))
-     (:foreground "spring green"))
+     (:foreground "PaleGreen1"))
     (((class color)
       (background light))
      (:foreground "red3"))
@@ -778,7 +778,7 @@ Obsolete; use the face `gnus-signature' for customizations instead."
 (defface gnus-header-subject
   '((((class color)
       (background dark))
-     (:foreground "SeaGreen3"))
+     (:foreground "SeaGreen1"))
     (((class color)
       (background light))
      (:foreground "red4"))
@@ -810,7 +810,7 @@ articles."
 (defface gnus-header-name
   '((((class color)
       (background dark))
-     (:foreground "SeaGreen"))
+     (:foreground "SpringGreen2"))
     (((class color)
       (background light))
      (:foreground "maroon"))
@@ -825,7 +825,7 @@ articles."
 (defface gnus-header-content
   '((((class color)
       (background dark))
-     (:foreground "forest green" :italic t))
+     (:foreground "SpringGreen1" :italic t))
     (((class color)
       (background light))
      (:foreground "indianred4" :italic t))

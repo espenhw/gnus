@@ -1270,7 +1270,7 @@ starting with `not' and followed by regexps."
 (defface message-header-to
   '((((class color)
       (background dark))
-     (:foreground "green2" :bold t))
+     (:foreground "DarkOliveGreen1" :bold t))
     (((class color)
       (background light))
      (:foreground "MidnightBlue" :bold t))
@@ -1284,7 +1284,7 @@ starting with `not' and followed by regexps."
 (defface message-header-cc
   '((((class color)
       (background dark))
-     (:foreground "green4" :bold t))
+     (:foreground "chartreuse1" :bold t))
     (((class color)
       (background light))
      (:foreground "MidnightBlue"))
@@ -1298,7 +1298,7 @@ starting with `not' and followed by regexps."
 (defface message-header-subject
   '((((class color)
       (background dark))
-     (:foreground "green3"))
+     (:foreground "OliveDrab1"))
     (((class color)
       (background light))
      (:foreground "navy blue" :bold t))
@@ -1326,7 +1326,7 @@ starting with `not' and followed by regexps."
 (defface message-header-other
   '((((class color)
       (background dark))
-     (:foreground "#b00000"))
+     (:foreground "VioletRed1"))
     (((class color)
       (background light))
      (:foreground "steel blue"))
@@ -1340,7 +1340,7 @@ starting with `not' and followed by regexps."
 (defface message-header-name
   '((((class color)
       (background dark))
-     (:foreground "DarkGreen"))
+     (:foreground "green"))
     (((class color)
       (background light))
      (:foreground "cornflower blue"))
@@ -1354,7 +1354,7 @@ starting with `not' and followed by regexps."
 (defface message-header-xheader
   '((((class color)
       (background dark))
-     (:foreground "blue"))
+     (:foreground "DeepSkyBlue1"))
     (((class color)
       (background light))
      (:foreground "blue"))
@@ -1368,7 +1368,7 @@ starting with `not' and followed by regexps."
 (defface message-separator
   '((((class color)
       (background dark))
-     (:foreground "blue3"))
+     (:foreground "LightSkyBlue1"))
     (((class color)
       (background light))
      (:foreground "brown"))
@@ -1382,7 +1382,7 @@ starting with `not' and followed by regexps."
 (defface message-cited-text
   '((((class color)
       (background dark))
-     (:foreground "red"))
+     (:foreground "LightPink1"))
     (((class color)
       (background light))
      (:foreground "red"))
@@ -1396,7 +1396,7 @@ starting with `not' and followed by regexps."
 (defface message-mml
   '((((class color)
       (background dark))
-     (:foreground "ForestGreen"))
+     (:foreground "MediumSpringGreen"))
     (((class color)
       (background light))
      (:foreground "ForestGreen"))

@@ -559,7 +559,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-1
   '((((class color)
       (background dark))
-     (:foreground "aquamarine1" :bold t))
+     (:foreground "#e1ffe1" :bold t))
     (((class color)
       (background light))
      (:foreground "DeepPink3" :bold t))
@@ -573,7 +573,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-1-empty
   '((((class color)
       (background dark))
-     (:foreground "aquamarine1"))
+     (:foreground "#e1ffe1"))
     (((class color)
       (background light))
      (:foreground "DeepPink3"))
@@ -587,7 +587,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-2
   '((((class color)
       (background dark))
-     (:foreground "aquamarine2" :bold t))
+     (:foreground "DarkSeaGreen1" :bold t))
     (((class color)
       (background light))
      (:foreground "HotPink3" :bold t))
@@ -601,7 +601,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-2-empty
   '((((class color)
       (background dark))
-     (:foreground "aquamarine2"))
+     (:foreground "DarkSeaGreen1"))
     (((class color)
       (background light))
      (:foreground "HotPink3"))
@@ -615,7 +615,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-3
   '((((class color)
       (background dark))
-     (:foreground "aquamarine3" :bold t))
+     (:foreground "aquamarine1" :bold t))
     (((class color)
       (background light))
      (:foreground "magenta4" :bold t))
@@ -629,7 +629,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-3-empty
   '((((class color)
       (background dark))
-     (:foreground "aquamarine3"))
+     (:foreground "aquamarine1"))
     (((class color)
       (background light))
      (:foreground "magenta4"))
@@ -643,7 +643,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-low
   '((((class color)
       (background dark))
-     (:foreground "aquamarine4" :bold t))
+     (:foreground "aquamarine2" :bold t))
     (((class color)
       (background light))
      (:foreground "DeepPink4" :bold t))
@@ -657,7 +657,7 @@ be set in `.emacs' instead."
 (defface gnus-group-mail-low-empty
   '((((class color)
       (background dark))
-     (:foreground "aquamarine4"))
+     (:foreground "aquamarine2"))
     (((class color)
       (background light))
      (:foreground "DeepPink4"))
@@ -919,7 +919,7 @@ be set in `.emacs' instead."
 (defface gnus-splash
   '((((class color)
       (background dark))
-     (:foreground "#888888"))
+     (:foreground "#cccccc"))
     (((class color)
       (background light))
      (:foreground "#888888"))

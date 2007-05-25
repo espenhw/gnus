@@ -192,7 +192,7 @@ If nil, a faster, but more primitive, buffer is used instead."
 (defface gnus-server-closed
   '((((class color) (background light)) (:foreground "Steel Blue" :italic t))
     (((class color) (background dark))
-     (:foreground "Light Steel Blue" :italic t))
+     (:foreground "LightBlue" :italic t))
     (t (:italic t)))
   "Face used for displaying CLOSED servers"
   :group 'gnus-server-visual)
