@@ -1918,7 +1918,8 @@ increase the score of each group you read."
   "N" gnus-summary-insert-new-articles
   "S" gnus-summary-limit-to-singletons
   "r" gnus-summary-limit-to-replied
-  "R" gnus-summary-limit-to-recipient)
+  "R" gnus-summary-limit-to-recipient
+  "A" gnus-summary-limit-to-address)
 
 (gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
   "n" gnus-summary-next-unread-article
@@ -2572,6 +2573,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Subject..." gnus-summary-limit-to-subject t]
 	 ["Author..." gnus-summary-limit-to-author t]
 	 ["Recipient..." gnus-summary-limit-to-recipient t]
+	 ["Address..." gnus-summary-limit-to-address t]
 	 ["Age..." gnus-summary-limit-to-age t]
 	 ["Extra..." gnus-summary-limit-to-extra t]
 	 ["Score..." gnus-summary-limit-to-score t]
@@ -8002,6 +8004,59 @@ To and Cc headers are checked.  You need to include them in
 		     (nconc to cc))))
 	     (unless articles
 	       (error "Found no matches for \"%s\"" recipient))
+	     (gnus-summary-limit articles))
+      (gnus-summary-position-point))))
+
+(defun gnus-summary-limit-to-address (address &optional not-matching)
+  "Limit the summary buffer to articles with the given ADDRESS.
+
+If NOT-MATCHING, exclude ADDRESS.
+
+To, Cc and From headers are checked.  You need to include `To' and `Cc'
+in `nnmail-extra-headers'."
+  (interactive
+   (list (read-string (format "%s address (regexp): "
+			      (if current-prefix-arg "Exclude" "Limit to")))
+	 current-prefix-arg))
+  (when (not (equal "" address))
+    (prog1 (let* ((to
+		   (if (memq 'To nnmail-extra-headers)
+		       (gnus-summary-find-matching
+			(cons 'extra 'To) address 'all nil nil
+			not-matching)
+		     (gnus-message
+		      1 "`To' isn't present in `nnmail-extra-headers'")
+		     (sit-for 1)
+		     t))
+		  (cc
+		   (if (memq 'Cc nnmail-extra-headers)
+		       (gnus-summary-find-matching
+			(cons 'extra 'Cc) address 'all nil nil
+			not-matching)
+		     (gnus-message
+		      1 "`Cc' isn't present in `nnmail-extra-headers'")
+		     (sit-for 1)
+		     t))
+		  (from
+		   (gnus-summary-find-matching "from" address
+					       'all nil nil not-matching))
+		  (articles
+		   (if not-matching
+		       ;; We need the numbers that are in all lists:
+		       (if (eq cc t)
+			   (if (eq to t)
+			       from
+			     (mapcar (lambda (a) (car (memq a from))) to))
+			 (if (eq to t)
+			     (mapcar (lambda (a) (car (memq a from))) cc)
+			   (mapcar (lambda (a) (car (memq a from)))
+				   (mapcar (lambda (a) (car (memq a to)))
+					   cc))))
+		     (nconc (if (eq to t) nil to)
+			    (if (eq cc t) nil cc)
+			    from))))
+	     (unless articles
+	       (error "Found no matches for \"%s\"" address))
 	     (gnus-summary-limit articles))
       (gnus-summary-position-point))))
 
