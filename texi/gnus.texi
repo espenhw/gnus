@@ -6438,6 +6438,13 @@ Limit the summary buffer to articles that match some recipient
 (@code{gnus-summary-limit-to-recipient}).  If given a prefix, exclude
 matching articles.
 
+@item / A
+@kindex / A (Summary)
+@findex gnus-summary-limit-to-address
+Limit the summary buffer to articles in which contents of From, To or Cc
+header match a given address (@code{gnus-summary-limit-to-address}).  If
+given a prefix, exclude matching articles.
+
 @item / S
 @kindex / S (Summary)
 @findex gnus-summary-limit-to-singletons
