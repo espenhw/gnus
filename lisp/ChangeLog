@@ -1,3 +1,11 @@
+2007-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-update-message-archive-method): New variable.
+
+	* gnus-start.el (gnus-setup-news): Update saved "archive" method
+	according to gnus-message-archive-method if
+	gnus-update-message-archive-method is non-nil.
+
 2007-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-limit-to-address): New function.  Suggested

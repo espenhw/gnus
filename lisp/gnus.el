@@ -1290,11 +1290,28 @@ see the manual for details."
 
 (defcustom gnus-message-archive-method "archive"
   "*Method used for archiving messages you've sent.
-This should be a mail method."
+This should be a mail method.
+
+See also `gnus-update-message-archive-method'."
   :group 'gnus-server
   :group 'gnus-message
   :type '(choice (const :tag "Default archive method" "archive")
 		 gnus-select-method))
+
+(defcustom gnus-update-message-archive-method nil
+  "Non-nil means always update the saved \"archive\" method.
+
+The archive method is initially set according to the value of
+`gnus-message-archive-method' and is saved in the \"~/.newsrc.eld\" file
+so that it may be used as a real method of the server which is named
+\"archive\" ever since.  If it once has been saved, it will never be
+updated if the value of this variable is nil, even if you change the
+value of `gnus-message-archive-method' afterward.  If you want the
+saved \"archive\" method to be updated whenever you change the value of
+`gnus-message-archive-method', set this variable to a non-nil value."
+  :group 'gnus-server
+  :group 'gnus-message
+  :type 'boolean)
 
 (defcustom gnus-message-archive-group nil
   "*Name of the group in which to save the messages you've written.
