@@ -12121,7 +12121,8 @@ Group Commands}).
 
 @vindex gnus-message-archive-method
 @code{gnus-message-archive-method} says what virtual server Gnus is to
-use to store sent messages.  The default is:
+use to store sent messages.  The default is @code{"archive"}, and when
+actually being used it is expanded into:
 
 @lisp
 (nnfolder "archive"
@@ -12130,6 +12131,22 @@ use to store sent messages.  The default is:
           (nnfolder-get-new-mail nil)
           (nnfolder-inhibit-expiry t))
 @end lisp
+
+@quotation
+@vindex gnus-update-message-archive-method
+Note: a server like this is saved in the @file{~/.newsrc.eld} file first
+so that it may be used as a real method of the server which is named
+@code{"archive"} (that is, for the case where
+@code{gnus-message-archive-method} is set to @code{"archive"}) ever
+since.  If it once has been saved, it will never be updated by default
+even if you change the value of @code{gnus-message-archive-method}
+afterward.  Therefore, the server @code{"archive"} doesn't necessarily
+mean the @code{nnfolder} server like this at all times.  If you want the
+saved method to reflect always the value of
+@code{gnus-message-archive-method}, set the
+@code{gnus-update-message-archive-method} variable to a non-@code{nil}
+value.  The default value of this variable is @code{nil}.
+@end quotation
 
 You can, however, use any mail select method (@code{nnml},
 @code{nnmbox}, etc.).  @code{nnfolder} is a quite likable select method

@@ -1,3 +1,8 @@
+2007-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Archived Messages): Document
+	gnus-update-message-archive-method.
+
 2007-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Limiting): Document gnus-summary-limit-to-address.
