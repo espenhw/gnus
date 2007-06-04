@@ -1,3 +1,13 @@
+2007-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-view-part-externally)
+	(gnus-mime-view-part-internally): Fix predicate function passed to
+	completing-read.
+
+	* mm-decode.el (mm-image-fit-p): Return t if argument is not an image.
+
+	* gnus.el (gnus-update-message-archive-method): Add :version.
+
 2007-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-update-message-archive-method): New variable.
