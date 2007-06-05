@@ -5970,7 +5970,7 @@ not have a face in `gnus-article-boring-faces'."
       ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
-	    win func in-buffer selected new-sum-start new-sum-hscroll)
+	    win func in-buffer selected new-sum-start new-sum-hscroll err)
 	(cond (not-restore-window
 	       (pop-to-buffer gnus-article-current-summary nil 'norecord)
 	       (setq win (selected-window)))
@@ -5992,9 +5992,13 @@ not have a face in `gnus-article-boring-faces'."
 	;; We disable the pick minor mode commands.
 	(if (and (setq func (let (gnus-pick-mode)
 			      (lookup-key (current-local-map) keys)))
-		 (functionp func))
+		 (functionp func)
+		 (condition-case code
+		     (call-interactively func)
+		   (error
+		    (setq err code)
+		    nil)))
 	    (progn
-	      (call-interactively func)
 	      (when (eq win (selected-window))
 		(setq new-sum-point (point)
 		      new-sum-start (window-start win)
@@ -6009,11 +6013,12 @@ not have a face in `gnus-article-boring-faces'."
 		  (set-window-configuration owin))
 		(when (and (eq selected 'old)
 			   new-sum-point)
-		  (article-goto-body)
 		  (set-window-start (get-buffer-window (current-buffer))
 				    1)
 		  (set-window-point (get-buffer-window (current-buffer))
-				    (1- (point))))
+				    (if (article-goto-body)
+					(1- (point))
+				      (point))))
 		(when (and (not not-restore-window)
 			   new-sum-point
 			   (with-current-buffer (window-buffer win)
@@ -6022,7 +6027,9 @@ not have a face in `gnus-article-boring-faces'."
 		  (set-window-start win new-sum-start)
 		  (set-window-hscroll win new-sum-hscroll))))
 	  (set-window-configuration owin)
-	  (ding))))))
+	  (if err
+	      (signal (car err) (cdr err))
+	    (ding)))))))
 
 (defun gnus-article-describe-key (key)
   "Display documentation of the function invoked by KEY.  KEY is a string."
