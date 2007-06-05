@@ -1,5 +1,10 @@
 2007-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-summary-command-nosave): Correct the order
+	of the arguments passed to pop-to-buffer.
+	(gnus-article-read-summary-keys): Ditto; make it work properly when the
+	summary command ends up with the article buffer.
+
 	* mm-decode.el (mm-insert-part): Separate the extracted parts that have
 	the same faces.
 
