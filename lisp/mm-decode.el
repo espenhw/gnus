@@ -1148,16 +1148,26 @@ are ignored."
   "Insert the contents of HANDLE in the current buffer.
 If NO-CACHE is non-nil, cached contents of a message/external-body part
 are ignored."
-  (save-excursion
-    (insert
-     (cond ((eq (mail-content-type-get (mm-handle-type handle) 'charset)
-		'gnus-decoded)
-	    (with-current-buffer (mm-handle-buffer handle)
-	      (buffer-string)))
-	   ((mm-multibyte-p)
-	    (mm-string-to-multibyte (mm-get-part handle no-cache)))
-	   (t
-	    (mm-get-part handle no-cache))))))
+  (let ((text (cond ((eq (mail-content-type-get (mm-handle-type handle)
+						'charset)
+			 'gnus-decoded)
+		     (with-current-buffer (mm-handle-buffer handle)
+		       (buffer-string)))
+		    ((mm-multibyte-p)
+		     (mm-string-to-multibyte (mm-get-part handle no-cache)))
+		    (t
+		     (mm-get-part handle no-cache)))))
+    (save-restriction
+      (widen)
+      (goto-char
+       (prog1
+	   (point)
+	 (if (and (eq (get-char-property (max (point-min) (1- (point))) 'face)
+		      'mm-uu-extract)
+		  (eq (get-char-property 0 'face text) 'mm-uu-extract))
+	     ;; Separate the extracted parts that have the same faces.
+	     (insert "\n" text)
+	   (insert text)))))))
 
 (defun mm-file-name-delete-whitespace (file-name)
   "Remove all whitespace characters from FILE-NAME."
