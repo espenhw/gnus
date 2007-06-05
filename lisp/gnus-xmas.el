@@ -367,7 +367,12 @@ call it with the value of the `gnus-data' text property."
    (t
     (defalias 'gnus-characterp 'characterp)))
 
-  (defalias 'gnus-make-overlay 'make-extent)
+  (defalias 'gnus-make-overlay
+    (lambda (beg end &optional buffer front-advance rear-advance)
+      "Create a new overlay with range BEG to END in BUFFER.
+FRONT-ADVANCE and REAR-ADVANCE are ignored."
+      (make-extent beg end buffer)))
+
   (defalias 'gnus-delete-overlay 'delete-extent)
   (defalias 'gnus-overlay-put 'set-extent-property)
   (defalias 'gnus-move-overlay 'gnus-xmas-move-overlay)

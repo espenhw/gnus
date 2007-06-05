@@ -5203,10 +5203,8 @@ N is the numerical prefix."
 		(1- (point))
 	      (point)))
     (when gnus-article-button-face
-      (gnus-overlay-put (if (featurep 'xemacs)
-			    (gnus-make-overlay b e)
-			  (gnus-make-overlay b e nil t))
-                        'face gnus-article-button-face))
+      (gnus-overlay-put (gnus-make-overlay b e nil t)
+			'face gnus-article-button-face))
     (widget-convert-button
      'link b e
      :mime-handle handle

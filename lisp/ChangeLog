@@ -1,5 +1,8 @@
 2007-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-xmas.el (gnus-xmas-define): Make gnus-make-overlay ignore the
+	4th and the 5th arguments.
+
 	* gnus-art.el (gnus-insert-mime-button): Make a button overlay without
 	the front stickiness.
 	(gnus-article-summary-command-nosave): Correct the order of the
