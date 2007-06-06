@@ -677,6 +677,11 @@ exceeding lisp nesting on huge groups.
 *  Add non-native groups to the list of killed groups when killing
  them.
 
+If this entry is about non-foreign non-native groups, then it was
+actually a bug that prevented them from being inserted into
+gnus-killed-list:
+<http://article.gmane.org/gmane.emacs.gnus.general/63383/>
+
 *  nntp-suggest-kewl-config to probe the nntp server and suggest
  variable settings.
 
