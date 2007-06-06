@@ -407,8 +407,6 @@ exceeding lisp nesting on huge groups.
 
 *  expunged articles are counted when computing scores.
 
-*  implement gnus-batch-brew-soup
-
 *  ticked articles aren't easy to read in pick mode - `n' and stuff
  just skips past them.  Read articles are the same.
 
