@@ -45,9 +45,11 @@
 		    current-language-environment cursor-in-non-selected-windows
 		    default-enable-multibyte-characters
 		    enable-multibyte-characters gnus-agent-expire-current-dirs
-		    language-info-alist mark-active mouse-selection-click-count
+		    language-info-alist line-spacing mark-active
+		    mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    temporary-file-directory timer-list transient-mark-mode)))
+		    temporary-file-directory timer-list tool-bar-mode
+		    transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation delete-extent device-connection dfw-device
 		 events-to-keys find-face font-lock-set-defaults frame-device

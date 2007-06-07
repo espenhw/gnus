@@ -164,40 +164,85 @@
 
 (defun gnus-x-splash ()
   "Show a splash screen using a pixmap in the current buffer."
-  (let ((dir (nnheader-find-etc-directory "gnus"))
-	pixmap file height beg i)
-    (save-excursion
-      (switch-to-buffer (gnus-get-buffer-create gnus-group-buffer))
-      (let ((buffer-read-only nil)
-	    width height)
-	(erase-buffer)
-	(when (and dir
-		   (file-exists-p (setq file
-					(expand-file-name "x-splash" dir))))
-	  (let ((coding-system-for-read 'raw-text)
-		default-enable-multibyte-characters)
-	    (with-temp-buffer
-	      (insert-file-contents file)
-	      (goto-char (point-min))
-	      (ignore-errors
-		(setq pixmap (read (current-buffer)))))))
-	(when pixmap
-	  (make-face 'gnus-splash)
-	  (setq height (/ (car pixmap) (frame-char-height))
-		width (/ (cadr pixmap) (frame-char-width)))
-	  (set-face-foreground 'gnus-splash "Brown")
-	  (set-face-stipple 'gnus-splash pixmap)
-	  (insert-char ?\n (* (/ (window-height) 2 height) height))
-	  (setq i height)
-	  (while (> i 0)
-	    (insert-char ?\  (* (/ (window-width) 2 width) width))
-	    (setq beg (point))
-	    (insert-char ?\  width)
-	    (set-text-properties beg (point) '(face gnus-splash))
-	    (insert ?\n)
-	    (decf i))
-	  (goto-char (point-min))
-	  (sit-for 0))))))
+  (interactive)
+  (switch-to-buffer (gnus-get-buffer-create (if (or (gnus-alive-p)
+						    (interactive-p))
+						"*gnus-x-splash*"
+					      gnus-group-buffer)))
+  (let ((inhibit-read-only nil)
+	(file (nnheader-find-etc-directory "images/gnus/x-splash" t))
+	pixmap fcw fch width height fringes sbars left yoffset top)
+    (erase-buffer)
+    (when (and file
+	       (ignore-errors
+		 (let ((coding-system-for-read 'raw-text)
+		       default-enable-multibyte-characters)
+		   (with-temp-buffer
+		     (insert-file-contents file)
+		     (goto-char (point-min))
+		     (setq pixmap (read (current-buffer)))))))
+      (setq fcw (float (frame-char-width))
+	    fch (float (frame-char-height))
+	    width (/ (car pixmap) fcw)
+	    height (/ (cadr pixmap) fch)
+	    fringes (if (fboundp 'window-fringes)
+			(eval '(window-fringes))
+		      '(10 11 nil))
+	    sbars (/ (or (frame-parameter nil 'scroll-bar-width) 14) fcw))
+      (setq sbars (if (eq (frame-parameter nil 'vertical-scroll-bars) 'right)
+		      (cons 0 sbars)
+		    (cons sbars 0)))
+      (setq left (- (* (round (/ (1- (/ (+ (window-width)
+					   (car sbars) (cdr sbars)
+					   (/ (+ (or (car fringes) 0)
+						 (or (cadr fringes) 0))
+					      fcw))
+					width))
+				 2))
+		       width)
+		    (car sbars)
+		    (/ (or (car fringes) 0) fcw))
+	    yoffset (cadr (window-edges))
+	    top (max 0 (- (* (max (if (and tool-bar-mode
+					   (not (featurep 'gtk))
+					   (eq (frame-first-window)
+					       (selected-window)))
+				      1 0)
+				  (round (/ (1- (/ (+ (1- (window-height))
+						      (* 2 yoffset))
+						   height))
+					    2)))
+			     height)
+			  yoffset
+			  (/ (* (or line-spacing 0) 2) fch)))
+	    height (- height (/ (or line-spacing 0) fch)))
+      (cond ((>= top 1)
+	     (insert (propertize
+		      " "
+		      'display `(space :width 0 :ascent 100))
+		     "\n"
+		     (propertize
+		      " "
+		      'display `(space :width 0 :height ,(1- top) :ascent 100))
+		     "\n"))
+	    ((> top 0)
+	     (insert (propertize
+		      " "
+		      'display `(space :width 0 :height ,top :ascent 100))
+		     "\n")))
+      (if (and (> width 0) (> left 0))
+	  (insert (propertize
+		   " "
+		   'display `(space :width ,left :height ,height :ascent 0)))
+	(setq width (+ width left)))
+      (when (> width 0)
+	(insert (propertize
+		 " "
+		 'display `(space :width ,width :height ,height :ascent 0)
+		 'face `(gnus-splash :stipple ,pixmap))))
+      (goto-char (if (zerop top) (1- (point)) (point-min)))
+      (redraw-frame (selected-frame))
+      (sit-for 0))))
 
 ;;; Image functions.
 

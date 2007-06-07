@@ -1,3 +1,12 @@
+2007-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-ems.el (gnus-x-splash): Make it work.
+
+	* gnus-start.el (gnus-1): Relax restrictions that prevent gnus-x-splash
+	from being used.
+
+	* lpath.el: Bind line-spacing and tool-bar-mode for XEmacs.
+
 2007-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-xmas-define): Make gnus-make-overlay ignore the
