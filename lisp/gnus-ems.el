@@ -165,22 +165,24 @@
 (defun gnus-x-splash ()
   "Show a splash screen using a pixmap in the current buffer."
   (interactive)
+  (unless window-system
+    (error "`gnus-x-splash' requires running on the window system"))
   (switch-to-buffer (gnus-get-buffer-create (if (or (gnus-alive-p)
 						    (interactive-p))
 						"*gnus-x-splash*"
 					      gnus-group-buffer)))
   (let ((inhibit-read-only nil)
 	(file (nnheader-find-etc-directory "images/gnus/x-splash" t))
-	pixmap fcw fch width height fringes sbars left yoffset top)
+	pixmap fcw fch width height fringes sbars left yoffset top ls)
     (erase-buffer)
     (when (and file
 	       (ignore-errors
-		 (let ((coding-system-for-read 'raw-text)
-		       default-enable-multibyte-characters)
-		   (with-temp-buffer
-		     (insert-file-contents file)
-		     (goto-char (point-min))
-		     (setq pixmap (read (current-buffer)))))))
+		(let ((coding-system-for-read 'raw-text)
+		      default-enable-multibyte-characters)
+		  (with-temp-buffer
+		    (insert-file-contents file)
+		    (goto-char (point-min))
+		    (setq pixmap (read (current-buffer)))))))
       (setq fcw (float (frame-char-width))
 	    fch (float (frame-char-height))
 	    width (/ (car pixmap) fcw)
@@ -188,10 +190,16 @@
 	    fringes (if (fboundp 'window-fringes)
 			(eval '(window-fringes))
 		      '(10 11 nil))
-	    sbars (/ (or (frame-parameter nil 'scroll-bar-width) 14) fcw))
-      (setq sbars (if (eq (frame-parameter nil 'vertical-scroll-bars) 'right)
-		      (cons 0 sbars)
-		    (cons sbars 0)))
+	    sbars (frame-parameter nil 'vertical-scroll-bars))
+      (cond ((eq sbars 'right)
+	     (setq sbars
+		   (cons 0 (/ (or (frame-parameter nil 'scroll-bar-width) 14)
+			      fcw))))
+	    (sbars
+	     (setq sbars
+		   (cons (/ (or (frame-parameter nil 'scroll-bar-width) 14)
+			    fcw)
+			 0))))
       (setq left (- (* (round (/ (1- (/ (+ (window-width)
 					   (car sbars) (cdr sbars)
 					   (/ (+ (or (car fringes) 0)
@@ -213,23 +221,25 @@
 						   height))
 					    2)))
 			     height)
-			  yoffset
-			  (/ (* (or line-spacing 0) 2) fch)))
-	    height (- height (/ (or line-spacing 0) fch)))
-      (cond ((>= top 1)
-	     (insert (propertize
-		      " "
-		      'display `(space :width 0 :ascent 100))
-		     "\n"
-		     (propertize
-		      " "
-		      'display `(space :width 0 :height ,(1- top) :ascent 100))
-		     "\n"))
-	    ((> top 0)
-	     (insert (propertize
-		      " "
-		      'display `(space :width 0 :height ,top :ascent 100))
-		     "\n")))
+			  yoffset))
+	    ls (/ (or line-spacing 0) fch)
+	    height (max 0 (- height ls)))
+      (cond ((>= (- top ls) 1)
+	     (insert
+	      (propertize
+	       " "
+	       'display `(space :width 0 :ascent 100))
+	      "\n"
+	      (propertize
+	       " "
+	       'display `(space :width 0 :height ,(- top ls 1) :ascent 100))
+	      "\n"))
+	    ((> (- top ls) 0)
+	     (insert
+	      (propertize
+	       " "
+	       'display `(space :width 0 :height ,(- top ls) :ascent 100))
+	      "\n")))
       (if (and (> width 0) (> left 0))
 	  (insert (propertize
 		   " "
@@ -240,7 +250,7 @@
 		 " "
 		 'display `(space :width ,width :height ,height :ascent 0)
 		 'face `(gnus-splash :stipple ,pixmap))))
-      (goto-char (if (zerop top) (1- (point)) (point-min)))
+      (goto-char (if (<= (- top ls) 0) (1- (point)) (point-min)))
       (redraw-frame (selected-frame))
       (sit-for 0))))
 

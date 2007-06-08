@@ -1,3 +1,7 @@
+2007-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-ems.el (gnus-x-splash): Fix calculation; error in tty.
+
 2007-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-ems.el (gnus-x-splash): Make it work.
