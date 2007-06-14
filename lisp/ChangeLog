@@ -26,6 +26,18 @@
 	* mm-decode.el (mm-insert-part): Separate the extracted parts that have
 	the same faces.
 
+2007-06-07  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-art.el (gnus-split-methods): Fix typo in docstring.
+
+2007-06-06  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-diary.el (gnus-diary-time-format, gnus-summary-sort-by-schedule):
+	* gnus-sum.el (gnus-summary-highlight):
+	* pgg.el (pgg-sign-region, pgg-sign):
+	* mail-source.el (mail-source-delete-old-incoming-confirm):
+	* nndiary.el (nndiary-reminders): Fix typos in docstrings.
+
 2007-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-view-part-externally)
@@ -3017,8 +3029,7 @@
 
 	* mm-view.el (mm-view-pkcs7-verify): Implement using smime.el.
 
-2006-02-21  Wolfram Fenske  <wolfram.fenske@student.uni-magdeburg.de>
-	(tiny change)
+2006-02-21  Wolfram Fenske  <wolfram.fenske@student.uni-magdeburg.de>  (tiny change)
 
 	* nnimap.el (nnimap-request-move-article): Change folder back to
 	source group before deleting.
@@ -6683,7 +6694,7 @@
 	* nnmail.el (nnmail-split-fancy-with-parent-ignore-groups)
 	(nnmail-cache-ignore-groups, nnmail-spool-hook)
 	(nnmail-split-fancy-match-partial-words)
-	(nnmail-split-lowercase-expanded):
+	(nnmail-split-lowercase-expanded): Add :version.
 
 	* nndiary.el (nndiary): Add :version.
 
@@ -7323,6 +7334,7 @@
 
 	* nnmail.el (nnmail-fancy-expiry-targets)
 	(nnmail-mail-splitting-charset, nnmail-mail-splitting-decodes):
+	Add :version.
 
 	* nnimap.el (nnimap-split-download-body, nnimap-dont-close)
 	(nnimap-retrieve-groups-asynchronous): Add :version.
@@ -7331,7 +7343,7 @@
 	* mml.el (mml-content-disposition-parameters)
 	(mml-insert-mime-headers-always): Add :version.
 
-	* mm-util.el (mm-coding-system-priorities):
+	* mm-util.el (mm-coding-system-priorities): Add :version.
 
 	* mm-decode.el (mm-inline-text-html-with-images)
 	(mm-keep-viewer-alive-types, mm-external-terminal-program)
@@ -7388,7 +7400,7 @@
 	* gnus-srvr.el (gnus-server-browse-in-group-buffer)
 	(gnus-server-offline-face): Add :version.
 
-	* gnus-score.el (gnus-adaptive-word-length-limit):
+	* gnus-score.el (gnus-adaptive-word-length-limit): Add :version.
 
 	* gnus-msg.el (gnus-gcc-externalize-attachments)
 	(gnus-debug-files, gnus-debug-exclude-variables)
@@ -7410,7 +7422,7 @@
 	* gnus-delay.el (gnus-delay-default-hour): Add :version.
 
 	* gnus-cite.el (gnus-cite-blank-line-after-header)
-	(gnus-article-boring-faces):
+	(gnus-article-boring-faces): Add :version.
 
 	* gnus-art.el (gnus-buttonized-mime-types)
 	(gnus-inhibit-mime-unbuttonizing)
