@@ -259,7 +259,7 @@
 
 2007-04-18  Levin Du  <zslevin@gmail.com>  (tiny change)
 
-	* calendar/parse-time.el (parse-time-string-chars): Check if CHAR
+	* parse-time.el (parse-time-string-chars): Check if CHAR
 	is less than the length of parse-time-syntax.
 
 2007-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
