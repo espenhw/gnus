@@ -1,3 +1,8 @@
+2007-06-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Add newlines to
+	.newsrc.eld file.
+
 2007-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-fetch-headers)

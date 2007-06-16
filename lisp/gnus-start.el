@@ -2866,7 +2866,7 @@ If FORCE is non-nil, the .newsrc file is read."
       (while variables
 	(when (and (boundp (setq variable (pop variables)))
 		   (symbol-value variable))
-	  (princ "(setq ")
+	  (princ "\n(setq ")
           (princ (symbol-name variable))
           (princ " '")
 	  (prin1 (symbol-value variable))
