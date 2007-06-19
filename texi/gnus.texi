@@ -25481,13 +25481,13 @@ to the Gnus back ends instead of Gnus proper.
 @item gnus-add-timestamp-to-message
 @vindex gnus-add-timestamp-to-message
 This variable controls whether to add timestamps to messages that are
-issued controlled by @code{gnus-verbose} and
-@code{gnus-verbose-backends}.  The default value is @code{nil} which
-means never to add timestamp.  If it is @code{log}, add timestamps to
-only the messages that go into the @samp{*Messages*} buffer (in XEmacs,
-it is the @samp{ *Message-Log*} buffer).  If it is neither @code{nil}
-nor @code{log}, add timestamps not only to log messages but also to the
-ones displayed in the echo area.
+controlled by @code{gnus-verbose} and @code{gnus-verbose-backends} and
+are issued.  The default value is @code{nil} which means never to add
+timestamp.  If it is @code{log}, add timestamps to only the messages
+that go into the @samp{*Messages*} buffer (in XEmacs, it is the
+@samp{ *Message-Log*} buffer).  If it is neither @code{nil} nor
+@code{log}, add timestamps not only to log messages but also to the ones
+displayed in the echo area.
 
 @item nnheader-max-head-length
 @vindex nnheader-max-head-length
