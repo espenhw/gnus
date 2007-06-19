@@ -1,3 +1,7 @@
+2007-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Various Various): Mention gnus-add-timestamp-to-message.
+
 2007-06-06  Juanma Barranquero  <lekktu@gmail.com>
 
 	* gnus.texi (Article Buttons, Mail Source Customization)
