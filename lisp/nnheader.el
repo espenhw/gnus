@@ -866,7 +866,9 @@ without formatting."
   "Message if the Gnus backends are talkative."
   (if (or (not (numberp gnus-verbose-backends))
 	  (<= level gnus-verbose-backends))
-      (apply 'message args)
+      (if gnus-add-timestamp-to-message
+	  (apply 'gnus-message-with-timestamp args)
+	(apply 'message args))
     (apply 'format args)))
 
 (defun nnheader-be-verbose (level)

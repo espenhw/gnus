@@ -456,6 +456,80 @@ jabbering all the time."
   :group 'gnus-start
   :type 'integer)
 
+(defcustom gnus-add-timestamp-to-message nil
+  "Non-nil means add timestamps to messages that Gnus issues.
+If it is `log', add timestamps to only the messages that go into the
+\"*Messages*\" buffer (in XEmacs, it is the \" *Message-Log*\" buffer).
+If it is neither nil nor `log', add timestamps not only to log messages
+but also to the ones displayed in the echo area."
+  :version "23.0" ;; No Gnus
+  :group  'gnus-various
+  :type '(choice :format "%{%t%}:\n %[Value Menu%] %v"
+		 (const :tag "Logged messages only" log)
+		 (sexp :tag "All messages"
+		       :match (lambda (widget value) value)
+		       :value t)
+		 (const :tag "No timestamp" nil)))
+
+(eval-when-compile
+  (defmacro gnus-message-with-timestamp-1 (format-string args)
+    (let ((timestamp '((format-time-string "%Y%m%dT%H%M%S" time)
+		       "." (format "%03d" (/ (nth 2 time) 1000)) "> ")))
+      (if (featurep 'xemacs)
+	  `(let (str time)
+	     (if (or (and (null ,format-string) (null ,args))
+		     (progn
+		       (setq str (apply 'format ,format-string ,args))
+		       (zerop (length str))))
+		 (prog1
+		     (and ,format-string str)
+		   (clear-message nil))
+	       (cond ((eq gnus-add-timestamp-to-message 'log)
+		      (setq time (current-time))
+		      (display-message 'no-log str)
+		      (setcar (car message-stack) 'message)
+		      (setcdr (car message-stack) (concat ,@timestamp str)))
+		     (gnus-add-timestamp-to-message
+		      (setq time (current-time))
+		      (display-message 'message (concat ,@timestamp str)))
+		     (t
+		      (display-message 'message str))))
+	     str)
+	`(let (str time)
+	   (cond ((eq gnus-add-timestamp-to-message 'log)
+		  (setq str (let (message-log-max)
+			      (apply 'message ,format-string ,args)))
+		  (when (and message-log-max
+			     (> message-log-max 0)
+			     (/= (length str) 0))
+		    (setq time (current-time))
+		    (with-current-buffer (get-buffer-create "*Messages*")
+		      (goto-char (point-max))
+		      (insert ,@timestamp str "\n")
+		      (forward-line (- message-log-max))
+		      (delete-region (point-min) (point))
+		      (goto-char (point-max))))
+		  str)
+		 (gnus-add-timestamp-to-message
+		  (if (or (and (null ,format-string) (null ,args))
+			  (progn
+			    (setq str (apply 'format ,format-string ,args))
+			    (zerop (length str))))
+		      (prog1
+			  (and ,format-string str)
+			(message nil))
+		    (setq time (current-time))
+		    (message "%s" (concat ,@timestamp str))
+		    str))
+		 (t
+		  (apply 'message ,format-string ,args))))))))
+
+(defun gnus-message-with-timestamp (format-string &rest args)
+  "Display message with timestamp.  Arguments are the same as `message'.
+The `gnus-add-timestamp-to-message' variable controls how to add
+timestamp to message."
+  (gnus-message-with-timestamp-1 format-string args))
+
 (defun gnus-message (level &rest args)
   "If LEVEL is lower than `gnus-verbose' print ARGS using `message'.
 
@@ -464,7 +538,9 @@ Guideline for numbers:
 that take a long time, 7 - not very important messages on stuff, 9 - messages
 inside loops."
   (if (<= level gnus-verbose)
-      (apply 'message args)
+      (if gnus-add-timestamp-to-message
+	  (apply 'gnus-message-with-timestamp args)
+	(apply 'message args))
     ;; We have to do this format thingy here even if the result isn't
     ;; shown - the return value has to be the same as the return value
     ;; from `message'.

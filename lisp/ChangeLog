@@ -1,3 +1,12 @@
+2007-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-add-timestamp-to-message): New user option.
+	(gnus-message-with-timestamp-1): New macro.
+	(gnus-message-with-timestamp): New function.
+	(gnus-message): Use them.
+
+	* nnheader.el (nnheader-message): Use them.
+
 2007-06-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Add newlines to
