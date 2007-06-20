@@ -25485,7 +25485,7 @@ controlled by @code{gnus-verbose} and @code{gnus-verbose-backends} and
 are issued.  The default value is @code{nil} which means never to add
 timestamp.  If it is @code{log}, add timestamps to only the messages
 that go into the @samp{*Messages*} buffer (in XEmacs, it is the
-@samp{ *Message-Log*} buffer).  If it is neither @code{nil} nor
+@w{@samp{ *Message-Log*}} buffer).  If it is neither @code{nil} nor
 @code{log}, add timestamps not only to log messages but also to the ones
 displayed in the echo area.
 
