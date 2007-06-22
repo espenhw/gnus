@@ -4025,23 +4025,28 @@ not have PROP."
 		 "Invisible text found and made visible; continue sending? ")
 	  (error "Invisible text found and made visible")))))
   (message-check 'illegible-text
-    (let (found choice)
+    (let (char found choice)
       (message-goto-body)
-      (skip-chars-forward mm-7bit-chars)
-      (while (not (eobp))
-	(when (let ((char (char-after)))
-		(or (< (mm-char-int char) 128)
-		    (and (mm-multibyte-p)
-			 (memq (char-charset char)
-			       '(eight-bit-control eight-bit-graphic
-						   control-1))
-			 (not (get-text-property
-			       (point) 'untranslated-utf-8)))))
+      (while (progn
+	       (skip-chars-forward mm-7bit-chars)
+	       (when (get-text-property (point) 'no-illegible-text)
+		 ;; There is a signed or encrypted raw message part
+		 ;; that is considered to be safe.
+		 (goto-char (or (next-single-property-change
+				 (point) 'no-illegible-text)
+				(point-max))))
+	       (setq char (char-after)))
+	(when (or (< (mm-char-int char) 128)
+		  (and (mm-multibyte-p)
+		       (memq (char-charset char)
+			     '(eight-bit-control eight-bit-graphic
+						 control-1))
+		       (not (get-text-property
+			     (point) 'untranslated-utf-8))))
 	  (message-overlay-put (message-make-overlay (point) (1+ (point)))
 			       'face 'highlight)
 	  (setq found t))
-	(forward-char)
-	(skip-chars-forward mm-7bit-chars))
+	(forward-char))
       (when found
 	(setq choice
 	      (gnus-multiple-choice
@@ -6847,9 +6852,10 @@ Optional DIGEST will use digest to forward."
 	(dolist (elem ignored)
 	  (message-remove-header elem t))))))
 
-(defun message-forward-make-body-mime (forward-buffer)
-  (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")
-  (let ((b (point)) e)
+(defun message-forward-make-body-mime (forward-buffer
+				       &optional signed-or-encrypted)
+  (let ((b (point)))
+    (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")
     (save-restriction
       (narrow-to-region (point) (point))
       (mml-insert-buffer forward-buffer)
@@ -6857,8 +6863,12 @@ Optional DIGEST will use digest to forward."
       (when (looking-at "From ")
 	(replace-match "X-From-Line: "))
       (goto-char (point-max)))
-    (setq e (point))
-    (insert "<#/part>\n")))
+    (insert "<#/part>\n")
+    (when signed-or-encrypted
+      ;; Consider there is no illegible text.
+      (add-text-properties
+       b (point)
+       `(no-illegible-text t rear-nonsticky t start-open t)))))
 
 (defun message-forward-make-body-mml (forward-buffer)
   (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
@@ -6982,17 +6992,20 @@ is for the internal use."
   (if digest
       (message-forward-make-body-digest forward-buffer)
     (if message-forward-as-mime
-	(if (and message-forward-show-mml
-		 (not (and (eq message-forward-show-mml 'best)
-			   ;; Use the raw form in the body if it contains
-			   ;; signed or encrypted message so as not to be
-			   ;; destroyed by re-encoding.
-			   (with-current-buffer forward-buffer
-			     (condition-case nil
-				 (message-signed-or-encrypted-p)
-			       (error t))))))
-	    (message-forward-make-body-mml forward-buffer)
-	  (message-forward-make-body-mime forward-buffer))
+	(let (signed-or-encrypted)
+	  (if (and message-forward-show-mml
+		   (not (and (eq message-forward-show-mml 'best)
+			     ;; Use the raw form in the body if it contains
+			     ;; signed or encrypted message so as not to be
+			     ;; destroyed by re-encoding.
+			     (with-current-buffer forward-buffer
+			       (condition-case nil
+				   (setq signed-or-encrypted
+					 (message-signed-or-encrypted-p))
+				 (error t))))))
+	      (message-forward-make-body-mml forward-buffer)
+	    (message-forward-make-body-mime forward-buffer
+					    signed-or-encrypted)))
       (message-forward-make-body-plain forward-buffer)))
   (message-position-point))
 

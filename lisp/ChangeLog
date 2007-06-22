@@ -1,3 +1,10 @@
+2007-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-fix-before-sending): Skip raw message part to be
+	forwarded while checking illegible text.
+	(message-forward-make-body-mime, message-forward-make-body): Mark
+	signed or encrypted raw message as having no illegible text.
+
 2007-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-add-timestamp-to-message): New user option.
