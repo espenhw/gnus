@@ -7313,12 +7313,12 @@ pre-fetch all the articles it can without bound.  If it is
 @code{nil}, no pre-fetching will be done.
 
 @vindex gnus-async-prefetch-article-p
-@findex gnus-async-read-p
+@findex gnus-async-unread-p
 There are probably some articles that you don't want to pre-fetch---read
 articles, for instance.  The @code{gnus-async-prefetch-article-p}
 variable controls whether an article is to be pre-fetched.  This
 function should return non-@code{nil} when the article in question is
-to be pre-fetched.  The default is @code{gnus-async-read-p}, which
+to be pre-fetched.  The default is @code{gnus-async-unread-p}, which
 returns @code{nil} on read articles.  The function is called with an
 article data structure as the only parameter.
 

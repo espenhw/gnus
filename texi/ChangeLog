@@ -1,3 +1,7 @@
+2007-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Asynchronous Fetching): Fix typo.
+
 2007-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Various Various): Mention gnus-add-timestamp-to-message.
