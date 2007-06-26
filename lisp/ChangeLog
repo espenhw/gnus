@@ -1,3 +1,11 @@
+2007-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-summary-command-nosave): Don't set the 3rd
+	arg of pop-to-buffer for XEmacs.
+	(gnus-article-read-summary-keys): Ditto; don't restore window
+	configuration if summary command ends up with neither article buffer
+	nor summary buffer; describe bindings if summary keys end with C-h.
+
 2007-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-fix-before-sending): Skip raw message part to be
