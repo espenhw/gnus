@@ -945,8 +945,8 @@ Emacs for Heathens
 @chapter Starting Gnus
 @cindex starting up
 
-If you are haven't used Emacs much before using Gnus, read @ref{Emacs
-for Heathens} first.
+If you haven't used Emacs much before using Gnus, read @ref{Emacs for
+Heathens} first.
 
 @kindex M-x gnus
 @findex gnus
