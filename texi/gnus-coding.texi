@@ -7,7 +7,7 @@
 @syncodeindex pg cp
 
 @copying
-Copyright (c) 2004, 2005  Free Software Foundation, Inc.
+Copyright (c) 2004, 2005, 2007  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -244,8 +244,8 @@ releases will be done when needed (5.10.7, @dots{}).
 @ref{Gnus Development, ,Gnus Development, gnus, The Gnus Newsreader}
 
 Stable releases of Gnus finally become part of Emacs.  E.g. Gnus 5.8
-became a part of Emacs 21 (relabeled to Gnus 5.9).  The 5.10 series will
-become part of Emacs 22 (as Gnus 5.11).
+became a part of Emacs 21 (relabeled to Gnus 5.9).  The 5.10 series 
+became part of Emacs 22 as Gnus 5.11.
 
 @section Syncing
 
