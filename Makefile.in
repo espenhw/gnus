@@ -32,6 +32,8 @@ OLD_TAG     = v5-10-6
 # CVS tag of the current release:
 TAG  = v5-10
 #
+COMMIT_STRING = $(CODENAME)Gnus v$(VERSION) is released.
+#
 # Procedure:
 # - release-bump-version
 # - release-commit
@@ -118,6 +120,12 @@ release-check-settings:
 	@echo   release-commit
 	@echo   release-files or release-files-signed
 
+bump-version:
+	$(MAKE) COMMIT_STRING='Bump version to $(VERSION).' release-bump-version
+
+bump-version-commit:
+	$(MAKE) COMMIT_STRING='Bump version to $(VERSION).' release-commit
+
 # Needs GNU grep and a recent GNU sed:
 release-bump-version:	release-check-settings
 	sed -i -e '/^(defconst gnus-version-number /s,"$(OLD_PATTERN)","$(VERSION)",' lisp/gnus.el
@@ -133,17 +141,17 @@ release-bump-version:	release-check-settings
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" ChangeLog; then \
 	  echo "ChangeLog is already updated"; \
 	else \
-	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* README: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" ChangeLog; \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* README: $(COMMIT_STRING)\n\n|" ChangeLog; \
 	fi
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" texi/ChangeLog; then \
 	  echo "texi/ChangeLog is already updated"; \
 	else \
-	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.texi, gnus-faq.texi, message.texi: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" texi/ChangeLog; \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.texi, gnus-faq.texi, message.texi: $(COMMIT_STRING)\n\n|" texi/ChangeLog; \
 	fi
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" lisp/ChangeLog; then \
 	  echo "lisp/ChangeLog is already updated"; \
 	else \
-	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.el: $(CODENAME)Gnus v$(VERSION) is released.\n\n|" lisp/ChangeLog; \
+	  sed -i -e "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.el: $(COMMIT_STRING)\n\n|" lisp/ChangeLog; \
 	fi
 	cvs diff -U0 $(RELEASE_COMMIT_FILES); sleep 2
 
@@ -156,12 +164,12 @@ release-commit:	release-check-settings
 	@echo
 	@echo "Really do the release-commit for $(CODENAME)Gnus v$(VERSION)?"
 	@echo "Command line:"
-	@echo "  " cvs commit -m "$(CODENAME)Gnus v$(VERSION) is released." $(RELEASE_COMMIT_FILES)
+	@echo "  " cvs commit -m "$(COMMIT_STRING)" $(RELEASE_COMMIT_FILES)
 	@echo
 	@echo "Hit RET to continue or Ctrl-C to abort."
 	@echo
 	@read dummy
-	cvs commit -m "$(CODENAME)Gnus v$(VERSION) is released." $(RELEASE_COMMIT_FILES)
+	cvs commit -m "$(COMMIT_STRING)" $(RELEASE_COMMIT_FILES)
 	@echo
 	@echo "Add tag $(TAG) to CVS?"
 	@echo "Command line:"

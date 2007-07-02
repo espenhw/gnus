@@ -1,3 +1,9 @@
+2007-07-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (COMMIT_STRING): New variable.
+	(release-bump-version): Use it.
+	(bump-version, bump-version-commit): New targets.
+
 2007-06-06  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
 	* todo: Add comment.  Remove duplicate item.
