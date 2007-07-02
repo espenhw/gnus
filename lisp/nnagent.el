@@ -132,6 +132,14 @@
     (insert ")\n")
     (write-region (point-min) (point-max) (gnus-agent-lib-file "flags")
 		  t 'silent))
+  ;; Also set the marks for the original back end that keeps marks in
+  ;; the local system.
+  (let ((gnus-agent nil))
+    (when (and (memq (car gnus-command-method) '(nntp))
+	       (gnus-check-backend-function 'request-set-mark
+					    (car gnus-command-method)))
+      (funcall (gnus-get-function gnus-command-method 'request-set-mark)
+	       group action server)))
   nil)
 
 (deffoo nnagent-retrieve-headers (articles &optional group server fetch-old)
