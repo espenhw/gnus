@@ -1,3 +1,7 @@
+2007-07-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Add message-citation-line-format.
+
 2007-07-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-coding.texi (Gnus Maintainance Guide): Update for Emacs 22.1.
