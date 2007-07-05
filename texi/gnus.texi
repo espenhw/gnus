@@ -13882,14 +13882,18 @@ Header lines longer than the value of
 @code{nnmail-split-header-length-limit} are excluded from the split
 function.
 
-@vindex nnmail-mail-splitting-charset
 @vindex nnmail-mail-splitting-decodes
-By default, splitting @acronym{MIME}-decodes headers so you
-can match on non-@acronym{ASCII} strings.  The
-@code{nnmail-mail-splitting-charset} variable specifies the default
-charset for decoding.  The behavior can be turned off completely by
-binding @code{nnmail-mail-splitting-decodes} to @code{nil}, which is
-useful if you want to match articles based on the raw header data.
+@vindex nnmail-mail-splitting-charset
+By default, splitting does not decode headers, so you can not match on
+non-@acronym{ASCII} strings.  But it is useful if you want to match
+articles based on the raw header data.  To enable it, set the
+@code{nnmail-mail-splitting-decodes} variable to a non-@code{nil} value.
+In addition, the value of the @code{nnmail-mail-splitting-charset}
+variable is used for decoding non-@acronym{MIME} encoded string when
+@code{nnmail-mail-splitting-decodes} is non-@code{nil}.  The default
+value is @code{nil} which means not to decode non-@acronym{MIME} encoded
+string.  A suitable value for you will be @code{undecided} or be the
+charset used normally in mails you are interested in.
 
 @vindex nnmail-resplit-incoming
 By default, splitting is performed on all incoming messages.  If you
