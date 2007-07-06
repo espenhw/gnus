@@ -1,3 +1,15 @@
+2007-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-name-charset): Allow a method of the short
+	form in gnus-group-name-charset-method-alist.
+
+	* gnus-eform.el (gnus-edit-form): Add optional argument layout which
+	overrides the default layout edit-form.
+
+	* gnus-win.el (gnus-buffer-configuration): Add edit-server.
+
+	* gnus-srvr.el (gnus-server-edit-server): Use edit-server layout.
+
 2007-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-catchup): Don't recognize cached articles

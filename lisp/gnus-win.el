@@ -120,6 +120,10 @@ used to display Gnus windows."
      (vertical 1.0
 	       (summary 0.25)
 	       (edit-score 1.0 point)))
+    (edit-server
+     (vertical 1.0
+	       (server 0.5)
+	       (edit-form 1.0 point)))
     (post
      (vertical 1.0
 	       (post 1.0 point)))

@@ -624,7 +624,8 @@ The following commands are available:
      `(lambda (form)
 	(gnus-server-set-info ,server form)
 	(gnus-server-list-servers)
-	(gnus-server-position-point)))))
+	(gnus-server-position-point))
+     'edit-server)))
 
 (defun gnus-server-scan-server (server)
   "Request a scan from the current server."

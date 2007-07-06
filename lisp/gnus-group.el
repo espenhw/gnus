@@ -1218,7 +1218,10 @@ The following commands are available:
 (defun gnus-group-name-charset (method group)
   (if (null method)
       (setq method (gnus-find-method-for-group group)))
-  (let ((item (assoc method gnus-group-name-charset-method-alist))
+  (let ((item (or (assoc method gnus-group-name-charset-method-alist)
+		  (and (consp method)
+		       (assoc (list (car method) (cadr method))
+			      gnus-group-name-charset-method-alist))))
 	(alist gnus-group-name-charset-group-alist)
 	result)
     (if item
