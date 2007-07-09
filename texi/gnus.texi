@@ -11747,6 +11747,7 @@ region.
 
 @item gnus-single-article-buffer
 @vindex gnus-single-article-buffer
+@cindex article buffers, several
 If non-@code{nil}, use the same article buffer for all the groups.
 (This is the default.)  If @code{nil}, each group will have its own
 article buffer.

@@ -11,6 +11,14 @@
 
 	* gnus-coding.texi (Gnus Maintainance Guide): Update for Emacs 22.1.
 
+2007-07-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-faq.texi ([3.2]): Fix locating of environment variables in the
+	Control Panel.
+
+	* gnus.texi (Misc Article): Add index entry for
+	gnus-single-article-buffer.
+
 2007-06-27  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
 	* gnus.texi (Starting Up): Fix typo.

@@ -15,6 +15,10 @@
 	* gnus-sum.el (gnus-summary-catchup): Don't recognize cached articles
 	as unfetched articles.
 
+2007-07-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-level-unsubscribed): Improve doc string.
+
 2007-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnagent.el (nnagent-request-set-mark): Also set the marks for the
