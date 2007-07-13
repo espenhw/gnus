@@ -38,7 +38,7 @@
 (require 'ietf-drums)
 ;; Fixme: Avoid this (used for mail-parse-charset) mm dependence on gnus.
 (require 'mail-prsvr)
-(require 'base64)
+(require 'rfc2045) ;; rfc2045-encode-string
 (autoload 'mm-body-7-or-8 "mm-bodies")
 
 (defvar rfc2047-header-encoding-alist
@@ -816,12 +816,9 @@ it, put the following line in your ~/.gnus.el file:
 
 \(defalias 'mail-header-encode-parameter 'rfc2047-encode-parameter)
 "
-  (let* ((rfc2047-encoding-type 'mime)
-	 (rfc2047-encode-max-chars nil)
-	 (string (rfc2047-encode-string value)))
-    (if (string-match (concat "[" ietf-drums-tspecials "]") string)
-	(format "%s=%S" param string)
-      (concat param "=" string))))
+  (let ((rfc2047-encoding-type 'mime)
+	(rfc2047-encode-max-chars nil))
+    (rfc2045-encode-string param (rfc2047-encode-string value))))
 
 ;;;
 ;;; Functions for decoding RFC2047 messages

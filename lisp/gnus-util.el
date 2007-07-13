@@ -487,8 +487,7 @@ but also to the ones displayed in the echo area."
 	       (cond ((eq gnus-add-timestamp-to-message 'log)
 		      (setq time (current-time))
 		      (display-message 'no-log str)
-		      (setcar (car message-stack) 'message)
-		      (setcdr (car message-stack) (concat ,@timestamp str)))
+		      (log-message 'message (concat ,@timestamp str)))
 		     (gnus-add-timestamp-to-message
 		      (setq time (current-time))
 		      (display-message 'message (concat ,@timestamp str)))
