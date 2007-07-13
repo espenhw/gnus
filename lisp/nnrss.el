@@ -83,7 +83,13 @@ ENTRY is the record of the current headline.  GROUP is the group name.
 ARTICLE is the article number of the current headline.")
 
 (defvar nnrss-file-coding-system mm-universal-coding-system
-  "Coding system used when reading and writing files.")
+  "*Coding system used when reading and writing files.
+If you run Gnus with various versions of Emacsen, the value of this
+variable should be the coding system that all those Emacsen support.
+Note that you have to regenerate all the nnrss groups if you change
+the value.  Moreover, you should be patient even if you are made to
+read the same articles twice, that arises for the difference of the
+versions of xml.el.")
 
 (defvar nnrss-compatible-encoding-alist
   (delq nil (mapcar (lambda (elem)
@@ -365,7 +371,8 @@ used to render text.  If it is nil, text will simply be folded.")
 	(delq (assoc group nnrss-server-data) nnrss-server-data))
   (nnrss-save-server-data server)
   (ignore-errors
-   (delete-file (nnrss-make-filename group server)))
+    (let ((file-name-coding-system nnmail-pathname-coding-system))
+      (delete-file (nnrss-make-filename group server))))
   t)
 
 (deffoo nnrss-request-list-newsgroups (&optional server)
@@ -544,13 +551,13 @@ which RSS 2.0 allows."
 
 (defun nnrss-read-server-data (server)
   (setq nnrss-server-data nil)
-  (let ((file (nnrss-make-filename "nnrss" server)))
+  (let ((file (nnrss-make-filename "nnrss" server))
+	(file-name-coding-system nnmail-pathname-coding-system))
     (when (file-exists-p file)
       ;; In Emacs 21.3 and earlier, `load' doesn't support non-ASCII
       ;; file names.  So, we use `insert-file-contents' instead.
       (mm-with-multibyte-buffer
-	(let ((coding-system-for-read nnrss-file-coding-system)
-	      (file-name-coding-system nnmail-pathname-coding-system))
+	(let ((coding-system-for-read nnrss-file-coding-system))
 	  (insert-file-contents file)
 	  (eval-region (point-min) (point-max)))))))
 
@@ -573,13 +580,13 @@ which RSS 2.0 allows."
   (let ((pair (assoc group nnrss-server-data)))
     (setq nnrss-group-max (or (cadr pair) 0))
     (setq nnrss-group-min (+ nnrss-group-max 1)))
-  (let ((file (nnrss-make-filename group server)))
+  (let ((file (nnrss-make-filename group server))
+	(file-name-coding-system nnmail-pathname-coding-system))
     (when (file-exists-p file)
       ;; In Emacs 21.3 and earlier, `load' doesn't support non-ASCII
       ;; file names.  So, we use `insert-file-contents' instead.
       (mm-with-multibyte-buffer
-	(let ((coding-system-for-read nnrss-file-coding-system)
-	      (file-name-coding-system nnmail-pathname-coding-system))
+	(let ((coding-system-for-read nnrss-file-coding-system))
 	  (insert-file-contents file)
 	  (eval-region (point-min) (point-max))))
       (dolist (e nnrss-group-data)
@@ -698,7 +705,9 @@ which RSS 2.0 allows."
     (dolist (item (nreverse (nnrss-find-el (intern (concat rss-ns "item")) xml)))
       (when (and (listp item)
 		 (string= (concat rss-ns "item") (car item))
-		 (progn (setq hash-index (md5 (gnus-prin1-to-string item)))
+		 (progn (setq hash-index (md5 (gnus-prin1-to-string item)
+					      nil nil
+					      nnrss-file-coding-system))
 			(not (gethash hash-index nnrss-group-hashtb))))
 	(setq subject (nnrss-node-text rss-ns 'title item))
 	(setq url (nnrss-decode-entities-string

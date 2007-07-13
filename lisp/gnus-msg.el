@@ -379,7 +379,7 @@ Thank you for your help in stamping out bugs.
 (defun gnus-inews-make-draft (articles)
   `(lambda ()
      (gnus-inews-make-draft-meta-information
-      ,gnus-newsgroup-name ',articles)))
+      ,(gnus-group-decoded-name gnus-newsgroup-name) ',articles)))
 
 (defvar gnus-article-reply nil)
 (defmacro gnus-setup-message (config &rest forms)
@@ -1723,8 +1723,13 @@ this is a reply."
 
 (defun gnus-inews-insert-archive-gcc (&optional group)
   "Insert the Gcc to say where the article is to be archived."
+  (setq group (cond (group
+		     (gnus-group-decoded-name group))
+		    (gnus-newsgroup-name
+		     (gnus-group-decoded-name gnus-newsgroup-name))
+		    (t
+		     "")))
   (let* ((var gnus-message-archive-group)
-	 (group (or group gnus-newsgroup-name ""))
 	 (gcc-self-val
 	  (and gnus-newsgroup-name
 	       (not (equal gnus-newsgroup-name ""))

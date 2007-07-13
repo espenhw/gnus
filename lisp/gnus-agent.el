@@ -916,7 +916,8 @@ supported."
 	 (new-command-method (gnus-find-method-for-group new-group))
 	 (new-path           (directory-file-name
 			      (let (gnus-command-method new-command-method)
-				(gnus-agent-group-pathname new-group)))))
+				(gnus-agent-group-pathname new-group))))
+	 (file-name-coding-system nnmail-pathname-coding-system))
     (gnus-rename-file old-path new-path t)
 
     (let* ((old-real-group (gnus-group-real-name old-group))
@@ -944,7 +945,8 @@ supported."
   (let* ((command-method (gnus-find-method-for-group group))
 	 (path           (directory-file-name
 			  (let (gnus-command-method command-method)
-			    (gnus-agent-group-pathname group)))))
+			    (gnus-agent-group-pathname group))))
+	 (file-name-coding-system nnmail-pathname-coding-system))
     (gnus-delete-directory path)
 
     (let* ((real-group (gnus-group-real-name group)))
@@ -1439,9 +1441,7 @@ downloaded into the agent."
   (if (or nnmail-use-long-file-names
           (file-directory-p (expand-file-name group (gnus-agent-directory))))
       group
-    (mm-encode-coding-string
-     (nnheader-replace-chars-in-string group ?. ?/)
-     nnmail-pathname-coding-system)))
+    (nnheader-replace-chars-in-string group ?. ?/)))
 
 (defun gnus-agent-group-pathname (group)
   "Translate GROUP into a file name."
@@ -1556,7 +1556,8 @@ downloaded into the agent."
                (dir (gnus-agent-group-pathname group))
                (date (time-to-days (current-time)))
                (case-fold-search t)
-               pos crosses id)
+               pos crosses id
+	       (file-name-coding-system nnmail-pathname-coding-system))
 
           (setcar selected-sets (nreverse (car selected-sets)))
           (setq selected-sets (nreverse selected-sets))
@@ -1642,22 +1643,27 @@ downloaded into the agent."
 	    (delete-this (pop articles)))
        (while (and (cdr next-possibility) delete-this)
 	 (let ((have-this (caar (cdr next-possibility))))
-	   (cond ((< delete-this have-this)
-		  (setq delete-this (pop articles)))
-		 ((= delete-this have-this)
-		  (let ((timestamp (cdar (cdr next-possibility))))
-		    (when timestamp
-		      (let* ((file-name (concat (gnus-agent-group-pathname group)
-						(number-to-string have-this)))
-			     (size-file (float (or (and gnus-agent-total-fetched-hashtb
-							(nth 7 (file-attributes file-name)))
-						   0))))
-			(delete-file file-name)
-			(gnus-agent-update-files-total-fetched-for group (- size-file)))))
+	   (cond
+	    ((< delete-this have-this)
+	     (setq delete-this (pop articles)))
+	    ((= delete-this have-this)
+	     (let ((timestamp (cdar (cdr next-possibility))))
+	       (when timestamp
+		 (let* ((file-name (concat (gnus-agent-group-pathname group)
+					   (number-to-string have-this)))
+			(size-file
+			 (float (or (and gnus-agent-total-fetched-hashtb
+					 (nth 7 (file-attributes file-name)))
+				    0)))
+			(file-name-coding-system
+			 nnmail-pathname-coding-system))
+		   (delete-file file-name)
+		   (gnus-agent-update-files-total-fetched-for
+		    group (- size-file)))))
 
-		  (setcdr next-possibility (cddr next-possibility)))
-		 (t
-		  (setq next-possibility (cdr next-possibility))))))
+	     (setcdr next-possibility (cddr next-possibility)))
+	    (t
+	     (setq next-possibility (cdr next-possibility))))))
        (setq gnus-agent-article-alist (cdr alist))
        (gnus-agent-save-alist group)))))
 
@@ -1683,8 +1689,9 @@ downloaded into the agent."
 	(when (= (point-max) (point-min))
 	  (push (cons group (current-buffer)) gnus-agent-buffer-alist)
 	  (ignore-errors
-	    (nnheader-insert-file-contents
-	     (gnus-agent-article-name ".overview" group))))
+	   (let ((file-name-coding-system nnmail-pathname-coding-system))
+	     (nnheader-insert-file-contents
+	      (gnus-agent-article-name ".overview" group)))))
 	(nnheader-find-nov-line (string-to-number (cdar crosses)))
 	(insert (string-to-number (cdar crosses)))
 	(insert-buffer-substring gnus-agent-overview-buffer beg end)
@@ -1695,7 +1702,8 @@ downloaded into the agent."
   (when gnus-newsgroup-name
     (let ((root (gnus-agent-article-name ".overview" gnus-newsgroup-name))
           (cnt 0)
-          name)
+          name
+	  (file-name-coding-system nnmail-pathname-coding-system))
       (while (file-exists-p
 	      (setq name (concat root "~"
 				 (int-to-string (setq cnt (1+ cnt))) "~"))))
@@ -1782,7 +1790,8 @@ the article files."
   (let* ((gnus-command-method (or gnus-command-method
 				  (gnus-find-method-for-group group)))
 	 (overview (gnus-agent-article-name ".overview" group))
-	 (agentview (gnus-agent-article-name ".agentview" group)))
+	 (agentview (gnus-agent-article-name ".agentview" group))
+	 (file-name-coding-system nnmail-pathname-coding-system))
 
     (if (file-exists-p overview)
 	(delete-file overview))
@@ -1797,29 +1806,29 @@ the article files."
     (gnus-agent-save-group-info nil group nil)))
 
 (defun gnus-agent-flush-cache ()
-"Flush the agent's index files such that the group no longer
+  "Flush the agent's index files such that the group no longer
 appears to have any local content.  The actual content, the
 article files, is then deleted using gnus-agent-expire-group. The
 gnus-agent-regenerate-group method provides an undo mechanism by
 reconstructing the index files from the article files."
   (save-excursion
-    (while gnus-agent-buffer-alist
-      (set-buffer (cdar gnus-agent-buffer-alist))
-      (let ((coding-system-for-write
-	     gnus-agent-file-coding-system))
-	(write-region (point-min) (point-max)
-		      (gnus-agent-article-name ".overview"
-					       (caar gnus-agent-buffer-alist))
-		      nil 'silent))
-      (setq gnus-agent-buffer-alist (cdr gnus-agent-buffer-alist)))
-    (while gnus-agent-group-alist
-      (with-temp-file (gnus-agent-article-name
-		       ".agentview" (caar gnus-agent-group-alist))
-	(princ (cdar gnus-agent-group-alist))
-	(insert "\n")
-        (princ 1 (current-buffer))
-	(insert "\n"))
-      (setq gnus-agent-group-alist (cdr gnus-agent-group-alist)))))
+    (let ((file-name-coding-system nnmail-pathname-coding-system))
+      (while gnus-agent-buffer-alist
+	(set-buffer (cdar gnus-agent-buffer-alist))
+	(let ((coding-system-for-write gnus-agent-file-coding-system))
+	  (write-region (point-min) (point-max)
+			(gnus-agent-article-name ".overview"
+						 (caar gnus-agent-buffer-alist))
+			nil 'silent))
+	(setq gnus-agent-buffer-alist (cdr gnus-agent-buffer-alist)))
+      (while gnus-agent-group-alist
+	(with-temp-file (gnus-agent-article-name
+			 ".agentview" (caar gnus-agent-group-alist))
+	  (princ (cdar gnus-agent-group-alist))
+	  (insert "\n")
+	  (princ 1 (current-buffer))
+	  (insert "\n"))
+	(setq gnus-agent-group-alist (cdr gnus-agent-group-alist))))))
 
 ;;;###autoload
 (defun gnus-agent-find-parameter (group symbol)
@@ -1855,7 +1864,8 @@ article numbers will be returned."
                      (gnus-list-of-unread-articles group)))
          (gnus-decode-encoded-word-function 'identity)
 	 (gnus-decode-encoded-address-function 'identity)
-         (file (gnus-agent-article-name ".overview" group)))
+         (file (gnus-agent-article-name ".overview" group))
+	 (file-name-coding-system nnmail-pathname-coding-system))
 
     (unless fetch-all
       ;; Add articles with marks to the list of article headers we want to
@@ -2077,7 +2087,8 @@ doesn't exist, to valid the overview buffer."
 (defun gnus-agent-load-alist (group)
   "Load the article-state alist for GROUP."
   ;; Bind free variable that's used in `gnus-agent-read-agentview'.
-  (let ((gnus-agent-read-agentview group))
+  (let ((gnus-agent-read-agentview group)
+	(file-name-coding-system nnmail-pathname-coding-system))
     (setq gnus-agent-article-alist
           (gnus-cache-file-contents
            (gnus-agent-article-name ".agentview" group)
@@ -2139,6 +2150,7 @@ doesn't exist, to valid the overview buffer."
 	   ;; If the agent directory exists, attempt to perform a brute-force
 	   ;; reconstruction of its contents.
 	   (let* (alist
+		  (file-name-coding-system nnmail-pathname-coding-system)
 		  (file-attributes (directory-files-and-attributes 
 				    (gnus-agent-article-name ""
 							     gnus-agent-read-agentview) nil "^[0-9]+$" t)))
@@ -2278,10 +2290,10 @@ modified) original contents, they are first saved to their own file."
              (dest (gnus-agent-lib-file "local")))
         (gnus-make-directory (gnus-agent-lib-file ""))
 
-	(let ((buffer-file-coding-system gnus-agent-file-coding-system))
+	(let ((coding-system-for-write gnus-agent-file-coding-system)
+	      (file-name-coding-system nnmail-pathname-coding-system))
 	  (with-temp-file dest
 	    (let ((gnus-command-method (symbol-value (intern "+method" my-obarray)))
-		  (file-name-coding-system nnmail-pathname-coding-system)
 		  print-level print-length item article
 		  (standard-output (current-buffer)))
 	      (mapatoms (lambda (symbol)
@@ -3115,7 +3127,8 @@ FORCE is equivalent to setting the expiration predicates to true."
   ;; gnus-command-method, initialized overview buffer, and to have
   ;; provided a non-nil active
 
-  (let ((dir (gnus-agent-group-pathname group)))
+  (let ((dir (gnus-agent-group-pathname group))
+	(file-name-coding-system nnmail-pathname-coding-system))
     (gnus-agent-with-refreshed-group
      group
      (when (boundp 'gnus-agent-expire-current-dirs)
@@ -3712,7 +3725,8 @@ has been fetched."
     (let ((gnus-decode-encoded-word-function 'identity)
 	  (gnus-decode-encoded-address-function 'identity)
 	  (file (gnus-agent-article-name ".overview" group))
-	  cached-articles uncached-articles)
+	  cached-articles uncached-articles
+	  (file-name-coding-system nnmail-pathname-coding-system))
       (gnus-make-directory (nnheader-translate-file-chars
 			    (file-name-directory file) t))
 
@@ -3847,7 +3861,8 @@ has been fetched."
              (numberp article))
     (let* ((gnus-command-method (gnus-find-method-for-group group))
            (file (gnus-agent-article-name (number-to-string article) group))
-           (buffer-read-only nil))
+           (buffer-read-only nil)
+	   (file-name-coding-system nnmail-pathname-coding-system))
       (when (and (file-exists-p file)
                  (> (nth 7 (file-attributes file)) 0))
         (erase-buffer)
@@ -3897,6 +3912,7 @@ If REREAD is not nil, downloaded articles are marked as unread."
 	   (file (gnus-agent-article-name ".overview" group))
 	   (dir (file-name-directory file))
 	   point
+	   (file-name-coding-system nnmail-pathname-coding-system)
 	   (downloaded (if (file-exists-p dir)
 			   (sort (delq nil (mapcar (lambda (name)
 						     (and (not (file-directory-p (nnheader-concat dir name)))
@@ -4140,7 +4156,8 @@ agent has fetched."
 	    (path (or path (gnus-agent-group-pathname group)))
 	    (entry (or (gnus-gethash path gnus-agent-total-fetched-hashtb)
 		       (gnus-sethash path (make-list 3 0)
-				     gnus-agent-total-fetched-hashtb))))
+				     gnus-agent-total-fetched-hashtb)))
+	    (file-name-coding-system nnmail-pathname-coding-system))
        (when (listp delta)
 	 (if delta
 	     (let ((sum 0.0)
@@ -4177,6 +4194,7 @@ modified."
 	    (entry (or (gnus-gethash path gnus-agent-total-fetched-hashtb)
 		       (gnus-sethash path (make-list 3 0)
 				     gnus-agent-total-fetched-hashtb)))
+	    (file-name-coding-system nnmail-pathname-coding-system)
 	    (size (or (nth 7 (file-attributes
 			      (nnheader-concat
 			       path (if agent-over

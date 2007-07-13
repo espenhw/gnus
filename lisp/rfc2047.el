@@ -274,9 +274,10 @@ Should be called narrowed to the head of the message."
 ;;; 		  (rfc2047-encode-region (point-min) (point-max))
 ;;; 		(error "Cannot send unencoded text")))
 	     ((mm-coding-system-p method)
-	      (if (and (featurep 'mule)
-		       (if (boundp 'default-enable-multibyte-characters)
-			   default-enable-multibyte-characters))
+	      (if (or (and (featurep 'mule)
+			   (if (boundp 'default-enable-multibyte-characters)
+			       default-enable-multibyte-characters))
+		      (featurep 'file-coding))
 		  (mm-encode-coding-region (point) (point-max) method)))
 	     ;; Hm.
 	     (t)))

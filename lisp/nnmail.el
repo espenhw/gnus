@@ -659,9 +659,7 @@ using different case (i.e. mailing-list@domain vs Mailing-List@Domain)."
 	  (expand-file-name group dir)
 	;; If not, we translate dots into slashes.
 	(expand-file-name
-	 (mm-encode-coding-string
-	  (nnheader-replace-chars-in-string group ?. ?/)
-	  nnmail-pathname-coding-system)
+	 (nnheader-replace-chars-in-string group ?. ?/)
 	 dir))))
    (or file "")))
 

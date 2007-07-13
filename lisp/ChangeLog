@@ -1,5 +1,54 @@
 2007-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-agent.el (gnus-agent-rename-group, gnus-agent-delete-group)
+	(gnus-agent-fetch-articles, gnus-agent-unfetch-articles)
+	(gnus-agent-crosspost, gnus-agent-backup-overview-buffer)
+	(gnus-agent-flush-group, gnus-agent-flush-cache)
+	(gnus-agent-fetch-headers, gnus-agent-load-alist)
+	(gnus-agent-read-agentview, gnus-agent-expire-group-1)
+	(gnus-agent-retrieve-headers, gnus-agent-request-article)
+	(gnus-agent-regenerate-group)
+	(gnus-agent-update-files-total-fetched-for)
+	(gnus-agent-update-view-total-fetched-for): Bind
+	file-name-coding-system to nnmail-pathname-coding-system.
+	(gnus-agent-group-pathname): Don't encode file names by
+	nnmail-pathname-coding-system.
+	(gnus-agent-save-local): Bind file-name-coding-system correctly; bind
+	coding-system-for-write instead of buffer-file-coding-system to
+	gnus-agent-file-coding-system.
+
+	* gnus-msg.el (gnus-inews-make-draft, gnus-inews-insert-archive-gcc):
+	Decode group name.
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Make group names unibyte.
+
+	* gnus-start.el (gnus-update-active-hashtb-from-killed)
+	(gnus-read-newsrc-el-file): Make group names unibyte.
+
+	* nnmail.el (nnmail-group-pathname): Don't encode file names by
+	nnmail-pathname-coding-system.
+
+	* nnrss.el (nnrss-file-coding-system): Doc fix; make it begin with *.
+	(nnrss-request-delete-group): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+	(nnrss-read-server-data, nnrss-read-group-data): Bind
+	file-name-coding-system correctly.
+	(nnrss-check-group): Pass nnrss-file-coding-system to md5.
+
+	* nntp.el: Require gnus-group for the function gnus-group-name-charset.
+	(nntp-server-to-method-cache): New variable.
+	(nntp-group-pathname): New function that decodes non-ASCII group names.
+	(nntp-possibly-create-directory, nntp-marks-changed-p)
+	(nntp-save-marks, nntp-open-marks): Use it.
+	(nntp-possibly-create-directory, nntp-open-marks):
+	Bind file-name-coding-system to nnmail-pathname-coding-system.
+	(nntp-open-marks): Decode group names when bootstrapping marks.
+
+	* rfc2047.el (rfc2047-encode-message-header): Make XEmacs decode
+	Newsgroups and Folowup-To headers.
+
+2007-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-srvr.el (gnus-server-agent-face, gnus-server-opened-face)
 	(gnus-server-closed-face, gnus-server-denied-face)
 	(gnus-server-offline-face): Remove variable.

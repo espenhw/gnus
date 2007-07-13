@@ -725,11 +725,12 @@ The following commands are available:
 	      (while (not (eobp))
 		(ignore-errors
 		  (push (cons
-			 (buffer-substring
-			  (point)
-			  (progn
-			    (skip-chars-forward "^ \t")
-			    (point)))
+			 (mm-string-as-unibyte
+			  (buffer-substring
+			   (point)
+			   (progn
+			     (skip-chars-forward "^ \t")
+			     (point))))
 			 (let ((last (read cur)))
 			   (cons (read cur) last)))
 			groups))
@@ -737,18 +738,19 @@ The following commands are available:
 	    (while (not (eobp))
 	      (ignore-errors
 		(push (cons
-		       (if (eq (char-after) ?\")
-			   (read cur)
-			 (let ((p (point)) (name ""))
-			   (skip-chars-forward "^ \t\\\\")
-			   (setq name (buffer-substring p (point)))
-			   (while (eq (char-after) ?\\)
-			     (setq p (1+ (point)))
-			     (forward-char 2)
-			     (skip-chars-forward "^ \t\\\\")
-			     (setq name (concat name (buffer-substring
-						      p (point)))))
-			   name))
+		       (mm-string-as-unibyte
+			(if (eq (char-after) ?\")
+			    (read cur)
+			  (let ((p (point)) (name ""))
+			    (skip-chars-forward "^ \t\\\\")
+			    (setq name (buffer-substring p (point)))
+			    (while (eq (char-after) ?\\)
+			      (setq p (1+ (point)))
+			      (forward-char 2)
+			      (skip-chars-forward "^ \t\\\\")
+			      (setq name (concat name (buffer-substring
+						       p (point)))))
+			    name)))
 		       (let ((last (read cur)))
 			 (cons (read cur) last)))
 		      groups))

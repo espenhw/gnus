@@ -1967,7 +1967,7 @@ If SCAN, request a scan of that group as well."
     (while lists
       (setq killed (car lists))
       (while killed
-	(gnus-sethash (car killed) nil hashtb)
+	(gnus-sethash (mm-string-as-unibyte (car killed)) nil hashtb)
 	(setq killed (cdr killed)))
       (setq lists (cdr lists)))))
 
@@ -2413,6 +2413,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (setq gnus-format-specs gnus-default-format-specs)))
 	(when gnus-newsrc-assoc
 	  (setq gnus-newsrc-alist gnus-newsrc-assoc))))
+    (dolist (elem gnus-newsrc-alist)
+      (setcar elem (mm-string-as-unibyte (car elem))))
     (gnus-make-hashtable-from-newsrc-alist)
     (when (file-newer-than-file-p file ding-file)
       ;; Old format quick file
