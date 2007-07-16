@@ -1,3 +1,7 @@
+2007-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-srvr.el (gnus-server-font-lock-keywords): Quote faces.
+
 2007-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-rename-group, gnus-agent-delete-group)
