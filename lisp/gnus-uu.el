@@ -393,7 +393,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
    (list current-prefix-arg
 	 (read-file-name
 	  (if gnus-uu-save-separate-articles
-	      "Save articles is dir: "
+	      "Save articles in dir: "
 	    "Save articles in file: ")
 	  gnus-uu-default-dir
 	  gnus-uu-default-dir)))

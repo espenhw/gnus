@@ -44,9 +44,9 @@
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment cursor-in-non-selected-windows
 		    default-enable-multibyte-characters
-		    enable-multibyte-characters gnus-agent-expire-current-dirs
-		    language-info-alist line-spacing mark-active
-		    mouse-selection-click-count
+		    default-file-name-coding-system enable-multibyte-characters
+		    gnus-agent-expire-current-dirs anguage-info-alist
+		    line-spacing mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
 		    temporary-file-directory timer-list tool-bar-mode
 		    transient-mark-mode)))
@@ -71,12 +71,14 @@
 		 char-charset charsetp coding-system-get define-ccl-program
 		 find-charset-region get-charset-property
 		 pgg-parse-crc24-string))
+  (maybe-bind '(language-info-alist))
   (unless (featurep 'file-coding)
     (maybe-fbind '(coding-system-base
 		   coding-system-change-eol-conversion coding-system-list
 		   coding-system-p decode-coding-region decode-coding-string
 		   detect-coding-region encode-coding-region
-		   encode-coding-string))))
+		   encode-coding-string))
+    (maybe-bind '(file-name-coding-system))))
 
 (defun nnkiboze-score-file (a)
   )

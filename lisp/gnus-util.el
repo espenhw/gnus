@@ -773,9 +773,9 @@ Bind `print-quoted' and `print-readably' to t, and `print-length' and
 
 (defun gnus-write-buffer (file)
   "Write the current buffer's contents to FILE."
-  ;; Make sure the directory exists.
-  (gnus-make-directory (file-name-directory file))
   (let ((file-name-coding-system nnmail-pathname-coding-system))
+    ;; Make sure the directory exists.
+    (gnus-make-directory (file-name-directory file))
     ;; Write the buffer.
     (write-region (point-min) (point-max) file nil 'quietly)))
 
@@ -1190,8 +1190,12 @@ Return the modified alist."
     t))
 
 (defun gnus-write-active-file (file hashtb &optional full-names)
+  ;; `coding-system-for-write' should be `raw-text' or equivalent.
   (let ((coding-system-for-write nnmail-active-file-coding-system))
     (with-temp-file file
+      ;; The buffer should be in the unibyte mode because group names
+      ;; are ASCII text or encoded non-ASCII text (i.e., unibyte).
+      (mm-disable-multibyte)
       (mapatoms
        (lambda (sym)
 	 (when (and sym

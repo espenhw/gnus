@@ -1311,7 +1311,8 @@ This can be added to `gnus-select-article-hook' or
       (gnus-active-to-gnus-format nil new)
       (gnus-agent-write-active file new)
       (erase-buffer)
-      (nnheader-insert-file-contents file))))
+      (let ((nnheader-file-coding-system gnus-agent-file-coding-system))
+	(nnheader-insert-file-contents file)))))
 
 (defun gnus-agent-write-active (file new)
     (gnus-make-directory (file-name-directory file))

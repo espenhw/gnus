@@ -2045,7 +2045,8 @@ Please refer to the following variables to customize the connection:
   (autoload 'time-less-p "time-date"))
 
 (defun nntp-marks-changed-p (group server)
-  (let ((file (nntp-group-pathname server group nntp-marks-file-name)))
+  (let ((file (nntp-group-pathname server group nntp-marks-file-name))
+	(file-name-coding-system nnmail-pathname-coding-system))
     (if (null (gnus-gethash file nntp-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
       (time-less-p (gnus-gethash file nntp-marks-modtime)

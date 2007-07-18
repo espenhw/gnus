@@ -1,3 +1,35 @@
+2007-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (gnus-agent-save-active): Bind
+	nnheader-file-coding-system to gnus-agent-file-coding-system.
+
+	* gnus-cache.el (gnus-cache-save-buffers)
+	(gnus-cache-possibly-enter-article, gnus-cache-request-article)
+	(gnus-cache-retrieve-headers, gnus-cache-change-buffer)
+	(gnus-cache-possibly-remove-article, gnus-cache-articles-in-group)
+	(gnus-cache-braid-nov, gnus-cache-braid-heads)
+	(gnus-cache-generate-active, gnus-cache-rename-group)
+	(gnus-cache-delete-group, gnus-cache-update-file-total-fetched-for)
+	(gnus-cache-update-overview-total-fetched-for): Bind
+	file-name-coding-system to nnmail-pathname-coding-system.
+	(gnus-cache-decoded-group-names, gnus-cache-unified-group-names): New
+	variables.
+	(gnus-cache-decoded-group-name): New function.
+	(gnus-cache-file-name): Use it.
+	(gnus-cache-generate-active): Use non-decoded group name for active.
+
+	* gnus-util.el (gnus-write-buffer): Bind file-name-coding-system at the
+	right place.
+	(gnus-write-active-file): Don't break non-ASCII group names.
+
+	* nntp.el (nntp-marks-changed-p): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+
+	* lpath.el: Bind default-file-name-coding-system,
+	file-name-coding-system and language-info-alist for XEmacs.
+
+	* gnus-uu.el (gnus-uu-decode-save): Typo.
+
 2007-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-srvr.el (gnus-server-font-lock-keywords): Quote faces.
