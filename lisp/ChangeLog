@@ -1,3 +1,15 @@
+2007-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-part-wrapper): Work with the nearest part
+	if it is not specified.
+	(gnus-article-pipe-part, gnus-article-save-part)
+	(gnus-article-interactively-view-part, gnus-article-copy-part)
+	(gnus-article-view-part-as-charset, gnus-article-view-part-externally)
+	(gnus-article-inline-part, gnus-article-save-part-and-strip)
+	(gnus-article-replace-part, gnus-article-delete-part)
+	(gnus-article-view-part-as-type): Pass raw prefix argument to
+	gnus-article-part-wrapper.
+
 2007-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-save-active): Bind

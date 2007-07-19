@@ -4965,6 +4965,24 @@ If INTERACTIVE, call FUNCTION interactivly."
       (unless (with-current-buffer gnus-summary-buffer
 		(eq gnus-current-article (gnus-summary-article-number)))
 	(error "You should select the right article first"))
+      (unless n
+	(let ((pt (point)))
+	  (setq n (or (get-text-property pt 'gnus-part)
+		      (and (not (bobp))
+			   (get-text-property (1- pt) 'gnus-part))
+		      (get-text-property (prog2
+					     (forward-line 1)
+					     (point)
+					   (goto-char pt))
+					 'gnus-part)
+		      (get-text-property
+		       (or (and (setq pt (previous-single-property-change
+					  pt 'gnus-part))
+				(1- pt))
+			   (next-single-property-change	(point) 'gnus-part)
+			   (point))
+		       'gnus-part)
+		      1))))
       ;; Check whether the specified part exists.
       (when (> n (length gnus-article-mime-handle-alist))
 	(error "No such part")))
@@ -5015,62 +5033,62 @@ If INTERACTIVE, call FUNCTION interactivly."
 
 (defun gnus-article-pipe-part (n)
   "Pipe MIME part N, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'mm-pipe-part))
 
 (defun gnus-article-save-part (n)
   "Save MIME part N, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'mm-save-part))
 
 (defun gnus-article-interactively-view-part (n)
   "View MIME part N interactively, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'mm-interactively-view-part))
 
 (defun gnus-article-copy-part (n)
   "Copy MIME part N, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-copy-part))
 
 (defun gnus-article-view-part-as-charset (n)
   "View MIME part N using a specified charset.
 N is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-view-part-as-charset))
 
 (defun gnus-article-view-part-externally (n)
   "View MIME part N externally, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-view-part-externally))
 
 (defun gnus-article-inline-part (n)
   "Inline MIME part N, which is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-inline-part))
 
 (defun gnus-article-save-part-and-strip (n)
   "Save MIME part N and replace it with an external body.
 N is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-save-part-and-strip t))
 
 (defun gnus-article-replace-part (n)
   "Replace MIME part N with an external body.
 N is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-replace-part t t))
 
 (defun gnus-article-delete-part (n)
   "Delete MIME part N and add some information about the removed part.
 N is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-delete-part t))
 
 (defun gnus-article-view-part-as-type (n)
   "Choose a MIME media type, and view part N as such.
 N is the numerical prefix."
-  (interactive "p")
+  (interactive "P")
   (gnus-article-part-wrapper n 'gnus-mime-view-part-as-type t))
 
 (defun gnus-article-mime-match-handle-first (condition)
