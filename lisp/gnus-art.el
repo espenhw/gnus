@@ -4965,7 +4965,8 @@ If INTERACTIVE, call FUNCTION interactivly."
       (unless (with-current-buffer gnus-summary-buffer
 		(eq gnus-current-article (gnus-summary-article-number)))
 	(error "You should select the right article first"))
-      (unless n
+      (if n
+	  (setq n (prefix-numeric-value n))
 	(let ((pt (point)))
 	  (setq n (or (get-text-property pt 'gnus-part)
 		      (and (not (bobp))
