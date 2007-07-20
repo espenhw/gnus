@@ -1,3 +1,62 @@
+2007-07-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (gnus-agent-group-pathname): Take notice of the method.
+
+	* gnus-art.el (article-decode-group-name): Decode Xref header too.
+
+	* gnus-group.el (gnus-group-make-group): Encode group name here unless
+	the new optional argument ENCODED is non-nil.
+	(gnus-group-make-doc-group): Use gnus-group-name-charset to determine
+	coding system for encoding group name.
+	(gnus-group-make-rss-group): Pass un-encoded group name to
+	gnus-group-make-group.
+	(gnus-group-set-info): Tell gnus-group-make-group that group name is
+	encoded.
+
+	* gnus-sum.el (gnus-summary-move-article, gnus-read-move-group-name):
+	Encode group name to which articles are moved or copied.
+	(gnus-summary-edit-article): Use gnus-group-name-charset to determine
+	coding system for encoding Newsgroup, Followup-To and Xref headers.
+
+	* nnagent.el (nnagent-request-set-mark): Use unibyte buffer to compose
+	marks; use nnheader-file-coding-system to write a file.
+	(nnagent-retrieve-headers): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+
+	* nnmail.el (nnmail-insert-xref): Don't break non-ASCII group name.
+
+	* nnml.el (nnml-decoded-group-name, nnml-group-pathname): New functions.
+	(nnml-request-article, nnml-request-create-group)
+	(nnml-request-rename-group, nnml-find-id)
+	(nnml-possibly-change-directory, nnml-possibly-create-directory)
+	(nnml-save-mail, nnml-active-number, nnml-marks-changed-p)
+	(nnml-save-marks): Use nnml-group-pathname instead of
+	nnmail-group-pathname.
+
+	(nnml-request-create-group, nnml-request-expire-articles)
+	(nnml-request-move-article, nnml-request-delete-group)
+	(nnml-deletable-article-p, nnml-possibly-create-directory)
+	(nnml-get-nov-buffer, nnml-generate-nov-databases-directory)
+	(nnml-open-marks): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+
+	(nnml-request-article): Pass server argument to nnml-find-group-number.
+	(nnml-request-create-group, nnml-active-number, nnml-save-marks): Pass
+	server argument to nnml-possibly-create-directory.
+	(nnml-request-accept-article): Pass server argument to
+	nnml-active-number and nnml-save-mail.
+	(nnml-find-group-number): Pass server argument to nnml-find-id.
+	(nnml-request-update-info): Pass server argument to
+	nnml-marks-changed-p.
+
+	(nnml-find-id, nnml-find-group-number, nnml-possibly-create-directory)
+	(nnml-save-mail, nnml-active-number): Add server argument.
+
+	(nnml-request-delete-group): Warn if group is missing.
+	(nnml-get-nov-buffer): Decode group name.
+	(nnml-generate-active-info): Encode group name.
+	(nnml-open-marks): Decode group name in messages.
+
 2007-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-part-wrapper): Work with the nearest part

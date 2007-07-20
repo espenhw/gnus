@@ -9502,7 +9502,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		 (crosspost "Crosspost" "Crossposting")))
 	(copy-buf (save-excursion
 		    (nnheader-set-temp-buffer " *copy article*")))
-	art-group to-method new-xref article to-groups articles-to-update-marks)
+	art-group to-method new-xref article to-groups
+	articles-to-update-marks encoded)
     (unless (assq action names)
       (error "Unknown action %s" action))
     ;; Read the newsgroup name.
@@ -9520,15 +9521,25 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		(gnus-article-prepare-hook nil)
 		(gnus-mark-article-hook nil))
 	    (gnus-summary-select-article nil nil nil (car articles))))
-      (setq to-newsgroup
-	    (gnus-read-move-group-name
-	     (cadr (assq action names))
-	     (symbol-value (intern (format "gnus-current-%s-group" action)))
-	     articles prefix))
-      (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
-    (setq to-method (or select-method
-			(gnus-server-to-method
-			 (gnus-group-method to-newsgroup))))
+      (setq to-newsgroup (gnus-read-move-group-name
+			  (cadr (assq action names))
+			  (symbol-value
+			   (intern (format "gnus-current-%s-group" action)))
+			  articles prefix)
+	    encoded to-newsgroup
+	    to-method (gnus-server-to-method (gnus-group-method to-newsgroup)))
+      (set (intern (format "gnus-current-%s-group" action))
+	   (mm-decode-coding-string
+	    to-newsgroup
+	    (gnus-group-name-charset to-method to-newsgroup))))
+    (unless to-method
+      (setq to-method (or select-method
+			  (gnus-server-to-method
+			   (gnus-group-method to-newsgroup)))))
+    (setq to-newsgroup (or encoded
+			   (mm-encode-coding-string
+			    to-newsgroup
+			    (gnus-group-name-charset to-method to-newsgroup))))
     ;; Check the method we are to move this article to...
     (unless (gnus-check-backend-function
 	     'request-accept-article (car to-method))
@@ -9537,7 +9548,9 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
       (error "Can't open server %s" (car to-method)))
     (gnus-message 6 "%s to %s: %s..."
 		  (caddr (assq action names))
-		  (or (car select-method) to-newsgroup) articles)
+		  (or (car select-method)
+		      (gnus-group-decoded-name to-newsgroup))
+		  articles)
     (while articles
       (setq article (pop articles))
       (setq
@@ -10069,7 +10082,16 @@ groups."
 		  (message-options message-options)
 		  (message-options-set-recipient)
 		  (mail-parse-ignored-charsets
-		   ',gnus-newsgroup-ignored-charsets))
+		   ',gnus-newsgroup-ignored-charsets)
+		  (rfc2047-header-encoding-alist
+		   ',(let ((charset (gnus-group-name-charset
+				     (gnus-find-method-for-group
+				      gnus-newsgroup-name)
+				     gnus-newsgroup-name)))
+		       (append (list (cons "Newsgroups" charset)
+				     (cons "Followup-To" charset)
+				     (cons "Xref" charset))
+			       rfc2047-header-encoding-alist))))
 	      ,(if (not raw) '(progn
 				(mml-to-mime)
 				(mml-destroy-buffers)
@@ -11699,24 +11721,27 @@ save those articles instead."
 	     (mapcar 'list (nreverse split-name))
 	     nil nil nil
 	     'gnus-group-history))))
-	 (to-method (gnus-server-to-method (gnus-group-method to-newsgroup))))
+	 (to-method (gnus-server-to-method (gnus-group-method to-newsgroup)))
+	 encoded)
     (when to-newsgroup
       (if (or (string= to-newsgroup "")
 	      (string= to-newsgroup prefix))
 	  (setq to-newsgroup default))
       (unless to-newsgroup
 	(error "No group name entered"))
-      (or (gnus-active to-newsgroup)
-	  (gnus-activate-group to-newsgroup nil nil to-method)
+      (setq encoded (mm-encode-coding-string
+		     to-newsgroup
+		     (gnus-group-name-charset to-method to-newsgroup)))
+      (or (gnus-active encoded)
+	  (gnus-activate-group encoded nil nil to-method)
 	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
 				     to-newsgroup))
-	      (or (and (gnus-request-create-group to-newsgroup to-method)
-		       (gnus-activate-group
-			to-newsgroup nil nil to-method)
-		       (gnus-subscribe-group to-newsgroup))
+	      (or (and (gnus-request-create-group encoded to-method)
+		       (gnus-activate-group encoded nil nil to-method)
+		       (gnus-subscribe-group encoded))
 		  (error "Couldn't create group %s" to-newsgroup)))
-	  (error "No such group: %s" to-newsgroup)))
-    to-newsgroup))
+	  (error "No such group: %s" to-newsgroup))
+      encoded)))
 
 (defvar gnus-summary-save-parts-counter)
 

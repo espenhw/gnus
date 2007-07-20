@@ -1244,11 +1244,11 @@ Return the number of characters in the body."
 		     (progn (forward-line 1) (point))))
     (insert (format "Xref: %s" (system-name)))
     (while group-alist
-      (insert (format " %s:%d"
-		      (mm-encode-coding-string
-		       (caar group-alist)
-		       nnmail-pathname-coding-system)
-		      (cdar group-alist)))
+      (insert (if (mm-multibyte-p)
+		  (mm-string-as-multibyte
+		   (format " %s:%d" (caar group-alist) (cdar group-alist)))
+		(mm-string-as-unibyte
+		 (format " %s:%d" (caar group-alist) (cdar group-alist)))))
       (setq group-alist (cdr group-alist)))
     (insert "\n")))
 

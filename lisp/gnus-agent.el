@@ -1451,9 +1451,11 @@ downloaded into the agent."
   ;; while plugged.
   (let ((gnus-command-method (or gnus-command-method
                                  (gnus-find-method-for-group group))))
-    (nnmail-group-pathname (gnus-group-real-name
-			    (gnus-group-decoded-name group))
-			   (gnus-agent-directory))))
+    (nnmail-group-pathname
+     (gnus-group-real-name
+      (mm-decode-coding-string
+       group (gnus-group-name-charset gnus-command-method group)))
+     (gnus-agent-directory))))
 
 (defun gnus-agent-get-function (method)
   (if (gnus-online method)

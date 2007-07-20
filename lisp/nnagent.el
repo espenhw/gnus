@@ -121,7 +121,7 @@
   (gnus-request-accept-article "nndraft:queue" nil t t))
 
 (deffoo nnagent-request-set-mark (group action server)
-  (with-temp-buffer
+  (mm-with-unibyte-buffer
     (insert "(gnus-agent-synchronize-group-flags \""
 	    group 
 	    "\" '")
@@ -130,8 +130,9 @@
 	    (gnus-method-to-server gnus-command-method)
 	    "\"")
     (insert ")\n")
-    (write-region (point-min) (point-max) (gnus-agent-lib-file "flags")
-		  t 'silent))
+    (let ((coding-system-for-write nnheader-file-coding-system))
+      (write-region (point-min) (point-max) (gnus-agent-lib-file "flags")
+		    t 'silent)))
   ;; Also set the marks for the original back end that keeps marks in
   ;; the local system.
   (let ((gnus-agent nil))
@@ -157,7 +158,8 @@
 	  (pop arts)))
       (set-buffer nntp-server-buffer)
       (erase-buffer)
-      (nnheader-insert-nov-file file (car articles))
+      (let ((file-name-coding-system nnmail-pathname-coding-system))
+	(nnheader-insert-nov-file file (car articles)))
       (goto-char (point-min))
       (gnus-parse-without-error
 	(while (and arts (not (eobp)))

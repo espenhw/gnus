@@ -2457,10 +2457,11 @@ The user will be prompted for GROUP."
    (gnus-group-real-name group)
    (gnus-group-server group)))
 
-(defun gnus-group-make-group (name &optional method address args)
+(defun gnus-group-make-group (name &optional method address args encoded)
   "Add a new newsgroup.
 The user will be prompted for a NAME, for a select METHOD, and an
-ADDRESS."
+ADDRESS.  NAME should be a human-readable string (i.e., not be encoded
+even if it contains non-ASCII characters) unless ENCODED is non-nil."
   (interactive
    (list
     (gnus-read-group "Group name: ")
@@ -2468,6 +2469,10 @@ ADDRESS."
 
   (when (stringp method)
     (setq method (or (gnus-server-to-method method) method)))
+  (unless encoded
+    (setq name (mm-encode-coding-string
+		name
+		(gnus-group-name-charset method name))))
   (let* ((meth (gnus-method-simplify
 		(when (and method
 			   (not (gnus-server-equal method gnus-select-method)))
@@ -2759,19 +2764,17 @@ If called with a prefix argument, ask for the file type."
 			     nil))))
       (setq type found)))
   (setq file (expand-file-name file))
-  (let ((name (gnus-generate-new-group-name
-	       (gnus-group-prefixed-name
-		(file-name-nondirectory file) '(nndoc ""))))
-	(encodable (mm-coding-system-p 'utf-8)))
+  (let* ((name (gnus-generate-new-group-name
+		(gnus-group-prefixed-name
+		 (file-name-nondirectory file) '(nndoc ""))))
+	 (method (list 'nndoc file
+		       (list 'nndoc-address file)
+		       (list 'nndoc-article-type (or type 'guess))))
+	 (coding (gnus-group-name-charset method name)))
+    (setcar (cdr method) (mm-encode-coding-string file coding))
     (gnus-group-make-group
-     (if encodable
-	 (mm-encode-coding-string (gnus-group-real-name name) 'utf-8)
-       (gnus-group-real-name name))
-     (list 'nndoc (if encodable
-		      (mm-encode-coding-string file 'utf-8)
-		    file)
-	   (list 'nndoc-address file)
-	   (list 'nndoc-article-type (or type 'guess))))))
+     (mm-encode-coding-string (gnus-group-real-name name) coding)
+     method nil nil t)))
 
 (defvar nnweb-type-definition)
 (defvar gnus-group-web-type-history nil)
@@ -2825,25 +2828,23 @@ If there is, use Gnus to create an nnrss group"
       (setq url (read-from-minibuffer "URL to Search for RSS: ")))
   (let ((feedinfo (nnrss-discover-feed url)))
     (if feedinfo
-	(let ((title (gnus-newsgroup-savable-name
-		      (read-from-minibuffer "Title: "
-					    (gnus-newsgroup-savable-name
-					     (or (cdr (assoc 'title
-							     feedinfo))
-						 "")))))
-	      (desc  (read-from-minibuffer "Description: "
-					   (cdr (assoc 'description
-						       feedinfo))))
-	      (href (cdr (assoc 'href feedinfo)))
-	      (encodable (mm-coding-system-p 'utf-8)))
-	  (when encodable
+	(let* ((title (gnus-newsgroup-savable-name
+		       (read-from-minibuffer "Title: "
+					     (gnus-newsgroup-savable-name
+					      (or (cdr (assoc 'title
+							      feedinfo))
+						  "")))))
+	       (desc  (read-from-minibuffer "Description: "
+					    (cdr (assoc 'description
+							feedinfo))))
+	       (href (cdr (assoc 'href feedinfo)))
+	       (coding (gnus-group-name-charset '(nnrss "") title)))
+	  (when coding
 	    ;; Unify non-ASCII text.
 	    (setq title (mm-decode-coding-string
-			 (mm-encode-coding-string title 'utf-8) 'utf-8)))
-	  (gnus-group-make-group (if encodable
-				     (mm-encode-coding-string title 'utf-8)
-				   title)
-				 '(nnrss ""))
+			 (mm-encode-coding-string title coding)
+			 coding)))
+	  (gnus-group-make-group title '(nnrss ""))
 	  (push (list title href desc) nnrss-group-alist)
 	  (nnrss-save-server-data nil))
       (error "No feeds found for %s" url))))
@@ -4313,9 +4314,10 @@ and the second element is the address."
 		 (if (stringp method) method
 		   (prin1-to-string (car method)))
 		 (and (consp method)
-		      (nth 1 (gnus-info-method info))))
+		      (nth 1 (gnus-info-method info)))
+		 nil t)
 	      ;; It's a native group.
-	      (gnus-group-make-group (gnus-info-group info))))
+	      (gnus-group-make-group (gnus-info-group info) nil nil nil t)))
 	  (gnus-message 6 "Note: New group created")
 	  (setq entry
 		(gnus-group-entry (gnus-group-prefixed-name
