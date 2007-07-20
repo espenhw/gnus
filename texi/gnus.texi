@@ -16581,6 +16581,15 @@ data files.  The default is the value of
 @code{mm-universal-coding-system} (which defaults to @code{emacs-mule}
 in Emacs or @code{escape-quoted} in XEmacs).
 
+@item nnrss-ignore-article-fields
+@vindex nnrss-ignore-article-fields
+Some feeds update constantly article fields during their publications,
+e.g. to indicate the number of comments.  However, if there is
+a difference between the local article and the distant one, the latter
+is considered to be new.  To avoid this and discard some fields, set this
+variable to the list of fields to be ignored.  The default is
+@code{'(slash:comments)}.
+
 @item nnrss-use-local
 @vindex nnrss-use-local
 @findex nnrss-generate-download-script
@@ -16618,7 +16627,7 @@ summary buffer.
 @lisp
 (require 'browse-url)
 
-(defun browse-nnrss-url( arg )
+(defun browse-nnrss-url (arg)
   (interactive "p")
   (let ((url (assq nnrss-url-field
                    (mail-header-extra
