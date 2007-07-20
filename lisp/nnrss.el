@@ -50,6 +50,15 @@
 (defvoo nnrss-directory (nnheader-concat gnus-directory "rss/")
   "Where nnrss will save its files.")
 
+(defvoo nnrss-ignore-article-fields '(slash:comments)
+  "*List of fields that should be ignored when comparing RSS articles.
+Some RSS feeds update article fields during their lives, e.g. to
+indicate the number of comments or the number of times the
+articles have been seen.  However, if there is a difference
+between the local article and the distant one, the latter is
+considered to be new.  To avoid this and discard some fields, set
+this variable to the list of fields to be ignored.")
+
 ;; (group max rss-url)
 (defvoo nnrss-server-data nil)
 
@@ -670,6 +679,16 @@ which RSS 2.0 allows."
 
 ;;; Snarf functions
 
+(defun nnrss-make-hash-index (item)
+  (setq item (remove-if
+	      (lambda (field)
+		(when (listp field)
+		  (memq (car field) nnrss-ignore-article-fields)))
+	      item))
+  (md5 (gnus-prin1-to-string item)
+       nil nil
+       nnrss-file-coding-system))
+
 (defun nnrss-check-group (group server)
   (let (file xml subject url extra changed author date feed-subject
 	     enclosure comments rss-ns rdf-ns content-ns dc-ns
@@ -705,9 +724,7 @@ which RSS 2.0 allows."
     (dolist (item (nreverse (nnrss-find-el (intern (concat rss-ns "item")) xml)))
       (when (and (listp item)
 		 (string= (concat rss-ns "item") (car item))
-		 (progn (setq hash-index (md5 (gnus-prin1-to-string item)
-					      nil nil
-					      nnrss-file-coding-system))
+		 (progn (setq hash-index (nnrss-make-hash-index item))
 			(not (gethash hash-index nnrss-group-hashtb))))
 	(setq subject (nnrss-node-text rss-ns 'title item))
 	(setq url (nnrss-decode-entities-string

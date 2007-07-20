@@ -1,3 +1,12 @@
+2007-07-20  Micha,Ak(Bl Cadilhac <michael@cadilhac.name>
+
+	* nnrss.el (nnrss-ignore-article-fields): New variable.  List of fields
+	that should be ignored when comparing distant RSS articles with local
+	ones.
+	(nnrss-make-hash-index): New function.  Create a hash index according
+	to the ignored fields.
+	(nnrss-check-group): Use it.
+
 2007-07-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-group-pathname): Take notice of the method.
@@ -2083,7 +2092,7 @@
 
 	* nnrss.el (nnrss-check-group): Bind hash-index.
 
-2006-05-23  Michael Cadilhac  <michael.cadilhac@lrde.org>
+2006-05-23  Micha,Ak(Bl Cadilhac  <michael.cadilhac@lrde.org>
 
 	* nnrss.el (nnrss-check-group): Use the md5sum of the whole RSS item as
 	its hash index.  Store this hash in `nnrss-group-data'.
