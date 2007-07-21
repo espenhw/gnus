@@ -184,7 +184,7 @@ This can be either \"inline\" or \"attachment\".")
      ;; http://www.slrn.org/manual/slrn-manual-6.html#ss6.81
      "^#v\\+"
      "^#v\\-$"
-     (lambda () (mm-uu-verbatim-marks-extract 0 0 1 -1))
+     (lambda () (mm-uu-verbatim-marks-extract 0 0))
      nil)
     (LaTeX
      "^\\([\\\\%][^\n]+\n\\)*\\\\documentclass.*[[{%]"
@@ -196,7 +196,10 @@ This can be either \"inline\" or \"attachment\".")
 Each element consist of the following entries: label,
 start-regexp, end-regexp, extract-function, test-function.
 
-After modifying this list you must run \\[mm-uu-configure].")
+After modifying this list you must run \\[mm-uu-configure].
+
+You can disable elements from this list by customizing
+`mm-uu-configure-list'.")
 
 (defcustom mm-uu-configure-list '((shar . disabled))
   "A list of mm-uu configuration.

@@ -1,3 +1,8 @@
+2007-07-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-uu.el (mm-uu-type-alist): Refer to mm-uu-configure-list in doc
+	string.
+
 2007-07-20  Micha,Ak(Bl Cadilhac <michael@cadilhac.name>
 
 	* nnrss.el (nnrss-ignore-article-fields): New variable.  List of fields
