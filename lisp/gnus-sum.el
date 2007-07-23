@@ -9536,10 +9536,12 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
       (setq to-method (or select-method
 			  (gnus-server-to-method
 			   (gnus-group-method to-newsgroup)))))
-    (setq to-newsgroup (or encoded
-			   (mm-encode-coding-string
-			    to-newsgroup
-			    (gnus-group-name-charset to-method to-newsgroup))))
+    (setq to-newsgroup
+	  (or encoded
+	      (and to-newsgroup
+		   (mm-encode-coding-string
+		    to-newsgroup
+		    (gnus-group-name-charset to-method to-newsgroup)))))
     ;; Check the method we are to move this article to...
     (unless (gnus-check-backend-function
 	     'request-accept-article (car to-method))
@@ -9562,8 +9564,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	 (gnus-dup-unsuppress-article article)
 	 (let* ((from-method (gnus-find-method-for-group
 			      gnus-newsgroup-name))
-		(to-method (gnus-find-method-for-group
-			    to-newsgroup))
+		(to-method (or select-method
+			       (gnus-find-method-for-group to-newsgroup)))
 		(move-is-internal (gnus-method-equal from-method to-method)))
 	   (gnus-request-move-article
 	    article			; Article to move

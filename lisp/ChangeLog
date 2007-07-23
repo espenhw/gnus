@@ -1,9 +1,14 @@
+2007-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-move-article): Make
+	gnus-summary-respool-article work.
+
 2007-07-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-uu.el (mm-uu-type-alist): Refer to mm-uu-configure-list in doc
 	string.
 
-2007-07-20  Micha,Ak(Bl Cadilhac <michael@cadilhac.name>
+2007-07-20  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
 	* nnrss.el (nnrss-ignore-article-fields): New variable.  List of fields
 	that should be ignored when comparing distant RSS articles with local
