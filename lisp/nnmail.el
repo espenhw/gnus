@@ -1044,6 +1044,9 @@ If SOURCE is a directory spec, try to return the group name component."
       (nnmail-check-duplication message-id func artnum-func))
     1))
 
+(defvar nnmail-group-names-not-encoded-p nil
+  "Non-nil means group names are not encoded.")
+
 (defun nnmail-split-incoming (incoming func &optional exit-func
 				       group artnum-func)
   "Go through the entire INCOMING file and pick out each individual mail.
@@ -1053,7 +1056,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	(nnmail-split-methods (if (and group
 				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
-				nnmail-split-methods)))
+				nnmail-split-methods))
+	(nnmail-group-names-not-encoded-p t))
     (save-excursion
       ;; Insert the incoming file.
       (set-buffer (get-buffer-create nnmail-article-buffer))

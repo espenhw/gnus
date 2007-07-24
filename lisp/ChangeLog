@@ -1,3 +1,20 @@
+2007-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-group-names-not-encoded-p): New variable.
+	(nnmail-split-incoming): Bind it.
+
+	* nnml.el (nnml-group-name-charset): New function.
+	(nnml-decoded-group-name): Use it; don't decode group name if
+	nnmail-group-names-not-encoded-p is non-nil.
+	(nnml-encoded-group-name): New function.
+	(nnml-group-pathname): Inline nnml-decoded-group-name.
+	(nnml-request-expire-articles): Decode group name in message.
+	(nnml-request-delete-group): Ditto; bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+	(nnml-save-mail, nnml-active-number): Work with decoded group names and
+	not decoded ones according to nnmail-group-names-not-encoded-p.
+	(nnml-generate-active-info): Use nnml-encoded-group-name.
+
 2007-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-move-article): Make
