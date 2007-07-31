@@ -1,3 +1,9 @@
+2007-07-31  Ted Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-srvr.el (gnus-server-close-all-servers): Close servers not only
+	in gnus-inserted-opened-servers but also in gnus-server-alist (Katsumi
+	Yamaoka slightly modified the code).
+
 2007-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-group-names-not-encoded-p): New variable.

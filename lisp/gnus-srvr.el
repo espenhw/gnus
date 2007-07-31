@@ -517,6 +517,8 @@ The following commands are available:
   "Close all servers."
   (interactive)
   (dolist (server gnus-inserted-opened-servers)
+    (gnus-server-close-server (car server)))
+  (dolist (server gnus-server-alist)
     (gnus-server-close-server (car server))))
 
 (defun gnus-server-deny-server (server)
