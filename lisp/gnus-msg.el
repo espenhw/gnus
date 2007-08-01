@@ -580,9 +580,9 @@ If ARG is 1, prompt for a group name to find the posting style."
 	  (setq gnus-newsgroup-name
 		(if arg
 		    (if (= 1 (prefix-numeric-value arg))
-			(completing-read "Use posting style of group: "
-					 gnus-active-hashtb nil
-					 (gnus-read-active-file-p))
+			(gnus-group-completing-read
+			 "Use posting style of group: "
+			 nil nil (gnus-read-active-file-p))
 		      (gnus-group-group-name))
 		  ""))
 	  ;; #### see comment in gnus-setup-message -- drv
@@ -611,9 +611,9 @@ network.  The corresponding back end must have a 'request-post method."
 	  (setq gnus-newsgroup-name
 		(if arg
 		    (if (= 1 (prefix-numeric-value arg))
-			(completing-read "Use group: "
-					 gnus-active-hashtb nil
-					 (gnus-read-active-file-p))
+			(gnus-group-completing-read "Use group: "
+						    nil nil
+						    (gnus-read-active-file-p))
 		      (gnus-group-group-name))
 		  ""))
 	  ;; #### see comment in gnus-setup-message -- drv
@@ -633,8 +633,8 @@ a news."
   (let ((gnus-newsgroup-name
 	 (if arg
 	     (if (= 1 (prefix-numeric-value arg))
-		 (completing-read "Newsgroup: " gnus-active-hashtb nil
-				  (gnus-read-active-file-p))
+		 (gnus-group-completing-read "Newsgroup: " nil nil
+					     (gnus-read-active-file-p))
 	       (gnus-group-group-name))
 	   ""))
 	;; make sure last viewed article doesn't affect posting styles:
@@ -659,9 +659,9 @@ posting style."
 	  (setq gnus-newsgroup-name
 		(if arg
 		    (if (= 1 (prefix-numeric-value arg))
-			(completing-read "Use group: "
-					 gnus-active-hashtb nil
-					 (gnus-read-active-file-p))
+			(gnus-group-completing-read "Use group: "
+						    nil nil
+						    (gnus-read-active-file-p))
 		      "")
 		  gnus-newsgroup-name))
 	  ;; #### see comment in gnus-setup-message -- drv
@@ -690,9 +690,9 @@ network.  The corresponding back end must have a 'request-post method."
 	  (setq gnus-newsgroup-name
 		(if arg
 		    (if (= 1 (prefix-numeric-value arg))
-			(completing-read "Use group: "
-					 gnus-active-hashtb nil
-					 (gnus-read-active-file-p))
+			(gnus-group-completing-read "Use group: "
+						    nil nil
+						    (gnus-read-active-file-p))
 		      "")
 		  gnus-newsgroup-name))
 	  ;; #### see comment in gnus-setup-message -- drv
@@ -717,8 +717,8 @@ a news."
   (let ((gnus-newsgroup-name
 	 (if arg
 	     (if (= 1 (prefix-numeric-value arg))
-		 (completing-read "Newsgroup: " gnus-active-hashtb nil
-				  (gnus-read-active-file-p))
+		 (gnus-group-completing-read "Newsgroup: " nil nil
+					     (gnus-read-active-file-p))
 	       "")
 	   gnus-newsgroup-name))
 	;; make sure last viewed article doesn't affect posting styles:

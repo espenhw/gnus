@@ -5397,26 +5397,30 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	      t
 	    gnus-summary-ignore-duplicates))
 	 (info (nth 2 entry))
-	 articles fetched-articles cached)
+	 charset articles fetched-articles cached)
 
     (unless (gnus-check-server
 	     (set (make-local-variable 'gnus-current-select-method)
 		  (gnus-find-method-for-group group)))
       (error "Couldn't open server"))
+    (setq charset (gnus-group-name-charset gnus-current-select-method group))
 
     (or (and entry (not (eq (car entry) t))) ; Either it's active...
 	(gnus-activate-group group)	; Or we can activate it...
 	(progn				; Or we bug out.
 	  (when (equal major-mode 'gnus-summary-mode)
 	    (gnus-kill-buffer (current-buffer)))
-	  (error "Couldn't activate group %s: %s"
-		 (gnus-group-decoded-name group) (gnus-status-message group))))
+	  (error
+	   "Couldn't activate group %s: %s"
+	   (mm-decode-coding-string group charset)
+	   (mm-decode-coding-string (gnus-status-message group) charset))))
 
     (unless (gnus-request-group group t)
-      (when (equal major-mode 'gnus-summary-mode)
-	(gnus-kill-buffer (current-buffer)))
-      (error "Couldn't request group %s: %s"
-	     (gnus-group-decoded-name group) (gnus-status-message group)))
+	(when (equal major-mode 'gnus-summary-mode)
+	  (gnus-kill-buffer (current-buffer)))
+	(error "Couldn't request group %s: %s"
+	       (mm-decode-coding-string group charset)
+	       (mm-decode-coding-string (gnus-status-message group) charset)))
 
     (when gnus-agent
       (gnus-agent-possibly-alter-active group (gnus-active group) info)
@@ -11702,27 +11706,28 @@ save those articles instead."
 		      (format "these %d articles" (length articles))
 		    "this article")))
 	 (to-newsgroup
-	  (cond
-	   ((null split-name)
-	    (gnus-completing-read-with-default
-	     default prom
-	     gnus-active-hashtb
-	     'gnus-valid-move-group-p
-	     nil prefix
-	     'gnus-group-history))
-	   ((= 1 (length split-name))
-	    (gnus-completing-read-with-default
-	     (car split-name) prom
-	     gnus-active-hashtb
-	     'gnus-valid-move-group-p
-	     nil nil
-	     'gnus-group-history))
-	   (t
-	    (gnus-completing-read-with-default
-	     nil prom
-	     (mapcar 'list (nreverse split-name))
-	     nil nil nil
-	     'gnus-group-history))))
+	  (let (active group)
+	    (when (or (null split-name) (= 1 (length split-name)))
+	      (setq active (gnus-make-hashtable (length gnus-active-hashtb)))
+	      (mapatoms (lambda (symbol)
+			  (setq group (symbol-name symbol))
+			  (when (string-match "[^\000-\177]" group)
+			    (setq group (gnus-group-decoded-name group)))
+			  (set (intern group active) group))
+			gnus-active-hashtb))
+	    (cond
+	     ((null split-name)
+	      (gnus-completing-read-with-default
+	       default prom active 'gnus-valid-move-group-p nil prefix
+	       'gnus-group-history))
+	     ((= 1 (length split-name))
+	      (gnus-completing-read-with-default
+	       (car split-name) prom active 'gnus-valid-move-group-p nil nil
+	       'gnus-group-history))
+	     (t
+	      (gnus-completing-read-with-default
+	       nil prom (mapcar 'list (nreverse split-name)) nil nil nil
+	       'gnus-group-history)))))
 	 (to-method (gnus-server-to-method (gnus-group-method to-newsgroup)))
 	 encoded)
     (when to-newsgroup

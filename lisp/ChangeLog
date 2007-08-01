@@ -1,3 +1,23 @@
+2007-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-name-at-point): Rewrite; rename from
+	group-name-at-point.
+	(gnus-group-completing-read): New function that offers decoded
+	non-ASCII group names for completion.
+	(gnus-fetch-group, gnus-group-read-ephemeral-group)
+	(gnus-group-jump-to-group, gnus-group-make-group-simple)
+	(gnus-group-unsubscribe-group, gnus-group-fetch-charter)
+	(gnus-group-fetch-control): Use it.
+	(gnus-fetch-group): Use group-name-at-point for the initial value
+	rather than the default value; use gnus-alive-p.
+
+	* gnus-msg.el (gnus-group-mail, gnus-group-news, gnus-group-post-news)
+	(gnus-summary-mail-other-window, gnus-summary-news-other-window)
+	(gnus-summary-post-news): Use gnus-group-completing-read.
+
+	* gnus-sum.el (gnus-select-newsgroup): Decode group name in error msg.
+	(gnus-read-move-group-name): Decode group name for completion.
+
 2007-07-31  Ted Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-srvr.el (gnus-server-close-all-servers): Close servers not only

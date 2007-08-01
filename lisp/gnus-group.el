@@ -2113,28 +2113,78 @@ be permanent."
     (gnus-group-read-ephemeral-group
      (gnus-group-prefixed-name group method) method)))
 
-(defun group-name-at-point ()
-  (let ((regexp "[^-a-zA-Z+.:_]"))
-    (save-excursion
-      (buffer-substring
-       (progn
-	 (re-search-backward regexp nil t)
-	 (forward-char 1)
-	 (point))
-       (progn
-	 (re-search-forward regexp nil t)
-	 (forward-char -1)
-	 (point))))))
+(defun gnus-group-name-at-point ()
+  "Return a group name from around point if it exists, or nil."
+  (if (eq major-mode 'gnus-group-mode)
+      (let ((group (gnus-group-group-name)))
+	(when group
+	  (gnus-group-decoded-name group)))
+    (let ((regexp "[\t ]*\\(nn[a-z]+\\(?:\\+[^][\C-@-*,/:-@\\^`{-\C-?]+\\)?:\
+\[^][\C-@-*,./:-@\\^`{-\C-?]+\\(?:\\.[^][\C-@-*,./:-@\\^`{-\C-?]+\\)*\
+\\|[^][\C-@-*,./:-@\\^`{-\C-?]+\\(?:\\.[^][\C-@-*,./:-@\\^`{-\C-?]+\\)+\\)")
+	  (start (point))
+	  (case-fold-search nil))
+      (prog1
+	  (if (or (and (not (memq (char-after) '(?\t ?\n ? )))
+		       (skip-chars-backward "^\t "))
+		  (and (looking-at "[\t ]*$")
+		       (progn
+			 (skip-chars-backward "\t ")
+			 (skip-chars-backward "^\t ")))
+		  (string-match "\\`[\t ]*\\'" (buffer-substring (point-at-bol)
+								 (point))))
+	      (when (looking-at regexp)
+		(match-string 1))
+	    (let (group distance)
+	      (when (looking-at regexp)
+		(setq group (match-string 1)
+		      distance (- (match-beginning 1) (match-beginning 0))))
+	      (skip-chars-backward "\t ")
+	      (skip-chars-backward "^\t ")
+	      (if (looking-at regexp)
+		  (if (and group (<= distance (- start (match-end 0))))
+		      group
+		    (match-string 1))
+		group)))
+	(goto-char start)))))
+
+(defun gnus-group-completing-read (prompt &optional collection predicate
+					  require-match initial-input hist def
+					  &rest args)
+  "Read a group name with completion.  Non-ASCII group names are allowed.
+The arguments are the same as `completing-read' except that COLLECTION
+and HIST default to `gnus-active-hashtb' and `gnus-group-history'
+respectively if they are omitted."
+  (let (group)
+    (mapatoms (lambda (symbol)
+		(setq group (symbol-name symbol))
+		(set (intern (if (string-match "[^\000-\177]" group)
+				 (gnus-group-decoded-name group)
+			       group)
+			     collection)
+		     group))
+	      (prog1
+		  (or collection
+		      (setq collection (or gnus-active-hashtb [0])))
+		(setq collection (gnus-make-hashtable (length collection)))))
+    (setq group (apply 'completing-read prompt collection predicate
+		       require-match initial-input
+		       (or hist 'gnus-group-history)
+		       def args))
+    (or (prog1
+	    (symbol-value (intern-soft group collection))
+	  (setq collection nil))
+	(mm-encode-coding-string group (gnus-group-name-charset nil group)))))
 
 ;;;###autoload
 (defun gnus-fetch-group (group &optional articles)
   "Start Gnus if necessary and enter GROUP.
 If ARTICLES, display those articles.
 Returns whether the fetching was successful or not."
-  (interactive (list (completing-read "Group name: " gnus-active-hashtb
-				      nil nil nil nil
-				      (group-name-at-point))))
-  (unless (get-buffer gnus-group-buffer)
+  (interactive (list (gnus-group-completing-read "Group name: "
+						 nil nil nil
+						 (gnus-group-name-at-point))))
+  (unless (gnus-alive-p)
     (gnus-no-server))
   (gnus-group-read-group (if articles nil t) nil group articles))
 
@@ -2194,10 +2244,7 @@ Return the name of the group if selection was successful."
   (interactive
    (list
     ;; (gnus-read-group "Group name: ")
-    (completing-read
-     "Group: " gnus-active-hashtb
-     nil nil nil
-     'gnus-group-history)
+    (gnus-group-completing-read "Group: ")
     (gnus-read-method "From method: ")))
   ;; Transform the select method into a unique server.
   (when (stringp method)
@@ -2249,17 +2296,14 @@ Return the name of the group if selection was successful."
 If PROMPT (the prefix) is a number, use the prompt specified in
 `gnus-group-jump-to-group-prompt'."
   (interactive
-   (list (mm-string-make-unibyte
-	  (completing-read
-	   "Group: " gnus-active-hashtb nil
-	   (gnus-read-active-file-p)
-	   (if current-prefix-arg
-	       (cdr (assq current-prefix-arg gnus-group-jump-to-group-prompt))
-	     (or (and (stringp gnus-group-jump-to-group-prompt)
-		      gnus-group-jump-to-group-prompt)
-		 (let ((p (cdr (assq 0 gnus-group-jump-to-group-prompt))))
-		   (and (stringp p) p))))
-	   'gnus-group-history))))
+   (list (gnus-group-completing-read
+	  "Group: " nil nil (gnus-read-active-file-p)
+	  (if current-prefix-arg
+	      (cdr (assq current-prefix-arg gnus-group-jump-to-group-prompt))
+	    (or (and (stringp gnus-group-jump-to-group-prompt)
+		     gnus-group-jump-to-group-prompt)
+		(let ((p (cdr (assq 0 gnus-group-jump-to-group-prompt))))
+		  (and (stringp p) p)))))))
 
   (when (equal group "")
     (error "Empty group name"))
@@ -2450,12 +2494,10 @@ If EXCLUDE-GROUP, do not go to that group."
 (defun gnus-group-make-group-simple (&optional group)
   "Add a new newsgroup.
 The user will be prompted for GROUP."
-  (interactive
-   (list (completing-read "Group: " gnus-active-hashtb
-			  nil nil nil 'gnus-group-history)))
-  (gnus-group-make-group
-   (gnus-group-real-name group)
-   (gnus-group-server group)))
+  (interactive (list (gnus-group-completing-read "Group: ")))
+  (gnus-group-make-group (gnus-group-real-name group)
+			 (gnus-group-server group)
+			 nil nil t))
 
 (defun gnus-group-make-group (name &optional method address args encoded)
   "Add a new newsgroup.
@@ -3538,12 +3580,8 @@ If given numerical prefix, toggle the N next groups."
   "Toggle subscription to GROUP.
 Killed newsgroups are subscribed.  If SILENT, don't try to update the
 group line."
-  (interactive
-   (list (completing-read
-	  "Group: " gnus-active-hashtb nil
-	  (gnus-read-active-file-p)
-	  nil
-	  'gnus-group-history)))
+  (interactive (list (gnus-group-completing-read
+		      "Group: " nil nil (gnus-read-active-file-p))))
   (let ((newsrc (gnus-group-entry group)))
     (cond
      ((string-match "^[ \t]*$" group)
@@ -3930,7 +3968,7 @@ to use."
 If given a prefix argument, prompt for a group."
   (interactive
    (list (or (when current-prefix-arg
-	       (completing-read "Group: " gnus-active-hashtb))
+	       (gnus-group-completing-read "Group: "))
 	     (gnus-group-group-name)
 	     gnus-newsgroup-name)))
   (unless group
@@ -3958,7 +3996,7 @@ If given a prefix argument, prompt for a group."
 If given a prefix argument, prompt for a group."
   (interactive
    (list (or (when current-prefix-arg
-	       (completing-read "Group: " gnus-active-hashtb))
+	       (gnus-group-completing-read "Group: "))
 	     (gnus-group-group-name)
 	     gnus-newsgroup-name)))
   (unless group
