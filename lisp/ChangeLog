@@ -1,3 +1,13 @@
+2007-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-security-verify-or-decrypt): Don't narrow to
+	a point here in order to keep the window start.
+	(gnus-insert-mime-security-button): Make a button overlay without the
+	front stickiness.
+	(gnus-mime-display-security): Goto the end of a button.
+
+	* gnus-group.el (gnus-group-name-at-point): Fix regexps.
+
 2007-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-name-at-point): Rewrite; rename from

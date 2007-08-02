@@ -7919,18 +7919,15 @@ For example:
 	point (inhibit-read-only t))
     (if region
 	(goto-char (car region)))
-    (save-restriction
-      (narrow-to-region (point) (point))
-      (with-current-buffer (mm-handle-multipart-original-buffer handle)
-	(let* ((mm-verify-option 'known)
-	       (mm-decrypt-option 'known)
-	       (nparts (mm-possibly-verify-or-decrypt (cdr handle) handle)))
-	  (unless (eq nparts (cdr handle))
-	    (mm-destroy-parts (cdr handle))
-	    (setcdr handle nparts))))
-      (setq point (point))
-      (gnus-mime-display-security handle)
-      (goto-char (point-max)))
+    (setq point (point))
+    (with-current-buffer (mm-handle-multipart-original-buffer handle)
+      (let* ((mm-verify-option 'known)
+	     (mm-decrypt-option 'known)
+	     (nparts (mm-possibly-verify-or-decrypt (cdr handle) handle)))
+	(unless (eq nparts (cdr handle))
+	  (mm-destroy-parts (cdr handle))
+	  (setcdr handle nparts))))
+    (gnus-mime-display-security handle)
     (when region
       (delete-region (point) (cdr region))
       (set-marker (car region) nil)
@@ -8019,7 +8016,7 @@ For example:
 		(1- (point))
 	      (point)))
     (when gnus-article-button-face
-      (gnus-overlay-put (gnus-make-overlay b e)
+      (gnus-overlay-put (gnus-make-overlay b e nil t)
                         'face gnus-article-button-face))
     (widget-convert-button
      'link b e
@@ -8052,7 +8049,8 @@ For example:
     (mm-set-handle-multipart-parameter
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))
-	   (set-marker (make-marker) (point-max))))))
+	   (set-marker (make-marker) (point-max))))
+    (goto-char (point-max))))
 
 (defun gnus-mime-security-run-function (function)
   "Run FUNCTION with the security part under point."

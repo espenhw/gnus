@@ -2119,28 +2119,33 @@ be permanent."
       (let ((group (gnus-group-group-name)))
 	(when group
 	  (gnus-group-decoded-name group)))
-    (let ((regexp "[\t ]*\\(nn[a-z]+\\(?:\\+[^][\C-@-*,/:-@\\^`{-\C-?]+\\)?:\
+    (let ((regexp "[][\C-@-\t\v-*,/:-@\\^`{-\C-?]*\
+\\(nn[a-z]+\\(?:\\+[^][\C-@-*,/:-@\\^`{-\C-?]+\\)?:\
 \[^][\C-@-*,./:-@\\^`{-\C-?]+\\(?:\\.[^][\C-@-*,./:-@\\^`{-\C-?]+\\)*\
 \\|[^][\C-@-*,./:-@\\^`{-\C-?]+\\(?:\\.[^][\C-@-*,./:-@\\^`{-\C-?]+\\)+\\)")
 	  (start (point))
 	  (case-fold-search nil))
       (prog1
-	  (if (or (and (not (memq (char-after) '(?\t ?\n ? )))
-		       (skip-chars-backward "^\t "))
-		  (and (looking-at "[\t ]*$")
+	  (if (or (and (not (or (eobp)
+				(looking-at "[][\C-@-*,/:-@\\^`{-\C-?]")))
+		       (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
+					    (point-at-bol)))
+		  (and (looking-at "[][\C-@-\t\v-*,/:-@\\^`{-\C-?]*$")
 		       (progn
-			 (skip-chars-backward "\t ")
-			 (skip-chars-backward "^\t ")))
-		  (string-match "\\`[\t ]*\\'" (buffer-substring (point-at-bol)
-								 (point))))
+			 (skip-chars-backward "][\C-@-\t\v-*,/:-@\\^`{-\C-?")
+			 (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
+					      (point-at-bol))))
+		  (string-match "\\`[][\C-@-\t\v-*,/:-@\\^`{-\C-?]*\\'"
+				(buffer-substring (point-at-bol) (point))))
 	      (when (looking-at regexp)
 		(match-string 1))
 	    (let (group distance)
 	      (when (looking-at regexp)
 		(setq group (match-string 1)
 		      distance (- (match-beginning 1) (match-beginning 0))))
-	      (skip-chars-backward "\t ")
-	      (skip-chars-backward "^\t ")
+	      (skip-chars-backward "][\C-@-\t\v-*,/:-@\\^`{-\C-?")
+	      (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
+				   (point-at-bol))
 	      (if (looking-at regexp)
 		  (if (and group (<= distance (- start (match-end 0))))
 		      group
