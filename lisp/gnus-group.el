@@ -2127,15 +2127,16 @@ be permanent."
 	  (case-fold-search nil))
       (prog1
 	  (if (or (and (not (or (eobp)
-				(looking-at "[][\C-@-*,/:-@\\^`{-\C-?]")))
-		       (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
-					    (point-at-bol)))
-		  (and (looking-at "[][\C-@-\t\v-*,/:-@\\^`{-\C-?]*$")
-		       (progn
-			 (skip-chars-backward "][\C-@-\t\v-*,/:-@\\^`{-\C-?")
-			 (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
+				(looking-at "[][\C-@-*,/;-@\\^`{-\C-?]")))
+		       (prog1 t
+			 (skip-chars-backward "^][\C-@-\t\v-*,/;-@\\^`{-\C-?"
 					      (point-at-bol))))
-		  (string-match "\\`[][\C-@-\t\v-*,/:-@\\^`{-\C-?]*\\'"
+		  (and (looking-at "[][\C-@-\t\v-*,/;-@\\^`{-\C-?]*$")
+		       (prog1 t
+			 (skip-chars-backward "][\C-@-\t\v-*,/;-@\\^`{-\C-?")
+			 (skip-chars-backward "^][\C-@-\t\v-*,/;-@\\^`{-\C-?"
+					      (point-at-bol))))
+		  (string-match "\\`[][\C-@-\t\v-*,/;-@\\^`{-\C-?]*\\'"
 				(buffer-substring (point-at-bol) (point))))
 	      (when (looking-at regexp)
 		(match-string 1))
@@ -2143,8 +2144,8 @@ be permanent."
 	      (when (looking-at regexp)
 		(setq group (match-string 1)
 		      distance (- (match-beginning 1) (match-beginning 0))))
-	      (skip-chars-backward "][\C-@-\t\v-*,/:-@\\^`{-\C-?")
-	      (skip-chars-backward "^][\C-@-\t\v-*,/:-@\\^`{-\C-?"
+	      (skip-chars-backward "][\C-@-\t\v-*,/;-@\\^`{-\C-?")
+	      (skip-chars-backward "^][\C-@-\t\v-*,/;-@\\^`{-\C-?"
 				   (point-at-bol))
 	      (if (looking-at regexp)
 		  (if (and group (<= distance (- start (match-end 0))))
