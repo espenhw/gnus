@@ -5451,10 +5451,21 @@ If displaying \"text/html\" is discouraged \(see
 	  (save-excursion
 	    (save-restriction
 	      (narrow-to-region beg (point))
-	      (gnus-treat-article
-	       nil id
-	       (gnus-article-mime-total-parts)
-	       (mm-handle-media-type handle)))))))))
+	      (if (eq handle gnus-article-mime-handles)
+		  ;; The format=flowed case.
+		  (gnus-treat-article nil 1 1 (mm-handle-media-type handle))
+		;; Don't count signature parts that are never displayed.
+		;; The part number should be re-calculated supposing this
+		;; might be a message/rfc822 part.
+		(let (handles)
+		  (dolist (part gnus-article-mime-handles)
+		    (unless (or (stringp part)
+				(equal (car (mm-handle-type part))
+				       "application/pgp-signature"))
+		      (push part handles)))
+		  (gnus-treat-article
+		   nil (length (memq handle handles)) (length handles)
+		   (mm-handle-media-type handle)))))))))))
 
 (defun gnus-unbuttonized-mime-type-p (type)
   "Say whether TYPE is to be unbuttonized."

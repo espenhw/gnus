@@ -1,3 +1,8 @@
+2007-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-display-single): Pass part number that is
+	calculated ignoring signature parts to gnus-treat-article.
+
 2007-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-security-verify-or-decrypt): Don't narrow to
