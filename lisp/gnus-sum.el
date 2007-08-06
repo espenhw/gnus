@@ -12312,12 +12312,24 @@ returned."
     (when gnus-suppress-duplicates
       (gnus-dup-suppress-articles))
 
-    ;; We might want to build some more threads first.
-    (when (and gnus-fetch-old-headers
-	       (eq gnus-headers-retrieved-by 'nov))
-      (if (eq gnus-fetch-old-headers 'invisible)
-	  (gnus-build-all-threads)
-	(gnus-build-old-threads)))
+    (if (and gnus-fetch-old-headers
+	     (eq gnus-headers-retrieved-by 'nov))
+	;; We might want to build some more threads first.
+	(if (eq gnus-fetch-old-headers 'invisible)
+	    (gnus-build-all-threads)
+	  (gnus-build-old-threads))
+      ;; Mark the inserted articles that are unread as unread.
+      (setq gnus-newsgroup-unreads
+	    (gnus-sorted-nunion
+	     gnus-newsgroup-unreads
+	     (gnus-sorted-nintersection
+	      (gnus-list-of-unread-articles gnus-newsgroup-name)
+	      articles)))
+      ;; Mark the inserted articles as selected so that the information
+      ;; of the marks having been changed by a user may be updated when
+      ;; exiting this group.  See `gnus-summary-update-info'.
+      (dolist (art articles)
+	(setq gnus-newsgroup-unselected (delq art gnus-newsgroup-unselected))))
     ;; Let the Gnus agent mark articles as read.
     (when gnus-agent
       (gnus-agent-get-undownloaded-list))

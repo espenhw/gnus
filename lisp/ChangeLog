@@ -1,3 +1,9 @@
+2007-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-insert-articles): Mark inserted articles
+	that are unread as unread, and also as selected so that information of
+	marks having been changed by a user may be updated when exiting group.
+
 2007-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-display-single): Pass part number that is
