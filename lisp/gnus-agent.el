@@ -459,6 +459,16 @@ manipulated as follows:
 (defsubst gnus-agent-cat-make (name &optional default-agent-predicate)
   (list name `(agent-predicate . ,(or default-agent-predicate 'false))))
 
+(defun gnus-agent-read-group ()
+  "Read a group name in the minibuffer, with completion."
+  (let ((def (or (gnus-group-group-name) gnus-newsgroup-name)))
+    (when def
+      (setq def (gnus-group-decoded-name def)))
+    (gnus-group-completing-read (if def
+				    (concat "Group Name (" def "): ")
+				  "Group Name: ")
+				nil nil t nil nil def)))
+
 ;;; Fetching setup functions.
 
 (defun gnus-agent-start-fetch ()
@@ -1778,17 +1788,7 @@ article files, may then be deleted using gnus-agent-expire-group.
 If flushing was a mistake, the gnus-agent-regenerate-group method
 provides an undo mechanism by reconstructing the index files from
 the article files."
-  (interactive
-   (list (let ((def (or (gnus-group-group-name)
-                        gnus-newsgroup-name)))
-           (let ((select (read-string (if def
-                                          (concat "Group Name ("
-                                                  def "): ")
-                                        "Group Name: "))))
-             (if (and (equal "" select)
-                      def)
-                 def
-               select)))))
+  (interactive (list (gnus-agent-read-group)))
 
   (let* ((gnus-command-method (or gnus-command-method
 				  (gnus-find-method-for-group group)))
@@ -3085,17 +3085,7 @@ The articles on which the expiration process runs are selected as follows:
   if ARTICLES is t, all articles.
   if ARTICLES is a list, just those articles.
 FORCE is equivalent to setting the expiration predicates to true."
-  (interactive
-   (list (let ((def (or (gnus-group-group-name)
-                        gnus-newsgroup-name)))
-           (let ((select (read-string (if def
-                                          (concat "Group Name ("
-                                                  def "): ")
-                                        "Group Name: "))))
-             (if (and (equal "" select)
-                      def)
-                 def
-               select)))))
+  (interactive (list (gnus-agent-read-group)))
 
   (if (not group)
       (gnus-agent-expire articles group force)
@@ -3574,7 +3564,8 @@ articles in every agentized group? "))
 	   ;; compiler will not complain about free references.
 	   (gnus-agent-expire-current-dirs
 	    (symbol-value 'gnus-agent-expire-current-dirs))
-           dir)
+           dir
+	   (file-name-coding-system nnmail-pathname-coding-system))
 
       (gnus-sethash gnus-agent-directory t keep)
       (while gnus-agent-expire-current-dirs
@@ -3882,16 +3873,7 @@ In addition, their NOV entries in .overview will be refreshed using
 the articles' current headers.
 If REREAD is not nil, downloaded articles are marked as unread."
   (interactive
-   (list (let ((def (or (gnus-group-group-name)
-                        gnus-newsgroup-name)))
-           (let ((select (read-string (if def
-                                          (concat "Group Name ("
-                                                  def "): ")
-                                        "Group Name: "))))
-             (if (and (equal "" select)
-                      def)
-                 def
-               select)))
+   (list (gnus-agent-read-group)
          (catch 'mark
            (while (let (c
                         (cursor-in-echo-area t)

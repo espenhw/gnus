@@ -1,4 +1,12 @@
-2007-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+2007-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (gnus-agent-read-group): New function.
+	(gnus-agent-flush-group, gnus-agent-expire-group)
+	(gnus-agent-regenerate-group): Use it.
+	(gnus-agent-expire-unagentized-dirs): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+
+(2007-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-insert-articles): Mark inserted articles
 	that are unread as unread, and also as selected so that information of
