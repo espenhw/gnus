@@ -1,3 +1,9 @@
+2007-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-xref-number-is-evil): New server variable.
+	(nntp-find-group-and-number): If it is non-nil, don't trust article
+	numbers in the Xref header.
+
 2007-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-read-group): New function.
