@@ -4352,6 +4352,90 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-run-hooks 'gnus-article-prepare-hook)))
 
 ;;;
+;;; Gnus Sticky Article Mode
+;;;
+
+(define-derived-mode gnus-sticky-article-mode gnus-article-mode "StickyArticle"
+  "Mode for sticky articles."
+  ;; Release bindings that won't work.
+  (substitute-key-definition 'gnus-article-read-summary-keys 'undefined
+			     gnus-sticky-article-mode-map)
+  (substitute-key-definition 'gnus-article-refer-article 'undefined
+			     gnus-sticky-article-mode-map)
+  (dolist (k '("e" "h" "s" "F" "R"))
+    (define-key gnus-sticky-article-mode-map k nil))
+  (define-key gnus-sticky-article-mode-map "k" 'gnus-kill-sticky-article-buffer)
+  (define-key gnus-sticky-article-mode-map "q" 'bury-buffer)
+  (define-key gnus-sticky-article-mode-map "\C-hc" 'describe-key-briefly)
+  (define-key gnus-sticky-article-mode-map "\C-hk" 'describe-key))
+
+(defun gnus-sticky-article (arg)
+  "Make the current article sticky.
+If a prefix ARG is given, ask for a name for this sticky article
+buffer."
+  (interactive "P")
+  (gnus-configure-windows 'article)
+  (gnus-summary-show-thread)
+  (gnus-summary-select-article nil nil 'pseudo)
+  (let (new-art-buf-name)
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (setq new-art-buf-name
+            (rename-buffer
+             (concat
+              "*Sticky Article: "
+              (if arg
+                  (read-from-minibuffer "Sticky article buffer name: ")
+                (gnus-with-article-headers
+                  (gnus-article-goto-header "subject")
+                  (setq new-art-buf-name
+                        (buffer-substring-no-properties
+                         (line-beginning-position) (line-end-position)))
+                  (goto-char (point-min))
+                  (gnus-article-goto-header "from")
+                  (setq new-art-buf-name
+                        (concat
+                         new-art-buf-name ", "
+                         (buffer-substring-no-properties
+                          (line-beginning-position) (line-end-position))))
+                  (goto-char (point-min))
+                  (gnus-article-goto-header "date")
+                  (setq new-art-buf-name
+                        (concat
+                         new-art-buf-name ", "
+                         (buffer-substring-no-properties
+                          (line-beginning-position) (line-end-position))))))
+              "*")
+             t)))
+    (setq gnus-article-buffer new-art-buf-name))
+  (gnus-summary-recenter)
+  (gnus-summary-position-point)
+  (set-buffer gnus-article-buffer)
+  (gnus-sticky-article-mode))
+
+(defun gnus-kill-sticky-article-buffer (&optional buffer)
+  "Kill the given sticky article BUFFER.
+If none is given, assume the current buffer and kill it if it has
+`gnus-sticky-article-mode'."
+  (interactive)
+  (unless buffer
+    (setq buffer (current-buffer)))
+  (with-current-buffer buffer
+    (when (eq major-mode 'gnus-sticky-article-mode)
+      (gnus-kill-buffer buffer))))
+
+(defun gnus-kill-sticky-article-buffers (arg)
+  "Kill all sticky article buffers.
+If a prefix ARG is given, ask for confirmation."
+  (interactive "P")
+  (dolist (buf (gnus-buffers))
+    (with-current-buffer buf
+      (when (eq major-mode 'gnus-sticky-article-mode)
+	(if (not arg)
+	    (gnus-kill-buffer buf)
+	  (when (yes-or-no-p (concat "Kill buffer " (buffer-name buf) "? "))
+	    (gnus-kill-buffer buf)))))))
+
+;;;
 ;;; Gnus MIME viewing functions
 ;;;
 

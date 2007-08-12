@@ -1997,6 +1997,7 @@ increase the score of each group you read."
   "g" gnus-summary-show-article
   "s" gnus-summary-isearch-article
   "P" gnus-summary-print-article
+  "S" gnus-sticky-article
   "M" gnus-mailing-list-insinuate
   "t" gnus-article-babel)
 
@@ -2444,6 +2445,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Remove article" gnus-cache-remove-article t])
 	     ["Translate" gnus-article-babel t]
 	     ["Select article buffer" gnus-summary-select-article-buffer t]
+	     ["Make article buffer sticky" gnus-sticky-article t]
 	     ["Enter digest buffer" gnus-summary-enter-digest-group t]
 	     ["Isearch article..." gnus-summary-isearch-article t]
 	     ["Beginning of the article" gnus-summary-beginning-of-article t]
@@ -6941,9 +6943,13 @@ If FORCE (the prefix), also save the .newsrc file(s)."
     (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
-      (gnus-kill-buffer gnus-article-buffer)
-      (gnus-kill-buffer gnus-original-article-buffer)
-      (setq gnus-article-current nil))
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(with-current-buffer gnus-article-buffer
+	  ;; Don't kill sticky article buffers
+	  (unless (eq major-mode 'gnus-sticky-article-mode)
+	    (gnus-kill-buffer gnus-article-buffer)
+	    (setq gnus-article-current nil))))
+      (gnus-kill-buffer gnus-original-article-buffer))
     (when gnus-use-cache
       (gnus-cache-possibly-remove-articles)
       (gnus-cache-save-buffers))
@@ -6975,11 +6981,6 @@ If FORCE (the prefix), also save the .newsrc file(s)."
     (setq group-point (point))
     (if temporary
 	nil				;Nothing to do.
-      ;; If we have several article buffers, we kill them at exit.
-      (unless gnus-single-article-buffer
-	(gnus-kill-buffer gnus-article-buffer)
-	(gnus-kill-buffer gnus-original-article-buffer)
-	(setq gnus-article-current nil))
       (set-buffer buf)
       (if (not gnus-kill-summary-on-exit)
 	  (progn

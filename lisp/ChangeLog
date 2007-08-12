@@ -1,3 +1,14 @@
+2007-08-12  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* gnus-sum.el (gnus-summary-article-map, gnus-summary-make-menu-bar):
+	Add binding for gnus-sticky-article.
+	(gnus-summary-exit): Don't kill sticky article buffers.
+
+	* gnus-art.el (gnus-sticky-article-mode): New mode to generate a sticky
+	article buffer.
+	(gnus-sticky-article, gnus-kill-sticky-article-buffer)
+	(gnus-kill-sticky-article-buffers): New commands.
+
 2007-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-xref-number-is-evil): New server variable.
