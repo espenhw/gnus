@@ -1,3 +1,10 @@
+2007-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (gnus-agent-decoded-group-names): New variable.
+	(gnus-agent-decoded-group-name): New function.
+	(gnus-agent-group-path, gnus-agent-group-pathname): Use it.
+	(gnus-agent-expire-group-1): Use it; decode group name in messages.
+
 2007-08-12  Tassilo Horn  <tassilo@member.fsf.org>
 
 	* gnus-sum.el (gnus-summary-article-map, gnus-summary-make-menu-bar):

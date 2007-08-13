@@ -1435,6 +1435,18 @@ downloaded into the agent."
                     oactive-min (read (current-buffer))) ;; min
 	      (cons oactive-min oactive-max))))))))
 
+(defvar gnus-agent-decoded-group-names nil
+  "Alist of non-ASCII group names and decoded ones.")
+
+(defun gnus-agent-decoded-group-name (group)
+  "Return a decoded group name of GROUP."
+  (or (cdr (assoc group gnus-agent-decoded-group-names))
+      (if (string-match "[^\000-\177]" group)
+	  (let ((decoded (gnus-group-decoded-name group)))
+	    (push (cons group decoded) gnus-agent-decoded-group-names)
+	    decoded)
+	group)))
+
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a file name."
 
@@ -1446,7 +1458,7 @@ downloaded into the agent."
         (nnheader-translate-file-chars
          (nnheader-replace-duplicate-chars-in-string
           (nnheader-replace-chars-in-string
-           (gnus-group-real-name (gnus-group-decoded-name group))
+           (gnus-group-real-name (gnus-agent-decoded-group-name group))
            ?/ ?_)
           ?. ?_)))
   (if (or nnmail-use-long-file-names
@@ -1459,13 +1471,12 @@ downloaded into the agent."
   ;; nnagent uses nnmail-group-pathname to read articles while
   ;; unplugged.  The agent must, therefore, use the same directory
   ;; while plugged.
-  (let ((gnus-command-method (or gnus-command-method
-                                 (gnus-find-method-for-group group))))
-    (nnmail-group-pathname
-     (gnus-group-real-name
-      (mm-decode-coding-string
-       group (gnus-group-name-charset gnus-command-method group)))
-     (gnus-agent-directory))))
+  (nnmail-group-pathname
+   (gnus-group-real-name (gnus-agent-decoded-group-name group))
+   (if gnus-command-method
+       (gnus-agent-directory)
+     (let ((gnus-command-method (gnus-find-method-for-group group)))
+       (gnus-agent-directory)))))
 
 (defun gnus-agent-get-function (method)
   (if (gnus-online method)
@@ -3121,7 +3132,8 @@ FORCE is equivalent to setting the expiration predicates to true."
   ;; provided a non-nil active
 
   (let ((dir (gnus-agent-group-pathname group))
-	(file-name-coding-system nnmail-pathname-coding-system))
+	(file-name-coding-system nnmail-pathname-coding-system)
+	(decoded (gnus-agent-decoded-group-name group)))
     (gnus-agent-with-refreshed-group
      group
      (when (boundp 'gnus-agent-expire-current-dirs)
@@ -3132,8 +3144,8 @@ FORCE is equivalent to setting the expiration predicates to true."
      (if (and (not force)
 	      (eq 'DISABLE (gnus-agent-find-parameter group
 						      'agent-enable-expiration)))
-	 (gnus-message 5 "Expiry skipping over %s" group)
-       (gnus-message 5 "Expiring articles in %s" group)
+	 (gnus-message 5 "Expiry skipping over %s" decoded)
+       (gnus-message 5 "Expiring articles in %s" decoded)
        (gnus-agent-load-alist group)
        (let* ((bytes-freed 0)
 	      (size-files-deleted 0.0)
@@ -3357,7 +3369,7 @@ line." (point) nov-file)))
 		(keep
 		 (gnus-agent-message 10
 				     "gnus-agent-expire: %s:%d: Kept %s article%s."
-				     group article-number keep (if fetch-date " and file" ""))
+				     decoded article-number keep (if fetch-date " and file" ""))
 		 (when fetch-date
 		   (unless (file-exists-p
 			    (concat dir (number-to-string
@@ -3365,7 +3377,7 @@ line." (point) nov-file)))
 		     (setf (nth 1 entry) nil)
 		     (gnus-agent-message 3 "gnus-agent-expire cleared \
 download flag on %s:%d as the cached article file is missing."
-					 group (caar dlist)))
+					 decoded (caar dlist)))
 		   (unless marker
 		     (gnus-message 1 "gnus-agent-expire detected a \
 missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
@@ -3442,12 +3454,12 @@ article alist" type) actions))
 
 		   (when actions
 		     (gnus-agent-message 8 "gnus-agent-expire: %s:%d: %s"
-					 group article-number
+					 decoded article-number
 					 (mapconcat 'identity actions ", ")))))
 		(t
 		 (gnus-agent-message
 		  10 "gnus-agent-expire: %s:%d: Article kept as \
-expiration tests failed." group article-number)
+expiration tests failed." decoded article-number)
 		 (gnus-agent-append-to-list
 		  tail-alist (cons article-number fetch-date)))
 		)
