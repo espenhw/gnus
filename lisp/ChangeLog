@@ -1,3 +1,14 @@
+2007-08-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-maximum-newsgroup): New variable.
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Limit the range of articles
+	according to gnus-maximum-newsgroup.
+
+	* gnus-sum.el (gnus-articles-to-read, gnus-list-of-unread-articles)
+	(gnus-list-of-read-articles, gnus-sequence-of-unread-articles): Limit
+	the range of articles according to gnus-maximum-newsgroup.
+
 2007-08-14  Tassilo Horn  <tassilo@member.fsf.org>
 
 	* gnus-art.el (gnus-sticky-article): Fixed problems described in
