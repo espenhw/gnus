@@ -496,6 +496,7 @@ Summary Buffer
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
 * Persistent Articles::         Making articles expiry-resistant.
+* Sticky Articles::             Article buffers that are not reused.
 * Article Backlog::             Having already read articles hang around.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
@@ -4598,6 +4599,7 @@ command or better use it as a prefix key.  For example:
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
 * Persistent Articles::         Making articles expiry-resistant.
+* Sticky Articles::             Article buffers that are not reused.
 * Article Backlog::             Having already read articles hang around.
 * Saving Articles::             Ways of customizing article saving.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
@@ -7484,6 +7486,53 @@ interested in persistent articles:
 (setq gnus-use-cache 'passive)
 @end lisp
 
+@node Sticky Articles
+@section Sticky Articles
+@cindex sticky articles
+
+When you select an article the current article buffer will be reused
+according to the value of the variable
+@code{gnus-single-article-buffer}.  If its value is non-@code{nil} (the
+default) all articles reuse the same article buffer.  Else each group
+has its own article buffer.
+
+This implies that it's not possible to have more than one article buffer
+in a group at a time.  But sometimes you might want to display all the
+latest emails from your mother, your father, your aunt, your uncle and
+your 17 cousins to coordinate the next christmas party.
+
+That's where sticky articles come in handy.  A sticky article buffer
+basically is a normal article buffer, but it won't be reused when you
+select another article.  You can make an article sticky with:
+
+@table @kbd
+@item A S
+@kindex A S (Summary)
+@findex gnus-sticky-article
+Make the current article sticky.  If a prefix arg is given, ask for a
+name for this sticky article buffer.
+@end table
+
+To close a sticky article buffer you can use these commands:
+
+@table @kbd
+@item q
+@kindex q (Article)
+@findex bury-buffer
+Puts this sticky article buffer at the end of the list of all buffers.
+
+@item k
+@kindex k (Article)
+@findex gnus-kill-sticky-article-buffer
+Kills this sticky article buffer.
+@end table
+
+To kill all sticky article buffers you can use:
+
+@defun gnus-kill-sticky-article-buffers ARG
+Kill all sticky article buffers.
+If a prefix ARG is given, ask for confirmation.
+@end defun
 
 @node Article Backlog
 @section Article Backlog
@@ -26195,6 +26244,7 @@ Yoshiki Hayashi, @c Hayashi
 P. E. Jareth Hein,
 Hisashige Kenji, @c Hisashige
 Scott Hofmann,
+Tassilo Horn,
 Marc Horowitz,
 Gunnar Horrigmo,
 Richard Hoskins,

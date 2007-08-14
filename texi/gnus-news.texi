@@ -69,6 +69,11 @@ about whether to do so.
 @item Changes in summary and article mode
 
 @itemize @bullet
+
+@item Gnus now supports sticky article buffers.  Those are article buffers
+that are not reused when you select another article.  @xref{Sticky
+Articles}.
+
 @item International host names (@acronym{IDNA}) can now be decoded
 inside article bodies using @kbd{W i}
 (@code{gnus-summary-idna-message}).  This requires that GNU Libidn

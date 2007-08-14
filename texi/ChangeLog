@@ -1,3 +1,9 @@
+2007-08-13  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* gnus-news.texi: Mention sticky article buffers.
+
+	* gnus.texi (Sticky Articles): Documentation for sticky article buffers.
+
 2007-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NNTP): Mention nntp-xref-number-is-evil.
