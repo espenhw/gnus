@@ -4371,46 +4371,46 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-sticky-article (arg)
   "Make the current article sticky.
-If a prefix ARG is given, ask for a name for this sticky article
-buffer."
+If a prefix ARG is given, ask for a name for this sticky article buffer."
   (interactive "P")
-  (gnus-configure-windows 'article)
   (gnus-summary-show-thread)
   (gnus-summary-select-article nil nil 'pseudo)
   (let (new-art-buf-name)
     (gnus-eval-in-buffer-window gnus-article-buffer
       (setq new-art-buf-name
-            (rename-buffer
-             (concat
-              "*Sticky Article: "
-              (if arg
-                  (read-from-minibuffer "Sticky article buffer name: ")
-                (gnus-with-article-headers
-                  (gnus-article-goto-header "subject")
-                  (setq new-art-buf-name
-                        (buffer-substring-no-properties
-                         (line-beginning-position) (line-end-position)))
-                  (goto-char (point-min))
-                  (gnus-article-goto-header "from")
-                  (setq new-art-buf-name
-                        (concat
-                         new-art-buf-name ", "
-                         (buffer-substring-no-properties
-                          (line-beginning-position) (line-end-position))))
-                  (goto-char (point-min))
-                  (gnus-article-goto-header "date")
-                  (setq new-art-buf-name
-                        (concat
-                         new-art-buf-name ", "
-                         (buffer-substring-no-properties
-                          (line-beginning-position) (line-end-position))))))
-              "*")
-             t)))
+	    (concat
+	     "*Sticky Article: "
+	     (if arg
+		 (read-from-minibuffer "Sticky article buffer name: ")
+	       (gnus-with-article-headers
+		 (gnus-article-goto-header "subject")
+		 (setq new-art-buf-name
+		       (buffer-substring-no-properties
+			(line-beginning-position) (line-end-position)))
+		 (goto-char (point-min))
+		 (gnus-article-goto-header "from")
+		 (setq new-art-buf-name
+		       (concat
+			new-art-buf-name ", "
+			(buffer-substring-no-properties
+			 (line-beginning-position) (line-end-position))))
+		 (goto-char (point-min))
+		 (gnus-article-goto-header "date")
+		 (setq new-art-buf-name
+		       (concat
+			new-art-buf-name ", "
+			(buffer-substring-no-properties
+			 (line-beginning-position) (line-end-position))))))
+	     "*"))
+      (if (and (gnus-buffer-live-p new-art-buf-name)
+	       (with-current-buffer new-art-buf-name
+		 (eq major-mode 'gnus-sticky-article-mode)))
+	  (switch-to-buffer new-art-buf-name)
+	(setq new-art-buf-name (rename-buffer new-art-buf-name t)))
+      (gnus-sticky-article-mode))
     (setq gnus-article-buffer new-art-buf-name))
   (gnus-summary-recenter)
-  (gnus-summary-position-point)
-  (set-buffer gnus-article-buffer)
-  (gnus-sticky-article-mode))
+  (gnus-summary-position-point))
 
 (defun gnus-kill-sticky-article-buffer (&optional buffer)
   "Kill the given sticky article BUFFER.

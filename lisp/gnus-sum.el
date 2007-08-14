@@ -7413,15 +7413,15 @@ Given a prefix, will force an `article' buffer configuration."
 
 (defun gnus-summary-display-article (article &optional all-header)
   "Display ARTICLE in article buffer."
-  (when (gnus-buffer-live-p gnus-article-buffer)
-    (with-current-buffer gnus-article-buffer
-      (mm-enable-multibyte)))
+  (unless (and (gnus-buffer-live-p gnus-article-buffer)
+	       (with-current-buffer gnus-article-buffer
+		 (eq major-mode 'gnus-article-mode)))
+    (gnus-article-setup-buffer))
   (gnus-set-global-variables)
-  (when (gnus-buffer-live-p gnus-article-buffer)
-    (with-current-buffer gnus-article-buffer
-      (setq gnus-article-charset gnus-newsgroup-charset)
-      (setq gnus-article-ignored-charsets gnus-newsgroup-ignored-charsets)
-      (mm-enable-multibyte)))
+  (with-current-buffer gnus-article-buffer
+    (setq gnus-article-charset gnus-newsgroup-charset)
+    (setq gnus-article-ignored-charsets gnus-newsgroup-ignored-charsets)
+    (mm-enable-multibyte))
   (if (null article)
       nil
     (prog1

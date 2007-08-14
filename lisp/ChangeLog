@@ -1,3 +1,13 @@
+2007-08-14  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* gnus-art.el (gnus-sticky-article): Fixed problems described in
+	<b4mps1qitio.fsf@jpl.org> on ding.  Thanks to Katsumi.
+	Don't perform gnus-configure-windows here; reuse existing sticky
+	article buffer.
+
+	* gnus-sum.el (gnus-summary-display-article): Setup article buffer if
+	it doesn't exist in gnus-article-mode.
+
 2007-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-decoded-group-names): New variable.
