@@ -2187,7 +2187,7 @@ stuck as the case may be.  If you use such news servers, set the
 variable @code{gnus-maximum-newsgroup} to a positive number.  The value
 means that Gnus ignores articles other than this number of the latest
 ones in every group.  For instance, the value 10000 makes Gnus get only
-the articles 29990000-30000000 (if the latest article number is 30000000
+the articles 29990001-30000000 (if the latest article number is 30000000
 in a group).  Note that setting this variable to a number might prevent
 you from reading very old articles.  The default value of the variable
 @code{gnus-maximum-newsgroup} is @code{nil}, which means Gnus never
