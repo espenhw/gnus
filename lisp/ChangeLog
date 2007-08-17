@@ -1,5 +1,13 @@
 2007-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* imap.el (imap-logout-timeout): New variable.
+	(imap-logout, imap-logout-wait): New functions.
+	(imap-kerberos4-open, imap-gssapi-open, imap-close): Use them.
+
+	* nnimap.el (nnimap-logout-timeout): New server variable.
+	(nnimap-open-server, nnimap-close-server): Bind imap-logout-timeout to
+	nnimap-logout-timeout.
+
 	* gnus-art.el (gnus-article-summary-command-nosave)
 	(gnus-article-read-summary-keys): Don't use 3rd arg of pop-to-buffer.
 

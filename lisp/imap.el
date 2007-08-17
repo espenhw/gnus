@@ -325,6 +325,13 @@ for doing the actual authentication.")
 (defvar imap-error nil
   "Error codes from the last command.")
 
+(defvar imap-logout-timeout nil
+  "Close server immediately if it can't logout in this number of seconds.
+If it is nil, never close server until logout completes.  Normally,
+the value of this variable will be bound to a certain value to which
+an application program that uses this module specifies on a per-server
+basis.")
+
 ;; Internal constants.  Change these and die.
 
 (defconst imap-default-port 143)
@@ -554,7 +561,7 @@ sure of changing the value of `foo'."
 				(not (string-match "failed" response))))
 		(setq done process)
 	      (if (memq (process-status process) '(open run))
-		  (imap-send-command "LOGOUT"))
+		  (imap-logout))
 	      (delete-process process)
 	      nil)))))
     done))
@@ -629,7 +636,7 @@ sure of changing the value of `foo'."
 				(not (string-match "failed" response))))
 		(setq done process)
 	      (if (memq (process-status process) '(open run))
-		  (imap-send-command "LOGOUT"))
+		  (imap-logout))
 	      (delete-process process)
 	      nil)))))
     done))
@@ -1188,7 +1195,7 @@ If BUFFER is nil, the current buffer is used."
   (with-current-buffer (or buffer (current-buffer))
     (when (imap-opened)
       (condition-case nil
-	  (imap-send-command-wait "LOGOUT")
+	  (imap-logout-wait)
 	(quit nil)))
     (when (and imap-process
 	       (memq (process-status imap-process) '(open run)))
@@ -1242,6 +1249,28 @@ If BUFFER is nil, the current buffer is assumed."
 
 (defun imap-send-command-wait (command &optional buffer)
   (imap-wait-for-tag (imap-send-command command buffer) buffer))
+
+(defun imap-logout (&optional buffer)
+  (or buffer (setq buffer (current-buffer)))
+  (if imap-logout-timeout
+      (with-timeout (imap-logout-timeout
+		     (condition-case nil
+			 (with-current-buffer buffer
+			   (delete-process imap-process))
+		       (error)))
+	(imap-send-command "LOGOUT" buffer))
+    (imap-send-command "LOGOUT" buffer)))
+
+(defun imap-logout-wait (&optional buffer)
+  (or buffer (setq buffer (current-buffer)))
+  (if imap-logout-timeout
+      (with-timeout (imap-logout-timeout
+		     (condition-case nil
+			 (with-current-buffer buffer
+			   (delete-process imap-process))
+		       (error)))
+	(imap-send-command-wait "LOGOUT" buffer))
+    (imap-send-command-wait "LOGOUT" buffer)))
 
 
 ;; Mailbox functions:

@@ -254,6 +254,11 @@ it O(n).  If p is small, then the default is probably faster."
   "Unselect mailboxes before looking for new mail in them.
 Some servers seem to need this under some circumstances.")
 
+(defvoo nnimap-logout-timeout nil
+  "Close server immediately if it can't logout in this number of seconds.
+If it is nil, never close server until logout completes.  This variable
+overrides `imap-logout-timeout' on a per-server basis.")
+
 ;; Authorization / Privacy variables
 
 (defvoo nnimap-auth-method nil
@@ -775,6 +780,8 @@ If EXAMINE is non-nil the group is selected read-only."
       'nov)))
 
 (defun nnimap-open-connection (server)
+  ;; Note: `nnimap-open-server' that calls this function binds
+  ;; `imap-logout-timeout' to `nnimap-logout-timeout'.
   (if (not (imap-open nnimap-address nnimap-server-port nnimap-stream
 		      nnimap-authenticator nnimap-server-buffer))
       (nnheader-report 'nnimap "Can't open connection to server %s" server)
@@ -836,14 +843,15 @@ If EXAMINE is non-nil the group is selected read-only."
 	(setq nnimap-server-buffer (cadr (assq 'nnimap-server-buffer defs))))
     (with-current-buffer (get-buffer-create nnimap-server-buffer)
       (nnoo-change-server 'nnimap server defs))
-    (or (and nnimap-server-buffer
-	     (imap-opened nnimap-server-buffer)
-	     (if (with-current-buffer nnimap-server-buffer
-		   (memq imap-state '(auth selected examine)))
-		 t
-	       (imap-close nnimap-server-buffer)
-	       (nnimap-open-connection server)))
-	(nnimap-open-connection server))))
+    (let ((imap-logout-timeout nnimap-logout-timeout))
+      (or (and nnimap-server-buffer
+	       (imap-opened nnimap-server-buffer)
+	       (if (with-current-buffer nnimap-server-buffer
+		     (memq imap-state '(auth selected examine)))
+		   t
+		 (imap-close nnimap-server-buffer)
+		 (nnimap-open-connection server)))
+	  (nnimap-open-connection server)))))
 
 (deffoo nnimap-server-opened (&optional server)
   "Whether SERVER is opened.
@@ -858,7 +866,8 @@ SERVER is nil, it is treated as the current server."
 (deffoo nnimap-close-server (&optional server)
   "Close connection to server and free all resources connected to it.
 Return nil if the server couldn't be closed for some reason."
-  (let ((server (or server nnimap-current-server)))
+  (let ((server (or server nnimap-current-server))
+	(imap-logout-timeout nnimap-logout-timeout))
     (when (or (nnimap-server-opened server)
 	      (imap-opened (nnimap-get-server-buffer server)))
       (imap-close (nnimap-get-server-buffer server))
