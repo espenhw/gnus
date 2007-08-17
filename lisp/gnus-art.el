@@ -6015,7 +6015,7 @@ not have a face in `gnus-article-boring-faces'."
   "Execute the last keystroke in the summary buffer."
   (interactive)
   (let (func)
-    (pop-to-buffer gnus-article-current-summary nil (not (featurep 'xemacs)))
+    (pop-to-buffer gnus-article-current-summary)
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)))
 
@@ -6058,8 +6058,7 @@ not have a face in `gnus-article-boring-faces'."
 	  (member keys nosave-in-article))
       (let (func)
 	(save-window-excursion
-	  (pop-to-buffer gnus-article-current-summary
-			 nil (not (featurep 'xemacs)))
+	  (pop-to-buffer gnus-article-current-summary)
 	  ;; We disable the pick minor mode commands.
 	  (let (gnus-pick-mode)
 	    (setq func (lookup-key (current-local-map) keys))))
@@ -6071,15 +6070,14 @@ not have a face in `gnus-article-boring-faces'."
 	  (call-interactively func)
 	  (setq new-sum-point (point)))
 	(when (member keys nosave-but-article)
-	  (pop-to-buffer gnus-article-buffer nil (not (featurep 'xemacs))))))
+	  (pop-to-buffer gnus-article-buffer))))
      (t
       ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
 	    win func in-buffer selected new-sum-start new-sum-hscroll err)
 	(cond (not-restore-window
-	       (pop-to-buffer gnus-article-current-summary
-			      nil (not (featurep 'xemacs)))
+	       (pop-to-buffer gnus-article-current-summary)
 	       (setq win (selected-window)))
 	      ((setq win (get-buffer-window gnus-article-current-summary))
 	       (select-window win))
