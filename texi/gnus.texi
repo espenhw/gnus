@@ -17156,6 +17156,30 @@ messages, you start cursing Gnus for being so slow. On the other hand,
 if you get a lot of email within a week, setting this variable will
 cause a lot of network traffic between Gnus and the IMAP server.
 
+@item nnimap-logout-timeout
+@vindex nnimap-logout-timeout
+
+There is a case where a connection to a @acronym{IMAP} server is unable
+to close, when connecting to the server via a certain kind of network,
+e.g. @acronym{VPN}.  In that case, it will be observed that a connection
+between Emacs and the local network looks alive even if the server has
+closed a connection for some reason (typically, a timeout).
+Consequently, Emacs continues waiting for a response from the server for
+the @code{LOGOUT} command that Emacs sent, or hangs in other words.  If
+you are in such a network, setting this variable to a number of seconds
+will be helpful.  If it is set, a hung connection will be closed
+forcibly, after this number of seconds from the time Emacs sends the
+@code{LOGOUT} command.  It should not be too small value but too large
+value will be inconvenient too.  Perhaps the value 1.0 will be a good
+candidate but it might be worth trying some other values.
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-logout-timeout 1.0))
+@end lisp
+
 @end table
 
 @menu
