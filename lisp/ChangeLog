@@ -1,3 +1,16 @@
+2007-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-display-single): Use utf-8 by default for
+	decoding text/calendar parts.
+
+	* message.el (message-forward-make-body-mime): Always mark body as
+	having no illegible text; remove signed-or-encrypted argument.
+	(message-forward-make-body): Don't pass signed-or-encrypted arg to it.
+
+	* mml.el (mml-generate-mime): Make sure it uses multibyte temp buffer.
+	(mml-generate-mime-1): Don't encode body if it is specified to be in
+	raw form; don't make buffer be unibyte when inserting multibyte string.
+
 2007-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* imap.el (imap-logout-timeout): New variable.

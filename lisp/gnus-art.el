@@ -5521,8 +5521,9 @@ If displaying \"text/html\" is discouraged \(see
 	    (gnus-article-insert-newline)
 	    (mm-insert-inline
 	     handle
-	     (let ((charset (mail-content-type-get (mm-handle-type handle)
-						   'charset)))
+	     (let ((charset (or (mail-content-type-get (mm-handle-type handle)
+						       'charset)
+				(and (equal type "text/calendar") 'utf-8))))
 	       (cond ((not charset)
 		      (mm-string-as-multibyte (mm-get-part handle)))
 		     ((eq charset 'gnus-decoded)

@@ -6852,8 +6852,7 @@ Optional DIGEST will use digest to forward."
 	(dolist (elem ignored)
 	  (message-remove-header elem t))))))
 
-(defun message-forward-make-body-mime (forward-buffer
-				       &optional signed-or-encrypted)
+(defun message-forward-make-body-mime (forward-buffer)
   (let ((b (point)))
     (insert "\n\n<#part type=message/rfc822 disposition=inline raw=t>\n")
     (save-restriction
@@ -6864,11 +6863,10 @@ Optional DIGEST will use digest to forward."
 	(replace-match "X-From-Line: "))
       (goto-char (point-max)))
     (insert "<#/part>\n")
-    (when signed-or-encrypted
-      ;; Consider there is no illegible text.
-      (add-text-properties
-       b (point)
-       `(no-illegible-text t rear-nonsticky t start-open t)))))
+    ;; Consider there is no illegible text.
+    (add-text-properties
+     b (point)
+     `(no-illegible-text t rear-nonsticky t start-open t))))
 
 (defun message-forward-make-body-mml (forward-buffer)
   (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
@@ -6992,20 +6990,17 @@ is for the internal use."
   (if digest
       (message-forward-make-body-digest forward-buffer)
     (if message-forward-as-mime
-	(let (signed-or-encrypted)
-	  (if (and message-forward-show-mml
-		   (not (and (eq message-forward-show-mml 'best)
-			     ;; Use the raw form in the body if it contains
-			     ;; signed or encrypted message so as not to be
-			     ;; destroyed by re-encoding.
-			     (with-current-buffer forward-buffer
-			       (condition-case nil
-				   (setq signed-or-encrypted
-					 (message-signed-or-encrypted-p))
-				 (error t))))))
-	      (message-forward-make-body-mml forward-buffer)
-	    (message-forward-make-body-mime forward-buffer
-					    signed-or-encrypted)))
+	(if (and message-forward-show-mml
+		 (not (and (eq message-forward-show-mml 'best)
+			   ;; Use the raw form in the body if it contains
+			   ;; signed or encrypted message so as not to be
+			   ;; destroyed by re-encoding.
+			   (with-current-buffer forward-buffer
+			     (condition-case nil
+				 (message-signed-or-encrypted-p)
+			       (error t))))))
+	    (message-forward-make-body-mml forward-buffer)
+	  (message-forward-make-body-mime forward-buffer))
       (message-forward-make-body-plain forward-buffer)))
   (message-position-point))
 
