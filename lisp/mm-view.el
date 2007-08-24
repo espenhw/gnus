@@ -188,12 +188,12 @@
 	 handle
 	 `(lambda ()
 	    (let (buffer-read-only)
-	      (if (functionp 'remove-specifier)
-		  (mapcar (lambda (prop)
-			    (remove-specifier
-			     (face-property 'default prop)
-			     (current-buffer)))
-			  '(background background-pixmap foreground)))
+	      ,@(if (functionp 'remove-specifier)
+		    '((mapcar (lambda (prop)
+				(remove-specifier
+				 (face-property 'default prop)
+				 (current-buffer)))
+			      '(background background-pixmap foreground))))
 	      (delete-region ,(point-min-marker)
 			     ,(point-max-marker)))))))))
 
@@ -262,13 +262,7 @@
 	(mm-handle-set-undisplayer
 	 handle
 	 `(lambda ()
-	    (let (buffer-read-only)
-	      (if (functionp 'remove-specifier)
-		  (mapcar (lambda (prop)
-			    (remove-specifier
-			     (face-property 'default prop)
-			     (current-buffer)))
-			  '(background background-pixmap foreground)))
+	    (let ((inhibit-read-only t))
 	      (delete-region ,(point-min-marker)
 			     ,(point-max-marker)))))))))
 

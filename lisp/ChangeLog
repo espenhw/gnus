@@ -1,3 +1,19 @@
+2007-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-edit-part): Don't jump to nonexistent part.
+	(gnus-mime-view-part-as-type-internal): Default to text/plain for text
+	parts, or application/octet-stream as a last resort.
+	(gnus-mime-view-part-as-type): Don't toggle display.
+	(gnus-mime-view-part-as-charset): Don't turn off display before
+	querying charset.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3): Don't add XEmacs
+	stuff to undisplayer function in Emacs.
+	(mm-inline-text-html-render-with-w3m): Remove Emacs/W3 stuff.
+
+	* mml.el (mml-generate-mime-1): Prefer utf-8 when encoding
+	text/calendar parts.
+
 2007-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-display-single): Use utf-8 by default for

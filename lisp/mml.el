@@ -535,7 +535,13 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 			;; insert a "; format=flowed" string unless the
 			;; user has already specified it.
 			(setq flowed (null (assq 'format cont)))))
-		    (setq charset (mm-encode-body charset))
+		    ;; Prefer `utf-8' for text/calendar parts.
+		    (if (or charset
+			    (not (string= type "text/calendar")))
+			(setq charset (mm-encode-body charset))
+		      (let ((mm-coding-system-priorities
+			     (cons 'utf-8 mm-coding-system-priorities)))
+			(setq charset (mm-encode-body))))
 		    (setq encoding (mm-body-encoding
 				    charset (cdr (assq 'encoding cont))))))
 		  (setq coded (buffer-string)))

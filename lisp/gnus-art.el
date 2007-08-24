@@ -4605,7 +4605,11 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
     (gnus-summary-show-article)
     (when (and current-id (integerp gnus-auto-select-part))
       (gnus-article-jump-to-part
-       (+ current-id gnus-auto-select-part)))))
+       (if (text-property-any (point-min) (point-max)
+			      'gnus-part (+ current-id gnus-auto-select-part))
+	   (+ current-id gnus-auto-select-part)
+	 (with-current-buffer gnus-article-buffer
+	   (length gnus-article-mime-handle-alist)))))))
 
 (defun gnus-mime-replace-part (file)
   "Replace MIME part under point with an external body."
@@ -4742,7 +4746,11 @@ Deleting parts may malfunction or destroy the article; continue? "))
 		;; Content-Disposition: attachment; filename=...
 		(cdr (assq 'filename (cdr (mm-handle-disposition handle))))))
 	 (def-type (and name (mm-default-file-encoding name))))
-    (and def-type (cons def-type 0))))
+    (or (and def-type (cons def-type 0))
+	(and handle
+	     (equal (mm-handle-media-supertype handle) "text")
+	     '("text/plain" . 0))
+	'("application/octet-stream" . 0))))
 
 (defun gnus-mime-view-part-as-type (&optional mime-type pred)
   "Choose a MIME media type, and view the part as such.
@@ -4776,6 +4784,8 @@ available media-types."
 			    (mm-handle-id handle)))
       (setq gnus-article-mime-handles
 	    (mm-merge-handles gnus-article-mime-handles handle))
+      (when (mm-handle-displayed-p handle)
+	(mm-remove-part handle))
       (gnus-mm-display-part handle))))
 
 (defun gnus-mime-copy-part (&optional handle arg)
@@ -4943,12 +4953,15 @@ specified charset."
 	(gnus-newsgroup-ignored-charsets 'gnus-all)
 	gnus-newsgroup-charset form preferred parts)
     (when handle
-      (if (mm-handle-undisplayer handle)
-	  (mm-remove-part handle))
-      (when fun
-	(setq gnus-newsgroup-charset
-	      (or (cdr (assq arg gnus-summary-show-article-charset-alist))
-		  (mm-read-coding-system "Charset: ")))
+      (when (prog1
+		(and fun
+		     (setq gnus-newsgroup-charset
+			   (or (cdr (assq
+				     arg
+				     gnus-summary-show-article-charset-alist))
+			       (mm-read-coding-system "Charset: "))))
+	      (if (mm-handle-undisplayer handle)
+		  (mm-remove-part handle)))
 	(gnus-mime-strip-charset-parameters handle)
 	(when (and (consp (setq form (cdr-safe fun)))
 		   (setq form (ignore-errors
