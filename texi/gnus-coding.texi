@@ -210,8 +210,8 @@ The files @file{mml*.el} and @file{mm-*.el} provide @acronym{MIME}
 functionality for Emacs.
 
 @acronym{MML} (@acronym{MIME} Meta Language) is supposed to be
-independent from Gnus.  Alas it is not anymore.
-
+independent from Gnus.  Alas it is not anymore.  Patches and suggestions
+to remove the dependencies are welcome.
 
 @subsection Gnus backends
 
@@ -220,27 +220,13 @@ The files @file{nn*.el} provide functionality for accessing NNTP
 ends (probably @file{nnml.el}, @file{nnfolder.el} and
 @file{nnmaildir.el} are the most widely used mail back ends).
 
-
-
 @c mm-uu requires nnheader which requires gnus-util.  message.el also
 @c requires nnheader.
-
-@c message / gnus
-@c 
-@c nn*
-@c 
-@c mm*
-@c
-@c rfc*
-@c 
-@c pgg*
-@c tla netrc pop3 dig dns ...
-@c format-spec.el
 
 
 @section Compatibility
 
-No Gnus should work on:
+No Gnus and Gnus 5.10.10 and up should work on:
 @itemize @bullet
 @item
 Emacs 21.1 and up.
@@ -248,7 +234,7 @@ Emacs 21.1 and up.
 XEmacs 21.4 and up.
 @end itemize
 
-Gnus 5.10 should work on:
+Gnus 5.10.8 and below should work on:
 @itemize @bullet
 @item
 Emacs 20.7 and up.

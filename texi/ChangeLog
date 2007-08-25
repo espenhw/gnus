@@ -8,6 +8,9 @@
 	dependencies.
 	(Gnus Maintainance Guide): Give advice for post-Emacs-22.1 defcustoms.
 	Say that it should also be used when the default changed.
+	(Gnus Coding Style) <Compatibility>: Adjust versions for 5.10.10.
+	(Gnus Coding Style) <Emacs MIME>: Add "patches welcome".
+	(Gnus Coding Style) <Gnus backends>: Clean up.
 
 2007-08-24  IRIE Tetsuya  <irie@t.email.ne.jp>  (tiny change)
 
