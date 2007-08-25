@@ -101,6 +101,15 @@ Glue for the various PGP implementations.
 @c As of 2005-10-21...
 There are no Gnus dependencies in these files.
 
+@item sha1.el
+SHA1 Secure Hash Algorithm.
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
+
+@item hex-util.el
+Functions to encode/decode hexadecimal string.
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
 @end table
 
 @subsection Networking
@@ -112,7 +121,7 @@ Domain Name System dig interface.
 There are no serious Gnus dependencies in this file.  Uses
 @code{gnus-run-mode-hooks} (a wrapper function).
 
-@item dns*.el
+@item dns.el, dns-mode.el
 Domain Name Service lookups.
 @c As of 2005-10-21...
 There are no Gnus dependencies in these files.
@@ -147,15 +156,25 @@ using an optional argument to @code{rfc1843-decode-article-body}.
 
 @item rfc2045.el
 Functions for decoding rfc2045 headers
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
 
 @item rfc2047.el
 Functions for encoding and decoding rfc2047 messages
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
+@c
+Only a couple of tests for gnusy symbols.
 
 @item rfc2104.el
 RFC2104 Hashed Message Authentication Codes
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
 
 @item rfc2231.el
 Functions for decoding rfc2231 headers
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
 
 @item flow-fill.el
 Interpret RFC2646 "flowed" text.
@@ -167,6 +186,15 @@ Elisp native uudecode.
 @c As of 2005-12-06...
 There are no Gnus dependencies in this file.
 @c ... but the custom group is gnus-extract.
+
+@item canlock.el
+Functions for Cancel-Lock feature
+@c Cf. draft-ietf-usefor-cancel-lock-01.txt
+@c Although this draft has expired, Canlock-Lock revived in 2007 when
+@c major news providers (e.g. news.individual.org) started to use it.
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
+
 @end table
 
 @subsection message
@@ -346,10 +374,14 @@ Starting from No Gnus, the @file{GNUS-NEWS} is created from
 @heading Conventions for version information in defcustoms
 
 For new customizable variables introduced in Oort Gnus (including the
-v5-10 branch) use @code{:version "22.1" ;; Oort Gnus} including the
-comment.
+v5-10 branch) use @code{:version "22.1" ;; Oort Gnus} (including the
+comment) or e.g. @code{:version "22.2" ;; Gnus 5.10.10} if the feature
+was added for Emacs 22.2 and Gnus 5.10.10.
 @c
 If the variable is new in No Gnus use @code{:version "23.0" ;; No Gnus}.
+
+The same applies for customizable variables when its default value was
+changed.
 
 @c Local Variables:
 @c mode: texinfo

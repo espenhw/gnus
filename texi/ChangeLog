@@ -1,3 +1,14 @@
+2007-08-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-coding.texi (Gnus Coding Style) <Encryption and security>: Add
+	sha1.el and hex-util.el.
+	(Gnus Coding Style) <Networking>: Write dns.el and dns-mode.el instead
+	of dns*.el.
+	(Gnus Coding Style) <Mail and News related RFCs>: Document missing Gnus
+	dependencies.
+	(Gnus Maintainance Guide): Give advice for post-Emacs-22.1 defcustoms.
+	Say that it should also be used when the default changed.
+
 2007-08-24  IRIE Tetsuya  <irie@t.email.ne.jp>  (tiny change)
 
 	* message.texi (MIME): Replace mml-attach with mml-attach-file.
