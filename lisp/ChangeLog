@@ -1,3 +1,17 @@
+2007-08-31  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-extract-cleartext-signature): New function.
+	(mml2015-mailcrypt-clear-verify): Use it.
+	(mml2015-gpg-clear-verify): Use it.
+	(mml2015-pgg-clear-verify): Use it.
+	(mml2015-epg-clear-verify): Replace the current part with the output
+	from GnuPG; don't extract the plaintext by itself.
+
+	* mm-uu.el (mm-uu-pgp-beginning-signature): Abolish.
+	(mm-uu-pgp-signed-extract-1): Bind coding-system-for-read when calling
+	mml2015-clear-verify-function; don't touch the armor headers or
+	dash-escaped text here.
+
 2007-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-edit-part): Don't jump to nonexistent part.

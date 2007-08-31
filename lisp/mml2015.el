@@ -141,6 +141,28 @@ Whether the passphrase is cached at all is controlled by
   :group 'mime-security
   :type 'boolean)
 
+;; Extract plaintext from cleartext signature.  IMO, this kind of task
+;; should be done by GnuPG rather than Elisp, but older PGP backends
+;; (such as Mailcrypt, PGG, and gpg.el) discard the output from GnuPG.
+(defun mml2015-extract-cleartext-signature ()
+  (goto-char (point-min))
+  (forward-line)
+  ;; We need to be careful not to strip beyond the armor headers.
+  ;; Previously, an attacker could replace the text inside our
+  ;; markup with trailing garbage by injecting whitespace into the
+  ;; message.
+  (while (looking-at "Hash:")		; The only header allowed in cleartext
+    (forward-line))			; signatures according to RFC2440.
+  (when (looking-at "[\t ]*$")
+    (forward-line))
+  (delete-region (point-min) (point))
+  (if (re-search-forward "^-----BEGIN PGP SIGNATURE-----" nil t)
+      (delete-region (match-beginning 0) (point-max)))
+  (goto-char (point-min))
+  (while (re-search-forward "^- " nil t)
+    (replace-match "" t t)
+    (forward-line 1)))
+
 ;;; mailcrypt wrapper
 
 (eval-and-compile
@@ -327,7 +349,8 @@ Whether the passphrase is cached at all is controlled by
 	(mm-set-handle-multipart-parameter
 	 mm-security-handle 'gnus-info "OK")
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-info "Failed"))))
+       mm-security-handle 'gnus-info "Failed")))
+  (mml2015-extract-cleartext-signature))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -593,7 +616,8 @@ Whether the passphrase is cached at all is controlled by
        (with-current-buffer mml2015-result-buffer
 	 (mml2015-gpg-extract-signature-details)))
     (mm-set-handle-multipart-parameter
-     mm-security-handle 'gnus-info "Failed")))
+     mm-security-handle 'gnus-info "Failed"))
+  (mml2015-extract-cleartext-signature))
 
 (defun mml2015-gpg-sign (cont)
   (let ((boundary (mml-compute-boundary cont))
@@ -856,7 +880,8 @@ Whether the passphrase is cached at all is controlled by
 	 (with-current-buffer pgg-errors-buffer
 	   (mml2015-gpg-extract-signature-details)))
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-info "Failed"))))
+       mm-security-handle 'gnus-info "Failed")))
+  (mml2015-extract-cleartext-signature))
 
 (defun mml2015-pgg-sign (cont)
   (let ((pgg-errors-buffer mml2015-result-buffer)
@@ -1119,7 +1144,7 @@ Whether the passphrase is cached at all is controlled by
   (let ((inhibit-redisplay t)
 	(context (epg-make-context))
 	(signature (mm-encode-coding-string (buffer-string)
-					    buffer-file-coding-system))
+					    coding-system-for-write))
 	plain)
     (condition-case error
 	(setq plain (epg-verify-string context signature))
@@ -1132,10 +1157,14 @@ Whether the passphrase is cached at all is controlled by
 	 (mm-set-handle-multipart-parameter
 	  mm-security-handle 'gnus-details (mml2015-format-error error)))))
     (if plain
-	(mm-set-handle-multipart-parameter
-	 mm-security-handle 'gnus-info
-	 (epg-verify-result-to-string
-	  (epg-context-result-for context 'verify))))))
+	(progn
+	  (mm-set-handle-multipart-parameter
+	   mm-security-handle 'gnus-info
+	   (epg-verify-result-to-string
+	    (epg-context-result-for context 'verify)))
+	  (delete-region (point-min) (point-max))
+	  (insert (mm-decode-coding-string plain coding-system-for-read)))
+      (mml2015-extract-cleartext-signature))))
 
 (defun mml2015-epg-sign (cont)
   (let* ((inhibit-redisplay t)

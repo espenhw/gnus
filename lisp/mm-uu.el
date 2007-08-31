@@ -68,9 +68,6 @@ decoder, such as hexbin."
 
 (defvar mm-uu-yenc-decode-function 'yenc-decode-region)
 
-(defvar mm-uu-pgp-beginning-signature
-     "^-----BEGIN PGP SIGNATURE-----")
-
 (defvar mm-uu-beginning-regexp nil)
 
 (defvar mm-dissect-disposition "inline"
@@ -478,29 +475,14 @@ apply the face `mm-uu-extract'."
 	  (progn
 	    (mml2015-clean-buffer)
 	    (let ((coding-system-for-write (or gnus-newsgroup-charset
-					       'iso-8859-1)))
+					       'iso-8859-1))
+		  (coding-system-for-read (or gnus-newsgroup-charset
+					      'iso-8859-1)))
 	      (funcall (mml2015-clear-verify-function))))
 	(when (and mml2015-use (null (mml2015-clear-verify-function)))
 	  (mm-set-handle-multipart-parameter
 	   mm-security-handle 'gnus-details
-	   (format "Clear verification not supported by `%s'.\n" mml2015-use))))
-      (goto-char (point-min))
-      (forward-line)
-      ;; We need to be careful not to strip beyond the armor headers.
-      ;; Previously, an attacker could replace the text inside our
-      ;; markup with trailing garbage by injecting whitespace into the
-      ;; message.
-      (while (looking-at "Hash:") ; The only header allowed in cleartext
-	(forward-line))		  ; signatures according to RFC2440.
-      (when (looking-at "[\t ]*$")
-	(forward-line))
-      (delete-region (point-min) (point))
-      (if (re-search-forward mm-uu-pgp-beginning-signature nil t)
-	  (delete-region (match-beginning 0) (point-max)))
-      (goto-char (point-min))
-      (while (re-search-forward "^- " nil t)
-	(replace-match "" t t)
-	(forward-line 1)))
+	   (format "Clear verification not supported by `%s'.\n" mml2015-use)))))
     (list (mm-make-handle buf mm-uu-text-plain-type))))
 
 (defun mm-uu-pgp-signed-extract ()
