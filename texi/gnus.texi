@@ -14349,7 +14349,9 @@ mapped into the @code{imap-shell-program} variable.  This should be a
 ssh %s imapd
 @end example
 
-The valid format specifier characters are:
+Make sure nothing is interfering with the output of the program, e.g.,
+don't forget to redirect the error output to the void.  The valid format
+specifier characters are:
 
 @table @samp
 @item s
@@ -16976,8 +16978,10 @@ to OpenSSL/SSLeay.
 
 @vindex imap-shell-program
 @vindex imap-shell-host
-For @acronym{IMAP} connections using the @code{shell} stream, the variable
-@code{imap-shell-program} specify what program to call.
+For @acronym{IMAP} connections using the @code{shell} stream, the
+variable @code{imap-shell-program} specify what program to call.  Make
+sure nothing is interfering with the output of the program, e.g., don't
+forget to redirect the error output to the void.
 
 @item nnimap-authenticator
 @vindex nnimap-authenticator
