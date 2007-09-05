@@ -1,3 +1,9 @@
+2007-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-cus.el (gnus-score-extra): New widget.
+	(gnus-score-extra-convert): New function.
+	(gnus-score-customize): Use it for Extra.
+
 2007-08-31  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-extract-cleartext-signature): New function.
