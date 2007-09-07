@@ -1,3 +1,9 @@
+2007-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-gnus-to-newsrc-format): Use a unibyte buffer and
+	raw-text coding system when saving .newsrc file, which may contain
+	non-ASCII group names.
+
 2007-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cus.el (gnus-score-extra): New widget.

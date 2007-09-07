@@ -2900,6 +2900,10 @@ If FORCE is non-nil, the .newsrc file is read."
       (setq default-directory (file-name-directory buffer-file-name))
       (buffer-disable-undo)
       (erase-buffer)
+      ;; Use a unibyte buffer since group names are unibyte strings;
+      ;; in particular, non-ASCII group names are the ones encoded by
+      ;; a certain coding system.
+      (mm-disable-multibyte)
       ;; Write options.
       (when gnus-newsrc-options
 	(insert gnus-newsrc-options))
@@ -2942,7 +2946,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (delete-file gnus-startup-file)
 	(clear-visited-file-modtime))
       (gnus-run-hooks 'gnus-save-standard-newsrc-hook)
-      (save-buffer)
+      (let ((coding-system-for-write 'raw-text))
+	(save-buffer))
       (kill-buffer (current-buffer)))))
 
 
