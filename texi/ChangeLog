@@ -1,3 +1,9 @@
+2007-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Non-ASCII Group Names): New node.
+	(Misc Group Stuff): Move gnus-group-name-charset-method-alist and
+	gnus-group-name-charset-group-alist to Non-ASCII Group Names node.
+
 2007-08-31  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
 	* gnus.texi (Mail Source Specifiers, IMAP): Add a notice on the need to

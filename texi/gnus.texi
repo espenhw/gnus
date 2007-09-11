@@ -457,6 +457,7 @@ Group Buffer
 * Browse Foreign Server::       You can browse a server.  See what it has to offer.
 * Exiting Gnus::                Stop reading news and get some work done.
 * Group Topics::                A folding group mode divided into topics.
+* Non-ASCII Group Names::       Accessing groups of non-English names.
 * Misc Group Stuff::            Other stuff that you can to do.
 
 Group Buffer Format
@@ -1722,6 +1723,7 @@ long as Gnus is active.
 * Browse Foreign Server::       You can browse a server.  See what it has to offer.
 * Exiting Gnus::                Stop reading news and get some work done.
 * Group Topics::                A folding group mode divided into topics.
+* Non-ASCII Group Names::       Accessing groups of non-English names.
 * Misc Group Stuff::            Other stuff that you can to do.
 @end menu
 
@@ -4158,6 +4160,132 @@ happen.  In fact, I hereby declare that it is @dfn{undefined} what
 happens.  You just have to be careful if you do stuff like that.
 
 
+@node Non-ASCII Group Names
+@section Accessing groups of non-English names
+@cindex non-ascii group names
+
+There are some news servers that provide groups of which the names are
+expressed with their native languages in the world.  For instance, in a
+certain news server there are some newsgroups of which the names are
+spelled in Chinese, where people are talking in Chinese.  You can, of
+course, subscribe to such news groups using Gnus.  Currently Gnus
+supports non-@acronym{ASCII} group names not only with the @code{nntp}
+back end but also with the @code{nnml} back end and the @code{nnrss}
+back end.
+
+Every such group name is encoded by a certain charset in the server
+side (in an @acronym{NNTP} server its administrator determines the
+charset, but for groups in the other back ends it is determined by you).
+Gnus has to display the decoded ones for you in the group buffer and the
+article buffer, and needs to use the encoded ones when communicating
+with servers.  However, Gnus doesn't know what charset is used for each
+non-@acronym{ASCII} group name.  The following two variables are just
+the ones for telling Gnus what charset should be used for each group:
+
+@table @code
+@item gnus-group-name-charset-method-alist
+@vindex gnus-group-name-charset-method-alist
+An alist of select methods and charsets.  The default value is
+@code{nil}.  The names of groups in the server specified by that select
+method are all supposed to use the corresponding charset.  For example:
+
+@lisp
+(setq gnus-group-name-charset-method-alist
+      '(((nntp "news.com.cn") . cn-gb-2312)))
+@end lisp
+
+Charsets specified for groups with this variable are preferred to the
+ones specified for the same groups with the
+@code{gnus-group-name-charset-group-alist} variable (see below).
+
+A select method can be very long, like:
+
+@lisp
+(nntp "quimby"
+      (nntp-address "news.gnus.org")
+      (nntp-end-of-line "\n")
+      (nntp-open-connection-function
+       nntp-open-via-rlogin-and-telnet)
+      (nntp-via-rlogin-command "ssh")
+      (nntp-via-rlogin-command-switches
+       ("-C" "-t" "-e" "none"))
+      (nntp-via-address @dots{}))
+@end lisp
+
+In that case, you can truncate it into @code{(nntp "quimby")} in this
+variable.  That is, it is enough to contain only the back end name and
+the server name.
+
+@item gnus-group-name-charset-group-alist
+@cindex UTF-8 group names
+@vindex gnus-group-name-charset-group-alist
+An alist of regexp of group name and the charset for group names.
+@code{((".*" . utf-8))} is the default value if UTF-8 is supported,
+otherwise the default is @code{nil}.  For example:
+
+@lisp
+(setq gnus-group-name-charset-group-alist
+      '(("\\.com\\.cn:" . cn-gb-2312)
+        (".*" . utf-8)))
+@end lisp
+
+Note that this variable is ignored if the match is made with
+@code{gnus-group-name-charset-method-alist}.
+@end table
+
+Those two variables are used also to determine the charset for encoding
+and decoding non-@acronym{ASCII} group names that are in the back ends
+other than @code{nntp}.  It means that it is you who determine it.  If
+you do nothing, the charset used for group names in those back ends will
+all be @code{utf-8} because of the last element of
+@code{gnus-group-name-charset-group-alist}.
+
+There is one more important variable for non-@acronym{ASCII} group
+names.  @emph{XEmacs users must set this}.  Emacs users necessarily need
+not do:
+
+@table @code
+@item nnmail-pathname-coding-system
+The value of this variable should be a coding system or @code{nil}
+(which is the default).  The @code{nnml} back end, the @code{nnrss} back
+end, the @acronym{NNTP} marks feature (@pxref{NNTP marks}), the agent,
+and the cache use non-@acronym{ASCII} group names in those files and
+directories.  This variable overrides the value of
+@code{file-name-coding-system} which specifies the coding system used
+when encoding and decoding those file names and directory names.
+
+In XEmacs (with the @code{mule} feature), @code{file-name-coding-system}
+is the only means to specify the coding system used to encode and decode
+file names.  Therefore, @emph{you, XEmacs users, have to set it} to the
+coding system that is suitable to encode and decode non-@acronym{ASCII}
+group names.  On the other hand, Emacs uses the value of
+@code{default-file-name-coding-system} if @code{file-name-coding-system}
+is @code{nil}.  Normally the value of
+@code{default-file-name-coding-system} is initialized according to the
+locale, so you will need to do nothing if the value is suitable to
+encode and decode non-@acronym{ASCII} group names.
+
+The value of this variable (or @code{default-file-name-coding-system})
+does not necessarily need to be the same value that is determined by
+@code{gnus-group-name-charset-method-alist} and
+@code{gnus-group-name-charset-group-alist}.
+
+If you want to subscribe to the groups spelled in Chinese but
+@code{default-file-name-coding-system} is initialized by default to
+@code{iso-latin-1} for example, that is the most typical case where you
+have to set @code{nnmail-pathname-coding-system} even if you are an
+Emacs user.  The @code{utf-8} coding system is a good candidate for it.
+Otherwise, you may change the locale in your system so that
+@code{default-file-name-coding-system} may be initialized to an
+appropriate value, instead of specifying this variable.
+@end table
+
+Note that when you copy or move articles from a non-@acronym{ASCII}
+group to another group, the charset used to encode and decode group
+names should be the same in both groups.  Otherwise the Newsgroups
+header will be displayed incorrectly in the article buffer.
+
+
 @node Misc Group Stuff
 @section Misc Group Stuff
 
@@ -4259,31 +4387,6 @@ generated.  It may be used to move point around, for instance.
 @vindex gnus-permanently-visible-groups
 Groups matching this regexp will always be listed in the group buffer,
 whether they are empty or not.
-
-@item gnus-group-name-charset-method-alist
-@vindex gnus-group-name-charset-method-alist
-An alist of method and the charset for group names.  It is used to show
-non-@acronym{ASCII} group names.
-
-For example:
-@lisp
-(setq gnus-group-name-charset-method-alist
-    '(((nntp "news.com.cn") . cn-gb-2312)))
-@end lisp
-
-@item gnus-group-name-charset-group-alist
-@cindex UTF-8 group names
-@vindex gnus-group-name-charset-group-alist
-An alist of regexp of group name and the charset for group names.  It
-is used to show non-@acronym{ASCII} group names.  @code{((".*"
-utf-8))} is the default value if UTF-8 is supported, otherwise the
-default is @code{nil}.
-
-For example:
-@lisp
-(setq gnus-group-name-charset-group-alist
-    '(("\\.com\\.cn:" . cn-gb-2312)))
-@end lisp
 
 @end table
 
