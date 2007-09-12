@@ -1,3 +1,9 @@
+2007-09-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-unfollowed-groups): Add INBOX to the
+	list of groups not followed by default.  Fix type to be regexp.
+	(gnus-registry-grep-in-list): Fix inverted parameters to string-match.
+
 2007-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-gnus-to-newsrc-format): Use a unibyte buffer and

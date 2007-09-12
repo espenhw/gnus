@@ -76,14 +76,14 @@
 			      :test 'equal)
   "*The article registry by Message ID.")
 
-(defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")
+(defcustom gnus-registry-unfollowed-groups '("delayed$" "drafts$" "queue$" "INBOX$")
   "List of groups that gnus-registry-split-fancy-with-parent won't return.
 The group names are matched, they don't have to be fully
 qualified.  This parameter tells the Registry 'never split a
 message into a group that matches one of these, regardless of
 references.'"
   :group 'gnus-registry
-  :type '(repeat string))
+  :type '(repeat regexp))
 
 (defcustom gnus-registry-install nil
   "Whether the registry should be installed."
@@ -584,7 +584,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	  (mapcar 'not
 		  (mapcar
 		   (lambda (x)
-		     (string-match x word))
+		     (string-match word x))
 		   list)))))
 
 (defun gnus-registry-fetch-extra (id &optional entry)
