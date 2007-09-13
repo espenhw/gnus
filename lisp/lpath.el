@@ -68,9 +68,8 @@
 (when (and (featurep 'xemacs)
 	   (not (featurep 'mule)))
   (maybe-fbind '(ccl-execute-on-string
-		 char-charset charsetp coding-system-get define-ccl-program
-		 find-charset-region get-charset-property
-		 pgg-parse-crc24-string))
+		 char-charset charsetp coding-system-get find-charset-region
+		 get-charset-property pgg-parse-crc24-string))
   (maybe-bind '(language-info-alist))
   (unless (featurep 'file-coding)
     (maybe-fbind '(coding-system-base
@@ -78,7 +77,8 @@
 		   coding-system-p decode-coding-region decode-coding-string
 		   detect-coding-region encode-coding-region
 		   encode-coding-string))
-    (maybe-bind '(file-name-coding-system))))
+    (maybe-bind '(coding-system-for-read
+		  coding-system-for-write file-name-coding-system))))
 
 (defun nnkiboze-score-file (a)
   )

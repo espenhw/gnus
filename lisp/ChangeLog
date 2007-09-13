@@ -1,3 +1,26 @@
+2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmbox.el (nnmbox-request-article): Don't assume delim regexp matches
+	newline.
+	(nnmbox-request-accept-article): Don't change article in source buffer;
+	narrow to header to use message-fetch-field rather than
+	nnmail-fetch-field; use with-current-buffer instead of save-excursion.
+	(nnmbox-request-replace-article): Quote lines that'll be misidentified
+	as delimiters; make sure article ends with newline.
+	(nnmbox-delete-mail): Correct last position of article to be deleted;
+	ignore X-Gnus-Newsgroup header in article body.
+	(nnmbox-save-mail): Quote lines looking like delimiters at the right
+	positions; make sure article ends with newline.
+
+	* message.el (message-display-abbrev): Don't infloop when a user
+	inserts SPC in the beginning of header.
+
+	* lpath.el: Don't bind define-ccl-program for non-Mule XEmacs; bind
+	coding-system-for-read and coding-system-for-write for XEmacs having no
+	file-coding feature.
+
+	* dgnushack.el: Bind or autoload define-ccl-program for XEmacs.
+
 2007-09-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-unfollowed-groups): Add INBOX to the

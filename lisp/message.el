@@ -7698,13 +7698,13 @@ From headers in the original article."
 (defun message-display-abbrev (&optional choose)
   "Display the next possible abbrev for the text before point."
   (interactive (list t))
-  (when (and (member (char-after (point-at-bol)) '(?C ?T ? ))
+  (when (and (memq (char-after (point-at-bol)) '(?C ?T ?\t ? ))
 	     (message-point-in-header-p)
 	     (save-excursion
-	       (save-restriction
-		 (message-narrow-to-field)
-		 (goto-char (point-min))
-		 (looking-at "To\\|Cc"))))
+	       (beginning-of-line)
+	       (while (and (memq (char-after) '(?\t ? ))
+			   (zerop (forward-line -1))))
+	       (looking-at "To:\\|Cc:")))
     (let* ((end (point))
 	   (start (save-excursion
 		    (and (re-search-backward "[\n\t ]" nil t)
