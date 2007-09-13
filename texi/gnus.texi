@@ -4201,8 +4201,8 @@ ones specified for the same groups with the
 A select method can be very long, like:
 
 @lisp
-(nntp "quimby"
-      (nntp-address "news.gnus.org")
+(nntp "gmane"
+      (nntp-address "news.gmane.org")
       (nntp-end-of-line "\n")
       (nntp-open-connection-function
        nntp-open-via-rlogin-and-telnet)
@@ -4212,7 +4212,7 @@ A select method can be very long, like:
       (nntp-via-address @dots{}))
 @end lisp
 
-In that case, you can truncate it into @code{(nntp "quimby")} in this
+In that case, you can truncate it into @code{(nntp "gmane")} in this
 variable.  That is, it is enough to contain only the back end name and
 the server name.
 

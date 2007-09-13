@@ -1,3 +1,7 @@
+2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Non-ASCII Group Names): Fix select method example.
+
 2007-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Non-ASCII Group Names): New node.
