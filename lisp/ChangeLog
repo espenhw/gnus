@@ -1,5 +1,12 @@
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-sum.el (gnus-newsgroup-maximum-articles): Move from gnus.el.
+	Suggested by Leo <sdl.web@gmail.com>.
+
+	* gnus.el: Do.
+
+2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus.el (gnus-newsgroup-maximum-articles): Rename from
 	gnus-maximum-newsgroup.  Suggested by Leo <sdl.web@gmail.com>.
 

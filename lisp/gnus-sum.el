@@ -1138,6 +1138,17 @@ default charset will be used instead."
   :type '(repeat symbol)
   :group 'gnus-charset)
 
+(defcustom gnus-newsgroup-maximum-articles nil
+  "The maximum number of articles a newsgroup.
+If this is a number, old articles in a newsgroup exceeding this number
+are silently ignored.  If it is nil, no article is ignored.  Note that
+setting this variable to a number might prevent you from reading very
+old articles."
+  :group 'gnus-group-select
+  :version "22.2"
+  :type '(choice (const :tag "No limit" nil)
+		 integer))
+
 (gnus-define-group-parameter
  ignored-charsets
  :type list
