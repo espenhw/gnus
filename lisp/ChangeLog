@@ -1,5 +1,15 @@
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus.el (gnus-newsgroup-maximum-articles): Rename from
+	gnus-maximum-newsgroup.  Suggested by Leo <sdl.web@gmail.com>.
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Do.
+
+	* gnus-sum.el (gnus-articles-to-read, gnus-list-of-unread-articles)
+	(gnus-list-of-read-articles, gnus-sequence-of-unread-articles): Do.
+
+2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* nnmbox.el (nnmbox-request-article): Don't assume delim regexp matches
 	newline.
 	(nnmbox-request-accept-article): Don't change article in source buffer;

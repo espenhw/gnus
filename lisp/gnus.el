@@ -1515,7 +1515,7 @@ If it is nil, no confirmation is required."
   :type '(choice (const :tag "No limit" nil)
 		 integer))
 
-(defcustom gnus-maximum-newsgroup nil
+(defcustom gnus-newsgroup-maximum-articles nil
   "The maximum number of articles a newsgroup.
 If this is a number, old articles in a newsgroup exceeding this number
 are silently ignored.  If it is nil, no article is ignored.  Note that
