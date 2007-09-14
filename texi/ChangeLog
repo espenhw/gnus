@@ -1,3 +1,10 @@
+2007-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Crosspost Handling): Move vindex to gnus-nov-is-evil to
+	the Slow/Expensive Connection node.
+	(Slow/Expensive Connection): Describe not only NNTP connection; improve
+	gnus-nov-is-evil; add an explanation of NOV.
+
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Selecting a Group): Rename gnus-maximum-newsgroup to
