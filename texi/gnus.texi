@@ -11053,8 +11053,8 @@ your news admin until she includes the @code{Xref} header in the
 overview files.
 
 If you want Gnus to get the @code{Xref}s right all the time, you have to
-set @code{gnus-nov-is-evil} to @code{t}, which slows things down
-considerably.
+set @code{nntp-nov-is-evil} to @code{t}, which slows things down
+considerably.  Also @pxref{Slow/Expensive Connection}.
 
 C'est la vie.
 
@@ -28398,7 +28398,7 @@ Set @code{gnus-check-new-newsgroups} and
 
 Set @code{gnus-show-threads}, @code{gnus-use-cross-reference} and
 @code{gnus-nov-is-evil} to @code{nil} to make entering and exiting the
-summary buffer faster.
+summary buffer faster.  Also @pxref{Slow/Expensive Connection}.
 
 
 @page

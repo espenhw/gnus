@@ -1,9 +1,11 @@
 2007-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus.texi (Crosspost Handling): Move vindex to gnus-nov-is-evil to
-	the Slow/Expensive Connection node.
+	* gnus.texi (Crosspost Handling): Replace gnus-nov-is-evil with
+	nntp-nov-is-evil; move vindex to gnus-nov-is-evil to Slow/Expensive
+	Connection; add xref to Slow/Expensive Connection.
 	(Slow/Expensive Connection): Describe not only NNTP connection; improve
 	gnus-nov-is-evil; add an explanation of NOV.
+	(Slow Machine): Add xref to Slow/Expensive Connection.
 
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
