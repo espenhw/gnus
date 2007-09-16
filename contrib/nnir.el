@@ -1,7 +1,7 @@
 ;;; nnir.el --- search mail with various search engines -*- coding: iso-8859-1 -*-
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006 Free Software Foundation, Inc.
+;;   2005, 2006, 2007 Free Software Foundation, Inc.
 
 ;; Author: Kai Groﬂjohann <grossjohann@ls6.cs.uni-dortmund.de>
 ;; Swish-e and Swish++ backends by: 
@@ -216,6 +216,27 @@
 ;; To function the `nnir-hyrex-remove-prefix' variable must also be
 ;; correct, see the documentation for `nnir-wais-remove-prefix' above.
 
+;; 4. find-grep
+;;
+;; The find-grep engine simply runs find(1) to locate eligible
+;; articles and searches them with grep(1).  This, of course, is much
+;; slower than using a proper search engine but OTOH doesn't require
+;; maintenance of an index and is still faster than using any built-in
+;; means for searching.  The method specification of the server to
+;; search must include a directory for this engine to work (E.g.,
+;; `nnml-directory').  The tools must be POSIX compliant.  GNU Find
+;; prior to version 4.2.12 (4.2.26 on Linux due to incorrect ARG_MAX
+;; handling) does not work.
+;; ,----
+;; |    ;; find-grep configuration for searching the Gnus Cache
+;; |
+;; |	(nnml "cache"
+;; |          (nnml-get-new-mail nil)
+;; |          (nnir-search-engine find-grep)
+;; |          (nnml-directory "~/News/cache/")
+;; |          (nnml-active-file "~/News/cache/active"))
+;; `----
+
 ;; Developer information:
 
 ;; I have tried to make the code expandable.  Basically, it is divided
@@ -281,8 +302,6 @@
 ;; * Support compressed mail files.  Probably, just stripping off the
 ;;   `.gz' or `.Z' file name extension is sufficient.
 ;;
-;; * Support a find/grep combination.
-;;
 ;; * At least for imap, the query is performed twice.
 ;;
 
@@ -342,7 +361,9 @@
     (namazu  nnir-run-namazu
              ())
     (hyrex   nnir-run-hyrex
-	     ((group . "Group spec: "))))
+	     ((group . "Group spec: ")))
+  (find-grep nnir-run-find-grep
+	     ((grep-options . "Grep options: "))))
   "Alist of supported search engines.
 Each element in the alist is a three-element list (ENGINE FUNCTION ARGS).
 ENGINE is a symbol designating the searching engine.  FUNCTION is also
@@ -1254,6 +1275,59 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
                     (function (lambda (x y)
                                 (> (nnir-artitem-rsv x)
                                    (nnir-artitem-rsv y)))))))))
+
+(defun nnir-run-find-grep (query server &optional group)
+  "Run find and grep to obtain matching articles."
+  (let* ((method (gnus-server-to-method server))
+	 (sym (intern
+	       (concat (symbol-name (car method)) "-directory")))
+	 (directory (cadr (assoc sym (cddr method))))
+	 (regexp (cdr (assoc 'query query)))
+	 (grep-options (cdr (assoc 'grep-options query)))
+	 artlist)
+    (unless directory
+      (error "No directory found in method specification of server %s"
+	     server))
+    (message "Searching %s using find-grep..." (or group server))
+    (save-window-excursion
+      (set-buffer (get-buffer-create nnir-tmp-buffer))
+      (erase-buffer)
+      (if (> gnus-verbose 6)
+	  (pop-to-buffer (current-buffer)))
+      (cd directory) ; Using relative paths simplifies postprocessing.
+      (let ((group
+	     (if (not group)
+		 "."
+	       ;; Try accessing the group literally as well as
+	       ;; interpreting dots as directory separators so the
+	       ;; engine works with plain nnml as well as the Gnus
+	       ;; Cache.
+	       (find-if 'file-directory-p
+		(let ((group (gnus-group-real-name group)))
+		  (list group (gnus-replace-in-string group "\\." "/" t)))))))
+	(unless group
+	  (error "Cannot locate directory for group"))
+	(save-excursion
+	  (apply
+	   'call-process "find" nil t
+	   "find" group "-type" "f" "-name" "[0-9]*" "-exec"
+	   "grep"
+	   `("-l" ,@(and grep-options (split-string grep-options "\\s-" t))
+	     "-e" ,regexp "{}" "+"))))
+
+      ;; Translate relative paths to group names.
+      (while (not (eobp))
+	(let* ((path (split-string
+		      (buffer-substring (point) (line-end-position)) "/" t))
+	       (art (string-to-number (car (last path)))))
+	  (while (string= "." (car path))
+	    (setq path (cdr path)))
+	  (let ((group (mapconcat 'identity (subseq path 0 -1) ".")))
+	    (push (vector (nnir-group-full-name group server) art 0)
+		  artlist))
+	  (forward-line 1)))
+      (message "Searching %s using find-grep...done" (or group server))
+      artlist)))
 
 ;;; Util Code:
 

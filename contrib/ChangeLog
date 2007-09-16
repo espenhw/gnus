@@ -1,3 +1,7 @@
+2007-09-16  Andreas Seltenreich  <andreas@gate450.dyndns.org>
+
+	* nnir.el (nnir-run-query): Add a find-grep engine.
+
 2007-04-06  Chong Yidong  <cyd@stupidchicken.com>
 
 	* sendmail.el (mail-text, mail-mode): Revert extant pieces of
