@@ -1,3 +1,11 @@
+2007-09-17  Lowell Gilbert  <lgusenet@be-well.ilk.org>  (tiny change)
+
+	* gnus.texi (Slow/Expensive Connection): Improve descriptions.
+
+2007-09-17  Allan Gottlieb  <gottlieb@nyu.edu>  (tiny change)
+
+	* gnus.texi (Slow/Expensive Connection): Improve descriptions.
+
 2007-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Crosspost Handling): Replace gnus-nov-is-evil with
