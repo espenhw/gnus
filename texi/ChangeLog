@@ -1,5 +1,8 @@
 2007-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi (Sorting the Summary Buffer): Remove
+	gnus-article-sort-by-date-reverse.
+
 	* gnus-coding.texi (Gnus Coding Style) <message>: Add "patches
 	welcome".
 	(Gnus Coding Style) <General purpose libraries>: Move hex-util.el here.
