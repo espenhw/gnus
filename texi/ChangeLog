@@ -1,3 +1,9 @@
+2007-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-coding.texi (Gnus Coding Style) <message>: Add "patches
+	welcome".
+	(Gnus Coding Style) <General purpose libraries>: Move hex-util.el here.
+
 2007-09-20  Jim Meyering  <jim@meyering.net>  (tiny change)
 
 	* gnus.texi (On Writing Manuals): Fix typos.

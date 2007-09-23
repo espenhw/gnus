@@ -76,6 +76,10 @@ Functions for formatting arbitrary formatting strings.
 @c As of 2005-10-21...
 There are no Gnus dependencies in this file.
 
+@item hex-util.el
+Functions to encode/decode hexadecimal string.
+@c As of 2007-08-25...
+There are no Gnus dependencies in these files.
 @end table
 
 @subsection Encryption and security
@@ -103,11 +107,6 @@ There are no Gnus dependencies in these files.
 
 @item sha1.el
 SHA1 Secure Hash Algorithm.
-@c As of 2007-08-25...
-There are no Gnus dependencies in these files.
-
-@item hex-util.el
-Functions to encode/decode hexadecimal string.
 @c As of 2007-08-25...
 There are no Gnus dependencies in these files.
 @end table
@@ -202,7 +201,10 @@ There are no Gnus dependencies in these files.
 All message composition from Gnus (both mail and news) takes place in
 Message mode buffers.  Message mode is intended to be a replacement for
 Emacs mail mode.  There should be no Gnus dependencies in
-@file{message.el}.
+@file{message.el}.  Alas it is not anymore.  Patches and suggestions to
+remove the dependencies are welcome.
+
+@c message.el requires nnheader which requires gnus-util.
 
 @subsection Emacs @acronym{MIME}
 
