@@ -1,3 +1,14 @@
+2007-09-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-store-extra-entry): Allow for nil
+	extras value, so an extras entry can be deleted.
+	(gnus-registry-delete-extra-entry): Use it.
+	(gnus-registry-fetch-extra-flags, gnus-registry-has-extra-flag)
+	(gnus-registry-store-extra-flags, gnus-registry-delete-extra-flags)
+	(gnus-registry-delete-all-extra-flags): Allow for arbitrary flag symbol
+	 storage through the gnus-registry, and provide an appropriate API for
+	 it.
+
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-newsgroup-maximum-articles): Move from gnus.el.

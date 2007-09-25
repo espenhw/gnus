@@ -587,6 +587,33 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		     (string-match word x))
 		   list)))))
 
+;;; if this extends to more than 'flags, it should be improved to be more generic.
+(defun gnus-registry-fetch-extra-flags (id)
+  "Get the flags of a message, based on the message ID.
+Returns a list of symbol flags or nil."
+  (car-safe (cdr (gnus-registry-fetch-extra id 'flags))))
+
+(defun gnus-registry-has-extra-flag (id flag)
+  "Checks if a message has `flag', based on the message ID."
+  (memq flag (gnus-registry-fetch-extra-flags id)))
+
+(defun gnus-registry-store-extra-flags (id &rest flag-list)
+  "Set the flags of a message, based on the message ID.
+The `flag-list' can be nil, in which case no flags are left."
+  (gnus-registry-store-extra-entry id 'flags (list flag-list)))
+
+(defun gnus-registry-delete-extra-flags (id &rest flag-delete-list)
+  "Delete the message flags in `flag-delete-list', based on the message ID."
+  (let ((flags (gnus-registry-fetch-extra-flags id)))
+    (when flags
+      (dolist (flag flag-delete-list)
+	(setq flags (delq flag flags))))
+    (gnus-registry-store-extra-flags id (car flags))))
+
+(defun gnus-registry-delete-all-extra-flags (id)
+  "Delete all the flags for a message ID."
+  (gnus-registry-store-extra-flags id nil))
+
 (defun gnus-registry-fetch-extra (id &optional entry)
   "Get the extra data of a message, based on the message ID.
 Returns the first place where the trail finds a nonstring."
@@ -644,12 +671,20 @@ The message must have at least one group name."
 	       gnus-registry-hashtb)
       (setq gnus-registry-dirty t)))))
 
+(defun gnus-registry-delete-extra-entry (id key)
+  "Delete a specific entry in the extras field of the registry entry for id."
+  (gnus-registry-store-extra-entry id key nil))
+
 (defun gnus-registry-store-extra-entry (id key value)
   "Put a specific entry in the extras field of the registry entry for id."
   (let* ((extra (gnus-registry-fetch-extra id))
-	 (alist (gnus-registry-remove-alist-text-properties 
-		 (cons (cons key value)
-		       (gnus-assq-delete-all key (gnus-registry-fetch-extra id))))))
+	 ;; all the entries except the one for `key'
+	 (the-rest (gnus-assq-delete-all key (gnus-registry-fetch-extra id))) 
+	 (alist (if value
+		    (gnus-registry-remove-alist-text-properties
+		     (cons (cons key value)
+			   the-rest))
+		  the-rest)))
     (gnus-registry-store-extra id alist)))
 
 (defun gnus-registry-fetch-group (id)
