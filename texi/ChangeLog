@@ -1,3 +1,9 @@
+2007-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Slow/Expensive Connection): Merge explanation for NOV into
+	the Terminology section.
+	(Terminology): Do.
+
 2007-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Sorting the Summary Buffer): Remove

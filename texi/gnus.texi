@@ -28115,10 +28115,31 @@ collection of @acronym{NOV} lines.
 
 @item @acronym{NOV}
 @cindex @acronym{NOV}
+@acronym{NOV} stands for News OverView, which is a type of news server
+header which provide datas containing the condensed header information
+of articles.  They are produced by the server itself; in the @code{nntp}
+back end Gnus uses the ones that the @acronym{NNTP} server makes, but
+Gnus makes them by itself for some backends (in particular, @code{nnml}).
+
 When Gnus enters a group, it asks the back end for the headers of all
 unread articles in the group.  Most servers support the News OverView
 format, which is more compact and much faster to read and parse than the
 normal @sc{head} format.
+
+The @acronym{NOV} data consist of one or more text lines (@pxref{Text
+Lines, ,Motion by Text Lines, elisp, The Emacs Lisp Reference Manual})
+where each line has the header information of one article.  The header
+information is a tab-separated series of the header's contents including
+an article number, a subject, an author, a date, a message-id,
+references, etc.
+
+Those data enable Gnus to generate summary lines quickly.  However, if
+the server does not support @acronym{NOV} or you disable it purposely or
+for some reason, Gnus will try to generate the header information by
+parsing each article's headers one by one.  It will take time.
+Therefore, it is not usually a good idea to set nn*-nov-is-evil
+(@pxref{Slow/Expensive Connection}) to a non-@code{nil} value unless you
+know that the server makes wrong @acronym{NOV} data.
 
 @item level
 @cindex levels
@@ -28269,45 +28290,25 @@ doesn't suddenly decide to fetch the active file anyway.
 
 @item gnus-nov-is-evil
 @vindex gnus-nov-is-evil
-This one must @emph{always} be @code{nil} (which is the default).  If,
-for example, you wish to not use @acronym{NOV} (see below) with the
-@code{nntp} back end (@pxref{Crosspost Handling}), set
-@code{nntp-nov-is-evil} to a non-@code{nil} value instead of setting
-this.  But you normally do not need to set @code{nntp-nov-is-evil} since
-Gnus by itself will detect whether the @acronym{NNTP} server supports
-@acronym{NOV}.  Anyway, grabbing article headers from the @acronym{NNTP}
-server will not be very fast if you tell Gnus not to use @acronym{NOV}.
+Usually this one must @emph{always} be @code{nil} (which is the
+default).  If, for example, you wish to not use @acronym{NOV}
+(@pxref{Terminology}) with the @code{nntp} back end (@pxref{Crosspost
+Handling}), set @code{nntp-nov-is-evil} to a non-@code{nil} value
+instead of setting this.  But you normally do not need to set
+@code{nntp-nov-is-evil} since Gnus by itself will detect whether the
+@acronym{NNTP} server supports @acronym{NOV}.  Anyway, grabbing article
+headers from the @acronym{NNTP} server will not be very fast if you tell
+Gnus not to use @acronym{NOV}.
 
 As the variables for the other back ends, there are
 @code{nndiary-nov-is-evil}, @code{nndir-nov-is-evil},
 @code{nnfolder-nov-is-evil}, @code{nnimap-nov-is-evil},
 @code{nnml-nov-is-evil}, @code{nnspool-nov-is-evil}, and
 @code{nnwarchive-nov-is-evil}.  Note that a non-@code{nil} value for
-@code{gnus-nov-is-evil} overrides all those variables.
+@code{gnus-nov-is-evil} overrides all those variables.@footnote{Although
+the back ends @code{nnkiboze}, @code{nnslashdot}, @code{nnultimate}, and
+@code{nnwfm} don't have their own nn*-nov-is-evil.}
 @end table
-
-@noindent
-What's @acronym{NOV}?
-
-@acronym{NOV} stands for News OverView, which is a type of news server
-header which provide datas containing the condensed header information
-of articles.  They are produced by the server itself; in the @code{nntp}
-back end Gnus uses the ones that the @acronym{NNTP} server makes, but
-Gnus makes them by itself for some backends (in particular,
-@code{nnml}).  The @acronym{NOV} data consist of one or more text lines
-(@pxref{Text Lines, ,Motion by Text Lines, elisp, The Emacs Lisp
-Reference Manual}) where each line has the header information of one
-article.  The header information is a tab-separated series of the
-header's contents including an article number, a subject, an author, a
-date, a message-id, references, etc.
-
-Those data enable Gnus to generate summary lines quickly.  However, if
-the server does not support @acronym{NOV} or you disable it purposely or
-for some reason, Gnus will try to generate the header information by
-parsing each article's headers one by one.  It will take time.
-Therefore, it is not usually a good idea to set @code{*-nov-is-evil} to
-a non-@code{nil} value unless you know that the server makes wrong
-@acronym{NOV} data.
 
 
 @node Slow Terminal Connection
