@@ -20,7 +20,7 @@ set PWD=
 set ERROR=:
 REM set pause=
 
-if "%1" == "" goto usage
+if %1p == p goto usage
 
 echo * Installing Gnus on your system.  Operating system:
 ver
