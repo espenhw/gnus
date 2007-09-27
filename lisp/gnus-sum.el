@@ -1790,6 +1790,7 @@ increase the score of each group you read."
   "k" gnus-summary-kill-same-subject-and-select
   "\C-k" gnus-summary-kill-same-subject
   "\M-\C-k" gnus-summary-kill-thread
+  "\M-\C-e" gnus-summary-expire-thread
   "\M-\C-l" gnus-summary-lower-thread
   "e" gnus-summary-edit-article
   "#" gnus-summary-mark-as-processable
@@ -1950,6 +1951,7 @@ increase the score of each group you read."
 
 (gnus-define-keys (gnus-summary-thread-map "T" gnus-summary-mode-map)
   "k" gnus-summary-kill-thread
+  "e" gnus-summary-expire-thread
   "l" gnus-summary-lower-thread
   "i" gnus-summary-raise-thread
   "T" gnus-summary-toggle-threads
@@ -2497,6 +2499,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	["Go up thread" gnus-summary-up-thread t]
 	["Top of thread" gnus-summary-top-thread t]
 	["Mark thread as read" gnus-summary-kill-thread t]
+	["Mark thread as expired" gnus-summary-expire-thread t]
 	["Lower thread score" gnus-summary-lower-thread t]
 	["Raise thread score" gnus-summary-raise-thread t]
 	["Rethread current" gnus-summary-rethread-current t]))
@@ -11393,6 +11396,11 @@ taken."
   (interactive)
   (while (gnus-summary-go-up-thread))
   (gnus-summary-article-number))
+
+(defun gnus-summary-expire-thread ()
+  "Mark articles under current thread as expired."
+  (interactive)
+  (gnus-summary-kill-thread 0))
 
 (defun gnus-summary-kill-thread (&optional unmark)
   "Mark articles under current thread as read.

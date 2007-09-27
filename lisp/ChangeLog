@@ -4,6 +4,10 @@
 	to mark a thread as expirable.  Add variable `hide' to handle hiding of
 	thread for both the null and zero (kill/expire thread) universal prefix
 	cases.
+	(gnus-summary-expire-thread): Add new function to expire a thread,
+	using gnus-summary-kill-thread.
+	(gnus-summary-mode-map, gnus-summary-thread-map): Add 'M-C-e' and 'T e'
+	shortcuts for gnus-summary-expire-thread.
 
 2007-09-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
