@@ -11397,11 +11397,13 @@ taken."
 (defun gnus-summary-kill-thread (&optional unmark)
   "Mark articles under current thread as read.
 If the prefix argument is positive, remove any kinds of marks.
+If the prefix argument is zero, mark thread as expired.
 If the prefix argument is negative, tick articles instead."
   (interactive "P")
   (when unmark
     (setq unmark (prefix-numeric-value unmark)))
-  (let ((articles (gnus-summary-articles-in-thread)))
+  (let ((articles (gnus-summary-articles-in-thread))
+	(hide (or (null unmark) (= unmark 0))))
     (save-excursion
       ;; Expand the thread.
       (gnus-summary-show-thread)
@@ -11412,15 +11414,17 @@ If the prefix argument is negative, tick articles instead."
 	       (gnus-summary-mark-article-as-read gnus-killed-mark))
 	      ((> unmark 0)
 	       (gnus-summary-mark-article-as-unread gnus-unread-mark))
+	      ((= unmark 0)
+	       (gnus-summary-mark-article-as-unread gnus-expirable-mark))
 	      (t
 	       (gnus-summary-mark-article-as-unread gnus-ticked-mark)))
 	(setq articles (cdr articles))))
-    ;; Hide killed subtrees.
-    (and (null unmark)
+    ;; Hide killed subtrees when hide is true.
+    (and hide
 	 gnus-thread-hide-killed
 	 (gnus-summary-hide-thread))
-    ;; If marked as read, go to next unread subject.
-    (when (null unmark)
+    ;; If hide is t, go to next unread subject.
+    (when hide
       ;; Go to next unread subject.
       (gnus-summary-next-subject 1 t)))
   (gnus-set-mode-line 'summary))

@@ -1,3 +1,10 @@
+2007-09-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-kill-thread): Allow universal prefix zero
+	to mark a thread as expirable.  Add variable `hide' to handle hiding of
+	thread for both the null and zero (kill/expire thread) universal prefix
+	cases.
+
 2007-09-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-store-extra-entry): Allow for nil
