@@ -1790,7 +1790,6 @@ increase the score of each group you read."
   "k" gnus-summary-kill-same-subject-and-select
   "\C-k" gnus-summary-kill-same-subject
   "\M-\C-k" gnus-summary-kill-thread
-  "\M-\C-e" gnus-summary-expire-thread
   "\M-\C-l" gnus-summary-lower-thread
   "e" gnus-summary-edit-article
   "#" gnus-summary-mark-as-processable
@@ -1951,7 +1950,7 @@ increase the score of each group you read."
 
 (gnus-define-keys (gnus-summary-thread-map "T" gnus-summary-mode-map)
   "k" gnus-summary-kill-thread
-  "e" gnus-summary-expire-thread
+  "E" gnus-summary-expire-thread
   "l" gnus-summary-lower-thread
   "i" gnus-summary-raise-thread
   "T" gnus-summary-toggle-threads

@@ -8,6 +8,8 @@
 	using gnus-summary-kill-thread.
 	(gnus-summary-mode-map, gnus-summary-thread-map): Add 'M-C-e' and 'T e'
 	shortcuts for gnus-summary-expire-thread.
+	(gnus-summary-mode-map, gnus-summary-thread-map): Remove `M-C-e' and `T
+	e' bindings for gnus-summary-expire-thread.  Add `T E' binding.
 
 2007-09-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
