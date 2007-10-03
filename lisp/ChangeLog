@@ -1,3 +1,15 @@
+2007-10-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* pgg.el, pgg-def.el, pgg-gpg.el: Revert to the version in v5-10.  The
+	trunk version of PGG was unmaintained.  The author of PGG, Daiki Ueno,
+	recommends to use EasyPG instead of PGG.
+
+	* pgg.el: Revert to revision 6.23.2.16
+
+	* pgg-def.el: Revert to revision 6.6.2.14.
+
+	* pgg-gpg.el: Revert to revision 6.23.2.34.
+
 2007-09-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-sum.el (gnus-summary-kill-thread): Allow universal prefix zero

@@ -31,7 +31,7 @@
 
 (require 'pgg-def)
 (require 'pgg-parse)
-(require 'password)
+(autoload 'run-at-time "timer")
 
 ;; Don't merge these two `eval-when-compile's.
 (eval-when-compile
@@ -88,10 +88,18 @@ is true, or else the output buffer is displayed."
 (defun pgg-display-error-buffer ()
   "Pop up an error buffer indicating the reason for an en/decryption failure."
   (let ((temp-buffer-show-function
-	 (function pgg-temp-buffer-show-function)))
+         (function pgg-temp-buffer-show-function)))
     (with-output-to-temp-buffer pgg-echo-buffer
       (set-buffer standard-output)
       (insert-buffer-substring pgg-errors-buffer))))
+
+(defvar pgg-passphrase-cache (make-vector 7 0))
+
+(defvar pgg-pending-timers (make-vector 7 0)
+  "Hash table for managing scheduled pgg cache management timers.
+
+We associate key and timer, so the timer can be cancelled if a new
+timeout for the key is set while an old one is still pending.")
 
 (defun pgg-read-passphrase (prompt &optional key notruncate)
   "Using PROMPT, obtain passphrase for KEY from cache or user.
@@ -101,9 +109,21 @@ Truncate the key to 8 trailing characters unless NOTRUNCATE is true
 
 Custom variables `pgg-cache-passphrase' and `pgg-passphrase-cache-expiry'
 regulate cache behavior."
-  (password-read prompt (if notruncate
-			    key
-			  (pgg-truncate-key-identifier key))))
+  (or (pgg-read-passphrase-from-cache key notruncate)
+      (read-passwd prompt)))
+
+(defun pgg-read-passphrase-from-cache (key &optional notruncate)
+  "Obtain passphrase for KEY from time-limited passphrase cache.
+
+Truncate the key to 8 trailing characters unless NOTRUNCATE is true
+\(default false).
+
+Custom variables `pgg-cache-passphrase' and `pgg-passphrase-cache-expiry'
+regulate cache behavior."
+  (and pgg-cache-passphrase
+       key (or notruncate
+                (setq key (pgg-truncate-key-identifier key)))
+       (symbol-value (intern-soft key pgg-passphrase-cache))))
 
 (defun pgg-add-passphrase-to-cache (key passphrase &optional notruncate)
   "Associate KEY with PASSPHRASE in time-limited passphrase cache.
@@ -113,11 +133,25 @@ Truncate the key to 8 trailing characters unless NOTRUNCATE is true
 
 Custom variables `pgg-cache-passphrase' and `pgg-passphrase-cache-expiry'
 regulate cache behavior."
-  (let ((password-cache-expiry pgg-passphrase-cache-expiry))
-    (password-cache-add (if notruncate
-			    key
-			  (pgg-truncate-key-identifier key))
-			passphrase)))
+
+  (let* ((key (if notruncate key (pgg-truncate-key-identifier key)))
+         (interned-timer-key (intern-soft key pgg-pending-timers))
+         (old-timer (symbol-value interned-timer-key))
+         new-timer)
+    (when old-timer
+        (cancel-timer old-timer)
+        (unintern interned-timer-key pgg-pending-timers))
+    (set (intern key pgg-passphrase-cache)
+         passphrase)
+    (set (intern key pgg-pending-timers)
+         (pgg-run-at-time pgg-passphrase-cache-expiry nil
+                           #'pgg-remove-passphrase-from-cache
+                           key notruncate))))
+
+(if (fboundp 'clear-string)
+    (defalias 'pgg-clear-string 'clear-string)
+  (defun pgg-clear-string (string)
+    (fillarray string ?_)))
 
 (defun pgg-remove-passphrase-from-cache (key &optional notruncate)
   "Omit passphrase associated with KEY in time-limited passphrase cache.
@@ -132,9 +166,95 @@ references to it.
 
 Custom variables `pgg-cache-passphrase' and `pgg-passphrase-cache-expiry'
 regulate cache behavior."
-  (password-cache-remove (if notruncate
-			     key
-			   (pgg-truncate-key-identifier key))))
+  (let* ((passphrase (pgg-read-passphrase-from-cache key notruncate))
+         (key (if notruncate key (pgg-truncate-key-identifier key)))
+         (interned-timer-key (intern-soft key pgg-pending-timers))
+         (old-timer (symbol-value interned-timer-key)))
+    (when passphrase
+      (pgg-clear-string passphrase)
+      (unintern key pgg-passphrase-cache))
+    (when old-timer
+      (pgg-cancel-timer old-timer)
+      (unintern interned-timer-key pgg-pending-timers))))
+
+(eval-when-compile
+  (defmacro pgg-run-at-time-1 (time repeat function args)
+    (when (featurep 'xemacs)
+      (if (condition-case nil
+	      (let ((delete-itimer 'delete-itimer)
+		    (itimer-driver-start 'itimer-driver-start)
+		    (itimer-value 'itimer-value)
+		    (start-itimer 'start-itimer))
+		(unless (or (symbol-value 'itimer-process)
+			    (symbol-value 'itimer-timer))
+		  (funcall itimer-driver-start))
+		;; Check whether there is a bug to which the difference of
+		;; the present time and the time when the itimer driver was
+		;; woken up is subtracted from the initial itimer value.
+		(let* ((inhibit-quit t)
+		       (ctime (current-time))
+		       (itimer-timer-last-wakeup
+			(prog1
+			    ctime
+			  (setcar ctime (1- (car ctime)))))
+		       (itimer-list nil)
+		       (itimer (funcall start-itimer "pgg-run-at-time"
+					'ignore 5)))
+		  (sleep-for 0.1) ;; Accept the timeout interrupt.
+		  (prog1
+		      (> (funcall itimer-value itimer) 0)
+		    (funcall delete-itimer itimer))))
+	    (error nil))
+	  `(let ((time ,time))
+	     (apply #'start-itimer "pgg-run-at-time"
+		    ,function (if time (max time 1e-9) 1e-9)
+		    ,repeat nil t ,args)))
+      `(let ((time ,time)
+	     (itimers (list nil)))
+	 (setcar
+	  itimers
+	  (apply #'start-itimer "pgg-run-at-time"
+		 (lambda (itimers repeat function &rest args)
+		   (let ((itimer (car itimers)))
+		     (if repeat
+			 (progn
+			   (set-itimer-function
+			    itimer
+			    (lambda (itimer repeat function &rest args)
+			      (set-itimer-restart itimer repeat)
+			      (set-itimer-function itimer function)
+			      (set-itimer-function-arguments itimer args)
+			      (apply function args)))
+			   (set-itimer-function-arguments
+			    itimer
+			    (append (list itimer repeat function) args)))
+		       (set-itimer-function
+			itimer
+			(lambda (itimer function &rest args)
+			  (delete-itimer itimer)
+			  (apply function args)))
+		       (set-itimer-function-arguments
+			itimer
+			(append (list itimer function) args)))))
+		 1e-9 (if time (max time 1e-9) 1e-9)
+		 nil t itimers ,repeat ,function ,args))))))
+
+(eval-and-compile
+  (if (featurep 'xemacs)
+      (progn
+        (defun pgg-run-at-time (time repeat function &rest args)
+          "Emulating function run as `run-at-time'.
+TIME should be nil meaning now, or a number of seconds from now.
+Return an itimer object which can be used in either `delete-itimer'
+or `cancel-timer'."
+          (pgg-run-at-time-1 time repeat function args))
+        (defun pgg-cancel-timer (timer)
+          "Emulate cancel-timer for xemacs."
+          (let ((delete-itimer 'delete-itimer))
+            (funcall delete-itimer timer)))
+        )
+    (defalias 'pgg-run-at-time 'run-at-time)
+    (defalias 'pgg-cancel-timer 'cancel-timer)))
 
 (defmacro pgg-convert-lbt-region (start end lbt)
   `(let ((pgg-conversion-end (set-marker (make-marker) ,end)))
@@ -305,7 +425,7 @@ passphrase cache or user."
 		  (pgg-invoke "sign-region" (or pgg-scheme pgg-default-scheme)
 			      (point-min) (point-max)
 			      (or (interactive-p) cleartext)
-			      passphrase))))
+                              passphrase))))
     (when (interactive-p)
       (pgg-display-output-buffer start end status))
     status))
@@ -329,8 +449,8 @@ passphrase cache or user."
   (let* ((start (or start (point-min)))
 	 (end (or end (point-max)))
 	 (status (pgg-sign-region start end
-				  (or (interactive-p) cleartext)
-				  passphrase)))
+                                  (or (interactive-p) cleartext)
+                                  passphrase)))
     (when (interactive-p)
       (pgg-display-output-buffer start end status))
     status))
