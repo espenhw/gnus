@@ -1,3 +1,7 @@
+2007-10-03  Holger Schauer  <Holger.Schauer@gmx.de>
+
+	* gnus.texi (X-Face): Fix typo.
+
 2007-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Slow/Expensive Connection): Merge explanation for NOV into

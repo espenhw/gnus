@@ -23209,7 +23209,7 @@ readers.
 @c @anchor{X-Face}
 
 Viewing an @code{X-Face} header either requires an Emacs that has
-@samp{compface} support (which most XEmacs versions has), or that you
+@samp{compface} support (which most XEmacs versions have), or that you
 have suitable conversion or display programs installed.  If your Emacs
 has image support the default action is to display the face before the
 @code{From} header.  If there's no native @code{X-Face} support, Gnus
