@@ -658,8 +658,8 @@
 
 2007-05-11  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
-	* gnus-sum.el (gnus-summary-next-group-on-exit): New variable.  Tell if, on
-	summary exit, the next group has to be selected.
+	* gnus-sum.el (gnus-summary-next-group-on-exit): New variable.  Tell
+	if, on summary exit, the next group has to be selected.
 	(gnus-summary-exit): Use it.
 
 2007-05-10  Reiner Steib  <Reiner.Steib@gmx.de>
