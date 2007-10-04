@@ -1,3 +1,7 @@
+2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+        * Relicense "GPLv2 or later" files to "GPLv3 or later".
+
 2007-09-17  Alexander Solovyov  <piranha@piranha.org.ua>  (tiny change)
 
 	* make.bat: Initial check didn't work if path contained spaces. 

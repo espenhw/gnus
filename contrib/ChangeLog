@@ -1,3 +1,7 @@
+2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+        * Relicense "GPLv2 or later" files to "GPLv3 or later".
+
 2007-09-16  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
 	* nnir.el (nnir-run-query): Add a find-grep engine.
@@ -239,7 +243,7 @@
 2003-05-01  Vasily Korytov  <deskpot@despammed.com>
 
 	* gpg.el (gpg-passphrase-forget): Check that gpg-passphrase is
-	set. 
+	set.
 
 2003-04-17  Steve Youngs  <youngs@xemacs.org>
 
@@ -305,7 +309,7 @@
 2002-03-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* ucs-tables.el: Copy from Emacs 21.
-	
+
 2002-03-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* xml.el: Sync with Emacs 21.
@@ -370,7 +374,7 @@
 
 2001-10-25  Simon Josefsson  <jas@extundo.com>
 
-	* canlock.el (canlock-password, canlock-password-for-verify) 
+	* canlock.el (canlock-password, canlock-password-for-verify)
 	(canlock-force-insert-header): Defcustom.
 
 2001-10-17  Simon Josefsson  <jas@extundo.com>
@@ -393,7 +397,7 @@
 	gpg-passphrase-timer.
 	(gpg-passphrase-store): Check if gpg-passphrase-timer is
 	initialized already.
-	
+
 2001-07-30 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Andreas Fuchs <asf@void.at>
 
@@ -442,20 +446,41 @@
 
 	* gpg.el (gpg-key-lessp): use string-lessp instead of
 	compare-strings (not available on XEmacs)
-	
+
 2000-11-16  Simon Josefsson  <sj@extundo.com>
 
 	* gpg.el (gpg-command-verify-cleartext): New variable.
 	(gpg-verify-cleartext): New function.
-	
+
 2000-10-31 17:32:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gpg.el (gpg-verify): The last argument of apply is a list.
 	(gpg-encrypt): Add passphrase as a parameter.
 
+    Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+    2007 Free Software Foundation, Inc.
+
+  This file is part of GNU Emacs.
+
+  GNU Emacs is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3, or (at your option)
+  any later version.
+
+  GNU Emacs is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with GNU Emacs; see the file COPYING.  If not, write to the
+  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+  Boston, MA 02110-1301, USA.
+
 ;; Local Variables:
 ;; coding: iso-2022-7bit
 ;; fill-column: 79
+;; add-log-time-zone-rule: t
 ;; End:
 
 ;;; arch-tag: 105a2bf0-3f04-4ba6-a991-619aece2c04f
