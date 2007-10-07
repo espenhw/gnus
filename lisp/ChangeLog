@@ -1,3 +1,9 @@
+2007-10-07  Daiki Ueno  <ueno@unixuser.org>
+
+	* mm-uu.el (mm-uu-pgp-signed-extract-1): Delete the first line
+	beginning with "-----BEGIN PGP SIGNED MESSAGE-----" if extraction
+	failed.
+
 2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
         * Relicense "GPLv2 or later" files to "GPLv3 or later".
