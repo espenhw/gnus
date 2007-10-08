@@ -1536,7 +1536,7 @@ If RECURSIVE, search recursively."
 			   (format "protocol=%s" protocol))))))
 	(save-excursion
 	  (if func
-	      (funcall func parts ctl)
+	      (setq parts (funcall func parts ctl))
 	    (mm-set-handle-multipart-parameter
 	     mm-security-handle 'gnus-details
 	     (format "Unknown sign protocol (%s)" protocol))))))

@@ -483,9 +483,7 @@ apply the face `mm-uu-extract'."
 	  (mm-set-handle-multipart-parameter
 	   mm-security-handle 'gnus-details
 	   (format "Clear verification not supported by `%s'.\n" mml2015-use)))
-	(goto-char (point-min))
-	(forward-line 1)
-	(delete-region (point-min) (point)))
+	(mml2015-extract-cleartext-signature))
       (list (mm-make-handle buf mm-uu-text-plain-type)))))
 
 (defun mm-uu-pgp-signed-extract ()

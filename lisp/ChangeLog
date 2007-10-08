@@ -1,3 +1,11 @@
+2007-10-08   Daiki Ueno  <ueno@unixuser.org>
+
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Replace PARTS with the
+	ones returned from the verify-function.
+
+	* mm-uu.el (mm-uu-pgp-signed-extract-1): Call
+	mml2015-extract-cleartext-signature if extraction failed.
+
 2007-10-07  Daiki Ueno  <ueno@unixuser.org>
 
 	* mm-uu.el (mm-uu-pgp-signed-extract-1): Delete the first line
