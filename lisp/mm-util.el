@@ -259,7 +259,7 @@ the alias.  Else windows-NUMBER is used."
     ,@(when (and (not (mm-coding-system-p 'gbk))
 		 (mm-coding-system-p 'cp936))
 	'((gbk . cp936)))
-    ;; ISO8859-1 is ISO-8859-1
+    ;; ISO8859-1 is a bogus name for ISO-8859-1
     ,@(when (and (not (mm-coding-system-p 'iso8859-1))
 		 (mm-coding-system-p 'iso-8859-1))
 	'((iso8859-1 . iso-8859-1)))
