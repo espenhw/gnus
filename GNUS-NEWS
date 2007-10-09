@@ -27,6 +27,40 @@ installer issues a warning if other Gnus installations which will shadow
 the latest one are detected.  You can then remove those shadows manually
 or remove them using `make remove-installed-shadows'.
 
+** New `make.bat' for compiling and installing Gnus under MS Windows
+
+Use `make.bat' if you want to install Gnus under MS Windows, the first
+argument to the batch-program should be the directory where `xemacs.exe'
+respectively `emacs.exe' is located, if you want to install Gnus after
+compiling it, give `make.bat' `/copy' as the second parameter.
+
+`make.bat' has been rewritten from scratch, it now features automatic
+recognition of XEmacs and GNU Emacs, generates `gnus-load.el', checks if
+errors occur while compilation and generation of info files and reports
+them at the end of the build process.  It now uses `makeinfo' if it is
+available and falls back to `infohack.el' otherwise.  `make.bat' should
+now install all files which are necessary to run Gnus and be generally a
+complete replacement for the `configure; make; make install' cycle used
+under Unix systems.
+
+The new `make.bat' makes `make-x.bat' and `xemacs.mak' superfluous, so
+they have been removed.
+
+** `~/News/overview/' not used.
+
+As a result of the following change, the `~/News/overview/' directory is
+not used any more.  You can safely delete the entire hierarchy.
+
+** `(require 'gnus-load)'
+
+If you use a stand-alone Gnus distribution, you'd better add `(require
+'gnus-load)' into your `~/.emacs' after adding the Gnus lisp directory
+into load-path.
+
+File `gnus-load.el' contains autoload commands, functions and variables,
+some of which may not be included in distributions of Emacsen.
+
+
 
 * New packages and libraries within Gnus
 
@@ -137,13 +171,14 @@ Variables.
 
 ** The nntp back end stores article marks in `~/News/marks'.
 
-The directory can be changed using the (customizable) variable
-`nntp-marks-directory', and marks can be disabled using the (back end)
-variable `nntp-marks-is-evil'.  The advantage of this is that you can
-copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
-installation, and it will realize what articles you have read and
-marked.  The data in `~/News/marks' has priority over the same data in
-`~/.newsrc.eld'.
+Earlier it was generated when the user configurable email address was
+different from the Gnus guessed default user address.  As the guessing
+algorithm is rarely correct these days, and (more controversially) the
+only use of the Sender: header was to check if you are entitled to
+cancel/supersede news (which is now solved by Cancel Locks instead, see
+another entry), generation of the header has been disabled by default.
+See the variables `message-required-headers',
+`message-required-news-headers', and `message-required-mail-headers'.
 
 ** You can import and export your RSS subscriptions from OPML files.  *Note
 RSS::.

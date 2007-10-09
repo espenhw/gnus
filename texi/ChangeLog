@@ -95,6 +95,14 @@
 
 	* gnus.texi (NNTP): Mention nntp-xref-number-is-evil.
 
+2007-08-08  Glenn Morris  <rgm@gnu.org>
+
+	* gnus.texi, sieve.texi: Replace `iff'.
+
+2007-07-25  Glenn Morris  <rgm@gnu.org>
+
+	* Relicense all FSF files to GPLv3 or later.
+
 2007-07-20  Micha,Ak(Bl Cadilhac  <michael@cadilhac.name>
 
 	* gnus.texi (RSS): Document nnrss-ignore-article-fields.
