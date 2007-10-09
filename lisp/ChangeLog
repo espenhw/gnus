@@ -103,6 +103,13 @@
 	list of groups not followed by default.  Fix type to be regexp.
 	(gnus-registry-grep-in-list): Fix inverted parameters to string-match.
 
+2007-09-06  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* hmac-def.el (define-hmac-function): Switch from old-style to
+	new-style backquotes.
+
+	* md4.el (md4-make-step): likewise.
+
 2007-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-gnus-to-newsrc-format): Use a unibyte buffer and
