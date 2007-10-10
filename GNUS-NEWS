@@ -96,7 +96,7 @@ using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
 ** The non-ASCII group names handling has been much improved.  The back
 ends that fully support non-ASCII group names are now `nntp', `nnml',
 and `nnrss'.  Also the agent, the cache, and the marks features work
-with those back-ends.  *Note Non-ASCII Group Names::.
+with those back ends.  *Note Non-ASCII Group Names::.
 
 ** Gnus now displays DNS master files sent as text/dns using dns-mode.
 

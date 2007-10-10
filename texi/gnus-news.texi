@@ -123,7 +123,7 @@ inside article bodies using @kbd{W i}
 @item The non-@acronym{ASCII} group names handling has been much
 improved.  The back ends that fully support non-@acronym{ASCII} group
 names are now @code{nntp}, @code{nnml}, and @code{nnrss}.  Also the
-agent, the cache, and the marks features work with those back-ends.
+agent, the cache, and the marks features work with those back ends.
 @xref{Non-ASCII Group Names}.
 
 @item Gnus now displays @acronym{DNS} master files sent as text/dns
