@@ -27,7 +27,7 @@ installer issues a warning if other Gnus installations which will shadow
 the latest one are detected.  You can then remove those shadows manually
 or remove them using `make remove-installed-shadows'.
 
-** New `make.bat' for compiling and installing Gnus under MS Windows
+** New `make.bat' for compiling and installing Gnus under MS Windows.
 
 Use `make.bat' if you want to install Gnus under MS Windows, the first
 argument to the batch-program should be the directory where `xemacs.exe'
@@ -60,7 +60,6 @@ into load-path.
 File `gnus-load.el' contains autoload commands, functions and variables,
 some of which may not be included in distributions of Emacsen.
 
-
 
 * New packages and libraries within Gnus
 
@@ -86,9 +85,18 @@ querying the user about whether to do so.
 
 * Changes in summary and article mode
 
+** Gnus now supports sticky article buffers.  Those are article buffers
+that are not reused when you select another article.  *Note Sticky
+Articles::.
+
 ** International host names (IDNA) can now be decoded inside article bodies
 using `W i' (`gnus-summary-idna-message').  This requires that GNU Libidn
 (`http://www.gnu.org/software/libidn/') has been installed.
+
+** The non-ASCII group names handling has been much improved.  The back
+ends that fully support non-ASCII group names are now `nntp', `nnml',
+and `nnrss'.  Also the agent, the cache, and the marks features work
+with those back-ends.  *Note Non-ASCII Group Names::.
 
 ** Gnus now displays DNS master files sent as text/dns using dns-mode.
 
@@ -131,7 +139,7 @@ From Newsgroups::.
 
 ** You can replace MIME parts with external bodies.  See
 `gnus-mime-replace-part' and `gnus-article-replace-part'.  *Note MIME
-Commands::, *Note Using MIME::.
+Commands::, *note Using MIME::.
 
 ** The option `mm-fill-flowed' can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
@@ -165,11 +173,15 @@ buffer.  See `gnus-message-highlight-citation'.
 `message-fill-column'.  *Note Message Headers: (message)Various Message
 Variables.
 
+** You can now store signature files in a special directory named
+`message-signature-directory'.
 
-
-* Changes in back ends
+** The option `message-citation-line-format' controls the format of the
+"Whomever writes:" line.  You need to set
+`message-citation-line-function' to
+`message-insert-formated-citation-line' as well.
 
-** The nntp back end stores article marks in `~/News/marks'.
+** Gnus no longer generate the Sender: header automatically.
 
 Earlier it was generated when the user configurable email address was
 different from the Gnus guessed default user address.  As the guessing
@@ -179,6 +191,19 @@ cancel/supersede news (which is now solved by Cancel Locks instead, see
 another entry), generation of the header has been disabled by default.
 See the variables `message-required-headers',
 `message-required-news-headers', and `message-required-mail-headers'.
+
+
+* Changes in back ends
+
+** The nntp back end stores article marks in `~/News/marks'.
+
+The directory can be changed using the (customizable) variable
+`nntp-marks-directory', and marks can be disabled using the (back end)
+variable `nntp-marks-is-evil'.  The advantage of this is that you can
+copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
+installation, and it will realize what articles you have read and
+marked.  The data in `~/News/marks' has priority over the same data in
+`~/.newsrc.eld'.
 
 ** You can import and export your RSS subscriptions from OPML files.  *Note
 RSS::.
