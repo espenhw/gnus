@@ -1,9 +1,8 @@
 2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-news.texi: Mention non-@acronym{ASCII} group names; move new
-	text about `New make.bat', `~/News/overview/ not used', `(require
-	'gnus-load)', and `Gnus no longer generate the Sender: header' from
-	GNUS-NEWS.
+	* gnus-news.texi: Mention non-ASCII group names; move new text about
+	`New make.bat', `~/News/overview/ not used', `(require 'gnus-load)',
+	and `Gnus no longer generate the Sender: header' from GNUS-NEWS.
 
 2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
