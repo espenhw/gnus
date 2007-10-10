@@ -1,5 +1,9 @@
 2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-news.texi: Remove Oort Gnus stuff.
+
+2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-news.texi: Mention non-ASCII group names; move new text about
 	`New make.bat', `~/News/overview/ not used', `(require 'gnus-load)',
 	and `Gnus no longer generate the Sender: header' from GNUS-NEWS.

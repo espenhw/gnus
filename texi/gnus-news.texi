@@ -38,46 +38,6 @@ the new installer issues a warning if other Gnus installations which
 will shadow the latest one are detected.  You can then remove those
 shadows manually or remove them using @code{make
 remove-installed-shadows}.
-
-@item
-New @file{make.bat} for compiling and installing Gnus under MS Windows.
-
-Use @file{make.bat} if you want to install Gnus under MS Windows, the
-first argument to the batch-program should be the directory where
-@file{xemacs.exe} respectively @file{emacs.exe} is located, if you want
-to install Gnus after compiling it, give @file{make.bat} @code{/copy} as
-the second parameter.
-
-@file{make.bat} has been rewritten from scratch, it now features
-automatic recognition of XEmacs and GNU Emacs, generates
-@file{gnus-load.el}, checks if errors occur while compilation and
-generation of info files and reports them at the end of the build
-process.  It now uses @code{makeinfo} if it is available and falls
-back to @file{infohack.el} otherwise.  @file{make.bat} should now
-install all files which are necessary to run Gnus and be generally a
-complete replacement for the @code{configure; make; make install}
-cycle used under Unix systems.
-
-The new @file{make.bat} makes @file{make-x.bat} and @file{xemacs.mak}
-superfluous, so they have been removed.
-
-@item @file{~/News/overview/} not used.
-
-As a result of the following change, the @file{~/News/overview/}
-directory is not used any more.  You can safely delete the entire
-hierarchy.
-
-@c FIXME: `gnus-load' is mentioned in README, which is not included in
-@c CVS.  We should find a better place for this item.
-@item
-@code{(require 'gnus-load)}
-
-If you use a stand-alone Gnus distribution, you'd better add
-@code{(require 'gnus-load)} into your @file{~/.emacs} after adding the Gnus
-lisp directory into load-path.
-
-File @file{gnus-load.el} contains autoload commands, functions and variables,
-some of which may not be included in distributions of Emacsen.
 @end itemize
 
 @item New packages and libraries within Gnus
@@ -216,19 +176,6 @@ named @code{message-signature-directory}.
 of the "Whomever writes:" line.  You need to set
 @code{message-citation-line-function} to
 @code{message-insert-formated-citation-line} as well.
-
-@item
-Gnus no longer generate the Sender: header automatically.
-
-Earlier it was generated when the user configurable email address was
-different from the Gnus guessed default user address.  As the guessing
-algorithm is rarely correct these days, and (more controversially) the
-only use of the Sender: header was to check if you are entitled to
-cancel/supersede news (which is now solved by Cancel Locks instead,
-see another entry), generation of the header has been disabled by
-default.  See the variables @code{message-required-headers},
-@code{message-required-news-headers}, and
-@code{message-required-mail-headers}.
 @end itemize
 
 @item Changes in back ends
