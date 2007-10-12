@@ -7463,7 +7463,7 @@ url is put as the `gnus-button-url' overlay property on the button."
 (defun gnus-article-add-button (from to fun &optional data)
   "Create a button between FROM and TO with callback FUN and data DATA."
   (when gnus-article-button-face
-    (gnus-overlay-put (gnus-make-overlay from to)
+    (gnus-overlay-put (gnus-make-overlay from to nil t)
 		      'face gnus-article-button-face))
   (gnus-add-text-properties
    from to
