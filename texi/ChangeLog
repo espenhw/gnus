@@ -1,3 +1,7 @@
+2007-10-14  Emanuele Giaquinta  <e.giaquinta@glauco.it>  (tiny change)
+
+	* gnus-faq.texi ([5.12]): Remove reference to discontinued service. 
+
 2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-news.texi: Remove Oort Gnus stuff.
