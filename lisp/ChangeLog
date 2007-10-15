@@ -1,3 +1,8 @@
+2007-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-win.el (gnus-configure-windows): Focus on the frame for which
+	the frame-focus tag is set in gnus-buffer-configuration.
+
 2007-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-add-button): Make a button overlay without
