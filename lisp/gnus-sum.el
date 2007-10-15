@@ -4821,7 +4821,7 @@ using some other form will lead to serious barfage."
 
 (defsubst gnus-article-sort-by-author (h1 h2)
   "Sort articles by root author."
-  (string-lessp
+  (gnus-string<
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (mail-header-from h1))))
@@ -4838,7 +4838,7 @@ using some other form will lead to serious barfage."
 
 (defsubst gnus-article-sort-by-recipient (h1 h2)
   "Sort articles by recipient."
-  (string-lessp
+  (gnus-string<
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (or (cdr (assq 'To (mail-header-extra h1))) ""))))
@@ -4855,7 +4855,7 @@ using some other form will lead to serious barfage."
 
 (defsubst gnus-article-sort-by-subject (h1 h2)
   "Sort articles by root subject."
-  (string-lessp
+  (gnus-string<
    (downcase (gnus-simplify-subject-re (mail-header-subject h1)))
    (downcase (gnus-simplify-subject-re (mail-header-subject h2)))))
 
