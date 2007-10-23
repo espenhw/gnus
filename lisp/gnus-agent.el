@@ -1825,6 +1825,7 @@ appears to have any local content.  The actual content, the
 article files, is then deleted using gnus-agent-expire-group. The
 gnus-agent-regenerate-group method provides an undo mechanism by
 reconstructing the index files from the article files."
+  (interactive)
   (save-excursion
     (let ((file-name-coding-system nnmail-pathname-coding-system))
       (while gnus-agent-buffer-alist
@@ -3333,16 +3334,17 @@ line." (point) nov-file)))
 	 ;; Check the order of the entry positions.  They should be in
 	 ;; ascending order.  If they aren't, the positions must be
 	 ;; converted to markers.
-	 (when (let ((dlist dlist)
-		     (prev-pos -1)
-		     pos)
-		 (while dlist
-		   (if (setq pos (nth 3 (pop dlist)))
-		       (if (< pos prev-pos)
-			   (throw 'sort-results 'unsorted)
-			 (setq prev-pos pos)))))
+	 (when (catch 'sort-results
+		 (let ((dlist dlist)
+		       (prev-pos -1)
+		       pos)
+		   (while dlist
+		     (if (setq pos (nth 3 (pop dlist)))
+			 (if (< pos prev-pos)
+			     (throw 'sort-results 'unsorted)
+			   (setq prev-pos pos))))))
 	   (gnus-message 7 "gnus-agent-expire: Unsorted overview; inserting markers to compensate.")
-	   (mapcar (lambda (entry)
+	   (mapc (lambda (entry)
 		     (let ((pos (nth 3 entry)))
 		       (if pos
 			   (setf (nth 3 entry)

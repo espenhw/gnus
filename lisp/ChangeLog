@@ -1,3 +1,10 @@
+2007-10-22  Kevin Greiner  <kevin.greiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-expire-group-1): The check for an unsorted
+	overview buffer needed a catch to receive its throw.
+	(gnus-agent-flush-cache): Declared as interactive to make this function
+	easier to use.
+
 2007-10-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* html2text.el (html2text-fix-paragraph): Use `forward-line' instead of
