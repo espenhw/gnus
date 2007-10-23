@@ -1,5 +1,8 @@
 2007-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus.el (gnus-server-to-method): Return server matching first in
+	gnus-newsrc-alist.
+
 	* gnus-art.el (gnus-article-highlight-signature)
 	(gnus-insert-prev-page-button, gnus-insert-next-page-button): Make a
 	button overlay without the front stickiness.
