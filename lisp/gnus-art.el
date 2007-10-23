@@ -7312,7 +7312,7 @@ It does this by highlighting everything after
       (save-restriction
 	(when (and gnus-signature-face
 		   (gnus-article-narrow-to-signature))
-	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
+	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max) nil t)
 			    'face gnus-signature-face)
 	  (widen)
 	  (gnus-article-search-signature)
@@ -7760,7 +7760,7 @@ url is put as the `gnus-button-url' overlay property on the button."
 		(1- (point))
 	      (point)))
     (when gnus-article-button-face
-      (gnus-overlay-put (gnus-make-overlay b e)
+      (gnus-overlay-put (gnus-make-overlay b e nil t)
                         'face gnus-article-button-face))
     (widget-convert-button
      'link b e
@@ -7796,7 +7796,7 @@ url is put as the `gnus-button-url' overlay property on the button."
 		(1- (point))
 	      (point)))
     (when gnus-article-button-face
-      (gnus-overlay-put (gnus-make-overlay b e)
+      (gnus-overlay-put (gnus-make-overlay b e nil t)
                         'face gnus-article-button-face))
     (widget-convert-button
      'link b e
