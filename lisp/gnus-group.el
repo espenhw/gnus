@@ -4228,12 +4228,12 @@ The hook `gnus-suspend-gnus-hook' is called before actually suspending."
   (gnus-offer-save-summaries)
   ;; Kill Gnus buffers except for group mode buffer.
   (let ((group-buf (get-buffer gnus-group-buffer)))
-    (mapcar (lambda (buf)
-	      (unless (or (member buf (list group-buf gnus-dribble-buffer))
-			  (with-current-buffer buf
-			    (eq major-mode 'message-mode)))
-		(gnus-kill-buffer buf)))
-	    (gnus-buffers))
+    (dolist (buf (gnus-buffers))
+      (unless (or (eq buf group-buf)
+		  (eq buf gnus-dribble-buffer)
+		  (with-current-buffer buf
+		    (eq major-mode 'message-mode)))
+	(gnus-kill-buffer buf)))
     (setq gnus-backlog-articles nil)
     (gnus-kill-gnus-frames)
     (when group-buf

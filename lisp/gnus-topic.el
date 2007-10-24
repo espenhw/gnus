@@ -244,13 +244,12 @@ If RECURSIVE is t, return groups in its subtopics too."
     (when recursive
       (if (eq recursive t)
 	  (setq recursive (cdr (gnus-topic-find-topology topic))))
-      (mapcar (lambda (topic-topology)
-		(setq visible-groups
-		      (nconc visible-groups
-			     (gnus-topic-find-groups
-			      (caar topic-topology)
-			      level all lowest topic-topology))))
-	      (cdr recursive)))
+      (dolist (topic-topology (cdr recursive))
+	(setq visible-groups
+	      (nconc visible-groups
+		     (gnus-topic-find-groups
+		      (caar topic-topology)
+		      level all lowest topic-topology)))))
     visible-groups))
 
 (defun gnus-topic-goto-previous-topic (n)
@@ -351,7 +350,7 @@ If RECURSIVE is t, return groups in its subtopics too."
     (setq topology gnus-topic-topology
 	  gnus-tmp-topics nil))
   (push (caar topology) gnus-tmp-topics)
-  (mapcar 'gnus-topic-list (cdr topology))
+  (mapc 'gnus-topic-list (cdr topology))
   gnus-tmp-topics)
 
 ;;; Topic parameter jazz
@@ -1310,15 +1309,13 @@ If COPYP, copy the groups instead."
 	entry)
     (if (and (not groups) (not copyp) start-topic)
 	(gnus-topic-move start-topic topic)
-      (mapcar
-       (lambda (g)
-	 (gnus-group-remove-mark g use-marked)
-	 (when (and
-		(setq entry (assoc (gnus-current-topic) gnus-topic-alist))
-		(not copyp))
-	   (setcdr entry (gnus-delete-first g (cdr entry))))
-	 (nconc topicl (list g)))
-       groups)
+      (dolist (g groups)
+	(gnus-group-remove-mark g use-marked)
+	(when (and
+	       (setq entry (assoc (gnus-current-topic) gnus-topic-alist))
+	       (not copyp))
+	  (setcdr entry (gnus-delete-first g (cdr entry))))
+	(nconc topicl (list g)))
       (gnus-topic-enter-dribble)
       (if start-group
 	  (gnus-group-goto-group start-group)

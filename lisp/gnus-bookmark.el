@@ -367,7 +367,8 @@ deletion, or > if it is flagged for displaying."
   (if (interactive-p)
       (switch-to-buffer (get-buffer-create "*Gnus Bookmark List*"))
     (set-buffer (get-buffer-create "*Gnus Bookmark List*")))
-  (let ((inhibit-read-only t))
+  (let ((inhibit-read-only t)
+	alist name start end)
     (erase-buffer)
     (insert "% Gnus Bookmark\n- --------\n")
     (add-text-properties (point-min) (point)
@@ -375,30 +376,29 @@ deletion, or > if it is flagged for displaying."
     ;; sort before displaying
     (gnus-bookmark-maybe-sort-alist)
     ;; Display gnus bookmarks
-    (mapcar
-     (lambda (full-record)
-       ;; if a Gnus bookmark has an annotation, prepend a "*"
-       ;; in the list of bookmarks.
-       (let ((annotation (gnus-bookmark-get-annotation
-                          (gnus-bookmark-name-from-full-record full-record))))
-         (if (and annotation (not (string-equal annotation "")))
-             (insert " *")
-           (insert "  "))
-	 (let ((start (point)))
-	   (insert (gnus-bookmark-name-from-full-record full-record))
-	   (if (gnus-bookmark-mouse-available-p)
-	       (add-text-properties
-		start
-		(save-excursion (re-search-backward
-				 "[^ \t]")
-				(1+ (point)))
-		`(mouse-face highlight
-		  follow-link t
-		  help-echo ,(format "%s: go to this article"
-				     (aref gnus-mouse-2 0)))))
-	   (insert "\n")
-	   )))
-     gnus-bookmark-alist)
+    (setq alist gnus-bookmark-alist)
+    (while alist
+      (setq name (gnus-bookmark-name-from-full-record (pop alist)))
+      ;; if a Gnus bookmark has an annotation, prepend a "*"
+      ;; in the list of bookmarks.
+      (insert (if (member (gnus-bookmark-get-annotation name) (list nil ""))
+		  "  "
+		" *"))
+      (if (gnus-bookmark-mouse-available-p)
+	  (add-text-properties
+	   (prog1
+	       (point)
+	     (insert name))
+	   (let ((end (point)))
+	     (prog2
+		 (re-search-backward "[^ \t]")
+		 (1+ (point))
+	       (goto-char end)
+	       (insert "\n")))
+	   `(mouse-face highlight follow-link t
+			help-echo ,(format "%s: go to this article"
+					   (aref gnus-mouse-2 0))))
+	(insert name "\n")))
     (goto-char (point-min))
     (forward-line 2)
     (gnus-bookmark-bmenu-mode)
@@ -659,20 +659,19 @@ reposition and try again, else return nil."
 
 (defun gnus-bookmark-show-details (bookmark)
   "Display the annotation for BOOKMARK in a buffer."
-  (let ((record (gnus-bookmark-get-bookmark-record bookmark)))
+  (let ((record (gnus-bookmark-get-bookmark-record bookmark))
+	(old-buf (current-buffer))
+	(details gnus-bookmark-bookmark-details)
+	detail)
     (save-excursion
-      (let ((old-buf (current-buffer)))
-	(pop-to-buffer (get-buffer-create "*Gnus Bookmark Annotation*") t)
-	(delete-region (point-min) (point-max))
-	(mapcar
-	 (lambda (detail)
-	   (when (not (equal (cdr (assoc detail record)) ""))
-	     (insert (concat (symbol-name detail) ": "
-			     (cdr (assoc detail record))
-			     "\n"))))
-	 gnus-bookmark-bookmark-details)
-	(goto-char (point-min))
-	(pop-to-buffer old-buf)))))
+      (pop-to-buffer (get-buffer-create "*Gnus Bookmark Annotation*") t)
+      (erase-buffer)
+      (while details
+	(setq detail (pop details))
+	(unless (equal (cdr (assoc detail record)) "")
+	  (insert (symbol-name detail) ": " (cdr (assoc detail record)) "\n")))
+      (goto-char (point-min))
+      (pop-to-buffer old-buf))))
 
 (defun gnus-bookmark-bmenu-show-details ()
   "Show the annotation for the current bookmark in another window."

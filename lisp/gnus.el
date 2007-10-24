@@ -2806,7 +2806,7 @@ gnus-registry.el will populate this if it's loaded.")
 
   ;; This little mapcar goes through the list below and marks the
   ;; symbols in question as autoloaded functions.
-  (mapcar
+  (mapc
    (lambda (package)
      (let ((interactive (nth 1 (memq ':interactive package))))
        (mapcar
@@ -2957,7 +2957,7 @@ gnus-registry.el will populate this if it's loaded.")
       gnus-article-hide-pem gnus-article-hide-signature
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
-;;      gnus-article-show-all-headers
+      ;;gnus-article-show-all-headers
       gnus-article-edit-mode gnus-article-edit-article
       gnus-article-edit-done gnus-article-decode-encoded-words
       gnus-start-date-timer gnus-stop-date-timer

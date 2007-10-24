@@ -1,3 +1,41 @@
+2007-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-agent.el (gnus-agent-read-agentview, gnus-agent-save-alist)
+	(gnus-agent-expire-unagentized-dirs): Replace mapcar called for effect
+	with while loop.
+
+	* gnus-art.el: Use mapc instead of mapcar to make gnus-article-*
+	functions from article-* functions.
+	(gnus-multi-decode-header): Replace mapcar called for effect with
+	dolist.
+
+	* gnus-bookmark.el (gnus-bookmark-bmenu-list)
+	(gnus-bookmark-show-details): Replace mapcar called for effect with
+	while loop.
+
+	* gnus-diary.el (gnus-diary-update-group-parameters): Replace mapcar
+	called for effect with while loop.
+
+	* gnus-group.el (gnus-group-suspend): Replace mapcar called for effect
+	with dolist.
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Replace
+	mapcar called for effect with dolist.
+
+	* gnus-spec.el (gnus-correct-length): Make it simple and fast.
+
+	* gnus-sum.el (gnus-multi-decode-encoded-word-string)
+	(gnus-build-sparse-threads, gnus-summary-limit-include-expunged):
+	Replace mapcar called for effect with dolist.
+	(gnus-simplify-buffer-fuzzy): Replace mapcar called for effect with
+	mapc.
+
+	* gnus-topic.el (gnus-topic-find-groups, gnus-topic-move-group):
+	Replace mapcar called for effect with dolist.
+	(gnus-topic-list): Replace mapcar called for effect with mapc.
+
+	* gnus.el: Use mapc instead of mapcar to add autoloads.
+
 2007-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-server-to-method): Return method found first in

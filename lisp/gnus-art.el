@@ -3952,7 +3952,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (canlock-verify gnus-original-article-buffer)))
 
 (eval-and-compile
-  (mapcar
+  (mapc
    (lambda (func)
      (let (afunc gfunc)
        (if (consp func)
@@ -4013,7 +4013,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-emphasize
      article-treat-dumbquotes
      article-normalize-headers
-;;     (article-show-all . gnus-article-show-all-headers)
+     ;;(article-show-all . gnus-article-show-all-headers)
      )))
 
 ;;;
@@ -7842,14 +7842,13 @@ For example:
 	       (eq gnus-newsgroup-name
 		   (car gnus-decode-header-methods-cache)))
     (setq gnus-decode-header-methods-cache (list gnus-newsgroup-name))
-    (mapcar (lambda (x)
-	      (if (symbolp x)
-		  (nconc gnus-decode-header-methods-cache (list x))
-		(if (and gnus-newsgroup-name
-			 (string-match (car x) gnus-newsgroup-name))
-		    (nconc gnus-decode-header-methods-cache
-			   (list (cdr x))))))
-	  gnus-decode-header-methods))
+    (dolist (x gnus-decode-header-methods)
+      (if (symbolp x)
+	  (nconc gnus-decode-header-methods-cache (list x))
+	(if (and gnus-newsgroup-name
+		 (string-match (car x) gnus-newsgroup-name))
+	    (nconc gnus-decode-header-methods-cache
+		   (list (cdr x)))))))
   (let ((xlist gnus-decode-header-methods-cache))
     (pop xlist)
     (save-restriction

@@ -1597,19 +1597,15 @@ For example:
 	       (eq gnus-newsgroup-name
 		   (car gnus-decode-encoded-word-methods-cache)))
     (setq gnus-decode-encoded-word-methods-cache (list gnus-newsgroup-name))
-    (mapcar (lambda (x)
-	      (if (symbolp x)
-		  (nconc gnus-decode-encoded-word-methods-cache (list x))
-		(if (and gnus-newsgroup-name
-			 (string-match (car x) gnus-newsgroup-name))
-		    (nconc gnus-decode-encoded-word-methods-cache
-			   (list (cdr x))))))
-	    gnus-decode-encoded-word-methods))
-  (let ((xlist gnus-decode-encoded-word-methods-cache))
-    (pop xlist)
-    (while xlist
-      (setq string (funcall (pop xlist) string))))
-  string)
+    (dolist (method gnus-decode-encoded-word-methods)
+      (if (symbolp method)
+	  (nconc gnus-decode-encoded-word-methods-cache (list method))
+	(if (and gnus-newsgroup-name
+		 (string-match (car method) gnus-newsgroup-name))
+	    (nconc gnus-decode-encoded-word-methods-cache
+		   (list (cdr method)))))))
+  (dolist (method (cdr gnus-decode-encoded-word-methods-cache) string)
+    (setq string (funcall method string))))
 
 ;; Subject simplification.
 
@@ -1681,8 +1677,8 @@ matter is removed.  Additional things can be deleted by setting
       (setq modified-tick (buffer-modified-tick))
       (cond
        ((listp gnus-simplify-subject-fuzzy-regexp)
-	(mapcar 'gnus-simplify-buffer-fuzzy-step
-		gnus-simplify-subject-fuzzy-regexp))
+	(mapc 'gnus-simplify-buffer-fuzzy-step
+	      gnus-simplify-subject-fuzzy-regexp))
        (gnus-simplify-subject-fuzzy-regexp
 	(gnus-simplify-buffer-fuzzy-step gnus-simplify-subject-fuzzy-regexp)))
       (gnus-simplify-buffer-fuzzy-step "^ *\\[[-+?*!][-+?*!]\\] *")
@@ -4289,21 +4285,19 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	  (erase-buffer)))
       (kill-buffer (current-buffer)))
     ;; Sort over trustworthiness.
-    (mapcar
-     (lambda (relation)
-       (when (gnus-dependencies-add-header
-	      (make-full-mail-header
-	       gnus-reffed-article-number
-	       (nth 3 relation) "" (or (nth 4 relation) "")
-	       (nth 1 relation)
-	       (or (nth 2 relation) "") 0 0 "")
-	      gnus-newsgroup-dependencies nil)
-	 (push gnus-reffed-article-number gnus-newsgroup-limit)
-	 (push gnus-reffed-article-number gnus-newsgroup-sparse)
-	 (push (cons gnus-reffed-article-number gnus-sparse-mark)
-	       gnus-newsgroup-reads)
-	 (decf gnus-reffed-article-number)))
-     (sort relations 'car-less-than-car))
+    (dolist (relation (sort relations 'car-less-than-car))
+      (when (gnus-dependencies-add-header
+	     (make-full-mail-header
+	      gnus-reffed-article-number
+	      (nth 3 relation) "" (or (nth 4 relation) "")
+	      (nth 1 relation)
+	      (or (nth 2 relation) "") 0 0 "")
+	     gnus-newsgroup-dependencies nil)
+	(push gnus-reffed-article-number gnus-newsgroup-limit)
+	(push gnus-reffed-article-number gnus-newsgroup-sparse)
+	(push (cons gnus-reffed-article-number gnus-sparse-mark)
+	      gnus-newsgroup-reads)
+	(decf gnus-reffed-article-number)))
     (gnus-message 7 "Making sparse threads...done")))
 
 (defun gnus-build-old-threads ()
@@ -10931,9 +10925,8 @@ even ticked and dormant ones."
 	(goto-char (point-min))
 	(push gnus-newsgroup-limit gnus-newsgroup-limits)
 	(setq gnus-newsgroup-limit (copy-sequence gnus-newsgroup-limit))
-	(mapcar (lambda (x) (push (mail-header-number x)
-				  gnus-newsgroup-limit))
-		headers)
+	(dolist (x headers)
+	  (push (mail-header-number x) gnus-newsgroup-limit))
 	(gnus-summary-prepare-unthreaded (nreverse headers))
 	(goto-char (point-min))
 	(gnus-summary-position-point)

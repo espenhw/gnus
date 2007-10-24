@@ -398,21 +398,18 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	 (if (listp nnmail-split-fancy-with-parent-ignore-groups)
 	     nnmail-split-fancy-with-parent-ignore-groups
 	   (list nnmail-split-fancy-with-parent-ignore-groups)))
-	references res)
+	res)
     ;; the references string must be valid and parse to valid references
     (if (and refstr (gnus-extract-references refstr))
-	(progn
-	  (setq references (nreverse (gnus-extract-references refstr)))
-	  (mapcar (lambda (x)
-		    (setq res (or (gnus-registry-fetch-group x) res))
-		    (when (or (gnus-registry-grep-in-list
-			       res
-			       gnus-registry-unfollowed-groups)
-			      (gnus-registry-grep-in-list
-			       res
-			       nnmail-split-fancy-with-parent-ignore-groups))
-		      (setq res nil)))
-		  references))
+	(dolist (reference (nreverse (gnus-extract-references refstr)))
+	  (setq res (or (gnus-registry-fetch-group reference) res))
+	  (when (or (gnus-registry-grep-in-list
+		     res
+		     gnus-registry-unfollowed-groups)
+		    (gnus-registry-grep-in-list
+		     res
+		     nnmail-split-fancy-with-parent-ignore-groups))
+	    (setq res nil)))
 
       ;; else: there were no references, now try the extra tracking
       (let ((sender (gnus-string-remove-all-properties(message-fetch-field "from")))

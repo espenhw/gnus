@@ -2150,17 +2150,13 @@ doesn't exist, to valid the overview buffer."
 	     ((= version 1)
 	      (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
 	     ((= version 2)
-	      (let (uncomp)
-		(mapcar
-		 (lambda (comp-list)
-		   (let ((state (car comp-list))
-			 (sequence (inline
-				     (gnus-uncompress-range
-				      (cdr comp-list)))))
-		     (mapcar (lambda (article-id)
-			       (setq uncomp (cons (cons article-id state) uncomp)))
-			     sequence)))
-		 alist)
+	      (let (state sequence uncomp)
+		(while alist
+		  (setq state (caar alist)
+			sequence (inline (gnus-uncompress-range (cdar alist)))
+			alist (cdr alist))
+		  (while sequence
+		    (push (cons (pop sequence) state) uncomp)))
 		(setq alist (sort uncomp 'car-less-than-car)))
 	      (setq changed-version (not (= 2 gnus-agent-article-alist-save-format)))))
 	    (when changed-version
@@ -2213,23 +2209,21 @@ doesn't exist, to valid the overview buffer."
       (cond ((eq gnus-agent-article-alist-save-format 1)
              (princ gnus-agent-article-alist (current-buffer)))
             ((eq gnus-agent-article-alist-save-format 2)
-             (let ((compressed nil))
-               (mapcar (lambda (pair)
-                         (let* ((article-id (car pair))
-                                (day-of-download (cdr pair))
-                                (comp-list (assq day-of-download compressed)))
-                           (if comp-list
-                               (setcdr comp-list
-				       (cons article-id (cdr comp-list)))
-                             (setq compressed
-				   (cons (list day-of-download article-id)
-					 compressed)))
-                           nil)) gnus-agent-article-alist)
-               (mapcar (lambda (comp-list)
-			 (setcdr comp-list
-				 (gnus-compress-sequence
-				  (nreverse (cdr comp-list)))))
-		       compressed)
+             (let ((alist gnus-agent-article-alist)
+		   article-id day-of-download comp-list compressed)
+	       (while alist
+		 (setq article-id (caar alist)
+		       day-of-download (cdar alist)
+		       comp-list (assq day-of-download compressed)
+		       alist (cdr alist))
+		 (if comp-list
+		     (setcdr comp-list (cons article-id (cdr comp-list)))
+		   (push (list day-of-download article-id) compressed)))
+	       (setq alist compressed)
+	       (while alist
+		 (setq comp-list (pop alist))
+		 (setcdr comp-list
+			 (gnus-compress-sequence (nreverse (cdr comp-list)))))
                (princ compressed (current-buffer)))))
       (insert "\n")
       (princ gnus-agent-article-alist-save-format (current-buffer))
@@ -3644,6 +3638,7 @@ articles in every agentized group? "))
             (let ((dir (pop to-remove)))
               (if (gnus-y-or-n-p (format "Delete %s? " dir))
                   (let* (delete-recursive
+			 files f
                          (delete-recursive
                           (function
                            (lambda (f-or-d)
@@ -3652,12 +3647,13 @@ articles in every agentized group? "))
                                    (condition-case nil
                                        (delete-directory f-or-d)
                                      (file-error
-                                      (mapcar (lambda (f)
-                                                (or (member f '("." ".."))
-                                                    (funcall delete-recursive
-                                                             (nnheader-concat
-                                                              f-or-d f))))
-                                              (directory-files f-or-d))
+				      (setq files (directory-files f-or-d))
+				      (while files
+					(setq f (pop files))
+					(or (member f '("." ".."))
+					    (funcall delete-recursive
+						     (nnheader-concat
+						      f-or-d f))))
                                       (delete-directory f-or-d)))
                                  (delete-file f-or-d)))))))
                     (funcall delete-recursive dir))))))))))
