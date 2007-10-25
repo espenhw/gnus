@@ -680,7 +680,7 @@ which RSS 2.0 allows."
 ;;; Snarf functions
 
 (defun nnrss-make-hash-index (item)
-  (setq item (remove-if
+  (setq item (gnus-remove-if
 	      (lambda (field)
 		(when (listp field)
 		  (memq (car field) nnrss-ignore-article-fields)))

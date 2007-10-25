@@ -1,3 +1,50 @@
+2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* hashcash.el (mail-add-payment): Replace mapcar called for effect with
+	mapc.
+
+	* imap.el (imap-open): Replace mapcar called for effect with mapc.
+	(top-level): Use mapc to set functions to be traced for debugging.
+
+	* legacy-gnus-agent.el (gnus-agent-convert-agentview): Replace mapcar
+	called for effect with while loop.
+
+	* message.el (message-talkative-question): Replace mapcar called for
+	effect with mapc.
+
+	* mm-util.el: Use mapc instead of mapcar to make compatible functions.
+	(mm-find-mime-charset-region, mm-find-charset-region): Replace mapcar
+	called for effect with dolist.
+
+	* mml.el (mml-insert-mime): Replace mapcar called for effect with mapc.
+
+	* nndiary.el: Use dolist instead of mapcar to add diary headers to
+	gnus-extra-headers and nnmail-extra-headers.
+
+	* nnimap.el (nnimap-request-update-info-internal): Replace mapcar
+	called for effect with dolist.
+	(top-level): Use mapc to set functions to be traced for debugging.
+
+	* nnmail.el (nnmail-read-incoming-hook): Doc fix.
+	(nnmail-split-fancy-with-parent): Replace mapcar called for effect with
+	dolist.
+
+	* nnmaildir.el (nnmaildir--delete-dir-files, nnmaildir-request-close):
+	Replace mapcar called for effect with mapc.
+	(nnmaildir--scan, nnmaildir-request-scan, nnmaildir-retrieve-groups)
+	(nnmaildir-request-update-info, nnmaildir-request-delete-group)
+	(nnmaildir-retrieve-headers, nnmaildir-request-set-mark)
+	(nnmaildir-close-group): Replace mapcar called for effect with dolist.
+
+	* nnrss.el (nnrss-make-hash-index): Use gnus-remove-if instead of
+	remove-if that's a cl function.
+
+	* webmail.el (webmail-debug): Replace mapcar called for effect with
+	dolist.
+
+	* gnus-xmas.el (gnus-group-add-icon): Replace mapcar called for effect
+	with mapc.
+
 2007-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-read-agentview, gnus-agent-save-alist)

@@ -297,7 +297,10 @@ Eg.
 \(add-hook 'nnmail-read-incoming-hook
 	  (lambda ()
 	    (call-process \"/local/bin/mailsend\" nil nil nil
-			  \"read\" nnmail-spool-file)))
+			  \"read\"
+			  ;; The incoming mail box file.
+			  (expand-file-name (user-login-name)
+					    rmail-spool-directory))))
 
 If you have xwatch running, this will alert it that mail has been
 read.
@@ -1682,12 +1685,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (setq references (nreverse (gnus-split-references refstr)))
       (unless (gnus-buffer-live-p nnmail-cache-buffer)
 	(nnmail-cache-open))
-      (mapcar (lambda (x)
-		(setq res (or (nnmail-cache-fetch-group x) res))
-		(when (or (member res '("delayed" "drafts" "queue"))
-			  (and regexp res (string-match regexp res)))
-		  (setq res nil)))
-	      references)
+      (dolist (x references)
+	(setq res (or (nnmail-cache-fetch-group x) res))
+	(when (or (member res '("delayed" "drafts" "queue"))
+		  (and regexp res (string-match regexp res)))
+	  (setq res nil)))
       res)))
 
 (defun nnmail-cache-id-exists-p (id)

@@ -325,10 +325,10 @@ Set ASYNC to t to start asynchronous calculation.  (See
 	  (when (and hashcash-in-news ng)
 	    (setq addrlist (nconc addrlist (split-string ng ",[ \t\n]*")))))
 	(when addrlist
-	  (mapcar (if async
-		      #'hashcash-insert-payment-async
-		    #'hashcash-insert-payment)
-		  addrlist))))) ; mapc
+	  (mapc (if async
+		    #'hashcash-insert-payment-async
+		  #'hashcash-insert-payment)
+		addrlist)))))
   t)
 
 ;;;###autoload

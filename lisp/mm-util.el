@@ -37,7 +37,7 @@
     (require 'timer)))
 
 (eval-and-compile
-  (mapcar
+  (mapc
    (lambda (elem)
      (let ((nfunc (intern (format "mm-%s" (car elem)))))
        (if (fboundp (car elem))
@@ -1012,8 +1012,8 @@ charset, and a longer list means no appropriate charset."
 	     (memq 'iso-8859-15 charsets)
 	     (memq 'iso-8859-15 hack-charsets)
 	     (save-excursion (mm-iso-8859-x-to-15-region b e)))
-	(mapcar (lambda (x) (setq charsets (delq (car x) charsets)))
-		mm-iso-8859-15-compatible))
+	(dolist (x mm-iso-8859-15-compatible)
+	  (setq charsets (delq (car x) charsets))))
     (if (and (memq 'iso-2022-jp-2 charsets)
 	     (memq 'iso-2022-jp-2 hack-charsets))
 	(setq charsets (delq 'iso-2022-jp charsets)))
@@ -1095,10 +1095,10 @@ Emacs 23 (unicode)."
     ;; Remove composition since the base charsets have been included.
     ;; Remove eight-bit-*, treat them as ascii.
     (let ((css (find-charset-region b e)))
-      (mapcar (lambda (cs) (setq css (delq cs css)))
-	      '(composition eight-bit-control eight-bit-graphic
-			    control-1))
-      css))
+      (dolist (cs
+	       '(composition eight-bit-control eight-bit-graphic control-1)
+	       css)
+	(setq css (delq cs css)))))
    (t
     ;; We are in a unibyte buffer or XEmacs non-mule, so we futz around a bit.
     (save-excursion

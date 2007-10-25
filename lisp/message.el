@@ -7484,7 +7484,7 @@ The following arguments may contain lists of values."
 	  (with-output-to-temp-buffer " *MESSAGE information message*"
 	    (set-buffer " *MESSAGE information message*")
 	    (fundamental-mode)		; for Emacs 20.4+
-	    (mapcar 'princ text)
+	    (mapc 'princ text)
 	    (goto-char (point-min))))
 	(funcall ask question))
     (funcall ask question)))

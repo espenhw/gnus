@@ -845,7 +845,7 @@ XEmacs compatibility workaround."
 			     file)))
 		(if glyph
 		    (progn
-		      (mapcar 'delete-annotation (annotations-at myend))
+		      (mapc 'delete-annotation (annotations-at myend))
 		      (let ((ext (make-extent mystart myend))
 			    (ant (make-annotation glyph myend 'text)))
 			;; set text extent params

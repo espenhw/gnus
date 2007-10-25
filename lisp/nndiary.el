@@ -1575,13 +1575,11 @@ all.  This may very well take some time.")
 
 ;; The end... ===============================================================
 
-(mapcar
- (lambda (elt)
-   (let ((header (intern (format "X-Diary-%s" (car elt)))))
-     ;; Required for building NOV databases and some other stuff
-     (add-to-list 'gnus-extra-headers header)
-     (add-to-list 'nnmail-extra-headers header)))
- nndiary-headers)
+(dolist (header nndiary-headers)
+  (setq header (intern (format "X-Diary-%s" (car header))))
+  ;; Required for building NOV databases and some other stuff.
+  (add-to-list 'gnus-extra-headers header)
+  (add-to-list 'nnmail-extra-headers header))
 
 (unless (assoc "nndiary" gnus-valid-select-methods)
   (gnus-declare-backend "nndiary" 'post-mail 'respool 'address))
