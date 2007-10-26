@@ -3518,6 +3518,27 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(forward-line 1))))
   (goto-char start))
 
+(defun message-remove-blank-cited-lines (&optional remove)
+  "Remove cited lines containing only blanks.
+If REMOVE is non-nil, remove newlines, too.
+
+To use this automatically, you may add this function to
+`gnus-message-setup-hook'."
+  (interactive "P")
+  (let ((citexp
+	 (concat
+	  "^\\("
+	  (if (boundp 'message-yank-cited-prefix)
+	      (concat message-yank-cited-prefix "\\|"))
+	  message-yank-prefix
+	  "\\)+ *$"
+	  (if remove "\n" ""))))
+    (gnus-message 8 "removing `%s'" citexp)
+    (save-excursion
+      (message-goto-body)
+      (while (re-search-forward citexp nil t)
+	(replace-match "")))))
+
 (defvar message-cite-reply-above nil
   "If non-nil, start own text above the quote.
 

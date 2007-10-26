@@ -1,3 +1,8 @@
+2007-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-remove-blank-cited-lines): New function.
+	Suggested by Karl Pl,Ad(Bsterer.
+
 2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* hashcash.el (mail-add-payment): Replace mapcar called for effect with
