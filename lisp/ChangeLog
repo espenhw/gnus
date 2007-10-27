@@ -88,6 +88,10 @@
 
 	* gnus.el: Use mapc instead of mapcar to add autoloads.
 
+2007-10-23  Richard Stallman  <rms@gnu.org>
+
+	* gnus-group.el (gnus-group-highlight): Mark as risky.
+
 2007-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-server-to-method): Return method found first in
