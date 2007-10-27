@@ -1,4 +1,9 @@
-2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+2007-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (release-bump-version): Adjust version
+	in (gnus)Troubleshooting.
+
+007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* GNUS-NEWS: Generated.
 
