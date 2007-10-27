@@ -1,3 +1,8 @@
+2007-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-msg.el (gnus-message-setup-hook): Add
+	`message-remove-blank-cited-lines' to options.
+
 2007-10-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-remove-blank-cited-lines): New function.
