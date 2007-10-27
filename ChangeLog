@@ -13,7 +13,7 @@
 
 2007-09-17  Alexander Solovyov  <piranha@piranha.org.ua>  (tiny change)
 
-	* make.bat: Initial check didn't work if path contained spaces. 
+	* make.bat: Initial check didn't work if path contained spaces.
 
 2007-07-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
