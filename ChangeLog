@@ -1,3 +1,10 @@
+2007-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (SED_I, CODENAME_PATTERN): New.
+	(OLD_PATTERN): Adjust.
+	(release-bump-version): Use new variables.  Allow going from
+	development version to release.
+
 2007-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (release-bump-version): Adjust version
