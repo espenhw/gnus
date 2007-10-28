@@ -2,6 +2,11 @@
 
 	* message.el (message-remove-blank-cited-lines): Fix if remove is
 	given.
+	(message-bogus-address-regexp): New variable.
+	(message-bogus-recipient-p): New function.
+	(message-check-recipients): New command.
+	(message-syntax-checks): Add `bogus-recipient'.
+	(message-fix-before-sending): Add `bogus-recipient'.
 
 	* gnus-art.el (gnus-button-mid-or-mail-heuristic-alist): Add "alpine".
 	(gnus-treat-emphasize, gnus-treat-body-boundary): Don't test
