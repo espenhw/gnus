@@ -3528,16 +3528,16 @@ To use this automatically, you may add this function to
   (let ((citexp
 	 (concat
 	  "^\\("
-	  (if (boundp 'message-yank-cited-prefix)
-	      (concat message-yank-cited-prefix "\\|"))
+	  (when (boundp 'message-yank-cited-prefix)
+	    (concat message-yank-cited-prefix "\\|"))
 	  message-yank-prefix
-	  "\\)+ *$"
-	  (if remove "\n" ""))))
+	  "\\)+ *\n"
+	  )))
     (gnus-message 8 "removing `%s'" citexp)
     (save-excursion
       (message-goto-body)
       (while (re-search-forward citexp nil t)
-	(replace-match "")))))
+	(replace-match (if remove "" "\n"))))))
 
 (defvar message-cite-reply-above nil
   "If non-nil, start own text above the quote.
