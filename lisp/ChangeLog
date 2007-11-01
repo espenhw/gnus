@@ -1,3 +1,10 @@
+2007-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-next-page): Honor gnus-article-over-scroll
+	even if the point is not in the last page of an article.
+	(gnus-article-prev-page): Honor gnus-article-over-scroll when moving
+	back to the previous page.
+
 2007-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-ems.el (gnus-x-splash): Work even if there's no scroll bar.

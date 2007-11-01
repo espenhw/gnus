@@ -5893,10 +5893,16 @@ If end of article, return non-nil.  Otherwise return nil.
 Argument LINES specifies lines to be scrolled up."
   (interactive "p")
   (move-to-window-line -1)
-  (if (save-excursion
-	(end-of-line)
-	(and (pos-visible-in-window-p)	;Not continuation line.
-	     (>= (1+ (point)) (point-max)))) ;Allow for trailing newline.
+  (if (and (not (and gnus-article-over-scroll
+		     (> (count-lines (window-start) (point-max))
+			(+ (or lines (1- (window-height)))
+			   (or (and (boundp 'scroll-margin)
+				    (symbol-value 'scroll-margin))
+			       0)))))
+	   (save-excursion
+	     (end-of-line)
+	     (and (pos-visible-in-window-p)	;Not continuation line.
+		  (>= (1+ (point)) (point-max))))) ;Allow for trailing newline.
       ;; Nothing in this page.
       (if (or (not gnus-page-broken)
 	      (save-excursion
@@ -5956,7 +5962,14 @@ Argument LINES specifies lines to be scrolled down."
       (progn
 	(gnus-narrow-to-page -1)	;Go to previous page.
 	(goto-char (point-max))
-	(recenter -1))
+	(recenter (if gnus-article-over-scroll
+		      (if lines
+			  (max (+ lines (or (and (boundp 'scroll-margin)
+						 (symbol-value 'scroll-margin))
+					    0))
+			       3)
+			(- (window-height) 2))
+		    -1)))
     (prog1
 	(condition-case ()
 	    (let ((scroll-in-place nil))
