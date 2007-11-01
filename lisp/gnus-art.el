@@ -7194,6 +7194,7 @@ variable it the real callback function."
 		       (repeat :tag "Par"
 			       :inline t
 			       (integer :tag "Regexp group")))))
+(put 'gnus-button-alist 'risky-local-variable t)
 
 (defcustom gnus-header-button-alist
   '(("^\\(References\\|Message-I[Dd]\\|^In-Reply-To\\):" "<[^<>]+>"
@@ -7233,6 +7234,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 		       (repeat :tag "Par"
 			       :inline t
 			       (integer :tag "Regexp group")))))
+(put 'gnus-header-button-alist 'risky-local-variable t)
 
 ;;; Commands:
 

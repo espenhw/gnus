@@ -1,3 +1,14 @@
+2007-11-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-util.el (mm-charset-eval-alist): Mark as risky local variable.
+
+	* gnus.el (gnus-group-charter-alist): Mark as risky local variable.
+
+	* gnus-art.el (gnus-button-alist, gnus-header-button-alist): Mark as
+	risky local variable.
+
+	* gnus-group.el (gnus-group-icon-list): Mark as risky local variable.
+
 2007-11-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* encrypt.el: Improve documentation to fix function name typo.
