@@ -1,3 +1,8 @@
+2007-11-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* encrypt.el: Improve documentation to fix function name typo.
+	Reported by Daiki Ueno <ueno@unixuser.org>.
+
 2007-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-next-page): Honor gnus-article-over-scroll
