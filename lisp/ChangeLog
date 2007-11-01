@@ -1357,6 +1357,7 @@
 
 	* message.el (message-cite-original-1): Call
 	gnus-article-highlight-citation if requested.
+	(message-make-from): Allow name and address as optional arguments.
 
 	* gnus-cite.el (gnus-article-highlight-citation): Add SAME-BUFFER arg.
 
