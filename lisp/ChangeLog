@@ -1,5 +1,11 @@
 2007-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* nnml.el (nnml-request-rename-group): Bind file-name-coding-system to
+	nnmail-pathname-coding-system.
+
+	* gnus-group.el (gnus-group-rename-group): Encode non-ASCII group name
+	that a user enters; decode group names in messages.
+
 	* gnus-msg.el (gnus-inews-do-gcc): Encode non-ASCII group names.
 
 2007-11-01  Reiner Steib  <Reiner.Steib@gmx.de>
