@@ -1,3 +1,9 @@
+2007-11-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Fix spelling.
+	`message-insert-formatted-citation-line', not
+	`message-insert-formated-citation-line'.
+
 2007-10-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Troubleshooting): Adjust Gnus version number.
