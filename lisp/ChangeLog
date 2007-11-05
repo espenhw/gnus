@@ -1,3 +1,9 @@
+2007-11-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-citation-line-function)
+	(message-insert-formatted-citation-line): Fix spelling of
+	`message-insert-formated-citation-line'.
+
 2007-11-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-highlight): Mark as risky local variable.
