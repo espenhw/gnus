@@ -3687,7 +3687,7 @@ This function uses `mail-citation-hook' if that is non-nil."
   (message-cite-original-1 nil))
 
 (defun message-insert-formatted-citation-line (&optional from date)
-  "Function that inserts a formated citation line.
+  "Function that inserts a formatted citation line.
 
 See `message-citation-line-format'."
   ;; The optional args are for testing/debugging.  They will disappear later.
