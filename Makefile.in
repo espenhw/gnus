@@ -24,9 +24,10 @@ CODENAME =
 # Codename initial (lower case), e.g. 'n' for "No Gnus".
 CIN =
 # Files with hard-coded versions numbers:
-RELEASE_COMMIT_FILES = ChangeLog README \
-  lisp/ChangeLog lisp/gnus.el \
-  texi/ChangeLog texi/gnus.texi texi/message.texi texi/gnus-faq.texi
+RELEASE_COMMIT_FILES = ChangeLog \
+  etc/ChangeLog lisp/ChangeLog texi/ChangeLog \
+  README lisp/gnus.el \
+  texi/gnus.texi texi/message.texi texi/gnus-faq.texi
 # Pattern matching previous version numbers:
 OLD_PATTERN = \(5\.[0-9][0-9]\.[0-9]*\|5\.[0-9][0-9]\|0\.[1-9][0-9]*\)
 # Codename pattern
@@ -121,6 +122,7 @@ release-check-settings:
 	@echo
 	@echo You may now make...
 	@echo   release-bump-version
+	@echo   release-add-changelog
 	@echo   release-commit
 	@echo   release-files or release-files-signed
 
@@ -144,7 +146,7 @@ release-bump-version:	release-check-settings
 	  true; \
 	fi
 # Only for going from the development version to release...
-	if [ "x$(CODENAME)" = "x" ]; then \
+	if [ "x$(CODENAME)" = "x" -a "$(CODENAME_TO_STABLE)" = t ]; then \
 	  $(SED_I) '/^(defconst gnus-version /s,"$(CODENAME_PATTERN)Gnus v,"Gnus v,' lisp/gnus.el; \
 	  $(SED_I) '/^.newcommand{.gnusversionname}{$(CODENAME_PATTERN)Gnus v/s,$(CODENAME_PATTERN)Gnus v$(OLD_PATTERN),Gnus v$(VERSION),' texi/gnus.texi; \
 	  $(SED_I) '/^This manual corresponds to $(CODENAME_PATTERN)Gnus v/s,$(CODENAME_PATTERN)Gnus v$(OLD_PATTERN),Gnus v$(VERSION),' texi/gnus.texi; \
@@ -152,13 +154,21 @@ release-bump-version:	release-check-settings
 	else \
 	  true; \
 	fi
+	$(MAKE) release-diff-commit-files
+
 # Add ChangeLog entry...
+release-add-changelog:	release-check-settings
+	@echo "Updating ChangeLog files..."
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" ChangeLog; then \
 	  echo "ChangeLog is already updated"; \
 	else \
 	  $(SED_I) "1s|^|`date -I`  $(COMMITTER)\n\n\t* README: $(COMMIT_STRING)\n\n|" ChangeLog; \
 	fi
-	@echo "Updating ChangeLog files..."
+	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" etc/ChangeLog; then \
+	  echo "etc/ChangeLog is already updated"; \
+	else \
+	  $(SED_I) "1s|^|`date -I`  $(COMMITTER)\n\n\t* ChangeLog: $(COMMIT_STRING)\n\n|" etc/ChangeLog; \
+	fi
 	@if grep -q "$(CODENAME)Gnus v$(VERSION) is released" texi/ChangeLog; then \
 	  echo "texi/ChangeLog is already updated"; \
 	else \
@@ -169,6 +179,9 @@ release-bump-version:	release-check-settings
 	else \
 	  $(SED_I) "1s|^|`date -I`  $(COMMITTER)\n\n\t* gnus.el: $(COMMIT_STRING)\n\n|" lisp/ChangeLog; \
 	fi
+	$(MAKE) release-diff-commit-files
+
+release-diff-commit-files: release-check-settings
 	cvs diff -U0 $(RELEASE_COMMIT_FILES); sleep 2
 
 release-revert-files:

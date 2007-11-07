@@ -1,3 +1,18 @@
+2007-11-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (RELEASE_COMMIT_FILES): Add etc/ChangeLog.
+	(release-check-settings): Add release-add-changelog
+	(release-bump-version): Add check for CODENAME_TO_STABLE.  Split off
+	release-add-changelog.
+	(release-add-changelog): New target.  Separate some commands from
+	release-bump-version.  Add etc/ChangeLog.
+	(release-diff-commit-files): New target.
+	(RELEASE_COMMIT_FILES): Reorder files.
+
+2007-11-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* COPYING: GPLv3 from Emacs repository.
+
 2007-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (SED_I, CODENAME_PATTERN): New.

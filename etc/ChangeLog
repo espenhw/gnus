@@ -1,5 +1,10 @@
 2007-11-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* images/GNUS-README: Rename from README.  Add some information
+	about the purpose of the various README files.
+
+	* images/README: New.  `emacs/etc/images/README' from Emacs.
+
 	* ChangeLog: New ChangeLog for `./etc'.  Should simplify syncing with
 	Emacs a little bit.
 

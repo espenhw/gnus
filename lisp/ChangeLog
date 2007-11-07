@@ -41,6 +41,10 @@
 	(gnus-article-prev-page): Honor gnus-article-over-scroll when moving
 	back to the previous page.
 
+2007-10-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* qp.el (quoted-printable-decode-string): Fix typo in doc string.
+
 2007-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-ems.el (gnus-x-splash): Work even if there's no scroll bar.
