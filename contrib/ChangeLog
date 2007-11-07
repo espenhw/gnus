@@ -1,6 +1,19 @@
+2007-10-15  Sam Steingold  <sds@gnu.org>
+
+	* sendmail.el (sendmail-error-reporting-interactive)
+	(sendmail-error-reporting-non-interactive): New variables for
+	sendmail error reporting options to simplify support for imperfect
+	sendmail emulators.
+	(sendmail-send-it): Use them instead of list literals.
+
 2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
         * Relicense "GPLv2 or later" files to "GPLv3 or later".
+
+2007-09-23  Richard Stallman  <rms@gnu.org>
+
+	* sendmail.el (mail-bury): Delete the frame if this frame looks
+	like it was made for this message.
 
 2007-09-16  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 

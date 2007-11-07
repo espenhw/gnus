@@ -395,7 +395,8 @@ on your system, you could say something like:
 	       out)))
      out))
 
-(defvar nnheader-uniquify-message-id nil)
+(eval-and-compile
+  (defvar nnheader-uniquify-message-id nil))
 
 (defmacro nnheader-nov-read-message-id (&optional number)
   `(let ((id (nnheader-nov-field)))

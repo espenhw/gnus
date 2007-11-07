@@ -767,7 +767,13 @@ Prefix arg means don't delete this window."
   "Bury this mail buffer."
   (let ((newbuf (other-buffer (current-buffer))))
     (bury-buffer (current-buffer))
-    (if (and (or (window-dedicated-p (frame-selected-window))
+    (if (and (or nil
+		 ;; In this case, we need to go to a different frame.
+		 (window-dedicated-p (frame-selected-window))
+		 ;; In this mode of operation, the frame was probably
+		 ;; made for this buffer, so the user probably wants
+		 ;; to delete it now.
+		 (and pop-up-frames (one-window-p))
 		 (cdr (assq 'mail-dedicated-frame (frame-parameters))))
 	     (not (null (delq (selected-frame) (visible-frame-list)))))
 	(progn
@@ -985,6 +991,19 @@ See also the function `select-message-coding-system'.")
 	   nil)
 	  (t (error "Invalid value for `mail-from-style'")))))
 
+;; Normally you will not need to modify these options unless you are
+;; using some non-genuine substitute for sendmail which does not
+;; implement each and every option that the original supports.
+;; E.g., ssmtp does not support "-odb", so, if your site uses it,
+;; you will need to modify `sendmail-error-reporting-non-interactive'
+;; in your site-init.el.
+(defvar sendmail-error-reporting-interactive
+  ;; These mean "report errors to terminal" and "deliver interactively"
+  '("-oep" "-odi"))
+(defvar sendmail-error-reporting-non-interactive
+  ;; These mean "report errors by mail" and "deliver in background".
+  '("-oem" "-odb"))
+
 (defun sendmail-send-it ()
   "Send the current mail buffer using the Sendmail package.
 This is a suitable value for `send-mail-function'.  It sends using the
@@ -1129,12 +1148,8 @@ external program defined by `sendmail-program'."
 			      (and mail-alias-file
 				   (list (concat "-oA" mail-alias-file)))
 			      (if mail-interactive
-				  ;; These mean "report errors to terminal"
-				  ;; and "deliver interactively"
-				  '("-oep" "-odi")
-				;; These mean "report errors by mail"
-				;; and "deliver in background".
-				'("-oem" "-odb"))
+                                  sendmail-error-reporting-interactive
+                                  sendmail-error-reporting-non-interactive)
 			      ;; Get the addresses from the message
 			      ;; unless this is a resend.
 			      ;; We must not do that for a resend

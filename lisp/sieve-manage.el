@@ -197,7 +197,7 @@ Valid states are `closed', `initial', `nonauth', and `auth'.")
 (defun sieve-manage-interactive-login (buffer loginfunc)
   "Login to server in BUFFER.
 LOGINFUNC is passed a username and a password, it should return t if
-it where sucessful authenticating itself to the server, nil otherwise.
+it was successful authenticating itself to the server, nil otherwise.
 Returns t if login was successful, nil otherwise."
   (with-current-buffer buffer
     (make-local-variable 'sieve-manage-username)
