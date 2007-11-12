@@ -1,3 +1,7 @@
+2007-11-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Adjust :version.
+
 2007-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-parse-active): Make group names unibyte.
