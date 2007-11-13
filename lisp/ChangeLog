@@ -5,8 +5,8 @@
 2007-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnmail.el (nnmail-parse-active): Make group names unibyte.
-	(nnmail-save-active): Use a unibyte buffer saving active file, which
-	may contain non-ASCII group names.
+	(nnmail-save-active): Use a unibyte buffer when saving active file,
+	which may contain non-ASCII group names.
 
 	* nnml.el (nnml-request-group): Decode group names in messages.
 
