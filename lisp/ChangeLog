@@ -1,3 +1,8 @@
+2007-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-active-to-gnus-format): Use unibyte buffer to
+	read group names.
+
 2007-11-12  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Adjust :version.
