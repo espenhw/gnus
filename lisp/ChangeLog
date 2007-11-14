@@ -1,3 +1,8 @@
+2007-11-14  Denys Duchier  <denys.duchier@univ-orleans.fr>  (tiny change)
+
+	* pop3.el (pop3-open-server): Accept and process data more robustly at
+	connexion start to avoid spurious "POP SSL connexion failed" errors.
+
 2007-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-active-to-gnus-format): Use unibyte buffer to
