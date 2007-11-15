@@ -256,7 +256,7 @@ Returns the process associated with the connection."
 			     (setq again nil)
 			     (delete-region (point-min) (point)))
 			    ((not again)
-			     (pop3-quit-process)
+			     (pop3-quit process)
 			     (error "POP SSL connexion failed")))))
 		  process)))
 	     ((eq pop3-stream-type 'starttls)
