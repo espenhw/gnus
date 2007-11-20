@@ -1,3 +1,7 @@
+2007-11-20  Noah S. Friedman  <friedman@splode.com>
+
+	* vcard.el: Update to revision 1.11 2000/06/29.
+
 2007-10-15  Sam Steingold  <sds@gnu.org>
 
 	* sendmail.el (sendmail-error-reporting-interactive)
