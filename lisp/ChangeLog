@@ -1,5 +1,10 @@
 2007-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-start.el (gnus-get-unread-articles): Mark groups that have never
+	been read as having never been checked.
+
+2007-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-start.el (gnus-get-unread-articles): Don't prevent from checking
 	foreign groups unless a group level is specified by a user.
 	Reported by Dan Nicolaescu <dann@ics.uci.edu>.

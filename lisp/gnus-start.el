@@ -1733,7 +1733,12 @@ If SCAN, request a scan of that group as well."
 		   (when (fboundp (intern (concat (symbol-name (car method))
 						  "-request-update-info")))
 		     (inline (gnus-request-update-info info method))))
-	       (if (and level (> (gnus-info-level info) level))
+	       (if (and level
+			;; If `active' is nil that means the group has
+			;; never been read, the group should be marked
+			;; as having never been checked (see below).
+			active
+			(> (gnus-info-level info) level))
 		   ;; Don't check groups of which levels are higher
 		   ;; than the one that a user specified.
 		   (setq active 'ignore))))
