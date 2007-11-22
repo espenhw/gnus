@@ -1,7 +1,8 @@
 2007-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-start.el (gnus-get-unread-articles): Mark groups that have never
-	been read as having never been checked.
+	* gnus-start.el (gnus-get-unread-articles): Mark groups as having never
+	been checked if they have never been read and those group levels are
+	higher than the one that a user specified.
 
 2007-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
