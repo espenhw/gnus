@@ -1,3 +1,9 @@
+2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* tls.el (tls-checktrust, tls-hostmismatch, tls-untrusted): Add custom
+	version.  Minor improvement to doc strings.
+	(tls-program): Add comment.
+
 2007-11-24  Elias Oltmanns  <eo@nebensachen.de>
 
 	* tls.el (tls-certtool-program, tls-hostmismatch): New variables.

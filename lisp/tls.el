@@ -64,6 +64,8 @@ Each entry in the list is tried until a connection is successful.
 The program should read input on stdin and write output to
 stdout.  Also see `tls-success' for what the program should output
 after successful negotiation."
+  ;; FIXME: Add suggestions from the doc string of `tls-checktrust' here?  Or
+  ;; provide them as custom options?
   :type '(repeat string)
   :version "22.1"
   :group 'tls)
@@ -84,34 +86,41 @@ The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
 
 (defcustom tls-checktrust nil
   "Indicate if certificates should be checked against trusted root certs.
-If this is `ask', the user can decide whether to accept an untrusted
-certificate. You may have to adapt `tls-program' in order to make this feature
-work properly, i.e., to ensure that the external program knows about the
-root certificates you consider trustworthy. An appropriate entry in .emacs
-might look like this:
-(setq tls-program
+If this is `ask', the user can decide whether to accept an
+untrusted certificate.  You may have to adapt `tls-program' in
+order to make this feature work properly, i.e., to ensure that
+the external program knows about the root certificates you
+consider trustworthy, e.g.:
+
+\(setq tls-program
       '(\"gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h\"
 	\"gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h --protocols ssl3\"
 	\"openssl s_client -connect %h:%p -CAfile /etc/ssl/certs/ca-certificates.crt -no_ssl2\"))"
   :type '(choice (const :tag "Always" t)
 		 (const :tag "Never" nil)
 		 (const :tag "Ask" ask))
+  :version "23.0" ;; No Gnus
   :group 'tls)
 
-(defcustom tls-untrusted "- Peer's certificate is NOT trusted\\|Verify return code: \\([^0] \\|.[^ ]\\)"
-  "*Regular expression indicating failure of TLS certificate verification.
+(defcustom tls-untrusted
+"- Peer's certificate is NOT trusted\\|Verify return code: \\([^0] \\|.[^ ]\\)"
+  "Regular expression indicating failure of TLS certificate verification.
 The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
-\"openssl s_client\" return in the event of unsuccessful verification."
+\"openssl s_client\" return in the event of unsuccessful
+verification."
   :type 'regexp
+  :version "23.0" ;; No Gnus
   :group 'tls)
 
-(defcustom tls-hostmismatch "# The hostname in the certificate does NOT match"
-  "*Regular expression indicating a host name mismatch in certificate.
-When the host name specified in the certificate doesn't match the name of the
-host you are connecting to, gnutls-cli issues a warning to this effect. There
-is no such feature in openssl. Set this to nil if you want to ignore host name
-mismatches."
+(defcustom tls-hostmismatch
+  "# The hostname in the certificate does NOT match"
+  "Regular expression indicating a host name mismatch in certificate.
+When the host name specified in the certificate doesn't match the
+name of the host you are connecting to, gnutls-cli issues a
+warning to this effect. There is no such feature in openssl. Set
+this to nil if you want to ignore host name mismatches."
   :type 'regexp
+  :version "23.0" ;; No Gnus
   :group 'tls)
 
 (defcustom tls-certtool-program (executable-find "certtool")
