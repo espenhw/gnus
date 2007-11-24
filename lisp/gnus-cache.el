@@ -92,7 +92,7 @@ it's not cached."
 (defvar gnus-cache-total-fetched-hashtb nil)
 
 (eval-and-compile
-  (autoload 'nnml-generate-nov-databases-1 "nnml")
+  (autoload 'nnml-generate-nov-databases-directory "nnml")
   (autoload 'nnvirtual-find-group-art "nnvirtual"))
 
 
@@ -756,7 +756,7 @@ If LOW, update the lower bound instead."
   (interactive (list gnus-cache-directory))
   (gnus-cache-close)
   (let ((nnml-generate-active-function 'identity))
-    (nnml-generate-nov-databases-1 dir))
+    (nnml-generate-nov-databases-directory dir))
 
   (setq gnus-cache-total-fetched-hashtb nil)
 

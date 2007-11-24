@@ -1,3 +1,9 @@
+2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-cache.el (gnus-cache-generate-nov-databases): Use
+	nnml-generate-nov-databases-directory instead of
+	nnml-generate-nov-databases-1.
+
 2007-11-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* smime.el (smime-cert-by-ldap-1): Use `ldap-search' instead of
