@@ -14649,14 +14649,12 @@ If non-@code{nil}, name of program for fetching new mail.  If
 @subsubsection Fetching Mail
 
 @vindex mail-sources
-@vindex nnmail-spool-file
 The way to actually tell Gnus where to get new mail from is to set
 @code{mail-sources} to a list of mail source specifiers
 (@pxref{Mail Source Specifiers}).
 
-If this variable (and the obsolescent @code{nnmail-spool-file}) is
-@code{nil}, the mail back ends will never attempt to fetch mail by
-themselves.
+If this variable is @code{nil}, the mail back ends will never attempt to
+fetch mail by themselves.
 
 If you want to fetch mail both from your local spool as well as a
 @acronym{POP} mail server, you'd say something like:

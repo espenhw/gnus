@@ -1,3 +1,7 @@
+2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Fetching Mail): Remove obsoleted `nnmail-spool-file'.
+
 2007-11-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.texi: Fix spelling.
