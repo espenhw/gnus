@@ -1,5 +1,33 @@
 2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-msg.el (gnus-summary-reply): Ignore
+	gnus-confirm-mail-reply-to-news for wide and very wide replies.
+
+2007-11-24  Elias Oltmanns  <eo@nebensachen.de>
+
+	* gnus.el (gnus-method-to-server): Add an optional parameter so the
+	caller can indicate whether the cache should be disregarded for this
+	call.  This way the result of the call is reproducible at all times and
+	can be considered a canonical server name for the supplied method.
+	(gnus-agent-method-p): Canonicalize server names by pushing their
+	method through `gnus-method-to-server' using the no-cache argument.
+
+	* gnus-srvr.el (gnus-server-insert-server-line): Call
+	`gnus-method-to-server' with `no-cache' argument.
+
+	* gnus-agent.el (gnus-agent-toggle-plugged): Don't call
+	gnus-agent-possibly-synchronize-flags as this should be called when the
+	server is actually being opened.
+	(gnus-agent-possibly-synchronize-flags)
+	(gnus-agent-possibly-synchronize-flags-server): Move check for the
+	flags file of an agentized server to the latter function.
+
+	* gnus-int.el (gnus-agent-possibly-synchronize-flags-server): Autoload.
+	(gnus-open-server): Call gnus-agent-possibly-synchronize-flags-server
+	after a connection has been established successfully.
+
+2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* tls.el (tls-checktrust, tls-hostmismatch, tls-untrusted): Add custom
 	version.  Minor improvement to doc strings.
 	(tls-program): Add comment.
