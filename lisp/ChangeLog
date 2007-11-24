@@ -1,3 +1,13 @@
+2007-11-24  Elias Oltmanns  <eo@nebensachen.de>
+
+	* tls.el (tls-certtool-program, tls-certtool-program)
+	(tls-hostmismatch): New variables.
+	(tls-checktrust): New variable.  Check if GNU TLS complained about a
+	mismatch between the hostname provided in the certificate and the name
+	of the host connnecting to.
+	(open-tls-stream): Use them.  Check certificates against trusted root
+	certificates.
+
 2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-cache.el (gnus-cache-generate-nov-databases): Use

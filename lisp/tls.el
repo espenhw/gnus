@@ -82,6 +82,38 @@ The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
   :type 'regexp
   :group 'tls)
 
+(defcustom tls-checktrust nil
+  "Indicate if certificates should be checked against trusted root certs.
+If this is `ask', the user can decide whether to accept an untrusted
+certificate. You may have to adapt `tls-program' in order to make this feature
+work properly, i.e., to ensure that the external program knows about the
+root certificates you consider trustworthy. An appropriate entry in .emacs
+might look like this:
+(setq tls-program
+      '(\"gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h\"
+	\"gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h --protocols ssl3\"
+	\"openssl s_client -connect %h:%p -CAfile /etc/ssl/certs/ca-certificates.crt -no_ssl2\"))"
+  :type '(choice (const :tag "Always" t)
+		 (const :tag "Never" nil)
+		 (const :tag "Ask" ask))
+  :group 'tls)
+
+(defcustom tls-untrusted "- Peer's certificate is NOT trusted\\|Verify return code: \\([^0] \\|.[^ ]\\)"
+  "*Regular expression indicating failure of TLS certificate verification.
+The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
+\"openssl s_client\" return in the event of unsuccessful verification."
+  :type 'regexp
+  :group 'tls)
+
+(defcustom tls-hostmismatch "# The hostname in the certificate does NOT match"
+  "*Regular expression indicating a host name mismatch in certificate.
+When the host name specified in the certificate doesn't match the name of the
+host you are connecting to, gnutls-cli issues a warning to this effect. There
+is no such feature in openssl. Set this to nil if you want to ignore host name
+mismatches."
+  :type 'regexp
+  :group 'tls)
+
 (defcustom tls-certtool-program (executable-find "certtool")
   "Name of  GnuTLS certtool.
 Used by `tls-certificate-information'."
@@ -156,6 +188,25 @@ Fourth arg PORT is an integer specifying a port to connect to."
 		 (if done "done" "failed"))
 	(if done
 	    (setq done process)
+	  (delete-process process))))
+    (when done
+      (save-excursion
+	(set-buffer buffer)
+	(when
+	    (or
+	     (and tls-untrusted
+		  (progn
+		    (goto-char (point-min))
+		    (re-search-forward tls-untrusted nil t))
+		  (not (yes-or-no-p
+			(format "The certificate presented by `%s' is NOT trusted. Accept anyway? " host))))
+	     (and tls-hostmismatch
+		  (progn
+		    (goto-char (point-min))
+		    (re-search-forward tls-hostmismatch nil t))
+		  (not (yes-or-no-p
+			(format "Host name in certificate doesn't match `%s'. Connect anyway? " host)))))
+	  (setq done nil)
 	  (delete-process process))))
     (message "Opening TLS connection to `%s'...%s"
 	     host (if done "done" "failed"))
