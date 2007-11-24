@@ -663,8 +663,7 @@ the first newsgroup."
   (defvar gnus-current-select-method)
   (defvar mail-sources)
   (defvar nnmail-scan-directory-mail-source-once)
-  (defvar nnmail-split-history)
-  (defvar nnmail-spool-file))
+  (defvar nnmail-split-history))
 
 (defun gnus-close-all-servers ()
   "Close all servers."
@@ -1763,11 +1762,7 @@ If SCAN, request a scan of that group as well."
 	       ;; not required.
 	       (if (and
 		    (or nnmail-scan-directory-mail-source-once
-			(null (assq 'directory
-				    (or mail-sources
-					(if (listp nnmail-spool-file)
-					    nnmail-spool-file
-					  (list nnmail-spool-file))))))
+			(null (assq 'directory mail-sources)))
 		    (member method scanned-methods))
 		   (setq active (gnus-activate-group group))
 		 (setq active (gnus-activate-group group 'scan))

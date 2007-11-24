@@ -620,7 +620,6 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
   (interactive)
   (let ((gnus-mark-article-hook nil)
 	(gnus-expert-user t)
-	(nnmail-spool-file nil)
 	(mail-sources nil)
 	(gnus-use-dribble-file nil)
 	(gnus-novice-user nil)

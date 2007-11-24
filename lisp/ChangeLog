@@ -1,5 +1,20 @@
 2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnmail.el (nnmail-spool-file): Remove obsolete variable.
+	(nnmail-get-new-mail): Remove code using `nnmail-spool-file'.
+
+	* gnus-start.el (defvar, gnus-get-unread-articles): Remove code using
+	`nnmail-spool-file'.
+
+	* nnkiboze.el (nnkiboze-generate-groups): Don't bind obsolete
+	`nnmail-spool-file'.
+
+	* gnus-move.el (gnus-change-server): Ditto.
+
+	* gnus-kill.el (gnus-batch-score): Ditto.
+
+	* gnus-cache.el (gnus-jog-cache): Ditto.
+
 	* gnus-msg.el (gnus-summary-reply): Ignore
 	gnus-confirm-mail-reply-to-news for wide and very wide replies.
 
