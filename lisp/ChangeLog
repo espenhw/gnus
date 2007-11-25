@@ -1,3 +1,7 @@
+2007-11-25  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-msg.el (gnus-summary-reply): Delete extra paren.
+
 2007-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* tls.el (tls-program): Provide more custom choices from

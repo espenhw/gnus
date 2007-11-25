@@ -1104,7 +1104,7 @@ If VERY-WIDE, make a very wide reply."
 	    (if (or wide very-wide)
 		t ;; Ignore gnus-confirm-mail-reply-to-news for wide and very
 		  ;; wide replies.
-	      (y-or-n-p "Really reply by mail to article author? "))))
+	      (y-or-n-p "Really reply by mail to article author? ")))
     (let* ((article
 	    (if (listp (car yank))
 		(caar yank)
