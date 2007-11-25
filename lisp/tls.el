@@ -62,22 +62,48 @@
 Each entry in the list is tried until a connection is successful.
 %h is replaced with server hostname, %p with port to connect to.
 The program should read input on stdin and write output to
-stdout.  Also see `tls-success' for what the program should output
-after successful negotiation."
-  ;; FIXME: Add suggestions from the doc string of `tls-checktrust' here?  Or
-  ;; provide them as custom options?
-  :type '(repeat string)
+stdout.
+
+See `tls-checktrust' on how to check trusted root certs.
+
+Also see `tls-success' for what the program should output after
+successful negotiation."
+  :type
+  '(choice
+    (list :tag "Choose commands"
+	  :value
+	  ("gnutls-cli -p %p %h"
+	   "gnutls-cli -p %p %h --protocols ssl3"
+	   "openssl s_client -connect %h:%p -no_ssl2")
+	  (set :inline t
+	       ;; FIXME: add brief `:tag "..."' descriptions.
+	       ;; (repeat :inline t :tag "Other" (string))
+	       ;; See `tls-checktrust':
+	       (const "gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h")
+	       (const "gnutls-cli --x509cafile /etc/ssl/certs/ca-certificates.crt -p %p %h --protocols ssl3")
+	       (const "openssl s_client -connect %h:%p -CAfile /etc/ssl/certs/ca-certificates.crt -no_ssl2")
+	       ;; No trust check:
+	       (const "gnutls-cli -p %p %h")
+	       (const "gnutls-cli -p %p %h --protocols ssl3")
+	       (const "openssl s_client -connect %h:%p -no_ssl2"))
+	  (repeat :inline t :tag "Other" (string)))
+    (const :tag "Default list of commands"
+	   ("gnutls-cli -p %p %h"
+	    "gnutls-cli -p %p %h --protocols ssl3"
+	    "openssl s_client -connect %h:%p -no_ssl2"))
+    (list :tag "List of commands"
+	  (repeat :tag "Command" (string))))
   :version "22.1"
   :group 'tls)
 
 (defcustom tls-process-connection-type nil
-  "*Value for `process-connection-type' to use when starting TLS process."
+  "Value for `process-connection-type' to use when starting TLS process."
   :version "22.1"
   :type 'boolean
   :group 'tls)
 
 (defcustom tls-success "- Handshake was completed\\|SSL handshake has read "
-  "*Regular expression indicating completed TLS handshakes.
+  "Regular expression indicating completed TLS handshakes.
 The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
 \"openssl s_client\" outputs."
   :version "22.1"
@@ -103,7 +129,7 @@ consider trustworthy, e.g.:
   :group 'tls)
 
 (defcustom tls-untrusted
-"- Peer's certificate is NOT trusted\\|Verify return code: \\([^0] \\|.[^ ]\\)"
+  "- Peer's certificate is NOT trusted\\|Verify return code: \\([^0] \\|.[^ ]\\)"
   "Regular expression indicating failure of TLS certificate verification.
 The default is what GNUTLS's \"gnutls-cli\" or OpenSSL's
 \"openssl s_client\" return in the event of unsuccessful

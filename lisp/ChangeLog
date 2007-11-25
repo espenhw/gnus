@@ -1,3 +1,9 @@
+2007-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* tls.el (tls-program): Provide more custom choices from
+	`tls-checktrust'.  Refer to `tls-checktrust' in doc string.
+	(tls-process-connection-type, tls-success): Remove "*" in doc string.
+
 2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnmail.el (nnmail-spool-file): Remove obsolete variable.
