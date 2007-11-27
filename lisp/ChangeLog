@@ -1,3 +1,14 @@
+2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-allow-irregular-q-encoded-words): New variable.
+	(rfc2047-encodable-p): Use rfc2047-encoded-word-regexp instead of "=?"
+	to look for encoded word that should be encoded again.
+	(rfc2047-encoded-word-regexp): Make B encoding pattern strict.
+	(rfc2047-encoded-word-regexp-loose): New constant that has loose Q
+	encoding pattern.
+	(rfc2047-decode-region): Switch strict regexp and loose one according
+	to rfc2047-allow-irregular-q-encoded-words.
+
 2007-11-25  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-msg.el (gnus-summary-reply): Delete extra paren.

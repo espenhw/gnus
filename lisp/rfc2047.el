@@ -99,6 +99,9 @@ quoted-printable and base64 respectively.")
 (defvar rfc2047-encode-encoded-words t
   "Whether encoded words should be encoded again.")
 
+(defvar rfc2047-allow-irregular-q-encoded-words t
+  "*Whether to decode irregular Q-encoded words.")
+
 ;;;
 ;;; Functions for encoding RFC2047 messages
 ;;;
@@ -296,7 +299,7 @@ The buffer may be narrowed."
     (goto-char (point-min))
     (or (and rfc2047-encode-encoded-words
 	     (prog1
-		 (search-forward "=?" nil t)
+		 (re-search-forward rfc2047-encoded-word-regexp nil t)
 	       (goto-char (point-min))))
 	(and charsets
 	     (not (equal charsets (list (car message-posting-charset))))))))
@@ -827,8 +830,15 @@ it, put the following line in your ~/.gnus.el file:
 
 (eval-and-compile
   (defconst rfc2047-encoded-word-regexp
-    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\
-\\?\\(B\\|Q\\)\\?\\([!->@-~ ]*\\)\\?="))
+    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
+\\(B\\?[+/0-9A-Za-z]*=*\
+\\|Q\\?[ ->@-~]*\
+\\)\\?=")
+  (defconst rfc2047-encoded-word-regexp-loose
+    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
+\\(B\\?[+/0-9A-Za-z]*=*\
+\\|Q\\?\\(?:\\?+[ -<>@-~]\\)?\\(?:[ ->@-~]+\\?+[ -<>@-~]\\)*[ ->@-~]*\\?*\
+\\)\\?="))
 
 (defvar rfc2047-quote-decoded-words-containing-tspecials nil
   "If non-nil, quote decoded words containing special characters.")
@@ -948,10 +958,12 @@ If ADDRESS-MIME is non-nil, strip backslashes which precede characters
 other than `\"' and `\\' in quoted strings."
   (interactive "r")
   (let ((case-fold-search t)
-	(eword-regexp (eval-when-compile
-			;; Ignore whitespace between encoded-words.
-			(concat "[\n\t ]*\\(" rfc2047-encoded-word-regexp
-				"\\)")))
+	(eword-regexp
+	 (if rfc2047-allow-irregular-q-encoded-words
+	     (eval-when-compile
+	       (concat "[\n\t ]*\\(" rfc2047-encoded-word-regexp-loose "\\)"))
+	   (eval-when-compile
+	     (concat "[\n\t ]*\\(" rfc2047-encoded-word-regexp "\\)"))))
 	b e match words)
     (save-excursion
       (save-restriction
@@ -967,7 +979,7 @@ other than `\"' and `\\' in quoted strings."
 	  (while match
 	    (push (list (match-string 2) ;; charset
 			(char-after (match-beginning 3)) ;; encoding
-			(match-string 4) ;; encoded-text
+			(substring (match-string 3) 2) ;; encoded-text
 			(match-string 1)) ;; encoded-word
 		  words)
 	    ;; Look for the subsequent encoded-words.
