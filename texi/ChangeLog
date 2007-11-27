@@ -1,3 +1,9 @@
+2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-mime.texi (rfc2047): Mention rfc2047-encoded-word-regexp-loose
+	and rfc2047-allow-irregular-q-encoded-words; fix description of
+	rfc2047-encode-encoded-words.
+
 2007-11-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Fetching Mail): Remove obsoleted `nnmail-spool-file'.
