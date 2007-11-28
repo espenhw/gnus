@@ -1,3 +1,8 @@
+2007-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Fancy Mail Splitting): Fix description of splitting based
+	on body.
+
 2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (rfc2047): Mention rfc2047-encoded-word-regexp-loose
