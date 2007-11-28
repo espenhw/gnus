@@ -1,5 +1,9 @@
 2007-11-28  Elias Oltmanns  <eo@nebensachen.de>
 
+	* tls.el (open-tls-stream): Actually consult tls-checktrust to see if
+	certs should be verified and what is to be done in the event of a
+	verification failure.
+
 	* gnus.el (gnus-method-to-server): Add an optional parameter so the
 	caller can indicate whether the cache should be disregarded for this
 	call.  This way the result of the call is reproducible at all times and

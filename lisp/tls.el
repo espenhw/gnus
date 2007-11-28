@@ -229,12 +229,15 @@ Fourth arg PORT is an integer specifying a port to connect to."
 	(set-buffer buffer)
 	(when
 	    (or
-	     (and tls-untrusted
+	     (and tls-checktrust
 		  (progn
 		    (goto-char (point-min))
 		    (re-search-forward tls-untrusted nil t))
-		  (not (yes-or-no-p
-			(format "The certificate presented by `%s' is NOT trusted. Accept anyway? " host))))
+		  (or 
+		   (and (not (eq tls-checktrust 'ask))
+			(message "The certificate presented by `%s' is NOT trusted." host))
+		   (not (yes-or-no-p
+			 (format "The certificate presented by `%s' is NOT trusted. Accept anyway? " host)))))
 	     (and tls-hostmismatch
 		  (progn
 		    (goto-char (point-min))
