@@ -1,3 +1,7 @@
+2007-11-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* tls.el (tls-hostmismatch, open-tls-stream): Checkdoc cleanup.
+
 2007-11-28  Elias Oltmanns  <eo@nebensachen.de>
 
 	* tls.el (open-tls-stream): Actually consult tls-checktrust to see if

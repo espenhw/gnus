@@ -143,7 +143,7 @@ verification."
   "Regular expression indicating a host name mismatch in certificate.
 When the host name specified in the certificate doesn't match the
 name of the host you are connecting to, gnutls-cli issues a
-warning to this effect. There is no such feature in openssl. Set
+warning to this effect.  There is no such feature in openssl.  Set
 this to nil if you want to ignore host name mismatches."
   :type 'regexp
   :version "23.0" ;; No Gnus
@@ -185,7 +185,7 @@ Returns a subprocess-object to represent the connection.
 Input and output work as for subprocesses; `delete-process' closes it.
 Args are NAME BUFFER HOST PORT.
 NAME is name for process.  It is modified if necessary to make it unique.
-BUFFER is the buffer (or buffer-name) to associate with the process.
+BUFFER is the buffer (or buffer name) to associate with the process.
  Process output goes at end of that buffer, unless you specify
  an output stream or filter function to handle the output.
  BUFFER may be also nil, meaning that this process is not associated
@@ -233,7 +233,7 @@ Fourth arg PORT is an integer specifying a port to connect to."
 		  (progn
 		    (goto-char (point-min))
 		    (re-search-forward tls-untrusted nil t))
-		  (or 
+		  (or
 		   (and (not (eq tls-checktrust 'ask))
 			(message "The certificate presented by `%s' is NOT trusted." host))
 		   (not (yes-or-no-p
