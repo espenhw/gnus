@@ -9740,7 +9740,7 @@ To have all Vcards be ignored, you'd say something like this:
 If non-@code{nil}, Gnus won't require the @samp{MIME-Version} header
 before interpreting the message as a @acronym{MIME} message.  This helps
 when reading messages from certain broken mail user agents.  The
-default is @code{nil}.
+default is @code{t}.
 
 @item gnus-article-emulate-mime
 @vindex gnus-article-emulate-mime
