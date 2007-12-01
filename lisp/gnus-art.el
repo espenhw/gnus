@@ -2830,7 +2830,10 @@ Warning: Spammers use links to images in HTML articles to verify
 whether you have read the message.  As
 `gnus-article-browse-html-article' passes the unmodified HTML
 content to the browser without eliminating these \"web bugs\" you
-should only use it for mails from trusted senders."
+should only use it for mails from trusted senders.
+
+If you alwasy want to display HTML part in the browser, set
+`mm-text-html-renderer' to nil."
   ;; Cf. `mm-w3m-safe-url-regexp'
   (interactive)
   (save-window-excursion
