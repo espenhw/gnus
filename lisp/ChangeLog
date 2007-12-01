@@ -1,5 +1,8 @@
 2007-12-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* rfc2047.el (rfc2047-encode-max-chars): Refer to RFC 2047 in doc
+	string.  Add comments.
+
 	* message.el (message-idna-to-ascii-rhs-1): Don't call `idna-to-ascii'
 	if rhs is ASCII.
 

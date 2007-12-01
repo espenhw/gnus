@@ -534,10 +534,19 @@ By default, the string is treated as containing addresses (see
     (rfc2047-encode-region (point-min) (point-max))
     (buffer-string)))
 
+;; From RFC 2047:
+;; 2. Syntax of encoded-words
+;;    [...]
+;;    While there is no limit to the length of a multiple-line header
+;;    field, each line of a header field that contains one or more
+;;    'encoded-word's is limited to 76 characters.
+;;
+;; In `rfc2047-encode-parameter' it is bound to nil, so don't defconst it.
 (defvar rfc2047-encode-max-chars 76
   "Maximum characters of each header line that contain encoded-words.
-If it is nil, encoded-words will not be folded.  Too small value may
-cause an error.  Don't change this for no particular reason.")
+According to RFC 2047, it is 76.  If it is nil, encoded-words
+will not be folded.  Too small value may cause an error.  You
+should not change this value.")
 
 (defun rfc2047-encode-1 (column string cs encoder start crest tail
 				&optional eword)
