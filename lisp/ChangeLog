@@ -1,5 +1,8 @@
 2007-12-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-cite-prefix-regexp): Remove `-' and `+' to avoid
+	matches on patches.
+
 	* gnus-art.el (gnus-article-browse-html-article): Mention
 	`mm-text-html-renderer' in the doc string.
 
