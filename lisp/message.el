@@ -5547,7 +5547,9 @@ subscribed address (and not the additional To and Cc header contents)."
 			(mapcar 'downcase
 				(mapcar
 				 'car (mail-header-parse-addresses field))))))
-	(setq ace (downcase (idna-to-ascii rhs)))
+	(setq ace (if (string-match "\\`[[:ascii:]]+\\'" rhs)
+		      rhs
+		    (downcase (idna-to-ascii rhs))))
 	(when (and (not (equal rhs ace))
 		   (or (not (eq message-use-idna 'ask))
 		       (y-or-n-p (format "Replace %s with %s in %s:? "
