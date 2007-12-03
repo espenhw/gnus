@@ -1,3 +1,7 @@
+2007-12-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-ignored-supersedes-headers): Add "X-ID".
+
 2007-12-03  Nathan J. Williams  <nathanw@MIT.EDU>  (tiny change)
 
 	* imap.el (imap-mailbox-status-asynch): Upcase STATUS items.
@@ -7,15 +11,15 @@
 2007-12-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-uu-extract-map): Add a command for the yenc
-	function. 
+	function.
 
 	* gnus-uu.el (gnus-uu-decode-yenc): New command.
 	(gnus-uu-yenc-article): New function.
 
-	* yenc.el (yenc-first-part-p, yenc-last-part-p): New functions. 
+	* yenc.el (yenc-first-part-p, yenc-last-part-p): New functions.
 
 	* mm-uu.el (mm-uu-yenc-extract): Get the data from the original
-	buffer. 
+	buffer.
 
 2007-12-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
