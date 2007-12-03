@@ -1,5 +1,11 @@
 2007-12-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mailcap.el: Reduce dependencies.
+	(mail-header-parse-content-type): Autoload.
+	(mailcap-delete-duplicates): New alias.
+	(mailcap-mime-info): Add optional argument NO-DECODE.
+	(mailcap-mime-types): Use mailcap-delete-duplicates.
+
 	* message.el (message-ignored-supersedes-headers): Add "X-ID".
 
 2007-12-03  Nathan J. Williams  <nathanw@MIT.EDU>  (tiny change)
