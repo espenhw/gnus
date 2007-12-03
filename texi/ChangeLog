@@ -1,3 +1,7 @@
+2007-12-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Other Files): Add the yenc command.
+
 2007-11-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (MIME Commands): Default of gnus-article-loose-mime is t

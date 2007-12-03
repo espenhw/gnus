@@ -6,6 +6,9 @@
 
 2007-12-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-uu-extract-map): Add a command for the yenc
+	function. 
+
 	* gnus-uu.el (gnus-uu-decode-yenc): New command.
 	(gnus-uu-yenc-article): New function.
 

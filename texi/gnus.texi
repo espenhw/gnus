@@ -8175,6 +8175,11 @@ Save the current series
 @findex gnus-uu-decode-binhex
 Unbinhex the current series (@code{gnus-uu-decode-binhex}).  This
 doesn't really work yet.
+
+@item X Y
+@kindex X Y (Summary)
+@findex gnus-uu-decode-yenc
+yEnc-decode the current series and save it (@code{gnus-uu-decode-yenc}).
 @end table
 
 
