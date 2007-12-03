@@ -1,4 +1,4 @@
-2007-12-03  Nathan J. Williams  <nathanw@MIT.EDU>
+2007-12-03  Nathan J. Williams  <nathanw@MIT.EDU>  (tiny change)
 
 	* imap.el (imap-mailbox-status-asynch): Upcase STATUS items.
 	(imap-parse-status): Upcase status-att for broken servers that sends
