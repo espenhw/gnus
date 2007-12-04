@@ -1,5 +1,7 @@
 2007-12-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-highlight-line): Add FIXME.
+
 	* gnus-dired.el: Reduce Gnus dependencies.
 	(gnus-ems, gnus-msg, gnus-util, message, mm-decode, mml): Don't
 	require.  Use autoloads instead.
