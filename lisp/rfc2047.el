@@ -102,6 +102,37 @@ quoted-printable and base64 respectively.")
 (defvar rfc2047-allow-irregular-q-encoded-words t
   "*Whether to decode irregular Q-encoded words.")
 
+(eval-and-compile ;; Necessary to hard code them in `rfc2047-decode-region'.
+  (defconst rfc2047-encoded-word-regexp
+    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
+\\(B\\?[+/0-9A-Za-z]*=*\
+\\|Q\\?[ ->@-~]*\
+\\)\\?="
+    "Regexp that matches encoded word."
+    ;; The patterns for the B encoding and the Q encoding, i.e. the ones
+    ;; beginning with "B" and "Q" respectively, are restricted into only
+    ;; the characters that those encodings may generally use.
+    )
+  (defconst rfc2047-encoded-word-regexp-loose
+    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
+\\(B\\?[+/0-9A-Za-z]*=*\
+\\|Q\\?\\(?:\\?+[ -<>@-~]\\)?\\(?:[ ->@-~]+\\?+[ -<>@-~]\\)*[ ->@-~]*\\?*\
+\\)\\?="
+    "Regexp that matches encoded word allowing loose Q encoding."
+    ;; The pattern for the Q encoding, i.e. the one beginning with "Q",
+    ;; is similar to:
+    ;; "Q\\?\\(\\?+[^\n=?]\\)?\\([^\n?]+\\?+[^\n=?]\\)*[^\n?]*\\?*"
+    ;;      <--------1-------><----------2,3----------><--4--><-5->
+    ;; They mean:
+    ;; 1. After "Q?", allow "?"s that follow a character other than "=".
+    ;; 2. Allow "=" after "Q?"; it isn't regarded as the terminator.
+    ;; 3. In the middle of an encoded word, allow "?"s that follow a
+    ;;    character other than "=".
+    ;; 4. Allow any characters other than "?" in the middle of an
+    ;;    encoded word.
+    ;; 5. At the end, allow "?"s.
+    ))
+
 ;;;
 ;;; Functions for encoding RFC2047 messages
 ;;;
@@ -836,18 +867,6 @@ it, put the following line in your ~/.gnus.el file:
 ;;;
 ;;; Functions for decoding RFC2047 messages
 ;;;
-
-(eval-and-compile
-  (defconst rfc2047-encoded-word-regexp
-    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
-\\(B\\?[+/0-9A-Za-z]*=*\
-\\|Q\\?[ ->@-~]*\
-\\)\\?=")
-  (defconst rfc2047-encoded-word-regexp-loose
-    "=\\?\\([^][\000-\040()<>@,\;:*\\\"/?.=]+\\)\\(?:\\*[^?]+\\)?\\?\
-\\(B\\?[+/0-9A-Za-z]*=*\
-\\|Q\\?\\(?:\\?+[ -<>@-~]\\)?\\(?:[ ->@-~]+\\?+[ -<>@-~]\\)*[ ->@-~]*\\?*\
-\\)\\?="))
 
 (defvar rfc2047-quote-decoded-words-containing-tspecials nil
   "If non-nil, quote decoded words containing special characters.")
