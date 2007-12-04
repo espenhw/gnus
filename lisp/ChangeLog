@@ -1,3 +1,23 @@
+2007-12-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-dired.el: Reduce Gnus dependencies.
+	(gnus-ems, gnus-msg, gnus-util, message, mm-decode, mml): Don't
+	require.  Use autoloads instead.
+	(mml-attach-file, mm-default-file-encoding, mailcap-extension-to-mime)
+	(mailcap-mime-info, mm-mailcap-command, ps-print-preprint)
+	(message-buffers, gnus-setup-message, gnus-print-buffer): Autoload.
+	(gnus-dired-mode): Adjust doc string.
+	(gnus-dired-mail-mode): New variable.
+	(gnus-dired-mode-map): Avoid using `gnus-define-keys'.
+	(gnus-dired-mode): Avoid using `gnus-run-hooks'.
+	(gnus-dired-mail-buffers): New function.  Return mail or message
+	composition buffers.
+	(gnus-dired-attach): Use it.
+	(gnus-dired-find-file-mailcap): Call `mailcap-mime-info' with
+	NO-DECODE.
+	(gnus-dired-print): Use `gnus-print-buffer' depending on
+	`gnus-dired-mail-mode'.
+
 2007-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encoded-word-regexp)
