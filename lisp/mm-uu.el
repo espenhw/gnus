@@ -236,7 +236,7 @@ To disable dissecting shar codes, for instance, add
 ;; 21 and XEmacs don't support it.
 (defcustom mm-uu-hide-markers
   (< 16 (or (and (fboundp 'defined-colors)
-		 (length (eval '(defined-colors))))
+		 (length (defined-colors)))
 	    (and (fboundp 'device-color-cells)
 		 (device-color-cells))
 	    0))

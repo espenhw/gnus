@@ -1,5 +1,13 @@
 2007-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-use-idna)
+	* gnus-start.el (gnus-site-init-file)
+	* message.el (message-use-idna)
+	* mm-uu.el (mm-uu-hide-markers)
+	* smiley.el (smiley-style): Revert changes that suppress warnings.
+
+2007-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-art.el (gnus-article-browse-html-parts): Add meta html tag to
 	specify charset to html source.  Reported by Christoph Conrad
 	<christoph.conrad@gmx.de>.

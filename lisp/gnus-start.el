@@ -80,7 +80,7 @@ If a file with the `.el' or `.elc' suffixes exists, it will be read instead."
 (defcustom gnus-site-init-file
   (condition-case nil
       (concat (file-name-directory
-	       (directory-file-name (symbol-value 'installation-directory)))
+	       (directory-file-name installation-directory))
 	      "site-lisp/gnus-init")
     (error nil))
   "The site-wide Gnus Emacs-Lisp startup file name, or nil if none.
