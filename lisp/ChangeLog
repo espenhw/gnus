@@ -1,5 +1,11 @@
 2007-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-browse-html-parts): Add meta html tag to
+	specify charset to html source.  Reported by Christoph Conrad
+	<christoph.conrad@gmx.de>.
+
+2007-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-art.el (gnus-use-idna): Don't directly refer to the value of
 	idna-program in order to suppress byte compile warning issued by XEmacs
 	that came to byte compile the default value section of defcustom forms
