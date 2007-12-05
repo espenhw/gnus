@@ -1600,7 +1600,7 @@ no, only reply back to the author."
 (defcustom message-use-idna (and (condition-case nil (require 'idna)
 				   (file-error))
 				 (mm-coding-system-p 'utf-8)
-				 (executable-find idna-program)
+				 (executable-find (symbol-value 'idna-program))
 				 (string= (idna-to-ascii "räksmörgås")
 					  "xn--rksmrgs-5wao1o")
 				 t)
