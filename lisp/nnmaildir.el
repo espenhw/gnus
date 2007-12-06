@@ -883,7 +883,9 @@ by nnmaildir-request-article.")
 			pgname (nnmaildir--pgname nnmaildir--cur-server pgname)
 			group (symbol-value group)
 			ro (nnmaildir--param pgname 'read-only))
-		  (insert (nnmaildir--grp-name group) " ")
+		  (insert (gnus-replace-in-string
+			   (nnmaildir--grp-name group) " " "\\ " t)
+			  " ")
                   (princ (nnmaildir--group-maxnum nnmaildir--cur-server group)
 			 nntp-server-buffer)
 		  (insert " ")
@@ -910,7 +912,9 @@ by nnmaildir-request-article.")
 	  (insert " ")
 	  (princ (nnmaildir--group-maxnum nnmaildir--cur-server group)
 		 nntp-server-buffer)
-	  (insert " " gname "\n")))))
+	  (insert " "
+		  (gnus-replace-in-string gname " " "\\ " t)
+		  "\n")))))
   'group)
 
 (defun nnmaildir-request-update-info (gname info &optional server)
@@ -998,7 +1002,7 @@ by nnmaildir-request-article.")
 	(insert " ")
 	(princ (nnmaildir--group-maxnum nnmaildir--cur-server group)
 	       nntp-server-buffer)
-	(insert " " gname "\n")
+	(insert " " (gnus-replace-in-string gname " " "\\ " t) "\n")
 	t))))
 
 (defun nnmaildir-request-create-group (gname &optional server args)
@@ -1160,7 +1164,7 @@ by nnmaildir-request-article.")
 	      (insert "\t" (nnmaildir--nov-get-beg nov) "\t"
 		      (nnmaildir--art-msgid article) "\t"
 		      (nnmaildir--nov-get-mid nov) "\tXref: nnmaildir "
-		      gname ":")
+		      (gnus-replace-in-string gname " " "\\ " t) ":")
 	      (princ num nntp-server-buffer)
 	      (insert "\t" (nnmaildir--nov-get-end nov) "\n"))))
     (catch 'return

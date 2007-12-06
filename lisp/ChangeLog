@@ -1,3 +1,10 @@
+2004-12-17  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-list, nnmaildir-retrieve-groups,
+	nnmaildir-request-group, nnmaildir-retrieve-headers): Escape spaces in
+	group names with backslashes.  Reported by Tassilo Horn
+	<tassilo@member.fsf.org>.
+
 2007-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-use-idna)
