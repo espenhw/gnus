@@ -1,4 +1,9 @@
-2004-12-17  Paul Jarc  <prj@po.cwru.edu>
+2007-12-06 Christian Plate  <cplate@web.de>
+
+	* nnmaildir.el (nnmaildir-request-update-info): Improved performance.
+	Call gnus-add-to-range ranges only once with a prepared article-list.
+
+2007-12-06  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-list, nnmaildir-retrieve-groups,
 	nnmaildir-request-group, nnmaildir-retrieve-headers): Escape spaces in
