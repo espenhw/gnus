@@ -265,6 +265,24 @@ fixed in Emacs 22."
     (defalias 'replace-highlight 'ignore)
     (defalias 'w3-coding-system-for-mime-charset 'ignore)))
 
+(defun dgnushack-emacs-compile-defcustom-p ()
+  "Return non-nil if Emacs byte compiles `defcustom' forms.
+Those Emacsen will warn against undefined variables and functions used
+in `defcustom' forms."
+  (let ((outbuf (with-temp-buffer
+		  (insert "(defcustom foo (1+ (random)) \"\" :group 'emacs)\n")
+		  (byte-compile-from-buffer (current-buffer) "foo.el"))))
+    (when outbuf
+      (prog1
+	  (with-current-buffer outbuf
+	    (goto-char (point-min))
+	    (search-forward " 'foo '(byte-code " nil t))
+	(kill-buffer outbuf)))))
+
+(when (dgnushack-emacs-compile-defcustom-p)
+  (maybe-fbind '(defined-colors face-attribute))
+  (maybe-bind '(idna-program installation-directory)))
+
 (defun dgnushack-compile-verbosely ()
   "Call dgnushack-compile with warnings ENABLED.  If you are compiling
 patches to gnus, you should consider modifying make.bat to call
