@@ -4,7 +4,7 @@
 	it to bind idna-program, installation-directory, defined-colors, and
 	face-attribute for XEmacs of the version that compiles defcustom forms.
 
-2007-12-06  Christian Plate  <cplate@web.de>
+2007-12-06  Christian Plate  <cplate@web.de>  (tiny change)
 
 	* nnmaildir.el (nnmaildir-request-update-info): Improved performance.
 	Call gnus-add-to-range ranges only once with a prepared article-list.
