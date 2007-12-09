@@ -32,9 +32,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  (defvar gnus-message-group-art)
-  (defvar gnus-list-identifiers)) ; gnus-sum is required where necessary
+  (require 'cl))
+  
 (require 'hashcash)
 (require 'canlock)
 (require 'mailheader)
@@ -51,6 +50,11 @@
 (require 'rfc822)
 (require 'ecomplete)
 
+(autoload 'mailclient-send-it "mailclient") ;; Emacs 22 or contrib/
+
+(defvar gnus-message-group-art)
+(defvar gnus-list-identifiers) ; gnus-sum is required where necessary
+(defvar rmail-enable-mime-composing)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -474,8 +478,7 @@ This is used by `message-kill-buffer'."
   :group 'message-buffers
   :type 'boolean)
 
-(eval-when-compile
-  (defvar gnus-local-organization))
+(defvar gnus-local-organization)
 (defcustom message-user-organization
   (or (and (boundp 'gnus-local-organization)
 	   (stringp gnus-local-organization)
@@ -618,28 +621,36 @@ Done before generating the new subject of a forward."
   :link '(custom-manual "(message)Canceling News")
   :type 'string)
 
+(defvar smtpmail-default-smtp-server)
+
+(defun message-send-mail-function ()
+  "Return suitable value for the variable `message-send-mail-function'."
+  (cond ((and (require 'sendmail)
+	      (boundp 'sendmail-program)
+	      sendmail-program
+	      (executable-find sendmail-program))
+	 'message-send-mail-with-sendmail)
+	((and (locate-library "smtpmail")
+	      (require 'smtpmail)
+	      smtpmail-default-smtp-server)
+	 'message-smtpmail-send-it)
+	((locate-library "mailclient")
+	 'message-send-mail-with-mailclient)
+	(t
+	 (lambda ()
+	   (error "Don't know how to send mail.  Please customize `message-send-mail-function'")))))
+
 ;; Useful to set in site-init.el
-(defcustom message-send-mail-function
-  (let ((program (if (boundp 'sendmail-program)
-		     ;; see paths.el
-		     sendmail-program)))
-    (cond
-     ((and program
-	   (string-match "/" program) ;; Skip path
-	   (file-executable-p program))
-      'message-send-mail-with-sendmail)
-     ((and program
-	   (executable-find program))
-      'message-send-mail-with-sendmail)
-     (t
-      'smtpmail-send-it)))
+(defcustom message-send-mail-function (message-send-mail-function)
   "Function to call to send the current buffer as mail.
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
 
-Valid values include `message-send-mail-with-sendmail' (the default),
+Valid values include `message-send-mail-with-sendmail'
 `message-send-mail-with-mh', `message-send-mail-with-qmail',
-`message-smtpmail-send-it', `smtpmail-send-it' and `feedmail-send-it'.
+`message-smtpmail-send-it', `smtpmail-send-it',
+`feedmail-send-it' and `message-send-mail-with-mailclient'.  The
+default is system dependent.
 
 See also `send-mail-function'."
   :type '(radio (function-item message-send-mail-with-sendmail)
@@ -648,8 +659,12 @@ See also `send-mail-function'."
 		(function-item message-smtpmail-send-it)
 		(function-item smtpmail-send-it)
 		(function-item feedmail-send-it)
-		(function :tag "Other"))
+		(function :tag "Other")
+		(function-item message-send-mail-with-mailclient
+			       :tag "Use Mailclient package")
+ 		(function :tag "Other"))
   :group 'message-sending
+  :initialize 'custom-initialize-default
   :link '(custom-manual "(message)Mail Variables")
   :group 'message-mail)
 
@@ -816,9 +831,8 @@ might set this variable to '(\"-f\" \"you@some.where\")."
   :type '(choice (function)
 		 (repeat string)))
 
-(eval-when-compile
-  (defvar gnus-post-method)
-  (defvar gnus-select-method))
+(defvar gnus-post-method)
+(defvar gnus-select-method)
 (defcustom message-post-method
   (cond ((and (boundp 'gnus-post-method)
 	      (listp gnus-post-method)
@@ -1122,8 +1136,7 @@ these lines."
 	   (file-readable-p "/etc/sendmail.cf")
 	   (let ((buffer (get-buffer-create " *temp*")))
 	     (unwind-protect
-		 (save-excursion
-		   (set-buffer buffer)
+		 (with-current-buffer buffer
 		   (insert-file-contents "/etc/sendmail.cf")
 		   (goto-char (point-min))
 		   (let ((case-fold-search nil))
@@ -1205,7 +1218,7 @@ If nil, you might be asked to input the charset."
 (defcustom message-dont-reply-to-names
   (and (boundp 'rmail-dont-reply-to-names) rmail-dont-reply-to-names)
   "*Addresses to prune when doing wide replies.
-This can be a regexp or a list of regexps. Also, a value of nil means
+This can be a regexp or a list of regexps.  Also, a value of nil means
 exclude your own user name only."
   :version "21.1"
   :group 'message
@@ -1617,7 +1630,7 @@ functionality to work."
 
 (defcustom message-generate-hashcash (if (executable-find "hashcash") t)
   "*Whether to generate X-Hashcash: headers.
-If `t', always generate hashcash headers.  If `opportunistic',
+If t, always generate hashcash headers.  If `opportunistic',
 only generate hashcash headers if it can be done without the user
 waiting (i.e., only asynchronously).
 
@@ -1640,9 +1653,8 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
 (defvar message-inserted-headers nil)
 
 ;; Byte-compiler warning
-(eval-when-compile
-  (defvar gnus-active-hashtb)
-  (defvar gnus-read-active-file))
+(defvar gnus-active-hashtb)
+(defvar gnus-read-active-file)
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
 ;;; (UNIX From lines), minus the initial ^.  It should be a copy
@@ -1916,8 +1928,7 @@ see `message-narrow-to-headers-or-head'."
   "Evaluate FORMS in the reply buffer, if it exists."
   `(when (and message-reply-buffer
 	      (buffer-name message-reply-buffer))
-     (save-excursion
-       (set-buffer message-reply-buffer)
+     (with-current-buffer message-reply-buffer
        ,@forms)))
 
 (put 'message-with-reply-buffer 'lisp-indent-function 0)
@@ -2662,9 +2673,8 @@ Prefixed with two \\[universal-argument]'s, display the PGG manual."
 
 (defvar message-tool-bar-map nil)
 
-(eval-when-compile
-  (defvar facemenu-add-face-function)
-  (defvar facemenu-remove-face-function))
+(defvar facemenu-add-face-function)
+(defvar facemenu-remove-face-function)
 
 ;;; Forbidden properties
 ;;
@@ -2877,6 +2887,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   ;; solution would be not to use `define-derived-mode', and run
   ;; `text-mode-hook' ourself at the end of the mode.
   ;; -- Per Abrahamsen <abraham@dina.kvl.dk> Date: 2001-10-19.
+  ;; This kludge is unneeded in Emacs>=21 since define-derived-mode is
+  ;; now careful to run parent hooks after the body.  --Stef
   (when auto-fill-function
     (setq auto-fill-function normal-auto-fill-function)))
 
@@ -3082,8 +3094,7 @@ or in the synonym headers, defined by `message-header-synonyms'."
   (let ((follow-to
 	 (and message-reply-buffer
 	      (buffer-name message-reply-buffer)
-	      (save-excursion
-		(set-buffer message-reply-buffer)
+	      (with-current-buffer message-reply-buffer
 		(message-get-reply-headers t)))))
     (save-excursion
       (save-restriction
@@ -3335,8 +3346,7 @@ The three allowed values according to RFC 1327 are `high', `normal'
 and `low'."
   (interactive)
   (save-excursion
-    (let ((valid '("high" "normal" "low"))
-	  (new "high")
+    (let ((new "high")
 	  cur)
       (save-restriction
 	(message-narrow-to-headers)
@@ -3610,15 +3620,13 @@ Really top post? ")))
 (defun message-buffers ()
   "Return a list of active message buffers."
   (let (buffers)
-    (save-excursion
+    (save-current-buffer
       (dolist (buffer (buffer-list t))
 	(set-buffer buffer)
 	(when (and (eq major-mode 'message-mode)
 		   (null message-sent-message-via))
 	  (push (buffer-name buffer) buffers))))
     (nreverse buffers)))
-
-(eval-when-compile (defvar mail-citation-hook))	; Compiler directive
 
 (defun message-cite-original-1 (strip-signature)
   "Cite an original message.
@@ -3685,6 +3693,8 @@ This function uses `mail-citation-hook' if that is non-nil."
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
   (message-cite-original-1 nil))
+
+(defvar gnus-extract-address-components)
 
 (defun message-insert-formatted-citation-line (&optional from date)
   "Function that inserts a formatted citation line.
@@ -4302,8 +4312,7 @@ This function could be useful in `message-setup-hook'."
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
-	(save-excursion
-	  (set-buffer tembuf)
+	(with-current-buffer tembuf
 	  (erase-buffer)
 	  ;; Avoid copying text props (except hard newlines).
 	  (insert (with-current-buffer mailbuf
@@ -4448,8 +4457,7 @@ If you always want Gnus to send messages in one piece, set
 	    (unless (or (null cpr) (and (numberp cpr) (zerop cpr)))
 	      (error "Sending...failed with exit value %d" cpr)))
 	  (when message-interactive
-	    (save-excursion
-	      (set-buffer errbuf)
+	    (with-current-buffer errbuf
 	      (goto-char (point-min))
 	      (while (re-search-forward "\n+ *" nil t)
 		(replace-match "; "))
@@ -4529,6 +4537,13 @@ if your ISP requires the POP-before-SMTP authentication.  See the Gnus
 manual for details."
   (run-hooks 'message-send-mail-hook)
   (smtpmail-send-it))
+
+(defun message-send-mail-with-mailclient ()
+  "Send the prepared message buffer with `mailclient-send-it'.
+This only differs from `smtpmail-send-it' that this command evaluates
+`message-send-mail-hook' just before sending a message."
+  (run-hooks 'message-send-mail-hook)
+  (mailclient-send-it))
 
 (defun message-canlock-generate ()
   "Return a string that is non-trivial to guess.
@@ -4612,8 +4627,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 		 (message-check-news-syntax)))
 	  nil
 	(unwind-protect
-	    (save-excursion
-	      (set-buffer tembuf)
+	    (with-current-buffer tembuf
 	      (buffer-disable-undo)
 	      (erase-buffer)
 	      ;; Avoid copying text props (except hard newlines).
@@ -5005,7 +5019,7 @@ Otherwise, generate and save a value for `canlock-password' first."
    ;; Check for control characters.
    (message-check 'control-chars
      (if (re-search-forward
-	  (mm-string-as-multibyte "[\000-\007\013\015-\032\034-\037\200-\237]")
+	  (mm-string-to-multibyte "[\000-\007\013\015-\032\034-\037\200-\237]")
 	  nil t)
 	 (y-or-n-p
 	  "The article contains control characters.  Really post? ")
@@ -5276,8 +5290,7 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
   "Return the References header for this message."
   (when message-reply-headers
     (let ((message-id (mail-header-message-id message-reply-headers))
-	  (references (mail-header-references message-reply-headers))
-	  new-references)
+	  (references (mail-header-references message-reply-headers)))
       (if (or references message-id)
 	  (concat (or references "") (and references " ")
 		  (or message-id ""))
@@ -5525,8 +5538,7 @@ subscribed address (and not the additional To and Cc header contents)."
 			     (mapcar 'funcall
 				     message-subscribed-address-functions))))
     (save-match-data
-      (let ((subscribed-lists nil)
-	    (list
+      (let ((list
 	     (loop for recipient in recipients
 	       when (loop for regexp in mft-regexps
 		      when (string-match regexp recipient) return t)
@@ -6873,8 +6885,7 @@ the message."
 	    (setq subject (funcall func subject))))
 	subject))))
 
-(eval-when-compile
-  (defvar gnus-article-decoded-p))
+(defvar gnus-article-decoded-p)
 
 
 ;;;###autoload
@@ -7087,8 +7098,6 @@ is for the internal use."
     (if (rmail-msg-is-pruned)
 	(rmail-msg-restore-non-pruned-header)))
   (message-forward-make-body forward-buffer))
-
-(eval-when-compile (defvar rmail-enable-mime-composing))
 
 ;; Fixme: Should have defcustom.
 ;;;###autoload
@@ -7311,8 +7320,7 @@ which specify the range to operate on."
     (mapcar #'delete-overlay (overlays-in (point-min) (point-max)))))
 
 ;; Support for toolbar
-(eval-when-compile
-  (defvar tool-bar-mode))
+(defvar tool-bar-mode)
 
 ;; Note: The :set function in the `message-tool-bar*' variables will only
 ;; affect _new_ message buffers.  We might add a function that walks thru all
@@ -7377,7 +7385,7 @@ See `gmm-tool-bar-from-list' for details on the format of the list."
 
 (defcustom message-tool-bar-retro
   '(;; Old Emacs 21 icon for consistency.
-    (message-send-and-exit "gnus/mail_send")
+    (message-send-and-exit "gnus/mail-send")
     (message-kill-buffer "close")
     (message-dont-send "cancel")
     (mml-attach-file "attach" mml-mode-map)
@@ -7556,9 +7564,8 @@ The following arguments may contain lists of values."
   (if (and show
 	   (setq text (message-flatten-list text)))
       (save-window-excursion
-	(save-excursion
-	  (with-output-to-temp-buffer " *MESSAGE information message*"
-	    (set-buffer " *MESSAGE information message*")
+        (with-output-to-temp-buffer " *MESSAGE information message*"
+          (with-current-buffer " *MESSAGE information message*"
 	    (fundamental-mode)		; for Emacs 20.4+
 	    (mapc 'princ text)
 	    (goto-char (point-min))))
@@ -7581,16 +7588,13 @@ Then clone the local variables and values from the old buffer to the
 new one, cloning only the locals having a substring matching the
 regexp VARSTR."
   (let ((oldbuf (current-buffer)))
-    (save-excursion
-      (set-buffer (generate-new-buffer name))
+    (with-current-buffer (generate-new-buffer name)
       (message-clone-locals oldbuf varstr)
       (current-buffer))))
 
 (defun message-clone-locals (buffer &optional varstr)
   "Clone the local variables from BUFFER to the current buffer."
-  (let ((locals (save-excursion
-		  (set-buffer buffer)
-		  (buffer-local-variables)))
+  (let ((locals (with-current-buffer buffer (buffer-local-variables)))
 	(regexp "^gnus\\|^nn\\|^message\\|^sendmail\\|^smtp\\|^user-mail-address"))
     (mapcar
      (lambda (local)
@@ -7727,7 +7731,7 @@ From headers in the original article."
 		   message-hidden-headers))
 	(inhibit-point-motion-hooks t)
 	(after-change-functions nil)
-	(end-of-headers 0))
+	(end-of-headers (point-min)))
     (when regexps
       (save-excursion
 	(save-restriction
@@ -7742,11 +7746,11 @@ From headers in the original article."
 		(setq header (buffer-substring begin (point))
 		      header-len (- (point) begin))
 		(delete-region begin (point))
-		(goto-char (1+ end-of-headers))
+		(goto-char end-of-headers)
 		(insert header)
 		(setq end-of-headers
 		      (+ end-of-headers header-len))))))))
-    (narrow-to-region (1+ end-of-headers) (point-max))))
+    (narrow-to-region end-of-headers (point-max))))
 
 (defun message-hide-header-p (regexps)
   (let ((result nil)

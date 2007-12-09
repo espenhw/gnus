@@ -75,6 +75,23 @@
 	(rfc2047-encoded-word-regexp-loose): Move forward; add comments
 	explaining what regexp patterns are for.
 
+2007-12-04  Glenn Morris  <rgm@gnu.org>
+
+	* password.el: Move to password-cache.el.
+
+	* mml1991.el (password-read, password-cache-add, password-cache-remove):
+	* mml2015.el (password-read, password-cache-add, password-cache-remove):
+	* mml-smime.el (password-read, password-cache-add)
+	(password-cache-remove):
+	No need to autoload, since mml-sec requires password.
+
+	* gnus.el (gnus-spam-resend-to, gnus-ham-resend-to):
+	* message.el (gnus-extract-address-components):
+	* mml-smime.el (gnus-extract-address-components): Define for compiler.
+
+	* mml-sec.el, sieve-manage.el, smime.el: Require password-cache or
+	password.
+
 2007-12-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mailcap.el: Reduce dependencies.
@@ -104,6 +121,22 @@
 	* mm-uu.el (mm-uu-yenc-extract): Get the data from the original
 	buffer.
 
+2007-12-02  Glenn Morris  <rgm@gnu.org>
+
+	* binhex.el (binhex): New custom group.
+	(binhex-decoder-program, binhex-decoder-switches)
+	(binhex-use-external): Move to the binhex custom group.
+
+	* uudecode.el (uudecode): New custom group.
+	(uudecode-decoder-program, uudecode-decoder-switches)
+	(uudecode-use-external): Move to the uudecode custom group.
+
+	* netrc.el (top-level): Don't load `encrypt' features.
+	(netrc-parse): Don't use encrypt.
+	(netrc-find-service-name, netrc-find-service-number): Don't use caddr.
+
+	* encrypt.el: Remove file.
+
 2007-12-01  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-cite-prefix-regexp): Remove `-' and `+' to avoid
@@ -117,6 +150,21 @@
 
 	* message.el (message-idna-to-ascii-rhs-1): Don't call `idna-to-ascii'
 	if rhs is ASCII.
+
+2007-12-01  Glenn Morris  <rgm@gnu.org>
+
+	* mail-source.el (top-level): Require format-spec before
+	eval-when-compile.
+
+2007-11-30  Glenn Morris  <rgm@gnu.org>
+
+	* encrypt.el: Require password, rather than autoloading password-read.
+
+2007-11-29  Glenn Morris  <rgm@gnu.org>
+
+	* imap.el (sasl-find-mechanism, sasl-mechanism-name)
+	(sasl-make-client, sasl-next-step, sasl-step-data)
+	(sasl-step-set-data): Declare as functions.
 
 2007-11-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -155,6 +203,12 @@
 	interactively; check if gnus-article-x-face-too-ugly matches author.
 	(article-display-x-face): Display face even if From header is missing
 	as article-display-face does.
+
+2007-11-27  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* hashcash.el (message-narrow-to-headers-or-head)
+	(message-fetch-field, message-goto-eoh)
+	(message-narrow-to-headers): Declare as functions.
 
 2007-11-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -223,10 +277,43 @@
 	nnml-generate-nov-databases-directory instead of
 	nnml-generate-nov-databases-1.
 
+2007-11-24  Glenn Morris  <rgm@gnu.org>
+
+	* message.el (message-tool-bar-retro): Update for rename
+	mail_send.xpm->mail-send.xpm.
+
 2007-11-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* smime.el (smime-cert-by-ldap-1): Use `ldap-search' instead of
 	`smime-ldap-search' for Emacs 22 and up.
+
+2007-11-22  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-art.el (gnus-article-truncate-lines): Use `truncate-lines'.
+
+	* message.el (message-send-mail-function): Fix error convention.
+	(message-mailer-swallows-blank-line, message-send-mail-with-sendmail)
+	(message-widen-reply, message-send-mail, message-talkative-question)
+	(message-with-reply-buffer, message-generate-new-buffer-clone-locals)
+	(message-clone-locals, message-send-news): Use with-current-buffer.
+	(message-insert-or-toggle-importance): Remove unused var `valid'.
+	(message-make-references): Remove unused var `new-references'.
+	(message-make-mail-followup-to): Remove unused var `subscribed-lists'.
+
+2007-11-22  Juanma Barranquero  <lekktu@gmail.com>
+
+	* spam.el (spam-find-spam, spam-enter-list): Doc fixes.
+	(spam-split-symbolic-return-positive): Reflow docstring.
+	(spam-backends, spam-summary-exit-behavior)
+	(spam-mark-ham-unread-before-move-from-spam-group)
+	(spam-summary-score-preferred-header, spam-sa-learn-spam-switch)
+	(spam-sa-learn-ham-switch, spam-sa-learn-unregister-switch)
+	(spam-clear-cache, spam-backend-check, spam-install-backend)
+	(spam-install-statistical-backend, spam-list-of-processors)
+	(spam-group-processor-p, spam-split, spam-bogofilter-score)
+	(spam-bsfilter-score, spam-check-bsfilter, spam-crm114-score)
+	(spam-check-crm114, spam-initialize, spam-unload-hook):
+	Fix typos in docstrings.
 
 2007-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -239,6 +326,112 @@
 	* gnus-start.el (gnus-get-unread-articles): Don't prevent from checking
 	foreign groups unless a group level is specified by a user.
 	Reported by Dan Nicolaescu <dann@ics.uci.edu>.
+
+2007-11-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-send-mail-function): Require sendmail.
+
+2007-11-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-send-mail-function): Check for smtpmail too.
+
+	* utf7.el (utf7-encode, utf7-decode): Use coding system
+	`utf-7'/`utf-7-imap' from utf-7.el' if available.
+
+	* message.el (message-send-mail-function): New function.
+	(message-send-mail-function): Set default using
+	message-send-mail-function.  Adjust doc string.
+	(message-send-mail-with-mailclient): New function.
+
+2007-11-17  Richard Stallman  <rms@gnu.org>
+
+	* assistant.el: Remove file.
+
+2007-11-16  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* smime.el (from):
+	* rfc2047.el (message-posting-charset):
+	* qp.el (mm-use-ultra-safe-encoding):
+	* pop3.el (parse-time-months):
+	* nnrss.el (mm-text-html-renderer, mm-text-html-washer-alist):
+	* nnml.el (files):
+	* nnheader.el (gnus-newsgroup-name, nnheader-file-coding-system)
+	(jka-compr-compression-info-list, ange-ftp-path-format)
+	(efs-path-regexp):
+	* nndiary.el (files):
+	* mml2015.el (mc-default-scheme, mc-schemes, pgg-default-user-id)
+	(pgg-errors-buffer, pgg-output-buffer, epg-user-id-alist)
+	(epg-digest-algorithm-alist, inhibit-redisplay)
+	(password-cache-expiry):
+	* mml1991.el (pgg-default-user-id, pgg-errors-buffer)
+	(pgg-output-buffer, password-cache-expiry):
+	* mml.el (mml-dnd-protocol-alist, ange-ftp-name-format)
+	(efs-path-regexp):
+	* mml-smime.el (epg-user-id-alist, epg-digest-algorithm-alist)
+	(inhibit-redisplay):
+	* mm-uu.el (file-name, start-point, end-point, entry)
+	(gnus-newsgroup-name, gnus-newsgroup-charset):
+	* mm-util.el (mm-mime-mule-charset-alist, latin-unity-coding-systems)
+	(latin-unity-ucs-list):
+	* mm-bodies.el (mm-uu-yenc-decode-function, mm-uu-decode-function)
+	(mm-uu-binhex-decode-function):
+	* message.el (gnus-message-group-art, gnus-list-identifiers, )
+	(rmail-enable-mime-composing, gnus-local-organization)
+	(gnus-post-method, gnus-select-method, gnus-active-hashtb)
+	(gnus-read-active-file, facemenu-add-face-function)
+	(facemenu-remove-face-function, gnus-article-decoded-p)
+	(tool-bar-mode):
+	* mail-source.el (display-time-mail-function):
+	* gnus-util.el (nnmail-pathname-coding-system)
+	(nnmail-active-file-coding-system, gnus-emphasize-whitespace-regexp)
+	(gnus-original-article-buffer, gnus-user-agent)
+	(rmail-default-rmail-file, mm-text-coding-system, tool-bar-mode)
+	(xemacs-codename, sxemacs-codename, emacs-program-version):
+	* gnus-sum.el (tool-bar-mode, gnus-tmp-header, number):
+	* gnus-start.el (gnus-agent-covered-methods)
+	(gnus-agent-file-loading-local, gnus-agent-file-loading-cache)
+	(gnus-current-headers, gnus-thread-indent-array, gnus-newsgroup-name)
+	(gnus-newsgroup-headers, gnus-group-list-mode)
+	(gnus-group-mark-positions, gnus-newsgroup-data)
+	(gnus-newsgroup-unreads, nnoo-state-alist)
+	(gnus-current-select-method, mail-sources)
+	(nnmail-scan-directory-mail-source-once, nnmail-split-history)
+	(nnmail-spool-file, gnus-cache-active-hashtb):
+	* gnus-mh.el (mh-lib-progs):
+	* gnus-ems.el (gnus-tmp-unread, gnus-tmp-replied)
+	(gnus-tmp-score-char, gnus-tmp-indentation, gnus-tmp-opening-bracket)
+	(gnus-tmp-lines, gnus-tmp-name, gnus-tmp-closing-bracket)
+	(gnus-tmp-subject-or-nil, gnus-check-before-posting, gnus-mouse-face)
+	(gnus-group-buffer):
+	* gnus-cite.el (font-lock-defaults-computed, font-lock-keywords)
+	(font-lock-set-defaults):
+	* gnus-art.el (tool-bar-map, w3m-minor-mode-map)
+	(gnus-face-properties-alist, charset, gnus-summary-article-menu)
+	(gnus-summary-post-menu, total-parts, type, condition, length):
+	* gnus-agent.el (gnus-agent-read-agentview):
+	* flow-fill.el (show-trailing-whitespace):
+	* gnus-group.el (tool-bar-mode, nnrss-group-alist): Remove unnecessary
+	eval-and-compile wrappers for byte compiler pacifiers.
+
+	* mm-view.el (mm-inline-image-xemacs): Only do something for XEmacs.
+	(mm-display-inline-fontify): Check for featurep 'xemacs not
+	extent-list.
+
+	* mm-decode.el (mm-display-external): Check for featurep 'xemacs not
+	itimer-list.
+	(mm-create-image-xemacs): Only do something for XEmacs.
+	(mm-image-fit-p): Check for featurep 'xemacs not glyph-width.
+
+	* mm-util.el (mm-find-buffer-file-coding-system): Add check for XEmacs.
+
+	* gnus-registry.el (gnus-adaptive-word-syntax-table):
+	* gnus-fun.el (gnus-face-properties-alist): Pacify byte compiler.
+
+2007-11-15  Juanma Barranquero  <lekktu@gmail.com>
+
+	* nnimap.el (nnimap-split-download-body):
+	* gnus-demon.el (gnus-demon):
+	* gnus-uu.el (gnus-uu-default-view-rules): Fix typos in docstrings.
 
 2007-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -325,6 +518,12 @@
 2007-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-ems.el (gnus-x-splash): Work even if there's no scroll bar.
+
+2007-10-29  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* message.el (message-check-news-body-syntax): Avoid
+	mm-string-as-multibyte.
+	(message-hide-headers): Don't assume (point-min)==1.
 
 2007-10-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -525,7 +724,7 @@
 
 2007-10-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
-        * Relicense "GPLv2 or later" files to "GPLv3 or later".
+	* Relicense "GPLv2 or later" files to "GPLv3 or later".
 
 2007-10-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -10968,7 +11167,7 @@
 	eval-when-compile, to define gnus-agent-set-cat-groups as the setf
 	method of gnus-agent-cat-groups even when the buffer has been
 	evaled.
-	(gnus-agent-save-active,gnus-agent-save-active-1): Merged to
+	(gnus-agent-save-active, gnus-agent-save-active-1): Merged to
 	delete gnus-agent-save-active-1.
 	(gnus-agent-save-groups): Deleted. Identical to
 	gnus-agent-save-active.
@@ -10979,12 +11178,12 @@
 	servers.  Add use of min/max range limits from server's local
 	file.
 	(gnus-agent-save-alist): Removed unused optional argument.
-	(gnus-agent-load-local,gnus-agent-read-and-cache-local),
-	(gnus-agent-read-local,gnus-agent-save-local,gnus-agent-get-local),
+	(gnus-agent-load-local, gnus-agent-read-and-cache-local),
+	(gnus-agent-read-local, gnus-agent-save-local, gnus-agent-get-local),
 	(gnus-agent-set-local): A per-server file that keeps min/max range
-	limits for articles known to the agent.	 Provides a fast mechanism
+	limits for articles known to the agent.  Provides a fast mechanism
 	for altering many active ranges.
-	(gnus-agent-expire-group,gnus-agent-expire): No longer save the
+	(gnus-agent-expire-group, gnus-agent-expire): No longer save the
 	active file (local makes it unnecessary).
 	(gnus-agent-regenerate-group): Fixed XEmacs compatibility.
 

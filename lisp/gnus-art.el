@@ -28,9 +28,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  (defvar tool-bar-map)
-  (defvar w3m-minor-mode-map))
+  (require 'cl))
+(defvar tool-bar-map)
+(defvar w3m-minor-mode-map)
 
 (require 'gnus)
 ;; Avoid the "Recursive load suspected" error in Emacs 21.1.
@@ -2222,7 +2222,7 @@ unfolded."
 	(mail-header-fold-field)
 	(goto-char (point-max))))))
 
-(defcustom gnus-article-truncate-lines default-truncate-lines
+(defcustom gnus-article-truncate-lines (default-value 'truncate-lines)
   "Value of `truncate-lines' in Gnus Article buffer.
 Valid values are nil, t, `head', `first', `last', an integer or a
 predicate.  See Info node `(gnus)Customizing Articles'."
@@ -2332,8 +2332,7 @@ long lines iff arg is positive."
 	 (forward-line 1)
 	 (point))))))
 
-(eval-when-compile
-  (defvar gnus-face-properties-alist))
+(defvar gnus-face-properties-alist)
 
 (defun article-display-face (&optional force)
   "Display any Face headers in the header."
@@ -2732,7 +2731,7 @@ charset defined in `gnus-summary-show-article-charset-alist' is used."
 	   ;; Put the mark meaning this part was rendered by emacs-w3m.
 	   'mm-inline-text-html-with-w3m t))))
 
-(eval-when-compile (defvar charset)) ;; Bound by `article-wash-html'.
+(defvar charset) ;; Bound by `article-wash-html'.
 
 (defun gnus-article-wash-html-with-w3m-standalone ()
   "Wash the current buffer with w3m."
@@ -3567,9 +3566,8 @@ This format is defined by the `gnus-article-time-format' variable."
 				 gnus-newsgroup-name 'highlight-words t)))
 	     gnus-emphasis-alist)))))
 
-(eval-when-compile
-  (defvar gnus-summary-article-menu)
-  (defvar gnus-summary-post-menu))
+(defvar gnus-summary-article-menu)
+(defvar gnus-summary-post-menu)
 
 ;;; Saving functions.
 
@@ -7941,12 +7939,11 @@ For example:
 	  (funcall (cadr elem)))))))
 
 ;; Dynamic variables.
-(eval-when-compile
-  (defvar part-number)
-  (defvar total-parts)
-  (defvar type)
-  (defvar condition)
-  (defvar length))
+(defvar part-number)
+(defvar total-parts)
+(defvar type)
+(defvar condition)
+(defvar length)
 
 (defun gnus-treat-predicate (val)
   (cond

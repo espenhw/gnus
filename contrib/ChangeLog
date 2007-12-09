@@ -1,3 +1,12 @@
+2007-11-27  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* mail/sendmail.el (dired-view-file, dired-get-filename): Declare as
+	functions.
+
+2007-11-24  Kenichi Handa  <handa@m17n.org>
+
+	* ucs-tables.el (ucs-8859-7-alist): Update the table.
+
 2007-11-20  Noah S. Friedman  <friedman@splode.com>
 
 	* vcard.el: Update to revision 1.11 2000/06/29.

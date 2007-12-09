@@ -1,6 +1,7 @@
-;;; password.el --- Read passwords from user, possibly using a password cache.
+;;; password-cache.el --- Read passwords, possibly using a password cache.
 
-;; Copyright (C) 1999, 2000, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004, 2005, 2006, 2007
+;;   Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Created: 2003-12-21
@@ -36,13 +37,6 @@
 ;; (password-cache-add "test" "foo")
 ;;  => nil
 
-;; Note the previous two can be replaced with:
-;; (password-read-and-add "Password? " "test")
-;; ;; Minibuffer prompt for password.
-;; => "foo"
-;; ;; "foo" is now cached with key "test"
-
-
 ;; (password-read "Password? " "test")
 ;; ;; No minibuffer prompt
 ;;  => "foo"
@@ -58,9 +52,6 @@
 ;;  => "foo"
 
 ;;; Code:
-
-(eval-when-compile
-  (require 'cl))
 
 (defcustom password-cache t
   "Whether to cache passwords."
@@ -96,13 +87,19 @@ The variable `password-cache' control whether the cache is used."
 (defun password-read-and-add (prompt &optional key)
   "Read password, for use with KEY, from user, or from cache if wanted.
 Then store the password in the cache.  Uses `password-read' and
-`password-cache-add'.
-Custom variables `password-cache' and `password-cache-expiry'
-regulate cache behavior."
+`password-cache-add'.  Custom variables `password-cache' and
+`password-cache-expiry' regulate cache behavior.
+
+Warning: the password is cached without checking that it is
+correct.  It is better to check the password before caching.  If
+you must use this function, take care to check passwords and
+remove incorrect ones from the cache."
   (let ((password (password-read prompt key)))
     (when (and password key)
       (password-cache-add key password))
     password))
+
+(make-obsolete 'password-read-and-add 'password-read "23.1")
 
 (defun password-cache-remove (key)
   "Remove password indexed by KEY from password cache.
@@ -120,8 +117,7 @@ user again."
 
 (defun password-cache-add (key password)
   "Add password to cache.
-The password is removed by a timer after `password-cache-expiry'
-seconds."
+The password is removed by a timer after `password-cache-expiry' seconds."
   (when (and password-cache-expiry (null (intern-soft key password-data)))
     (run-at-time password-cache-expiry nil
 		 #'password-cache-remove
@@ -134,7 +130,7 @@ seconds."
   (interactive)
   (fillarray password-data 0))
 
-(provide 'password)
+(provide 'password-cache)
 
 ;;; arch-tag: ab160494-16c8-4c68-a4a1-73eebf6686e5
-;;; password.el ends here
+;;; password-cache.el ends here
