@@ -1,5 +1,8 @@
 2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* hashcash.el, imap.el, pgg.el, pgg-parse.el (declare-function): Add
+	new no-op macro for backward compatibility.
+
 	* imap.el (imap-string-to-integer): New function.
 
 2007-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
