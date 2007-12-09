@@ -1,3 +1,7 @@
+2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* imap.el (imap-string-to-integer): New function.
+
 2007-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el (dgnushack-emacs-compile-defcustom-p): New function; use
