@@ -29,8 +29,6 @@ gnus-namazu.el
 gpg-ring.el
 gpg.el
 
-hashcash.el
-
 nnir.el
 
 	Interface to various full-text search engines.  Provides less
