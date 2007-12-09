@@ -27,6 +27,9 @@
 
 ;;; Code:
 
+;; For Emacs < 22.2.
+(eval-and-compile
+  (unless (fboundp 'declare-function) (defmacro declare-function (&rest r))))
 (eval-when-compile
   (require 'cl))
 
@@ -4028,7 +4031,7 @@ If NO-DISPLAY, don't generate a summary buffer."
   "Query where the respool algorithm would put this article."
   (interactive)
   (gnus-summary-select-article)
-  (message (gnus-general-simplify-subject (gnus-summary-article-subject))))
+  (message "%s" (gnus-general-simplify-subject (gnus-summary-article-subject))))
 
 (defun gnus-gather-threads-by-subject (threads)
   "Gather threads by looking at Subject headers."
@@ -5575,6 +5578,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-unseen
 	  (gnus-inverse-list-range-intersection
 	   gnus-newsgroup-articles gnus-newsgroup-seen))))
+
+(declare-function gnus-get-predicate "gnus-agent" (predicate))
 
 (defun gnus-summary-display-make-predicate (display)
   (require 'gnus-agent)
