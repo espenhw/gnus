@@ -48,16 +48,16 @@
 		    gnus-agent-expire-current-dirs anguage-info-alist
 		    line-spacing mark-active mouse-selection-click-count
 		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    temporary-file-directory timer-list tool-bar-mode
-		    transient-mark-mode)))
+		    show-trailing-whitespace temporary-file-directory
+		    timer-list tool-bar-mode transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation delete-extent device-connection dfw-device
 		 events-to-keys find-face font-lock-set-defaults frame-device
 		 get-char-table glyph-height glyph-width ldap-search-entries
 		 mail-aliases-setup make-annotation make-event make-glyph
 		 map-extents message-xmas-redefine put-char-table
-		 set-extent-property set-itimer-function temp-directory
-		 valid-image-instantiator-format-p
+		 run-mode-hooks set-extent-property set-itimer-function
+		 temp-directory valid-image-instantiator-format-p
 		 w3-coding-system-for-mime-charset w3-do-setup
 		 w3-prepare-buffer w3-region window-pixel-height
 		 window-pixel-width))

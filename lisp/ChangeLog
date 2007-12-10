@@ -1,3 +1,12 @@
+2007-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-browse-html-parts): Decode CTE.
+
+	* pgg.el (pgg-run-at-time, pgg-cancel-timer): Use eval-and-compile.
+
+	* lpath.el: Fbind run-mode-hooks for Emacs 21;
+	bind show-trailing-whitespace for XEmacs.
+
 2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* hashcash.el, imap.el, pgg.el, pgg-parse.el (declare-function): Add
