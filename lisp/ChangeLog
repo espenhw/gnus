@@ -1,3 +1,13 @@
+2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-add-meta-html-tag): New function.
+	(mm-save-part-to-file, mm-pipe-part): Use it
+
+	* gnus-art.el (gnus-article-browse-delete-temp-files): Use
+	gnus-y-or-n-p instead of y-or-n-p.
+	(gnus-article-browse-html-parts): Work with message/external-body; use
+	mm-add-meta-html-tag.
+
 2007-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-browse-html-parts): Decode CTE.
