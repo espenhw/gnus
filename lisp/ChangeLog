@@ -1,3 +1,8 @@
+2007-12-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-util.el (gnus-y-or-n-p, gnus-yes-or-no-p): Alias to y-or-n-p and
+	yes-or-no-p.
+
 2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-add-meta-html-tag): New function.
