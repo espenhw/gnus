@@ -3918,6 +3918,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 
 (defun article-verify-x-pgp-sig ()
   "Verify X-PGP-Sig."
+  ;; <ftp://ftp.isc.org/pub/pgpcontrol/FORMAT>
   (interactive)
   (if (gnus-buffer-live-p gnus-original-article-buffer)
       (let ((sig (with-current-buffer gnus-original-article-buffer
@@ -4726,8 +4727,9 @@ Deleting parts may malfunction or destroy the article; continue? "))
 	   (handles gnus-article-mime-handles)
 	   (none "(none)")
 	   (description
-	    (mail-decode-encoded-word-string (or (mm-handle-description data)
-						 none)))
+	    (let ((desc (mm-handle-description data)))
+	      (when desc
+		(mail-decode-encoded-word-string desc))))
 	   (filename
 	    (or (mail-content-type-get (mm-handle-disposition data) 'filename)
 		none))
@@ -4745,7 +4747,8 @@ Deleting parts may malfunction or destroy the article; continue? "))
 	    "| Type:           " type "\n"
 	    "| Filename:       " filename "\n"
 	    "| Size (encoded): " bsize " Byte\n"
-	    "| Description:    " description "\n"
+	    (when description
+	      (concat    "| Description:    " description "\n"))
 	    "`----\n"))
 	  (setcdr data
 		  (cdr (mm-make-handle
@@ -8005,6 +8008,11 @@ For example:
 			 gnus-article-encrypt-protocol-alist
 			 nil t))
     current-prefix-arg))
+  ;; User might hit `K E' instead of `K e', so prompt once.
+  (when (and gnus-article-encrypt-protocol
+	     gnus-novice-user)
+    (unless (gnus-y-or-n-p "Really encrypt article(s)? ")
+      (error "Encrypt aborted.")))
   (let ((func (cdr (assoc protocol gnus-article-encrypt-protocol-alist))))
     (unless func
       (error "Can't find the encrypt protocol %s" protocol))
