@@ -27,8 +27,13 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(or (require 'password-cache nil t)
-    (require 'password))
+
+(if (featurep 'xemacs)
+    (or (load "password-cache" t)
+        ;; Not all XEmacs versions support `noerror' arg of `require'.
+	(require 'password))
+  (or (require 'password-cache nil t)
+      (require 'password)))
 
 (autoload 'mml2015-sign "mml2015")
 (autoload 'mml2015-encrypt "mml2015")

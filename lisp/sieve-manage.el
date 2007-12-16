@@ -79,8 +79,14 @@
 ;; For Emacs < 22.2.
 (eval-and-compile
   (unless (fboundp 'declare-function) (defmacro declare-function (&rest r))))
-(or (require 'password-cache nil t)
-    (require 'password))
+
+(if (featurep 'xemacs)
+    (or (load "password-cache" t)
+        ;; Not all XEmacs versions support `noerror' arg of `require'.
+	(require 'password))
+  (or (require 'password-cache nil t)
+      (require 'password)))
+
 (eval-when-compile
   (require 'sasl)
   (require 'starttls))

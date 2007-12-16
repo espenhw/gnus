@@ -1,3 +1,8 @@
+2007-12-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mml-sec.el, sieve-manage.el, smime.el: Make loading of password-cache
+	or password compatible with XEmacs.
+
 2007-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (article-verify-x-pgp-sig): Add reference to X-PGP-Sig
