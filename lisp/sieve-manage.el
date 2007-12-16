@@ -81,8 +81,9 @@
   (unless (fboundp 'declare-function) (defmacro declare-function (&rest r))))
 
 (if (featurep 'xemacs)
-    (or (load "password-cache" t)
-        ;; Not all XEmacs versions support `noerror' arg of `require'.
+    ;; Not all XEmacs versions support `noerror' arg of `require'.
+    (or (featurep 'password-cache)
+	(load "password-cache" t)
 	(require 'password))
   (or (require 'password-cache nil t)
       (require 'password)))
