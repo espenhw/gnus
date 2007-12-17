@@ -1,3 +1,11 @@
+2007-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-browse-html-parts): Add message header and
+	title to html parts.
+	(gnus-article-browse-html-article): Pass message header to it.
+
+	* mm-decode.el (mm-display-external): Use mm-add-meta-html-tag.
+
 2007-12-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml-sec.el, sieve-manage.el, smime.el: Make loading of password-cache
