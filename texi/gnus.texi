@@ -20962,9 +20962,9 @@ additional commands:
 
 @item C-c C-c
 @kindex C-c C-c (Score)
-@findex gnus-score-edit-done
+@findex gnus-score-edit-exit
 Save the changes you have made and return to the summary buffer
-(@code{gnus-score-edit-done}).
+(@code{gnus-score-edit-exit}).
 
 @item C-c C-d
 @kindex C-c C-d (Score)
