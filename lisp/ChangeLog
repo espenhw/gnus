@@ -284,8 +284,8 @@
 2007-12-03  Nathan J. Williams  <nathanw@MIT.EDU>  (tiny change)
 
 	* imap.el (imap-mailbox-status-asynch): Upcase STATUS items.
-	(imap-parse-status): Upcase status-att for broken servers that sends
-	them lower-case (e.g., MS Exchange 2007).
+	(imap-parse-status): Upcase status-att for servers that sends them
+	lower-case (e.g., MS Exchange 2007).
 
 2007-12-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
