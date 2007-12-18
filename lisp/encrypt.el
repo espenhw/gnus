@@ -29,11 +29,12 @@
 ;;; particular aspect.
 
 ;;; Use in Gnus like this:
+;;; (require 'encrypt)
 ;;; (setq
 ;;;   nnimap-authinfo-file "~/.authinfo.enc"
 ;;;   nntp-authinfo-file "~/.authinfo.enc"
 ;;;   smtpmail-auth-credentials "~/.authinfo.enc"
-;;;   ;; using the AES256 cipher, feel free to use your own favorite
+;;;   ;; GnuPG using the AES256 cipher, feel free to use your own favorite
 ;;;   encrypt-file-alist (quote (("~/.authinfo.enc" (gpg "AES256"))))
 ;;;   password-cache-expiry 600)
 
@@ -53,7 +54,9 @@
 
 ;; autoload password
 (eval-and-compile
-  (autoload 'password-read "password"))
+  (if (locate-library "password-cache")
+      (require 'password-cache)
+    (require 'password)))
 
 (defgroup encrypt '((password-cache custom-variable)
 		    (password-cache-expiry custom-variable))
