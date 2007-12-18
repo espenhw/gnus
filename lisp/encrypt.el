@@ -46,8 +46,10 @@
 ;;; 2) write the new authinfo.enc
 ;;; M-x encrypt-write-file-contents RET ~/.authinfo.enc
 
-;;; 3) verify the new authinfo is correct (this will show the contents in the minibuffer)
-;;; M-: (encrypt-get-file-contents "~/.authinfo.enc")
+;;; 3) verify the new authinfo is correct 
+;;;   (this will insert the contents in the current buffer)
+
+;;; M-: (encrypt-insert-file-contents "~/.authinfo.enc")
 
 
 ;;; Code:
@@ -68,6 +70,8 @@
 Format example:
  '((\"beta\"
     (gpg \"AES\"))
+   (\"gamma\\\\*\"
+    (pgg))
    (\"/home/tzz/alpha\"
     (encrypt-xor \"Semi-Secret\")))"
 
@@ -77,6 +81,9 @@ Format example:
 		  (file :tag "Filename")
 		  (regexp :tag "Regular expression match"))
 	   (radio :tag "How to encrypt it"
+		  (list
+		   :tag "GPG Encryption via PGG (including passphrases)"
+		   (const :tag "GPG via PGG" pgg))
 		  (list
 		   :tag "GPG Encryption"
 		   (const :tag "GPG Program" gpg)
@@ -122,43 +129,43 @@ Format example:
 	(return model)))))
 
 ;;;###autoload
-(defun encrypt-insert-file-contents (file &optional model)
+(defun encrypt-insert-file-contents (file &optional model erase)
   "Decrypt FILE into the current buffer."
   (interactive "fFile to insert: ")
   (let* ((model (or model (encrypt-find-model file)))
 	 (method (nth 0 model))
 	 (cipher (nth 1 model))
-	 (password-key (format "encrypt-password-%s-%s %s"
-			       (symbol-name method) cipher file))
-	 (passphrase
-	  (password-read-and-add
-	   (format "%s password for cipher %s (file %s)? "
-		   file (symbol-name method) cipher)
-	   password-key))
-	  (buffer-file-coding-system 'binary)
+	 (passphrase (encrypt-get-passphrase-if-needed file method cipher t))
+	 (buffer-file-coding-system 'binary)
 	 (coding-system-for-read 'binary)
 	 outdata)
 
     ;; note we only insert-file-contents if the method is known to be valid
-    (cond
-     ((eq method 'gpg)
-      (insert-file-contents file)
-      (setq outdata (encrypt-gpg-decode-buffer passphrase cipher)))
-     ((eq method 'encrypt-xor)
-      (insert-file-contents file)
-      (setq outdata (encrypt-xor-decode-buffer passphrase cipher))))
+    (with-temp-buffer
+      (cond
+       ((eq method 'gpg)
+	(insert-file-contents file)
+	(setq outdata (encrypt-gpg-decode-buffer passphrase cipher)))
+       ((eq method 'pgg)
+	(insert-file-contents file)
+	(setq outdata (encrypt-pgg-decode-buffer)))
+       ((eq method 'encrypt-xor)
+	(insert-file-contents file)
+	(setq outdata (encrypt-xor-decode-buffer passphrase cipher)))))
 
     (if outdata
 	(progn
-	  (message "%s was decrypted with %s (cipher %s)"
-		   file (symbol-name method) cipher)
-	  (delete-region (point-min) (point-max))
-	  (goto-char (point-min))
+	  (message "%s was decrypted with %s"
+		   file 
+		   (encrypt-message-method-and-cipher method cipher))
+	  (when erase 
+	    (delete-region (point-min) (point-max)))
 	  (insert outdata))
       ;; the decryption failed, alas
-      (password-cache-remove password-key)
-      (gnus-error 5 "%s was NOT decrypted with %s (cipher %s)"
-		  file (symbol-name method) cipher))))
+      (password-cache-remove (encrypt-password-key file method cipher))
+      (gnus-error 5 "%s was NOT decrypted with %s"
+		  file
+		  (encrypt-message-method-and-cipher method cipher)))))
 
 (defun encrypt-get-file-contents (file &optional model)
   "Decrypt FILE and return the contents."
@@ -180,35 +187,56 @@ Format example:
   (if model
       (let* ((method (nth 0 model))
 	     (cipher (nth 1 model))
-	     (password-key (format "encrypt-password-%s-%s %s"
-				   (symbol-name method) cipher file))
-	     (passphrase
-	      (password-read
-	       (format "%s password for cipher %s? "
-		       (symbol-name method) cipher)
-	       password-key))
-	     outdata)
-
-	(cond
-	 ((eq method 'gpg)
-	  (setq outdata (encrypt-gpg-encode-buffer passphrase cipher)))
-	 ((eq method 'encrypt-xor)
-	  (setq outdata (encrypt-xor-encode-buffer passphrase cipher))))
+	     (passphrase 
+	      (encrypt-get-passphrase-if-needed file method cipher))
+	     (outdata
+	      (cond
+	       ((eq method 'gpg)
+		(encrypt-gpg-encode-buffer passphrase cipher))
+	       ((eq method 'pgg)
+		(encrypt-pgg-encode-buffer))
+	       ((eq method 'encrypt-xor)
+		(encrypt-xor-encode-buffer passphrase cipher)))))
 
 	(if outdata
 	    (progn
-	      (message "%s was encrypted with %s (cipher %s)"
-		       file (symbol-name method) cipher)
-	      (delete-region (point-min) (point-max))
-	      (goto-char (point-min))
-	      (insert outdata)
-	      ;; do not confirm overwrites
-	      (write-file file nil))
+	      (message "%s was encrypted with %s"
+		       file
+		       (encrypt-message-method-and-cipher method cipher))
+	      (with-temp-buffer
+		(insert outdata)
+		;; do not confirm overwrites
+		(write-file file nil)))
 	  ;; the decryption failed, alas
-	  (password-cache-remove password-key)
-	  (gnus-error 5 "%s was NOT encrypted with %s (cipher %s)"
-		      file (symbol-name method) cipher)))
-    (gnus-error 1 "%s has no associated encryption model!  See encrypt-file-alist." file)))
+	  (password-cache-remove (encrypt-password-key file method cipher))
+	  (gnus-error 5 "%s was NOT encrypted with %s"
+		      file
+		      (encrypt-message-method-and-cipher method cipher))))
+    (gnus-error 
+     1 
+     "%s has no associated encryption model!  See encrypt-file-alist."
+     file)))
+
+(defun encrypt-password-key (file method cipher)
+  (format "encrypt-password-%s-%s %s" (symbol-name method) cipher file))
+
+(defun encrypt-get-passphrase-if-needed (file method cipher &optional add)
+  "Read the passphrase for FILE, METHOD, CIPHER if necessary."
+  (when (not (eq method 'pgg))
+    (let ((password-key (encrypt-password-key file method cipher))
+	  (password-question 
+	   (format "password for %s (file %s)? "
+		   (encrypt-message-method-and-cipher method cipher)
+		   file)))      
+      (if add
+	  (password-read-and-add password-question password-key)
+	  (password-read password-question password-key)))))
+
+
+(defun encrypt-message-method-and-cipher (method cipher)
+  (format "method %s%s" 
+	  (symbol-name method)
+	  (if cipher (format " (cipher %s)" cipher) "")))
 
 (defun encrypt-xor-encode-buffer (passphrase cipher)
   (encrypt-xor-process-buffer passphrase cipher t))
@@ -291,6 +319,27 @@ Format example:
 				    program exit-status (buffer-string)))))
 	  (delete-file temp-file))
       (gnus-error 5 "GPG is not installed."))
+    exit-data))
+
+(defun encrypt-pgg-encode-buffer ()
+  (encrypt-pgg-process-buffer t))
+
+(defun encrypt-pgg-decode-buffer ()
+  (encrypt-pgg-process-buffer))
+
+(defun encrypt-pgg-process-buffer (&optional encode)
+  "Use PGG to encode or decode the current buffer."
+  (let ((pfft (if encode 'pgg-encrypt-symmetric 'pgg-decrypt))
+	(default-enable-multibyte-characters nil)
+	(input (buffer-substring-no-properties (point-min) (point-max)))
+	exit-data)
+    (with-temp-buffer
+      (insert input)
+      ;; note that we call pfft before pgg-display-output-buffer
+      (pgg-display-output-buffer (point-min) (point-max) (funcall pfft))
+      (setq exit-data
+	    (buffer-substring-no-properties (point-min) (point-max))))
+    (debug exit-data)
     exit-data))
 
 (provide 'encrypt)
