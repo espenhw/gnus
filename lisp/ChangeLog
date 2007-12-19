@@ -1,3 +1,11 @@
+2007-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* netrc.el: Bind encrypt-file-alist for Emacs 21 and XEmacs when
+	compiling.
+	(netrc-bound-and-true-p): New macro.
+	(netrc-parse): Use it instead of bound-and-true-p that is not available
+	in XEmacs 21.4.
+
 2007-12-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-mark-article)

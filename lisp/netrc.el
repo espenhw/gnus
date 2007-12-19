@@ -42,6 +42,14 @@
   (if (fboundp 'point-at-eol)
       'point-at-eol
     'line-end-position))
+(eval-when-compile
+  (defvar encrypt-file-alist)
+  ;; This is unnecessary in the compiled version as it is a macro.
+  (if (fboundp 'bound-and-true-p)
+      (defalias 'netrc-bound-and-true-p 'bound-and-true-p)
+    (defmacro netrc-bound-and-true-p (var)
+      "Return the value of symbol VAR if it is bound, else nil."
+      `(and (boundp (quote ,var)) ,var))))
 
 (defgroup netrc nil
  "Netrc configuration."
@@ -58,7 +66,7 @@
       (let ((tokens '("machine" "default" "login"
 		      "password" "account" "macdef" "force"
 		      "port"))
-	    (encryption-model (when (bound-and-true-p encrypt-file-alist)
+	    (encryption-model (when (netrc-bound-and-true-p encrypt-file-alist)
 				(encrypt-find-model file)))
 	    alist elem result pair)
 	(if encryption-model
