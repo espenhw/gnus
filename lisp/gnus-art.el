@@ -2835,53 +2835,55 @@ message header will be added to the bodies of the \"text/html\" parts."
 	     ;; Add a meta html tag to specify charset and a header.
 	     (cond
 	      (header
-	       (with-temp-buffer
-		 (mm-enable-multibyte)
-		 (setq case-fold-search t)
-		 (insert header "\n")
-		 (let ((title (message-fetch-field "subject"))
-		       body hcharset coding)
+	       (let (title eheader body hcharset coding)
+		 (with-temp-buffer
+		   (mm-enable-multibyte)
+		   (setq case-fold-search t)
+		   (insert header "\n")
+		   (setq title (message-fetch-field "subject"))
 		   (goto-char (point-min))
 		   (while (re-search-forward "\\(<\\)\\|\\(>\\)\\|&" nil t)
 		     (replace-match (cond ((match-beginning 1) "&lt;")
 					  ((match-beginning 2) "&gt;")
 					  (t "&amp;"))))
 		   (goto-char (point-min))
-		   (insert "<pre>")
+		   (insert "<pre>\n")
 		   (goto-char (point-max))
 		   (insert "</pre>\n<hr>\n")
+		   ;; We have to examine charset one by one since
+		   ;; charset specified in parts might be different.
 		   (if (eq charset 'gnus-decoded)
 		       (setq charset 'utf-8
-			     header (mm-encode-coding-string (buffer-string)
-							     charset)
+			     eheader (mm-encode-coding-string (buffer-string)
+							      charset)
 			     title (when title
 				     (mm-encode-coding-string title charset))
 			     body (mm-encode-coding-string (mm-get-part handle)
 							   charset))
 		     (setq hcharset (mm-find-mime-charset-region (point-min)
 								 (point-max)))
-		     (cond ((> (length hcharset) 1)
-			    (setq hcharset 'utf-8
-				  coding hcharset))
-			   ((= (length hcharset) 1)
+		     (cond ((= (length hcharset) 1)
 			    (setq hcharset (car hcharset)
 				  coding (mm-charset-to-coding-system
-					  hcharset))))
+					  hcharset)))
+			   ((> (length hcharset) 1)
+			    (setq hcharset 'utf-8
+				  coding hcharset)))
 		     (if coding
 			 (if charset
 			     (progn
 			       (setq body
 				     (mm-charset-to-coding-system charset))
 			       (if (eq coding body)
-				   (setq header (mm-encode-coding-string
-						 (buffer-string) coding)
+				   (setq eheader (mm-encode-coding-string
+						  (buffer-string) coding)
 					 title (when title
 						 (mm-encode-coding-string
 						  title coding))
 					 body (mm-get-part handle))
 				 (setq charset 'utf-8
-				       header (mm-encode-coding-string
-					       (buffer-string) charset)
+				       eheader (mm-encode-coding-string
+						(buffer-string) charset)
 				       title (when title
 					       (mm-encode-coding-string
 						title charset))
@@ -2890,13 +2892,13 @@ message header will be added to the bodies of the \"text/html\" parts."
 					      (mm-get-part handle) body)
 					     charset))))
 			   (setq charset hcharset
-				 header (mm-encode-coding-string
-					 (buffer-string) coding)
+				 eheader (mm-encode-coding-string
+					  (buffer-string) coding)
 				 title (when title
 					 (mm-encode-coding-string
 					  title coding))
 				 body (mm-get-part handle)))
-		       (setq header (mm-string-as-unibyte (buffer-string))
+		       (setq eheader (mm-string-as-unibyte (buffer-string))
 			     body (mm-get-part handle))))
 		   (erase-buffer)
 		   (mm-disable-multibyte)
@@ -2907,15 +2909,15 @@ message header will be added to the bodies of the \"text/html\" parts."
 		     (goto-char (point-min))
 		     (unless (search-forward "<title>" nil t)
 		       (re-search-forward "<head>\\s-*" nil t)
-		       (insert "<title>" title "</title>\n"))))
-		 (goto-char (point-min))
-		 (or (re-search-forward
-		      "<body\\(?:\\s-+[^>]+\\|\\s-*\\)>\\s-*" nil t)
-		     (re-search-forward
-		      "</head\\(?:\\s-+[^>]+\\|\\s-*\\)>\\s-*" nil t))
-		 (insert header)
-		 (mm-write-region (point-min) (point-max)
-				  tmp-file nil nil nil 'binary t)))
+		       (insert "<title>" title "</title>\n")))
+		   (goto-char (point-min))
+		   (or (re-search-forward
+			"<body\\(?:\\s-+[^>]+\\|\\s-*\\)>\\s-*" nil t)
+		       (re-search-forward
+			"</head\\(?:\\s-+[^>]+\\|\\s-*\\)>\\s-*" nil t))
+		   (insert eheader)
+		   (mm-write-region (point-min) (point-max)
+				    tmp-file nil nil nil 'binary t))))
 	      (charset
 	       (mm-with-unibyte-buffer
 		 (insert (if (eq charset 'gnus-decoded)
@@ -2941,11 +2943,30 @@ message header will be added to the bodies of the \"text/html\" parts."
 	     (browse-url-of-file (or tmp-file (expand-file-name file)))
 	     (setq showed t))
 	    ;; If multipart, recurse
-	    ((and (stringp (car handle))
-		  (string-match "^multipart/" (car handle))
-		  (setq showed
-			(or showed
-			    (gnus-article-browse-html-parts handle)))))))
+	    ((equal (mm-handle-media-supertype handle) "multipart")
+	     (when (gnus-article-browse-html-parts handle header)
+	       (setq showed t)))
+	    ((equal (mm-handle-media-type handle) "message/rfc822")
+	     (mm-with-multibyte-buffer
+	       (mm-insert-part handle)
+	       (setq handle (mm-dissect-buffer t t))
+	       (when (and (bufferp (car handle))
+			  (stringp (car (mm-handle-type handle))))
+		 (setq handle (list handle)))
+	       (when header
+		 (article-decode-encoded-words)
+		 (let ((gnus-visible-headers
+			(or (get 'gnus-visible-headers 'standard-value)
+			    gnus-visible-headers)))
+		   (article-hide-headers))
+		 (goto-char (point-min))
+		 (search-forward "\n\n" nil 'move)
+		 (skip-chars-backward "\t\n ")
+		 (setq header (buffer-substring (point-min) (point)))))
+	     (when (prog1
+		       (gnus-article-browse-html-parts handle header)
+		     (mm-destroy-parts handle))
+	       (setq showed t)))))
     showed))
 
 ;; FIXME: Documentation in texi/gnus.texi missing.
@@ -2990,6 +3011,7 @@ If you alwasy want to display HTML part in the browser, set
       ;; Process the list
       (unless (gnus-article-browse-html-parts parts header)
 	(gnus-error 3 "Mail doesn't contain a \"text/html\" part!"))
+      (mm-destroy-parts parts)
       (unless arg
 	(gnus-summary-show-article)))))
 

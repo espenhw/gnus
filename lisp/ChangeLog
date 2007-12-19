@@ -1,5 +1,9 @@
 2007-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-browse-html-parts): Work for two or more
+	html parts correctly; support forwarded messages.
+	(gnus-article-browse-html-article): Remove work buffers.
+
 	* netrc.el: Bind encrypt-file-alist for Emacs 21 and XEmacs when
 	compiling.
 	(netrc-bound-and-true-p): New macro.
