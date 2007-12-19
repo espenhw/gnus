@@ -1,5 +1,9 @@
 2007-12-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el (gnus-registry-mark-article)
+	(gnus-registry-article-marks): Add functionality to mark articles
+	through the Gnus registry.
+
 	* encrypt.el: Clarify documentation for the new pgg method.
 	(encrypt-file-alist): Add PGG option.
 	(encrypt-insert-file-contents, encrypt-write-file-contents): Use PGG
@@ -8,8 +12,6 @@
 	(encrypt-message-method-and-cipher): Add new convenience external functions.
 	(encrypt-pgg-encode-buffer, encrypt-pgg-decode-buffer)
 	(encrypt-pgg-process-buffer): Add PGG functionality glue.
-
-2007-12-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* netrc.el: Autoload encrypt when encrypt-file-alist is set.
 	(netrc-parse): Use encrypt-file-alist to determine if
