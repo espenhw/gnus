@@ -1,3 +1,9 @@
+2007-12-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* imap.el (imap-authenticate): Use current-buffer instead of buffer,
+	for the cases where imap-authenticate is called with a nil buffer
+	parameter.
+
 2007-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-browse-html-parts): Work for two or more
