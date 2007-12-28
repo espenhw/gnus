@@ -80,13 +80,9 @@
 (eval-and-compile
   (unless (fboundp 'declare-function) (defmacro declare-function (&rest r))))
 
-(if (featurep 'xemacs)
-    ;; Not all XEmacs versions support `noerror' arg of `require'.
-    (or (featurep 'password-cache)
-	(load "password-cache" t)
-	(require 'password))
-  (or (require 'password-cache nil t)
-      (require 'password)))
+(if (locate-library "password-cache")
+    (require 'password-cache)
+  (require 'password))
 
 (eval-when-compile
   (require 'sasl)
