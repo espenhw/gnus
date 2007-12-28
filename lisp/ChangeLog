@@ -1,5 +1,7 @@
 2007-12-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-send-mail-function): Increase custom version.
+
 	* mml-sec.el, sieve-manage.el, smime.el: Simplify loading of
 	password-cache or password.  Suggested by Glenn Morris <rgm@gnu.org>.
 
