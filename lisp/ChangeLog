@@ -47,6 +47,11 @@
 	* encrypt.el: Clarify documentation.  Load password-cache or
 	password, whichever one is found first, instead of autoloading.
 
+2007-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-draft.el (gnus-draft-send-message): Mention process/prefix
+	convention in doc string.
+
 2007-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-browse-html-parts): Add message header and
