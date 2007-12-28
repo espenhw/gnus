@@ -47,6 +47,17 @@
 	* encrypt.el: Clarify documentation.  Load password-cache or
 	password, whichever one is found first, instead of autoloading.
 
+2007-12-19  Glenn Morris  <rgm@gnu.org>
+
+	* mml.el (message-options-set, message-narrow-to-head)
+	(message-in-body-p, message-mail-p, message-encode-message-body):
+	Autoload.
+	(message-remove-header, message-narrow-to-headers-or-head)
+	(message-subscribed-p, message-make-mail-followup-to)
+	(message-position-on-field, message-news-p)
+	(message-options-set-recipient, message-generate-headers)
+	(message-sort-headers): Declare as functions.
+
 2007-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-draft.el (gnus-draft-send-message): Mention process/prefix
