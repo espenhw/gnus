@@ -1,3 +1,8 @@
+2008-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-bookmark.el (gnus-bookmark-mouse-available-p): Don't test for
+	display-color-p.  Reported by Reiner Steib <Reiner.Steib@gmx.de>.
+
 2008-01-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el (gnus-group-gmane-group-download-format): New variable.
