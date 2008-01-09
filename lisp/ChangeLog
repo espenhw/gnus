@@ -1,3 +1,21 @@
+2008-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-send-map): New keymap for S prefix keys;
+	bind SW key to gnus-article-wide-reply-with-original; set default
+	binding to gnus-article-read-summary-send-keys.
+	(gnus-article-read-summary-keys): Fix the order of keys; display
+	continuation keys correctly in the echo area; describe bindings
+	correctly when keys end with C-h.
+	(gnus-article-read-summary-send-keys): New function.
+	(gnus-article-describe-key, gnus-article-describe-key-briefly): Work
+	for gnus-article-read-summary-send-keys; display continuation keys
+	correctly in the echo area.
+	(gnus-article-reply-with-original): Ignore prefix argument.
+	(gnus-article-wide-reply-with-original): New function.
+
+	* lpath.el: Fbind character-to-event and set-keymap-default-binding for
+	Emacs 21.
+
 2008-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-bookmark.el (gnus-bookmark-mouse-available-p): Don't test for
