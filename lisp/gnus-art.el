@@ -6260,20 +6260,27 @@ not have a face in `gnus-article-boring-faces'."
 
     (cond
      ((eq (aref keys (1- (length keys))) ?\C-h)
-      ;; FIXME: XEmacs doesn't show the S-prefixed keys that are defined
-      ;; in the parent keymap (try `S C-h' in the article buffer).
-      (let ((keymap (make-sparse-keymap))
-	    (map (copy-keymap gnus-article-send-map)))
-	(define-key keymap "S" map)
-	(if (featurep 'xemacs)
-	    (set-keymap-default-binding map nil)
-	  (define-key map [t] nil))
-	(set-keymap-parent keymap
-			   (with-current-buffer gnus-article-current-summary
-			     (current-local-map)))
-	(with-temp-buffer
-	  (use-local-map keymap)
-	  (describe-bindings (substring keys 0 -1)))))
+      (if (featurep 'xemacs)
+	  (let ((keymap (with-current-buffer gnus-article-current-summary
+			  (copy-keymap (current-local-map)))))
+	    (map-keymap
+	     (lambda (key def)
+	       (define-key keymap (vector ?S key) def))
+	     gnus-article-send-map)
+	    (with-temp-buffer
+	      (setq major-mode 'gnus-article-mode)
+	      (use-local-map keymap)
+	      (describe-bindings (substring keys 0 -1))))
+	(let ((keymap (make-sparse-keymap))
+	      (map (copy-keymap gnus-article-send-map)))
+	  (define-key keymap "S" map)
+	  (define-key map [t] nil)
+	  (set-keymap-parent keymap
+			     (with-current-buffer gnus-article-current-summary
+			       (current-local-map)))
+	  (with-temp-buffer
+	    (use-local-map keymap)
+	    (describe-bindings (substring keys 0 -1))))))
      ((or (member keys nosaves)
 	  (member keys nosave-but-article)
 	  (member keys nosave-in-article))
@@ -6367,7 +6374,8 @@ not have a face in `gnus-article-boring-faces'."
     (gnus-article-read-summary-keys)))
 
 (defun gnus-article-describe-key (key)
-  "Display documentation of the function invoked by KEY.  KEY is a string."
+  "Display documentation of the function invoked by KEY.
+KEY is a string or a vector."
   (interactive (list (let ((cursor-in-echo-area t)) ;; better for XEmacs.
 		       (read-key-sequence "Describe key: "))))
   (gnus-article-check-buffer)
@@ -6378,7 +6386,9 @@ not have a face in `gnus-article-boring-faces'."
 	(setq unread-command-events
 	      (if (featurep 'xemacs)
 		  (append key nil)
-		(mapcar (lambda (x) (if (>= x 128) (list 'meta (- x 128)) x))
+		(mapcar (lambda (x) (if (and (integerp x) (>= x 128))
+					(list 'meta (- x 128))
+				      x))
 			key)))
 	(let ((cursor-in-echo-area t)
 	      gnus-pick-mode)
@@ -6386,7 +6396,8 @@ not have a face in `gnus-article-boring-faces'."
     (describe-key key)))
 
 (defun gnus-article-describe-key-briefly (key &optional insert)
-  "Display documentation of the function invoked by KEY.  KEY is a string."
+  "Display documentation of the function invoked by KEY.
+KEY is a string or a vector."
   (interactive (list (let ((cursor-in-echo-area t)) ;; better for XEmacs.
 		       (read-key-sequence "Describe key: "))
 		     current-prefix-arg))
@@ -6398,7 +6409,9 @@ not have a face in `gnus-article-boring-faces'."
 	(setq unread-command-events
 	      (if (featurep 'xemacs)
 		  (append key nil)
-		(mapcar (lambda (x) (if (>= x 128) (list 'meta (- x 128)) x))
+		(mapcar (lambda (x) (if (and (integerp x) (>= x 128))
+					(list 'meta (- x 128))
+				      x))
 			key)))
 	(let ((cursor-in-echo-area t)
 	      gnus-pick-mode)
