@@ -56,7 +56,7 @@
 		 font-lock-set-defaults frame-device get-char-table
 		 glyph-height glyph-width ldap-search-entries
 		 mail-aliases-setup make-annotation make-event make-glyph
-		 map-extents message-xmas-redefine put-char-table
+		 map-extents map-keymap message-xmas-redefine put-char-table
 		 run-mode-hooks set-extent-property set-itimer-function
 		 set-keymap-default-binding temp-directory
 		 valid-image-instantiator-format-p
