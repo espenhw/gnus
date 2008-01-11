@@ -4215,6 +4215,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   "F" gnus-article-followup-with-original
   "\C-hk" gnus-article-describe-key
   "\C-hc" gnus-article-describe-key-briefly
+  "\C-hb" gnus-article-describe-bindings
 
   "\C-d" gnus-article-read-summary-keys
   "\M-*" gnus-article-read-summary-keys
@@ -6260,27 +6261,7 @@ not have a face in `gnus-article-boring-faces'."
 
     (cond
      ((eq (aref keys (1- (length keys))) ?\C-h)
-      (if (featurep 'xemacs)
-	  (let ((keymap (with-current-buffer gnus-article-current-summary
-			  (copy-keymap (current-local-map)))))
-	    (map-keymap
-	     (lambda (key def)
-	       (define-key keymap (vector ?S key) def))
-	     gnus-article-send-map)
-	    (with-temp-buffer
-	      (setq major-mode 'gnus-article-mode)
-	      (use-local-map keymap)
-	      (describe-bindings (substring keys 0 -1))))
-	(let ((keymap (make-sparse-keymap))
-	      (map (copy-keymap gnus-article-send-map)))
-	  (define-key keymap "S" map)
-	  (define-key map [t] nil)
-	  (set-keymap-parent keymap
-			     (with-current-buffer gnus-article-current-summary
-			       (current-local-map)))
-	  (with-temp-buffer
-	    (use-local-map keymap)
-	    (describe-bindings (substring keys 0 -1))))))
+      (gnus-article-describe-bindings (substring keys 0 -1)))
      ((or (member keys nosaves)
 	  (member keys nosave-but-article)
 	  (member keys nosave-in-article))
@@ -6417,6 +6398,60 @@ KEY is a string or a vector."
 	      gnus-pick-mode)
 	  (describe-key-briefly (read-key-sequence nil t) insert)))
     (describe-key-briefly key insert)))
+
+(defun gnus-article-describe-bindings (&optional prefix)
+  "Show a list of all defined keys, and their definitions.
+The optional argument PREFIX, if non-nil, should be a key sequence;
+then we display only bindings in the summary buffer that start with
+that prefix."
+  (interactive)
+  (gnus-article-check-buffer)
+  (if (featurep 'xemacs)
+      (if prefix
+	  (let ((keymap (with-current-buffer gnus-article-current-summary
+			  (copy-keymap (current-local-map)))))
+	    (map-keymap
+	     (lambda (key def)
+	       (define-key keymap (vector ?S key) def))
+	     gnus-article-send-map)
+	    (with-temp-buffer
+	      (setq major-mode 'gnus-article-mode)
+	      (use-local-map keymap)
+	      (describe-bindings prefix)))
+	(let ((keymap (copy-keymap gnus-article-mode-map))
+	      def)
+	  (with-current-buffer gnus-article-current-summary
+	    (map-keymap
+	     (lambda (key def)
+	       (when (and (eq def 'gnus-article-read-summary-keys)
+			  (setq def (key-binding key)))
+		 (define-key keymap key def)))
+	     gnus-article-mode-map))
+	  (with-temp-buffer
+	    (setq major-mode 'gnus-article-mode)
+	    (use-local-map keymap)
+	    (describe-bindings))))
+    (if prefix
+	(let ((keymap (make-sparse-keymap))
+	      (map (copy-keymap gnus-article-send-map)))
+	  (define-key keymap "S" map)
+	  (define-key map [t] nil)
+	  (set-keymap-parent keymap
+			     (with-current-buffer gnus-article-current-summary
+			       (current-local-map)))
+	  (with-temp-buffer
+	    (use-local-map keymap)
+	    (describe-bindings prefix)))
+      (let ((keymap (copy-keymap gnus-article-mode-map))
+	    (sumkeys (where-is-internal 'gnus-article-read-summary-keys))
+	    def)
+	(with-current-buffer gnus-article-current-summary
+	  (dolist (key sumkeys)
+	    (when (setq def (key-binding key))
+	      (define-key keymap key def))))
+	(with-temp-buffer
+	  (use-local-map keymap)
+	  (describe-bindings))))))
 
 (defun gnus-article-reply-with-original (&optional wide)
   "Start composing a reply mail to the current message.
