@@ -1,3 +1,9 @@
+2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-describe-bindings): New function.
+	(gnus-article-read-summary-keys): Use it.
+	(gnus-article-mode-map): Bind `C-h b' to it.
+
 2008-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-read-summary-keys): Work for `C-h' on

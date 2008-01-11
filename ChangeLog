@@ -1,3 +1,7 @@
+2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* GNUS-NEWS: Generated.
+
 2007-11-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Generated.
@@ -29,7 +33,7 @@
 	* Makefile.in (release-bump-version): Adjust version
 	in (gnus)Troubleshooting.
 
-007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* GNUS-NEWS: Generated.
 
