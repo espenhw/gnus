@@ -6399,6 +6399,8 @@ KEY is a string or a vector."
 	  (describe-key-briefly (read-key-sequence nil t) insert)))
     (describe-key-briefly key insert)))
 
+(defvar gnus-agent-summary-mode)
+
 (defun gnus-article-describe-bindings (&optional prefix)
   "Show a list of all defined keys, and their definitions.
 The optional argument PREFIX, if non-nil, should be a key sequence;
@@ -6408,8 +6410,11 @@ that prefix."
   (gnus-article-check-buffer)
   (if (featurep 'xemacs)
       (if prefix
-	  (let ((keymap (with-current-buffer gnus-article-current-summary
-			  (copy-keymap (current-local-map)))))
+	  (let (keymap agent)
+	    (with-current-buffer gnus-article-current-summary
+	      (setq keymap (copy-keymap (current-local-map))
+		    agent (if (boundp 'gnus-agent-summary-mode)
+			      gnus-agent-summary-mode)))
 	    (map-keymap
 	     (lambda (key def)
 	       (define-key keymap (vector ?S key) def))
@@ -6417,38 +6422,47 @@ that prefix."
 	    (with-temp-buffer
 	      (setq major-mode 'gnus-article-mode)
 	      (use-local-map keymap)
+	      (set (make-local-variable 'gnus-agent-summary-mode) agent)
 	      (describe-bindings prefix)))
 	(let ((keymap (copy-keymap gnus-article-mode-map))
-	      def)
+	      (map (copy-keymap gnus-article-send-map))
+	      (sumkeys (where-is-internal 'gnus-article-read-summary-keys)))
+	  (define-key keymap "S" map)
+	  (set-keymap-default-binding map nil)
 	  (with-current-buffer gnus-article-current-summary
-	    (map-keymap
-	     (lambda (key def)
-	       (when (and (eq def 'gnus-article-read-summary-keys)
-			  (setq def (key-binding key)))
-		 (define-key keymap key def)))
-	     gnus-article-mode-map))
+	    (let (def gnus-pick-mode)
+	      (dolist (key sumkeys)
+		(when (setq def (key-binding key))
+		  (define-key keymap key def)))))
 	  (with-temp-buffer
 	    (setq major-mode 'gnus-article-mode)
 	    (use-local-map keymap)
 	    (describe-bindings))))
     (if prefix
 	(let ((keymap (make-sparse-keymap))
-	      (map (copy-keymap gnus-article-send-map)))
+	      (map (copy-keymap gnus-article-send-map))
+	      smap agent)
+	  (with-current-buffer gnus-article-current-summary
+	    (setq smap (current-local-map)
+		  agent (if (boundp 'gnus-agent-summary-mode)
+			    'gnus-agent-summary-mode)))
 	  (define-key keymap "S" map)
 	  (define-key map [t] nil)
-	  (set-keymap-parent keymap
-			     (with-current-buffer gnus-article-current-summary
-			       (current-local-map)))
+	  (set-keymap-parent keymap smap)
 	  (with-temp-buffer
 	    (use-local-map keymap)
+	    (set (make-local-variable 'gnus-agent-summary-mode) agent)
 	    (describe-bindings prefix)))
       (let ((keymap (copy-keymap gnus-article-mode-map))
-	    (sumkeys (where-is-internal 'gnus-article-read-summary-keys))
-	    def)
+	    (map (copy-keymap gnus-article-send-map))
+	    (sumkeys (where-is-internal 'gnus-article-read-summary-keys)))
+	(define-key keymap "S" map)
+	(define-key map [t] nil)
 	(with-current-buffer gnus-article-current-summary
-	  (dolist (key sumkeys)
-	    (when (setq def (key-binding key))
-	      (define-key keymap key def))))
+	  (let (def gnus-pick-mode)
+	    (dolist (key sumkeys)
+	      (when (setq def (key-binding key))
+		(define-key keymap key def)))))
 	(with-temp-buffer
 	  (use-local-map keymap)
 	  (describe-bindings))))))
