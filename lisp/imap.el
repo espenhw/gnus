@@ -1157,7 +1157,16 @@ If BUFFER is nil then the current buffer is used."
        (buffer-live-p buffer)
        (with-current-buffer buffer
 	 (and imap-process
-	      (memq (process-status imap-process) '(open run))))))
+	      (memq (process-status imap-process) '(open run))
+	      (imap-ping-server)))))
+
+(defun imap-ping-server (&optional buffer)
+  "Ping the imap server in BUFFER with a noop command. Return non-nil
+if the server responds, and nil if it does not respond. If BUFFER is
+nil, the current buffer is used."
+  (condition-case ()
+      (imap-ok-p (imap-send-command-wait "NOOP" buffer))
+    (error nil)))
 
 (defun imap-authenticate (&optional user passwd buffer)
   "Authenticate to server in BUFFER, using current buffer if nil.

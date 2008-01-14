@@ -1,3 +1,8 @@
+2008-01-14  Knut Anders Hatlen  <kahatlen@gmail.com>  (tiny change)
+
+	* imap.el (imap-ping-server): New function.
+	(imap-opened): Call imap-ping-server.
+
 2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-describe-bindings): New function.
