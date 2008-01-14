@@ -1150,6 +1150,13 @@ necessary.  If nil, the buffer name is generated."
       (when imap-stream
 	buffer))))
 
+(defcustom imap-ping-server t
+  "If non-nil, check if IMAP is open.
+See the function `imap-ping-server'."
+  :version "23.0" ;; No Gnus
+  :group 'imap
+  :type 'boolean)
+
 (defun imap-opened (&optional buffer)
   "Return non-nil if connection to imap server in BUFFER is open.
 If BUFFER is nil then the current buffer is used."
@@ -1158,12 +1165,14 @@ If BUFFER is nil then the current buffer is used."
        (with-current-buffer buffer
 	 (and imap-process
 	      (memq (process-status imap-process) '(open run))
-	      (imap-ping-server)))))
+	      (if imap-ping-server
+		  (imap-ping-server)
+		t)))))
 
 (defun imap-ping-server (&optional buffer)
-  "Ping the imap server in BUFFER with a noop command. Return non-nil
-if the server responds, and nil if it does not respond. If BUFFER is
-nil, the current buffer is used."
+  "Ping the IMAP server in BUFFER with a \"NOOP\" command.
+Return non-nil if the server responds, and nil if it does not
+respond.  If BUFFER is nil, the current buffer is used."
   (condition-case ()
       (imap-ok-p (imap-send-command-wait "NOOP" buffer))
     (error nil)))

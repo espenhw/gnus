@@ -1,3 +1,9 @@
+2008-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* imap.el (imap-ping-server): New variable.
+	(imap-opened): On add extra ping if imap-ping-server is non-nil.
+	(imap-ping-server): Minor doc string fixes.
+
 2008-01-14  Knut Anders Hatlen  <kahatlen@gmail.com>  (tiny change)
 
 	* imap.el (imap-ping-server): New function.
