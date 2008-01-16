@@ -148,6 +148,11 @@ Note that the @kbd{R} command in the article buffer no longer accepts a
 prefix argument, which was used to make it do a wide reply.
 @xref{Article Keymap}.
 
+@item The new command @kbd{C-h b}
+(@code{gnus-article-describe-bindings}) used in the article buffer now
+shows not only the article commands but also the real summary commands
+that are accessible from the article buffer.
+
 @end itemize
 
 @item Changes in Message mode

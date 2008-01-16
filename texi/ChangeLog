@@ -1,3 +1,7 @@
+2008-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-news.texi: Mention gnus-article-describe-bindings.
+
 2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-news.texi: Mention gnus-article-wide-reply-with-original.
