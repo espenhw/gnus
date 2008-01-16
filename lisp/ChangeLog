@@ -1,4 +1,4 @@
-2008-01-16  Teodor Zlatanov  <tzlatanov@jumptrading.com>
+2008-01-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-marks, gnus-registry-default-mark):
 	Add new variables for article mark management.
