@@ -1,3 +1,8 @@
+2008-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-describe-bindings): Show all `S' prefix
+	keys when no argument is given.
+
 2008-01-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* imap.el (imap-ping-server): New variable.

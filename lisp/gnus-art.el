@@ -6430,7 +6430,11 @@ that prefix."
 	  (define-key keymap "S" map)
 	  (set-keymap-default-binding map nil)
 	  (with-current-buffer gnus-article-current-summary
-	    (let (def gnus-pick-mode)
+	    (let ((def (key-binding "S"))
+		  gnus-pick-mode)
+	      (set-keymap-parent map (if (symbolp def)
+					 (symbol-value def)
+				       def))
 	      (dolist (key sumkeys)
 		(when (setq def (key-binding key))
 		  (define-key keymap key def)))))
@@ -6459,6 +6463,7 @@ that prefix."
 	(define-key keymap "S" map)
 	(define-key map [t] nil)
 	(with-current-buffer gnus-article-current-summary
+	  (set-keymap-parent map (key-binding "S"))
 	  (let (def gnus-pick-mode)
 	    (dolist (key sumkeys)
 	      (when (setq def (key-binding key))
