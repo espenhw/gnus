@@ -120,6 +120,10 @@ region, if it is set, as well as the `R'
 in the article buffer no longer accepts a prefix argument, which was
 used to make it do a wide reply.  *Note Article Keymap::.
 
+** The new command `C-h b' (`gnus-article-describe-bindings') used in the
+article buffer now shows not only the article commands but also the real
+summary commands that are accessible from the article buffer.
+
 
 
 * Changes in Message mode
