@@ -1,3 +1,18 @@
+2008-01-16  Teodor Zlatanov  <tzlatanov@jumptrading.com>
+
+	* gnus-registry.el (gnus-registry-marks, gnus-registry-default-mark):
+	Add new variables for article mark management.
+	(gnus-registry-extra-entries-precious, gnus-registry-trim): Define a
+	list of extra data entries which, when present, will indicate that the
+	article ID should not be trimmed from the registry.
+	(gnus-registry-mark-article, gnus-registry-article-marks): Remove these functions.
+	(gnus-registry-read-mark): New function to read a mark name from the user.
+	(gnus-registry-set-article-mark, gnus-registry-remove-article-mark)
+	(gnus-registry-set-article-mark-internal): New functions to add and
+	remove marks.
+	(gnus-registry-get-article-marks): New function to show the marks for
+	an article, or retrieve them for further use.
+
 2008-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-describe-bindings): Show all `S' prefix
