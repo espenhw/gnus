@@ -1,3 +1,17 @@
+2008-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-read-summary-send-keys): Use
+	gnus-character-to-event.
+	(gnus-article-describe-bindings): Simplify; move XEmacs stuff to
+	gnus-xmas.el.
+
+	* gnus-xmas.el: Bind gnus-agent-summary-mode when compiling.
+	(gnus-xmas-article-describe-bindings): New function.
+	(gnus-xmas-redefine): Make gnus-article-describe-bindings alias to
+	gnus-xmas-article-describe-bindings.
+
+	* lpath.el: Don't fbind character-to-event and map-keymap for Emacs 21.
+
 2008-01-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-marks, gnus-registry-default-mark):

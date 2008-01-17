@@ -102,6 +102,8 @@ Possibly the `etc' directory has not been installed.")))
 (defvar gnus-mouse-2)
 (defvar standard-display-table)
 (defvar gnus-tree-minimize-window)
+;;`gnus-agent-mode' in gnus-agent.el will define it.
+(defvar gnus-agent-summary-mode)
 
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
@@ -345,6 +347,35 @@ call it with the value of the `gnus-data' text property."
 	       (event-to-character event))
 	  event)))
 
+(defun gnus-xmas-article-describe-bindings (&optional prefix)
+  "Show a list of all defined keys, and their definitions.
+The optional argument PREFIX, if non-nil, should be a key sequence;
+then we display only bindings that start with that prefix."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let ((keymap (copy-keymap gnus-article-mode-map))
+	(map (copy-keymap gnus-article-send-map))
+	(sumkeys (where-is-internal 'gnus-article-read-summary-keys))
+	agent)
+    (define-key keymap "S" map)
+    (set-keymap-default-binding map nil)
+    (with-current-buffer gnus-article-current-summary
+      (let ((def (key-binding "S"))
+	    gnus-pick-mode)
+	(set-keymap-parent map (if (symbolp def)
+				   (symbol-value def)
+				 def))
+	(dolist (key sumkeys)
+	  (when (setq def (key-binding key))
+	    (define-key keymap key def))))
+      (when (boundp 'gnus-agent-summary-mode)
+	(setq agent gnus-agent-summary-mode)))
+    (with-temp-buffer
+      (setq major-mode 'gnus-article-mode)
+      (use-local-map keymap)
+      (set (make-local-variable 'gnus-agent-summary-mode) agent)
+      (describe-bindings prefix))))
+
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
   (setq gnus-mouse-3 [button3])
@@ -440,6 +471,8 @@ FRONT-ADVANCE and REAR-ADVANCE are ignored."
   (defalias 'gnus-put-image 'gnus-xmas-put-image)
   (defalias 'gnus-create-image 'gnus-xmas-create-image)
   (defalias 'gnus-remove-image 'gnus-xmas-remove-image)
+  (defalias 'gnus-article-describe-bindings
+    'gnus-xmas-article-describe-bindings)
 
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved

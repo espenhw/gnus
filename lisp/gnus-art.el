@@ -6349,9 +6349,7 @@ not have a face in `gnus-article-boring-faces'."
 
 (defun gnus-article-read-summary-send-keys ()
   (interactive)
-  (let ((unread-command-events (list (if (featurep 'xemacs)
-					 (character-to-event ?S)
-				       ?S))))
+  (let ((unread-command-events (list (gnus-character-to-event ?S))))
     (gnus-article-read-summary-keys)))
 
 (defun gnus-article-describe-key (key)
@@ -6399,78 +6397,33 @@ KEY is a string or a vector."
 	  (describe-key-briefly (read-key-sequence nil t) insert)))
     (describe-key-briefly key insert)))
 
+;;`gnus-agent-mode' in gnus-agent.el will define it.
 (defvar gnus-agent-summary-mode)
 
 (defun gnus-article-describe-bindings (&optional prefix)
   "Show a list of all defined keys, and their definitions.
 The optional argument PREFIX, if non-nil, should be a key sequence;
-then we display only bindings in the summary buffer that start with
-that prefix."
+then we display only bindings that start with that prefix."
   (interactive)
   (gnus-article-check-buffer)
-  (if (featurep 'xemacs)
-      (if prefix
-	  (let (keymap agent)
-	    (with-current-buffer gnus-article-current-summary
-	      (setq keymap (copy-keymap (current-local-map))
-		    agent (if (boundp 'gnus-agent-summary-mode)
-			      gnus-agent-summary-mode)))
-	    (map-keymap
-	     (lambda (key def)
-	       (define-key keymap (vector ?S key) def))
-	     gnus-article-send-map)
-	    (with-temp-buffer
-	      (setq major-mode 'gnus-article-mode)
-	      (use-local-map keymap)
-	      (set (make-local-variable 'gnus-agent-summary-mode) agent)
-	      (describe-bindings prefix)))
-	(let ((keymap (copy-keymap gnus-article-mode-map))
-	      (map (copy-keymap gnus-article-send-map))
-	      (sumkeys (where-is-internal 'gnus-article-read-summary-keys)))
-	  (define-key keymap "S" map)
-	  (set-keymap-default-binding map nil)
-	  (with-current-buffer gnus-article-current-summary
-	    (let ((def (key-binding "S"))
-		  gnus-pick-mode)
-	      (set-keymap-parent map (if (symbolp def)
-					 (symbol-value def)
-				       def))
-	      (dolist (key sumkeys)
-		(when (setq def (key-binding key))
-		  (define-key keymap key def)))))
-	  (with-temp-buffer
-	    (setq major-mode 'gnus-article-mode)
-	    (use-local-map keymap)
-	    (describe-bindings))))
-    (if prefix
-	(let ((keymap (make-sparse-keymap))
-	      (map (copy-keymap gnus-article-send-map))
-	      smap agent)
-	  (with-current-buffer gnus-article-current-summary
-	    (setq smap (current-local-map)
-		  agent (if (boundp 'gnus-agent-summary-mode)
-			    'gnus-agent-summary-mode)))
-	  (define-key keymap "S" map)
-	  (define-key map [t] nil)
-	  (set-keymap-parent keymap smap)
-	  (with-temp-buffer
-	    (use-local-map keymap)
-	    (set (make-local-variable 'gnus-agent-summary-mode) agent)
-	    (describe-bindings prefix)))
-      (let ((keymap (copy-keymap gnus-article-mode-map))
-	    (map (copy-keymap gnus-article-send-map))
-	    (sumkeys (where-is-internal 'gnus-article-read-summary-keys)))
-	(define-key keymap "S" map)
-	(define-key map [t] nil)
-	(with-current-buffer gnus-article-current-summary
-	  (set-keymap-parent map (key-binding "S"))
-	  (let (def gnus-pick-mode)
-	    (dolist (key sumkeys)
-	      (when (setq def (key-binding key))
-		(define-key keymap key def)))))
-	(with-temp-buffer
-	  (use-local-map keymap)
-	  (describe-bindings))))))
+  (let ((keymap (copy-keymap gnus-article-mode-map))
+	(map (copy-keymap gnus-article-send-map))
+	(sumkeys (where-is-internal 'gnus-article-read-summary-keys))
+	agent)
+    (define-key keymap "S" map)
+    (define-key map [t] nil)
+    (with-current-buffer gnus-article-current-summary
+      (set-keymap-parent map (key-binding "S"))
+      (let (def gnus-pick-mode)
+	(dolist (key sumkeys)
+	  (when (setq def (key-binding key))
+	    (define-key keymap key def))))
+      (when (boundp 'gnus-agent-summary-mode)
+	(setq agent gnus-agent-summary-mode)))
+    (with-temp-buffer
+      (use-local-map keymap)
+      (set (make-local-variable 'gnus-agent-summary-mode) agent)
+      (describe-bindings prefix))))
 
 (defun gnus-article-reply-with-original (&optional wide)
   "Start composing a reply mail to the current message.

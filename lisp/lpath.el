@@ -51,12 +51,11 @@
 		    show-trailing-whitespace temporary-file-directory
 		    timer-list tool-bar-mode transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
-		 character-to-event delete-annotation delete-extent
-		 device-connection dfw-device events-to-keys find-face
-		 font-lock-set-defaults frame-device get-char-table
-		 glyph-height glyph-width ldap-search-entries
+		 delete-annotation delete-extent device-connection dfw-device
+		 events-to-keys find-face font-lock-set-defaults frame-device
+		 get-char-table glyph-height glyph-width ldap-search-entries
 		 mail-aliases-setup make-annotation make-event make-glyph
-		 map-extents map-keymap message-xmas-redefine put-char-table
+		 map-extents message-xmas-redefine put-char-table
 		 run-mode-hooks set-extent-property set-itimer-function
 		 set-keymap-default-binding temp-directory
 		 valid-image-instantiator-format-p
