@@ -6242,9 +6242,10 @@ not have a face in `gnus-article-boring-faces'."
 	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
 	   "=" "^" "\M-^" "|"))
 	(nosave-but-article
-	 '("A\r"))
+	 '("A " "A<" "A>" "AM" "AP" "AR" "AT" "A\C-?" "A\M-\r" "A\r" "Ab" "Ae"
+	   "An" "Ap" [?A (meta return)] [?A delete]))
 	(nosave-in-article
-	 '("\C-d"))
+	 '("AS" "\C-d"))
 	(up-to-top
 	 '("n" "Gn" "p" "Gp"))
 	keys new-sum-point)

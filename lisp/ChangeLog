@@ -1,7 +1,8 @@
 2008-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-art.el (gnus-article-read-summary-send-keys): Use
-	gnus-character-to-event.
+	* gnus-art.el (gnus-article-read-summary-keys): Work for some `A'
+	prefix keys.
+	(gnus-article-read-summary-send-keys): Use gnus-character-to-event.
 	(gnus-article-describe-bindings): Simplify; move XEmacs stuff to
 	gnus-xmas.el.
 
