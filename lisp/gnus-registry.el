@@ -353,7 +353,7 @@ Any entries with extra data (marks, currently) are left alone."
 	 (let ((extra (gnus-registry-fetch-extra key)))
 	   (dolist (item gnus-registry-extra-entries-precious)
 	     (dolist (e extra)
-	       (when (eq (nth 0 e) item)
+	       (when (equal (nth 0 e) item)
 		 (puthash key t precious)
 		 (return))))
 	   (puthash key (gnus-registry-fetch-extra key 'mtime) timehash)))
@@ -364,18 +364,19 @@ Any entries with extra data (marks, currently) are left alone."
 	  (if (gethash key precious)
 	      (push item precious-list)
 	    (push item junk-list))))
-      
+
+      (sort 
+       junk-list
+       (lambda (a b)
+	 (let ((t1 (or (cdr (gethash (car a) timehash)) 
+		       '(0 0 0)))
+	       (t2 (or (cdr (gethash (car b) timehash)) 
+		       '(0 0 0))))
+	   (time-less-p t1 t2))))
+
       ;; we use the return value of this setq, which is the trimmed alist
-      (setq alist
-	    (concat
-	     precious-list
-	     (nthcdr
-	      trim-length
-	      (sort junk-list
-		    (lambda (a b)
-		      (time-less-p
-		       (or (cdr (gethash (car a) timehash)) '(0 0 0))
-		       (or (cdr (gethash (car b) timehash)) '(0 0 0)))))))))))
+      (setq alist (append precious-list
+			  (nthcdr trim-length junk-list))))))
   
 (defun gnus-registry-action (action data-header from &optional to method)
   (let* ((id (mail-header-id data-header))
