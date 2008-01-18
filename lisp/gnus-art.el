@@ -6424,7 +6424,16 @@ then we display only bindings that start with that prefix."
     (with-temp-buffer
       (use-local-map keymap)
       (set (make-local-variable 'gnus-agent-summary-mode) agent)
-      (describe-bindings prefix))))
+      (describe-bindings prefix))
+    (let ((item `((lambda (prefix)
+		    (save-excursion
+		      (set-buffer ,(current-buffer))
+		      (gnus-article-describe-bindings prefix)))
+		  ,prefix)))
+      (with-current-buffer (if (fboundp 'help-buffer)
+			       (let (help-xref-following) (help-buffer))
+			     "*Help*") ;; Emacs 21
+	(setq help-xref-stack-item item)))))
 
 (defun gnus-article-reply-with-original (&optional wide)
   "Start composing a reply mail to the current message.

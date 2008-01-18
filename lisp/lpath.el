@@ -12,10 +12,10 @@
 (maybe-fbind '(Info-directory
 	       Info-menu clear-string cp-supported-codepages create-image
 	       custom-autoload display-graphic-p display-time-event-handler
-	       epg-check-configuration find-coding-system find-image image-size
-	       image-type-available-p insert-image line-number-at-pos
-	       make-mode-line-mouse-map make-network-process make-temp-file
-	       propertize put-image rmail-msg-is-pruned
+	       epg-check-configuration find-coding-system find-image
+	       help-buffer image-size image-type-available-p insert-image
+	       line-number-at-pos make-mode-line-mouse-map make-network-process
+	       make-temp-file propertize put-image rmail-msg-is-pruned
 	       rmail-msg-restore-non-pruned-header sort-coding-systems
 	       tool-bar-add-item tool-bar-add-item-from-menu
 	       tool-bar-local-item-from-menu unicode-precedence-list
@@ -23,8 +23,9 @@
 	       url-insert-file-contents vcard-pretty-print w32-focus-frame
 	       w3m-detect-meta-charset w3m-region x-focus-frame))
 (maybe-bind '(eudc-protocol
-	      filladapt-mode rmail-insert-mime-forwarded-message-function
-	      url-version w3-meta-charset-content-type-regexp
+	      filladapt-mode help-xref-stack-item
+	      rmail-insert-mime-forwarded-message-function url-version
+	      w3-meta-charset-content-type-regexp
 	      w3-meta-content-type-charset-regexp))
 
 (if (featurep 'xemacs)

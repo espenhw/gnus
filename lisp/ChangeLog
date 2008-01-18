@@ -1,3 +1,11 @@
+2008-01-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-describe-bindings): Make it possible to use
+	xrefs, i.e. [back] and [forward] buttons, in *Help* buffer.
+
+	* lpath.el: Fbind help-buffer for Emacs 21 and XEmacs; bind
+	help-xref-stack-item for Emacs 21, Emacs 22.1, and XEmacs.
+
 2008-01-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-trim): Use append, not concat.
