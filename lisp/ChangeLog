@@ -56,6 +56,12 @@
 	* imap.el (imap-ping-server): New function.
 	(imap-opened): Call imap-ping-server.
 
+2008-01-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-article-sort-by-random)
+	(gnus-thread-sort-by-random): Fix doc strings.  Reported by
+	jidanni@jidanni.org.
+
 2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-describe-bindings): New function.
