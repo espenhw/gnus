@@ -1,3 +1,8 @@
+2008-01-24  Michael Sperber  <sperber@deinprogramm.de>
+
+	* gnus.texi (Mail Source Specifiers): Document `group' specifier.
+	(Group Parameters): Document `mail-source' parameter.
+
 2008-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-news.texi: Mention gnus-article-describe-bindings.
