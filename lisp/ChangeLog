@@ -1,3 +1,11 @@
+2008-01-24    Michael Sperber  <sperber@deinprogramm.de>
+
+	* mail-source.el (mail-sources): Add `group' choice.
+
+	* nnmail.el (nnmail-get-new-mail-1): Abstract this out to add another
+	parameter `in-group' to control into which group the articles go.
+	Add treatment of `group' mail-source.
+
 2008-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-insert-mime-button): Don't decode description.
