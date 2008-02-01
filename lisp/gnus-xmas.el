@@ -104,6 +104,7 @@ Possibly the `etc' directory has not been installed.")))
 (defvar gnus-tree-minimize-window)
 ;;`gnus-agent-mode' in gnus-agent.el will define it.
 (defvar gnus-agent-summary-mode)
+(defvar gnus-draft-mode)
 
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
@@ -356,7 +357,7 @@ then we display only bindings that start with that prefix."
   (let ((keymap (copy-keymap gnus-article-mode-map))
 	(map (copy-keymap gnus-article-send-map))
 	(sumkeys (where-is-internal 'gnus-article-read-summary-keys))
-	agent)
+	agent draft)
     (define-key keymap "S" map)
     (set-keymap-default-binding map nil)
     (with-current-buffer gnus-article-current-summary
@@ -369,11 +370,14 @@ then we display only bindings that start with that prefix."
 	  (when (setq def (key-binding key))
 	    (define-key keymap key def))))
       (when (boundp 'gnus-agent-summary-mode)
-	(setq agent gnus-agent-summary-mode)))
+	(setq agent gnus-agent-summary-mode))
+      (when (boundp 'gnus-draft-mode)
+	(setq draft gnus-draft-mode)))
     (with-temp-buffer
       (setq major-mode 'gnus-article-mode)
       (use-local-map keymap)
       (set (make-local-variable 'gnus-agent-summary-mode) agent)
+      (set (make-local-variable 'gnus-draft-mode) draft)
       (describe-bindings prefix))))
 
 (defun gnus-xmas-define ()

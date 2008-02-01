@@ -1,3 +1,9 @@
+2008-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-describe-bindings): Work for draft group.
+
+	* gnus-xmas.el (gnus-xmas-article-describe-bindings): Ditto.
+
 2008-01-28  Dan Nicolaescu  <dann@ics.uci.edu>
 
 	* sieve.el (sieve-make-overlay, sieve-overlay-put, sieve-overlays-at):
