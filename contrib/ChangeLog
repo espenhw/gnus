@@ -2,6 +2,7 @@
 
 	* README: Clarify relevant Emacs versions for sendmail.el and
 	smtpmail.el.  Add fill-column.  Refill paragraphs.  Typographic fixes.
+	Add comment about gpg-ring.el and gpg.el.
 
 2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
 

@@ -27,6 +27,8 @@ gnus-namazu.el
 gpg-ring.el
 gpg.el
 
+	Obsoleted by PGG and EasyPG.
+
 nnir.el
 
 	Interface to various full-text search engines.  Provides less
