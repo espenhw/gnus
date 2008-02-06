@@ -1,6 +1,7 @@
 2008-02-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* README (sendmail.el, smtpmail.el): Clarify relevant Emacs versions.
+	* README: Clarify relevant Emacs versions for sendmail.el and
+	smtpmail.el.  Add fill-column.  Refill paragraphs.  Typographic fixes.
 
 2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
