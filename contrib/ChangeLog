@@ -1,3 +1,7 @@
+2008-02-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* README (sendmail.el, smtpmail.el): Clarify relevant Emacs versions.
+
 2007-12-09  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: Remove hashcash.el.
