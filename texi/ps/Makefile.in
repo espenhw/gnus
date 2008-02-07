@@ -1,5 +1,6 @@
-infodir = @infodir@
 prefix = @prefix@
+datarootdir = @datarootdir@
+infodir = @infodir@
 srcdir = @srcdir@
 subdir = texi/ps
 top_srcdir = @top_srcdir@

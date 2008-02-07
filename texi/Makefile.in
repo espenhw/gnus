@@ -1,5 +1,6 @@
-infodir = @info_dir@
 prefix = @prefix@
+datarootdir = @datarootdir@
+infodir = @info_dir@
 srcdir = @srcdir@
 subdir = texi
 top_srcdir = @top_srcdir@
@@ -214,21 +215,21 @@ distclean: clean
 	rm -f gnus-faq.xml gnus-faq.*.tmp
 
 install: $(INFO_DEPS)
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
+	$(SHELL) $(top_srcdir)/mkinstalldirs "$(infodir)"
 	@list='$(INFO_DEPS)'; \
 	for file in $$list; do \
 	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
 	    if test -f $$ifile; then \
-	      echo " $(INSTALL_DATA) $$ifile $(infodir)/$$ifile"; \
-	      $(INSTALL_DATA) $$ifile $(infodir)/$$ifile; \
+	      echo "$(INSTALL_DATA) $$ifile \"$(infodir)/$$ifile\""; \
+	      $(INSTALL_DATA) $$ifile "$(infodir)/$$ifile"; \
 	    else : ; fi; \
 	  done; \
 	done
 	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
 	  list='$(INFO_DEPS)'; \
 	  for file in $$list; do \
-	    echo " install-info --info-dir=$(infodir) $(infodir)/$$file";\
-	    install-info --info-dir=$(infodir) $(infodir)/$$file || :;\
+	    echo "install-info --info-dir=\"$(infodir)\" \"$(infodir)/$$file\"";\
+	    install-info --info-dir="$(infodir)" "$(infodir)/$$file" || :;\
 	  done; \
 	else : ; fi
 
@@ -236,14 +237,14 @@ uninstall:
 	@list='$(INFO_DEPS)'; \
 	for file in $$list; do \
 	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
-	    rm -f $(infodir)/$$ifile; \
+	    rm -f "$(infodir)/$$ifile"; \
 	  done; \
 	done
 	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
 	  list='$(INFO_DEPS)'; \
 	  for file in $$list; do \
-	    echo " install-info --delete --info-dir=$(infodir) $(infodir)/$$file";\
-	    install-info --delete --info-dir=$(infodir) $(infodir)/$$file || :;\
+	    echo "install-info --delete --info-dir=\"$(infodir)\" \"$(infodir)/$$file\"";\
+	    install-info --delete --info-dir="$(infodir)" "$(infodir)/$$file" || :;\
 	  done; \
 	else : ; fi
 

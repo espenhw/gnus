@@ -1,3 +1,14 @@
+2008-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (datarootdir): Define.
+	(install, uninstall): Quote directory name that might contain
+	whitespace.
+
+	* gnus-news.texi: Mention that spaces and tabs are allowed in the
+	installation directory name.
+
+	* ps/Makefile.in (datarootdir): Define.
+
 2008-01-24  Michael Sperber  <sperber@deinprogramm.de>
 
 	* gnus.texi (Mail Source Specifiers): Document `group' specifier.
@@ -5949,7 +5960,7 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 	* gnus.texi (Mail Folders): Addition.
 
     Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-    2007 Free Software Foundation, Inc.
+    2007, 2008 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 
