@@ -1,3 +1,9 @@
+2008-02-07  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* nnimap.el (nnimap-open-connection): Add "143" and "993" as default
+	ports to the calls to `netrc-machine-user-or-password' in addition to
+	"imap" and "imaps".
+
 2008-02-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.el (gnus-group-startup-message): Add `find-image' call before
