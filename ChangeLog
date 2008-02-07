@@ -1,3 +1,16 @@
+2008-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* GNUS-NEWS: Generated.
+
+	* Makefile.in (datarootdir): Define.
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Quote directory name that might contain
+	whitespace.
+
+	* configure: Regenerate.
+
+	* mkinstalldirs: Replace it with the 2006-05-11.19 version.
+
 2008-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* GNUS-NEWS: Generated.
@@ -779,7 +792,7 @@
 	Windows NT.
 
     Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-    2007 Free Software Foundation, Inc.
+    2007, 2008 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 

@@ -91,7 +91,8 @@ AC_DEFUN(AC_PATH_LISPDIR, [
     fi
     for thedir in share lib; do
 	potential=
-	if test -d ${theprefix}/${thedir}/${EMACS_FLAVOR}/site-lisp; then
+	dnl The directory name should be quoted because it might contain spaces.
+	if test -d "${theprefix}/${thedir}/${EMACS_FLAVOR}/site-lisp"; then
            if test "$EMACS_FLAVOR" = "xemacs"; then
 	       lispdir="\$(prefix)/${thedir}/${EMACS_FLAVOR}/site-packages/lisp/gnus"
            else
