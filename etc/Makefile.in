@@ -1,6 +1,7 @@
+prefix = @prefix@
+datarootdir = @datarootdir@
 datadir = @datadir@
 infodir = @infodir@
-prefix = @prefix@
 srcdir = @srcdir@
 subdir = etc
 top_srcdir = @top_srcdir@
@@ -14,32 +15,32 @@ INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 
 install:
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)
-	cd $(srcdir) \
+	$(SHELL) $(top_srcdir)/mkinstalldirs "$(etcdir)"
+	@cd $(srcdir) \
 	&& for p in gnus-tut.txt; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo "$(INSTALL_DATA) \"$$p $(etcdir)/$$p\""; \
+	  $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/gnus $(etcdir)/images/mail
-	cd $(srcdir) \
+	$(SHELL) $(top_srcdir)/mkinstalldirs "$(etcdir)/images/gnus" "$(etcdir)/images/mail"
+	@cd $(srcdir) \
 	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
                     images/mail/*.xpm images/mail/*.pbm \
                     images/*.xpm images/*.pbm \
                     images/gnus/x-splash; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
+	  $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
 	done
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/images/smilies \
-	  $(etcdir)/images/smilies/grayscale $(etcdir)/images/smilies/medium
-	cd $(srcdir) \
+	$(SHELL) $(top_srcdir)/mkinstalldirs "$(etcdir)/images/smilies" \
+	  "$(etcdir)/images/smilies/grayscale" "$(etcdir)/images/smilies/medium"
+	@cd $(srcdir) \
 	&& for p in images/smilies/*.pbm images/smilies/*.xpm \
             images/smilies/grayscale/*.xpm images/smilies/medium/*.xpm; do \
-	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
+	  echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
+	  $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
 	done
 
 uninstall:
-	rm -f $(etcdir)/gnus-tut.txt
+	rm -f "$(etcdir)/gnus-tut.txt"
 	cd $(srcdir) \
 	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
                     images/mail/*.xpm images/mail/*.pbm \
@@ -47,13 +48,13 @@ uninstall:
                     images/gnus/x-splash; do \
 	  rm -f "$(etcdir)/$$p"; \
 	done
-	rmdir $(etcdir)/images/gnus 2> /dev/null || true
+	rmdir "$(etcdir)/images/gnus" 2> /dev/null || true
 	cd $(srcdir) \
 	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
 	  rm -f "$(etcdir)/$$p"; \
 	done
-	rmdir $(etcdir)/images/smilies 2> /dev/null || true
-	rmdir $(etcdir)/images 2> /dev/null || true
+	rmdir "$(etcdir)/images/smilies" 2> /dev/null || true
+	rmdir "$(etcdir)/images" 2> /dev/null || true
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. \

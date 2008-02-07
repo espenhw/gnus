@@ -1,3 +1,9 @@
+2008-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (datarootdir): Define.
+	(install, uninstall): Quote directory name that might contain
+	whitespace.
+
 2007-11-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* images/GNUS-README: Rename from README.  Add some information
@@ -8,7 +14,7 @@
 	* ChangeLog: New ChangeLog for `./etc'.  Should simplify syncing with
 	Emacs a little bit.
 
-    Copyright (C) 2007 Free Software Foundation, Inc.
+    Copyright (C) 2007, 2008 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 
