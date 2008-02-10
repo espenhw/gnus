@@ -1,3 +1,10 @@
+2008-02-10  Daiki Ueno  <ueno@unixuser.org>
+
+	* mml2015.el (mml2015-epg-sign): Remove skipped signers from the signer
+	list.
+	(mml2015-epg-encrypt): Remove skipped recipients/signers from the
+	recipient/signer list.
+
 2008-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (datarootdir): Define.
