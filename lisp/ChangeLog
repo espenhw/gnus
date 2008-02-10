@@ -1,3 +1,8 @@
+2008-02-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-unsent-separator): Add the Exim bounce
+	separator. 
+
 2008-02-10  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-sign): Remove skipped signers from the signer
