@@ -1,7 +1,12 @@
+2008-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnmail.el (nnmail-message-id-cache-file): Derive from
+	`gnus-home-directory'.
+
 2008-02-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-unsent-separator): Add the Exim bounce
-	separator. 
+	separator.
 
 2008-02-10  Daiki Ueno  <ueno@unixuser.org>
 
