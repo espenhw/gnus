@@ -1,5 +1,8 @@
 2008-02-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mail-source.el (mail-source-delete-incoming): Change default.
+	Supplement doc string.
+
 	* gnus-util.el (gnus-y-or-n-p, gnus-y-or-n-p): Update comments.
 
 2008-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
