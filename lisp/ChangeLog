@@ -1,3 +1,7 @@
+2008-02-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-util.el (gnus-y-or-n-p, gnus-y-or-n-p): Update comments.
+
 2008-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnmail.el (nnmail-message-id-cache-file): Derive from
