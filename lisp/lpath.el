@@ -15,13 +15,14 @@
 	       epg-check-configuration find-coding-system find-image
 	       help-buffer image-size image-type-available-p insert-image
 	       line-number-at-pos make-mode-line-mouse-map make-network-process
-	       make-temp-file propertize put-image rmail-msg-is-pruned
-	       rmail-msg-restore-non-pruned-header sort-coding-systems
-	       tool-bar-add-item tool-bar-add-item-from-menu
-	       tool-bar-local-item-from-menu unicode-precedence-list
-	       url-generic-parse-url url-http-file-exists-p
-	       url-insert-file-contents vcard-pretty-print w32-focus-frame
-	       w3m-detect-meta-charset w3m-region x-focus-frame))
+	       make-temp-file pgg-display-output-buffer propertize put-image
+	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
+	       sort-coding-systems tool-bar-add-item
+	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
+	       unicode-precedence-list url-generic-parse-url
+	       url-http-file-exists-p url-insert-file-contents
+	       vcard-pretty-print w32-focus-frame w3m-detect-meta-charset
+	       w3m-region x-focus-frame))
 (maybe-bind '(eudc-protocol
 	      filladapt-mode help-xref-stack-item
 	      rmail-insert-mime-forwarded-message-function url-version
@@ -48,9 +49,9 @@
 		    default-file-name-coding-system enable-multibyte-characters
 		    gnus-agent-expire-current-dirs anguage-info-alist
 		    line-spacing mark-active mouse-selection-click-count
-		    mouse-selection-click-count-buffer pgg-parse-crc24
-		    show-trailing-whitespace temporary-file-directory
-		    timer-list tool-bar-mode transient-mark-mode)))
+		    mouse-selection-click-count-buffer show-trailing-whitespace
+		    temporary-file-directory timer-list tool-bar-mode
+		    transient-mark-mode)))
   (maybe-fbind '(bbdb-complete-name
 		 delete-annotation delete-extent device-connection dfw-device
 		 events-to-keys find-face font-lock-set-defaults frame-device
@@ -72,7 +73,7 @@
   (maybe-fbind '(ccl-execute-on-string
 		 char-charset charsetp coding-system-get find-charset-region
 		 get-charset-property pgg-parse-crc24-string))
-  (maybe-bind '(language-info-alist))
+  (maybe-bind '(language-info-alist pgg-parse-crc24))
   (unless (featurep 'file-coding)
     (maybe-fbind '(coding-system-base
 		   coding-system-change-eol-conversion coding-system-list

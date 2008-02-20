@@ -1,3 +1,8 @@
+2008-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind pgg-display-output-buffer for systems in which EasyPG
+	has been installed; bind pgg-parse-crc24 for only non-Mule XEmacs.
+
 2008-02-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mail-source.el (mail-source-delete-incoming): Change default.
