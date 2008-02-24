@@ -492,6 +492,10 @@ could use `autoload-coding-system' here."
     (iso-2022-jp latin-jisx0201 japanese-jisx0208 japanese-jisx0208-1978)
     (euc-kr korean-ksc5601)
     (gb2312 chinese-gb2312)
+    (gbk chinese-gbk)
+    (gb18030 gb18030-2-byte
+	     gb18030-4-byte-bmp gb18030-4-byte-smp
+	     gb18030-4-byte-ext-1 gb18030-4-byte-ext-2)
     (big5 chinese-big5-1 chinese-big5-2)
     (tibetan tibetan)
     (thai-tis620 thai-tis620)
@@ -560,7 +564,7 @@ with Mule charsets.  It is completely useless for Emacs."
 	  cs mime mule alist)
       (while css
 	(setq cs (pop css)
-	      mime (or (coding-system-get cs :mime-charset) ; Emacs 23 (unicode)
+	      mime (or (coding-system-get cs :mime-charset); Emacs 23 (unicode)
 		       (coding-system-get cs 'mime-charset)))
 	(when (and mime
 		   (not (eq t (setq mule
@@ -1011,6 +1015,8 @@ charset, and a longer list means no appropriate charset."
 	;; mm-xemacs-find-mime-charset will return an appropriate list.
 	;; Otherwise, we'll get nil, and the next setq will get invoked.
 	(setq charsets (mm-xemacs-find-mime-charset b e))
+
+	;; Fixme: won't work for unibyte Emacs 23:
 
 	;; We're not multibyte, or a single coding system won't cover it.
 	(setq charsets
