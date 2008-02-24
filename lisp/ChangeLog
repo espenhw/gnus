@@ -15,6 +15,13 @@
 	* nnmail.el (nnmail-message-id-cache-file): Derive from
 	`gnus-home-directory'.
 
+2008-02-11  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-topic.el (gnus-topic-select-group, gnus-topic-read-group):
+	Document negativ prefix.
+
+	* gnus-group.el (gnus-group-read-group): Document negativ prefix.
+
 2008-02-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-unsent-separator): Add the Exim bounce
