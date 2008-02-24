@@ -10,6 +10,10 @@
 
 	* gnus-util.el (gnus-y-or-n-p, gnus-y-or-n-p): Update comments.
 
+2008-02-14  Glenn Morris  <rgm@gnu.org>
+
+	* calendar/time-date.el (format-seconds): New function.
+
 2008-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnmail.el (nnmail-message-id-cache-file): Derive from
@@ -39,6 +43,15 @@
 	* Makefile.in (datarootdir): Define.
 	(EMACS_COMP, install-el, install-elc, install-el-elc): Quote directory
 	name that might contain whitespace.
+
+2008-02-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-util.el (mm-codepage-setup): If cp-supported-codepages isn't
+	fbound (Emacs 23 unicode), signal an error.
+
+2008-02-08  Glenn Morris  <rgm@gnu.org>
+
+	* gnus-art.el (pgg-display-output-buffer): Declare as function.
 
 2008-02-07  Tassilo Horn  <tassilo@member.fsf.org>
 
