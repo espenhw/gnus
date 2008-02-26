@@ -1,3 +1,10 @@
+2008-02-26  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-register-message-ids): Use `id'
+	instead of making an extra function call.  Don't add the current group
+	to articles only when they have the group.
+	Reported by David <de_bb@arcor.de>.
+
 2008-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind pgg-display-output-buffer for systems in which EasyPG
