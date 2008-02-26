@@ -1,3 +1,8 @@
+2008-02-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.texi: Mention problem with coding system `utf-8-emacs' when
+	using different Emacs versions.
+
 2008-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (datarootdir): Define.
