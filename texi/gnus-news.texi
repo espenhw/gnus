@@ -33,7 +33,7 @@ for more information about nntp marks.  Note that downgrading isn't
 safe in general.
 
 @item Incompatibity when switching from Emacs 23 to Emacs 22 
-In Emacs 23, Gnus uses Emacs' new internal coding system `utf-8-emacs'
+In Emacs 23, Gnus uses Emacs' new internal coding system @code{utf-8-emacs}
 for saving articles drafts and @file{~/.newsrc.eld}.  These file may not
 be read correctly in Emacs 22 and below.  If you want to Gnus across
 different Emacs versions, you may set @code{mm-auto-save-coding-system}
