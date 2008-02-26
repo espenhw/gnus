@@ -577,7 +577,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (unless (gnus-parameter-registry-ignore gnus-newsgroup-name)
     (dolist (article gnus-newsgroup-articles)
       (let ((id (gnus-registry-fetch-message-id-fast article)))
-	(unless (member gnus-newsgroup-name (gnus-registry-fetch-group id))
+	(unless (member gnus-newsgroup-name (gnus-registry-fetch-groups id))
 	  (gnus-message 9 "Registry: Registering article %d with group %s"
 			article gnus-newsgroup-name)
 	  (gnus-registry-add-group 
