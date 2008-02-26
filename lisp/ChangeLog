@@ -1,3 +1,8 @@
+2008-02-26  David Engster  <dengste@eml.cc>
+
+	* nnmairix.el: New file.  Mairix back end for Gnus.  Initial import of
+	version 0.5.
+
 2008-02-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-register-message-ids): Use `id'
