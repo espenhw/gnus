@@ -1,3 +1,9 @@
+2008-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mm-uu.el (mm-uu-type-alist): Fix message-marks non-hide arguments.
+	(mm-uu-extract): Improve face for low color ttys.  Reported by Sascha
+	Wilde.
+
 2008-02-26  David Engster  <dengste@eml.cc>
 
 	* nnmairix.el: New file.  Mairix back end for Gnus.  Initial import of
