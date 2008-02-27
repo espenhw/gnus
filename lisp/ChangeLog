@@ -1,3 +1,17 @@
+2008-02-27  David Engster  <dengste@eml.cc>
+
+	* nnmairix.el (nnmairix-request-group-with-article-number-correction):
+	Express real group name in the response.
+
+2008-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmairix.el (nnmairix-group-regexp, nnmairix-valid-backends)
+	(nnmairix-last-server, nnmairix-current-server): Defvar them.
+	(nnmairix-goto-original-article): Defvar gnus-registry-install and
+	autoload gnus-registry-fetch-group when compiling.
+	(nnmairix-request-group-with-article-number-correction): remove
+	unreferenced argument passed to nnmairix-call-backend.
+
 2008-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-uu.el (mm-uu-type-alist): Fix message-marks non-hide arguments.

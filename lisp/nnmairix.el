@@ -336,18 +336,19 @@ temporary searches, e.g. nnmairix-search.")
 
 ;;; === Internal variables
 
-;; Regexp for mairix groups on back end
-(setq nnmairix-group-regexp (format "%s-\\(.*\\)-[0-9]+" nnmairix-group-prefix))
+(defvar nnmairix-group-regexp
+  (format "%s-\\(.*\\)-[0-9]+" nnmairix-group-prefix)
+  "Regexp for mairix groups on back end.")
 
-;; Back ends (hopefully...) supported by nnmairix.
-;; Other backends might or might not work.
-(setq nnmairix-valid-backends '(nnimap nnml nnmaildir))
+(defvar nnmairix-valid-backends '(nnimap nnml nnmaildir)
+  "Back ends (hopefully...) supported by nnmairix.
+Other backends might or might not work.")
 
-;; Last chosen server
-(setq nnmairix-last-server nil)
+(defvar nnmairix-last-server nil
+  "Last chosen server.")
 
-;; Current server
-(setq nnmairix-current-server nil)
+(defvar nnmairix-current-server nil
+  "Current server.")
 
 ;;; === Gnus backend functions
   
@@ -843,6 +844,11 @@ with `nnmairix-mairix-update-options'."
 	  (set-process-sentinel (apply 'start-process args)
 				'nnmairix-sentinel-mairix-update-finished))))))
 
+;; Silence byte-compiler.
+(eval-when-compile
+  (defvar gnus-registry-install)
+  (autoload 'gnus-registry-fetch-group "gnus-registry"))
+
 (defun nnmairix-goto-original-article (&optional no-registry)
   "Jump to the original group and display article.
 The original group of the article is first determined with the
@@ -974,7 +980,7 @@ search in raw mode."
   "Request FOLDER on backend for nnmairix QUALGROUP and article number correction."
   (save-excursion
     (nnmairix-call-backend
-     "request-group" folder nnmairix-backend-server fast)
+     "request-group" folder nnmairix-backend-server)
     (set-buffer nnmairix-mairix-output-buffer)
     (goto-char (point-min))
     (re-search-forward "^Matched.*messages")
@@ -1006,7 +1012,8 @@ search in raw mode."
 		(gnus-group-set-parameter
 		 qualgroup 'numcorr (list nil 0 high))))
 	    (erase-buffer)
-	    (insert (format "%d %d %d %d %s" status total low high group))
+	    (insert (format "%d %d %d %d %s" status total low high
+			    (gnus-group-real-name qualgroup)))
 	    t)
 	(progn
 	  (nnheader-report
