@@ -1,3 +1,11 @@
+2008-02-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-follow-group-p)
+	(gnus-registry-post-process-groups): Add functions to aid registry
+	splitting and improve logging.  Clarify behavior in function
+	documentation.
+	(gnus-registry-split-fancy-with-parent): Use them.
+
 2008-02-27  David Engster  <dengste@eml.cc>
 
 	* nnmairix.el (nnmairix-request-group-with-article-number-correction):

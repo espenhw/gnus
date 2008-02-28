@@ -425,119 +425,150 @@ messages.
 For a message to be split, it looks for the parent message in the
 References or In-Reply-To header and then looks in the registry
 to see which group that message was put in.  This group is
-returned, unless it matches one of the entries in
-gnus-registry-unfollowed-groups or
-nnmail-split-fancy-with-parent-ignore-groups.
+returned, unless `gnus-registry-follow-group-p' return nil for
+that group.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
-  (let* ((refstr (or (message-fetch-field "references") "")) ; guarantee string
-	 (reply-to (message-fetch-field "in-reply-to"))	     ; grab reply-to
+  (let* ((refstr (or (message-fetch-field "references") "")) ; guaranteed
+	 (reply-to (message-fetch-field "in-reply-to"))	     ; may be nil
 	 ;; now, if reply-to is valid, append it to the References
 	 (refstr (if reply-to 
 		     (concat refstr " " reply-to)
 		   refstr))
-	(nnmail-split-fancy-with-parent-ignore-groups
-	 (if (listp nnmail-split-fancy-with-parent-ignore-groups)
-	     nnmail-split-fancy-with-parent-ignore-groups
-	   (list nnmail-split-fancy-with-parent-ignore-groups)))
-	res)
-    ;; the references string must be valid and parse to valid references
-    (if (and refstr (gnus-extract-references refstr))
-	(dolist (reference (nreverse (gnus-extract-references refstr)))
-	  (setq res (or (gnus-registry-fetch-group reference) res))
-	  (when (or (gnus-registry-grep-in-list
-		     res
-		     gnus-registry-unfollowed-groups)
-		    (gnus-registry-grep-in-list
-		     res
-		     nnmail-split-fancy-with-parent-ignore-groups))
-	    (setq res nil)))
+	 ;; these may not be used, but the code is cleaner having them up here
+	 (sender (gnus-string-remove-all-properties
+		  (message-fetch-field "from")))
+	 (subject (gnus-string-remove-all-properties
+		   (gnus-registry-simplify-subject
+		    (message-fetch-field "subject"))))
 
-      ;; else: there were no references, now try the extra tracking
-      (let ((sender (gnus-string-remove-all-properties(message-fetch-field "from")))
-	    (subject (gnus-string-remove-all-properties
-		      (gnus-registry-simplify-subject
-		       (message-fetch-field "subject"))))
-	    (single-match t))
-	(when (and single-match
-		   (gnus-registry-track-sender-p)
-		   sender)
-	  (maphash
-	   (lambda (key value)
-	     (let ((this-sender (cdr
-				 (gnus-registry-fetch-extra key 'sender))))
-	       (when (and single-match
-			  this-sender
-			  (equal sender this-sender))
-		 ;; too many matches, bail
-		 (unless (equal res (gnus-registry-fetch-group key))
-		   (setq single-match nil))
-		 (setq res (gnus-registry-fetch-group key))
-		 (when (and sender res)
-		   (gnus-message
-		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 7 9)
-		    "%s (extra tracking) traced sender %s to group %s"
-		    "gnus-registry-split-fancy-with-parent"
-		    sender
-		    res)))))
-	   gnus-registry-hashtb))
-	(when (and single-match
-		   (gnus-registry-track-subject-p)
-		   subject
-		   (< gnus-registry-minimum-subject-length (length subject)))
-	  (maphash
-	   (lambda (key value)
-	     (let ((this-subject (cdr
-				  (gnus-registry-fetch-extra key 'subject))))
-	       (when (and single-match
-			  this-subject
-			  (equal subject this-subject))
-		 ;; too many matches, bail
-		 (unless (equal res (gnus-registry-fetch-group key))
-		   (setq single-match nil))
-		 (setq res (gnus-registry-fetch-group key))
-		 (when (and subject res)
-		   (gnus-message
-		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 7 9)
-		    "%s (extra tracking) traced subject %s to group %s"
-		    "gnus-registry-split-fancy-with-parent"
-		    subject
-		    res)))))
-	   gnus-registry-hashtb))
-	(unless single-match
-	  (gnus-message
-	   3
-	   "gnus-registry-split-fancy-with-parent: too many extra matches for %s"
-	   refstr)
-	  (setq res nil))))
-    (when (and refstr res)
-      (gnus-message
-       5
-       "gnus-registry-split-fancy-with-parent traced %s to group %s"
-       refstr res))
+	 (nnmail-split-fancy-with-parent-ignore-groups
+	  (if (listp nnmail-split-fancy-with-parent-ignore-groups)
+	      nnmail-split-fancy-with-parent-ignore-groups
+	    (list nnmail-split-fancy-with-parent-ignore-groups)))
+	 (log-agent "gnus-registry-split-fancy-with-parent")
+	 found)
 
-    (when (and res gnus-registry-use-long-group-names)
-      (let ((m1 (gnus-find-method-for-group res))
-	    (m2 (or gnus-command-method
-		    (gnus-find-method-for-group gnus-newsgroup-name)))
-	    (short-res (gnus-group-short-name res)))
-      (if (gnus-methods-equal-p m1 m2)
-	  (progn
-	    (gnus-message
-	     9
-	     "gnus-registry-split-fancy-with-parent stripped group %s to %s"
-	     res
-	     short-res)
-	    (setq res short-res))
-	;; else...
+    ;; this is a big if-else statement.  it uses
+    ;; gnus-registry-post-process-groups to filter the results after
+    ;; every step.
+    (cond
+     ;; the references string must be valid and parse to valid references
+     ((and refstr (gnus-extract-references refstr))
+      (dolist (reference (nreverse (gnus-extract-references refstr)))
 	(gnus-message
-	 7
-	 "gnus-registry-split-fancy-with-parent ignored foreign group %s"
-	 res)
-	(setq res nil))))
-    res))
+	 9
+	 "%s is looking for matches for reference %s from [%s]"
+	 log-agent reference refstr)
+	(dolist (group (gnus-registry-fetch-groups reference))
+	  (when (and group (gnus-registry-follow-group-p group))
+	    (gnus-message
+	     7
+	     "%s traced the reference %s from [%s] to group %s"
+	     log-agent reference refstr group)
+	    (push group found))))
+      ;; filter the found groups and return them
+      (setq found (gnus-registry-post-process-groups "references" refstr found)))
+
+     ;; else: there were no matches, now try the extra tracking by sender
+     ((and (gnus-registry-track-sender-p) 
+	   sender)
+      (maphash
+       (lambda (key value)
+	 (let ((this-sender (cdr
+			     (gnus-registry-fetch-extra key 'sender)))
+	       matches)
+	   (when (and this-sender
+		      (equal sender this-sender))
+	     (setq found (append (gnus-registry-fetch-groups key) found))
+	     (push key matches)
+	     (gnus-message
+	      ;; raise level of messaging if gnus-registry-track-extra
+	      (if gnus-registry-track-extra 7 9)
+	      "%s (extra tracking) traced sender %s to groups %s (keys %s)"
+	      log-agent sender found matches))))
+       gnus-registry-hashtb)
+      ;; filter the found groups and return them
+      (setq found (gnus-registry-post-process-groups "sender" sender found)))
+      
+     ;; else: there were no matches, now try the extra tracking by subject
+     ((and (gnus-registry-track-subject-p)
+	   subject
+	   (< gnus-registry-minimum-subject-length (length subject)))
+      (maphash
+       (lambda (key value)
+	 (let ((this-subject (cdr
+			      (gnus-registry-fetch-extra key 'subject)))
+	       matches)
+	   (when (and this-subject
+		      (equal subject this-subject))
+	     (setq found (append (gnus-registry-fetch-groups key) found))
+	     (push key matches)
+	     (gnus-message
+	      ;; raise level of messaging if gnus-registry-track-extra
+	      (if gnus-registry-track-extra 7 9)
+	      "%s (extra tracking) traced subject %s to groups %s (keys %s)"
+	      log-agent subject found matches))))
+       gnus-registry-hashtb)
+      ;; filter the found groups and return them
+      (setq found (gnus-registry-post-process-groups "subject" subject found))))))
+
+(defun gnus-registry-post-process-groups (mode key groups)
+  "Modifies GROUPS obtained by searching by MODE for KEY to determine which ones to follow.
+
+MODE can be 'subject' or 'sender' for example.  The KEY is the
+value by which MODE was searched.
+
+Transforms each group name to the equivalent short name.
+
+Checks if the current Gnus method (from `gnus-command-method' or
+from `gnus-newsgroup-name') is the same as the group's method.
+This is not possible if gnus-registry-use-long-group-names is
+false.  Foreign methods are not supported so they are rejected.
+
+Reduces the list to a single group, or complains if that's not
+possible."
+  (let ((log-agent "gnus-registry-post-process-group")
+	out)
+    (if gnus-registry-use-long-group-names
+	(dolist (group groups)
+	  (let ((m1 (gnus-find-method-for-group group))
+		(m2 (or gnus-command-method
+			(gnus-find-method-for-group gnus-newsgroup-name)))
+		(short-name (gnus-group-short-name group)))
+	    (if (gnus-methods-equal-p m1 m2)
+		(progn
+		  ;; this is REALLY just for debugging
+		  (gnus-message
+		   10
+		   "%s stripped group %s to %s"
+		   log-agent group short-name)
+		  (unless (member short-name out)
+		    (push short-name out)))
+	      ;; else...
+	      (gnus-message
+	       7
+	       "%s ignored foreign group %s"
+	       log-agent group))))
+      (setq out groups))
+    (when (cdr-safe out)
+	(gnus-message
+	 5
+	 "%s: too many extra matches (%s) for %s %s.  Returning none."
+	 log-agent out mode key)
+	(setq out nil))
+    out))
+
+(defun gnus-registry-follow-group-p (group)
+  "Determines if a group name should be followed.
+Consults `gnus-registry-unfollowed-groups' and
+`nnmail-split-fancy-with-parent-ignore-groups'."
+  (not (or (gnus-registry-grep-in-list
+	    group
+	    gnus-registry-unfollowed-groups)
+	   (gnus-registry-grep-in-list
+	    group
+	    nnmail-split-fancy-with-parent-ignore-groups))))
 
 (defun gnus-registry-wash-for-keywords (&optional force)
   (interactive)
