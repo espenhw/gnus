@@ -743,7 +743,8 @@ Uses `gnus-registry-marks' to find what shortcuts to install."
 	       (&rest articles)
 	       ;; documentation
 	       ,(format 
-		 "Apply the %s mark to process-marked ARTICLES." 
+		 "%s the %s mark over process-marked ARTICLES."
+		 (upcase-initials variant-name)
 		 mark)
 	       ;; interactive definition
 	       (interactive 
