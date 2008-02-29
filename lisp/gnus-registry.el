@@ -79,17 +79,49 @@
   "*The article registry by Message ID.")
 
 (defcustom gnus-registry-marks
-  '(Important Work Personal To-Do Later)
-  "List of marks that `gnus-registry-mark-article' will offer for completion."
+  '((Important
+     (char . ?i)
+     (image . "summary_important"))
+    (Work
+     (char . ?w)
+     (image . "summary_work"))
+    (Personal
+     (char . ?p)
+     (image . "summary_personal"))
+    (To-Do
+     (char . ?t)
+     (image . "summary_todo"))
+    (Later
+     (char . ?l)
+     (image . "summary_later")))
+
+  "List of registry marks and their options.
+
+`gnus-registry-mark-article' will offer symbols from this list
+for completion.  
+
+Each entry must have a character to be useful for summary mode
+line display and for keyboard shortcuts.
+
+Each entry must have an image string to be useful for visual
+display."
   :group 'gnus-registry
-  :type '(repeat symbol))
+  :type '(alist :key-type symbol
+		:value-type (set :tag "Mark details"
+				  (cons :tag "Shortcut" 
+					(const :tag "Character code" char)
+					character)
+				  (cons :tag "Visual" 
+					(const :tag "Image" image) 
+					string))))
 
 (defcustom gnus-registry-default-mark 'To-Do
-  "The default mark."
+  "The default mark.  Should be a valid key for `gnus-registry-marks'."
   :group 'gnus-registry
   :type 'symbol)
 
-(defcustom gnus-registry-unfollowed-groups '("delayed$" "drafts$" "queue$" "INBOX$")
+(defcustom gnus-registry-unfollowed-groups 
+  '("delayed$" "drafts$" "queue$" "INBOX$")
   "List of groups that gnus-registry-split-fancy-with-parent won't return.
 The group names are matched, they don't have to be fully
 qualified.  This parameter tells the Registry 'never split a
@@ -197,7 +229,8 @@ considered precious) will not be trimmed."
     (if gnus-save-startup-file-via-temp-buffer
 	(let ((coding-system-for-write gnus-ding-file-coding-system)
 	      (standard-output (current-buffer)))
-	  (gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist)
+	  (gnus-gnus-to-quick-newsrc-format 
+	   t "gnus registry startup file" 'gnus-registry-alist)
 	  (gnus-registry-cache-whitespace file)
 	  (save-buffer))
       (let ((coding-system-for-write gnus-ding-file-coding-system)
@@ -221,7 +254,8 @@ considered precious) will not be trimmed."
 	(unwind-protect
 	    (progn
 	      (gnus-with-output-to-file working-file
-		(gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist))
+		(gnus-gnus-to-quick-newsrc-format 
+		 t "gnus registry startup file" 'gnus-registry-alist))
 
 	      ;; These bindings will mislead the current buffer
 	      ;; into thinking that it is visiting the startup
@@ -382,7 +416,8 @@ Any entries with extra data (marks, currently) are left alone."
 	 (subject (gnus-string-remove-all-properties
 		   (gnus-registry-simplify-subject
 		    (mail-header-subject data-header))))
-	 (sender (gnus-string-remove-all-properties (mail-header-from data-header)))
+	 (sender (gnus-string-remove-all-properties 
+		  (mail-header-from data-header)))
 	 (from (gnus-group-guess-full-name-from-command-method from))
 	 (to (if to (gnus-group-guess-full-name-from-command-method to) nil))
 	 (to-name (if to to "the Bit Bucket"))
@@ -468,7 +503,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	     log-agent reference refstr group)
 	    (push group found))))
       ;; filter the found groups and return them
-      (setq found (gnus-registry-post-process-groups "references" refstr found)))
+      (setq found (gnus-registry-post-process-groups 
+		   "references" refstr found)))
 
      ;; else: there were no matches, now try the extra tracking by sender
      ((and (gnus-registry-track-sender-p) 
@@ -511,10 +547,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	      log-agent subject found matches))))
        gnus-registry-hashtb)
       ;; filter the found groups and return them
-      (setq found (gnus-registry-post-process-groups "subject" subject found))))))
+      (setq found (gnus-registry-post-process-groups 
+		   "subject" subject found))))))
 
 (defun gnus-registry-post-process-groups (mode key groups)
-  "Modifies GROUPS obtained by searching by MODE for KEY to determine which ones to follow.
+  "Modifies GROUPS found by MODE for KEY to determine which ones to follow.
 
 MODE can be 'subject' or 'sender' for example.  The KEY is the
 value by which MODE was searched.
@@ -658,6 +695,77 @@ Consults `gnus-registry-unfollowed-groups' and
 		     (string-match word x))
 		   list)))))
 
+(defun gnus-registry-do-marks (type function)
+  "For each known mark, call FUNCTION for each cell of type TYPE.
+
+FUNCTION should take two parameters, a mark symbol and the cell value."
+  (dolist (mark-info gnus-registry-marks)
+    (let ((mark (car-safe mark-info))
+	  (data (cdr-safe mark-info)))
+      (dolist (cell data)
+	(let ((cell-type (car-safe cell))
+	      (cell-data (cdr-safe cell)))
+	  (when (equal type cell-type)
+	    (funcall function mark cell-data)))))))
+
+;;; this is ugly code, but I don't know how to do it better
+;;; TODO: clear the gnus-registry-mark-map before running
+(defun gnus-registry-install-shortcuts-and-menus ()
+  "Install the keyboard shortcuts and menus for the registry.
+Uses `gnus-registry-marks' to find what shortcuts to install."
+  (gnus-registry-do-marks 
+   'char
+   (lambda (mark data)
+     (let ((function-format
+	    (format "gnus-registry-%%s-article-%s-mark" mark)))
+
+;;; The following generates these functions:
+;;; (defun gnus-registry-set-article-Important-mark (&rest articles)
+;;;   "Apply the Important mark to process-marked ARTICLES."
+;;;   (interactive (gnus-summary-work-articles current-prefix-arg))
+;;;   (gnus-registry-set-article-mark-internal 'Important articles nil t))
+;;; (defun gnus-registry-remove-article-Important-mark (&rest articles)
+;;;   "Apply the Important mark to process-marked ARTICLES."
+;;;   (interactive (gnus-summary-work-articles current-prefix-arg))
+;;;   (gnus-registry-set-article-mark-internal 'Important articles t t))
+
+       (dolist (remove '(t nil))
+	 (let* ((variant-name (if remove "remove" "set"))
+		(function-name (format function-format variant-name))
+		(shortcut (format "%c" data))
+		(shortcut (if remove (upcase shortcut) shortcut)))
+	   (unintern function-name)
+	   (eval
+	    `(defun 
+	       ;; function name
+	       ,(intern function-name) 
+	       ;; parameter definition
+	       (&rest articles)
+	       ;; documentation
+	       ,(format 
+		 "Apply the %s mark to process-marked ARTICLES." 
+		 mark)
+	       ;; interactive definition
+	       (interactive 
+		(gnus-summary-work-articles current-prefix-arg))
+	       ;; actual code
+	       (gnus-registry-set-article-mark-internal 
+		;; all this just to get the mark, I must be doing it wrong
+		(intern ,(symbol-name mark))
+		articles ,remove t))))))))
+  ;; I don't know how to do this inside the loop above, because
+  ;; gnus-define-keys is a macro
+  (gnus-define-keys (gnus-registry-mark-map "M" gnus-summary-mark-map)
+    "i" gnus-registry-set-article-Important-mark
+    "I" gnus-registry-remove-article-Important-mark
+    "w" gnus-registry-set-article-Work-mark
+    "W" gnus-registry-remove-article-Work-mark
+    "l" gnus-registry-set-article-Later-mark
+    "L" gnus-registry-remove-article-Later-mark
+    "p" gnus-registry-set-article-Personal-mark
+    "P" gnus-registry-remove-article-Personal-mark
+    "t" gnus-registry-set-article-To-Do-mark
+    "T" gnus-registry-remove-article-To-Do-mark))
 
 (defun gnus-registry-read-mark ()
   "Read a mark name from the user with completion."
@@ -665,7 +773,7 @@ Consults `gnus-registry-unfollowed-groups' and
 	       (symbol-name gnus-registry-default-mark)
 	       "Label" 
 	       (mapcar (lambda (x)	; completion list
-			 (cons (symbol-name x) x))
+			 (cons (symbol-name (car-safe x)) (car-safe x)))
 		       gnus-registry-marks))))
     (when (stringp mark)
       (intern mark))))
@@ -927,6 +1035,7 @@ Returns the first place where the trail finds a group name."
   (interactive)
   (setq gnus-registry-install t)
   (gnus-registry-install-hooks)
+  (gnus-registry-install-shortcuts-and-menus)
   (gnus-registry-read))
 
 ;;;###autoload
