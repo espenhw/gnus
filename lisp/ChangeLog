@@ -1,10 +1,15 @@
+2008-02-29  Andreas Seltenreich  <andreas@gate450.dyndns.org>
+
+	* nnweb.el (nnweb-google-parse-1): Fix date parsing on articles with
+	empty author.
+
 2008-02-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-marks): Add variable for customization of marks and
-	their appearance.
+	* gnus-registry.el (gnus-registry-marks): Add variable for
+	customization of marks and their appearance.
 	(gnus-registry-read-mark): Use it.
-	(gnus-registry-do-marks): Add utility function to
-	loop through `gnus-registry-marks'.
+	(gnus-registry-do-marks): Add utility function to loop through
+	`gnus-registry-marks'.
 	(gnus-registry-install-shortcuts-and-menus): Add function to install
 	shortcuts and menus.
 	(gnus-registry-initialize): Use it.
