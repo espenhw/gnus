@@ -7823,7 +7823,7 @@ From headers in the original article."
 ;; Subject: Verification of your contact information
 ;; From: Contact verification <admin@foo.invalid>
 ;; --text follows this line--
-;; Hallo Bob,
+;; Hi Bob,
 ;; please verify that your contact information is still valid:
 ;; Bob, B street 22, 22222 Be town, Belgium
 ;; ----------next form letter message follows this line----------
@@ -7839,6 +7839,10 @@ From headers in the original article."
 ;; FIXME: What is the most common term (circular letter, form letter, serial
 ;; letter, standard letter) for such kind of letter?  See also
 ;; <http://en.wikipedia.org/wiki/Form_letter>
+
+;; FIXME: Maybe extent message-mode's font-lock support to recognize
+;; `message-form-letter-separator', i.e. highlight each message like a single
+;; message.
 
 (defcustom message-form-letter-separator
   "\n----------next form letter message follows this line----------\n"
