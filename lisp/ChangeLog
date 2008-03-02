@@ -1,3 +1,10 @@
+2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-form-letter-separator)
+	(message-send-form-letter-delay): New variables.
+	(message-send-form-letter): Use them.  New command to send form
+	letters.  Requested by Uwe Siart.
+
 2008-02-29  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
 	* nnweb.el (nnweb-google-parse-1): Fix date parsing on articles with
