@@ -7807,7 +7807,6 @@ From headers in the original article."
 	(delete-region start end)
 	(insert match)))))
 
-
 ;; To send pre-formatted letters like the example below, you can use
 ;; `message-send-form-letter':
 ;; --8<---------------cut here---------------start------------->8---
