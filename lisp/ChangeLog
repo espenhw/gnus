@@ -1,5 +1,9 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-group.el (gnus-group-read-ephemeral-gmane-group): Change
+	nndoc-article-type to mbox.
+	(gnus-group-read-ephemeral-gmane-group-url): Support permalink.
+
 	* mm-decode.el (mm-text-html-renderer): Prefer w3m over w3.  Fall back
 	to nil, instead of html2text.
 
