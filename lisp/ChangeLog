@@ -1,5 +1,7 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* imap.el (imap-debug): Add `imap-ping-server'.
+
 	* gnus-bookmark.el: Add FIXMEs.
 
 	* message.el (message-form-letter-separator)
