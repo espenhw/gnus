@@ -1,5 +1,8 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml2015.el (mml2015-extract-cleartext-signature): Explain that it
+	doesn't handle NotDashEscaped.
+
 	* mml.el (mml-menu): Improve help entries.  Move Sign/Encrypt Part.
 	(mml-dnd-attach-options): Fix typo in custom choice.
 
