@@ -1,5 +1,8 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-decode.el (mm-text-html-renderer): Prefer w3m over w3.  Fall back
+	to nil, instead of html2text.
+
 	* imap.el (imap-debug): Add `imap-ping-server'.
 
 	* gnus-bookmark.el: Add FIXMEs.
