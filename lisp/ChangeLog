@@ -1,5 +1,7 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-bookmark.el: Add FIXMEs.
+
 	* message.el (message-form-letter-separator)
 	(message-send-form-letter-delay): New variables.
 	(message-send-form-letter): Use them.  New command to send form
