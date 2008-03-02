@@ -1,5 +1,8 @@
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml.el (mml-menu): Improve help entries.  Move Sign/Encrypt Part.
+	(mml-dnd-attach-options): Fix typo in custom choice.
+
 	* gnus-group.el (gnus-group-read-ephemeral-gmane-group): Change
 	nndoc-article-type to mbox.
 	(gnus-group-read-ephemeral-gmane-group-url): Support permalink.
