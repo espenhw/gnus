@@ -652,7 +652,8 @@ Valid values include `message-send-mail-with-sendmail'
 `message-send-mail-with-mh', `message-send-mail-with-qmail',
 `message-smtpmail-send-it', `smtpmail-send-it',
 `feedmail-send-it' and `message-send-mail-with-mailclient'.  The
-default is system dependent.
+default is system dependent and determined by the function
+`message-send-mail-function'.
 
 See also `send-mail-function'."
   :type '(radio (function-item message-send-mail-with-sendmail)
@@ -661,7 +662,6 @@ See also `send-mail-function'."
 		(function-item message-smtpmail-send-it)
 		(function-item smtpmail-send-it)
 		(function-item feedmail-send-it)
-		(function :tag "Other")
 		(function-item message-send-mail-with-mailclient
 			       :tag "Use Mailclient package")
  		(function :tag "Other"))

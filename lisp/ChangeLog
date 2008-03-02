@@ -4,6 +4,7 @@
 	(message-send-form-letter-delay): New variables.
 	(message-send-form-letter): Use them.  New command to send form
 	letters.  Requested by Uwe Siart.
+	(message-send-mail-function): Doc fix.  Add "Other" custom option.
 
 2008-02-29  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
