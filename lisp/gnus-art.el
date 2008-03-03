@@ -6405,15 +6405,16 @@ then we display only bindings that start with that prefix."
 	  (setq key (pop sumkeys))
 	  (cond ((and (vectorp key) (= (length key) 1)
 		      (consp (setq def (aref key 0)))
-		      (numberp (car def)) (numberp (cdr def))
-		      (< (max (car def) (cdr def)) 128))
-		 (setq sumkeys (append (mapcar
-					#'vector
-					(nreverse (gnus-uncompress-range def)))
-				       sumkeys)))
-		((and (setq def (key-binding key))
-		      (not (eq def 'undefined)))
-		 (define-key keymap key def)))))
+		      (numberp (car def)) (numberp (cdr def)))
+		 (when (< (max (car def) (cdr def)) 128)
+		   (setq sumkeys
+			 (append (mapcar
+				  #'vector
+				  (nreverse (gnus-uncompress-range def)))
+				 sumkeys))))
+		((setq def (key-binding key))
+		 (unless (eq def 'undefined)
+		   (define-key keymap key def))))))
       (when (boundp 'gnus-agent-summary-mode)
 	(setq agent gnus-agent-summary-mode))
       (when (boundp 'gnus-draft-mode)
