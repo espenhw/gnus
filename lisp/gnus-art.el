@@ -6400,10 +6400,20 @@ then we display only bindings that start with that prefix."
     (define-key map [t] nil)
     (with-current-buffer gnus-article-current-summary
       (set-keymap-parent map (key-binding "S"))
-      (let (def gnus-pick-mode)
-	(dolist (key sumkeys)
-	  (when (setq def (key-binding key))
-	    (define-key keymap key def))))
+      (let (key def gnus-pick-mode)
+	(while sumkeys
+	  (setq key (pop sumkeys))
+	  (cond ((and (vectorp key) (= (length key) 1)
+		      (consp (setq def (aref key 0)))
+		      (numberp (car def)) (numberp (cdr def))
+		      (< (max (car def) (cdr def)) 128))
+		 (setq sumkeys (append (mapcar
+					#'vector
+					(nreverse (gnus-uncompress-range def)))
+				       sumkeys)))
+		((and (setq def (key-binding key))
+		      (not (eq def 'undefined)))
+		 (define-key keymap key def)))))
       (when (boundp 'gnus-agent-summary-mode)
 	(setq agent gnus-agent-summary-mode))
       (when (boundp 'gnus-draft-mode)

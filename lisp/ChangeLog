@@ -1,3 +1,8 @@
+2008-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-describe-bindings): Work for the version of
+	`where-is-internal' that returns a range of key sequences.
+
 2008-03-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml2015.el (mml2015-extract-cleartext-signature): Explain that it
