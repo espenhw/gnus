@@ -80,20 +80,20 @@
 
 (defcustom gnus-registry-marks
   '((Important
-     (char . ?i)
-     (image . "summary_important"))
+     :char ?i
+     :image "summary_important")
     (Work
-     (char . ?w)
-     (image . "summary_work"))
+     :char ?w
+     :image "summary_work")
     (Personal
-     (char . ?p)
-     (image . "summary_personal"))
+     :char ?p
+     :image "summary_personal")
     (To-Do
-     (char . ?t)
-     (image . "summary_todo"))
+     :char ?t
+     :image "summary_todo")
     (Later
-     (char . ?l)
-     (image . "summary_later")))
+     :char ?l
+     :image "summary_later"))
 
   "List of registry marks and their options.
 
@@ -106,14 +106,16 @@ line display and for keyboard shortcuts.
 Each entry must have an image string to be useful for visual
 display."
   :group 'gnus-registry
-  :type '(alist :key-type symbol
-		:value-type (set :tag "Mark details"
-				  (cons :tag "Shortcut" 
-					(const :tag "Character code" char)
-					character)
-				  (cons :tag "Visual" 
-					(const :tag "Image" image) 
-					string))))
+  :type '(repeat :tag "Registry Marks"
+		 (cons :tag "Mark"
+		       (symbol :tag "Name")
+		       (checklist :tag "Options" :greedy t
+				  (group :inline t
+					 (const :format "" :value :char)
+					 (character :tag "Character code"))
+				  (group :inline t
+					 (const :format "" :value :image)
+					 (string :tag "Image"))))))
 
 (defcustom gnus-registry-default-mark 'To-Do
   "The default mark.  Should be a valid key for `gnus-registry-marks'."
@@ -700,21 +702,21 @@ Consults `gnus-registry-unfollowed-groups' and
 
 FUNCTION should take two parameters, a mark symbol and the cell value."
   (dolist (mark-info gnus-registry-marks)
-    (let ((mark (car-safe mark-info))
-	  (data (cdr-safe mark-info)))
-      (dolist (cell data)
-	(let ((cell-type (car-safe cell))
-	      (cell-data (cdr-safe cell)))
-	  (when (equal type cell-type)
-	    (funcall function mark cell-data)))))))
+    (let* ((mark (car-safe mark-info))
+	   (data (cdr-safe mark-info))
+	   (cell-data (plist-get data type)))
+      (when cell-data
+	(funcall function mark cell-data)))))
 
 ;;; this is ugly code, but I don't know how to do it better
-;;; TODO: clear the gnus-registry-mark-map before running
+
+;;; TODO: clear the gnus-registry-mark-map before running (but I think
+;;; gnus-define-keys does it by default)
 (defun gnus-registry-install-shortcuts-and-menus ()
   "Install the keyboard shortcuts and menus for the registry.
 Uses `gnus-registry-marks' to find what shortcuts to install."
   (gnus-registry-do-marks 
-   'char
+   :char
    (lambda (mark data)
      (let ((function-format
 	    (format "gnus-registry-%%s-article-%s-mark" mark)))
@@ -753,7 +755,8 @@ Uses `gnus-registry-marks' to find what shortcuts to install."
 	       (gnus-registry-set-article-mark-internal 
 		;; all this just to get the mark, I must be doing it wrong
 		(intern ,(symbol-name mark))
-		articles ,remove t))))))))
+		articles ,remove t)))
+	   (gnus-message 9 "Defined mark handling function %s" function-name))))))
   ;; I don't know how to do this inside the loop above, because
   ;; gnus-define-keys is a macro
   (gnus-define-keys (gnus-registry-mark-map "M" gnus-summary-mark-map)

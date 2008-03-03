@@ -1,3 +1,10 @@
+2008-03-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-marks): Changed format to be nicer
+	with plists.
+	(gnus-registry-do-marks, gnus-registry-install-shortcuts-and-menus):
+	Use new format.
+
 2008-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-describe-bindings): Work for the version of
