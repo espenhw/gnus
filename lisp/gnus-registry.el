@@ -771,6 +771,23 @@ Uses `gnus-registry-marks' to find what shortcuts to install."
     "t" gnus-registry-set-article-To-Do-mark
     "T" gnus-registry-remove-article-To-Do-mark))
 
+;;; use like this:
+;;; (defalias 'gnus-user-format-function-M 'gnus-registry-user-format-function-M)
+(defun gnus-registry-user-format-function-M (headers)
+  (let* ((id (mail-header-message-id headers))
+	 (marks (when id (gnus-registry-fetch-extra-marks id)))
+	 (out ""))
+    (dolist (mark marks)
+      (let ((c (plist-get
+		(cdr-safe
+		 (assoc mark gnus-registry-marks)) :char)))
+	(setq out (format "%s%s"
+			  out
+			  (if c
+			      (char-to-string c)
+			    "")))))
+      out))
+
 (defun gnus-registry-read-mark ()
   "Read a mark name from the user with completion."
   (let ((mark (gnus-completing-read-with-default 
