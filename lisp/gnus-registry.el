@@ -132,10 +132,12 @@ references.'"
   :group 'gnus-registry
   :type '(repeat regexp))
 
-(defcustom gnus-registry-install nil
+(defcustom gnus-registry-install 'ask
   "Whether the registry should be installed."
   :group 'gnus-registry
-  :type 'boolean)
+  :type '(choice (const :tag "Never Install" nil)
+		 (const :tag "Always Install" t)
+		 (const :tag "Ask Me" ask)))
 
 (defcustom gnus-registry-clean-empty t
   "Whether the empty registry entries should be deleted.
@@ -709,17 +711,15 @@ FUNCTION should take two parameters, a mark symbol and the cell value."
 	(funcall function mark cell-data)))))
 
 ;;; this is ugly code, but I don't know how to do it better
-
-;;; TODO: clear the gnus-registry-mark-map before running (but I think
-;;; gnus-define-keys does it by default)
-(defun gnus-registry-install-shortcuts-and-menus ()
+(defun gnus-registry-install-shortcuts ()
   "Install the keyboard shortcuts and menus for the registry.
 Uses `gnus-registry-marks' to find what shortcuts to install."
-  (gnus-registry-do-marks 
-   :char
-   (lambda (mark data)
-     (let ((function-format
-	    (format "gnus-registry-%%s-article-%s-mark" mark)))
+  (let (keys-plist)
+    (gnus-registry-do-marks 
+     :char
+     (lambda (mark data)
+       (let ((function-format
+	      (format "gnus-registry-%%s-article-%s-mark" mark)))
 
 ;;; The following generates these functions:
 ;;; (defun gnus-registry-set-article-Important-mark (&rest articles)
@@ -731,62 +731,64 @@ Uses `gnus-registry-marks' to find what shortcuts to install."
 ;;;   (interactive (gnus-summary-work-articles current-prefix-arg))
 ;;;   (gnus-registry-set-article-mark-internal 'Important articles t t))
 
-       (dolist (remove '(t nil))
-	 (let* ((variant-name (if remove "remove" "set"))
-		(function-name (format function-format variant-name))
-		(shortcut (format "%c" data))
-		(shortcut (if remove (upcase shortcut) shortcut)))
-	   (unintern function-name)
-	   (eval
-	    `(defun 
-	       ;; function name
-	       ,(intern function-name) 
-	       ;; parameter definition
-	       (&rest articles)
-	       ;; documentation
-	       ,(format 
-		 "%s the %s mark over process-marked ARTICLES."
-		 (upcase-initials variant-name)
-		 mark)
-	       ;; interactive definition
-	       (interactive 
-		(gnus-summary-work-articles current-prefix-arg))
-	       ;; actual code
-	       (gnus-registry-set-article-mark-internal 
-		;; all this just to get the mark, I must be doing it wrong
-		(intern ,(symbol-name mark))
-		articles ,remove t)))
-	   (gnus-message 9 "Defined mark handling function %s" function-name))))))
-  ;; I don't know how to do this inside the loop above, because
-  ;; gnus-define-keys is a macro
-  (gnus-define-keys (gnus-registry-mark-map "M" gnus-summary-mark-map)
-    "i" gnus-registry-set-article-Important-mark
-    "I" gnus-registry-remove-article-Important-mark
-    "w" gnus-registry-set-article-Work-mark
-    "W" gnus-registry-remove-article-Work-mark
-    "l" gnus-registry-set-article-Later-mark
-    "L" gnus-registry-remove-article-Later-mark
-    "p" gnus-registry-set-article-Personal-mark
-    "P" gnus-registry-remove-article-Personal-mark
-    "t" gnus-registry-set-article-To-Do-mark
-    "T" gnus-registry-remove-article-To-Do-mark))
+	 (dolist (remove '(t nil))
+	   (let* ((variant-name (if remove "remove" "set"))
+		  (function-name (format function-format variant-name))
+		  (shortcut (format "%c" data))
+		  (shortcut (if remove (upcase shortcut) shortcut)))
+	     (unintern function-name)
+	     (eval
+	      `(defun 
+		 ;; function name
+		 ,(intern function-name) 
+		 ;; parameter definition
+		 (&rest articles)
+		 ;; documentation
+		 ,(format 
+		   "%s the %s mark over process-marked ARTICLES."
+		   (upcase-initials variant-name)
+		   mark)
+		 ;; interactive definition
+		 (interactive 
+		  (gnus-summary-work-articles current-prefix-arg))
+		 ;; actual code
+
+		 ;; if this is called and the user doesn't want the
+		 ;; registry enabled, we'll ask anyhow
+		 (when (eq gnus-registry-install nil)
+		   (setq gnus-registry-install 'ask))
+
+		 ;; now the user is asked if gnus-registry-install is 'ask
+		 (when (gnus-registry-install-p)
+		   (gnus-registry-set-article-mark-internal 
+		    ;; all this just to get the mark, I must be doing it wrong
+		    (intern ,(symbol-name mark))
+		    articles ,remove t)
+		   (dolist (article articles)
+		     (gnus-summary-update-article 
+		      article 
+		      (assoc article (gnus-data-list nil)))))))
+	     (push (intern function-name) keys-plist)
+	     (push shortcut keys-plist)
+	     (gnus-message 
+	      9 
+	      "Defined mark handling function %s" 
+	      function-name))))))
+    (gnus-define-keys-1
+     '(gnus-registry-mark-map "M" gnus-summary-mark-map) 
+     keys-plist)))
 
 ;;; use like this:
-;;; (defalias 'gnus-user-format-function-M 'gnus-registry-user-format-function-M)
-(defun gnus-registry-user-format-function-M (headers)
+;;; (defalias 'gnus-user-format-function-M 
+;;;           'gnus-registry-user-format-function-M)
+  (defun gnus-registry-user-format-function-M (headers)
   (let* ((id (mail-header-message-id headers))
-	 (marks (when id (gnus-registry-fetch-extra-marks id)))
-	 (out ""))
-    (dolist (mark marks)
-      (let ((c (plist-get
-		(cdr-safe
-		 (assoc mark gnus-registry-marks)) :char)))
-	(setq out (format "%s%s"
-			  out
-			  (if c
-			      (char-to-string c)
-			    "")))))
-      out))
+	 (marks (when id (gnus-registry-fetch-extra-marks id))))
+    (concat (mapcar (lambda(mark)
+		      (list (plist-get
+			     (cdr-safe (assoc mark gnus-registry-marks))
+			     :char)))
+		    marks))))
 
 (defun gnus-registry-read-mark ()
   "Read a mark name from the user with completion."
@@ -1053,10 +1055,12 @@ Returns the first place where the trail finds a group name."
 
 ;;;###autoload
 (defun gnus-registry-initialize ()
+"Initialize the Gnus registry."
   (interactive)
-  (setq gnus-registry-install t)
+  (gnus-message 5 "Initializing the registry")
+  (setq gnus-registry-install t)	; in case it was 'ask or nil
   (gnus-registry-install-hooks)
-  (gnus-registry-install-shortcuts-and-menus)
+  (gnus-registry-install-shortcuts)
   (gnus-registry-read))
 
 ;;;###autoload
@@ -1088,11 +1092,24 @@ Returns the first place where the trail finds a group name."
 
 (add-hook 'gnus-registry-unload-hook 'gnus-registry-unload-hook)
 
-(when gnus-registry-install
-  (gnus-registry-install-hooks)
-  (gnus-registry-read))
+(defun gnus-registry-install-p ()
+  (interactive)
+  (when (eq gnus-registry-install 'ask)
+    (setq gnus-registry-install
+	  (gnus-y-or-n-p
+	   (concat "Enable the Gnus registry?  "
+		   "See the variable `gnus-registry-install' "
+		   "to get rid of this query permanently. ")))
+    (when gnus-registry-install
+      ;; we just set gnus-registry-install to t, so initialize the registry!
+      (gnus-registry-initialize)))
+;;; we could call it here: (customize-variable 'gnus-registry-install)
+  gnus-registry-install)
 
-;; TODO: a lot of things
+(when (gnus-registry-install-p)
+  (gnus-registry-initialize))
+
+;; TODO: a few things
 
 (provide 'gnus-registry)
 

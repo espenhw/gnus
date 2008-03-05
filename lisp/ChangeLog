@@ -1,3 +1,18 @@
+2008-03-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-install): Allow 'ask as an option.
+	(gnus-registry-initialize, gnus-registry-install-p): Use it.
+	(gnus-registry-install-shortcuts): Renamed from
+	gnus-registry-install-shortcuts-and-menus.  Installs the shortcuts in
+	the `gnus-registry-mark-map' keymap dynamically from
+	`gnus-registry-marks'.  The generated functions update the summary line
+	when a registry mark is added or deleted, and will call
+	`gnus-registry-install-p' (see the comments in the code).
+	(gnus-registry-user-format-function-M): Use concat intelligently.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add menu entries for all
+	the registry mark functions.
+
 2008-03-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-print-buffer): Honor ps-print-color-p.
@@ -5,7 +20,7 @@
 
 2008-03-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus-registry.el (gnus-registry-user-format-function-M): Added
+	* gnus-registry.el (gnus-registry-user-format-function-M): Add
 	formatting function.
 
 2008-03-03  Teodor Zlatanov  <tzz@lifelogs.com>
