@@ -781,14 +781,19 @@ Uses `gnus-registry-marks' to find what shortcuts to install."
 ;;; use like this:
 ;;; (defalias 'gnus-user-format-function-M 
 ;;;           'gnus-registry-user-format-function-M)
-  (defun gnus-registry-user-format-function-M (headers)
+(defun gnus-registry-user-format-function-M (headers)
   (let* ((id (mail-header-message-id headers))
 	 (marks (when id (gnus-registry-fetch-extra-marks id))))
-    (concat (mapcar (lambda(mark)
-		      (list (plist-get
-			     (cdr-safe (assoc mark gnus-registry-marks))
-			     :char)))
-		    marks))))
+    (apply 'concat (mapcar (lambda(mark)
+			     (let ((c 
+				    (plist-get
+				     (cdr-safe 
+				      (assoc mark gnus-registry-marks))
+				     :char)))
+			       (if c
+				   (list c)
+				 nil)))
+			   marks))))
 
 (defun gnus-registry-read-mark ()
   "Read a mark name from the user with completion."

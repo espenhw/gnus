@@ -1,3 +1,7 @@
+2008-03-06  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-user-format-function-M): Fix concat bug.
+
 2008-03-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-install): Allow 'ask as an option.
