@@ -1,5 +1,8 @@
 2008-03-06  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* auth-source.el: New package.
+	(auth-source-choices): Add customization entry point variable.
+
 	* gnus-registry.el (gnus-registry-user-format-function-M): Fix concat bug.
 
 2008-03-05  Teodor Zlatanov  <tzz@lifelogs.com>
