@@ -1,5 +1,7 @@
 2008-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* lpath.el: Rearrange.
+
 	* gnus-art.el (gnus-narrow-to-page): Position point properly.
 	(gnus-article-goto-prev-page): Work for articles having ^L's.
 

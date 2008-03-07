@@ -9,85 +9,88 @@
 (defun maybe-bind (args)
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
-(maybe-fbind '(Info-directory
-	       Info-menu clear-string cp-supported-codepages create-image
-	       custom-autoload display-graphic-p display-time-event-handler
-	       epg-check-configuration find-coding-system find-image
-	       help-buffer image-size image-type-available-p insert-image
-	       line-number-at-pos make-mode-line-mouse-map make-network-process
-	       make-temp-file pgg-display-output-buffer propertize put-image
-	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
-	       sort-coding-systems tool-bar-add-item
-	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
-	       unicode-precedence-list url-generic-parse-url
-	       url-http-file-exists-p url-insert-file-contents
-	       vcard-pretty-print w32-focus-frame w3m-detect-meta-charset
-	       w3m-region x-focus-frame))
-(maybe-bind '(eudc-protocol
-	      filladapt-mode help-xref-stack-item
-	      rmail-insert-mime-forwarded-message-function url-version
-	      w3-meta-charset-content-type-regexp
-	      w3-meta-content-type-charset-regexp))
+(unless (featurep 'xemacs)
+  (maybe-fbind '(pgg-display-output-buffer))
+  (maybe-bind '(help-xref-stack-item))
 
-(if (featurep 'xemacs)
-    (progn
-      (maybe-fbind '(codepage-setup
-		     delete-overlay detect-coding-string display-images-p
-		     eudc-expand-inline event-click-count event-end event-start
-		     find-coding-systems-for-charsets
-		     find-coding-systems-region find-coding-systems-string
-		     mail-abbrevs-setup mouse-minibuffer-check mouse-movement-p
-		     mouse-scroll-subr overlay-lists posn-point posn-window
-		     read-event set-buffer-multibyte
-		     select-frame-set-input-focus select-safe-coding-system
-		     string-as-multibyte timer-set-function track-mouse
-		     window-edges))
-      (maybe-bind '(adaptive-fill-first-line-regexp
-		    buffer-display-table buffer-file-coding-system
-		    current-language-environment cursor-in-non-selected-windows
-		    default-enable-multibyte-characters
-		    default-file-name-coding-system enable-multibyte-characters
-		    gnus-agent-expire-current-dirs anguage-info-alist
-		    line-spacing mark-active mouse-selection-click-count
-		    mouse-selection-click-count-buffer show-trailing-whitespace
-		    temporary-file-directory timer-list tool-bar-mode
-		    transient-mark-mode)))
-  (maybe-fbind '(bbdb-complete-name
-		 delete-annotation delete-extent device-connection dfw-device
-		 events-to-keys find-face font-lock-set-defaults frame-device
-		 get-char-table glyph-height glyph-width ldap-search-entries
-		 mail-aliases-setup make-annotation make-event make-glyph
-		 map-extents message-xmas-redefine put-char-table
-		 run-mode-hooks set-extent-property set-itimer-function
-		 set-keymap-default-binding temp-directory
-		 valid-image-instantiator-format-p
-		 w3-coding-system-for-mime-charset w3-do-setup
-		 w3-prepare-buffer w3-region window-pixel-height
-		 window-pixel-width))
-  (maybe-bind '(help-echo-owns-message
-		itimer-list mail-mode-hook mm-w3m-mode-map nobreak-char-display
-		show-nonbreak-escape)))
+  (when (<= emacs-major-version 22)
+    (defun nnkiboze-score-file (a))
+    (maybe-fbind
+     '(Info-menu
+       bbdb-complete-name display-time-event-handler epg-check-configuration
+       find-coding-system w3-do-setup w3-prepare-buffer w3-region
+       w32-focus-frame w3m-detect-meta-charset w3m-region)))
 
-(when (and (featurep 'xemacs)
-	   (not (featurep 'mule)))
-  (maybe-fbind '(ccl-execute-on-string
-		 char-charset charsetp coding-system-get find-charset-region
-		 get-charset-property pgg-parse-crc24-string))
-  (maybe-bind '(language-info-alist pgg-parse-crc24))
+  (when (= emacs-major-version 21)
+    (defun split-line (&optional arg))
+    (maybe-fbind
+     '(clear-string
+       custom-autoload delete-annotation events-to-keys font-lock-set-defaults
+       get-char-table glyph-height glyph-width help-buffer ldap-search-entries
+       mail-aliases-setup make-annotation make-event make-network-process
+       message-xmas-redefine put-char-table run-mode-hooks set-itimer-function
+       set-keymap-default-binding temp-directory unicode-precedence-list
+       url-http-file-exists-p valid-image-instantiator-format-p
+       vcard-pretty-print w3-coding-system-for-mime-charset window-pixel-height
+       window-pixel-width))
+    (maybe-bind
+     '(eudc-protocol
+       filladapt-mode help-echo-owns-message itimer-list ps-print-color-p))))
+
+(when (featurep 'xemacs)
+  (defun nnkiboze-score-file (a))
+  (defun split-line (&optional arg))
+  (maybe-fbind
+   '(clear-string
+     codepage-setup create-image detect-coding-string
+     display-time-event-handler epg-check-configuration event-click-count
+     event-end event-start find-coding-systems-for-charsets
+     find-coding-systems-region find-coding-systems-string find-image
+     help-buffer image-size image-type-available-p insert-image
+     mail-abbrevs-setup make-mode-line-mouse-map make-network-process
+     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
+     pgg-display-output-buffer posn-point posn-window put-image read-event
+     select-safe-coding-system sort-coding-systems track-mouse
+     url-http-file-exists-p vcard-pretty-print w3m-detect-meta-charset
+     window-edges))
+  (maybe-bind
+   '(adaptive-fill-first-line-regexp
+     buffer-display-table cursor-in-non-selected-windows
+     default-enable-multibyte-characters eudc-protocol filladapt-mode
+     gnus-agent-expire-current-dirs help-xref-stack-item line-spacing
+     mark-active mouse-selection-click-count mouse-selection-click-count-buffer
+     rmail-insert-mime-forwarded-message-function show-trailing-whitespace
+     tool-bar-mode transient-mark-mode))
+
+  (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
+	    (featurep 'sxemacs))
+    (maybe-fbind
+     '(custom-autoload
+       display-graphic-p display-images-p display-visual-class
+       select-frame-set-input-focus unicode-precedence-list w32-focus-frame
+       x-focus-frame))
+    (maybe-bind
+     '(default-file-name-coding-system)))
+
+  (unless (featurep 'mule)
+    (maybe-fbind
+     '(ccl-execute-on-string
+       charsetp coding-system-get get-charset-property
+       pgg-display-output-buffer pgg-parse-crc24-string
+       unicode-precedence-list))
+    (maybe-bind
+     '(current-language-environment
+       default-file-name-coding-system language-info-alist pgg-parse-crc24)))
+
   (unless (featurep 'file-coding)
-    (maybe-fbind '(coding-system-base
-		   coding-system-change-eol-conversion coding-system-list
-		   coding-system-p decode-coding-region decode-coding-string
-		   detect-coding-region encode-coding-region
-		   encode-coding-string))
-    (maybe-bind '(coding-system-for-read
-		  coding-system-for-write file-name-coding-system))))
-
-(defun nnkiboze-score-file (a)
-  )
-
-(defun split-line (&optional arg)
-  )
+    (maybe-fbind
+     '(coding-system-base
+       coding-system-change-eol-conversion coding-system-list coding-system-p
+       find-coding-system))
+    (maybe-bind
+     '(buffer-file-coding-system
+       coding-system-for-read coding-system-for-write
+       enable-multibyte-characters file-name-coding-system))))
 
 (provide 'lpath)
 
