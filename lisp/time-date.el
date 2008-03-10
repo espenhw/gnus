@@ -110,6 +110,7 @@ and type 2 is the list (HIGH LOW MICRO)."
 	      (timezone-make-date-arpa-standard date)))
     (error (error "Invalid date: %s" date))))
 
+;;;###autoload
 (defun time-to-seconds (time)
   "Convert time value TIME to a floating point number.
 You can use `float-time' instead."
@@ -213,7 +214,7 @@ DATE1 and DATE2 should be date-time strings."
 
 ;;;###autoload
 (defun time-to-day-in-year (time)
-  "Return the day number within the year of the date month/day/year."
+  "Return the day number within the year corresponding to TIME."
   (let* ((tim (decode-time time))
 	 (month (nth 4 tim))
 	 (day (nth 3 tim))

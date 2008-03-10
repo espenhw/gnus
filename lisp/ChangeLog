@@ -20,7 +20,8 @@
 	* auth-source.el: New package.
 	(auth-source-choices): Add customization entry point variable.
 
-	* gnus-registry.el (gnus-registry-user-format-function-M): Fix concat bug.
+	* gnus-registry.el (gnus-registry-user-format-function-M): Fix concat
+	bug.
 
 2008-03-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -83,6 +84,16 @@
 	(message-send-form-letter): Use them.  New command to send form
 	letters.  Requested by Uwe Siart.
 	(message-send-mail-function): Doc fix.  Add "Other" custom option.
+
+2008-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Update copyright years.
+
+2008-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	Sync from EMACS_22_BASE.
+
+	* parse-time.el: Rename elt->parse-time-elt and val->parse-time-val.
 
 2008-02-29  Andreas Seltenreich  <andreas@gate450.dyndns.org>
 
@@ -188,7 +199,7 @@
 
 2008-02-14  Glenn Morris  <rgm@gnu.org>
 
-	* calendar/time-date.el (format-seconds): New function.
+	* time-date.el (format-seconds): New function.
 
 2008-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
 

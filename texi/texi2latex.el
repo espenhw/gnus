@@ -1,5 +1,5 @@
 ;;; texi2latex.el --- convert a texi file into a LaTeX file.
-;; Copyright (C) 1996, 2004 Lars Magne Ingebrigtsen
+;; Copyright (C) 1996, 2004, 2008 Lars Magne Ingebrigtsen
 
 (require 'cl)
 

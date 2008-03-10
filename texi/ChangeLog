@@ -10,6 +10,10 @@
 	* gnus-coding.texi (Gnus Maintainance Guide): Update conventions for
 	custom versions.
 
+2008-03-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Update copyright years.
+
 2008-02-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-news.texi: Mention problem with coding system `utf-8-emacs' when
