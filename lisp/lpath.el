@@ -10,32 +10,39 @@
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
 (unless (featurep 'xemacs)
-  (maybe-fbind '(pgg-display-output-buffer))
-  (maybe-bind '(help-xref-stack-item))
+  (maybe-fbind '(pgg-display-output-buffer url-generic-parse-url))
+  (maybe-bind '(help-xref-stack-item
+		url-version w3-meta-charset-content-type-regexp
+		w3-meta-content-type-charset-regexp))
 
   (when (<= emacs-major-version 22)
     (defun nnkiboze-score-file (a))
     (maybe-fbind
      '(Info-menu
        bbdb-complete-name display-time-event-handler epg-check-configuration
-       find-coding-system w3-do-setup w3-prepare-buffer w3-region
+       find-coding-system frame-device w3-do-setup w3-prepare-buffer w3-region
        w32-focus-frame w3m-detect-meta-charset w3m-region)))
 
   (when (= emacs-major-version 21)
     (defun split-line (&optional arg))
     (maybe-fbind
      '(clear-string
-       custom-autoload delete-annotation events-to-keys font-lock-set-defaults
+       custom-autoload delete-annotation delete-extent device-connection
+       dfw-device events-to-keys find-face font-lock-set-defaults
        get-char-table glyph-height glyph-width help-buffer ldap-search-entries
-       mail-aliases-setup make-annotation make-event make-network-process
-       message-xmas-redefine put-char-table run-mode-hooks set-itimer-function
+       mail-aliases-setup make-annotation make-event make-glyph
+       make-network-process map-extents message-xmas-redefine put-char-table
+       run-mode-hooks set-extent-property set-itimer-function
        set-keymap-default-binding temp-directory unicode-precedence-list
-       url-http-file-exists-p valid-image-instantiator-format-p
-       vcard-pretty-print w3-coding-system-for-mime-charset window-pixel-height
+       url-generic-parse-url url-http-file-exists-p
+       valid-image-instantiator-format-p vcard-pretty-print
+       w3-coding-system-for-mime-charset window-pixel-height
        window-pixel-width))
     (maybe-bind
      '(eudc-protocol
-       filladapt-mode help-echo-owns-message itimer-list ps-print-color-p))))
+       filladapt-mode help-echo-owns-message itimer-list ps-print-color-p
+       w3-meta-charset-content-type-regexp
+       w3-meta-content-type-charset-regexp))))
 
 (when (featurep 'xemacs)
   (defun nnkiboze-score-file (a))
@@ -51,8 +58,8 @@
      mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
      pgg-display-output-buffer posn-point posn-window put-image read-event
      select-safe-coding-system sort-coding-systems track-mouse
-     url-http-file-exists-p vcard-pretty-print w3m-detect-meta-charset
-     window-edges))
+     url-generic-parse-url url-http-file-exists-p vcard-pretty-print
+     w3m-detect-meta-charset window-edges))
   (maybe-bind
    '(adaptive-fill-first-line-regexp
      buffer-display-table cursor-in-non-selected-windows
@@ -60,7 +67,8 @@
      gnus-agent-expire-current-dirs help-xref-stack-item line-spacing
      mark-active mouse-selection-click-count mouse-selection-click-count-buffer
      rmail-insert-mime-forwarded-message-function show-trailing-whitespace
-     tool-bar-mode transient-mark-mode))
+     tool-bar-mode transient-mark-mode url-version
+     w3-meta-charset-content-type-regexp w3-meta-content-type-charset-regexp))
 
   (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
 	    (featurep 'sxemacs))
