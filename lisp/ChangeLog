@@ -1,3 +1,9 @@
+2008-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-open-telnet-stream, nntp-open-via-rlogin-and-telnet)
+	(nntp-open-via-rlogin-and-netcat, nntp-open-via-telnet-and-telnet):
+	Make sure the nntp port to specify is a string.
+
 2008-03-10  Daiki Ueno  <ueno@unixuser.org>
 
 	* mml2015.el (mml2015-epg-passphrase-callback): Type cast KEY-ID to a
