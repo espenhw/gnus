@@ -63,7 +63,7 @@
 	  auth-source-protocols))
 
 ;;; this default will be changed to ~/.authinfo.gpg
-(defcustom auth-source-choices '((:source "~/.authinfo.enc" :host t :protocol t))
+(defcustom auth-sources '((:source "~/.authinfo.enc" :host t :protocol t))
   "List of authentication sources.
 
 Each entry is the authentication type with optional properties."
@@ -86,10 +86,10 @@ Each entry is the authentication type with optional properties."
 
 ;; temp for debugging
 ;; (unintern 'auth-source-protocols)
-;; (unintern 'auth-source-choices)
-;; (customize-variable 'auth-source-choices)
-;; (setq auth-source-choices nil)
-;; (format "%S" auth-source-choices)
+;; (unintern 'auth-sources)
+;; (customize-variable 'auth-sources)
+;; (setq auth-sources nil)
+;; (format "%S" auth-sources)
 ;; (customize-variable 'auth-source-protocols)
 ;; (setq auth-source-protocols nil)
 ;; (format "%S" auth-source-protocols)
@@ -101,12 +101,12 @@ Each entry is the authentication type with optional properties."
 ;; (auth-source-protocol-defaults 'imap)
 
 (defun auth-source-pick (host protocol &optional fallback)
-  "Parse `auth-source-choices' for HOST and PROTOCOL matches.
+  "Parse `auth-sources' for HOST and PROTOCOL matches.
 
 Returns fallback choices (where PROTOCOL or HOST are nil) with FALLBACK t."
   (interactive "sHost: \nsProtocol: \n") ;for testing
   (let (choices)
-    (dolist (choice auth-source-choices)
+    (dolist (choice auth-sources)
       (let ((h (plist-get choice :host))
 	    (p (plist-get choice :protocol)))
 	(when (and

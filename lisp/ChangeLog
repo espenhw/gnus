@@ -1,3 +1,8 @@
+2008-03-13  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* auth-source.el (auth-sources): Renamed from auth-source-choices.
+	(auth-source-pick): Use it.
+
 2008-03-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* auth-source.el (auth-source-protocols)
