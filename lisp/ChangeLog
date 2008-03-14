@@ -1,3 +1,8 @@
+2008-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mail-source.el (mail-source-delete-old-incoming) Fix regexp to find
+	Incoming* files.
+
 2008-03-13  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* auth-source.el (auth-sources): Renamed from auth-source-choices.
