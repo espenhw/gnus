@@ -1,3 +1,8 @@
+2008-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-browse-html-article): Fix type in doc
+	string.
+
 2008-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mail-source.el (mail-source-delete-old-incoming) Fix regexp to find
