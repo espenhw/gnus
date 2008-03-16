@@ -23430,14 +23430,22 @@ the second element is the regexp match group that is to be replaced by
 the picture; and the third element is the name of the file to be
 displayed.
 
-The following variables customize where Smiley will look for these
-files:
+The following variables customize the appearance of the smileys:
 
 @table @code
 
+@item smiley-style
+@vindex smiley-style
+Specifies the smiley style.  Predefined smiley styles include
+@code{low-color} (small 13x14 pixel, three-color images), @code{medium}
+(more colorful images, 16x16 pixel), and @code{grayscale} (grayscale
+images, 14x14 pixel).  The default depends on the height of the default
+face.
+
 @item smiley-data-directory
 @vindex smiley-data-directory
-Where Smiley will look for smiley faces files.
+Where Smiley will look for smiley faces files.  You shouldn't set this
+variable anymore.  Customize @code{smiley-style} instead.
 
 @item gnus-smiley-file-types
 @vindex gnus-smiley-file-types

@@ -1,3 +1,7 @@
+2008-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Smileys): Document `smiley-style'.
+
 2008-03-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail Source Customization, Gnus Development, Oort Gnus):
