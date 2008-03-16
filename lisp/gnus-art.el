@@ -7345,9 +7345,9 @@ positives are possible."
      1 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url-kde 2)
     ("\\((Info-goto-node\\|(info\\)[ \t\n]*\\(\"[^\"]*\"\\))" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
-    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+i[ \t\n]+d?[ \t\n]?m[ \t\n]+\\([^ ]+ ?[^ ]+\\)[ \t\n]+RET"
-     ;; Info links like `C-h i d m CC Mode RET'
-     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-keystrokes 2)
+    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+i[ \t\n]+d?[ \t\n]?m[ \t\n]+[^ ]+ ?[^ ]+[ \t\n]+RET\\([ \t\n]+i[ \t\n]+[^ ]+ ?[^ ]+[ \t\n]+RET\\([ \t\n,]*\\)\\)?"
+     ;; Info links like `C-h i d m Gnus RET' or `C-h i d m Gnus RET i partial RET'
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-keystrokes 0)
     ;; This is custom
     ("M-x[ \t\n]\\(customize-[^ ]+\\)[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1 2)
@@ -7896,10 +7896,33 @@ url is put as the `gnus-button-url' overlay property on the button."
 
 (defun gnus-button-handle-info-keystrokes (url)
   "Call `info' when pushing the corresponding URL button."
-  ;; For links like `C-h i d m gnus RET', `C-h i d m CC Mode RET'.
-  (info)
-  (Info-directory)
-  (Info-menu url))
+  ;; For links like `C-h i d m gnus RET part RET , ,', `C-h i d m CC Mode RET'.
+  (let (node indx comma)
+    (if (string-match
+	 (concat "\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+i[ \t\n]+d?[ \t\n]?m[ \t\n]+"
+		 "\\([^ ]+ ?[^ ]+\\)[ \t\n]+RET"
+		 "\\([ \t\n]+i[ \t\n]+[^ ]+ ?[^ ]+[ \t\n]+RET"
+		 "\\(?:[ \t\n,]*\\)\\)?")
+	 url)
+	(setq node (match-string 2 url)
+	      indx (match-string 3 url))
+      (error "Can't parse %s" url))
+    (info)
+    (Info-directory)
+    (Info-menu node)
+    (when (> (length indx) 0)
+      (string-match (concat "[ \t\n]+i[ \t\n]+\\([^ ]+ ?[^ ]+\\)[ \t\n]+RET"
+			    "\\([ \t\n,]*\\)")
+		    indx)
+      (setq comma (match-string 2 indx))
+      (setq indx  (match-string 1 indx))
+      (Info-index indx)
+      (when comma
+	(dotimes (i (with-temp-buffer
+		      (insert comma)
+		      (how-many "," (point-min) (point-max))))
+	  (Info-index-next 1)))
+      nil)))
 
 ;; Called after pgg-snarf-keys-region, which autoloads pgg.el.
 (declare-function pgg-display-output-buffer "pgg" (start end status))
