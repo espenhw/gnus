@@ -6899,7 +6899,8 @@ groups."
 	 (concat
 	  "\\(?:"
 	  ;; Match paired parentheses, e.g. in Wikipedia URLs:
-	  "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)" "[" chars "]"
+	  ;; http://thread.gmane.org/47B4E3B2.3050402@gmail.com
+	  "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)" "[" chars "]*"
 	  "\\|"
 	  "[" chars punct     "]+" "[" chars "]"
 	  "\\)"))
