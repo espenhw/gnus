@@ -1,5 +1,8 @@
 2008-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-score.el (gnus-score-headers): Fix handling of
+	gnus-inhibit-slow-scoring.
+
 	* gnus-art.el (gnus-article-browse-html-article): Fix type in doc
 	string.
 	(gnus-button-url-regexp): Improve handling of parenthesis.
