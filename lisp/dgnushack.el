@@ -203,6 +203,8 @@ fixed in Emacs 22."
     (unless (fboundp 'defadvice)
       (autoload 'defadvice "advice" nil nil 'macro))
     (autoload 'Info-directory "info" nil t)
+    (autoload 'Info-index "info" nil t)
+    (autoload 'Info-index-next "info" nil t)
     (autoload 'Info-menu "info" nil t)
     (autoload 'ad-add-advice "advice")
     (autoload 'annotations-at "annotations")

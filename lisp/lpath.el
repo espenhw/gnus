@@ -18,10 +18,11 @@
   (when (<= emacs-major-version 22)
     (defun nnkiboze-score-file (a))
     (maybe-fbind
-     '(Info-menu
-       bbdb-complete-name display-time-event-handler epg-check-configuration
-       find-coding-system frame-device w3-do-setup w3-prepare-buffer w3-region
-       w32-focus-frame w3m-detect-meta-charset w3m-region)))
+     '(Info-index
+       Info-index-next Info-menu bbdb-complete-name display-time-event-handler
+       epg-check-configuration find-coding-system frame-device w3-do-setup
+       w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
+       w3m-region)))
 
   (when (= emacs-major-version 21)
     (defun split-line (&optional arg))

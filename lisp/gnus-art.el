@@ -7893,6 +7893,7 @@ url is put as the `gnus-button-url' overlay property on the button."
 
 ;; (info) will autoload info.el
 (declare-function Info-menu "info" (menu-item &optional fork))
+(declare-function Info-index-next "info" (num))
 
 (defun gnus-button-handle-info-keystrokes (url)
   "Call `info' when pushing the corresponding URL button."
@@ -7920,7 +7921,10 @@ url is put as the `gnus-button-url' overlay property on the button."
       (when comma
 	(dotimes (i (with-temp-buffer
 		      (insert comma)
-		      (how-many "," (point-min) (point-max))))
+		      ;; Note: the XEmacs version of `how-many' takes
+		      ;; no optional argument.
+		      (goto-char (point-min))
+		      (how-many ",")))
 	  (Info-index-next 1)))
       nil)))
 

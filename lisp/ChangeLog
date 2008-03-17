@@ -1,3 +1,13 @@
+2008-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el: Autoload Info-index and Info-index-next for XEmacs.
+
+	* lpath.el: Fbind Info-index and Info-index-next for Emacs 21, 22.
+
+	* gnus-art.el (gnus-button-handle-info-keystrokes): Don't use optional
+	args of `how-many' of which the XEmacs version doesn't take; declare
+	Info-index-next as function.
+
 2008-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-score-headers): Fix handling of
