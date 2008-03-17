@@ -1,3 +1,8 @@
+2008-03-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Eliminate
+	unnecessary duplicates from the match list.
+
 2008-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload Info-index and Info-index-next for XEmacs.
