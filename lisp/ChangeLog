@@ -1,3 +1,11 @@
+2008-03-18  Nils Ackermann  <nils@ackermath.info>  (tiny change)
+
+	* nnmh.el (nnmh-request-expire-articles): Prefer expiry-target group
+	parameter.
+
+	* message.el (message-disassociate-draft): Specify drafts group name
+	fully.
+
 2008-03-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Eliminate
