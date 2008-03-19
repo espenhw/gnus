@@ -1017,13 +1017,13 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key main "\C-c\C-m" map)
     main))
 
-;; (defun mml-toggle-gcc-externalize-attachments ()
-;;   (interactive)
-;;   (prog1
-;;       (setq gnus-gcc-externalize-attachments
-;; 	    (not gnus-gcc-externalize-attachments))
-;;     (message "gnus-gcc-externalize-attachments is `%s'."
-;; 	     gnus-gcc-externalize-attachments)))
+(defun mml-toggle-gcc-externalize-attachments ()
+  (interactive)
+  (prog1
+      (setq gnus-gcc-externalize-attachments
+	    (not gnus-gcc-externalize-attachments))
+    (message "gnus-gcc-externalize-attachments is `%s'."
+	     gnus-gcc-externalize-attachments)))
 
 (easy-menu-define
   mml-menu mml-mode-map ""
@@ -1094,9 +1094,14 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Emacs MIME manual" (lambda () (interactive) (message-info 4))
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Display the Emacs MIME manual"))]
-    ["PGG manual" (lambda () (interactive) (message-info 16))
+    ["PGG manual" (lambda () (interactive) (message-info mml2015-use))
+     :visible (equal mml2015-use 'pgg)
      ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Display the PGG manual"))]))
+	 '(:help "Display the PGG manual"))]
+    ["EasyPG manual" (lambda () (interactive) (message-info mml2015-use))
+     :visible (equal mml2015-use 'epg)
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Display the EasyPG manual"))]))
 
 (defvar mml-mode nil
   "Minor mode for editing MML.")

@@ -1,3 +1,9 @@
+2008-03-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-info): Hanlde EasyPG manual.
+
+	* mml.el (mml-menu): Add entry for EasyPG.
+
 2008-03-18  Nils Ackermann  <nils@ackermath.info>  (tiny change)
 
 	* nnmh.el (nnmh-request-expire-articles): Prefer expiry-target group

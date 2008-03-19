@@ -2478,12 +2478,18 @@ Point is left at the beginning of the narrowed-to region."
 (defun message-info (&optional arg)
   "Display the Message manual.
 
-Prefixed with one \\[universal-argument], display the Emacs MIME manual.
-Prefixed with two \\[universal-argument]'s, display the PGG manual."
+Prefixed with one \\[universal-argument], display the Emacs MIME
+manual.  With two \\[universal-argument]'s, display the EasyPG or
+PGG manual, depending on the value of `mml2015-use'."
   (interactive "p")
-  (cond ((eq arg 16) (Info-goto-node "(pgg)Top"))
-	((eq arg  4) (Info-goto-node "(emacs-mime)Top"))
-	(t           (Info-goto-node "(message)Top"))))
+  (Info-goto-node (format "(%s)Top"
+			  (cond ((eq arg 16) mml2015-use)
+				((eq arg  4) 'emacs-mime)
+				((and (not (booleanp arg))
+				      (symbolp arg))
+				 arg)
+				(t
+				 'message)))))
 
 
 
