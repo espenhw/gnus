@@ -1017,14 +1017,6 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key main "\C-c\C-m" map)
     main))
 
-(defun mml-toggle-gcc-externalize-attachments ()
-  (interactive)
-  (prog1
-      (setq gnus-gcc-externalize-attachments
-	    (not gnus-gcc-externalize-attachments))
-    (message "gnus-gcc-externalize-attachments is `%s'."
-	     gnus-gcc-externalize-attachments)))
-
 (easy-menu-define
   mml-menu mml-mode-map ""
   `("Attachments"
@@ -1037,13 +1029,22 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Attach External..." mml-attach-external
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Attach reference to an external file"))]
-    ;; ["Externalize Attachments"
-    ;;  (lambda () (interactive) (mml-toggle-gcc-externalize-attachments))
-    ;; ,@(if (featurep 'xemacs) nil
-    ;; 	'(:help "Save attachments as external parts in Gcc copies"))
-    ;; :visible (booleanp gnus-gcc-externalize-attachments)
-    ;; :style radio
-    ;; :selected (equal gnus-gcc-externalize-attachments t) ]
+    ;; FIXME: Is it possible to do this without using
+    ;; `gnus-gcc-externalize-attachments'?
+    ["Externalize Attachments"
+     (lambda ()
+       (interactive)
+       (setq gnus-gcc-externalize-attachments
+	     (not gnus-gcc-externalize-attachments))
+       (message "gnus-gcc-externalize-attachments is `%s'."
+		gnus-gcc-externalize-attachments))
+     :visible (and (boundp 'gnus-gcc-externalize-attachments)
+		   (memq gnus-gcc-externalize-attachments
+			 '(all t nil)))
+     :style toggle
+     :selected gnus-gcc-externalize-attachments
+     ,@(if (featurep 'xemacs) nil
+	 '(:help "Save attachments as external parts in Gcc copies"))]
     "----"
     ;;
     ("Change Security Method"

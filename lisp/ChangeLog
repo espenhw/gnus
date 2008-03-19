@@ -1,5 +1,7 @@
 2008-03-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mml.el (mml-menu): Add toggle for gnus-gcc-externalize-attachments.
+
 	* message.el (message-info): Hanlde EasyPG manual.
 
 	* mml.el (mml-menu): Add entry for EasyPG.
