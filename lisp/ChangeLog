@@ -4,6 +4,9 @@
 	function.
 	(message-alter-recipients-function): New variable.
 	(message-get-reply-headers): Use it.
+	(message-replace-header): New helper function.
+	(message-recipients-without-full-name): New variable.
+	(message-simplify-recipients): New command.
 
 	* mml.el (mml-menu): Add toggle for gnus-gcc-externalize-attachments.
 

@@ -7932,6 +7932,56 @@ Header and body are separated by `mail-header-separator'."
 	  (kill-buffer buff))))
     (message "%s message(s) sent, %s skipped." sent skipped)))
 
+(defun message-replace-header (header new-value &optional after force)
+  "Remove HEADER and insert the NEW-VALUE.
+If AFTER, insert after this header.  If FORCE, insert new field
+even if NEW-VALUE is empty."
+  ;; Similar to `nnheader-replace-header' but for message buffers.
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers)
+      (message-remove-header header))
+    (when (or force (> (length new-value) 0))
+      (if after
+	  (message-position-on-field header after)
+	(message-position-on-field header))
+      (insert new-value))))
+
+(defcustom message-recipients-without-full-name
+  (list "ding@gnus.org"
+	"bugs@gnus.org"
+	"emacs-devel@gnu.org"
+	"emacs-pretest-bug@gnu.org"
+	"bug-gnu-emacs@gnu.org")
+  "Mail addresses that have no full name.
+Used in `message-simplify-recipients'."
+  ;; Maybe the addresses could be extracted from
+  ;; `gnus-parameter-to-list-alist'?
+  :type '(choice (const :tag "None" nil)
+		 (repeat string))
+  :version "23.1" ;; No Gnus
+  :group 'message-headers)
+
+(defun message-simplify-recipients ()
+  (interactive)
+  (dolist (hdr '("Cc" "To"))
+    (message-replace-header
+     hdr
+     (mapconcat
+      (lambda (addrcomp)
+	(if (and message-strip-full-names
+		 (string-match
+		  (regexp-opt message-strip-full-names)
+		  (cadr addrcomp)))
+	    (cadr addrcomp)
+	  (if (car addrcomp)
+	      (message-make-from (car addrcomp) (cadr addrcomp))
+	    (cadr addrcomp))))
+      (when (message-fetch-field hdr)
+	(mail-extract-address-components
+	 (message-fetch-field hdr) t))
+      ", "))))
+
 (when (featurep 'xemacs)
   (require 'messagexmas)
   (message-xmas-redefine))
