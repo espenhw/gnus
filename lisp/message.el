@@ -6313,6 +6313,29 @@ is a function used to switch to and display the mail buffer."
     (message-setup `((Newsgroups . ,(or newsgroups ""))
 		     (Subject . ,(or subject ""))))))
 
+(defun message-alter-recipients-discard-bogus-full-name (addrcell)
+  "Discard mail address in full names.
+When the full name in reply headers contains the mail
+address (e.g. \"foo@bar <foo@bar>\"), discard full name.
+ADDRCELL is a cons cell where the car is the mail address and the
+cdr is the complete address (full name and mail address)."
+  (if (string-match (concat (regexp-quote (car addrcell)) ".*"
+			    (regexp-quote (car addrcell)))
+		    (cdr addrcell))
+      (cons (car addrcell) (car addrcell))
+    addrcell))
+
+(defcustom message-alter-recipients-function nil
+  "Function called to allow alteration of reply header structures.
+It is called in `message-get-reply-headers' for each recipient.
+The function is called with one parameter, a cons cell ..."
+  :type '(choice (const :tag "None" nil)
+		 (const :tag "Discard bogus full name"
+			message-alter-recipients-discard-bogus-full-name)
+		 function)
+  :version "23.1" ;; No Gnus
+  :group 'message-headers)
+
 (defun message-get-reply-headers (wide &optional to-address address-headers)
   (let (follow-to mct never-mct to cc author mft recipients extra)
   ;; Find all relevant headers we need.
@@ -6413,7 +6436,11 @@ want to get rid of this query permanently.")))
       (setq recipients
 	    (mapcar
 	     (lambda (addr)
-	       (cons (downcase (mail-strip-quoted-names addr)) addr))
+	       (if message-alter-recipients-function
+		   (funcall message-alter-recipients-function
+			    (cons (downcase (mail-strip-quoted-names addr))
+				  addr))
+		 (cons (downcase (mail-strip-quoted-names addr)) addr)))
 	     (message-tokenize-header recipients)))
       ;; Remove first duplicates.  (Why not all duplicates?  Is this a bug?)
       (let ((s recipients))

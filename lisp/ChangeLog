@@ -1,5 +1,10 @@
 2008-03-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-alter-recipients-discard-bogus-full-name): New
+	function.
+	(message-alter-recipients-function): New variable.
+	(message-get-reply-headers): Use it.
+
 	* mml.el (mml-menu): Add toggle for gnus-gcc-externalize-attachments.
 
 	* message.el (message-info): Handle EasyPG manual.
