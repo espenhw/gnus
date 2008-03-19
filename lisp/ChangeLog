@@ -2,7 +2,7 @@
 
 	* mml.el (mml-menu): Add toggle for gnus-gcc-externalize-attachments.
 
-	* message.el (message-info): Hanlde EasyPG manual.
+	* message.el (message-info): Handle EasyPG manual.
 
 	* mml.el (mml-menu): Add entry for EasyPG.
 
