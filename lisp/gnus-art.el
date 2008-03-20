@@ -2986,7 +2986,9 @@ If you always want to display HTML part in the browser, set
   (if arg
       (gnus-summary-show-article)
     (let ((gnus-visible-headers (or (get 'gnus-visible-headers 'standard-value)
-				    gnus-visible-headers)))
+				    gnus-visible-headers))
+	  ;; As we insert a <hr>, there's no need for the body boundary.
+	  (gnus-treat-body-boundary nil))
       (gnus-summary-show-article)))
   (with-current-buffer gnus-article-buffer
     (let ((header (unless arg
