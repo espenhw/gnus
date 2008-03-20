@@ -7969,9 +7969,9 @@ Used in `message-simplify-recipients'."
      hdr
      (mapconcat
       (lambda (addrcomp)
-	(if (and message-strip-full-names
+	(if (and message-recipients-without-full-name
 		 (string-match
-		  (regexp-opt message-strip-full-names)
+		  (regexp-opt message-recipients-without-full-name)
 		  (cadr addrcomp)))
 	    (cadr addrcomp)
 	  (if (car addrcomp)

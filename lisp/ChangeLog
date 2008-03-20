@@ -1,3 +1,7 @@
+2008-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-simplify-recipients): Fix previous commit.
+
 2008-03-19  Glenn Morris  <rgm@gnu.org>
 
 	* tls.el (open-tls-stream): Restore use of `tls-end-of-info'.
