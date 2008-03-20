@@ -1034,13 +1034,20 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Externalize Attachments"
      (lambda ()
        (interactive)
-       (setq gnus-gcc-externalize-attachments
-	     (not gnus-gcc-externalize-attachments))
-       (message "gnus-gcc-externalize-attachments is `%s'."
-		gnus-gcc-externalize-attachments))
-     :visible (and (boundp 'gnus-gcc-externalize-attachments)
-		   (memq gnus-gcc-externalize-attachments
-			 '(all t nil)))
+       (if (not (and (boundp 'gnus-gcc-externalize-attachments)
+		     (memq gnus-gcc-externalize-attachments
+			   '(all t nil))))
+	   ;; Stupid workaround for XEmacs not honoring :visible.
+	   (message "Can't handle this value of `gnus-gcc-externalize-attachments'")
+	 (setq gnus-gcc-externalize-attachments
+	       (not gnus-gcc-externalize-attachments))
+	 (message "gnus-gcc-externalize-attachments is `%s'."
+		  gnus-gcc-externalize-attachments)))
+     ;; XEmacs barfs on :visible.
+     ,@(if (featurep 'xemacs) nil
+	 '(:visible (and (boundp 'gnus-gcc-externalize-attachments)
+			 (memq gnus-gcc-externalize-attachments
+			       '(all t nil)))))
      :style toggle
      :selected gnus-gcc-externalize-attachments
      ,@(if (featurep 'xemacs) nil
@@ -1096,11 +1103,15 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Display the Emacs MIME manual"))]
     ["PGG manual" (lambda () (interactive) (message-info mml2015-use))
-     :visible (equal mml2015-use 'pgg)
+     ;; XEmacs barfs on :visible.
+     ,@(if (featurep 'xemacs) nil
+	 '(:visible (equal mml2015-use 'pgg)))
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Display the PGG manual"))]
     ["EasyPG manual" (lambda () (interactive) (message-info mml2015-use))
-     :visible (equal mml2015-use 'epg)
+     ;; XEmacs barfs on :visible.
+     ,@(if (featurep 'xemacs) nil
+	 '(:visible (equal mml2015-use 'epg)))
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Display the EasyPG manual"))]))
 
