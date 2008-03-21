@@ -178,12 +178,15 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
-  :type '(repeat :value-to-internal (lambda (widget value)
-				      (custom-split-regexp-maybe value))
-		 :match (lambda (widget value)
-			  (or (stringp value)
-			      (widget-editable-list-match widget value)))
-		 regexp)
+  :type '(choice
+	  (repeat :value-to-internal (lambda (widget value)
+				       (custom-split-regexp-maybe value))
+		  :match (lambda (widget value)
+			   (or (stringp value)
+			       (widget-editable-list-match widget value)))
+		  regexp)
+	  (const :tag "Use gnus-ignored-headers" nil)
+	  regexp)
   :group 'gnus-article-hiding)
 
 (defcustom gnus-sorted-header-list
@@ -2967,7 +2970,6 @@ message header will be added to the bodies of the \"text/html\" parts."
 	       (setq showed t)))))
     showed))
 
-;; FIXME: Documentation in texi/gnus.texi missing.
 (defun gnus-article-browse-html-article (&optional arg)
   "View \"text/html\" parts of the current article with a WWW browser.
 The message header is added to the beginning of every html part unless
@@ -2975,11 +2977,11 @@ the prefix argument ARG is given.
 
 Warning: Spammers use links to images in HTML articles to verify
 whether you have read the message.  As
-`gnus-article-browse-html-article' passes the unmodified HTML
-content to the browser without eliminating these \"web bugs\" you
-should only use it for mails from trusted senders.
+`gnus-article-browse-html-article' passes the HTML content to the
+browser without eliminating these \"web bugs\" you should only
+use it for mails from trusted senders.
 
-If you always want to display HTML part in the browser, set
+If you always want to display HTML parts in the browser, set
 `mm-text-html-renderer' to nil."
   ;; Cf. `mm-w3m-safe-url-regexp'
   (interactive "P")

@@ -1,3 +1,8 @@
+2008-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-article-browse-html-article): Fix documentation.
+	(gnus-visible-headers): Improve custom type.
+
 2008-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-menu): Add workarounds for XEmacs.
