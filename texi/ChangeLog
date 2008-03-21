@@ -1,3 +1,10 @@
+2008-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (MIME Commands): Add gnus-article-browse-html-article.
+
+	* gnus-news.texi: Add EasyPG.  Add gnus-article-browse-html-article.
+	Add FIXMEs for Bookmarks and gnus-registry-marks.
+
 2008-03-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Smileys): Document `smiley-style'.

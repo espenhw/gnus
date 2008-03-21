@@ -9679,6 +9679,21 @@ The rest of these @acronym{MIME} commands do not use the numerical prefix in
 the same manner:
 
 @table @kbd
+@item K H
+@kindex K H (Summary)
+@findex gnus-article-browse-html-article
+View @samp{text/html} parts of the current article with a WWW browser.
+The message header is added to the beginning of every html part unless
+the prefix argument is given.
+
+Warning: Spammers use links to images in HTML articles to verify whether
+you have read the message.  As this command passes the @acronym{HTML}
+content to the browser without eliminating these ``web bugs'' you should
+only use it for mails from trusted senders.
+
+If you always want to display @acronym{HTML} parts in the browser, set
+@code{mm-text-html-renderer} to @code{nil}.
+
 @item K b
 @kindex K b (Summary)
 Make all the @acronym{MIME} parts have buttons in front of them.  This is
