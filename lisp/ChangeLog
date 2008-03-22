@@ -1,3 +1,15 @@
+2008-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-gmane-group-download-format): Rename from
+	gnus-group-gmane-group-download-format.
+	(gnus-group-read-ephemeral-gmane-group): Rename from
+	gnus-group-read-ephemeral-gmane-group.
+	(gnus-read-ephemeral-gmane-group-url): Rename from
+	gnus-group-read-ephemeral-gmane-group-url.
+	(gnus-bug-group-download-format-alist):  New variable.
+	(gnus-read-ephemeral-bug-group, gnus-read-ephemeral-debian-bug-group)
+	(gnus-read-ephemeral-emacs-bug-group): New commands.
+
 2008-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-article-browse-html-article): Fix documentation.
