@@ -1,3 +1,10 @@
+2008-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Foreign Groups): Add gnus-read-ephemeral-gmane-group,
+	gnus-read-ephemeral-gmane-group-url,
+	gnus-read-ephemeral-emacs-bug-group,
+	gnus-read-ephemeral-debian-bug-group.
+
 2008-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (MIME Commands): Add gnus-article-browse-html-article.

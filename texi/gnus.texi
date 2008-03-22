@@ -2736,6 +2736,55 @@ groups from different @acronym{NNTP} servers.  Also @pxref{Group Levels};
 newsgroups.
 
 
+The following commands create ephemeral groups.  They can be called not
+only from the Group buffer, but in any Gnus buffer.
+
+@table @code
+@item gnus-read-ephemeral-gmane-group
+@findex gnus-read-ephemeral-gmane-group
+@vindex gnus-gmane-group-download-format
+Read an ephemeral group on Gmane.org.  The articles are downloaded via
+HTTP using the URL specified by @code{gnus-gmane-group-download-format}.
+Gnus will prompt you for a group name, the start article number and an
+the article range.
+
+@item gnus-read-ephemeral-gmane-group-url
+@findex gnus-read-ephemeral-gmane-group-url
+This command is similar to @code{gnus-read-ephemeral-gmane-group}, but
+the group name and the article number and range are constructed from a
+given @acronym{URL}.  Supported @acronym{URL} formats include e.g.
+@url{http://thread.gmane.org/gmane.foo.bar/12300/focus=12399},
+@url{http://thread.gmane.org/gmane.foo.bar/12345/},
+@url{http://article.gmane.org/gmane.foo.bar/12345/},
+@url{http://permalink.gmane.org/gmane.foo.bar/12345/}, and
+@url{http://news.gmane.org/group/gmane.foo.bar/thread=12345}.
+
+@item gnus-read-ephemeral-emacs-bug-group
+@findex gnus-read-ephemeral-emacs-bug-group
+Read an Emacs bug report in an ephemeral group.  Gnus will prompt for a
+bug number.  The default is the number at point.  The @acronym{URL} is
+specified in @code{gnus-bug-group-download-format-alist}.
+
+@item gnus-read-ephemeral-debian-bug-group
+@findex gnus-read-ephemeral-debian-bug-group
+Read a Debian bug report in an ephemeral group.  Analog to
+@code{gnus-read-ephemeral-emacs-bug-group}.
+@end table
+
+Some of these command are also useful for article buttons, @xref{Article
+Buttons}.
+
+Here is an example:
+@lisp
+(require 'gnus-art)
+(add-to-list
+ 'gnus-button-alist
+ '("#\\([0-9]+\\)\\>" 1
+   (string-match "\\<emacs\\>" (or gnus-newsgroup-name ""))
+   gnus-read-ephemeral-emacs-bug-group 1))
+@end lisp
+
+
 @node Group Parameters
 @section Group Parameters
 @cindex group parameters
