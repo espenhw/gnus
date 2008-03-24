@@ -2431,7 +2431,7 @@ the bug number, and browsing the URL must return mbox output."
 				  (thing-at-point 'word) nil)
 		     ;; FIXME: Add completing-read from
 		     ;; `gnus-emacs-bug-group-download-format' ...
-		     (cdr (assoc 'emacs gnus-emacs-bug-group-download-format-alist))))
+		     (cdr (assoc 'emacs gnus-bug-group-download-format-alist))))
   (when (stringp number)
     (setq number (string-to-number number)))
   (let ((tmpfile (make-temp-file "gnus-temp-group-")))
@@ -2450,7 +2450,7 @@ the bug number, and browsing the URL must return mbox output."
 				  (thing-at-point 'word) nil)))
   (gnus-read-ephemeral-bug-group
    number
-   (cdr (assoc 'debian gnus-emacs-bug-group-download-format-alist))))
+   (cdr (assoc 'debian gnus-bug-group-download-format-alist))))
 
 (defun gnus-read-ephemeral-emacs-bug-group (number)
   "Browse Emacs bug NUMBER as ephemeral group."
@@ -2458,7 +2458,7 @@ the bug number, and browsing the URL must return mbox output."
 				  (thing-at-point 'word) nil)))
   (gnus-read-ephemeral-bug-group
    number
-   (cdr (assoc 'emacs gnus-emacs-bug-group-download-format-alist))))
+   (cdr (assoc 'emacs gnus-bug-group-download-format-alist))))
 
 (defun gnus-group-jump-to-group (group &optional prompt)
   "Jump to newsgroup GROUP.
