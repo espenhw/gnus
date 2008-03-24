@@ -6212,11 +6212,12 @@ are not included."
   (save-restriction
     (message-narrow-to-headers)
     (run-hooks 'message-header-setup-hook))
-  (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)
   (when message-generate-hashcash
     ;; Generate hashcash headers for recipients already known
     (mail-add-payment-async))
+  ;; Gnus posting styles are applied via buffer-local `message-setup-hook'
+  ;; values.
   (run-hooks 'message-setup-hook)
   ;; Do this last to give it precedence over posting styles, etc.
   (when (message-mail-p)
@@ -6225,6 +6226,8 @@ are not included."
       (if message-alternative-emails
 	  (message-use-alternative-email-as-from))))
   (message-position-point)
+  ;; Allow correct handling of `message-checksum' in `message-yank-original':
+  (set-buffer-modified-p nil)
   (undo-boundary))
 
 (defun message-set-auto-save-file-name ()

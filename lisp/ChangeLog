@@ -1,6 +1,8 @@
 2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-check-news-body-syntax): Fix signature check.
+	(message-setup-1): Mark buffer as unmodified _after_ running
+	message-setup-hook and handling message-alternative-emails.
 
         * gnus-group.el (gnus-read-ephemeral-bug-group)
         (gnus-read-ephemeral-debian-bug-group)
