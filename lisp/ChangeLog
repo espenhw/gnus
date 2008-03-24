@@ -1,5 +1,10 @@
 2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-signature-separator): Change default.  Improve
+	custom type.
+	(message-cite-function): Change default to
+	message-cite-original-without-signature.
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add message-cite-function
 	toggle.
 

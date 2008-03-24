@@ -415,9 +415,17 @@ for `message-cross-post-insert-note'."
 
 ;;; End of variables adopted from `message-utils.el'.
 
-(defcustom message-signature-separator "^-- *$"
-  "Regexp matching the signature separator."
-  :type 'regexp
+(defcustom message-signature-separator "^-- $"
+  "Regexp matching the signature separator.
+This variable is used to strip off the signature from quoted text
+when `message-cite-function' is
+`message-cite-original-without-signature'.  Most useful values
+are \"^-- $\" (strict) and \"^-- *$\" (loose; allow missing
+whitespace)."
+  :type '(choice (const :tag "strict" "^-- $")
+		 (const :tag "loose" "^-- *$")
+		 regexp)
+  :version "23.1" ;; No Gnus (changed default)
   :link '(custom-manual "(message)Various Message Variables")
   :group 'message-various)
 
@@ -1004,7 +1012,7 @@ Used by `message-yank-original' via `message-yank-cite'."
   :link '(custom-manual "(message)Insertion Variables")
   :type 'integer)
 
-(defcustom message-cite-function 'message-cite-original
+(defcustom message-cite-function 'message-cite-original-without-signature
   "*Function for citing an original message.
 Predefined functions include `message-cite-original' and
 `message-cite-original-without-signature'.
@@ -1014,6 +1022,7 @@ Note that these functions use `mail-citation-hook' if that is non-nil."
 		(function-item sc-cite-original)
 		(function :tag "Other"))
   :link '(custom-manual "(message)Insertion Variables")
+  :version "23.1" ;; No Gnus (changed default)
   :group 'message-insertion)
 
 (defcustom message-indent-citation-function 'message-indent-citation
