@@ -2485,7 +2485,8 @@ PGG manual, depending on the value of `mml2015-use'."
   (Info-goto-node (format "(%s)Top"
 			  (cond ((eq arg 16) mml2015-use)
 				((eq arg  4) 'emacs-mime)
-				((and (not (booleanp arg))
+				;; `booleanp' only available in Emacs 22+
+				((and (not (memq arg '(nil t)))
 				      (symbolp arg))
 				 arg)
 				(t

@@ -1,3 +1,8 @@
+2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-info): Don't use booleanp which isn't supported
+	in Emacs 21 and XEmacs.
+
 2008-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el (gnus-gmane-group-download-format): Rename from
