@@ -3,6 +3,8 @@
 	* message.el (message-check-news-body-syntax): Fix signature check.
 	(message-setup-1): Mark buffer as unmodified _after_ running
 	message-setup-hook and handling message-alternative-emails.
+	(message-shorten-references): Be more strict when building list of
+	valid references to comply with GNKSA.
 
         * gnus-group.el (gnus-read-ephemeral-bug-group)
         (gnus-read-ephemeral-debian-bug-group)

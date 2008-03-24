@@ -5887,8 +5887,10 @@ they are."
     (with-temp-buffer
       (insert references)
       (goto-char (point-min))
-      ;; Cons a list of valid references.
-      (while (re-search-forward "<[^>]+>" nil t)
+      ;; Cons a list of valid references.  GNKSA says we must not include MIDs
+      ;; with whitespace or missing brackets (7.a "Does not propagate broken
+      ;; Message-IDs in original References").
+      (while (re-search-forward "<[^ <]+@[^ <]+>" nil t)
 	(push (match-string 0) refs))
       (setq refs (nreverse refs)
 	    count (length refs)))
