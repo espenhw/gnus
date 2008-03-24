@@ -5059,12 +5059,16 @@ Otherwise, generate and save a value for `canlock-password' first."
    ;; Check the length of the signature.
    (message-check 'signature
      (goto-char (point-max))
-     (if (> (count-lines (point) (point-max)) 5)
-	 (y-or-n-p
-	  (format
-	   "Your .sig is %d lines; it should be max 4.  Really post? "
-	   (1- (count-lines (point) (point-max)))))
-       t))
+     (if (not (re-search-backward message-signature-separator nil t))
+	 t
+       (if (>= (count-lines (1+ (point-at-eol)) (point-max)) 5)
+	   (if (message-gnksa-enable-p 'signature)
+	       (y-or-n-p
+		(format "Signature is excessively long (%d lines).  Really post? "
+			(count-lines (1+ (point-at-eol)) (point-max))))
+	     (message "Denied posting -- Excessive signature.")
+	     nil)
+	 t)))
    ;; Ensure that text follows last quoted portion.
    (message-check 'quoting-style
      (goto-char (point-max))
