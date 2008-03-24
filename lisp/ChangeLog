@@ -1,5 +1,8 @@
 2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add message-cite-function
+	toggle.
+
 	* message.el (message-check-news-body-syntax): Fix signature check.
 	(message-setup-1): Mark buffer as unmodified _after_ running
 	message-setup-hook and handling message-alternative-emails.
