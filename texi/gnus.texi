@@ -13132,7 +13132,7 @@ telnet connection to the news server as follows:
 @lisp
 (nntp "outside"
       (nntp-pre-command "runsocks")
-      (nntp-open-connection-function nntp-open-telnet-stream)
+      (nntp-open-connection-function nntp-open-via-telnet)
       (nntp-address "the.news.server")
       (nntp-end-of-line "\n"))
 @end lisp
