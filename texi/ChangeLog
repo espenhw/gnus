@@ -1,3 +1,8 @@
+2008-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Example Methods): Fix function name used to use socksified
+	telnet.
+
 2008-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Foreign Groups): Add gnus-read-ephemeral-gmane-group,
