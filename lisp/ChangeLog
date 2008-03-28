@@ -1,7 +1,6 @@
-2008-03-28  Teodor Zlatanov  <tzz@lifelogs.com>
+2008-03-28  Michael Harnois  <mdharnois@gmail.com>  (tiny change)
 
-	* nnimap.el (nnimap-find-minmax-uid): Tiny fix for Exchange 2007 IMAP
-	problem.  Reported by Michael Harnois <mdharnois@gmail.com>.
+	* nnimap.el (nnimap-find-minmax-uid): Fix Exchange 2007 IMAP problem.
 
 2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
