@@ -1,3 +1,8 @@
+2008-03-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnimap.el (nnimap-find-minmax-uid): Tiny fix for Exchange 2007 IMAP
+	problem.  Reported by Michael Harnois <mdharnois@gmail.com>.
+
 2008-03-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-signature-separator): Change default.  Improve
