@@ -1,3 +1,7 @@
+2008-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Top): Fix version.  Add SASL.
+
 2008-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Foreign Groups): Add gnus-read-ephemeral-gmane-group,
