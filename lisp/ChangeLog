@@ -1,3 +1,7 @@
+2008-03-29  Sven Joachim  <svenjoac@gmx.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Add missing dots.
+
 2008-03-28  Michael Harnois  <mdharnois@gmail.com>  (tiny change)
 
 	* nnimap.el (nnimap-find-minmax-uid): Fix Exchange 2007 IMAP problem.
