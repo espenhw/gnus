@@ -1,3 +1,15 @@
+2008-04-02  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-enable-exchange-bug-workaround): New variable.
+	(imap-message-copyuid-1): Use it.
+	(imap-message-appenduid-1): Likewise.  Based on patch by Nathan
+	J. Williams in
+	<http://permalink.gmane.org/gmane.emacs.gnus.general/65855>.
+
+	* nnimap.el (nnimap-enable-minmax-bug-workaround): Remove, replaced by
+	imap-enable-exchange-bug-workaround.
+	(nnimap-find-minmax-uid): Use imap-enable-exchange-bug-workaround.
+
 2008-04-01  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-find-minmax-uid): Revert last fix, the "fix" turns

@@ -219,19 +219,6 @@ will be downloaded."
 
 ;; Performance / bug workaround variables
 
-(defcustom nnimap-enable-minmax-bug-workaround nil
-  "Send UID FETCH UID commands as 1:* instead of 1,*.
-Enabling this appears to be required for some servers (e.g.,
-Exchange) which otherwise would trigger a response 'BAD The
-specified message set is invalid.'.
-Note that enabling this work around may cause significant
-performance penalties if you have large mailboxes.  It makes the
-code transfer one line of data for each message in a
-mailbox (i.e., O(n)) compared to transfering only two
-lines (i.e., O(1))."
-  :type 'boolean
-  :group 'nnimap)
-
 (defcustom nnimap-close-asynchronous t
   "Close mailboxes asynchronously in `nnimap-close-group'.
 This means that errors caught by nnimap when closing the mailbox will
@@ -568,7 +555,7 @@ If EXAMINE is non-nil the group is selected read-only."
 	      (imap-mailbox-select group examine))
       (let (minuid maxuid)
 	(when (> (imap-mailbox-get 'exists) 0)
-	  (imap-fetch (if nnimap-enable-minmax-bug-workaround "1:*" "1,*")
+	  (imap-fetch (if imap-enable-exchange-bug-workaround "1,*:*" "1,*")
 		      "UID" nil 'nouidfetch)
 	  (imap-message-map (lambda (uid Uid)
 			      (setq minuid (if minuid (min minuid uid) uid)
