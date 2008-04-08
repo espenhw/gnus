@@ -1,3 +1,8 @@
+2008-04-08  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el: Initialize the registry when gnus-registry-install
+	is t.
+
 2008-04-02  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-enable-exchange-bug-workaround): New variable.
