@@ -284,9 +284,9 @@ messages are deleted again).
 @itemize @bullet
 
 @item The tool bar has been updated to use GNOME icons.
-You can also customize the tool bar.  There's no documentation in the
-manual yet, but @kbd{M-x customize-apropos RET -tool-bar$} should get
-you started.  (Only for Emacs, not in XEmacs.)
+You can also customize the tool bar.  You can also customize the tool
+bars: @kbd{M-x customize-apropos RET -tool-bar$} should get you started.
+(Only for Emacs, not in XEmacs.)
 @c FIXME: Document this in the manual
 
 @item The tool bar icons are now (de)activated correctly
