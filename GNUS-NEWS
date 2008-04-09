@@ -225,9 +225,8 @@ removing gaps.  As a consequence, you get a correct total article count
 * Appearance
 
 ** The tool bar has been updated to use GNOME icons.  You can also
-customize the tool bar.  There's no documentation in the manual yet, but
-`M-x customize-apropos RET -tool-bar$' should get you started.  (Only
-for Emacs, not in XEmacs.)
+customize the tool bars: `M-x customize-apropos RET -tool-bar$' should
+get you started.  (Only for Emacs, not in XEmacs.)
 
 ** The tool bar icons are now (de)activated correctly in the group buffer,
 see the variable `gnus-group-update-tool-bar'.  Its default value
