@@ -1,5 +1,9 @@
 2008-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus.texi, gnus-faq.texi, message.texi: No Gnus v0.8 is released.
+
+2008-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* gnus.texi (Emacsen): Addition.
 
 2008-04-09  Reiner Steib  <Reiner.Steib@gmx.de>

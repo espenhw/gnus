@@ -19,7 +19,7 @@ If you are using XEmacs, you *must* say "./configure && make EMACS=xemacs".
 Then you have to tell Emacs where Gnus is.  You might put something
 like
 
-   (setq load-path (cons (expand-file-name "~/ngnus-0.7/lisp") load-path))
+   (setq load-path (cons (expand-file-name "~/ngnus-0.8/lisp") load-path))
    (require 'gnus-load)
 
 in your .emacs file, or wherever you keep such things.  
@@ -28,8 +28,8 @@ To enable reading the Gnus manual, you could say something like:
 
   (require 'info)
   (if (featurep 'xemacs)
-      (add-to-list 'Info-directory-list "~/ngnus-0.7/texi/")
-    (add-to-list 'Info-default-directory-list "~/ngnus-0.7/texi/"))
+      (add-to-list 'Info-directory-list "~/ngnus-0.8/texi/")
+    (add-to-list 'Info-default-directory-list "~/ngnus-0.8/texi/"))
 
 No Gnus does absolutely not work with anything older than Emacs 21.1 or
 XEmacs 21.4.

@@ -1,3 +1,7 @@
+2008-04-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el: No Gnus v0.8 is released.
+
 2008-04-10  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* mail-source.el (mail-source-value):
