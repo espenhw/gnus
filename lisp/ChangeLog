@@ -1,3 +1,9 @@
+2008-04-13  Naohiro Aota  <nao.aota@gmail.com>  (tiny change)
+
+	* tls.el (tls-program): Add -ign_eof argument to call the openssl
+	commands.
+	(tls-checktrust): Ditto.
+
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mm-decode.el (mm-display-external): Make temp file read-only.
