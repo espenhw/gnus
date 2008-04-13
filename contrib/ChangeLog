@@ -1,3 +1,11 @@
+2008-04-13  Daniel Pittman  <daniel@rimspace.net>
+
+	* nnir.el (nnir-run-imap): Add doc string.  Use `nnir-imap-make-query'.
+	(nnir-imap-make-query, nnir-imap-query-to-imap)
+	(nnir-imap-expr-to-imap, nnir-imap-parse-query, nnir-imap-next-expr)
+	(nnir-imap-peek-symbol, nnir-imap-next-symbol)
+	(nnir-imap-delimited-string, nnir-imap-end-of-input): New functions.
+
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el: Add assignment status.

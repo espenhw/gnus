@@ -6,8 +6,9 @@
 ;; Author: Kai Groﬂjohann <grossjohann@ls6.cs.uni-dortmund.de>
 ;; Swish-e and Swish++ backends by:
 ;;   Christoph Conrad <christoph.conrad@gmx.de>.
-;; Imap backend by: Simon Josefsson <jas@pdc.kth.se>.
-;; Imap search by: Torsten Hilbrich <torsten.hilbrich <at> gmx.net>
+;; IMAP backend by: Simon Josefsson <jas@pdc.kth.se>.
+;; IMAP search by: Torsten Hilbrich <torsten.hilbrich <at> gmx.net>
+;; IMAP search improved by Daniel Pittman  <daniel@rimspace.net>.
 ;; nnmaildir support for Swish++ and Namazu backends by:
 ;;   Justus Piater <Justus <at> Piater.name>
 
@@ -941,6 +942,9 @@ pairs (also vectors, actually)."
 ;; handle errors
 
 (defun nnir-run-imap (query srv &optional group-option)
+  "Run a search against an IMAP back-end server.
+This uses a custom query language parser; see `nnir-imap-make-query' for
+details on the language and supported extensions"
   (require 'imap)
   (require 'nnimap)
   (save-excursion
@@ -963,11 +967,182 @@ pairs (also vectors, actually)."
                  (lambda (artnum)
                    (push (vector group artnum 1) artlist)
                    (setq arts (1+ arts)))
-                 (imap-search (concat criteria " \"" qstring "\"") buf))
+                 (imap-search (nnir-imap-make-query criteria qstring) buf))
                 (message "Searching %s... %d matches" mbx arts)))
             (message "Searching %s...done" group))
         (quit nil))
       (reverse artlist))))
+
+(defun nnir-imap-make-query (criteria qstring)
+  "Parse the query string and criteria into an appropriate IMAP search
+expression, returning the string query to make.
+
+This implements a little language designed to return the expected results
+to an arbitrary query string to the end user.
+
+The search is always case-insensitive, as defined by RFC2060, and supports
+the following features (inspired by the Google search input language): 
+
+Automatic \"and\" queries
+    If you specify multiple words then they will be treated as an \"and\"
+    expression intended to match all components.
+
+Phrase searches
+    If you wrap your query in double-quotes then it will be treated as a
+    literal string.
+
+Negative terms
+    If you precede a term with \"-\" then it will negate that.
+
+\"OR\" queries
+    If you include an upper-case \"OR\" in your search it will cause the
+    term before it and the term after it to be treated as alternatives.
+
+In future the following will be added to the language:
+ * support for date matches
+ * support for location of text matching within the query
+ * from/to/etc headers
+ * additional search terms
+ * flag based searching
+ * anything else that the RFC supports, basically."
+  ;; Walk through the query and turn it into an IMAP query string.
+  (nnir-imap-query-to-imap criteria (nnir-imap-parse-query qstring)))
+
+
+(defun nnir-imap-query-to-imap (criteria query)
+  "Turn a s-expression format query into IMAP."
+  (mapconcat
+   ;; Turn the expressions into IMAP text
+   (lambda (item)
+     (nnir-imap-expr-to-imap criteria item))
+   ;; The query, already in s-expr format.
+   query
+   ;; Append a space between each expression
+   " "))
+
+
+(defun nnir-imap-expr-to-imap (criteria expr)
+  "Convert EXPR into an IMAP search expression on CRITERIA"
+  ;; What sort of expression is this, eh?
+  (cond
+   ;; Simple string term
+   ((stringp expr)
+    (format "%s \"%s\"" criteria (imap-quote-specials expr)))
+   ;; Trivial term: and
+   ((eq expr 'and) nil)
+   ;; Composite term: or expression
+   ((eq (car-safe expr) 'or)
+    (format "OR %s %s"
+	    (nnir-imap-expr-to-imap criteria (second expr))
+	    (nnir-imap-expr-to-imap criteria (third expr))))
+   ;; Composite term: just the fax, mam
+   ((eq (car-safe expr) 'not)
+    (format "NOT (%s)" (nnir-imap-query-to-imap criteria (rest expr))))
+   ;; Composite term: just expand it all.
+   ((and (not (null expr)) (listp expr))
+    (format "(%s)" (nnir-imap-query-to-imap criteria expr)))
+   ;; Complex value, give up for now.
+   (t (error "Unhandled input: %S" expr))))
+
+
+(defun nnir-imap-parse-query (string)
+  "Turn STRING into an s-expression based query based on the IMAP
+query language as defined in `nnir-imap-make-query'.
+
+This involves turning individual tokens into higher level terms
+that the search language can then understand and use."
+  (with-temp-buffer
+    ;; Set up the parsing environment.
+    (insert string)
+    (goto-char (point-min))
+    ;; Now, collect the output terms and return them.
+    (let (out)
+      (while (not (nnir-imap-end-of-input))
+	(push (nnir-imap-next-expr) out))
+      (reverse out))))
+
+
+(defun nnir-imap-next-expr (&optional count)
+  "Return the next expression from the current buffer."
+  (let ((term (nnir-imap-next-term count))
+	(next (nnir-imap-peek-symbol)))
+    ;; Are we looking at an 'or' expression?
+    (cond
+     ;; Handle 'expr or expr'
+     ((eq next 'or)
+      (list 'or term (nnir-imap-next-expr 2)))
+     ;; Anything else
+     (t term))))
+
+
+(defun nnir-imap-next-term (&optional count)
+  "Return the next TERM from the current buffer."
+  (let ((term (nnir-imap-next-symbol count)))
+    ;; What sort of term is this?
+    (cond
+     ;; and -- just ignore it
+     ((eq term 'and) 'and)
+     ;; negated term
+     ((eq term 'not) (list 'not (nnir-imap-next-expr)))
+     ;; generic term
+     (t term))))
+
+
+(defun nnir-imap-peek-symbol ()
+  "Return the next symbol from the current buffer, but don't consume it."
+  (save-excursion
+    (nnir-imap-next-symbol)))
+
+(defun nnir-imap-next-symbol (&optional count)
+  "Return the next symbol from the current buffer, or nil if we are
+at the end of the buffer.  If supplied COUNT skips some symbols before
+returning the one at the supplied position."
+  (when (and (numberp count) (> count 1))
+    (nnir-imap-next-symbol (1- count)))
+  (let ((case-fold-search t))
+    ;; end of input stream?
+    (unless (nnir-imap-end-of-input)
+      ;; No, return the next symbol from the stream.
+      (cond
+       ;; negated expression -- return it and advance one char.
+       ((looking-at "-") (forward-char 1) 'not)
+       ;; quoted string
+       ((looking-at "\"") (nnir-imap-delimited-string "\""))
+       ;; list expression -- we parse the content and return this as a list.
+       ((looking-at "(")
+	(nnir-imap-parse-query (nnir-imap-delimited-string ")")))
+       ;; keyword input -- return a symbol version
+       ((looking-at "\\band\\b") (forward-char 3) 'and)
+       ((looking-at "\\bor\\b")  (forward-char 2) 'or)
+       ((looking-at "\\bnot\\b") (forward-char 3) 'not)
+       ;; Simple, boring keyword
+       (t (let ((start (point))
+		(end (if (search-forward-regexp "[[:blank:]]" nil t)
+			 (prog1
+			     (match-beginning 0)
+			   ;; unskip if we hit a non-blank terminal character.
+			   (when (string-match "[^[:blank:]]" (match-string 0))
+			     (backward-char 1)))
+		       (goto-char (point-max)))))
+	    (buffer-substring start end)))))))
+
+(defun nnir-imap-delimited-string (delimiter)
+  "Return a delimited string from the current buffer."
+  (let ((start (point)) end)
+    (forward-char 1)			; skip the first delimiter.
+    (while (not end)
+      (unless (search-forward delimiter nil t)
+	(error "Unmatched delimited input with %s in query" delimiter))
+      (let ((here (point)))
+	(unless (equal (buffer-substring (- here 2) (- here 1)) "\\")
+	  (setq end (point)))))
+    (buffer-substring (1+ start) (1- end))))
+
+(defun nnir-imap-end-of-input ()
+  "Are we at the end of input?"
+  (skip-chars-forward "[[:blank:]]")
+  (looking-at "$"))
+  
 
 ;; Swish++ interface.
 ;; -cc- Todo
