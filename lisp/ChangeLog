@@ -1409,8 +1409,11 @@
 	(message-fix-before-sending): Add `bogus-recipient'.
 
 	* gnus-art.el (gnus-button-mid-or-mail-heuristic-alist): Add "alpine".
-	(gnus-treat-emphasize, gnus-treat-body-boundary): Don't test
-	window-system.
+	(gnus-treat-body-boundary): Don't test window-system.
+
+2007-10-28  Leo <sdl.web@gmail.com>  (tiny change)
+
+	* gnus-art.el (gnus-treat-emphasize): Don't test window-system.
 
 2007-10-28  Miles Bader  <miles@gnu.org>
 
