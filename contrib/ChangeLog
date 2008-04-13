@@ -273,8 +273,7 @@
 
 	* nnir.el: Autoload `read-kbd-macro' at compile time.
 
-2003-09-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
-	From Torsten Hilbrich <torsten.hilbrich@gmx.net>.
+2003-09-30  Torsten Hilbrich <torsten.hilbrich@gmx.net>
 
 	* nnir.el (nnir-imap-search-field, nnir-imap-search-arguments)
 	(nnir-imap-search-argument-history): New variables.
