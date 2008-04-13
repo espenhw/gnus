@@ -7,8 +7,34 @@
 ;; Swish-e and Swish++ backends by:
 ;;   Christoph Conrad <christoph.conrad@gmx.de>.
 ;; Imap backend by: Simon Josefsson <jas@pdc.kth.se>.
+;; Imap search by: Torsten Hilbrich <torsten.hilbrich <at> gmx.net>
 ;; nnmaildir support for Swish++ and Namazu backends by:
 ;;   Justus Piater <Justus <at> Piater.name>
+
+;; FIXME: This file should be move to ../lisp/ after all copyright assignments
+;; are on file.  As of 2008-04-13, we don't have an assignment/disclaimer from
+;; Torsten Hilbrich, but he's willing to sign.  I've sent hmm the form.
+;; -- rsteib
+
+;; TODO: Documentation in the Gnus manual
+
+;; From: Reiner Steib
+;; Subject: Re: Including nnir.el
+;; Newsgroups: gmane.emacs.gnus.general
+;; Message-ID: <v9d5dnp6aq.fsf@marauder.physik.uni-ulm.de>
+;; Date: 2006-06-05 22:49:01 GMT
+;;
+;; On Sun, Jun 04 2006, Sascha Wilde wrote:
+;;
+;; > The one thing most hackers like to forget: Documentation.  By now the
+;; > documentation is only in the comments at the head of the source, I
+;; > would use it as basis to cook up some minimal texinfo docs.
+;; >
+;; > Where in the existing gnus manual would this fit best?
+
+;; Maybe (info "(gnus)Combined Groups") for a general description.
+;; `gnus-group-make-nnir-group' might be described in (info
+;; "(gnus)Foreign Groups") as well.
 
 ;; Keywords: news mail searching ir
 
@@ -645,15 +671,12 @@ that it is for Namazu, not Wais."
 (or (fboundp 'kbd) (defalias 'kbd 'read-kbd-macro))
 
 (defun nnir-group-mode-hook ()
-  (define-key gnus-group-mode-map
-    (if (fboundp 'read-kbd-macro)
-        (kbd "G G")
-      "GG")                             ; XEmacs 19 compat
+  (define-key gnus-group-mode-map (kbd "G G")
     'gnus-group-make-nnir-group))
 (add-hook 'gnus-group-mode-hook 'nnir-group-mode-hook)
 
-;; JP: Why is this needed? Is this for compatibility with old/new
-;; gnusae? Using gnus-group-server instead works for me.
+;; Why is this needed? Is this for compatibility with old/new gnusae? Using
+;; gnus-group-server instead works for me.  -- Justus Piater
 (defmacro nnir-group-server (group)
   "Return the server for a newsgroup GROUP.
 The returned format is as `gnus-server-to-method' needs it.  See
@@ -840,7 +863,7 @@ and show thread that contains this article."
 (defun nnir-compose-result (dirnam article score prefix server)
   "Extract the group from dirnam, and create a result vector
 ready to be added to the list of search results."
-  
+
   ;; remove nnir-*-remove-prefix from beginning of dirnam filename
   (when (string-match (concat "^" prefix) dirnam)
     (setq dirnam (replace-match "" t t dirnam)))

@@ -1,3 +1,8 @@
+2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el: Add assignment status.
+	(nnir-group-mode-hook): Remove XEmacs 19 compatibility code.
+
 2008-04-13  Justus Piater  <Justus-bulk@Piater.name>
 
 	* nnir.el (nnir-run-swish++): Suppress non-existing files.
@@ -112,7 +117,7 @@
 
 2006-07-17  Sascha Wilde  <wilde@sha-bang.de>
 
-	* nnir.el: Removed support for non free backends glimpse and excite.
+g	* nnir.el: Removed support for non free backends glimpse and excite.
 	Changed and updated copyright to Free Software Foundation.  Moved all
 	authors to head.
 
