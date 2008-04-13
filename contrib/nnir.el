@@ -1,12 +1,14 @@
 ;;; nnir.el --- search mail with various search engines -*- coding: iso-8859-1 -*-
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 
 ;; Author: Kai Groﬂjohann <grossjohann@ls6.cs.uni-dortmund.de>
-;; Swish-e and Swish++ backends by: 
+;; Swish-e and Swish++ backends by:
 ;;   Christoph Conrad <christoph.conrad@gmx.de>.
 ;; Imap backend by: Simon Josefsson <jas@pdc.kth.se>.
+;; nnmaildir support for Swish++ and Namazu backends by:
+;;   Justus Piater <Justus <at> Piater.name>
 
 ;; Keywords: news mail searching ir
 
@@ -650,6 +652,8 @@ that it is for Namazu, not Wais."
     'gnus-group-make-nnir-group))
 (add-hook 'gnus-group-mode-hook 'nnir-group-mode-hook)
 
+;; JP: Why is this needed? Is this for compatibility with old/new
+;; gnusae? Using gnus-group-server instead works for me.
 (defmacro nnir-group-server (group)
   "Return the server for a newsgroup GROUP.
 The returned format is as `gnus-server-to-method' needs it.  See
@@ -661,7 +665,7 @@ The returned format is as `gnus-server-to-method' needs it.  See
 	   (if (string-match "^\\([^+]+\\)\\+\\(.+\\)$" gname)
 	       (format "%s:%s" (match-string 1 gname) (match-string 2 gname))
 	     (concat gname ":")))
-       "native")))
+       (format "%s:%s" (car gnus-select-method) (cadr gnus-select-method)))))
 
 ;; Summary mode commands.
 
@@ -830,6 +834,34 @@ and show thread that contains this article."
 
 (nnoo-define-skeleton nnir)
 
+
+;; Helper function currently used by the Swish++ and Namazu backends;
+;; perhaps useful for other backends as well
+(defun nnir-compose-result (dirnam article score prefix server)
+  "Extract the group from dirnam, and create a result vector
+ready to be added to the list of search results."
+  
+  ;; remove nnir-*-remove-prefix from beginning of dirnam filename
+  (when (string-match (concat "^" prefix) dirnam)
+    (setq dirnam (replace-match "" t t dirnam)))
+
+  ;; remove trailing slash and, for nnmaildir, cur/new/tmp
+  (setq dirnam (substring dirnam 0 (if (string= server "nnmaildir:") -5 -1)))
+
+  ;; eliminate all ".", "/", "\" from beginning. Always matches.
+  (string-match "^[./\\]*\\(.*\\)$" dirnam)
+  (setq group (substitute ?. ?/ (match-string 1 dirnam))) ;; "/" -> "."
+  (setq group (substitute ?. ?\\ group)) ;; "\\" -> "."
+
+  (vector (nnir-group-full-name group server)
+	  (if (string= server "nnmaildir:")
+	      (nnmaildir-base-name-to-article-number
+	       (substring article 0 (string-match ":" article))
+	       group nil)
+	    (string-to-int article))
+	  (string-to-int score)))
+
+
 ;;; Search Engine Interfaces:
 
 ;; freeWAIS-sf interface.
@@ -939,6 +971,9 @@ Windows NT 4.0."
 	   (groupspec (cdr (assq 'group query)))
 	   (prefix (nnir-read-server-parm 'nnir-swish++-remove-prefix server))
            (artlist nil)
+	   (article-pattern (if (string= server "nnmaildir:")
+				":[0-9]+"
+			      "^[0-9]+\\(\\.[a-z0-9]+\\)?$"))
            (score nil) (artno nil) (dirnam nil) (group nil) )
 
       (when (equal "" qstring)
@@ -982,11 +1017,13 @@ Windows NT 4.0."
       (while (re-search-forward
               "\\(^[0-9]+\\) \\([^ ]+\\) [0-9]+ \\(.*\\)$" nil t)
         (setq score (match-string 1)
-              artno (file-name-nondirectory (match-string 2))
-              dirnam (file-name-directory (match-string 2)))
+	      filenam (match-string 2)
+              artno (file-name-nondirectory filenam)
+              dirnam (file-name-directory filenam))
 
-        ;; don't match directories
-        (when (string-match "^[0-9]+\\(\\.[a-z0-9]+\\)?$" artno)
+        ;; don't match directories or inexistent/unreadable files
+        (when (and (string-match article-pattern artno)
+		   (file-readable-p filenam))
 	  ;; nnml-use-compressed-files might be any string, but probably this
 	  ;; is sufficient.  Note that we can't only use the value of
 	  ;; nnml-use-compressed-files because old articles might have been
@@ -996,23 +1033,7 @@ Windows NT 4.0."
 	    ;; maybe limit results to matching groups.
 	    (when (or (not groupspec)
 		      (string-match groupspec dirnam))
-
-	      ;; remove nnir-swish++-remove-prefix from beginning of dirname
-	      (when (string-match (concat "^" prefix)
-				  dirnam)
-		(setq dirnam (replace-match "" t t dirnam)))
-
-	      (setq dirnam (substring dirnam 0 -1))
-	      ;; eliminate all ".", "/", "\" from beginning. Always matches.
-	      (string-match "^[./\\]*\\(.*\\)$" dirnam)
-	      ;; "/" -> "."
-	      (setq group (substitute ?. ?/ (match-string 1 dirnam)))
-	      ;; "\\" -> "."
-	      (setq group (substitute ?. ?\\ group))
-
-	      (push (vector (nnir-group-full-name group server)
-			    (string-to-int artno)
-			    (string-to-int score))
+	      (push (nnir-compose-result dirnam artno score prefix server)
 		    artlist)))))
 
       (message "Massaging swish++ output...done")
@@ -1207,6 +1228,9 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
     (error "The Namazu backend cannot search specific groups"))
   (save-excursion
     (let (
+	  (article-pattern (if (string= server "nnmaildir:")
+			       ":[0-9]+"
+			     "^[0-9]+$"))
           (artlist nil)
           (qstring (cdr (assq 'query query)))
 	  (prefix (nnir-read-server-parm 'nnir-namazu-remove-prefix server))
@@ -1256,18 +1280,10 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
               article (file-name-nondirectory (match-string 4)))
 
         ;; make sure article and group is sane
-        (when (and (string-match "^[0-9]+$" article)
+        (when (and (string-match article-pattern article)
                    (not (null group)))
-          (when (string-match (concat "^" prefix) group)
-            (setq group (replace-match "" t t group)))
-
-          ;; remove trailing slash from groupname
-          (setq group (substring group 0 -1))
-
-          ;; stuff results into artlist vector
-          (push (vector (nnir-group-full-name (substitute ?. ?/ group) server)
-                        (string-to-int article)
-                        (string-to-int score)) artlist)))
+	  (push (nnir-compose-result group article score prefix server)
+		artlist)))
 
       ;; sort artlist by score
       (apply 'vector

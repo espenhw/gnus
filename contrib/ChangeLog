@@ -1,3 +1,12 @@
+2008-04-13  Justus Piater  <Justus-bulk@Piater.name>
+
+	* nnir.el (nnir-run-swish++): Suppress non-existing files.
+	(nnir-group-server): For native groups, obtain the server name from
+	gnus-select-method.
+	(nnir-run-swish++, nnir-run-namazu): Support nnmaildir.
+	(nnir-compose-result): New function unifying some code formerly
+	duplicated between nnir-run-swish++ and nnir-run-namazu.
+
 2008-02-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: Clarify relevant Emacs versions for sendmail.el and
