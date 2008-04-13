@@ -1,3 +1,8 @@
+2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-signature-separator, message-cite-function):
+	Change custom version.
+
 2008-04-13  Naohiro Aota  <nao.aota@gmail.com>  (tiny change)
 
 	* tls.el (tls-program): Add -ign_eof argument to call the openssl
