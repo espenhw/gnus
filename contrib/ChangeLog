@@ -5,6 +5,9 @@
 	(nnir-imap-expr-to-imap, nnir-imap-parse-query, nnir-imap-next-expr)
 	(nnir-imap-peek-symbol, nnir-imap-next-symbol)
 	(nnir-imap-delimited-string, nnir-imap-end-of-input): New functions.
+	Implement a query language for IMAP search, parse that and compose the
+	back-end query from it.  This allows searches with AND, OR and fixed
+	strings, not just a single substring.
 
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
