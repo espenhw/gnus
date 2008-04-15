@@ -1,3 +1,7 @@
+2008-04-15  Christoph Conrad <christoph.conrad@gmx.de>
+
+	* nnir.el (nnir-run-swish++): Fix inexistent file check for nnml.
+
 2008-04-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el (nnir-run-swish++): Fix typo in doc string.  Move comment on
