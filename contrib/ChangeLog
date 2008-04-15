@@ -1,3 +1,8 @@
+2008-04-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el (nnir-run-swish++): Fix typo in doc string.  Move comment on
+	nnml-use-compressed-files to more suitable place.
+
 2008-04-13  Daniel Pittman  <daniel@rimspace.net>
 
 	* nnir.el (nnir-run-imap): Add doc string.  Use `nnir-imap-make-query'.

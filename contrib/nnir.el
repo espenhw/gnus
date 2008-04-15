@@ -1154,11 +1154,11 @@ returning the one at the supplied position."
 ;; - file size
 ;; - group
 (defun nnir-run-swish++ (query server &optional group)
-  "Run given query against swish++.
+  "Run QUERY against swish++.
 Returns a vector of (group name, file name) pairs (also vectors,
 actually).
 
-Tested with swish++ 4.7 on GNU/Linux and with with swish++ 5.0b2 on
+Tested with swish++ 4.7 on GNU/Linux and with swish++ 5.0b2 on
 Windows NT 4.0."
 
   (when group
@@ -1169,6 +1169,10 @@ Windows NT 4.0."
 	   (groupspec (cdr (assq 'group query)))
 	   (prefix (nnir-read-server-parm 'nnir-swish++-remove-prefix server))
            (artlist nil)
+	   ;; nnml-use-compressed-files might be any string, but probably this
+	   ;; is sufficient.  Note that we can't only use the value of
+	   ;; nnml-use-compressed-files because old articles might have been
+	   ;; saved with a different value.
 	   (article-pattern (if (string= server "nnmaildir:")
 				":[0-9]+"
 			      "^[0-9]+\\(\\.[a-z0-9]+\\)?$"))
@@ -1221,11 +1225,7 @@ Windows NT 4.0."
 
         ;; don't match directories or inexistent/unreadable files
         (when (and (string-match article-pattern artno)
-		   (file-readable-p filenam))
-	  ;; nnml-use-compressed-files might be any string, but probably this
-	  ;; is sufficient.  Note that we can't only use the value of
-	  ;; nnml-use-compressed-files because old articles might have been
-	  ;; saved with a different value.
+		   (file-readable-p (concat prefix filenam)))
           (when (not (null dirnam))
 
 	    ;; maybe limit results to matching groups.
