@@ -4,6 +4,7 @@
 	compatibility code for `kbd'.  Replace `string-to-int' with
 	`string-to-number'.
 	(nnmaildir-base-name-to-article-number): Autoload.
+	(nnir-compose-result): Simplify the code.
 
 2008-04-19  Justus Piater  <Justus-bulk@Piater.name>
 
