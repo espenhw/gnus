@@ -859,6 +859,14 @@ and show thread that contains this article."
 (nnoo-define-skeleton nnir)
 
 
+(defmacro nnir-add-result (dirnam artno score prefix server artlist)
+  "Ask `nnir-compose-result' to construct a result vector, 
+and if it is non-nil, add it to artlist."
+  `(let ((result (nnir-compose-result dirnam artno score prefix server)))
+     (when (not (null result))
+       (push result artlist))))
+
+
 ;; Helper function currently used by the Swish++ and Namazu backends;
 ;; perhaps useful for other backends as well
 (defun nnir-compose-result (dirnam article score prefix server)
@@ -869,21 +877,24 @@ ready to be added to the list of search results."
   (when (string-match (concat "^" prefix) dirnam)
     (setq dirnam (replace-match "" t t dirnam)))
 
-  ;; remove trailing slash and, for nnmaildir, cur/new/tmp
-  (setq dirnam (substring dirnam 0 (if (string= server "nnmaildir:") -5 -1)))
+  (if (not (file-readable-p (concat prefix dirnam article)))
+      nil
+    ;; remove trailing slash and, for nnmaildir, cur/new/tmp
+    (setq dirnam
+	  (substring dirnam 0 (if (string= server "nnmaildir:") -5 -1)))
 
-  ;; eliminate all ".", "/", "\" from beginning. Always matches.
-  (string-match "^[./\\]*\\(.*\\)$" dirnam)
-  (setq group (substitute ?. ?/ (match-string 1 dirnam))) ;; "/" -> "."
-  (setq group (substitute ?. ?\\ group)) ;; "\\" -> "."
+    ;; eliminate all ".", "/", "\" from beginning. Always matches.
+    (string-match "^[./\\]*\\(.*\\)$" dirnam)
+    (setq group (substitute ?. ?/ (match-string 1 dirnam))) ;; "/" -> "."
+    (setq group (substitute ?. ?\\ group)) ;; "\\" -> "."
 
-  (vector (nnir-group-full-name group server)
-	  (if (string= server "nnmaildir:")
-	      (nnmaildir-base-name-to-article-number
-	       (substring article 0 (string-match ":" article))
-	       group nil)
-	    (string-to-int article))
-	  (string-to-int score)))
+    (vector (nnir-group-full-name group server)
+	    (if (string= server "nnmaildir:")
+		(nnmaildir-base-name-to-article-number
+		 (substring article 0 (string-match ":" article))
+		 group nil)
+	      (string-to-int article))
+	    (string-to-int score))))
 
 
 ;;; Search Engine Interfaces:
@@ -1223,16 +1234,14 @@ Windows NT 4.0."
               artno (file-name-nondirectory filenam)
               dirnam (file-name-directory filenam))
 
-        ;; don't match directories or inexistent/unreadable files
-        (when (and (string-match article-pattern artno)
-		   (file-readable-p (concat prefix filenam)))
+        ;; don't match directories
+        (when (string-match article-pattern artno)
           (when (not (null dirnam))
 
 	    ;; maybe limit results to matching groups.
 	    (when (or (not groupspec)
 		      (string-match groupspec dirnam))
-	      (push (nnir-compose-result dirnam artno score prefix server)
-		    artlist)))))
+	      (nnir-add-result dirnam artno score prefix server artlist)))))
 
       (message "Massaging swish++ output...done")
 
@@ -1480,8 +1489,7 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
         ;; make sure article and group is sane
         (when (and (string-match article-pattern article)
                    (not (null group)))
-	  (push (nnir-compose-result group article score prefix server)
-		artlist)))
+	  (nnir-add-result group article score prefix server artlist)))
 
       ;; sort artlist by score
       (apply 'vector

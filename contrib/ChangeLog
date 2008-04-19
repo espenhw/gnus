@@ -1,3 +1,8 @@
+2008-04-19  Justus Piater  <Justus-bulk@Piater.name>
+
+	* nnir.el (nnir-add-result): New helper macro.
+	(nnir-compose-result): Use it.  Fix inexistent file check for maildir.
+
 2008-04-15  Christoph Conrad <christoph.conrad@gmx.de>
 
 	* nnir.el (nnir-run-swish++): Fix inexistent file check for nnml.
