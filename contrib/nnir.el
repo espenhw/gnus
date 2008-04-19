@@ -346,8 +346,9 @@
 (eval-and-compile
   (require 'gnus-util))
 (eval-when-compile
-  (require 'nnimap)
-  (autoload 'read-kbd-macro "edmacro" nil t))
+  (require 'nnimap))
+
+(autoload 'nnmaildir-base-name-to-article-number "nnmaildir")
 
 (nnoo-declare nnir)
 (nnoo-define-basics nnir)
@@ -668,9 +669,6 @@ that it is for Namazu, not Wais."
            gnus-current-window-configuration)
      nil)))
 
-;; Emacs 19 compatibility?
-(or (fboundp 'kbd) (defalias 'kbd 'read-kbd-macro))
-
 (defun nnir-group-mode-hook ()
   (define-key gnus-group-mode-map (kbd "G G")
     'gnus-group-make-nnir-group))
@@ -877,8 +875,7 @@ ready to be added to the list of search results."
   (when (string-match (concat "^" prefix) dirnam)
     (setq dirnam (replace-match "" t t dirnam)))
 
-  (if (not (file-readable-p (concat prefix dirnam article)))
-      nil
+  (when (file-readable-p (concat prefix dirnam article))
     ;; remove trailing slash and, for nnmaildir, cur/new/tmp
     (setq dirnam
 	  (substring dirnam 0 (if (string= server "nnmaildir:") -5 -1)))
@@ -893,9 +890,8 @@ ready to be added to the list of search results."
 		(nnmaildir-base-name-to-article-number
 		 (substring article 0 (string-match ":" article))
 		 group nil)
-	      (string-to-int article))
-	    (string-to-int score))))
-
+	      (string-to-number article))
+	    (string-to-number score))))
 
 ;;; Search Engine Interfaces:
 
@@ -934,8 +930,8 @@ pairs (also vectors, actually)."
                            dirnam prefix))
         (setq group (substitute ?. ?/ (replace-match "" t t dirnam)))
         (push (vector (nnir-group-full-name group server)
-                      (string-to-int artno)
-                      (string-to-int score))
+                      (string-to-number artno)
+                      (string-to-number score))
               artlist))
       (message "Massaging waissearch output...done")
       (apply 'vector
@@ -1334,8 +1330,8 @@ Tested with swish-e-2.0.1 on Windows NT 4.0."
             (setq group (substitute ?. ?\\ group))
 
             (push (vector (nnir-group-full-name group server)
-                          (string-to-int artno)
-                          (string-to-int score))
+                          (string-to-number artno)
+                          (string-to-number score))
                   artlist))))
 
       (message "Massaging swish-e output...done")
@@ -1411,8 +1407,8 @@ Tested with swish-e-2.0.1 on Windows NT 4.0."
 	(when (string-match prefix dirnam)
 	  (setq dirnam (replace-match "" t t dirnam)))
 	(push (vector (nnir-group-full-name (substitute ?. ?/ dirnam) server)
-		      (string-to-int artno)
-		      (string-to-int score))
+		      (string-to-number artno)
+		      (string-to-number score))
 	      artlist))
       (message "Massaging hyrex-search output...done.")
       (apply 'vector

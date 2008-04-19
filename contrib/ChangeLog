@@ -1,3 +1,10 @@
+2008-04-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el: Don't require edmacro anymore.  Remove bogus Emacs 19
+	compatibility code for `kbd'.  Replace `string-to-int' with
+	`string-to-number'.
+	(nnmaildir-base-name-to-article-number): Autoload.
+
 2008-04-19  Justus Piater  <Justus-bulk@Piater.name>
 
 	* nnir.el (nnir-add-result): New helper macro.
