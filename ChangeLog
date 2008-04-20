@@ -1,3 +1,9 @@
+2008-04-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (release-check-settings): Clarify codename.
+	(release-help): New target.
+	(release-cvs-export): Add umask.  Suggested by Sven Joachim.
+
 2008-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: Bump version to 0.9.

@@ -13,6 +13,16 @@
 
 	* mm-decode.el (mm-display-external): Make temp file read-only.
 
+2008-04-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-diary.el (gnus-article-edit-mode-map, message-mode-map): Remove
+	binding for `gnus-diary-version'.  Bind `gnus-diary-check-message' to
+	`C-c C-f d'.
+
+2008-04-12  Adrian Aichner  <adrian@xemacs.org>
+
+	* gnus-sum.el (gnus-summary-goto-subject): Typo fix.
+
 2008-04-11  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.el: Bump version to 0.9.
@@ -70,6 +80,11 @@
 	(nnimap-enable-minmax-bug-workaround): New variable to toggle whether
 	to enable bug workaround or not.
 	(nnimap-find-minmax-uid): Only enable workaround conditionally.
+
+2008-03-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (EMACS_COMP): Quote directory name that might contain
+	whitespace.
 
 2008-03-29  Sven Joachim  <svenjoac@gmx.de>
 

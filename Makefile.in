@@ -40,12 +40,6 @@ OLD_TAG     = v5-10-6
 TAG  = v5-10
 #
 COMMIT_STRING = $(CODENAME)Gnus v$(VERSION) is released.
-#
-# Procedure:
-# - release-bump-version
-# - release-commit
-# - release-files or release-files-signed
-#
 # # # # # # # # # # End of release variables
 
 all: lick info
@@ -112,10 +106,12 @@ release-check-settings:
 	@echo "COMMITTER = '$(COMMITTER)'"
 	@echo "  (example: 'Foo Bar  <foo.bar@somewhere.invalid>')"
 	@echo "VERSION   = '$(VERSION)' (example: '5.10.6')"
-	@echo "CODENAME  = '$(CODENAME)' (example: 'No ')"
-	@echo "CIN       = '$(CIN)' (example: 'n', codename initial)"
 	@echo "TAG       = '$(TAG)' (example: 'v5-10-6')"
 	@echo "OLD_TAG   = '$(OLD_TAG)' (example: 'v5-10-5')"
+	@echo
+	@echo "# Only for development versions:"
+	@echo "CODENAME  = '$(CODENAME)' (example: 'No ')"
+	@echo "CIN       = '$(CIN)' (example: 'n', codename initial)"
 	@echo
 	@if [ x"$(VERSION)" = x ]; then echo "error: No VERSION given."; exit 1; else :; fi
 	@if [ x"$(TAG)" = x ]; then echo "error: No TAG given."; exit 1; else :; fi
@@ -127,6 +123,34 @@ release-check-settings:
 	@echo   release-add-changelog
 	@echo   release-commit
 	@echo   release-files or release-files-signed
+
+release-help:
+	@echo "Available targets for releases:"
+	@echo
+	@echo "[0]  release-help"
+	@echo "         Display this help message."
+	@echo
+	@echo "[1]  release-check-settings"
+	@echo "         Check it all required variables are specified on the command line."
+	@echo "         Run this target to display the variable names and current values."
+	@echo
+	@echo "[2]  release-bump-version"
+	@echo "         Bump the version to VERSION"
+	@echo
+	@echo "[3]  release-add-changelog"
+	@echo "         Add COMMITTER and COMMIT_STRING to the ChangeLogs."
+	@echo
+	@echo "[4]  release-commit"
+	@echo "         Commit the ChangeLogs and tag repository with TAG."
+	@echo
+	@echo "[5]  release-files or release-files-signed"
+	@echo "         Create the release tar-ball and diff file."
+	@echo "         release-files-signed creates detached GPG signature files as well."
+	@echo
+	@echo "For a release, steps [1]-[5] need to be done.  Immediately after"
+	@echo "the release, we bump the version again by performing steps [1]-[4]"
+	@echo "with the next VERSION and TAG."
+	@echo
 
 bump-version:
 	$(MAKE) COMMIT_STRING='Bump version to $(VERSION).' release-bump-version
@@ -237,7 +261,7 @@ release-sign-files:
 
 release-cvs-export $(CIN)gnus-$(VERSION):	release-check-settings
 	rm -fr $(CIN)gnus-$(VERSION)
-	cvs export -d $(CIN)gnus-$(VERSION) -r $(TAG) gnus
+	umask 0022; cvs export -d $(CIN)gnus-$(VERSION) -r $(TAG) gnus
 
 release-make-tar-ball:	$(CIN)gnus-$(VERSION)
 	[ -d $(CIN)gnus-$(VERSION) ] && cd $(CIN)gnus-$(VERSION) && \

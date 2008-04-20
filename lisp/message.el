@@ -1012,6 +1012,7 @@ Used by `message-yank-original' via `message-yank-cite'."
   :link '(custom-manual "(message)Insertion Variables")
   :type 'integer)
 
+;;;###autoload
 (defcustom message-cite-function 'message-cite-original-without-signature
   "*Function for citing an original message.
 Predefined functions include `message-cite-original' and
