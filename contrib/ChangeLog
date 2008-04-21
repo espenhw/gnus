@@ -1,3 +1,8 @@
+2008-04-21  Justus Piater  <Justus-bulk@Piater.name>
+
+	* nnir.el (nnir-compose-result): Use `gnus-replace-in-string' instead
+	of `substitute' to avoid using cl at runtime.
+
 2008-04-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el: Don't require edmacro anymore.  Remove bogus Emacs 19

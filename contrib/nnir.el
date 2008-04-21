@@ -880,10 +880,11 @@ ready to be added to the list of search results."
     (setq dirnam
 	  (substring dirnam 0 (if (string= server "nnmaildir:") -5 -1)))
 
-    ;; eliminate all ".", "/", "\" from beginning. Always matches.
-    (string-match "^[./\\]*\\(.*\\)$" dirnam)
-    (setq group (substitute ?. ?/ (match-string 1 dirnam))) ;; "/" -> "."
-    (setq group (substitute ?. ?\\ group)) ;; "\\" -> "."
+    ;; Set group to dirnam without any leading dots or slashes,
+    ;; and with all subsequent slashes replaced by dots
+    (setq group (gnus-replace-in-string
+                 (gnus-replace-in-string dirnam "^[./\\]" "" t)
+                 "[/\\]" "." t))
 
     (vector (nnir-group-full-name group server)
 	    (if (string= server "nnmaildir:")
