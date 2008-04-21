@@ -1,3 +1,8 @@
+2008-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el: Don't require cl at runtime.  Require gnus-util at runtime.
+	Autoload nnimap and imap functions.
+
 2008-04-21  Justus Piater  <Justus-bulk@Piater.name>
 
 	* nnir.el (nnir-compose-result): Use `gnus-replace-in-string' instead

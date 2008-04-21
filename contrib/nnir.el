@@ -338,17 +338,13 @@
 
 ;;; Setup Code:
 
-(require 'cl)
 (require 'nnoo)
 (require 'gnus-group)
 (require 'gnus-sum)
 (require 'message)
+(require 'gnus-util)
 (eval-and-compile
-  (require 'gnus-util))
-(eval-when-compile
-  (require 'nnimap))
-
-(autoload 'nnmaildir-base-name-to-article-number "nnmaildir")
+  (require 'cl))
 
 (nnoo-declare nnir)
 (nnoo-define-basics nnir)
@@ -864,6 +860,7 @@ and if it is non-nil, add it to artlist."
      (when (not (null result))
        (push result artlist))))
 
+(autoload 'nnmaildir-base-name-to-article-number "nnmaildir")
 
 ;; Helper function currently used by the Swish++ and Namazu backends;
 ;; perhaps useful for other backends as well
@@ -949,12 +946,15 @@ pairs (also vectors, actually)."
 ;; send queries as literals
 ;; handle errors
 
+(autoload 'nnimap-open-server "nnimap")
+(autoload 'imap-mailbox-select "imap")
+(autoload 'imap-search "imap")
+(autoload 'imap-quote-specials "imap")
+
 (defun nnir-run-imap (query srv &optional group-option)
   "Run a search against an IMAP back-end server.
 This uses a custom query language parser; see `nnir-imap-make-query' for
 details on the language and supported extensions"
-  (require 'imap)
-  (require 'nnimap)
   (save-excursion
     (let ((qstring (cdr (assq 'query query)))
 	  (server (cadr (gnus-server-to-method srv)))
