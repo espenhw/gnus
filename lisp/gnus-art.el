@@ -1703,11 +1703,6 @@ Initialized from `text-mode-syntax-table.")
 
 (defvar gnus-save-article-buffer nil)
 
-(defvar gnus-article-mode-line-format-alist
-  (nconc '((?w (gnus-article-wash-status) ?s)
-	   (?m (gnus-article-mime-part-status) ?s))
-	 gnus-summary-mode-line-format-alist))
-
 (defvar gnus-number-of-articles-to-be-saved nil)
 
 (defvar gnus-inhibit-hiding nil)
@@ -4790,10 +4785,9 @@ and `gnus-mime-delete-part', and not provided at run-time normally."
   ;; Useful if file has already been saved to disk
   (interactive
    (list
-    (mm-with-multibyte
-      (read-file-name "Replace MIME part with file: "
-		      (or mm-default-directory default-directory)
-		      nil nil))))
+    (read-file-name "Replace MIME part with file: "
+                    (or mm-default-directory default-directory)
+                    nil nil)))
   (gnus-mime-save-part-and-strip file))
 
 (defun gnus-mime-save-part-and-strip (&optional file)
@@ -6591,7 +6585,13 @@ If given a prefix, show the hidden text instead."
 		 (with-current-buffer gnus-original-article-buffer
 		   (and (equal (car gnus-original-article) group)
 			(eq (cdr gnus-original-article) article))))
-	    (insert-buffer-substring gnus-original-article-buffer)
+            ;; `insert-buffer-substring' would incorrectly use the
+            ;; equivalent of string-make-multibyte which amount to decoding
+            ;; with locale-coding-system, causing failure of
+            ;; subsequent decoding.
+            (insert (mm-string-to-multibyte
+                     (with-current-buffer gnus-original-article-buffer
+                       (buffer-substring (point-min) (point-max)))))
 	    'article)
 	   ;; Check the backlog.
 	   ((and gnus-keep-backlog

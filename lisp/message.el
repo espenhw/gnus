@@ -569,7 +569,13 @@ Done before generating the new subject of a forward."
   :link '(custom-manual "(message)Forwarding")
   :type 'boolean)
 
-(defcustom message-ignored-resent-headers "^Return-receipt\\|^X-Gnus\\|^Gnus-Warning:\\|^>?From "
+(defcustom message-ignored-resent-headers
+  ;; `Delivered-To' needs to be removed because some mailers use it to
+  ;; detect loops, so if you resend a message to an address that ultimately
+  ;; comes back to you (e.g. a mailing-list to which you subscribe, in which
+  ;; case you may be removed from the list on the grounds that mail to you
+  ;; bounced with a "mailing loop" error).
+  "^Return-receipt\\|^X-Gnus\\|^Gnus-Warning:\\|^>?From \\|^Delivered-To:"
   "*All headers that match this regexp will be deleted when resending a message."
   :group 'message-interface
   :link '(custom-manual "(message)Resending")
@@ -2484,6 +2490,7 @@ Point is left at the beginning of the narrowed-to region."
 
 
 (autoload 'Info-goto-node "info")
+(defvar mml2015-use)
 
 (defun message-info (&optional arg)
   "Display the Message manual.
@@ -2492,8 +2499,11 @@ Prefixed with one \\[universal-argument], display the Emacs MIME
 manual.  With two \\[universal-argument]'s, display the EasyPG or
 PGG manual, depending on the value of `mml2015-use'."
   (interactive "p")
+  ;; Why not `info', which is in loaddefs.el?
   (Info-goto-node (format "(%s)Top"
-			  (cond ((eq arg 16) mml2015-use)
+			  (cond ((eq arg 16)
+				 (require 'mml2015)
+				 mml2015-use)
 				((eq arg  4) 'emacs-mime)
 				;; `booleanp' only available in Emacs 22+
 				((and (not (memq arg '(nil t)))
@@ -5340,19 +5350,18 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
 		   ;; Quote a string containing non-ASCII characters.
 		   ;; It will make the RFC2047 encoder cause an error
 		   ;; if there are special characters.
-		   (let ((default-enable-multibyte-characters t))
-		     (with-temp-buffer
-		       (insert (car name))
-		       (goto-char (point-min))
-		       (while (search-forward "\"" nil t)
-			 (when (prog2
-				   (backward-char)
-				   (zerop (% (skip-chars-backward "\\\\") 2))
-				 (goto-char (match-beginning 0)))
-			   (insert "\\"))
-			 (forward-char))
-		       ;; Those quotes will be removed by the RFC2047 encoder.
-		       (concat "\"" (buffer-string) "\"")))
+                   (mm-with-multibyte-buffer
+                     (insert (car name))
+                     (goto-char (point-min))
+                     (while (search-forward "\"" nil t)
+                       (when (prog2
+                                 (backward-char)
+                                 (zerop (% (skip-chars-backward "\\\\") 2))
+                               (goto-char (match-beginning 0)))
+                         (insert "\\"))
+                       (forward-char))
+                     ;; Those quotes will be removed by the RFC2047 encoder.
+                     (concat "\"" (buffer-string) "\""))
 		 (car name))
 	     (nth 1 name))
 	   "'s message of \""

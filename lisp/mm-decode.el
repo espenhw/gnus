@@ -235,6 +235,9 @@ before the external MIME handler is invoked."
        ;; makes it possible to install another package which provides an
        ;; alternative implementation of diff-mode.  --Stef
        (fboundp 'diff-mode)))
+    ;; In case mime.types uses x-diff (as does Debian's mime-support-3.40).
+    ("text/x-diff" mm-display-patch-inline
+     (lambda (handle) (fboundp 'diff-mode)))
     ("application/emacs-lisp" mm-display-elisp-inline identity)
     ("application/x-emacs-lisp" mm-display-elisp-inline identity)
     ("text/dns" mm-display-dns-inline identity)
@@ -663,15 +666,16 @@ Postpone undisplaying of viewers for types in
 
 (defun mm-copy-to-buffer ()
   "Copy the contents of the current buffer to a fresh buffer."
-    (let ((obuf (current-buffer))
-	  beg)
-      (goto-char (point-min))
-      (search-forward-regexp "^\n" nil t)
-      (setq beg (point))
+  (let ((obuf (current-buffer))
+        (mb (mm-multibyte-p))
+        beg)
+    (goto-char (point-min))
+    (search-forward-regexp "^\n" nil t)
+    (setq beg (point))
     (with-current-buffer
-       ;; Preserve the data's unibyteness (for url-insert-file-contents).
-       (let ((default-enable-multibyte-characters (mm-multibyte-p)))
-          (generate-new-buffer " *mm*"))
+          (generate-new-buffer " *mm*")
+      ;; Preserve the data's unibyteness (for url-insert-file-contents).
+      (mm-set-buffer-multibyte mb)
       (insert-buffer-substring obuf beg)
       (current-buffer))))
 
@@ -1131,17 +1135,15 @@ in HANDLE."
 
 (defmacro mm-with-part (handle &rest forms)
   "Run FORMS in the temp buffer containing the contents of HANDLE."
-  `(let* ((handle ,handle)
-	  ;; The multibyteness of the temp buffer should be turned on
-	  ;; if inserting a multibyte string.  Contrarily, the buffer's
-	  ;; multibyteness should be off if inserting a unibyte string,
-	  ;; especially if a string contains 8bit data.
-	  (default-enable-multibyte-characters
-	    (with-current-buffer (mm-handle-buffer handle)
-	      (mm-multibyte-p))))
+  ;; The handle-buffer's content is a sequence of bytes, not a sequence of
+  ;; chars, so the buffer should be unibyte.  It may happen that the
+  ;; handle-buffer is multibyte for some reason, in which case now is a good
+  ;; time to adjust it, since we know at this point that it should
+  ;; be unibyte.
+  `(let* ((handle ,handle))
      (with-temp-buffer
-       (insert-buffer-substring (mm-handle-buffer handle))
        (mm-disable-multibyte)
+       (insert-buffer-substring (mm-handle-buffer handle))
        (mm-decode-content-transfer-encoding
 	(mm-handle-encoding handle)
 	(mm-handle-media-type handle))
@@ -1238,10 +1240,9 @@ PROMPT overrides the default one used to ask user for a file name."
       (setq filename (gnus-map-function mm-file-name-rewrite-functions
 					(file-name-nondirectory filename))))
     (setq file
-	  (mm-with-multibyte
-	   (read-file-name (or prompt "Save MIME part to: ")
-			   (or mm-default-directory default-directory)
-			   nil nil (or filename ""))))
+          (read-file-name (or prompt "Save MIME part to: ")
+                          (or mm-default-directory default-directory)
+                          nil nil (or filename "")))
     (setq mm-default-directory (file-name-directory file))
     (and (or (not (file-exists-p file))
 	     (yes-or-no-p (format "File %s already exists; overwrite? "
