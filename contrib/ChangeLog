@@ -306,10 +306,9 @@ g	* nnir.el: Removed support for non free backends glimpse and excite.
 	From Andreas Schwab  <schwab@suse.de>.
 	Fix doc-string, indent.
 
-2004-03-15  Reiner Steib  <Reiner.Steib@gmx.de>
+2004-03-15  Adrian Lanz  <lanz@fowi.ethz.ch>  (tiny change)
 
-	* nnir.el (nnir-run-swish-e): Fixed typo.  From Adrian Lanz
-	<lanz@fowi.ethz.ch> (tiny change).
+	* nnir.el (nnir-run-swish-e): Fixed typo.
 
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
