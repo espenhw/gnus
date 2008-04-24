@@ -147,7 +147,7 @@
 
 2008-03-28  Magnus Henoch  <mange@freemail.hu>
 
-	* net/dns.el (dns-write): Use set-buffer-multibyte.
+	* dns.el (dns-write): Use set-buffer-multibyte.
 
 2008-03-28  Michael Harnois  <mdharnois@gmail.com>  (tiny change)
 
@@ -264,7 +264,7 @@
 
 2008-03-15  Glenn Morris  <rgm@gnu.org>
 
-	* calendar/parse-time.el (parse-time-string): Simplify.
+	* parse-time.el (parse-time-string): Simplify.
 
 2008-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -279,7 +279,7 @@
 2008-03-12  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* binhex.el (binhex-decode-region-internal):
-	* mail/uudecode.el (uudecode-decode-region-internal):
+	* uudecode.el (uudecode-decode-region-internal):
 	* dns.el (dns-read-string-name, dns-read, dns-read-type, query-dns):
 	* sha1.el (sha1-string-external): Use set-buffer-multibyte rather than
 	setting default-enable-multibyte-characters.
@@ -360,7 +360,7 @@
 
 2008-03-08  Glenn Morris  <rgm@gnu.org>
 
-	* calendar/time-date.el (date-to-time, time-subtract, time-add)
+	* time-date.el (date-to-time, time-subtract, time-add)
 	(safe-date-to-time): Doc fixes.
 
 2008-03-08  Reiner Steib  <Reiner.Steib@gmx.de>
