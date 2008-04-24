@@ -302,9 +302,11 @@ g	* nnir.el: Removed support for non free backends glimpse and excite.
 
 2004-04-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnir.el (nnir-group-server): Fix doc-string, indent.
+
+2004-04-05  Andreas Schwab  <schwab@suse.de>
+
 	* nnir.el (nnir-group-server): Move before first use.
-	From Andreas Schwab  <schwab@suse.de>.
-	Fix doc-string, indent.
 
 2004-03-15  Adrian Lanz  <lanz@fowi.ethz.ch>  (tiny change)
 
