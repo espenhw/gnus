@@ -760,15 +760,8 @@ and show thread that contains this article."
 (deffoo nnir-retrieve-headers (articles &optional group server fetch-old)
   (save-excursion
     (let ((artlist (copy-sequence articles))
-          (art nil)
-          (artitem nil)
-          (artgroup nil) (artno nil)
-          (artrsv nil)
-          (artfullgroup nil)
-          (novitem nil)
-          (novdata nil)
-          (foo nil)
-	  server)
+          art artitem artgroup artno artrsv artfullgroup
+          novitem novdata foo server)
       (while (not (null artlist))
         (setq art (car artlist))
         (or (numberp art)
@@ -822,7 +815,7 @@ and show thread that contains this article."
         (setq artlist (cdr artlist)))
       (setq novdata (nreverse novdata))
       (set-buffer nntp-server-buffer) (erase-buffer)
-      (mapcar 'nnheader-insert-nov novdata)
+      (mapc 'nnheader-insert-nov novdata)
       'nov)))
 
 (deffoo nnir-request-article (article
@@ -879,9 +872,9 @@ ready to be added to the list of search results."
 
     ;; Set group to dirnam without any leading dots or slashes,
     ;; and with all subsequent slashes replaced by dots
-    (setq group (gnus-replace-in-string
+    (let ((group (gnus-replace-in-string
                  (gnus-replace-in-string dirnam "^[./\\]" "" t)
-                 "[/\\]" "." t))
+                 "[/\\]" "." t)))
 
     (vector (nnir-group-full-name group server)
 	    (if (string= server "nnmaildir:")
@@ -889,7 +882,7 @@ ready to be added to the list of search results."
 		 (substring article 0 (string-match ":" article))
 		 group nil)
 	      (string-to-number article))
-	    (string-to-number score))))
+	    (string-to-number score)))))
 
 ;;; Search Engine Interfaces:
 
@@ -902,8 +895,7 @@ pairs (also vectors, actually)."
   (save-excursion
     (let ((qstring (cdr (assq 'query query)))
 	  (prefix (nnir-read-server-parm 'nnir-wais-remove-prefix server))
-          (artlist nil)
-          (score nil) (artno nil) (dirnam nil) (group nil))
+          artlist score artno dirnam group)
       (set-buffer (get-buffer-create nnir-tmp-buffer))
       (erase-buffer)
       (message "Doing WAIS query %s..." query)
@@ -971,7 +963,7 @@ details on the language and supported extensions"
             (let ((arts 0)
                   (mbx (gnus-group-real-name group)))
               (when (imap-mailbox-select mbx nil buf)
-                (mapcar
+                (mapc
                  (lambda (artnum)
                    (push (vector group artnum 1) artlist)
                    (setq arts (1+ arts)))
@@ -1176,7 +1168,7 @@ Windows NT 4.0."
     (let ( (qstring (cdr (assq 'query query)))
 	   (groupspec (cdr (assq 'group query)))
 	   (prefix (nnir-read-server-parm 'nnir-swish++-remove-prefix server))
-           (artlist nil)
+           artlist
 	   ;; nnml-use-compressed-files might be any string, but probably this
 	   ;; is sufficient.  Note that we can't only use the value of
 	   ;; nnml-use-compressed-files because old articles might have been
@@ -1184,7 +1176,7 @@ Windows NT 4.0."
 	   (article-pattern (if (string= server "nnmaildir:")
 				":[0-9]+"
 			      "^[0-9]+\\(\\.[a-z0-9]+\\)?$"))
-           (score nil) (artno nil) (dirnam nil) (group nil) )
+           score artno dirnam group filenam )
 
       (when (equal "" qstring)
         (error "swish++: You didn't enter anything."))
@@ -1266,8 +1258,7 @@ Tested with swish-e-2.0.1 on Windows NT 4.0."
 	  (prefix
 	   (or (nnir-read-server-parm 'nnir-swish-e-remove-prefix server)
 	       (error "Missing parameter `nnir-swish-e-remove-prefix'")))
-	  (artlist nil)
-	  (score nil) (artno nil) (dirnam nil) (group nil) )
+          artlist score artno dirnam group )
 
       (when (equal "" qstring)
         (error "swish-e: You didn't enter anything."))
@@ -1431,18 +1422,14 @@ Tested with Namazu 2.0.6 on a GNU/Linux system."
   (when group
     (error "The Namazu backend cannot search specific groups"))
   (save-excursion
-    (let (
-	  (article-pattern (if (string= server "nnmaildir:")
+    (let ((article-pattern (if (string= server "nnmaildir:")
 			       ":[0-9]+"
 			     "^[0-9]+$"))
-          (artlist nil)
-          (qstring (cdr (assq 'query query)))
+          artlist
+	  (qstring (cdr (assq 'query query)))
 	  (prefix (nnir-read-server-parm 'nnir-namazu-remove-prefix server))
-          (score nil)
-          (group nil)
-          (article nil)
-	  (process-environment (copy-sequence process-environment))
-          )
+          score group article
+          (process-environment (copy-sequence process-environment)))
       (setenv "LC_MESSAGES" "C")
       (set-buffer (get-buffer-create nnir-tmp-buffer))
       (erase-buffer)
@@ -1672,7 +1659,7 @@ The Gnus backend/server information is added."
     ;; from each artitem, extract group component
     (setq with-dups (mapcar 'nnir-artitem-group artlist))
     ;; remove duplicates from above
-    (mapcar (function (lambda (x) (add-to-list 'res x)))
+    (mapc (function (lambda (x) (add-to-list 'res x)))
             with-dups)
     res))
 

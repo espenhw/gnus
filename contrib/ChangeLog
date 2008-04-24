@@ -1,3 +1,14 @@
+2008-04-24  Christoph Conrad <christoph.conrad@gmx.de>
+
+	* nnir.el: Fix byte compiler warnings.
+	(nnir-retrieve-headers): Don't set let-bound vars to nil.  Replace
+	mapcar called for effect with mapc.
+	(nnir-compose-result): Bind `group'.  Don't set let-bound vars to nil.
+	(nnir-run-imap, nnir-artlist-groups): Replace mapcar called for effect
+	with mapc.
+	(nnir-run-swish++, nnir-run-swish-e, nnir-run-namazu): Don't set
+	let-bound vars to nil.
+
 2008-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el: Don't require cl at runtime.  Require gnus-util at runtime.
