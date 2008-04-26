@@ -1,3 +1,8 @@
+2008-04-26  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* mail-source.el (mail-source-bind): Don't use user or password if they
+	are not bound.  Unintern them if they are nil.
+
 2008-04-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* mail-source.el: Load auth-source.el.

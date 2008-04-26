@@ -451,18 +451,24 @@ The variables bound and their default values are described by
 the `mail-source-keyword-map' variable."
   `(let* ,(mail-source-bind-1 (car type-source))
      (mail-source-set-1 ,(cadr type-source))
-     (let ((user (or
-		  (auth-source-user-or-password 
-		   "login"
-		   server	      ; this is "host" in auth-sources
-		   ',(car type-source))
-		  user))
-	   (password (or
-		      (auth-source-user-or-password 
-		       "password"
-		       server	      ; this is "host" in auth-sources
-		       ',(car type-source))
-		      password)))
+     (let ((user 
+	    (or
+	     (auth-source-user-or-password
+	      "login"
+	      server	      ; this is "host" in auth-sources
+	      ',(car type-source))
+	     (when (boundp 'user) (symbol-value 'user))))
+	   (password 
+	    (or
+	     (auth-source-user-or-password 
+	      "password"
+	      server	      ; this is "host" in auth-sources
+	      ',(car type-source))
+	     (when (boundp 'user) (symbol-value 'user)))))
+       (unless user
+	 (unintern 'user))
+       (unless password
+	 (unintern 'password))
        ,@body)))
 
 (put 'mail-source-bind 'lisp-indent-function 1)
