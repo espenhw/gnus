@@ -455,14 +455,16 @@ the `mail-source-keyword-map' variable."
 	    (or
 	     (auth-source-user-or-password
 	      "login"
-	      server	      ; this is "host" in auth-sources
+	      ;; this is "host" in auth-sources
+	      (if (boundp 'server) (symbol-value 'server) "")
 	      ',(car type-source))
 	     (when (boundp 'user) (symbol-value 'user))))
 	   (password 
 	    (or
 	     (auth-source-user-or-password 
 	      "password"
-	      server	      ; this is "host" in auth-sources
+	      ;; this is "host" in auth-sources
+	      (if (boundp 'server) (symbol-value 'server) "")
 	      ',(car type-source))
 	     (when (boundp 'user) (symbol-value 'user)))))
        (unless user
