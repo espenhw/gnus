@@ -1,3 +1,8 @@
+2008-04-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* mail-source.el (mail-source-set-1, mail-source-bind): Moved
+	auth-source code out of the macro to clean it up and fix bugs.
+
 2008-04-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Don't split
