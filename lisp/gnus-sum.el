@@ -1208,6 +1208,12 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
   :type 'boolean
   :group 'gnus-summary-marks)
 
+(defcustom gnus-use-marks t
+  "If non-nil, do not propagate marks to the backends."
+  :version "21.1"
+  :type 'boolean
+  :group 'gnus-summary-marks)
+
 (defcustom gnus-alter-articles-to-read-function nil
   "Function to be called to alter the list of articles to be selected."
   :type '(choice (const nil) function)
