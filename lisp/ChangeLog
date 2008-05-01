@@ -1,3 +1,9 @@
+2008-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-save-parts): Inhibit even more treatment
+	hooks. 
+	(gnus-update-read-articles): Speed up non-marks-using users.
+
 2008-04-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* mail-source.el (mail-source-set-1, mail-source-bind): Moved

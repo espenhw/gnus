@@ -11818,6 +11818,10 @@ If REVERSE, save parts that do not match TYPE."
 	 current-prefix-arg))
   (gnus-summary-iterate n
     (let ((gnus-display-mime-function nil)
+	  gnus-article-prepare-hook
+	  gnus-article-decode-hook
+	  gnus-display-mime-function
+	  gnus-break-pages
 	  (gnus-inhibit-treatment t))
       (gnus-summary-select-article))
     (with-current-buffer gnus-article-buffer
@@ -12151,7 +12155,8 @@ UNREAD is a sorted list."
 	(save-excursion
 	  (let (setmarkundo)
 	    ;; Propagate the read marks to the backend.
-	    (when (gnus-check-backend-function 'request-set-mark group)
+	    (when (and gnus-use-marks
+		       (gnus-check-backend-function 'request-set-mark group))
 	      (let ((del (gnus-remove-from-range (gnus-info-read info) read))
 		    (add (gnus-remove-from-range read (gnus-info-read info))))
 		(when (or add del)
