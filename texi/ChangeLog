@@ -1,3 +1,8 @@
+2008-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Various Summary Stuff): Add gnus-propagate-marks.
+	(Various Summary Stuff): Fix typo in last xref.
+
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Oort Gnus): Add message-fill-column.
