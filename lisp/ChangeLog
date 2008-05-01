@@ -1,3 +1,11 @@
+2008-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
+
+	* gnus.el: Bump version to 0.11
+
+2008-05-01 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: No Gnus v0.9 is released.
+
 2008-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-save-parts): Inhibit even more treatment
