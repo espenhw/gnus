@@ -10763,6 +10763,13 @@ buffers.  For example:
 @end lisp
 
 Also @pxref{Group Parameters}.
+
+@vindex gnus-propagate-marks
+@item gnus-propagate-marks
+If non-@code{nil}, propagate marks to the backends for possible
+storing.  @xref{NNTP marks}, and friends, for a more fine-grained
+sieve.
+
 @end table
 
 
@@ -28571,7 +28578,7 @@ Gnus will work.
 @item
 Try doing an @kbd{M-x gnus-version}.  If you get something that looks
 like @c
-@samp{No Gnus v0.7} @c Adjust ../Makefile.in if you change this line!
+@samp{No Gnus v0.9} @c Adjust ../Makefile.in if you change this line!
 @c
 you have the right files loaded.  Otherwise you have some old @file{.el}
 files lying around.  Delete these.
