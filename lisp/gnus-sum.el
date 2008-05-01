@@ -1208,7 +1208,7 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
   :type 'boolean
   :group 'gnus-summary-marks)
 
-(defcustom gnus-use-marks t
+(defcustom gnus-propagate-marks t
   "If non-nil, do not propagate marks to the backends."
   :version "21.1"
   :type 'boolean
@@ -12161,7 +12161,7 @@ UNREAD is a sorted list."
 	(save-excursion
 	  (let (setmarkundo)
 	    ;; Propagate the read marks to the backend.
-	    (when (and gnus-use-marks
+	    (when (and gnus-propagate-marks
 		       (gnus-check-backend-function 'request-set-mark group))
 	      (let ((del (gnus-remove-from-range (gnus-info-read info) read))
 		    (add (gnus-remove-from-range read (gnus-info-read info))))
