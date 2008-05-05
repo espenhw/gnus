@@ -680,9 +680,8 @@ Consults `gnus-registry-unfollowed-groups' and
   (let (articles)
     (maphash
      (lambda (key value)
-       (when (gnus-registry-grep-in-list
-	      keyword
-	      (cdr (gnus-registry-fetch-extra key 'keywords)))
+       (when (member keyword
+		   (cdr-safe (gnus-registry-fetch-extra key 'keywords)))
 	 (push key articles)))
      gnus-registry-hashtb)
     articles))
@@ -732,15 +731,13 @@ Consults `gnus-registry-unfollowed-groups' and
 			  (assoc article (gnus-data-list nil)))))
     nil))
 
-;;; this should be redone with catch/throw
 (defun gnus-registry-grep-in-list (word list)
-  (when word
-    (memq nil
-	  (mapcar 'not
-		  (mapcar
-		   (lambda (x)
-		     (string-match word x))
-		   list)))))
+"Find if a WORD matches any regular expression in the given LIST."
+  (when (and word list)
+    (catch 'found
+      (dolist (r list)
+	(when (string-match r word)
+	  (throw 'found r))))))
 
 (defun gnus-registry-do-marks (type function)
   "For each known mark, call FUNCTION for each cell of type TYPE.

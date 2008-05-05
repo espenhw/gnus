@@ -1,3 +1,9 @@
+2008-05-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-grep-in-list): Fix logic, use
+	catch/throw to optimize.
+	(gnus-registry-find-keywords): Just use member to find a keyword.
+
 2008-05-04  Juri Linkov  <juri@jurta.org>
 
 	* mailcap.el (mailcap-replace-in-string): New compatibility alias.
