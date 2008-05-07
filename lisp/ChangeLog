@@ -1,3 +1,13 @@
+2008-05-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-util.el (gnus-extract-address-component-name)
+	(gnus-extract-address-component-email): Convenience functions around
+	`gnus-extract-address-components'.
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Use
+	`gnus-extract-address-component-email' to fix bug of comparing full
+	sender name to `user-mail-address'.
+
 2008-05-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-grep-in-list): Fix logic, use

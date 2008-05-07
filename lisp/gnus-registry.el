@@ -525,7 +525,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
      ;; else: there were no matches, now try the extra tracking by sender
      ((and (gnus-registry-track-sender-p)
 	   sender
-	   (not (equal sender user-mail-address)))
+	   (not (equal (gnus-extract-address-component-email sender)
+		       user-mail-address)))
       (maphash
        (lambda (key value)
 	 (let ((this-sender (cdr
