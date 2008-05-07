@@ -1,5 +1,7 @@
 2008-05-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-registry.el: Adjusted copyright dates and added a keyword.
+
 	* gnus-util.el (gnus-extract-address-component-name)
 	(gnus-extract-address-component-email): Convenience functions around
 	`gnus-extract-address-components'.
