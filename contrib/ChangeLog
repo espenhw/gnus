@@ -1,3 +1,7 @@
+2008-05-08  Andreas Schwab  <schwab@suse.de>
+
+	* nnir.el (nnir-add-result): Properly substitute the parameters.
+
 2008-05-08  Reiner Steib  <reiner.steib@gmx.de>
 
 	* nnir.el (nnir-run-waissearch, nnir-run-swish++): Remove unused local
