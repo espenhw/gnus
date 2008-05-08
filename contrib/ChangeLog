@@ -1,3 +1,9 @@
+2008-05-08  Reiner Steib  <reiner.steib@gmx.de>
+
+	* nnir.el (nnir-run-waissearch, nnir-run-swish++): Remove unused local
+	variable.
+	(nnimap-server-buffer): Silence compiler warning.
+
 2008-04-24  Christoph Conrad <christoph.conrad@gmx.de>
 
 	* nnir.el: Fix byte compiler warnings.

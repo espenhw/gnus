@@ -14,7 +14,7 @@
 
 ;; FIXME: This file should be move to ../lisp/ after all copyright assignments
 ;; are on file.  As of 2008-04-13, we don't have an assignment/disclaimer from
-;; Torsten Hilbrich, but he's willing to sign.  I've sent hmm the form.
+;; Torsten Hilbrich, but he's willing to sign.  I've sent him the form.
 ;; -- rsteib
 
 ;; TODO: Documentation in the Gnus manual
@@ -895,7 +895,7 @@ pairs (also vectors, actually)."
   (save-excursion
     (let ((qstring (cdr (assq 'query query)))
 	  (prefix (nnir-read-server-parm 'nnir-wais-remove-prefix server))
-          artlist score artno dirnam group)
+          artlist score artno dirnam)
       (set-buffer (get-buffer-create nnir-tmp-buffer))
       (erase-buffer)
       (message "Doing WAIS query %s..." query)
@@ -939,6 +939,7 @@ pairs (also vectors, actually)."
 ;; handle errors
 
 (autoload 'nnimap-open-server "nnimap")
+(defvar nnimap-server-buffer) ;; nnimap.el
 (autoload 'imap-mailbox-select "imap")
 (autoload 'imap-search "imap")
 (autoload 'imap-quote-specials "imap")
@@ -1176,7 +1177,7 @@ Windows NT 4.0."
 	   (article-pattern (if (string= server "nnmaildir:")
 				":[0-9]+"
 			      "^[0-9]+\\(\\.[a-z0-9]+\\)?$"))
-           score artno dirnam group filenam )
+           score artno dirnam filenam)
 
       (when (equal "" qstring)
         (error "swish++: You didn't enter anything."))
