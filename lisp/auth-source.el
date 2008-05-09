@@ -41,6 +41,14 @@
 
 ;; before you put some data in ~/.authinfo.gpg (the default place)
 
+;;; For url-auth authentication (HTTP/HTTPS), you need to use:
+
+;;; machine yourmachine.com:80 port http login testuser password testpass
+
+;;; This will match any realm and authentication method (basic or
+;;; digest).  If you want finer controls, explore the url-auth source
+;;; code and variables.
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -137,6 +145,7 @@ Returns fallback choices (where PROTOCOL or HOST are nil) with FALLBACK t."
 
 (defun auth-source-user-or-password (mode host protocol)
   "Find user or password (from the string MODE) matching HOST and PROTOCOL."
+;;; (debug mode host protocol)
   (let (found)
     (dolist (choice (auth-source-pick host protocol))
       (setq found (netrc-machine-user-or-password 

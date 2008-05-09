@@ -1,3 +1,7 @@
+2008-05-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* auth-source.el: Added docs on using with url-auth.
+
 2008-05-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el: Adjusted copyright dates and added a keyword.
