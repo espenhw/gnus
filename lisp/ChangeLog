@@ -1,6 +1,14 @@
 2008-05-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* auth-source.el: Added docs on using with url-auth.
+	* nntp.el: Autoload `auth-source-user-or-password'.
+	(nntp-send-authinfo): Use it.
+
+	* nnimap.el: Autoload `auth-source-user-or-password'.
+	(nnimap-open-connection): Use it.
+
+	* auth-source.el: Added docs on using with url-auth.  Import gnus-util
+	for the gnus-message function.
+	(auth-source-user-or-password): Use it.
 
 2008-05-07  Teodor Zlatanov  <tzz@lifelogs.com>
 

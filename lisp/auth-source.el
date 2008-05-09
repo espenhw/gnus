@@ -51,6 +51,8 @@
 
 ;;; Code:
 
+(require 'gnus-util)
+
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'netrc))
 
@@ -145,7 +147,9 @@ Returns fallback choices (where PROTOCOL or HOST are nil) with FALLBACK t."
 
 (defun auth-source-user-or-password (mode host protocol)
   "Find user or password (from the string MODE) matching HOST and PROTOCOL."
-;;; (debug mode host protocol)
+  (gnus-message 9 
+		"auth-source-user-or-password: get %s for %s (%s)"
+		mode host protocol)
   (let (found)
     (dolist (choice (auth-source-pick host protocol))
       (setq found (netrc-machine-user-or-password 
@@ -155,6 +159,12 @@ Returns fallback choices (where PROTOCOL or HOST are nil) with FALLBACK t."
 		   (list (format "%s" protocol))
 		   (auth-source-protocol-defaults protocol)))
       (when found
+	(gnus-message 9 
+		      "auth-source-user-or-password: found %s=%s for %s (%s)"
+		      mode 
+		      ;; don't show the password
+		      (if (equal mode "password") "SECRET" found) 
+		      host protocol)
 	(return found)))))
 
 (defun auth-source-protocol-defaults (protocol)
