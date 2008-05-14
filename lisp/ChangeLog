@@ -1,5 +1,7 @@
 2008-05-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* nnimap.el (nnimap-open-connection): Fix login/password bug.
+
 	* nnrss.el (nnrss-normalize-date): Accept Unix-style epoch timestamps.
 
 	* auth-source.el: Preliminary Tramp docs.
