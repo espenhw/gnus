@@ -1,5 +1,7 @@
 2008-05-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* nnrss.el (nnrss-normalize-date): Accept Unix-style epoch timestamps.
+
 	* auth-source.el: Preliminary Tramp docs.
 	(auth-sources): Change the default auth-sources to use
 	EPA .gpg files.
