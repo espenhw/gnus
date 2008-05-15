@@ -1,3 +1,7 @@
+2008-05-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Scoring On Other Headers): Fix typo.  Rearrange.
+
 2008-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* gnus.texi, gnus-faq.texi, message.texi: Bump version to 0.11
@@ -6,6 +10,10 @@
 
 	* gnus.texi (Various Summary Stuff): Add gnus-propagate-marks.
 	(Various Summary Stuff): Fix typo in last xref.
+
+2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Searching, nnir.el, nnmairix.el): New nodes.
 
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
