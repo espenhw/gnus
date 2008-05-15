@@ -1,4 +1,4 @@
-2008-05-08  Andreas Schwab  <schwab@suse.de>
+2008-05-15  Andreas Schwab  <schwab@suse.de>
 
 	* nnir.el (nnir-add-result): Properly substitute the parameters.
 

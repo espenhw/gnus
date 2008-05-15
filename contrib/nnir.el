@@ -849,9 +849,9 @@ and show thread that contains this article."
 (defmacro nnir-add-result (dirnam artno score prefix server artlist)
   "Ask `nnir-compose-result' to construct a result vector, 
 and if it is non-nil, add it to artlist."
-  `(let ((result (nnir-compose-result dirnam artno score prefix server)))
+  `(let ((result (nnir-compose-result ,dirnam ,artno ,score ,prefix ,server)))
      (when (not (null result))
-       (push result artlist))))
+       (push result ,artlist))))
 
 (autoload 'nnmaildir-base-name-to-article-number "nnmaildir")
 
