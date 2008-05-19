@@ -1,3 +1,8 @@
+2008-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el (gnus-group-send-queue): Bind
+	message-send-mail-partially-limit to nil to avoid being prompted.
+
 2008-05-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-attach-buffer): Prompt for `disposition'.
