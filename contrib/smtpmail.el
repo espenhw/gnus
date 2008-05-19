@@ -14,10 +14,10 @@
 
 ;; This file is part of GNU Emacs.
 
-;; GNU Emacs is free software; you can redistribute it and/or modify
+;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,9 +25,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -84,6 +82,9 @@
 (autoload 'netrc-parse "netrc")
 (autoload 'netrc-machine "netrc")
 (autoload 'netrc-get "netrc")
+
+(eval-and-compile
+  (autoload 'auth-source-user-or-password "auth-source"))
 
 ;;;
 (defgroup smtpmail nil
@@ -547,17 +548,29 @@ This is relative to `smtpmail-queue-dir'.")
 (defun smtpmail-try-auth-methods (process supported-extensions host port)
   (let* ((mechs (cdr-safe (assoc 'auth supported-extensions)))
 	 (mech (car (smtpmail-intersection smtpmail-auth-supported mechs)))
-	 (cred (if (stringp smtpmail-auth-credentials)
-		   (let* ((netrc (netrc-parse smtpmail-auth-credentials))
-                          (port-name (format "%s" (or port "smtp")))
-			  (hostentry (netrc-machine netrc host port-name
-                                                    port-name)))
-                     (when hostentry
-                       (list host port
-                             (netrc-get hostentry "login")
-                             (netrc-get hostentry "password"))))
-		 (smtpmail-find-credentials
-		  smtpmail-auth-credentials host port)))
+	 (auth-user (auth-source-user-or-password 
+		     "login" host (or port "smtp")))
+	 (auth-pass (auth-source-user-or-password 
+		     "password" host (or port "smtp")))
+	 (cred (if (and auth-user auth-pass) ; try user-auth-* before netrc-*
+		   (list host port auth-user auth-pass)
+		 ;; else, if auth-source didn't return them...
+		 (if (stringp smtpmail-auth-credentials)
+		     (let* ((netrc (netrc-parse smtpmail-auth-credentials))
+			    (port-name (format "%s" (or port "smtp")))
+			    (hostentry (netrc-machine netrc host port-name
+						      port-name)))
+		       (when hostentry
+			 (list host port
+			       (netrc-get hostentry "login")
+			       (netrc-get hostentry "password"))))
+		   ;; else, try smtpmail-find-credentials since
+		   ;; smtpmail-auth-credentials is not a string
+		   (smtpmail-find-credentials
+		    smtpmail-auth-credentials host port))))
+	 (prompt (when cred (format "SMTP password for %s:%s: "
+				    (smtpmail-cred-server cred)
+				    (smtpmail-cred-port cred))))
 	 (passwd (when cred
 		   (or (smtpmail-cred-passwd cred)
 		       (read-passwd

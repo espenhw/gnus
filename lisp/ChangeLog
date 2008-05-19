@@ -33,6 +33,17 @@
 	for the gnus-message function.
 	(auth-source-user-or-password): Use it.
 
+2008-05-08  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* rfc2104.el (rfc2104-hexstring-to-bitstring): Rename it back from
+	rfc2104-hexstring-to-byte-list.  Return a unibyte string.
+	(rfc2104-hash): Use it.
+
+2008-05-08  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-art.el (gnus-article-toggle-truncate-lines):
+	Don't use `iff' in docstring.
+
 2008-05-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el: Adjusted copyright dates and added a keyword.
@@ -41,8 +52,8 @@
 	(gnus-extract-address-component-email): Convenience functions around
 	`gnus-extract-address-components'.
 
-	* gnus-registry.el (gnus-registry-split-fancy-with-parent): Use
-	`gnus-extract-address-component-email' to fix bug of comparing full
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent):
+	Use `gnus-extract-address-component-email' to fix bug of comparing full
 	sender name to `user-mail-address'.
 
 2008-05-05  Teodor Zlatanov  <tzz@lifelogs.com>
@@ -50,6 +61,13 @@
 	* gnus-registry.el (gnus-registry-grep-in-list): Fix logic, use
 	catch/throw to optimize.
 	(gnus-registry-find-keywords): Just use member to find a keyword.
+
+2008-05-07  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-srvr.el (gnus-enter-server-buffer): Make sure the server-buffer
+	is current before calling gnus-server-prepare.
+	(gnus-server-setup-buffer, gnus-server-update-server)
+	(gnus-server-read-server, gnus-browse-exit): Use with-current-buffer.
 
 2008-05-04  Juri Linkov  <juri@jurta.org>
 
@@ -86,8 +104,8 @@
 
 2008-04-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* mail-source.el (mail-source-set-1, mail-source-bind): Moved
-	auth-source code out of the macro to clean it up and fix bugs.
+	* mail-source.el (mail-source-set-1, mail-source-bind):
+	Move auth-source code out of the macro to clean it up and fix bugs.
 
 2008-04-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -680,7 +698,7 @@
 	(nnmairix-last-server, nnmairix-current-server): Defvar them.
 	(nnmairix-goto-original-article): Defvar gnus-registry-install and
 	autoload gnus-registry-fetch-group when compiling.
-	(nnmairix-request-group-with-article-number-correction): remove
+	(nnmairix-request-group-with-article-number-correction): Remove
 	unreferenced argument passed to nnmairix-call-backend.
 
 2008-02-27  Reiner Steib  <Reiner.Steib@gmx.de>
@@ -791,7 +809,7 @@
 
 2008-02-01  Kenichi Handa  <handa@m17n.org>
 
-	* rfc2104.el (rfc2104-hexstring-to-byte-list): Renamed from
+	* rfc2104.el (rfc2104-hexstring-to-byte-list): Rename from
 	rfc2104-hexstring-to-bitstring and changed to return a byte list.
 	(rfc2104-hash): Convert the result of concat to unibyte string.
 
@@ -1208,8 +1226,8 @@
 
 2007-12-06  Paul Jarc  <prj@po.cwru.edu>
 
-	* nnmaildir.el (nnmaildir-request-list, nnmaildir-retrieve-groups,
-	nnmaildir-request-group, nnmaildir-retrieve-headers): Escape spaces in
+	* nnmaildir.el (nnmaildir-request-list, nnmaildir-retrieve-groups)
+	(nnmaildir-request-group, nnmaildir-retrieve-headers): Escape spaces in
 	group names with backslashes.  Reported by Tassilo Horn
 	<tassilo@member.fsf.org>.
 
@@ -7380,8 +7398,8 @@
 
 2005-07-18  Romain Francoise  <romain@orebokech.com>
 
-	* gnus-sum.el (gnus-summary-to-prefix,
-	gnus-summary-newsgroup-prefix): New variables.
+	* gnus-sum.el (gnus-summary-to-prefix)
+	(gnus-summary-newsgroup-prefix): New variables.
 	(gnus-summary-from-or-to-or-newsgroups): Use them.
 
 2005-07-17  Romain Francoise  <romain@orebokech.com>
@@ -8222,9 +8240,8 @@
 	* gnus-start.el (gnus-convert-old-newsrc): Fixed numeric
 	comparison on string.
 
-	* gnus-agent.el (gnus-agent-long-article,
-	gnus-agent-short-article, gnus-agent-score): Renamed category
-	keywords to match gnus-cus.
+	* gnus-agent.el (gnus-agent-long-article, gnus-agent-short-article)
+	(gnus-agent-score): Renamed category keywords to match gnus-cus.
 	(gnus-agent-summary-fetch-series): Modified to protect against
 	gnus-agent-summary-fetch-group clearing processable flags.
 	(gnus-agent-synchronize-group-flags): Update live group buffer as
@@ -10075,8 +10092,8 @@
 	* gnus-start.el (gnus-convert-old-newsrc): Changed message text as
 	some users confused by references to .newsrc when they only have a
 	.newsrc.eld file.
-	(gnus-convert-mark-converter-prompt,
-	gnus-convert-converter-needs-prompt): Fixed use of property list.
+	(gnus-convert-mark-converter-prompt)
+	(gnus-convert-converter-needs-prompt): Fixed use of property list.
 	* legacy-gnus-agent.el (gnus-agent-convert-to-compressed-agentview-prompt):
 	New function.  Used internally to only display 'gnus converting
 	files' message when actually necessary.
@@ -10959,9 +10976,8 @@
 	Add spam-use-resend.
 	(spam-group-spam-processor-report-resend-p): Add utility wrapper.
 	(spam-report-articles-gmane): Add doc fix.
-	(spam-report-articles-resend,
-	spam-report-resend-register-routine): Add wrappers around
-	spam-report-resend-to.
+	(spam-report-articles-resend, spam-report-resend-register-routine):
+	Add wrappers around spam-report-resend-to.
 
 	* spam-report.el (spam-report-resend-to, spam-report-resend):
 	Add support for resending spam.
@@ -11631,7 +11647,7 @@
 	(gnus-insert-mime-button): Revert 2004-03-19 change.
 	(gnus-mime-accumulate-hierarchy): Remove.
 	(gnus-mime-enter-multipart): Remove.
-	(gnus-mime-leave-multipart): Remove,
+	(gnus-mime-leave-multipart): Remove.
 	(gnus-mime-display-part): Revert 2004-03-19 change.
 	(gnus-mime-display-alternative): Revert 2004-03-19 change.
 
@@ -12259,8 +12275,8 @@
 
 2004-01-25  Paul Jarc  <prj@po.cwru.edu>
 
-	* nnmaildir.el (nnmaildir--num-file, nnmaildir--mkfile,
-	nnmaildir--emlink-p, nnmaildir--eexist-p, nnmaildir--new-number):
+	* nnmaildir.el (nnmaildir--num-file, nnmaildir--mkfile)
+	(nnmaildir--emlink-p, nnmaildir--eexist-p, nnmaildir--new-number):
 	New macros and functions.
 	* nnmaildir.el (nnmaildir--group-maxnum, nnmaildir--update-nov):
 	Handle > NLINK_MAX messages.
@@ -12335,8 +12351,8 @@
 
 2004-01-21  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
-	* gnus-agent.el (gnus-agent-queue-mail,
-	gnus-agent-prompt-send-queue): New variables.
+	* gnus-agent.el (gnus-agent-queue-mail)
+	(gnus-agent-prompt-send-queue): New variables.
 	(gnus-agent-send-mail): Use gnus-agent-queue-mail.
 	* gnus-draft.el (gnus-group-send-queue): Pass the group name
 	"nndraft:queue" along to gnus-draft-send.  Use
@@ -12362,8 +12378,8 @@
 	servers.  Add use of min/max range limits from server's local
 	file.
 	(gnus-agent-save-alist): Removed unused optional argument.
-	(gnus-agent-load-local, gnus-agent-read-and-cache-local),
-	(gnus-agent-read-local, gnus-agent-save-local, gnus-agent-get-local),
+	(gnus-agent-load-local, gnus-agent-read-and-cache-local)
+	(gnus-agent-read-local, gnus-agent-save-local, gnus-agent-get-local)
 	(gnus-agent-set-local): A per-server file that keeps min/max range
 	limits for articles known to the agent.  Provides a fast mechanism
 	for altering many active ranges.
@@ -12384,9 +12400,8 @@
 	gnus-list-of-unread-articles, to avoid exhausting memory with huge
 	numbers of articles.  Use gnus-range-map to avoid having to
 	uncompress the unread list.
-	(gnus-group-archive-directory,
-	gnus-group-recent-archive-directory): Fixed invalid ange-ftp
-	reference.
+	(gnus-group-archive-directory, gnus-group-recent-archive-directory):
+	Fixed invalid ange-ftp reference.
 
 	* gnus-range.el (gnus-range-map): Iterate over list or sequence.
 	(gnus-sorted-range-intersection): Intersection of two ranges
@@ -12967,7 +12982,7 @@
 2004-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-treat-ansi-sequences,
-	article-treat-ansi-sequences): New variable and function.
+	(article-treat-ansi-sequences): New variable and function.
 	Suggested by Dan Jacobson <jidanni@jidanni.org>.
 
 	* gnus-sum.el (gnus-summary-wash-map, gnus-summary-make-menu-bar):
@@ -13040,8 +13055,8 @@
 
 	* imap.el (imap-point-at-eol): Replace with point-at-eol.
 
-	* flow-fill.el (fill-flowed-point-at-bol,
-	fill-flowed-point-at-eol): Replace with point-at-{eol,bol}.
+	* flow-fill.el (fill-flowed-point-at-bol)
+	(fill-flowed-point-at-eol): Replace with point-at-{eol,bol}.
 
 	* gnus-util.el (gnus-point-at-bol, gnus-point-at-eol): Remove.
 	Replace with point-at-{eol,bol} throughout all files.
@@ -13181,10 +13196,10 @@ See ChangeLog.2 for earlier changes.
 
   This file is part of GNU Emacs.
 
-  GNU Emacs is free software; you can redistribute it and/or modify
+  GNU Emacs is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3, or (at your option)
-  any later version.
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
   GNU Emacs is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13192,9 +13207,7 @@ See ChangeLog.2 for earlier changes.
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with GNU Emacs; see the file COPYING.  If not, write to the
-  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-  Boston, MA 02110-1301, USA.
+  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;; Local Variables:
 ;; coding: utf-8

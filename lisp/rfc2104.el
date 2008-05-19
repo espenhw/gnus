@@ -8,52 +8,50 @@
 
 ;; This file is part of GNU Emacs.
 
-;; GNU Emacs is free software; you can redistribute it and/or modify
+;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
-;;; This is a quick'n'dirty, low performance, implementation of RFC2104.
-;;;
-;;; Example:
-;;;
-;;; (require 'md5)
-;;; (rfc2104-hash 'md5 64 16 "Jefe" "what do ya want for nothing?")
-;;; "750c783e6ab0b503eaa86e310a5db738"
-;;;
-;;; (require 'sha-1)
-;;; (rfc2104-hash 'sha1-encode 64 20 "Jefe" "what do ya want for nothing?")
-;;; "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
-;;;
-;;; 64 is block length of hash function (64 for MD5 and SHA), 16 is
-;;; resulting hash length (16 for MD5, 20 for SHA).
-;;;
-;;; Tested with Emacs 20.2 and XEmacs 20.3.
-;;;
-;;; Test case reference: RFC 2202.
+;; This is a quick'n'dirty, low performance, implementation of RFC2104.
+;;
+;; Example:
+;;
+;; (require 'md5)
+;; (rfc2104-hash 'md5 64 16 "Jefe" "what do ya want for nothing?")
+;; "750c783e6ab0b503eaa86e310a5db738"
+;;
+;; (require 'sha-1)
+;; (rfc2104-hash 'sha1-encode 64 20 "Jefe" "what do ya want for nothing?")
+;; "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
+;;
+;; 64 is block length of hash function (64 for MD5 and SHA), 16 is
+;; resulting hash length (16 for MD5, 20 for SHA).
+;;
+;; Tested with Emacs 20.2 and XEmacs 20.3.
+;;
+;; Test case reference: RFC 2202.
 
-;;; Release history:
-;;;
-;;; 1998-08-16  initial release posted to gnu.emacs.sources
-;;; 1998-08-17  use append instead of char-list-to-string
-;;; 1998-08-26  don't require hexl
-;;; 1998-09-25  renamed from hmac.el to rfc2104.el, also renamed functions
-;;; 1999-10-23  included in pgnus
-;;; 2000-08-15  `rfc2104-hexstring-to-bitstring'
-;;; 2000-05-12  added sha-1 example, added test case reference
-;;; 2003-11-13  change rfc2104-hexstring-to-bitstring to ...-byte-list
+;;; History:
+
+;; 1998-08-16  initial release posted to gnu.emacs.sources
+;; 1998-08-17  use append instead of char-list-to-string
+;; 1998-08-26  don't require hexl
+;; 1998-09-25  renamed from hmac.el to rfc2104.el, also renamed functions
+;; 1999-10-23  included in pgnus
+;; 2000-08-15  `rfc2104-hexstring-to-bitstring'
+;; 2000-05-12  added sha-1 example, added test case reference
+;; 2003-11-13  change rfc2104-hexstring-to-bitstring to ...-byte-list
 
 ;;; Code:
 
@@ -89,12 +87,12 @@
 	(rfc2104-hex-to-int (reverse (append str nil))))
     0))
 
-(defun rfc2104-hexstring-to-byte-list (str)
+(defun rfc2104-hexstring-to-bitstring (str)
   (let (out)
     (while (< 0 (length str))
       (push (rfc2104-hex-to-int (substring str -2)) out)
       (setq str (substring str 0 -2)))
-    out))
+    (apply (if (fboundp 'unibyte-string) 'unibyte-string 'string) out)))
 
 (defun rfc2104-hash (hash block-length hash-length key text)
   (let* (;; if key is longer than B, reset it to HASH(key)
@@ -111,12 +109,9 @@
     (setq k_ipad (mapcar (lambda (c) (logxor c rfc2104-ipad)) k_ipad))
     (setq k_opad (mapcar (lambda (c) (logxor c rfc2104-opad)) k_opad))
     ;; perform outer hash
-    (funcall hash
-	     (encode-coding-string
-	      (concat k_opad (rfc2104-hexstring-to-byte-list
+    (funcall hash (concat k_opad (rfc2104-hexstring-to-bitstring
 			      ;; perform inner hash
-			      (funcall hash (concat k_ipad text))))
-	      'iso-latin-1))))
+				  (funcall hash (concat k_ipad text)))))))
 
 (provide 'rfc2104)
 
