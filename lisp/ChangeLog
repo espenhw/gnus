@@ -1,5 +1,8 @@
 2008-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* pop3.el (pop3-movemail): Change the sit-for from 0.1 to 0.01, which
+	seems to make mail retrieval much, much faster.
+
 	* gnus-draft.el (gnus-group-send-queue): Bind
 	message-send-mail-partially-limit to nil to avoid being prompted.
 
