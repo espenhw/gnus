@@ -1,3 +1,9 @@
+2008-05-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* auth-source.el: Add more docs.
+
+	* netrc.el (netrc-machine): Always match if the port is not given.
+
 2008-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-read-timeout): Change the default timeout from
