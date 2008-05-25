@@ -80,6 +80,7 @@ or `libgr-progs', for instance."
 	 (uncompface-internal face))
 	((eq uncompface-use-external t)
 	 (with-temp-buffer
+	   (unless (featurep 'xemacs) (set-buffer-multibyte nil))
 	   (insert face)
 	   (let ((coding-system-for-read 'raw-text)
 		 ;; At least "icontopbm" doesn't work with Windows because

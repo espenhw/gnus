@@ -1,3 +1,8 @@
+2008-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* compface.el (uncompface): Make buffer, in which uncompface program
+	runs, unibyte.
+
 2008-05-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* mail/smtpmail.el: Add autoload for `auth-source-user-or-password'.
