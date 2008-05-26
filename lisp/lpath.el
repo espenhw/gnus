@@ -60,15 +60,15 @@
      pgg-display-output-buffer posn-point posn-window put-image read-event
      select-safe-coding-system sort-coding-systems track-mouse
      url-generic-parse-url url-http-file-exists-p vcard-pretty-print
-     w3m-detect-meta-charset window-edges))
+     w3m-detect-meta-charset w3m-region window-edges))
   (maybe-bind
    '(adaptive-fill-first-line-regexp
      buffer-display-table cursor-in-non-selected-windows
      default-enable-multibyte-characters eudc-protocol filladapt-mode
      gnus-agent-expire-current-dirs help-xref-stack-item line-spacing
      mark-active mouse-selection-click-count mouse-selection-click-count-buffer
-     rmail-insert-mime-forwarded-message-function show-trailing-whitespace
-     tool-bar-mode transient-mark-mode url-version
+     ps-print-color-p rmail-insert-mime-forwarded-message-function
+     show-trailing-whitespace tool-bar-mode transient-mark-mode url-version
      w3-meta-charset-content-type-regexp w3-meta-content-type-charset-regexp))
 
   (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
