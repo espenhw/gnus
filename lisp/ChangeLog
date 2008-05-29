@@ -2,6 +2,9 @@
 
 	* message.el (message-bogus-recipient-p): Fix type in doc string.
 	Reported by Stephen Eglen <S.J.Eglen@damtp.cam.ac.uk>.
+	(message-bogus-addresses): Rename from message-bogus-address-regexp.
+	Improve custom options.
+	(message-bogus-recipient-p): Adjust accordingly.
 
 2008-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
