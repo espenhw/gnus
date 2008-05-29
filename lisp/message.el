@@ -4167,7 +4167,7 @@ not have PROP."
 RECIPIENTS is a mail header.  Return a list of potentially bogus
 addresses.  If none is found, return nil.
 
-An addresses might be bogus if the domain part is not fully
+An address might be bogus if the domain part is not fully
 qualified, see `message-valid-fqdn-regexp', or if it matches
 `message-bogus-address-regexp'."
   ;; FIXME: How about "foo@subdomain", when the MTA adds ".domain.tld"?
