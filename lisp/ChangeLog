@@ -1,3 +1,8 @@
+2008-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2231.el (rfc2231-decode-encoded-string): Don't decode things that
+	are not 2-digit hexadecimal characters that follow `%'s.
+
 2008-05-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-bogus-recipient-p): Fix type in doc string.
