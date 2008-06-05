@@ -1,3 +1,7 @@
+2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el: Move to ../lisp.
+
 2008-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* compface.el (uncompface): Make buffer, in which uncompface program
