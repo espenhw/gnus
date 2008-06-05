@@ -1,3 +1,7 @@
+2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnir.el: Move here from ../contrib.
+
 2008-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-disassociate-draft): Revert 2008-03-18 change.
