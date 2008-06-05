@@ -1,6 +1,7 @@
 2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Group Parameters): Change ~/.gnus to ~/.gnus.el
+	(Searching, nnir, nnmairix): New stub nodes.
 
 2008-05-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -18,10 +19,6 @@
 
 	* gnus.texi (Various Summary Stuff): Add gnus-propagate-marks.
 	(Various Summary Stuff): Fix typo in last xref.
-
-2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
-
-	* gnus.texi (Searching, nnir.el, nnmairix.el): New nodes.
 
 2008-04-13  Reiner Steib  <Reiner.Steib@gmx.de>
 

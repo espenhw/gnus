@@ -1736,6 +1736,7 @@ long as Gnus is active.
 * Exiting Gnus::                Stop reading news and get some work done.
 * Group Topics::                A folding group mode divided into topics.
 * Non-ASCII Group Names::       Accessing groups of non-English names.
+* Searching::                   Mail search engines.
 * Misc Group Stuff::            Other stuff that you can to do.
 @end menu
 
@@ -4355,6 +4356,41 @@ group to another group, the charset used to encode and decode group
 names should be the same in both groups.  Otherwise the Newsgroups
 header will be displayed incorrectly in the article buffer.
 
+
+@node Searching
+@section Searching
+
+@menu
+* nnir::                     Searching on IMAP, with swish, namazu, etc.
+* nnmairix::                 Searching maildir, MH or mbox with Mairix.
+@end menu
+
+@cindex Searching
+
+FIXME: This node is a stub.
+
+FIXME: Add a brief overview of Gnus search capabilities.  A brief
+comparison of nnir, nnmairix, contrib/gnus-namazu would be nice
+as well.
+
+FIXME: Explain difference to @ref{Searching for Articles}, add reference
+and back-reference.
+
+@node nnir
+@subsection nnir
+
+FIXME: As a first step, convert the commentary of @file{nnir} to texi.
+@cindex nnir
+
+@node nnmairix
+@subsection nnmairix
+
+FIXME: As a first step, convert commentary and/or
+@url{http://www.emacswiki.org/cgi-bin/wiki/GnusMairix} to texi.
+
+@c http://www.rpcurnow.force9.co.uk/mairix/
+@c mairix is a program for indexing and searching email messages stored in
+@c Maildir (see the documentation section below), MH or mbox folders.
 
 @node Misc Group Stuff
 @section Misc Group Stuff
