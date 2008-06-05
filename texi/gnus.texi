@@ -4389,7 +4389,7 @@ FIXME: As a first step, convert the commentary of @file{nnir} to texi.
 @cindex nnmairix
 This paragraph describes how to set up mairix and the back end
 @code{nnmairix} for indexing and searching your mail from within
-Gnus. Additionally, you can create permanent ``smart'' groups which are
+Gnus.  Additionally, you can create permanent ``smart'' groups which are
 bound to mairix searches and are automatically updated.
 
 @menu
@@ -4404,56 +4404,58 @@ bound to mairix searches and are automatically updated.
 * nnmairix caveats::            Some more stuff you might want to know
 @end menu
 
+@c FIXME: The markup in this section needs improvement.  E.g. add
+@c @sample{...}, maybe remove some @strong{...}, convert ` - ' to `---`,
+@c ...
 
 @node About mairix
 @subsubsection About mairix
 
 Mairix is a tool for indexing and searching words in locally stored
-mail. It was written by Richard Curnow and is licensed under the
-GPL. Mairix comes with most popular Linux distributions, but it also
-runs under Windows (with cygwin), Mac OS X and Solaris. The homepage can
+mail.  It was written by Richard Curnow and is licensed under the
+GPL.  Mairix comes with most popular GNU/Linux distributions, but it also
+runs under Windows (with cygwin), Mac OS X and Solaris.  The homepage can
 be found at
-
 @uref{http://www.rpcurnow.force9.co.uk/mairix/index.html}
 
 Though mairix might not be as flexible as other search tools like
 swish++ or namazu, which you can use via the @code{nnir} back end, it
-has the prime advantage of being incredibly fast. On current systems, it
+has the prime advantage of being incredibly fast.  On current systems, it
 can easily search through headers and message bodies of thousands and
-thousands of mails in well under a second. Building the database
+thousands of mails in well under a second.  Building the database
 necessary for searching might take a minute or two, but only has to be
-done once fully. Afterwards, the updates are done incrementally and
-therefore are really fast, too. Additionally, mairix is very easy to set
+done once fully.  Afterwards, the updates are done incrementally and
+therefore are really fast, too.  Additionally, mairix is very easy to set
 up.
 
 For maximum speed though, mairix should be used with mails stored in
 @code{Maildir} or @code{MH} format (this includes the @code{nnml} back
-end), although it also works with mbox. Mairix presents the search
+end), although it also works with mbox.  Mairix presents the search
 results by populating a @emph{virtual} maildir/MH folder with symlinks
 which point to the ``real'' message files (if mbox is used, copies are
-made). Since mairix already presents search results in such a virtual
+made).  Since mairix already presents search results in such a virtual
 mail folder, it is very well suited for using it as an external program
 for creating @emph{smart} mail folders, which represent certain mail
-searches. This is similar to a Kiboze group (@pxref{Kibozed Groups}),
+searches.  This is similar to a Kiboze group (@pxref{Kibozed Groups}),
 but much faster.
 
 @node nnmairix requirements
 @subsubsection nnmairix requirements
 
 Mairix searches local mail - that means, mairix absolutely must have
-direct access to your mail folders. If your mail resides on another
+direct access to your mail folders.  If your mail resides on another
 server (e.g. an @acronym{IMAP} server) and you happen to have shell
 access, @code{nnmairix} supports running mairix remotely, e.g. via ssh.
 
 Additionally, @code{nnmairix} only supports the following Gnus back
 ends: @code{nnml}, @code{nnmaildir}, and @code{nnimap}.  You
 @strong{must} use one of these back ends for using
-@code{nnmairix}. Other back ends, like @code{nnmbox}, @code{nnfolder} or
+@code{nnmairix}.  Other back ends, like @code{nnmbox}, @code{nnfolder} or
 @code{nnmh}, won't work.
 
 If you absolutely must use mbox and still want to use @code{nnmairix},
 you can set up a local @acronym{IMAP} server, which you then access via
-@code{nnimap}. This is a rather massive setup for accessing some mbox
+@code{nnimap}.  This is a rather massive setup for accessing some mbox
 files, so just change to MH or Maildir already...
 
 @node What nnmairix does
@@ -4461,43 +4463,43 @@ files, so just change to MH or Maildir already...
 
 The back end @code{nnmairix} enables you to call mairix from within Gnus,
 either to query mairix with a search term or to update the
-database. While visiting a message in the summary buffer, you can use
+database.  While visiting a message in the summary buffer, you can use
 several pre-defined shortcuts for calling mairix, e.g. to quickly
 search for all mails from the sender of the current message or to
 display the whole thread associated with the message, even if the
 mails are in different folders.
 
 Additionally, you can create permanent @code{nnmairix} groups which are bound
-to certain mairix searches. This way, you can easily create a group
+to certain mairix searches.  This way, you can easily create a group
 containing mails from a certain sender, with a certain subject line or
-even for one specific thread based on the message ID. If you check for
+even for one specific thread based on the Message-ID.  If you check for
 new mail in these folders (e.g. by pressing @kbd{g} or @kbd{M-g}), they
 automatically update themselves by calling mairix. 
 
 You might ask why you need @code{nnmairix} at all, since mairix already
 creates the group, populates it with links to the mails so that you can
 then access it with Gnus, right? Well, this @emph{might} work, but often
-does not - at least not without problems. Most probably you will get
+does not - at least not without problems.  Most probably you will get
 strange article counts, and sometimes you might see mails which Gnus
-claims have already been canceled and are inaccessible. This is due to
+claims have already been canceled and are inaccessible.  This is due to
 the fact that Gnus isn't really amused when things are happening behind
-its back. Another problem can be the mail back end itself, e.g. if you
-use mairix with an @acronym{IMAP}-Server (I had Dovecot complaining
+its back.  Another problem can be the mail back end itself, e.g. if you
+use mairix with an @acronym{IMAP} server (I had Dovecot complaining
 about corrupt index files when mairix changed the contents of the search
-group). Using @code{nnmairix} should circumvent these problems.
+group).  Using @code{nnmairix} should circumvent these problems.
 
 @code{nnmairix} is not really a mail back end - it's actually more like a
 wrapper, sitting between a ``real'' mail back end where mairix stores the
-searches and the Gnus front end. You can choose between three different
+searches and the Gnus front end.  You can choose between three different
 mail back ends for the mairix folders: @code{nnml}, @code{nnmaildir} or
-@code{nnimap}. @code{nnmairix} will call the mairix binary so that the
+@code{nnimap}.  @code{nnmairix} will call the mairix binary so that the
 search results are stored in folders named
 @code{zz_mairix-<NAME>-<NUMBER>} on this mail back end, but it will
-present these folders in the Gnus front end only with @code{<NAME>}. You
+present these folders in the Gnus front end only with @code{<NAME>}.  You
 can use an existing mail back end where you already store your mail, but
 if you're uncomfortable with @code{nnmairix} creating new mail groups
 alongside your other mail, you can also create e.g. a new
-@code{nnmaildir} server exclusively for mairix. However, a special case
+@code{nnmaildir} server exclusively for mairix.  However, a special case
 exists if you want to use mairix remotely on an IMAP server with
 @code{nnimap} - here the mairix folders and your other mail must be on
 the same @code{nnimap} back end.
@@ -4515,11 +4517,12 @@ Setting up mairix is easy: simply create a @file{.mairixrc} file with
 base=~/Maildir
 @end example
 
-This is the base folder for your mails. All the following paths are
-relative to this base folder. If you want to use @code{nnmairix} with
+This is the base folder for your mails.  All the following paths are
+relative to this base folder.  If you want to use @code{nnmairix} with
 @code{nnimap}, this base path has to point to the mail path where the
 @acronym{IMAP} server stores the mail folders!
 
+@c FIXME: Add typical examples?
 @example
 maildir= ... your maildir folders which should be indexed ...
 mh= ... your nnml/mh folders which should be indexed ...
@@ -4527,7 +4530,7 @@ mbox = ... your mbox files which should be indexed ...
 @end example
 
 Specify all your maildir/nnml folders and mbox files (relative to the
-base path!) you want to index with mairix. See the man-page for
+base path!) you want to index with mairix.  See the man-page for
 mairixrc for details.
 
 @example
@@ -4536,28 +4539,29 @@ omit=zz_mairix-*
 
 @vindex nnmairix-group-prefix
 This should make sure that you don't accidentally index the mairix
-search results. You can change the prefix of these folders with the
+search results.  You can change the prefix of these folders with the
 variable @code{nnmairix-group-prefix}.
 
+@c FIXME: Add typical examples?
 @example
 mformat= ... 'maildir' or 'mh' ...
 database= ... location of database file ...
 @end example
 
 The @code{format} setting specifies the output format for the mairix
-search folder. Set this to @code{mh} if you want to access search results
-with @code{nnml}. Otherwise choose @code{maildir}.
+search folder.  Set this to @code{mh} if you want to access search results
+with @code{nnml}.  Otherwise choose @code{maildir}.
 
-See the man pages for mairix and mairixrc for further options. Now
+See the man pages for mairix and mairixrc for further options.  Now
 simply call @code{mairix} to create the index for the first time.
 
 @node Configuring nnmairix
 @subsubsection Configuring nnmairix
 
 In group mode, type @kbd{G b c}
-(@code{nnmairix-create-server-and-default-group}). This will ask you for all
+(@code{nnmairix-create-server-and-default-group}).  This will ask you for all
 necessary information and create a @code{nnmairix} server as a foreign
-server. You will have to specify the following:
+server.  You will have to specify the following:
 
 @itemize @bullet
 
@@ -4567,35 +4571,35 @@ want.
 
 @item
 The @strong{mail back end} where mairix should stores its
-searches. Currently @code{nnmaildir}, @code{nnimap} and @code{nnml} are
-supported. As explained above, for locally stored mails, this can be an
-existing mail back end where you store your mails. However, you can also
+searches.  Currently @code{nnmaildir}, @code{nnimap} and @code{nnml} are
+supported.  As explained above, for locally stored mails, this can be an
+existing mail back end where you store your mails.  However, you can also
 create e.g. a new @code{nnmaildir} server exclusively for
 @code{nnmairix} in your secondary select methods (@pxref{Finding the
-News}). If you want to use mairix remotely on an @acronym{IMAP} server,
+News}).  If you want to use mairix remotely on an @acronym{IMAP} server,
 you have to choose the corresponding @code{nnimap} back end here.
 
 @item
 @vindex nnmairix-mairix-search-options
-The @strong{command} to call the mairix binary. This will usually just
+The @strong{command} to call the mairix binary.  This will usually just
 be @code{mairix}, but you can also choose something like @code{ssh
 SERVER mairix} if you want to call mairix remotely, e.g. on your
-@acronym{IMAP} server. If you want to add some default options to
+@acronym{IMAP} server.  If you want to add some default options to
 mairix, you could do this here, but better use the variable
 @code{nnmairix-mairix-search-options} instead.
 
 @item
-The name of the @strong{default search group}. This will be the group
+The name of the @strong{default search group}.  This will be the group
 where all temporary mairix searches are stored, i.e. all searches which
-are not bound to permanent @code{nnmairix} groups. Choose whatever you
+are not bound to permanent @code{nnmairix} groups.  Choose whatever you
 like.
 
 @item
 If the mail back end is @code{nnimap} or @code{nnmaildir}, you will be
 asked if you work with @strong{Maildir++}, i.e. with hidden maildir
-folders (=beginning with a dot). For example, you have to answer
+folders (=beginning with a dot).  For example, you have to answer
 @samp{yes} here if you work with the Dovecot @acronym{IMAP}
-server. Otherwise, you should answer @samp{no} here.
+server.  Otherwise, you should answer @samp{no} here.
 
 @end itemize
 
@@ -4610,13 +4614,13 @@ In group mode:
 @kindex G b c (Group)
 @findex nnmairix-create-server-and-default-group
 Creates @code{nnmairix} server and default search group for this server
-(@code{nnmairix-create-server-and-default-group}). You should have done
+(@code{nnmairix-create-server-and-default-group}).  You should have done
 this by now (@pxref{Configuring nnmairix}).
 
 @item G b s
 @kindex G b s (Group)
 @findex nnmairix-search
-Prompts for query which is then sent to the mairix binary. Search
+Prompts for query which is then sent to the mairix binary.  Search
 results are put into the default search group which is automatically
 displayed (@code{nnmairix-search}).
 
@@ -4625,7 +4629,7 @@ displayed (@code{nnmairix-search}).
 @findex nnmairix-widget-search
 Allows you to create a mairix search or a permanent group more
 comfortably using graphical widgets, similar to a customization
-group. Just try it to see how it works (@code{nnmairix-widget-search}).
+group.  Just try it to see how it works (@code{nnmairix-widget-search}).
 
 @item G b i
 @kindex G b i (Group)
@@ -4637,7 +4641,7 @@ only the minibuffer (@code{nnmairix-search-interactive}).
 @kindex G b g (Group)
 @findex nnmairix-create-search-group
 Creates a permanent group which is associated with a search query
-(@code{nnmairix-create-search-group}). The @code{nnmairix} back end
+(@code{nnmairix-create-search-group}).  The @code{nnmairix} back end
 automatically calls mairix when you update this group with @kbd{g} or
 @kbd{M-g}.
 
@@ -4651,7 +4655,7 @@ Changes the search query for the @code{nnmairix} group under cursor
 @kindex G b t (Group)
 @findex nnmairix-group-toggle-threads-this-group
 Toggles the 'threads' parameter for the @code{nnmairix} group under cursor,
-i.e. if you want see the whole threads of the found messages
+i.e.  if you want see the whole threads of the found messages
 (@code{nnmairix-group-toggle-threads-this-group}).
 
 @item G b u
@@ -4659,7 +4663,7 @@ i.e. if you want see the whole threads of the found messages
 @findex nnmairix-update-database
 @vindex nnmairix-mairix-update-options
 Calls mairix binary for updating the database
-(@code{nnmairix-update-database}). The default parameters are @code{-F}
+(@code{nnmairix-update-database}).  The default parameters are @code{-F}
 and @code{-Q} for making this as fast as possible (see variable
 @code{nnmairix-mairix-update-options} for defining these default
 options).
@@ -4674,18 +4678,18 @@ marks unchanged (@code{nnmairix-group-toggle-readmarks-this-group}).
 @kindex G b d (Group)
 @findex nnmairix-group-delete-recreate-this-group
 Recreate @code{nnmairix} group on the ``real'' mail back end
-(@code{nnmairix-group-delete-recreate-this-group}). You can do this if
+(@code{nnmairix-group-delete-recreate-this-group}).  You can do this if
 you always get wrong article counts with a @code{nnmairix} group.
 
 @item G b a
 @kindex G b a (Group)
 @findex nnmairix-group-toggle-allowfast-this-group
 Toggles the @code{allow-fast} parameters for group under cursor
-(@code{nnmairix-group-toggle-allowfast-this-group}). The default
+(@code{nnmairix-group-toggle-allowfast-this-group}).  The default
 behavior of @code{nnmairix} is to do a mairix search every time you
-update or enter the group. With the @code{allow-fast} parameter set,
+update or enter the group.  With the @code{allow-fast} parameter set,
 mairix will only be called when you explicitly update the group, but not
-upon entering. This makes entering the group faster, but it may also
+upon entering.  This makes entering the group faster, but it may also
 lead to dangling symlinks if something changed between updating and
 entering the group which is not yet in the mairix database.
 
@@ -4693,7 +4697,7 @@ entering the group which is not yet in the mairix database.
 @kindex G b p (Group)
 @findex nnmairix-group-toggle-propmarks-this-group
 Toggle marks propagation for this group
-(@code{nnmairix-group-toggle-propmarks-this-group}). (@pxref{Propagating
+(@code{nnmairix-group-toggle-propmarks-this-group}).  (@pxref{Propagating
 marks}).
 
 @item G b o
@@ -4726,7 +4730,7 @@ message, but uses the minibuffer instead of graphical widgets
 @kindex $ t (Summary)
 @findex nnmairix-search-thread-this-article
 Searches thread for the current article
-(@code{nnmairix-search-thread-this-article}). This is effectively a
+(@code{nnmairix-search-thread-this-article}).  This is effectively a
 shortcut for calling @code{nnmairix-search} with @samp{m:msgid} of the
 current article and enabled threads.
 
@@ -4734,7 +4738,7 @@ current article and enabled threads.
 @kindex $ f (Summary)
 @findex nnmairix-search-from-this-article
 Searches all messages from sender of the current article
-(@code{nnmairix-search-from-this-article}). This is a shortcut for
+(@code{nnmairix-search-from-this-article}).  This is a shortcut for
 calling @code{nnmairix-search} with @samp{f:From}.
 
 @item $ o
@@ -4743,7 +4747,7 @@ calling @code{nnmairix-search} with @samp{f:From}.
 (Only in @code{nnmairix} groups!) Tries determine the group this article
 originally came from and displays the article in this group, so that
 e.g. replying to this article the correct posting styles/group
-parameters are applied (@code{nnmairix-goto-original-article}). This
+parameters are applied (@code{nnmairix-goto-original-article}).  This
 function will use the registry if available, but can also parse the
 article file path as a fallback method.
 
@@ -4751,7 +4755,7 @@ article file path as a fallback method.
 @kindex $ u (Summary)
 @findex nnmairix-remove-tick-mark-original-article
 Remove possibly existing tick mark from original article
-(@code{nnmairix-remove-tick-mark-original-article}). (@pxref{nnmairix
+(@code{nnmairix-remove-tick-mark-original-article}).  (@pxref{nnmairix
 tips and tricks}).
 
 @end table
