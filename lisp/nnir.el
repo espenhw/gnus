@@ -12,11 +12,6 @@
 ;; nnmaildir support for Swish++ and Namazu backends by:
 ;;   Justus Piater <Justus <at> Piater.name>
 
-;; FIXME: This file should be move to ../lisp/ after all copyright assignments
-;; are on file.  As of 2008-04-13, we don't have an assignment/disclaimer from
-;; Torsten Hilbrich, but he's willing to sign.  I've sent him the form.
-;; -- rsteib
-
 ;; TODO: Documentation in the Gnus manual
 
 ;; From: Reiner Steib
