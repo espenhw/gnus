@@ -1,3 +1,7 @@
+2008-06-05  David Engster  <dengste@eml.cc>
+
+	* gnus.texi (nnmairix): New nodes describing nnmairix.el.
+
 2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Group Parameters): Change ~/.gnus to ~/.gnus.el
