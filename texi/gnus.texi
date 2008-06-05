@@ -3167,7 +3167,7 @@ message).  As a workaround, it might help to add the variable in
 question to @code{gnus-newsgroup-variables}.  @xref{Various Summary
 Stuff}.  So if you want to set @code{message-from-style} via the group
 parameters, then you may need the following statement elsewhere in your
-@file{~/.gnus} file:
+@file{~/.gnus.el} file:
 
 @lisp
 (add-to-list 'gnus-newsgroup-variables 'message-from-style)

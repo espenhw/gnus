@@ -1,3 +1,7 @@
+2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Group Parameters): Change ~/.gnus to ~/.gnus.el
+
 2008-05-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Filling In Threads): Additions to gnus-fetch-old-headers.
@@ -2698,7 +2702,7 @@
 
 2003-04-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus.texi: Changed ~/.gnus and .gnus.el to ~/.gnus.el
+	* gnus.texi: Change ~/.gnus and .gnus.el to ~/.gnus.el
 
 2003-04-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
