@@ -1,3 +1,7 @@
+2008-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind propertize for XEmacs 21.4.
+
 2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnir.el: Move here from ../contrib.
