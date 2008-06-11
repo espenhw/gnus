@@ -1,3 +1,7 @@
+2008-06-06  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* sendmail.el (mail-interactive): Change default.
+
 2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: Remove entry about nnir.el.

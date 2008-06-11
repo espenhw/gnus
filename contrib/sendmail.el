@@ -1,7 +1,8 @@
 ;;; sendmail.el --- mail sending commands for Emacs.  -*- byte-compile-dynamic: t -*-
 
 ;; Copyright (C) 1985, 1986, 1992, 1993, 1994, 1995, 1996, 1998, 2000,
-;;   2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;;   2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+;;   Free Software Foundation, Inc.
 
 ;; Maintainer: FSF
 ;; Keywords: mail
@@ -114,7 +115,11 @@ so you can remove or alter the BCC field to override the default."
   :group 'sendmail)
 
 ;;;###autoload
-(defcustom mail-interactive nil
+(defcustom mail-interactive t
+  ;; We used to use a default of nil rather than t, but nowadays it is very
+  ;; common for sendmail to be misconfigured, so one cannot rely on the
+  ;; bounce message to be delivered anywhere, least of all to the
+  ;; user's mailbox.
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors."
   :type 'boolean
