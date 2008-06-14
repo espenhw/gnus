@@ -230,6 +230,14 @@
 (add-hook 'gnus-group-mode-hook 'nnmairix-group-mode-hook)
 (add-hook 'gnus-summary-mode-hook 'nnmairix-summary-mode-hook)
 
+;; ;;;###autoload
+;; (defun nnmairix-initalize (&optional force)
+;;   (interactive "P")
+;;   (if (not (or (file-readable-p "~/.mairixrc")
+;; 	       force))
+;;       (message "No file `~/.mairixrc', skipping nnmairix setup")
+;;     (add-hook 'gnus-group-mode-hook 'nnmairix-group-mode-hook)
+;;     (add-hook 'gnus-summary-mode-hook 'nnmairix-summary-mode-hook)))
 
 ;; Customizable stuff
 
@@ -1530,8 +1538,8 @@ group."
 				   folder t nnmairix-backend-server)
 	    (nnmairix-call-backend "request-create-group"
 				   folder nnmairix-backend-server))
-	(error "Nnmairix-delete-recreate with\
- non-mairix group!! - check folder parameter")))))
+	(error "`nnmairix-delete-recreate-group' called on \
+non-mairix group.  Check folder parameter")))))
 
 (defun nnmairix-update-and-clear-marks (group &optional method)
   "Update group and clear all marks from GROUP using METHOD."
@@ -1546,7 +1554,7 @@ group."
 	(save-excursion
 	  (nnmairix-open-server (nth 1 method))
 	  (set-buffer gnus-group-buffer)
-;;	  (gnus-group-set-parameter group 'propmarks nil)
+	  ;; (gnus-group-set-parameter group 'propmarks nil)
 	  (setq info (gnus-get-info group))
 	  ;; Clear active and info
 	  (gnus-set-active group nil)
@@ -1560,7 +1568,7 @@ group."
 	      (gnus-group-set-parameter group 'numcorr corr)))
 	  (gnus-group-jump-to-group group)
 	  (gnus-group-get-new-news-this-group))
-      (error "Nnmairix-update-and-clear-marks - Called with non-nnmairix group"))))
+      (error "`nnmairix-update-and-clear-marks' called with non-nnmairix group"))))
 
 (defun nnmairix-sentinel-mairix-update-finished (proc status)
   "Sentinel for mairix update process PROC with STATUS."
@@ -1594,9 +1602,9 @@ See %s for details" proc nnmairix-mairix-output-buffer)))
 DESCRIPTION will be shown to the user with the activation
 status.  If PAR is a positive number, the group parameter will be
 set to t and to nil otherwise."
-  (let*  ((method (gnus-find-method-for-group group))
-	  (par (or par
-		   (not (gnus-group-get-parameter group parameter)))))
+  (let* ((method (gnus-find-method-for-group group))
+	 (par (or par
+		  (not (gnus-group-get-parameter group parameter)))))
     (if (eq (car method) 'nnmairix)
 	(progn
 	  (when (numberp par)
@@ -1608,7 +1616,6 @@ set to t and to nil otherwise."
 	  t)
       (error "This is no nnmairix group")
       nil)))
-
 
 ;; Search for original article helper functions
 
@@ -1759,6 +1766,7 @@ SERVER."
 		       allgroups nil t))
 	(setq group (car allgroups))))
     group))
+
 (defun nnmairix-show-original-article (group mid)
   "Switch to GROUP and display Article with message-id MID."
   (unless (string-match "^<" mid)
@@ -1823,8 +1831,6 @@ If VERSION is a string: must be contained in mairix version output."
 		   (progn
 		     (string-match "mairix \\([0-9\\.]+\\)" versionstring)
 		     (match-string 1 versionstring))))))))
-
-
 
 ;; ==== Widget stuff
 
@@ -1993,7 +1999,6 @@ Fill in VALUES if based on an article."
       (widget-insert "\n")
       (nnmairix-widget-add "Threads" 'checkbox nil))
       (widget-insert " Show full threads\n\n")))
-
 
 (defun nnmairix-widget-build-editable-fields (values)
   "Build editable field widgets in `nnmairix-widget-fields-list'.

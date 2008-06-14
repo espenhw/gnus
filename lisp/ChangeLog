@@ -1,3 +1,8 @@
+2008-06-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnmairix.el (nnmairix-delete-recreate-group)
+	(nnmairix-update-and-clear-marks): Fix error messages.
+
 2008-06-14  David Engster  <dengste@eml.cc>
 
 	* nnmairix.el: Upgrade to version 0.6.  FIXME: Add entry on
