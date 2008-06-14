@@ -4404,7 +4404,9 @@ bound to mairix searches and are automatically updated.
 * nnmairix caveats::            Some more stuff you might want to know
 @end menu
 
-@c FIXME: The markup in this section needs improvement, add @sample{...}
+@c FIXME: The markup in this section might need improvement.
+@c E.g. adding @samp, @var, @file, @command, etc.
+@c Cf. (info "(texinfo)Indicating")
 
 @node About mairix
 @subsubsection About mairix
@@ -4514,10 +4516,10 @@ Setting up mairix is easy: simply create a @file{.mairixrc} file with
 base=~/Maildir
 @end example
 
-This is the base folder for your mails.  All the following paths are
-relative to this base folder.  If you want to use @code{nnmairix} with
-@code{nnimap}, this base path has to point to the mail path where the
-@acronym{IMAP} server stores the mail folders!
+This is the base folder for your mails.  All the following directories
+are relative to this base folder.  If you want to use @code{nnmairix}
+with @code{nnimap}, this base directory has to point to the mail
+directory where the @acronym{IMAP} server stores the mail folders!
 
 @example
 maildir= ... your maildir folders which should be indexed ...
@@ -4526,7 +4528,7 @@ mbox = ... your mbox files which should be indexed ...
 @end example
 
 Specify all your maildir/nnml folders and mbox files (relative to the
-base path!) you want to index with mairix.  See the man-page for
+base directory!) you want to index with mairix.  See the man-page for
 mairixrc for details.
 
 @example
@@ -4559,13 +4561,13 @@ omit=zz_mairix-*
 database=~/.mairixdatabase
 @end example
 
-In this case, the base path is @file{~/Maildir}, where all my Maildir
+In this case, the base directory is @file{~/Maildir}, where all my Maildir
 folders are stored.  As you can see, the folders are separated by
 colons.  If you wonder why every folder begins with a dot: this is
 because I use Dovecot as @acronym{IMAP} server, which again uses
 @code{Maildir++} folders.  For testing nnmairix, I also have some
 @code{nnml} mail, which is saved in @file{~/Mail/nnml}.  Since this has
-to be specified relative to the @code{base} path, the @code{../Mail}
+to be specified relative to the @code{base} directory, the @code{../Mail}
 notation is needed.  Note that the line ends in @code{*...}, which means
 to recursively scan all files under this directory.  Without the three
 dots, the wildcard @code{*} will not work recursively.  I also have some
@@ -4774,7 +4776,7 @@ originally came from and displays the article in this group, so that
 e.g. replying to this article the correct posting styles/group
 parameters are applied (@code{nnmairix-goto-original-article}).  This
 function will use the registry if available, but can also parse the
-article file path as a fallback method.
+article file name as a fallback method.
 
 @item $ u
 @kindex $ u (Summary)
@@ -4863,11 +4865,11 @@ the safe side, choose roughly the amount of mails you index with mairix.
 
 @vindex nnmairix-only-use-registry
 If you don't want to use the registry or the registry hasn't seen the
-original article yet, @code{nnmairix} will use an additional mairix search
-for determining the file path of the article. This, of course, is way
-slower than the registry---if you set hundreds or even thousands of
-marks this way, it might take some time. You can avoid this situation
-by setting @code{nnmairix-only-use-registry} to t.
+original article yet, @code{nnmairix} will use an additional mairix
+search for determining the file name of the article. This, of course, is
+way slower than the registry---if you set hundreds or even thousands of
+marks this way, it might take some time. You can avoid this situation by
+setting @code{nnmairix-only-use-registry} to t.
 
 Maybe you also want to propagate marks the other way round, i.e. if you
 tick an article in a "real" mail group, you'd like to have the same
