@@ -1,3 +1,26 @@
+2008-06-14  David Engster  <dengste@eml.cc>
+
+	* nnmairix.el: Upgrade to version 0.6.  FIXME: Add entry on
+	function/variable level.
+
+	- It is now possible to propagate marks from the nnmairix groups
+	  to the original messages (and for maildir also vice versa). See
+	  the docs for details on this feature - it's pretty delicate
+	  and currently needs a patched mairix binary to work smoothly.
+
+	- Keep messages in nnmairix groups always read/unread
+	  (bound to `G b r').
+
+	- Recreate back end folder for nnmairix groups in case you
+	  somehow get wrong article counts (bound to `G b d').
+
+	- New group parameter `allow-fast'. Toggling of parameter bound to `G b
+	  a'.  The default is nil, meaning that the group will always be
+	  updated with a mairix search, even when only entered.
+
+	- More/Better use of the registry (if available).  Can now also deal
+	  with duplicate messages in different groups.
+
 2008-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnir.el: Require edmacro when compiling with XEmacs.
