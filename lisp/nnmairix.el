@@ -627,6 +627,12 @@ Other back ends might or might not work.")
 	t)
     nil))
 
+;; Silence byte-compiler.
+(defvar gnus-registry-install)
+(autoload 'gnus-registry-fetch-group "gnus-registry")
+(autoload 'gnus-registry-fetch-groups "gnus-registry")
+(autoload 'gnus-registry-add-group "gnus-registry")
+
 (deffoo nnmairix-request-set-mark (group actions &optional server)
   (when server
     (nnmairix-open-server server))
@@ -721,6 +727,8 @@ Other back ends might or might not work.")
 	;; update mairix group
 	(gnus-group-jump-to-group qualgroup)
 	(gnus-group-get-new-news-this-group))))))
+
+(autoload 'nnimap-request-update-info-internal "nnimap")
 
 (deffoo nnmairix-request-update-info (group info &optional server)
 ;; propagate info from underlying IMAP folder to nnmairix group
@@ -1115,10 +1123,6 @@ with `nnmairix-mairix-update-options'."
 	    (setq args (append args nnmairix-mairix-update-options)))
 	  (set-process-sentinel (apply 'start-process args)
 				'nnmairix-sentinel-mairix-update-finished))))))
-
-;; Silence byte-compiler.
-(defvar gnus-registry-install)
-(autoload 'gnus-registry-fetch-group "gnus-registry")
 
 (defun nnmairix-group-delete-recreate-this-group ()
   "Deletes and recreates group on the back end.

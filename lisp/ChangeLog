@@ -1,5 +1,9 @@
 2008-06-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnmairix.el: Add autoloads.
+
+2008-06-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* nnmairix.el (nnmairix-delete-recreate-group)
 	(nnmairix-update-and-clear-marks): Fix error messages.
 
