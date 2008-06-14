@@ -1,6 +1,10 @@
+2008-06-14  David Engster  <dengste@eml.cc>
+
+	* gnus.texi (nnmairix): Markup fixes.
+
 2008-06-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* gnus.texi (nnmairix): Markup and othe minor fixes.
+	* gnus.texi (nnmairix): Markup and other minor fixes.
 
 2008-06-05  David Engster  <dengste@eml.cc>
 
