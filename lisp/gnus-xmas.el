@@ -39,6 +39,7 @@
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 (require 'wid-edit)
+(require 'gnus-util)
 
 (defgroup gnus-xmas nil
   "XEmacsoid support for Gnus"
@@ -173,18 +174,18 @@ displayed, no centering will be performed."
 	(i 32))
     ;; Nix out all the control chars...
     (while (>= (setq i (1- i)) 0)
-      (aset table i [??]))
+      (gnus-put-display-table i [??] table))
     ;; ... but not newline and cr, of course.  (cr is necessary for the
     ;; selective display).
-    (aset table ?\n nil)
-    (aset table ?\r nil)
+    (gnus-put-display-table ?\n nil table)
+    (gnus-put-display-table ?\r nil table)
     ;; We keep TAB as well.
-    (aset table ?\t nil)
+    (gnus-put-display-table ?\t nil table)
     ;; We nix out any glyphs over 126 below ctl-arrow.
     (let ((i (if (integerp ctl-arrow) ctl-arrow 160)))
       (while (>= (setq i (1- i)) 127)
-	(unless (aref table i)
-	  (aset table i [??]))))
+	(unless (gnus-get-display-table i table)
+	  (gnus-put-display-table i [??] table))))
     ;; Can't use `set-specifier' because of a bug in 19.14 and earlier
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
 
