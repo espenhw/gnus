@@ -1,3 +1,7 @@
+2008-06-15  David Engster  <dengste@eml.cc>
+
+	* nnimap.el (nnimap-request-delete-group): Unselect group if necessary.
+
 2008-06-14  Aidan Kehoe  <kehoea@parhasard.net>
 
 	* gnus-util.el (gnus-put-display-table, gnus-get-display-table): New
