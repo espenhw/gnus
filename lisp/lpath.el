@@ -79,8 +79,8 @@
     (maybe-fbind
      '(custom-autoload
        display-graphic-p display-images-p display-visual-class
-       select-frame-set-input-focus unicode-precedence-list w32-focus-frame
-       x-focus-frame))
+       get-display-table put-display-table select-frame-set-input-focus
+       unicode-precedence-list w32-focus-frame x-focus-frame))
     (maybe-bind
      '(default-file-name-coding-system)))
 

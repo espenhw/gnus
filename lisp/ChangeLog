@@ -1,3 +1,11 @@
+2008-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el: Autoload get-display-table and put-display-table for
+	XEmacs 21.5.
+
+	* lpath.el: Fbind get-display-table and put-display-table for XEmacs
+	21.4 and SXEmacs.
+
 2008-06-15  David Engster  <dengste@eml.cc>
 
 	* nnimap.el (nnimap-request-delete-group): Unselect group if necessary.
