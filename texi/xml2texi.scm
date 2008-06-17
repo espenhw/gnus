@@ -77,7 +77,8 @@
 @c \\input texinfo @c -*-texinfo-*-~%\
 @c Uncomment 1st line before texing this file alone.~%\
 @c %**start of header~%\
-@c Copyright (C) 1995, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.~%\
+@c Copyright (C) 1995, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+@c   2008 Free Software Foundation, Inc.~%\
 @c~%\
 @c Do not modify this file, it was generated from gnus-faq.xml, available from~%\
 @c <URL:http://my.gnus.org/FAQ/>.~%\
@@ -144,7 +145,8 @@ tag: 64dc5692-edb4-4848-a965-7aa0181acbb8~%\
 ;;;; Questions
 (define format-q-level
     (lambda (level)
-      (apply format "[~A.~A]" (reverse level))))
+      ;; (apply format "[~A.~A]" (reverse level))))
+      (apply format "FAQ ~A-~A" (reverse level))))
 
 (define format-q-description
     (compose trim-ws (make-reg-replacer `((,(format "~%") " ")))))
