@@ -1,3 +1,21 @@
+2008-06-16  Glenn Morris  <rgm@gnu.org>
+
+	* pgg.texi, sasl.texi: Add Cover-Texts.
+
+2008-06-15  Glenn Morris  <rgm@gnu.org>
+
+	* sasl.texi: Refer to license in Emacs manual.
+
+	* gnus-coding.texi: Refer to license in Gnus manual.
+
+	* emacs-mime.texi, gnus.texi, message.texi, sieve.texi:
+	Remove references to external license, since doclicense is included.
+
+2008-06-13  Glenn Morris  <rgm@gnu.org>
+
+	* emacs-mime.texi, gnus-coding.texi, gnus.texi, message.texi
+	* sieve.texi: Update Back-Cover Text as per maintain.info.
+
 2008-06-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-faq.texi: Generate.  Change node names to "FAQ N-M".

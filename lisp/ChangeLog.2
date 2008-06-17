@@ -243,6 +243,7 @@
 	max-specpdl-size when compiling Gnus with Emacs 20.
 
 2003-12-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* gnus-int.el (gnus-open-server): Fixed the server status such
 	that an agentized server, when opened offline, has a status of
 	offline.  Also fixes bug whereby the agent's backend was called
@@ -673,6 +674,7 @@
 	* dgnushack.el (mapc): Add the compiler macro for Emacs 20.
 
 2003-11-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* gnus-srvr.el (gnus-server-insert-server-line): The server names
 	used in gnus-agent are different (for example, the native server
 	uses the alias "native") from the names in gnus-srvr.
@@ -10658,7 +10660,7 @@
 	(gnus-article-wash-function): New variable.
 	(gnus-article-wash-html-with-w3m): New function.
 
-2002-01-20  Bj,Avrn Torkelsson  <torkel@acc.umu.se>
+2002-01-20  Björn Torkelsson  <torkel@acc.umu.se>
 
 	* dgnushack.el (dgnushack-compile): Compile smiley-ems for
 	XEmacs.
