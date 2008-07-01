@@ -1,3 +1,7 @@
+2008-07-01  Rupert Swarbrick <rswarbrick@googlemail.com>  (tiny change)
+
+	* gnus-score.el (gnus-score-find-trace): Add "Total score" line.
+
 2008-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload get-display-table and put-display-table for
