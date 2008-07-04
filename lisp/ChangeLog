@@ -17,6 +17,25 @@
 
 	* gnus-score.el (gnus-score-find-trace): Add "Total score" line.
 
+2008-07-02  Juanma Barranquero  <lekktu@gmail.com>
+
+	* nnimap.el (nnimap-id):
+	* sieve-manage.el (sieve-manage-open): Doc fixes.
+
+2008-07-02  Francesc Rocher  <rocher@member.fsf.org>
+
+	* gnus.el (gnus-group-startup-message): Prefer SVG or PNG image,
+	if available.
+
+2008-06-25  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* mm-util.el (mm-with-multibyte, mm-with-unibyte): Remove.
+
+	* nnkiboze.el (nnkiboze-generate-group):
+	Use explicit mm-disable-multibyte rather than mm-with-unibyte.
+
+	* nnmairix.el: Require CL.
+
 2008-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Autoload get-display-table and put-display-table for
@@ -31,16 +50,16 @@
 
 2008-06-14  Aidan Kehoe  <kehoea@parhasard.net>
 
-	* gnus-util.el (gnus-put-display-table, gnus-get-display-table): New
-	macros that expand to an `aset'/`aref' call under Emacs, and to a
+	* gnus-util.el (gnus-put-display-table, gnus-get-display-table):
+	New macros that expand to an `aset'/`aref' call under Emacs, and to a
 	runtime choice under XEmacs.
 
-	* gnus-sum.el (gnus-summary-set-display-table): Use
-	`gnus-put-display-table', `gnus-get-display-table',
+	* gnus-sum.el (gnus-summary-set-display-table):
+	Use `gnus-put-display-table', `gnus-get-display-table',
 	`gnus-set-display-table' for the display table, instead of `aset'.
 
-	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Use
-	`gnus-put-display-table', `gnus-get-display-table',
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table):
+	Use `gnus-put-display-table', `gnus-get-display-table',
 	`gnus-set-display-table' for the display table.
 
 2008-06-14  Reiner Steib  <Reiner.Steib@gmx.de>
@@ -10319,7 +10338,7 @@
 2004-09-01  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-canlock-generate): Require sha1, not
-	sha1-el.  (Can we get rid of this require alltogheter? It is ugly
+	sha1-el.  (Can we get rid of this require altogether?  It is ugly
 	to require within a function.  Sadly, if sha1.el isn't loaded, the
 	let binding in m-c-g will hide the defcustom definition, which is
 	bad.)
