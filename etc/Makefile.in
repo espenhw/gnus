@@ -23,35 +23,68 @@ install:
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs "$(etcdir)/images/gnus" "$(etcdir)/images/mail"
 	@cd $(srcdir) \
-	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
-                    images/mail/*.xpm images/mail/*.pbm \
-                    images/*.xpm images/*.pbm \
-                    images/gnus/x-splash; do \
-	  echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
-	  $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
+	&& for p in images/gnus/*.pbm images/gnus/*.png images/gnus/*.svg \
+		    images/gnus/*.xbm images/gnus/*.xpm images/gnus/x-splash \
+		    images/mail/*.pbm images/mail/*.png images/mail/*.svg \
+		    images/mail/*.xbm images/mail/*.xpm \
+		    images/*.pbm images/*.png images/*.svg images/*.xbm \
+		    images/*.xpm; do \
+	  if test -f $$p; then \
+	    echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
+	    $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
+	  fi; \
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs "$(etcdir)/images/smilies" \
 	  "$(etcdir)/images/smilies/grayscale" "$(etcdir)/images/smilies/medium"
 	@cd $(srcdir) \
-	&& for p in images/smilies/*.pbm images/smilies/*.xpm \
-            images/smilies/grayscale/*.xpm images/smilies/medium/*.xpm; do \
-	  echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
-	  $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
+	&& for p in images/smilies/*.pbm images/smilies/*.png \
+		    images/smilies/*.svg images/smilies/*.xbm \
+		    images/smilies/*.xpm \
+		    images/smilies/grayscale/*.pbm \
+		    images/smilies/grayscale/*.png \
+		    images/smilies/grayscale/*.svg \
+		    images/smilies/grayscale/*.xbm \
+		    images/smilies/grayscale/*.xpm \
+		    images/smilies/medium/*.pbm images/smilies/medium/*.png \
+		    images/smilies/medium/*.xpm images/smilies/medium/*.xpm \
+		    images/smilies/medium/*.xpm; do \
+	  if test -f $$p; then \
+	    echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
+	    $(INSTALL_DATA) $$p "$(etcdir)/$$p"; \
+	  fi; \
 	done
 
 uninstall:
 	rm -f "$(etcdir)/gnus-tut.txt"
-	cd $(srcdir) \
-	&& for p in images/gnus/*.xpm images/gnus/*.pbm images/gnus/*.xbm \
-                    images/mail/*.xpm images/mail/*.pbm \
-                    images/*.xpm images/*.pbm \
-                    images/gnus/x-splash; do \
-	  rm -f "$(etcdir)/$$p"; \
+	@cd $(srcdir) \
+	&& for p in images/gnus/*.pbm images/gnus/*.png images/gnus/*.svg \
+		    images/gnus/*.xbm images/gnus/*.xpm images/gnus/x-splash \
+		    images/mail/*.pbm images/mail/*.png images/mail/*.svg \
+		    images/mail/*.xbm images/mail/*.xpm \
+		    images/*.pbm images/*.png images/*.svg images/*.xbm \
+		    images/*.xpm; do \
+	  if test -f $$p; then \
+	    echo "rm -f \"$(etcdir)/$$p\""; \
+	    rm -f "$(etcdir)/$$p"; \
+	  fi; \
 	done
 	rmdir "$(etcdir)/images/gnus" 2> /dev/null || true
-	cd $(srcdir) \
-	&& for p in images/smilies/*.pbm images/smilies/*.xpm; do \
-	  rm -f "$(etcdir)/$$p"; \
+	@cd $(srcdir) \
+	&& for p in images/smilies/*.pbm images/smilies/*.png \
+		    images/smilies/*.svg images/smilies/*.xbm \
+		    images/smilies/*.xpm \
+		    images/smilies/grayscale/*.pbm \
+		    images/smilies/grayscale/*.png \
+		    images/smilies/grayscale/*.svg \
+		    images/smilies/grayscale/*.xbm \
+		    images/smilies/grayscale/*.xpm \
+		    images/smilies/medium/*.pbm images/smilies/medium/*.png \
+		    images/smilies/medium/*.xpm images/smilies/medium/*.xpm \
+		    images/smilies/medium/*.xpm; do \
+	  if test -f $$p; then \
+	    echo "rm -f \"$(etcdir)/$$p\""; \
+	    rm -f "$(etcdir)/$$p"; \
+	  fi; \
 	done
 	rmdir "$(etcdir)/images/smilies" 2> /dev/null || true
 	rmdir "$(etcdir)/images" 2> /dev/null || true
