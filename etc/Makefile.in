@@ -46,7 +46,7 @@ install:
 		    images/smilies/grayscale/*.xbm \
 		    images/smilies/grayscale/*.xpm \
 		    images/smilies/medium/*.pbm images/smilies/medium/*.png \
-		    images/smilies/medium/*.xpm images/smilies/medium/*.xpm \
+		    images/smilies/medium/*.svg images/smilies/medium/*.xbm \
 		    images/smilies/medium/*.xpm; do \
 	  if test -f $$p; then \
 	    echo "$(INSTALL_DATA) $$p \"$(etcdir)/$$p\""; \
@@ -79,7 +79,7 @@ uninstall:
 		    images/smilies/grayscale/*.xbm \
 		    images/smilies/grayscale/*.xpm \
 		    images/smilies/medium/*.pbm images/smilies/medium/*.png \
-		    images/smilies/medium/*.xpm images/smilies/medium/*.xpm \
+		    images/smilies/medium/*.svg images/smilies/medium/*.xbm \
 		    images/smilies/medium/*.xpm; do \
 	  if test -f $$p; then \
 	    echo "rm -f \"$(etcdir)/$$p\""; \
