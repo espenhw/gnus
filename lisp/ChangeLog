@@ -1,3 +1,8 @@
+2008-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind ns-focus-frame for Emacs 21, 22, XEmacs 21.4, and
+	SXEmacs.
+
 2008-07-16  Glenn Morris  <rgm@gnu.org>
 
 	* gnus-util.el (ns-focus-frame): Declare for compiler.

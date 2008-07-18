@@ -20,9 +20,9 @@
     (maybe-fbind
      '(Info-index
        Info-index-next Info-menu bbdb-complete-name display-time-event-handler
-       epg-check-configuration find-coding-system frame-device w3-do-setup
-       w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
-       w3m-region)))
+       epg-check-configuration find-coding-system frame-device ns-focus-frame
+       w3-do-setup w3-prepare-buffer w3-region w32-focus-frame
+       w3m-detect-meta-charset w3m-region)))
 
   (when (= emacs-major-version 21)
     (defun split-line (&optional arg))
@@ -79,8 +79,9 @@
     (maybe-fbind
      '(custom-autoload
        display-graphic-p display-images-p display-visual-class
-       get-display-table put-display-table select-frame-set-input-focus
-       unicode-precedence-list w32-focus-frame x-focus-frame))
+       get-display-table ns-focus-frame put-display-table
+       select-frame-set-input-focus unicode-precedence-list w32-focus-frame
+       x-focus-frame))
     (maybe-bind
      '(default-file-name-coding-system)))
 
