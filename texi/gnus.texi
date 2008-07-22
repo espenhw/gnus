@@ -24678,11 +24678,14 @@ might want to have a nifty function to call when you happen to read
 spam.  And here is the nifty function:
 
 @lisp
- (defun my-gnus-raze-spam ()
-  "Submit SPAM to Vipul's Razor, then mark it as expirable."
+(defun my-gnus-raze-spam ()
+  "Invoke SpamAssassin reporting , then mark it as expirable."
   (interactive)
-  (gnus-summary-show-raw-article)
-  (gnus-summary-save-in-pipe "razor-report -f -d")
+  (let ((decode (get 'gnus-summary-save-in-pipe :decode)))
+    (put 'gnus-summary-save-in-pipe :decode nil)
+    (unwind-protect
+        (gnus-summary-save-in-pipe "spamassassin -r")
+      (put 'gnus-summary-save-in-pipe :decode decode)))
   (gnus-summary-mark-as-expirable 1))
 @end lisp
 
