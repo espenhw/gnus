@@ -24681,11 +24681,15 @@ spam.  And here is the nifty function:
 (defun my-gnus-raze-spam ()
   "Invoke SpamAssassin reporting , then mark it as expirable."
   (interactive)
-  (let ((decode (get 'gnus-summary-save-in-pipe :decode)))
+  (let ((decode (get 'gnus-summary-save-in-pipe :decode))
+        (headers (get 'gnus-summary-save-in-pipe :headers))
+        (gnus-save-all-headers t))
     (put 'gnus-summary-save-in-pipe :decode nil)
+    (put 'gnus-summary-save-in-pipe :headers nil)
     (unwind-protect
         (gnus-summary-save-in-pipe "spamassassin -r")
-      (put 'gnus-summary-save-in-pipe :decode decode)))
+      (put 'gnus-summary-save-in-pipe :decode decode)
+      (put 'gnus-summary-save-in-pipe :headers headers)))
   (gnus-summary-mark-as-expirable 1))
 @end lisp
 
