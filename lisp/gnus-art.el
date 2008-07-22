@@ -3973,12 +3973,14 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		     (setq save-buffer
 			   (nnheader-set-temp-buffer " *Gnus Save*"))))
 		  ;; Remove unwanted headers.
-		  (let ((gnus-visible-headers
-			 (or (symbol-value (get gnus-default-article-saver
-						:headers))
-			     gnus-saved-headers gnus-visible-headers))
-			(gnus-summary-buffer nil))
-		    (article-hide-headers 1 t)))
+		  (when (or (get 'gnus-summary-save-in-pipe :headers)
+			    (not gnus-save-all-headers))
+		    (let ((gnus-visible-headers
+			   (or (symbol-value (get 'gnus-summary-save-in-pipe
+						  :headers))
+			       gnus-saved-headers gnus-visible-headers))
+			  (gnus-summary-buffer nil))
+		      (article-hide-headers 1 t))))
 	      (error "%d is not a real article" article))
 	  (error "No article to pipe"))))
     (unless (stringp command)

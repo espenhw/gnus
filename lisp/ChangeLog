@@ -1,3 +1,8 @@
+2008-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-summary-save-in-pipe): Consider
+	gnus-save-all-headers.
+
 2008-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind ns-focus-frame for Emacs 21, 22, XEmacs 21.4, and
