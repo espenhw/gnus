@@ -1,3 +1,9 @@
+2008-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Saving Articles): Describe the 2nd argument of
+	gnus-summary-save-in-pipe.
+	(SpamAssassin): Use it.
+
 2008-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (SpamAssassin): Fix gnus-summary-save-in-pipe usage.
