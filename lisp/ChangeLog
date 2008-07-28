@@ -1,3 +1,7 @@
+2008-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: No need to fbind ns-focus-frame.
+
 2008-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-summary-save-in-pipe): Add optional argument `raw'.
