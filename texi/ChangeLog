@@ -1,3 +1,8 @@
+2008-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Saving Articles): Mention symbolic prefix `r' for
+	gnus-summary-pipe-output.
+
 2008-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Saving Articles): Describe the 2nd argument of

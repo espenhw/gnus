@@ -8518,9 +8518,11 @@ Save the current article in a VM folder
 Save the current article in a pipe.  Uhm, like, what I mean is---Pipe
 the current article to a process (@code{gnus-summary-pipe-output}).
 If given a symbolic prefix (@pxref{Symbolic Prefixes}), include the
-complete headers in the piped output.  The
-@code{gnus-summary-pipe-output-default-command} variable can be set to a
-string containing the default command and options (default @code{nil}).
+complete headers in the piped output.  The symbolic prefix @code{r} is
+special; it lets this command pipe a raw article including all headers.
+The @code{gnus-summary-pipe-output-default-command} variable can be set
+to a string containing the default command and options (default
+@code{nil}).
 
 @item O P
 @kindex O P (Summary)
