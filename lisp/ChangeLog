@@ -1,3 +1,12 @@
+2008-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-summary-save-in-pipe): Generate work buffer always;
+	don't redisplay article for raw contents; remove plural articles stuff.
+
+	* gnus-sum.el (gnus-summary-pipe-output): Pipe raw articles by symbolic
+	prefix `r'; use gnus-summary-save-in-pipe directly instead of relying
+	on gnus-summary-save-article; display results properly.
+
 2008-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: No need to fbind ns-focus-frame.
