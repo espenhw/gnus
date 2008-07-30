@@ -1825,12 +1825,14 @@ increase the score of each group you read."
   "?" gnus-summary-mark-as-dormant
   "\C-c\M-\C-s" gnus-summary-limit-include-expunged
   "\C-c\C-s\C-n" gnus-summary-sort-by-number
+  "\C-c\C-s\C-m\C-n" gnus-summary-sort-by-most-recent-number
   "\C-c\C-s\C-l" gnus-summary-sort-by-lines
   "\C-c\C-s\C-c" gnus-summary-sort-by-chars
   "\C-c\C-s\C-a" gnus-summary-sort-by-author
   "\C-c\C-s\C-t" gnus-summary-sort-by-recipient
   "\C-c\C-s\C-s" gnus-summary-sort-by-subject
   "\C-c\C-s\C-d" gnus-summary-sort-by-date
+  "\C-c\C-s\C-m\C-d" gnus-summary-sort-by-most-recent-date
   "\C-c\C-s\C-i" gnus-summary-sort-by-score
   "\C-c\C-s\C-o" gnus-summary-sort-by-original
   "\C-c\C-s\C-r" gnus-summary-sort-by-random
@@ -2703,10 +2705,12 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Pop article off history" gnus-summary-pop-article t])
 	("Sort"
 	 ["Sort by number" gnus-summary-sort-by-number t]
+	 ["Sort by most recent number" gnus-summary-sort-by-most-recent-number t]
 	 ["Sort by author" gnus-summary-sort-by-author t]
 	 ["Sort by recipient" gnus-summary-sort-by-recipient t]
 	 ["Sort by subject" gnus-summary-sort-by-subject t]
 	 ["Sort by date" gnus-summary-sort-by-date t]
+	 ["Sort by most recent date" gnus-summary-sort-by-most-recent-date t]
 	 ["Sort by score" gnus-summary-sort-by-score t]
 	 ["Sort by lines" gnus-summary-sort-by-lines t]
 	 ["Sort by characters" gnus-summary-sort-by-chars t]

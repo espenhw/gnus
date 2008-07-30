@@ -2,6 +2,8 @@
 
 	* gnus-sum.el (gnus-summary-sort-by-most-recent-number)
 	(gnus-summary-sort-by-most-recent-date): New commands.
+	(gnus-summary-mode-map, gnus-summary-make-menu-bar): Add key bindings
+	and menu entries.
 
 2008-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
