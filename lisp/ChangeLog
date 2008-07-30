@@ -1,3 +1,9 @@
+2008-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2104.el (rfc2104-string-make-unibyte): Define it as a compiler
+	macro.
+	(rfc2104-hash): Use it.
+
 2008-07-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-sort-by-most-recent-number)
