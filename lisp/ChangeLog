@@ -1,3 +1,8 @@
+2008-07-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-sort-by-most-recent-number)
+	(gnus-summary-sort-by-most-recent-date): New commands.
+
 2008-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-summary-save-in-pipe): Generate work buffer always;

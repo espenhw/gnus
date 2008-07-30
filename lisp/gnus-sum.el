@@ -11467,6 +11467,12 @@ Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'number reverse))
 
+(defun gnus-summary-sort-by-most-recent-number (&optional reverse)
+  "Sort the summary buffer by most recent article number.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'most-recent-number reverse))
+
 (defun gnus-summary-sort-by-random (&optional reverse)
   "Randomize the order in the summary buffer.
 Argument REVERSE means to randomize in reverse order."
@@ -11499,6 +11505,12 @@ Argument REVERSE means reverse order."
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'date reverse))
+
+(defun gnus-summary-sort-by-most-recent-date (&optional reverse)
+  "Sort the summary buffer by most recent date.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'most-recent-date reverse))
 
 (defun gnus-summary-sort-by-score (&optional reverse)
   "Sort the summary buffer by score.
