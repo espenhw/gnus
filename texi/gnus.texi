@@ -8111,11 +8111,13 @@ tickles your fancy.
 
 @findex gnus-article-sort-functions
 @findex gnus-article-sort-by-date
+@findex gnus-article-sort-by-most-recent-date
 @findex gnus-article-sort-by-score
 @findex gnus-article-sort-by-subject
 @findex gnus-article-sort-by-author
 @findex gnus-article-sort-by-random
 @findex gnus-article-sort-by-number
+@findex gnus-article-sort-by-most-recent-number
 If you are using an unthreaded display for some strange reason or
 other, you have to fiddle with the @code{gnus-article-sort-functions}
 variable.  It is very similar to the
@@ -10795,6 +10797,12 @@ can't really see why you'd want that.
 @findex gnus-summary-sort-by-number
 Sort by article number (@code{gnus-summary-sort-by-number}).
 
+@item C-c C-s C-m C-n
+@kindex C-c C-s C-n (Summary)
+@findex gnus-summary-sort-by-most-recent-number
+Sort by most recent article number
+(@code{gnus-summary-sort-by-most-recent-number}).
+
 @item C-c C-s C-a
 @kindex C-c C-s C-a (Summary)
 @findex gnus-summary-sort-by-author
@@ -10814,6 +10822,11 @@ Sort by subject (@code{gnus-summary-sort-by-subject}).
 @kindex C-c C-s C-d (Summary)
 @findex gnus-summary-sort-by-date
 Sort by date (@code{gnus-summary-sort-by-date}).
+
+@item C-c C-s C-m C-d
+@kindex C-c C-s C-m C-d (Summary)
+@findex gnus-summary-sort-by-most-recent-date
+Sort by most recent date (@code{gnus-summary-sort-by-most-recent-date}).
 
 @item C-c C-s C-l
 @kindex C-c C-s C-l (Summary)
@@ -10848,6 +10861,8 @@ line by line.  In the former case, sorting will be done on a
 root-by-root basis, which might not be what you were looking for.  To
 toggle whether to use threading, type @kbd{T T} (@pxref{Thread
 Commands}).
+
+If a prefix argument if given, the sort order is reversed.
 
 
 @node Finding the Parent

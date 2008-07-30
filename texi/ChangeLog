@@ -1,3 +1,10 @@
+2008-07-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Sorting the Summary Buffer, Summary Sorting): Add
+	gnus-summary-sort-by-most-recent-number and
+	gnus-summary-sort-by-most-recent-date.
+	(Summary Sorting): Explain prefix argument.
+
 2008-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Saving Articles): Mention symbolic prefix `r' for
