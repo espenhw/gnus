@@ -1,3 +1,10 @@
+2008-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-summary-supersede-article)
+	(gnus-summary-resend-message-edit): Bind mail-parse-charset to the
+	value of gnus-newsgroup-charset to decode non-MIME encoded text in
+	message header.
+
 2008-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2104.el (rfc2104-string-make-unibyte): Define it as a compiler
