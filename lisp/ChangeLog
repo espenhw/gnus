@@ -1,3 +1,8 @@
+2008-08-11  Ralf Angeli  <angeli@caeruleus.net>
+
+	* gnus-art.el (gnus-article-next-page): Respect `scroll-margin' when
+	moving point to the bottom of the window in order to avoid recentering.
+
 2008-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Bind scroll-margin for XEmacs 21.4 and SXEmacs.

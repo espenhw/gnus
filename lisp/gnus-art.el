@@ -6113,7 +6113,7 @@ If given a numerical ARG, move forward ARG pages."
 If end of article, return non-nil.  Otherwise return nil.
 Argument LINES specifies lines to be scrolled up."
   (interactive "p")
-  (move-to-window-line -1)
+  (move-to-window-line (if (featurep 'xemacs) -1 (- -1 scroll-margin)))
   (if (and (not (and gnus-article-over-scroll
 		     (> (count-lines (window-start) (point-max))
 			(if (featurep 'xemacs)
