@@ -82,7 +82,7 @@
        get-display-table put-display-table select-frame-set-input-focus
        unicode-precedence-list w32-focus-frame x-focus-frame))
     (maybe-bind
-     '(default-file-name-coding-system)))
+     '(default-file-name-coding-system scroll-margin)))
 
   (when (and (= emacs-major-version 21) (= emacs-minor-version 4))
     (maybe-fbind
