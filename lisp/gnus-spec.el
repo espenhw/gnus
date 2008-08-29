@@ -709,7 +709,15 @@ are supported for %s."
 	(when result
 	  (if dontinsert
 	      result
-	    (cons 'insert result)))
+	    `(progn
+	       (insert ,@result)
+	       (if (bolp)
+		   ;; remove trailing whitespaces from the line
+		   (progn
+		     (end-of-line 0)
+		     (skip-chars-backward " ")
+		     (delete-region (point) (point-at-eol))
+		     (forward-line 1))))))
       (cond ((stringp result)
 	     result)
 	    ((consp result)

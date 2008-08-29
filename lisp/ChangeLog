@@ -1,3 +1,7 @@
+2008-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-spec.el (gnus-parse-simple-format): Remove trailing whitespace.
+
 2008-08-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-max-track-groups): New variable to
