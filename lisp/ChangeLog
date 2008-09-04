@@ -39,6 +39,17 @@
 	value of gnus-newsgroup-charset to decode non-MIME encoded text in
 	message header.
 
+2008-08-02  Chong Yidong  <cyd@stupidchicken.com>
+
+	* pgg-gpg.el (pgg-gpg-process-region): Accept any remaining
+	pending output coming after the status change.
+
+2008-07-31  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* message.el:
+	* gnus-start.el:
+	* gnus-registry.el: Remove VMS support.
+
 2008-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2104.el (rfc2104-string-make-unibyte): Define it as a compiler
