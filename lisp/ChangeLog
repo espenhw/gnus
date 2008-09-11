@@ -1,3 +1,9 @@
+2008-09-11  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-insert-line): Trap errors on setting the
+	summary line gnus-number property and ignore them (with a warning
+	message).
+
 2008-09-08  David Engster  <dengste@eml.cc>
 
 	* nnmairix.el (nnmairix-create-server-and-default-group): Require match
