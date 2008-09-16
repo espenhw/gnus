@@ -1,3 +1,8 @@
+2008-09-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-use-long-group-names): Make t the
+	default, it's better.
+
 2008-09-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-sum.el (gnus-summary-insert-line): Trap errors on setting the
