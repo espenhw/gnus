@@ -1,3 +1,7 @@
+2008-09-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* mm-view.el (mm-pkcs7-enveloped-magic): Fix extra parenthesis in defvar.
+
 2008-09-22  Daiki Ueno  <ueno@unixuser.org>
 
 	* mm-view.el (mm-pkcs7-signed-magic): Use literals.
