@@ -69,6 +69,29 @@ which are indicated by the @copying ... @end copying command."
     (delete-region (1+ (match-beginning 0))
 		   (search-forward "\n@end iflatex\n"))))
 
+(defun infohack-include-files ()
+  "Insert @include files."
+  (goto-char (point-min))
+  (set-syntax-table texinfo-format-syntax-table)
+  (let (start texinfo-command-end filename)
+    (while (re-search-forward "^@include" nil t)
+      (setq start (match-beginning 0)
+	    texinfo-command-end (point)
+	    filename (texinfo-parse-line-arg))
+      (delete-region start (point-at-bol 2))
+      (message "Reading included file: %s" filename)
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region
+	   (point)
+	   (+ (point) (car (cdr (insert-file-contents filename)))))
+	  (goto-char (point-min))
+	  ;; Remove `@setfilename' line from included file, if any,
+	  ;; so @setfilename command not duplicated.
+	  (if (re-search-forward "^@setfilename" (point-at-eol 100) t)
+	      (delete-region (point-at-bol 1)
+			     (point-at-bol 2))))))))
+
 (defun infohack (file)
   (let ((dest-directory default-directory)
 	(max-lisp-eval-depth (max max-lisp-eval-depth 600))
@@ -80,29 +103,8 @@ which are indicated by the @copying ... @end copying command."
     (find-file file)
     (setq buffer-read-only nil)
     (setq coding-system buffer-file-coding-system)
-
-    ;; Insert @include files before performing `texinfo-every-node-update'.
-    (set-syntax-table texinfo-format-syntax-table)
-    (let (start texinfo-command-end filename)
-      (while (re-search-forward "^@include" nil t)
-	(setq start (match-beginning 0)
-	      texinfo-command-end (point)
-	      filename (texinfo-parse-line-arg))
-	(delete-region start (point-at-bol 2))
-	(message "Reading included file: %s" filename)
-	(save-excursion
-	  (save-restriction
-	    (narrow-to-region
-	     (point)
-	     (+ (point) (car (cdr (insert-file-contents filename)))))
-	    (goto-char (point-min))
-	    ;; Remove `@setfilename' line from included file, if any,
-	    ;; so @setfilename command not duplicated.
-	    (if (re-search-forward "^@setfilename" (point-at-eol 100) t)
-		(delete-region (point-at-bol 1)
-			       (point-at-bol 2)))))))
-
     (infohack-remove-unsupported)
+    (infohack-include-files)
     (texinfo-every-node-update) 
     (texinfo-format-buffer t) ;; Don't save any file.
     (setq default-directory dest-directory)
