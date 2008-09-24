@@ -1,6 +1,11 @@
+2008-09-24  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* message.el (message-confirm-send): Add appropriate version.
+
 2008-09-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* mm-view.el (mm-pkcs7-enveloped-magic): Fix extra parenthesis in defvar.
+	* mm-view.el (mm-pkcs7-enveloped-magic): Fix extra parenthesis in
+	defvar.
 
 2008-09-22  Daiki Ueno  <ueno@unixuser.org>
 
