@@ -1,5 +1,8 @@
 2008-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* infohack.el (infohack): Insert @include files before performing
+	texinfo-every-node-update.
+
 	* gnus.texi (The Gnus Registry): Don't give argument to @item used in
 	@enumerate section so as to be able to be formatted with MAKEINFO=no.
 
