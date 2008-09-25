@@ -1,3 +1,8 @@
+2008-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* infohack.el (infohack): Use Info-split-threshold to decide whether to
+	split Info files.
+
 2008-09-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* message.texi (Sending Variables): Fixed variable documentation to
