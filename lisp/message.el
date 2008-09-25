@@ -5633,7 +5633,8 @@ subscribed address (and not the additional To and Cc header contents)."
 		(mapcar (lambda (rhs) (or (cadr (split-string rhs "@")) ""))
 			(mapcar 'downcase
 				(mapcar
-				 'car (mail-header-parse-addresses field))))))
+				 'cadr
+				 (mail-extract-address-components field t))))))
 	(setq ace (if (string-match "\\`[[:ascii:]]+\\'" rhs)
 		      rhs
 		    (downcase (idna-to-ascii rhs))))
