@@ -445,7 +445,7 @@ nil means let mailer mail back a message to report errors."
   "When non-nil, ask for confirmation when sending a message."
   :group 'message-sending
   :group 'message-mail
-  :version "22.3" ;; No Gnus
+  :version "23.1" ;; No Gnus
   :link '(custom-manual "(message)Sending Variables")
   :type 'boolean)
 

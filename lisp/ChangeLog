@@ -1,3 +1,7 @@
+2008-09-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-confirm-send): Fix version.
+
 2008-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-idna-to-ascii-rhs-1): Use
@@ -9603,7 +9607,7 @@
 
 	* starttls.el (starttls-gnutls-program, starttls-use-gnutls)
 	(starttls-extra-arguments, starttls-process-connection-type)
-	(starttls-connect, starttls-failure, starttls-success):
+	(starttls-connect, starttls-failure, starttls-success): Add :version.
 
 	* spam-stat.el (spam-stat): Add :version.
 
