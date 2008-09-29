@@ -1,3 +1,8 @@
+2008-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Check if summary window
+	exists.
+
 2008-09-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-confirm-send): Fix version.
