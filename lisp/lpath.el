@@ -15,6 +15,10 @@
 		url-version w3-meta-charset-content-type-regexp
 		w3-meta-content-type-charset-regexp))
 
+  (when (>= emacs-major-version 23)
+    (maybe-fbind
+     '(codepage-setup)))
+
   (when (<= emacs-major-version 22)
     (defun nnkiboze-score-file (a))
     (maybe-fbind
