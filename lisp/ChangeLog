@@ -1,3 +1,11 @@
+2008-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnml.el (nnml-request-expire-articles): Expand nnmail-expiry-target
+	to an actual expiry target first if it is a function.  Suggested by
+	Phillip Lord <phillip.lord@newcastle.ac.uk>.
+
+	* nnfolder.el (nnfolder-request-expire-articles): Ditto.
+
 2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind codepage-setup for Emacs 23.

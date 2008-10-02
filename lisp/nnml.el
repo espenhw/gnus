@@ -355,15 +355,15 @@ non-nil.")
 						      nnml-inhibit-expiry)))
 	  (progn
 	    ;; Allow a special target group.
-	    (setq target nnmail-expiry-target)
+	    (setq target (if (functionp nnmail-expiry-target)
+			     (funcall nnmail-expiry-target group)
+			   nnmail-expiry-target))
 	    (unless (eq target 'delete)
 	      (with-temp-buffer
 		(nnml-request-article number group server (current-buffer))
 		(let (nnml-current-directory
 		      nnml-current-group
 		      nnml-article-file-alist)
-		  (when (functionp target)
-		    (setq target (funcall target group)))
 		  (if (and target
 			   (or (gnus-request-group target)
 			       (gnus-request-create-group target)))
