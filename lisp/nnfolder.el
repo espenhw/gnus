@@ -464,14 +464,14 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 		       (buffer-substring
 			(point) (progn (end-of-line) (point)))
 		       force nnfolder-inhibit-expiry))
-	    (setq target (if (functionp nnmail-expiry-target)
-			     (funcall nnmail-expiry-target newsgroup)
-			   nnmail-expiry-target))
+	    (setq target nnmail-expiry-target)
 	    (unless (eq target 'delete)
 	      (with-temp-buffer
 		(nnfolder-request-article (car maybe-expirable)
 					  newsgroup server (current-buffer))
 		(let ((nnfolder-current-directory nil))
+		  (when (functionp target)
+		    (setq target (funcall target newsgroup)))
 		  (if (and target
 			   (or (gnus-request-group target)
 			       (gnus-request-create-group target)))
