@@ -119,15 +119,24 @@ backslash and doublequote.")
   (with-temp-buffer
     (let (c)
       (ietf-drums-init string)
-      (while (not (eobp))
-	(setq c (char-after))
-	(cond
-	 ((eq c ?\")
-	  (forward-sexp 1))
-	 ((eq c ?\()
-	  (delete-region (point) (progn (forward-sexp 1) (point))))
-	 (t
-	  (forward-char 1))))
+      (condition-case err
+	  (while (not (eobp))
+	    (setq c (char-after))
+	    (cond
+	     ((eq c ?\")
+	      (forward-sexp 1))
+	     ((eq c ?\()
+	      (delete-region
+	       (point)
+	       (condition-case nil
+		   (with-syntax-table (copy-syntax-table ietf-drums-syntax-table)
+		     (modify-syntax-entry ?\" "w")
+		     (forward-sexp 1)
+		     (point))
+		 (error (point-max)))))
+	     (t
+	      (forward-char 1))))
+	(error nil))
       (buffer-string))))
 
 (defun ietf-drums-remove-whitespace (string)
