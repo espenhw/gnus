@@ -301,12 +301,11 @@ GNUTLS requires a port number."
 		     starttls-gnutls-program
 		   starttls-program)))
     (condition-case ()
-	(with-no-warnings
-	  (require 'starttls)
+	(progn
 	  (call-process program)
 	  program)
       (error (progn
-	       (message "No STARTTLS program was available (tried '%s')" 
+	       (message "No STARTTLS program was available (tried '%s')"
 			program)
 	       nil)))))
 
