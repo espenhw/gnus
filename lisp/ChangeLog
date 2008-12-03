@@ -1,3 +1,10 @@
+2008-12-03  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* nnimap.el (nnimap-retrieve-headers-progress): Don't use nnimap-demule
+	since the result is inserted in a unibyte buffer anyway.
+	(nnimap-demule-use-string-to-multibyte): Remove.
+	(nnimap-demule): Alias it to mm-string-to-multibyte.
+
 2008-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-idna-to-ascii-rhs-1): Protect against local
