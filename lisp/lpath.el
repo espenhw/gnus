@@ -22,7 +22,9 @@
        Info-index-next Info-menu bbdb-complete-name display-time-event-handler
        epg-check-configuration find-coding-system frame-device w3-do-setup
        w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
-       w3m-region)))
+       w3m-region))
+    (maybe-bind
+     '(w3m-link-map)))
 
   (when (= emacs-major-version 21)
     (defun split-line (&optional arg))
@@ -71,7 +73,7 @@
      mouse-selection-click-count-buffer ps-print-color-p
      rmail-insert-mime-forwarded-message-function
      show-trailing-whitespace tool-bar-mode transient-mark-mode
-     url-version w3-meta-charset-content-type-regexp
+     url-version w3-meta-charset-content-type-regexp w3m-link-map
      w3-meta-content-type-charset-regexp))
 
   (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
