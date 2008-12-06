@@ -3,6 +3,11 @@
 	* gnus.texi (nnmairix): Mention mairix.el.  Point out the importance
 	  of nnml-get-new-mail.  Change URL for mairix patch.
 
+2008-11-19  Glenn Morris  <rgm@gnu.org>
+
+	* doclicense.texi: Change to FDL 1.3.
+	Relicense all texi files under FDL 1.3 or later.
+
 2008-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* infohack.el (infohack): Use Info-split-threshold to decide whether to

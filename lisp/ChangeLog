@@ -14,12 +14,10 @@
 
 	* gnus-art.el (gnus-article-wash-html-with-w3m): Ditto.
 
-2008-12-03  Stefan Monnier  <monnier@iro.umontreal.ca>
+2008-12-03  Lute Kamstra  <lute@gnu.org>
 
-	* nnimap.el (nnimap-retrieve-headers-progress): Don't use nnimap-demule
-	since the result is inserted in a unibyte buffer anyway.
-	(nnimap-demule-use-string-to-multibyte): Remove.
-	(nnimap-demule): Alias it to mm-string-to-multibyte.
+	* sha1.el: Remove leading * from docstrings of defcustoms,
+	deffaces, defconsts and defuns.
 
 2008-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -28,6 +26,13 @@
 	(message-idna-to-ascii-rhs): Use message-narrow-to-headers-or-head
 	rather than message-narrow-to-head since there will be the message
 	header separator.
+
+2008-12-02  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* nnimap.el (nnimap-retrieve-headers-progress): Don't use nnimap-demule
+	since the result is inserted in a unibyte buffer anyway.
+	(nnimap-demule-use-string-to-multibyte): Remove.
+	(nnimap-demule): Alias it to mm-string-to-multibyte.
 
 2008-11-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -39,6 +44,14 @@
 
 	* gnus-score.el (gnus-score-find-trace): Handle default score in total
 	score calculation correctly.
+
+2008-11-21  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* message.el (message-send-mail): Just set the buffer to unibyte
+	rather than use mm-with-unibyte-current-buffer which does a lot more.
+	(message-send-mail-partially): Don't bother with
+	mm-with-unibyte-current-buffer since it's already been made unibyte by
+	message-send-mail.
 
 2008-11-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -65,6 +78,12 @@
 	allow override with `auth-source-do-cache'.
 	(auth-source-forget-user-or-password): Allow users to remove cache
 	entries if needed.
+
+2008-11-01  Juanma Barranquero  <lekktu@gmail.com>
+
+	* md4.el (md4-buffer): Fix typo in docstring.
+	(md4, md4-64): Doc fixes.
+	(md4-pack-int32): Reflow docstring.
 
 2008-10-31  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -894,7 +913,7 @@
 	gnus-group-read-ephemeral-gmane-group.
 	(gnus-read-ephemeral-gmane-group-url): Rename from
 	gnus-group-read-ephemeral-gmane-group-url.
-	(gnus-bug-group-download-format-alist):  New variable.
+	(gnus-bug-group-download-format-alist): New variable.
 	(gnus-read-ephemeral-bug-group, gnus-read-ephemeral-debian-bug-group)
 	(gnus-read-ephemeral-emacs-bug-group): New commands.
 
@@ -2145,7 +2164,7 @@
 	(latin-unity-ucs-list):
 	* mm-bodies.el (mm-uu-yenc-decode-function, mm-uu-decode-function)
 	(mm-uu-binhex-decode-function):
-	* message.el (gnus-message-group-art, gnus-list-identifiers, )
+	* message.el (gnus-message-group-art, gnus-list-identifiers)
 	(rmail-enable-mime-composing, gnus-local-organization)
 	(gnus-post-method, gnus-select-method, gnus-active-hashtb)
 	(gnus-read-active-file, facemenu-add-face-function)
@@ -9794,7 +9813,7 @@
 	(gnus-summary-display-while-building): Add :version.
 
 	* gnus-start.el (gnus-subscribe-newsgroup-hooks)
-	(gnus-get-top-new-news-hook):Add :version.
+	(gnus-get-top-new-news-hook): Add :version.
 
 	* gnus-srvr.el (gnus-server-agent-face, gnus-server-opened-face)
 	(gnus-server-closed-face, gnus-server-denied-face): Add :version.
@@ -9952,7 +9971,7 @@
 
 	* spam.el (spam-backend-article-list-property)
 	(spam-backend-get-article-todo-list)
-	(spam-backend-put-article-todo-list, )
+	(spam-backend-put-article-todo-list)
 	(spam-summary-prepare-exit, spam-resolve-registrations-routine):
 	Resolve registrations separately.
 	(spam-register-routine): Format comments.

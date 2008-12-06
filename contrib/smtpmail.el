@@ -73,6 +73,7 @@
     (error "Please use `smtpmail.el' bundled with Emacs.")))
 
 (require 'sendmail)
+(autoload 'starttls-any-program-available "starttls")
 (autoload 'starttls-open-stream "starttls")
 (autoload 'starttls-negotiate "starttls")
 (autoload 'mail-strip-quoted-names "mail-utils")
@@ -512,13 +513,7 @@ This is relative to `smtpmail-queue-dir'.")
 (defun smtpmail-open-stream (process-buffer host port)
   (let ((cred (smtpmail-find-credentials
 	       smtpmail-starttls-credentials host port)))
-    (if (null (and cred (condition-case ()
-			    (with-no-warnings
-			      (require 'starttls)
-			      (call-process (if starttls-use-gnutls
-						starttls-gnutls-program
-					      starttls-program)))
-			  (error nil))))
+    (if (null (and cred (starttls-any-program-available)))
 	;; The normal case.
 	(open-network-stream "SMTP" process-buffer host port)
       (let* ((cred-key (smtpmail-cred-key cred))
