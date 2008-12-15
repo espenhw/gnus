@@ -1,5 +1,8 @@
 2008-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-util.el (mm-charset-synonym-alist): Add bogus names "UTF8" and
+	"ISO_8859-1".
+
 	* gnus-start.el (gnus-backup-startup-file): Improve doc string.
 
 2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
