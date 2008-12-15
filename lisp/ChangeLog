@@ -1,3 +1,7 @@
+2008-12-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-backup-startup-file): Improve doc string.
+
 2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-charset-eval-alist):
