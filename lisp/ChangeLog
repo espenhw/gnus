@@ -1,3 +1,7 @@
+2008-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mml.el (mml-attach-file): Strip text properties from file name.
+
 2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-generate-mime-1): Prefer the MIME charset that Emacs
