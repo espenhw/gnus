@@ -1291,7 +1291,7 @@ body) or \"attachment\" (separate from the body)."
 			  'type type
 			  ;; icicles redefines read-file-name and returns a
 			  ;; string w/ text properties :-/
-			  'filename (substring-no-properties file)
+			  'filename (mm-substring-no-properties file)
 			  'disposition (or disposition "attachment")
 			  'description description)))
 

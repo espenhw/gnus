@@ -118,7 +118,19 @@
 		       (and (consp elem)
 			    (stringp (car elem))
 			    (string-match (car elem) buffer-name)
-			    (throw 'return (cdr elem))))))))))))
+			    (throw 'return (cdr elem)))))))))
+     (substring-no-properties
+      . (lambda (string &optional from to)
+	  "Return a substring of STRING, without text properties.
+It starts at index FROM and ending before TO.
+TO may be nil or omitted; then the substring runs to the end of STRING.
+If FROM is nil or omitted, the substring starts at the beginning of STRING.
+If FROM or TO is negative, it counts from the end.
+
+With one argument, just copy STRING without its properties."
+	  (setq string (substring string (or from 0) to))
+	  (set-text-properties 0 (length string) nil string)
+	  string)))))
 
 (eval-and-compile
   (if (featurep 'xemacs)
@@ -156,7 +168,7 @@
     'string-to-multibyte)
    (t
     (lambda (string)
-      "Return a multibyte string with the same individual chars as string."
+      "Return a multibyte string with the same individual chars as STRING."
       (mapconcat
        (lambda (ch) (mm-string-as-multibyte (char-to-string ch)))
        string "")))))
