@@ -11,6 +11,10 @@
 
 	* mml.el (mml-attach-file): Strip text properties from file name.
 
+2008-12-16  Glenn Morris  <rgm@gnu.org>
+
+	* mm-util.el (mm-charset-override-alist): Declare for compiler.
+
 2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-generate-mime-1): Prefer the MIME charset that Emacs
@@ -1848,7 +1852,7 @@
 	group names with backslashes.  Reported by Tassilo Horn
 	<tassilo@member.fsf.org>.
 
-2007-12-06  D. Goel  <deego3@gmail.com>
+2007-12-06  Deepak Goel  <deego3@gmail.com>
 
 	* gnus-art.el (article-make-date-line):
 	* gnus-start.el (gnus-load):
@@ -2545,7 +2549,7 @@
 	* mm-util.el (mm-charset-synonym-alist): Alias gbk to cp936.
 	Fix comment about "iso8859-1".
 
-2007-10-08   Daiki Ueno  <ueno@unixuser.org>
+2007-10-08  Daiki Ueno  <ueno@unixuser.org>
 
 	* mm-decode.el (mm-possibly-verify-or-decrypt): Replace PARTS with the
 	ones returned from the verify-function.
@@ -2828,7 +2832,7 @@
 	* gnus-sum.el (gnus-select-newsgroup): Decode group name in error msg.
 	(gnus-read-move-group-name): Decode group name for completion.
 
-2007-07-31  Ted Zlatanov  <tzz@lifelogs.com>
+2007-07-31  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-srvr.el (gnus-server-close-all-servers): Close servers not only
 	in gnus-inserted-opened-servers but also in gnus-server-alist (Katsumi
@@ -8693,7 +8697,7 @@
 
 	* gnus-art.el (gnus-article-read-summary-keys): Fix misplaced parens.
 
-2005-04-06  D Goel  <deego@gnufans.org>
+2005-04-06  Deepak Goel  <deego@gnufans.org>
 
 	* spam-stat.el (spam-stat-score-buffer): Add a call to a
 	user-function allow user modifications of the scores.
