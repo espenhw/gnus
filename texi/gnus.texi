@@ -1623,7 +1623,7 @@ times you start Gnus.
 
 @item gnus-before-startup-hook
 @vindex gnus-before-startup-hook
-A hook run after starting up Gnus successfully.
+A hook called as the first thing when Gnus is started.
 
 @item gnus-startup-hook
 @vindex gnus-startup-hook
@@ -6233,6 +6233,7 @@ given a prefix, fetch the current article, but don't run any of the
 article treatment functions.  This will give you a ``raw'' article, just
 the way it came from the server.
 
+@cindex charset, view article with different charset
 If given a numerical prefix, you can do semi-manual charset stuff.
 @kbd{C-u 0 g cn-gb-2312 RET} will decode the message as if it were
 encoded in the @code{cn-gb-2312} charset.  If you have
