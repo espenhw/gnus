@@ -1,3 +1,7 @@
+2008-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el: Add comments to the mm- emulating functions.
+
 2008-12-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-start.el (gnus-before-startup-hook): Fix doc string.  Reported
