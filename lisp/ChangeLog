@@ -1,3 +1,8 @@
+2008-12-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-start.el (gnus-before-startup-hook): Fix doc string.  Reported
+	by Stephen Berman <stephen.berman@gmx.net>.
+
 2008-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-substring-no-properties): New function.
@@ -10,6 +15,7 @@
 2008-12-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mml.el (mml-attach-file): Strip text properties from file name.
+	(Bug#1574)
 
 2008-12-16  Glenn Morris  <rgm@gnu.org>
 
