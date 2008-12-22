@@ -1,3 +1,9 @@
+2008-12-22  Dave Love  <fx@gnu.org>
+
+	* imap.el: Fix author email.  Doc fixes.
+	(imap-parse-body): Work around assertion failure in bogus Exchange 2007
+	reply.
+
 2008-12-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam-report.el (spam-report-gmane-max-requests): New constant.
