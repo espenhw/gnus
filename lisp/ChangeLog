@@ -1,5 +1,12 @@
 2008-12-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* spam-report.el (spam-report-gmane-max-requests): New constant.
+	(spam-report-gmane-wait): New variable.
+	(spam-report-gmane-ham, spam-report-gmane-spam)
+	(spam-report-url-ping-plain, spam-report-process-queue): Wait only if
+	spam-report-gmane-wait is non-nil should be sufficient to avoid DOS-ing
+	the server.
+
 	* nnheader.el (nnheader-read-timeout, nnheader-accept-process-output):
 	Add explanations.
 
