@@ -1,5 +1,12 @@
 2008-12-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnheader.el (nnheader-read-timeout, nnheader-accept-process-output):
+	Add explanations.
+
+	* pop3.el (pop3-accept-process-output, pop3-read-timeout): Use
+	nnheader-accept-process-output and nnheader-read-timeout if available.
+	(pop3-movemail): Use it.
+
 	* message.el (message-check-news-body-syntax): Fix signature check if
 	there's an attachment.
 
