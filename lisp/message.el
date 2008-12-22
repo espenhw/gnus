@@ -2395,6 +2395,8 @@ Return the number of headers removed."
      (point-max)))
   (goto-char (point-min)))
 
+;; FIXME: clarify diffference: message-narrow-to-head,
+;; message-narrow-to-headers-or-head, message-narrow-to-headers
 (defun message-narrow-to-head ()
   "Narrow the buffer to the head of the message.
 Point is left at the beginning of the narrowed-to region."
@@ -5119,17 +5121,24 @@ Otherwise, generate and save a value for `canlock-password' first."
 	nil)))
    ;; Check the length of the signature.
    (message-check 'signature
-     (goto-char (point-max))
-     (if (not (re-search-backward message-signature-separator nil t))
-	 t
-       (if (>= (count-lines (1+ (point-at-eol)) (point-max)) 5)
-	   (if (message-gnksa-enable-p 'signature)
-	       (y-or-n-p
-		(format "Signature is excessively long (%d lines).  Really post? "
-			(count-lines (1+ (point-at-eol)) (point-max))))
-	     (message "Denied posting -- Excessive signature.")
-	     nil)
-	 t)))
+     (let (sig-start sig-end)
+       (goto-char (point-max))
+       (if (not (re-search-backward message-signature-separator nil t))
+	   t
+	 (setq sig-start (1+ (point-at-eol)))
+	 (setq sig-end
+	       (if (re-search-forward
+		    "<#/?\\(multipart\\|part\\|external\\|mml\\)" nil t)
+		   (- (point-at-bol) 1)
+		 (point-max)))
+	 (if (>= (count-lines sig-start sig-end) 5)
+	     (if (message-gnksa-enable-p 'signature)
+		 (y-or-n-p
+		  (format "Signature is excessively long (%d lines).  Really post? "
+			  (count-lines sig-start sig-end)))
+	       (message "Denied posting -- Excessive signature.")
+	       nil)
+	   t))))
    ;; Ensure that text follows last quoted portion.
    (message-check 'quoting-style
      (goto-char (point-max))

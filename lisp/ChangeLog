@@ -1,3 +1,8 @@
+2008-12-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-check-news-body-syntax): Fix signature check if
+	there's an attachment.
+
 2008-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el: Add comments to the mm- emulating functions.
