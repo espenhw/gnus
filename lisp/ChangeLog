@@ -1,3 +1,9 @@
+2008-12-23  Dave Love  <fx@gnu.org>
+
+	* sieve-manage.el (sieve-manage-starttls-p): Renamed from
+	imap-starttls-p.
+	(sieve-manage-starttls-open): Renamed from imap-starttls-open.
+
 2008-12-22  Dave Love  <fx@gnu.org>
 
 	* imap.el: Fix author email.  Doc fixes.
