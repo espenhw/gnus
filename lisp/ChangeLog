@@ -1,3 +1,14 @@
+2008-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-line-number-at-pos): New function.
+
+	* spam-report.el (spam-report-process-queue): Use it.
+
+2008-12-24  David Engster  <dengste@eml.cc>
+
+	* gnus-sum.el (gnus-summary-set-local-parameters): Don't bind
+	parameters that haven't existed as variables as buffer-local variables.
+
 2008-12-23  Dave Love  <fx@gnu.org>
 
 	* legacy-gnus-agent.el (gnus-agent-unlist-expire-days): Don't use
