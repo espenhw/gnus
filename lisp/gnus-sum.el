@@ -3831,6 +3831,13 @@ This function is intended to be used in
       (and (consp elem)			; Has to be a cons.
 	   (consp (cdr elem))		; The cdr has to be a list.
 	   (symbolp (car elem))		; Has to be a symbol in there.
+
+	   ;; Variables like `gnus-show-threads' that are globally bound,
+	   ;; if used as group parameters, need to get to be buffer-local,
+	   ;; whereas just parameters like `gcc-self', `timestamp', etc.
+	   ;; should not be bound as variables.
+	   (boundp (car elem))		; Has to be already bound
+
 	   (not (memq (car elem) vars))
 	   (ignore-errors		; So we set it.
 	     (push (car elem) vars)
