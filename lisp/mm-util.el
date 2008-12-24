@@ -154,7 +154,22 @@ If FROM or TO is negative, it counts from the end.
 With one argument, just copy STRING without its properties."
 	   (setq string (substring string (or from 0) to))
 	   (set-text-properties 0 (length string) nil string)
-	   string)))))
+	   string))
+     ;; `line-number-at-pos' is available only in Emacs 22.1 or greater
+     ;; and XEmacs 21.5.
+     (line-number-at-pos
+      . ,(lambda (&optional pos)
+	   "Return (narrowed) buffer line number at position POS.
+If POS is nil, use current buffer location.
+Counting starts at (point-min), so the value refers
+to the contents of the accessible portion of the buffer."
+	   (let ((opoint (or pos (point))) start)
+	     (save-excursion
+	       (goto-char (point-min))
+	       (setq start (point))
+	       (goto-char opoint)
+	       (forward-line 0)
+	       (1+ (count-lines start (point))))))))))
 
 ;; `decode-coding-string', `encode-coding-string', `decode-coding-region'
 ;; and `encode-coding-region' are available in Emacs and XEmacs built with
