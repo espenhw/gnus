@@ -1,3 +1,10 @@
+2008-12-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* dns.el (dns-set-servers): Renamed from dns-parse-resolv-conf.  Call
+	nslookup if resolv.conf isn't available.
+	(dns-query): Rename from query-dns.
+	(dns-query-cached): Rename from query-dns-cached.
+
 2008-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-set-article-display-arrow): Make
