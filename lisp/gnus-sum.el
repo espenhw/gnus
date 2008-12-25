@@ -3455,9 +3455,9 @@ display only a single character."
 
 (defun gnus-summary-set-article-display-arrow (pos)
   "Update the overlay arrow to point to line at position POS."
-  (when (and gnus-summary-display-arrow
-	     (boundp 'overlay-arrow-position)
-	     (boundp 'overlay-arrow-string))
+  (when gnus-summary-display-arrow
+    (make-local-variable 'overlay-arrow-position)
+    (make-local-variable 'overlay-arrow-string)
     (save-excursion
       (goto-char pos)
       (beginning-of-line)

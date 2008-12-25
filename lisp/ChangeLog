@@ -1,3 +1,9 @@
+2008-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-set-article-display-arrow): Make
+	overlay-arrow-position and overlay-arrow-string buffer-local; no need
+	to check if those variables exist (first appeared in Emacs 18.50).
+
 2008-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-line-number-at-pos): New function.
