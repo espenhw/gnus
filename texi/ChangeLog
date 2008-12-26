@@ -1,3 +1,8 @@
+2008-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Converting Kill Files): Fix URL.  Include
+	gnus-kill-to-score.el in contrib directory.
+
 2008-12-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Startup Variables): Fix gnus-before-startup-hook.

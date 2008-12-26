@@ -22465,9 +22465,10 @@ score files.  If they are ``regular'', you can use
 the @file{gnus-kill-to-score.el} package; if not, you'll have to do it
 by hand.
 
-The kill to score conversion package isn't included in Gnus by default.
-You can fetch it from
-@uref{http://www.stud.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
+The kill to score conversion package isn't included in Emacs by default.
+You can fetch it from the contrib directory of the Gnus distribution or
+from
+@uref{http://heim.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
 
 If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
