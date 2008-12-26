@@ -314,8 +314,8 @@ Parses \"/etc/resolv.conf\" or calls \"nslookup\"."
 	  (call-process "nslookup" nil t nil "localhost")
 	  (goto-char (point-min))
 	  (re-search-forward
-	   "^Server:[ \t]*\\([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+\\)" nil t)
-	  (setq dns-servers) (list (match-string 1))))))
+	   "^Address:[ \t]*\\([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+\\)" nil t)
+	  (setq dns-servers (list (match-string 1)))))))
 
 (defun dns-read-txt (string)
   (if (> (length string) 1)

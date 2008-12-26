@@ -1,3 +1,7 @@
+2008-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* dns.el (dns-set-servers): Check "Address".  Fix typo.
+
 2008-12-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* dns.el (dns-set-servers): Renamed from dns-parse-resolv-conf.  Call
