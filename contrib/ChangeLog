@@ -1,3 +1,10 @@
+2008-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* README: Add gnus-kill-to-score.el.
+
+	* gnus-kill-to-score.el: New file from
+	<http://heim.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el>.
+
 2008-11-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* smtpmail.el (smtpmail-open-stream): Use

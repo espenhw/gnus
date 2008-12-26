@@ -24,6 +24,11 @@ gnus-namazu.el
 	with Namazu, which is a full-text search engine distributed at
 	<http://namazu.org>, and to browse its results with Gnus.
 
+gnus-kill-to-score.el
+
+	Convert kill files to score files.  See (info "(gnus)Converting Kill
+	Files").
+
 gpg-ring.el
 gpg.el
 
