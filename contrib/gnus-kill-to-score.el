@@ -204,3 +204,4 @@ See also the variable gnus-convert-loads."
       (setq all-kill-files (cdr all-kill-files)))))
 
 
+;; arch-tag: 9e64880a-9d8d-4e6f-b565-b4c76a5f9218
