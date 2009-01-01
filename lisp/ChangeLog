@@ -6,6 +6,16 @@
 
 	* nnimap.el (nnimap-find-minmax-uid): Use imap-fetch-safe.
 
+	* imap.el (imap-process-connection-type, imap-debug, imap-open):
+	(imap-parse-greeting): Fix doc strings.
+	(imap-tls-open, imap-search, imap-message-appenduid-1): Add FIXMEs.
+	(imap-parse-flag-list): Make messages unique.
+	(imap-parse-body): Fix comments.  Add comment on Exchange 2007.
+
+	* nnimap.el: Fix author email.
+	(nnimap-split-rule): Add FIXME comment.
+	(nnimap-debug): Fix doc string.
+
 2008-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* dns.el (dns-set-servers): Check "Address".  Fix typo.

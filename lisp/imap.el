@@ -212,12 +212,12 @@ until a successful connection is made."
 
 (defcustom imap-process-connection-type nil
   "*Value for `process-connection-type' to use for Kerberos4, GSSAPI and SSL.
-The `process-connection-type' variable control type of device
+The `process-connection-type' variable controls the type of device
 used to communicate with subprocesses.  Values are nil to use a
 pipe, or t or `pty' to use a pty.  The value has no effect if the
 system has no ptys or if all ptys are busy: then a pipe is used
-in any case.  The value takes effect when a IMAP server is
-opened, changing it after that has no effect."
+in any case.  The value takes effect when an IMAP server is
+opened; changing it after that has no effect."
   :version "22.1"
   :group 'imap
   :type 'boolean)
@@ -242,10 +242,13 @@ See also `imap-debug'."
   :type 'boolean)
 
 (defcustom imap-debug nil
-  "If non-nil, random debug spews are placed in *imap-debug* buffer.
+  "If non-nil, trace imap- functions into `imap-debug-buffer'.
+Uses `trace-function-background', so you can turn it off with,
+say, `untrace-all'.
+
 Note that username, passwords and other privacy sensitive
-information (such as e-mail) may be stored in the *imap-debug*
-buffer.  It is not written to disk, however.  Do not enable this
+information (such as e-mail) may be stored in the buffer.
+It is not written to disk, however.  Do not enable this
 variable unless you are comfortable with that.
 
 This variable only takes effect when loading the `imap' library.
@@ -717,6 +720,13 @@ sure of changing the value of `foo'."
 	 (process (open-tls-stream name buffer server port)))
     (when process
       (while (and (memq (process-status process) '(open run))
+		  ;; FIXME: Per the "blue moon" comment, the process/buffer
+		  ;; handling here, and elsewhere in functions which open
+		  ;; streams, looks confused.  Obviously we can change buffers
+		  ;; if a different process handler kicks in from
+		  ;; `accept-process-output' or `sit-for' below, and TRT seems
+		  ;; to be to `save-buffer' around those calls.  (I wonder why
+		  ;; `sit-for' is used with a non-zero wait.)  -- fx
 		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 		  (goto-char (point-max))
 		  (forward-line -1)
@@ -1087,7 +1097,7 @@ Returns t if login was successful, nil otherwise."
 	   imap-process))))
 
 (defun imap-open (server &optional port stream auth buffer)
-  "Open a IMAP connection to host SERVER at PORT returning a buffer.
+  "Open an IMAP connection to host SERVER at PORT returning a buffer.
 If PORT is unspecified, a default value is used (143 except
 for SSL which use 993).
 STREAM indicates the stream to use, see `imap-streams' for available
@@ -1726,6 +1736,7 @@ is non-nil return these properties."
   `(with-current-buffer (or ,buffer (current-buffer))
      (imap-message-get ,uid 'BODY)))
 
+;; FIXME: Should this try to use CHARSET?  -- fx
 (defun imap-search (predicate &optional buffer)
   (with-current-buffer (or buffer (current-buffer))
     (imap-mailbox-put 'search 'dummy)
@@ -1849,6 +1860,8 @@ first element.  The rest of list contains the saved articles' UIDs."
 	    (or no-copyuid
 		(imap-message-copyuid-1 mailbox)))))))
 
+;; FIXME: Amalgamate with imap-message-copyuid-1, using an extra arg, since it
+;; shares most of the code?  -- fx
 (defun imap-message-appenduid-1 (mailbox)
   (if (imap-capability 'UIDPLUS)
       (imap-mailbox-get-1 'appenduid mailbox)
@@ -2234,7 +2247,7 @@ Return nil if no complete line has arrived."
 ;;   resp-cond-bye   = "BYE" SP resp-text
 
 (defun imap-parse-greeting ()
-  "Parse a IMAP greeting."
+  "Parse an IMAP greeting."
   (cond ((looking-at "\\* OK ")
 	 (setq imap-state 'nonauth))
 	((looking-at "\\* PREAUTH ")
@@ -2652,7 +2665,7 @@ Return nil if no complete line has arrived."
 
 (defun imap-parse-flag-list ()
   (let (flag-list start)
-    (assert (eq (char-after) ?\() nil "In imap-parse-flag-list")
+    (assert (eq (char-after) ?\() nil "In imap-parse-flag-list 1")
     (while (and (not (eq (char-after) ?\)))
 		(setq start (progn
 			      (imap-forward)
@@ -2661,7 +2674,7 @@ Return nil if no complete line has arrived."
 			      (point)))
 		(> (skip-chars-forward "^ )" (point-at-eol)) 0))
       (push (buffer-substring start (point)) flag-list))
-    (assert (eq (char-after) ?\)) nil "In imap-parse-flag-list")
+    (assert (eq (char-after) ?\)) nil "In imap-parse-flag-list 2")
     (imap-forward)
     (nreverse flag-list)))
 
@@ -2890,9 +2903,10 @@ Return nil if no complete line has arrived."
 	(imap-forward)
 	(push (imap-parse-nstring) body) ;; body-fld-desc
 	(imap-forward)
-	;; next `or' for Sun SIMS bug, it regard body-fld-enc as a
-	;; nstring and return nil instead of defaulting back to 7BIT
+	;; Next `or' for Sun SIMS bug.  It regards body-fld-enc as a
+	;; nstring and returns nil instead of defaulting back to 7BIT
 	;; as the standard says.
+	;; Exchange (2007, at least) does this as well.
 	(push (or (imap-parse-nstring) "7BIT") body) ;; body-fld-enc
 	(imap-forward)
 	;; Exchange 2007 can return -1, contrary to the spec...
@@ -2902,15 +2916,15 @@ Return nil if no complete line has arrived."
 	      (push nil body))
 	  (push (imap-parse-number) body)) ;; body-fld-octets
 
-   ;; ok, we're done parsing the required parts, what comes now is one
-	;; of three things:
+	;; Ok, we're done parsing the required parts, what comes now is one of
+	;; three things:
 	;;
 	;; envelope       (then we're parsing body-type-msg)
 	;; body-fld-lines (then we're parsing body-type-text)
 	;; body-ext-1part (then we're parsing body-type-basic)
 	;;
-  ;; the problem is that the two first are in turn optionally followed
-;; by the third.  So we parse the first two here (if there are any)...
+	;; The problem is that the two first are in turn optionally followed
+	;; by the third.  So we parse the first two here (if there are any)...
 
 	(when (eq (char-after) ?\ )
 	  (imap-forward)
