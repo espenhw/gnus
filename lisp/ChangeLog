@@ -1,3 +1,11 @@
+2009-01-01  Dave Love  <fx@gnu.org>
+
+	* imap.el (imap-string-to-integer): Fix typo.
+	(imap-fetch-safe): New function.
+	(imap-message-copyuid-1, imap-message-appenduid-1): Use it.
+
+	* nnimap.el (nnimap-find-minmax-uid): Use imap-fetch-safe.
+
 2008-12-26  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* dns.el (dns-set-servers): Check "Address".  Fix typo.

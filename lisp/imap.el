@@ -1,7 +1,7 @@
 ;;; imap.el --- imap library
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: mail
@@ -1772,8 +1772,37 @@ is non-nil return these properties."
   (let ((number (string-to-number string base)))
     (if (> number most-positive-fixnum)
 	(error
-	 (format "String %s cannot be converted to a lisp integer" number))
+	 (format "String %s cannot be converted to a Lisp integer" number))
       number)))
+
+(defun imap-fetch-safe (uids props &optional receive nouidfetch buffer)
+  "Like `imap-fetch', but DTRT with Exchange 2007 bug.
+However, UIDS here is a cons, where the car is the canonical form
+of the UIDS specification, and the cdr is the one which works with
+Exchange 2007 or, potentially, other buggy servers.
+See `imap-enable-exchange-bug-workaround'."
+  ;; We don't unconditionally use the alternative (valid) form, since
+  ;; this is said to be significantly inefficient.  The first time we
+  ;; get here for a given, we'll try the canonical form.  If we get
+  ;; the known error from the buggy server, set the flag
+  ;; buffer-locally (to account for connexions to multiple servers),
+  ;; then re-try with the alternative UIDS spec.
+  (condition-case data
+      (imap-fetch (if imap-enable-exchange-bug-workaround
+		      (cdr uids)
+		    (car uids))
+		  props receive nouidfetch buffer)
+    (error
+     (if (and (not imap-enable-exchange-bug-workaround)
+	      (string-match
+	       "The specified message set is invalid"
+	       (cadr data)))
+	 (with-current-buffer (or buffer (current-buffer))
+	   (set (make-local-variable
+		 'imap-enable-exchange-bug-workaround)
+		t)
+	   (imap-fetch (cdr uids) props receive nouidfetch))
+       (signal (car data) (cdr data))))))
 
 (defun imap-message-copyuid-1 (mailbox)
   (if (imap-capability 'UIDPLUS)
@@ -1784,11 +1813,7 @@ is non-nil return these properties."
 	  (imap-message-data (make-vector 2 0)))
       (when (imap-mailbox-examine-1 mailbox)
 	(prog1
-	    (and (imap-fetch
-		  ;; why the switch here, since they seem to be
-		  ;; equivalent, and ~ no-one is going to find this
-		  ;; switch?  -- fx
-		  (if imap-enable-exchange-bug-workaround "*:*" "*") "UID")
+	    (and (imap-fetch-safe '("*" . "*:*") "UID")
 		 (list (imap-mailbox-get-1 'uidvalidity mailbox)
 		       (apply 'max (imap-message-map
 				    (lambda (uid prop) uid) 'UID))))
@@ -1832,8 +1857,7 @@ first element.  The rest of list contains the saved articles' UIDs."
 	  (imap-message-data (make-vector 2 0)))
       (when (imap-mailbox-examine-1 mailbox)
 	(prog1
-	    (and (imap-fetch
-		  (if imap-enable-exchange-bug-workaround "*:*" "*") "UID")
+	    (and (imap-fetch-safe '("*" "*:*") "UID")
 		 (list (imap-mailbox-get-1 'uidvalidity mailbox)
 		       (apply 'max (imap-message-map
 				    (lambda (uid prop) uid) 'UID))))

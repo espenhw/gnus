@@ -1,7 +1,7 @@
 ;;; nnimap.el --- imap backend for Gnus
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-;;   2007, 2008  Free Software Foundation, Inc.
+;;   2007, 2008, 2009  Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
 ;;         Jim Radford <radford@robby.caltech.edu>
@@ -555,8 +555,7 @@ If EXAMINE is non-nil the group is selected read-only."
 	      (imap-mailbox-select group examine))
       (let (minuid maxuid)
 	(when (> (imap-mailbox-get 'exists) 0)
-	  (imap-fetch (if imap-enable-exchange-bug-workaround "1,*:*" "1,*")
-		      "UID" nil 'nouidfetch)
+	  (imap-fetch-safe '("1,*" . "1,*:*") "UID" nil 'nouidfetch)
 	  (imap-message-map (lambda (uid Uid)
 			      (setq minuid (if minuid (min minuid uid) uid)
 				    maxuid (if maxuid (max maxuid uid) uid)))
