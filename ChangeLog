@@ -1,3 +1,7 @@
+2009-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* README: Add outline.  Clarify Emacs versions.
+
 2008-05-01  Lars Magne Ingebrigtsen  <lars@ingebrigtsen.no>
 
 	* README: Bump version to 0.11
