@@ -13873,11 +13873,10 @@
 
 2004-01-04  Mario Lang  <lang@zid.tugraz.at>
 
-	* dns.el: Add support for AAAA records (see RFC 3596)
-
-	* Fix typo PRT -> PTR
-
-	* Parse MX, PTR and SOA replies (see RFC 1035)
+	* dns.el (dns-query-types): Fix typo.
+	(dns-query-types): New function
+	(dns-read-type): Add support for AAAA records, see RFC 3596.  Parse MX,
+	PTR and SOA replies, see RFC 1035.
 
 2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -13904,7 +13903,7 @@
 
 See ChangeLog.2 for earlier changes.
 
-    Copyright (C) 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+    Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 
