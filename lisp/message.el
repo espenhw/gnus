@@ -1,7 +1,7 @@
 ;;; message.el --- composing mail and news messages
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: mail, news
@@ -4142,6 +4142,8 @@ conformance."
 		  (and (mm-multibyte-p)
 		       (memq (char-charset char)
 			     '(eight-bit-control eight-bit-graphic
+						 ;; Emacs 23, Bug#1770:
+						 eight-bit
 						 control-1))
 		       (not (get-text-property
 			     (point) 'untranslated-utf-8))))
@@ -4172,6 +4174,8 @@ conformance."
 			   ;; use find-coding-systems-region.
 			   (memq (char-charset char)
 				 '(eight-bit-control eight-bit-graphic
+						     ;; Emacs 23, Bug#1770:
+						     eight-bit
 						     control-1))
 			   (not (get-text-property
 				 (point) 'untranslated-utf-8)))))

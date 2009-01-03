@@ -1,3 +1,8 @@
+2009-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-fix-before-sending): Add `eight-bit' to
+	illegible-text check.
+
 2009-01-01  Dave Love  <fx@gnu.org>
 
 	* imap.el (imap-string-to-integer): Fix typo.
