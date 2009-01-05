@@ -1,3 +1,12 @@
+2009-01-05  Dave Love  <fx@gnu.org>
+
+	* time-date.el: Require cl for `declare'.
+
+2009-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* time-date.el (format-seconds): Explain `assoc-string'.  Suggested by
+	Dave Love.
+
 2009-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-fix-before-sending): Add `eight-bit' to
