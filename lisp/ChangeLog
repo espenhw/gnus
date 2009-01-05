@@ -1,3 +1,12 @@
+2009-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-ucs-to-char): New function.
+
+	* mm-url.el (mm-url-decode-entities): Use it.
+
+	* lpath.el: Fbind decode-char, int-to-char, ucs-to-char and
+	unicode-to-char.
+
 2009-01-05  Dave Love  <fx@gnu.org>
 
 	* time-date.el: Require cl for `declare'.
