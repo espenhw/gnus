@@ -1,7 +1,7 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -3831,18 +3831,16 @@ This function is intended to be used in
       (and (consp elem)			; Has to be a cons.
 	   (consp (cdr elem))		; The cdr has to be a list.
 	   (symbolp (car elem))		; Has to be a symbol in there.
-
-	   ;; Variables like `gnus-show-threads' that are globally bound,
-	   ;; if used as group parameters, need to get to be buffer-local,
-	   ;; whereas just parameters like `gcc-self', `timestamp', etc.
-	   ;; should not be bound as variables.
-	   (boundp (car elem))		; Has to be already bound
-
 	   (not (memq (car elem) vars))
-	   (ignore-errors		; So we set it.
+	   (ignore-errors
 	     (push (car elem) vars)
-	     (make-local-variable (car elem))
-	     (set (car elem) (eval (nth 1 elem))))))))
+	     ;; Variables like `gnus-show-threads' that are globally
+	     ;; bound, if used as group parameters, need to get to be
+	     ;; buffer-local, whereas just parameters like `gcc-self',
+	     ;; `timestamp', etc. should not be bound as variables.
+	     (if (boundp (car elem))
+		 (set (make-local-variable (car elem)) (eval (nth 1 elem)))
+	       (eval (nth 1 elem))))))))
 
 (defun gnus-summary-read-group (group &optional show-all no-article
 				      kill-buffer no-display backward
