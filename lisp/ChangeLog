@@ -1,3 +1,8 @@
+2009-01-06  David Engster  <dengste@eml.cc>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Reduce to short group name when on
+	primary select method (for gnus-group-mark-article-as-read).
+
 2009-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-ucs-to-char): New function.
