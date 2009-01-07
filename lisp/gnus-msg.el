@@ -1677,7 +1677,10 @@ this is a reply."
 				    group method t t))))
 		(gnus-message 1 "Couldn't store article in group %s: %s"
 			      group (gnus-status-message method)))
-	      (when (gnus-native-method-p method)
+	      (when (stringp method)
+		(setq method (gnus-server-to-method method)))
+	      (when (and (listp method)
+			 (gnus-native-method-p method))
 		(setq group (gnus-group-short-name group)))
 	      (when (and group-art
 			 ;; FIXME: Should gcc-mark-as-read work when
