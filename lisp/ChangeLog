@@ -5,6 +5,10 @@
 
 	* message.el (message-fix-before-sending): Amend comment.
 
+2009-01-08  Dave Love  <fx@gnu.org>
+
+	* imap.el (imap-message-appenduid-1): Fix typo in imap-fetch-safe call.
+
 2009-01-07  David Engster  <dengste@eml.cc>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Fix last patch to deal with

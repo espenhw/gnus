@@ -1876,7 +1876,7 @@ first element.  The rest of list contains the saved articles' UIDs."
 	  (imap-message-data (make-vector 2 0)))
       (when (imap-mailbox-examine-1 mailbox)
 	(prog1
-	    (and (imap-fetch-safe '("*" "*:*") "UID")
+	    (and (imap-fetch-safe '("*" . "*:*") "UID")
 		 (list (imap-mailbox-get-1 'uidvalidity mailbox)
 		       (apply 'max (imap-message-map
 				    (lambda (uid prop) uid) 'UID))))
