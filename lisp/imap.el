@@ -449,9 +449,15 @@ second the status (OK, NO, BAD etc) of the command.")
 
 (defvar imap-enable-exchange-bug-workaround nil
   "Send FETCH UID commands as *:* instead of *.
-Enabling this appears to be required for some servers (e.g.,
-Microsoft Exchange) which otherwise would trigger a response 'BAD
-The specified message set is invalid.'.")
+
+When non-nil, use an alternative UIDS form.  Enabling appears to
+be required for some servers (e.g., Microsoft Exchange 2007)
+which otherwise would trigger a response 'BAD The specified
+message set is invalid.'.  We don't unconditionally use this
+form, since this is said to be significantly inefficient.
+
+This variable is set to t automatically per server if the
+canonical form fails.")
 
 
 ;; Utility functions:
@@ -1796,7 +1802,7 @@ See `imap-enable-exchange-bug-workaround'."
   ;; this is said to be significantly inefficient.  The first time we
   ;; get here for a given, we'll try the canonical form.  If we get
   ;; the known error from the buggy server, set the flag
-  ;; buffer-locally (to account for connexions to multiple servers),
+  ;; buffer-locally (to account for connections to multiple servers),
   ;; then re-try with the alternative UIDS spec.
   (condition-case data
       (imap-fetch (if imap-enable-exchange-bug-workaround

@@ -1,5 +1,8 @@
 2009-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* imap.el (imap-enable-exchange-bug-workaround): Explain auto-detection
+	in the doc string.
+
 	* message.el (message-fix-before-sending): Amend comment.
 
 2009-01-07  David Engster  <dengste@eml.cc>
