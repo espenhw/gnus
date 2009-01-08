@@ -5,7 +5,8 @@
 2009-01-07  David Engster  <dengste@eml.cc>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Fix last patch to deal with
-	simplified server definitions by converting it via g-server-to-method.
+	simplified server definitions by converting it via
+	gnus-server-to-method.
 
 2009-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
