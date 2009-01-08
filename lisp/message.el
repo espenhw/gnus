@@ -4170,8 +4170,9 @@ conformance."
 		  (or (< (mm-char-int char) 128)
 		      (and (mm-multibyte-p)
 			   ;; FIXME: Wrong for Emacs 23 (unicode) and for
-			   ;; things like undecable utf-8.  Should at least
-			   ;; use find-coding-systems-region.
+			   ;; things like undecodable utf-8 (in Emacs 21?).
+			   ;; Should at least use find-coding-systems-region.
+			   ;; -- fx
 			   (memq (char-charset char)
 				 '(eight-bit-control eight-bit-graphic
 						     ;; Emacs 23, Bug#1770:

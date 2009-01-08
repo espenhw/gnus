@@ -1,3 +1,7 @@
+2009-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-fix-before-sending): Amend comment.
+
 2009-01-07  David Engster  <dengste@eml.cc>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Fix last patch to deal with
