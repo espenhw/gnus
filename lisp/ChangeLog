@@ -1,6 +1,6 @@
 2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* mm-util.el (mm-coding-system-priorities): Allow the valu like
+	* mm-util.el (mm-coding-system-priorities): Allow the value like
 	"Japanese (UTF-8)" of current-language-environment.
 
 2009-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
