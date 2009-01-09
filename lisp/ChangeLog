@@ -1,3 +1,8 @@
+2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-coding-system-priorities): Allow the valu like
+	"Japanese (UTF-8)" of current-language-environment.
+
 2009-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* imap.el (imap-enable-exchange-bug-workaround): Explain auto-detection

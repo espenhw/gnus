@@ -842,7 +842,8 @@ Valid elements include:
 (defcustom mm-coding-system-priorities
   (if (boundp 'current-language-environment)
       (let ((lang (symbol-value 'current-language-environment)))
-	(cond ((string= lang "Japanese")
+	(cond (;; In XEmacs 21.5 it may be the one like "Japanese (UTF-8)".
+	       (string-match "\\`Japanese" lang)
 	       ;; Japanese users prefer iso-2022-jp to euc-japan or
 	       ;; shift_jis, however iso-8859-1 should be used when
 	       ;; there are only ASCII text and Latin-1 characters.
