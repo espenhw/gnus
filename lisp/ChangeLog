@@ -1,3 +1,10 @@
+2009-01-11  Aidan Kehoe  <kehoea@parhasard.net>
+
+	* nnfolder.el (nnfolder-read-folder): The (lsh -1 -1) trick to generate
+	the greatest positive fixnum value doesn't work under an XEmacs with
+	bignum support; use the most-positive-fixnum constant instead,
+	available since Emacs 21.1 with cl and XEmacs 21.1.
+
 2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-priorities): Allow the value like
