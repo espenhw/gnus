@@ -3405,11 +3405,13 @@ should replace the \"Date:\" one, or should be added below it."
 		     (setq date (get-text-property pos 'original-date))
 		     t))
 	  (narrow-to-region
-	   pos (if (goto-char (text-property-any pos (point-max)
-						 'original-date nil))
-		   (if (or (bolp) (eobp))
-		       (point)
-		     (1+ (point)))
+	   pos (if (setq pos (text-property-any pos (point-max)
+						'original-date nil))
+		   (progn
+		     (goto-char pos)
+		     (if (or (bolp) (eobp))
+			 (point)
+		       (1+ (point))))
 		 (point-max)))
 	  (goto-char (point-min))
 	  (when (re-search-forward tdate-regexp nil t)
