@@ -1,3 +1,8 @@
+2009-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nnfolder.el (nnfolder-read-folder): Check if most-positive-fixnum is
+	available at runtime.
+
 2009-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-date-ut): Fix end point of narrowing.

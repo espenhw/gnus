@@ -925,7 +925,9 @@ deleted.  Point is left where the deleted region was."
 	      (active (or (cadr (assoc group nnfolder-group-alist))
 			  (cons 1 0)))
 	      (scantime (assoc group nnfolder-scantime-alist))
-	      (minid most-positive-fixnum)
+	      (minid (or (and (boundp 'most-positive-fixnum)
+			      most-positive-fixnum)
+			 (lsh -1 -1)))
 	      maxid start end newscantime
 	      novbuf articles newnum
 	      buffer-read-only)
