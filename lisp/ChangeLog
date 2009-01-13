@@ -1,3 +1,7 @@
+2009-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (article-date-ut): Fix end point of narrowing.
+
 2009-01-11  Aidan Kehoe  <kehoea@parhasard.net>
 
 	* nnfolder.el (nnfolder-read-folder): The (lsh -1 -1) trick to generate

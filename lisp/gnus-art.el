@@ -1,7 +1,7 @@
 ;;; gnus-art.el --- article mode commands for Gnus
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -3404,9 +3404,13 @@ should replace the \"Date:\" one, or should be added below it."
 				    (point) 'original-date))
 		     (setq date (get-text-property pos 'original-date))
 		     t))
-	  (narrow-to-region pos (or (text-property-any pos (point-max)
-						       'original-date nil)
-				    (point-max)))
+	  (narrow-to-region
+	   pos (if (goto-char (text-property-any pos (point-max)
+						 'original-date nil))
+		   (if (or (bolp) (eobp))
+		       (point)
+		     (1+ (point)))
+		 (point-max)))
 	  (goto-char (point-min))
 	  (when (re-search-forward tdate-regexp nil t)
 	    (setq bface (get-text-property (point-at-bol) 'face)
