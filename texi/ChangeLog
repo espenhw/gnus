@@ -1,3 +1,8 @@
+2009-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Non-ASCII Group Names, RSS): Update description of
+	nnmail-pathname-coding-system.
+
 2009-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Group Parameters): Add note for local variables.
