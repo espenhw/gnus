@@ -1,3 +1,10 @@
+2009-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-pathname-coding-system): Default to the `file-name'
+	coding system in XEmacs; add a workaround for XEmacs.
+
+	* lpath.el: Fbind coding-system-aliasee.
+
 2009-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-priorities): Protect against nil value

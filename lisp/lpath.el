@@ -30,16 +30,17 @@
     (defun split-line (&optional arg))
     (maybe-fbind
      '(clear-string
-       custom-autoload delete-annotation delete-extent device-connection
-       dfw-device events-to-keys find-face font-lock-set-defaults
-       get-char-table glyph-height glyph-width help-buffer int-to-char
-       ldap-search-entries mail-aliases-setup make-annotation make-event
-       make-glyph make-network-process map-extents message-xmas-redefine
-       put-char-table run-mode-hooks set-extent-property set-itimer-function
-       set-keymap-default-binding temp-directory ucs-to-char
-       unicode-precedence-list unicode-to-char url-generic-parse-url
-       url-http-file-exists-p valid-image-instantiator-format-p
-       vcard-pretty-print w3-coding-system-for-mime-charset window-pixel-height
+       coding-system-aliasee custom-autoload delete-annotation delete-extent
+       device-connection dfw-device events-to-keys find-face
+       font-lock-set-defaults get-char-table glyph-height glyph-width
+       help-buffer int-to-char ldap-search-entries mail-aliases-setup
+       make-annotation make-event make-glyph make-network-process map-extents
+       message-xmas-redefine put-char-table run-mode-hooks set-extent-property
+       set-itimer-function set-keymap-default-binding temp-directory
+       ucs-to-char unicode-precedence-list unicode-to-char
+       url-generic-parse-url url-http-file-exists-p
+       valid-image-instantiator-format-p vcard-pretty-print
+       w3-coding-system-for-mime-charset window-pixel-height
        window-pixel-width))
     (maybe-bind
      '(eudc-protocol
@@ -102,9 +103,9 @@
 
   (unless (featurep 'file-coding)
     (maybe-fbind
-     '(coding-system-base
-       coding-system-change-eol-conversion coding-system-list coding-system-p
-       find-coding-system))
+     '(coding-system-aliasee
+       coding-system-base coding-system-change-eol-conversion coding-system-list
+       coding-system-p find-coding-system))
     (maybe-bind
      '(buffer-file-coding-system
        coding-system-for-read coding-system-for-write
