@@ -31,10 +31,20 @@
 	bignum support; use the most-positive-fixnum constant instead,
 	available since Emacs 21.1 with cl and XEmacs 21.1.
 
+2009-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-next-article): Revert last change by which
+	XEmacs gets not to work.
+
 2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-priorities): Allow the value like
 	"Japanese (UTF-8)" of current-language-environment.
+
+2009-01-09  Glenn Morris  <rgm@gnu.org>
+
+	* gnus-sum.el (gnus-summary-next-article): Replace last-command-char
+	with last-command-event.
 
 2009-01-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -63,6 +73,11 @@
 	* gnus-msg.el (gnus-inews-do-gcc): Reduce to short group name when on
 	primary select method (for gnus-group-mark-article-as-read).
 
+2009-01-06  Tassilo Horn  <tassilo@member.fsf.org>
+
+	* gnus-art.el (gnus-treat-display-face): Fix docstring link to point to
+	`(gnus)Face', not `(gnus)X-Face'.
+
 2009-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-ucs-to-char): New function.
@@ -85,6 +100,17 @@
 
 	* message.el (message-fix-before-sending): Add `eight-bit' to
 	illegible-text check.
+
+2009-01-03  Michael Olson  <mwolson@gnu.org>
+
+	* nnimap.el (nnimap-retrieve-headers-progress): Handle edge case where
+	`headers' is nil.  This can occur if the IMAP server does not have
+	permissions to read messages from a folder, but can write new messages
+	to the folder.
+	(nnimap-request-article-part): Do not insert `data' if it is nil.
+
+	* imap.el (imap-parse-fetch): Courier can insert spurious blank
+	characters which will confuse `read', so skip past them.
 
 2009-01-01  Dave Love  <fx@gnu.org>
 
@@ -12297,6 +12323,7 @@
 	* gnus-start.el (gnus-get-unread-articles): Fix last commit.
 
 2004-04-07  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
 	* gnus-agent.el (gnus-agent-total-fetched-hashtb): New variable.
 	(gnus-agent-with-refreshed-group): New macro.
 	(gnus-agent-rename-group): New function.

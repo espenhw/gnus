@@ -1,3 +1,7 @@
+2009-01-22  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* .dir-locals.el: New file.
+
 2009-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* README: Add outline.  Clarify Emacs versions.
@@ -818,7 +822,7 @@
 	Windows NT.
 
     Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-    2007, 2008 Free Software Foundation, Inc.
+    2007, 2008, 2009 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 
