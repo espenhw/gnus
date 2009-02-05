@@ -1,3 +1,8 @@
+2009-01-31  Glenn Morris  <rgm@gnu.org>
+
+	* gnus-sum.el (gnus-summary-next-article): XEmacs-friendly version of
+	2009-01-09 change.
+
 2009-01-31  Dave Love  <fx@gnu.org>
 
 	* imap.el (imap-fetch-safe): Bind debug-on-error.
