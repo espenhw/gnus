@@ -1,3 +1,7 @@
+2009-02-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-alist): Recognize Konqueror info links.
+
 2009-01-31  Glenn Morris  <rgm@gnu.org>
 
 	* gnus-sum.el (gnus-summary-next-article): XEmacs-friendly version of
@@ -25,10 +29,6 @@
 
 	* nntp.el (nntp-send-authinfo): Use list of
 	auth-source modes.
-
-2009-01-26  Teodor Zlatanov  <tzz@lifelogs.com>
-
-	* nntp.el (nntp-send-authinfo): 
 
 2009-01-16  Teodor Zlatanov  <tzz@lifelogs.com>
 
