@@ -23829,7 +23829,8 @@ away.
 What use are these NoCeM messages if the articles are canceled anyway?
 Some sites do not honor cancel messages and some sites just honor cancels
 from a select few people.  Then you may wish to make use of the NoCeM
-messages, which are distributed in the @samp{alt.nocem.misc} newsgroup.
+messages, which are distributed in the newsgroups
+@samp{news.lists.filters}, @samp{alt.nocem.misc}, etc.
 
 Gnus can read and parse the messages in this group automatically, and
 this will make spam disappear.
@@ -23856,19 +23857,24 @@ groups remain the default, 3 is the best choice.
 Gnus will look for NoCeM messages in the groups in this list.  The
 default is
 @lisp
-("news.lists.filters" "news.admin.net-abuse.bulletins"
- "alt.nocem.misc" "news.admin.net-abuse.announce")
+("news.lists.filters" "alt.nocem.misc")
 @end lisp
 
 @item gnus-nocem-issuers
 @vindex gnus-nocem-issuers
 There are many people issuing NoCeM messages.  This list says what
-people you want to listen to.  The default is
+people you want to listen to.  The default is:
+
 @lisp
-("Automoose-1" "clewis@@ferret.ocunix.on.ca"
- "cosmo.roadkill" "SpamHippo" "hweede@@snafu.de")
+("Adri Verhoef"
+ "alba-nocem@@albasani.net"
+ "bleachbot@@httrack.com"
+ "news@@arcor-online.net"
+ "news@@uni-berlin.de"
+ "nocem@@arcor.de"
+ "pgpmoose@@killfile.org"
+ "xjsppl@@gmx.de")
 @end lisp
-fine, upstanding citizens all of them.
 
 Known despammers that you can put in this list are listed at@*
 @uref{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
@@ -23903,9 +23909,9 @@ The specs are applied left-to-right.
 
 @item gnus-nocem-verifyer
 @vindex gnus-nocem-verifyer
-@findex pgg-verify
+@findex gnus-nocem-epg-verify
 This should be a function for verifying that the NoCeM issuer is who she
-says she is.  The default is @code{pgg-verify}, which returns
+says she is.  The default is @code{gnus-nocem-epg-verify}, which returns
 non-@code{nil} if the verification is successful, otherwise (including
 the case the NoCeM message was not signed) returns @code{nil}.  If this
 is too slow and you don't care for verification (which may be dangerous),
@@ -23937,7 +23943,8 @@ issuers.
 @item gnus-nocem-check-article-limit
 @vindex gnus-nocem-check-article-limit
 If non-@code{nil}, the maximum number of articles to check in any NoCeM
-group.  NoCeM groups can be huge and very slow to process.
+group.  @code{nil} means no restriction.  NoCeM groups can be huge and
+very slow to process.
 
 @end table
 
