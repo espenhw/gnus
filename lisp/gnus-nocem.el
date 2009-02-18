@@ -101,16 +101,24 @@ issuer registry."
   :group 'gnus-nocem
   :type 'integer)
 
-(defcustom gnus-nocem-verifyer 'gnus-nocem-epg-verify
+(defcustom gnus-nocem-verifyer (if (locate-library "epg")
+				   'gnus-nocem-epg-verify
+				 'pgg-verify)
   "*Function called to verify that the NoCeM message is valid.
-One likely value is `gnus-nocem-epg-verify'.  If the function in this
-variable isn't bound, the message will be used unconditionally."
+If the function in this variable isn't bound, the message will be used
+unconditionally."
   :group 'gnus-nocem
   :version "23.1"
   :type '(radio (function-item gnus-nocem-epg-verify)
 		(function-item pgg-verify)
 		(function-item mc-verify)
-		(function :tag "other")))
+		(function :tag "other"))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol
+			     (if (and (eq value 'gnus-nocem-epg-verify)
+				      (not (locate-library "epg")))
+				 'pgg-verify
+			       value))))
 
 (defcustom gnus-nocem-liberal-fetch nil
   "*If t try to fetch all messages which have @@NCM in the subject.

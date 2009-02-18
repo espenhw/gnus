@@ -2,7 +2,8 @@
 
 	* gnus-nocem.el (gnus-nocem-groups): Remove invalid NoCeM groups.
 	(gnus-nocem-issuers): List currently active issuers; fix custom type.
-	(gnus-nocem-verifyer): Default to gnus-nocem-epg-verify.
+	(gnus-nocem-verifyer): Default to gnus-nocem-epg-verify if EasyPG is
+	available.
 	(gnus-nocem-epg-verify): New function.
 
 2009-02-15  Reiner Steib  <Reiner.Steib@gmx.de>
