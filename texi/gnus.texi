@@ -23910,17 +23910,20 @@ The specs are applied left-to-right.
 @item gnus-nocem-verifyer
 @vindex gnus-nocem-verifyer
 @findex gnus-nocem-epg-verify
+@findex pgg-verify
 This should be a function for verifying that the NoCeM issuer is who she
-says she is.  The default is @code{gnus-nocem-epg-verify}, which returns
-non-@code{nil} if the verification is successful, otherwise (including
-the case the NoCeM message was not signed) returns @code{nil}.  If this
-is too slow and you don't care for verification (which may be dangerous),
-you can set this variable to @code{nil}.
+says she is.  This variable defaults to @code{gnus-nocem-epg-verify} if
+EasyPG is available, otherwise defaults to @code{pgg-verify}.  The
+function should return non-@code{nil} if the verification is successful,
+otherwise (including the case the NoCeM message was not signed) should
+return @code{nil}.  If this is too slow and you don't care for
+verification (which may be dangerous), you can set this variable to
+@code{nil}.
 
 Formerly the default was @code{mc-verify}, which is a Mailcrypt
 function.  While you can still use it, you can change it into
-@code{pgg-verify} running with GnuPG if you are willing to add the
-@acronym{PGP} public keys to GnuPG's keyring.
+@code{gnus-nocem-epg-verify} or @code{pgg-verify} running with GnuPG if
+you are willing to add the @acronym{PGP} public keys to GnuPG's keyring.
 
 @item gnus-nocem-directory
 @vindex gnus-nocem-directory
