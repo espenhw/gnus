@@ -23848,9 +23848,10 @@ In that case, Gnus scans NoCeM messages when checking new news if this
 value is not exceeding a group level that you specify as the prefix
 argument to some commands, e.g. @code{gnus},
 @code{gnus-group-get-new-news}, etc.  Otherwise, Gnus does not scan
-NoCeM messages if you specify a group level to those commands.  For
-example, if you use 1 or 2 on the mail groups and the levels on the news
-groups remain the default, 3 is the best choice.
+NoCeM messages if you specify a group level that is smaller than this
+value to those commands.  For example, if you use 1 or 2 on the mail
+groups and the levels on the news groups remain the default, 3 is the
+best choice.
 
 @item gnus-nocem-groups
 @vindex gnus-nocem-groups
