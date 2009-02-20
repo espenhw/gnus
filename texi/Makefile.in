@@ -19,7 +19,7 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 PAPERTYPE=a4
-INFO_DEPS=gnus message emacs-mime sieve pgg sasl
+INFO_DEPS=gnus message emacs-mime sieve pgg auth sasl
 REFCARD=gnus-refcard
 LOGO=gnus-logo
 
@@ -45,9 +45,9 @@ GNUS-NEWS:	gnus-news.texi gnus-news.el
 	$(EMACSCOMP) -l $(srcdir)/gnus-news.el -f batch-gnus-news $< $@
 	mv $@ ../$@
 
-dvi: gnus.dvi message.dvi $(REFCARD).dvi emacs-mime.dvi sieve.dvi pgg.dvi sasl.dvi
+dvi: gnus.dvi message.dvi $(REFCARD).dvi emacs-mime.dvi sieve.dvi pgg.dvi auth.dvi sasl.dvi
 
-pdf: gnus.pdf message.pdf $(REFCARD).pdf emacs-mime.pdf sieve.pdf pgg.pdf sasl.pdf
+pdf: gnus.pdf message.pdf $(REFCARD).pdf emacs-mime.pdf sieve.pdf pgg.pdf auth.pdf sasl.pdf
 
 .texi.dvi :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi
@@ -127,9 +127,9 @@ makeinfo:
 texi2latex.elc: texi2latex.el
 	srcdir=$(srcdir)/../lisp $(EMACSCOMP) -l $(srcdir)/../lisp/dgnushack.el --eval '(byte-compile-file "$(srcdir)/texi2latex.el")'
 
-latex: gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi sasl.latexi gnus-news.latexi
+latex: gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi auth.latexi sasl.latexi gnus-news.latexi
 
-gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi sasl.latexi gnus-news.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi $(srcdir)/message.texi $(srcdir)/emacs-mime.texi $(srcdir)/sieve.texi $(srcdir)/pgg.texi $(srcdir)/sasl.texi $(srcdir)/gnus-news.texi texi2latex.elc
+gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.latexi auth.latexi sasl.latexi gnus-news.latexi: $(srcdir)/gnus.texi $(srcdir)/gnus-faq.texi $(srcdir)/message.texi $(srcdir)/emacs-mime.texi $(srcdir)/sieve.texi $(srcdir)/pgg.texi $(srcdir)/sasl.texi $(srcdir)/gnus-news.texi texi2latex.elc
 	srcdir=$(srcdir) $(EMACSCOMP) -l ./texi2latex.elc -f latexi-translate
 
 .latexi.dvi-x:

@@ -21,4 +21,5 @@ File: dir	Node: Top	This is the Gnus Info tree
 * Emacs MIME: (emacs-mime).	Libraries for handling MIME.
 * Sieve: (sieve).	        Managing Sieve scripts in Emacs.
 * PGG: (pgg).   		Emacs interface to various PGP implementations.
+* auth-source: (auth).   	Emacs interface to keeping login information.
 * SASL: (sasl).   		The Emacs SASL library.

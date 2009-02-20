@@ -1,3 +1,10 @@
+2009-02-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* dir: Add auth.texi.
+
+	* Makefile.in (INSTALL_DATA, INFO_DEPS, dvi, pdf, latex): Add
+	auth.texi.
+
 2009-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (NoCeM): Fix description of gnus-use-nocem.
