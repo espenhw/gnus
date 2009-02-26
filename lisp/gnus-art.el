@@ -537,6 +537,7 @@ that the symbol of the saver function, which is specified by
   :group 'gnus-article-saving
   :type 'regexp)
 
+;; Note that "Rmail format" is mbox since Emacs 23, but Babyl before.
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
   "A function to save articles in your favourite format.
 The function will be called by way of the `gnus-summary-save-article'
@@ -3876,6 +3877,9 @@ Directory to save to is default to `gnus-article-save-directory'."
     (save-excursion
       (save-restriction
 	(widen)
+	;; Note that unlike gnus-summary-save-in-mail, there is no
+	;; check to see if filename is Babyl.  Rmail in Emacs 23 does
+	;; not use Babyl.
 	(gnus-output-to-rmail filename))))
   filename)
 
@@ -3894,7 +3898,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 	(if (and (file-readable-p filename)
 		 (file-regular-p filename)
 		 (mail-file-babyl-p filename))
-	    (rmail-output-to-rmail-file filename t)
+	    (gnus-output-to-rmail filename)
 	  (gnus-output-to-mail filename)))))
   filename)
 

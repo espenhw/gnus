@@ -1,3 +1,19 @@
+2009-02-26  Glenn Morris  <rgm@gnu.org>
+
+	* gnus.texi: Minor updates for mbox Rmail.
+
+2009-02-26  Karl Berry  <karl@gnu.org>
+
+	* gnus-coding.texi,
+	* gnus.texi,
+	* message.texi,
+	* pgg.texi,
+	* sasl.texi,
+	* sieve.texi: Consistently use @insertcopying in the Top node,
+	@contents at the front (after @end titlepage),
+	and @direntry after @copying.
+	(Bug#1988)
+
 2009-02-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* dir: Add auth.texi.
@@ -6284,7 +6300,7 @@ Thu Feb 25 00:28:49 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
 	* gnus.texi (Mail Folders): Addition.
 
     Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-    2007, 2008 Free Software Foundation, Inc.
+    2007, 2008, 2009 Free Software Foundation, Inc.
 
   This file is part of GNU Emacs.
 

@@ -1,3 +1,13 @@
+2009-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-dired.el: Remove autoload for gnus-setup-message.
+	(gnus-dired-attach): Fake this-command value to prevent Gnus from
+	displaying Gnus logo; always use compose-mail.
+
+2009-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-dired.el: Tell autoload that gnus-setup-message is a macro.
+
 2009-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-nocem.el (gnus-nocem-groups): Remove invalid NoCeM groups.
@@ -9,6 +19,34 @@
 2009-02-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-alist): Recognize Konqueror info links.
+
+2009-02-15  Glenn Morris  <rgm@gnu.org>
+
+	* gnus-util.el (rmail-insert-rmail-file-header)
+	(rmail-count-new-messages, rmail-show-message): Remove unnecessary
+	autoloads.
+	(rmail-default-rmail-file): Remove unnecessary declaration.
+	(gnus-output-to-rmail): Handle mbox Rmail as well as Babyl Rmail.
+
+2009-02-14  Glenn Morris  <rgm@gnu.org>
+
+	* gnus.el (rmail-default-rmail-file): Remove declaration of deleted
+	variable (only used in gnus-util, which declares it anyway).
+	(rmail-output-to-rmail-file): Remove autoload of deleted function,
+	which was only needed by gnus-art (changed to not use it any more).
+	(rmail-insert-rmail-file-header): Remove autoload of deleted function,
+	only used in gnus-util, which autoloads it itself.
+	(rmail-update-summary): Fix autoload.
+
+	* gnus-art.el (gnus-summary-save-in-mail): Use gnus-output-to-rmail
+	rather than rmail-output-to-rmail-file.
+
+2009-02-07  Glenn Morris  <rgm@gnu.org>
+
+	* message.el (rmail-msg-restore-non-pruned-header): Remove unneeded
+	autoload of function that no longer exists.
+	(rmail-toggle-header): Declare.
+	(message-forward-rmail-make-body): Handle mbox Rmail.
 
 2009-01-31  Glenn Morris  <rgm@gnu.org>
 

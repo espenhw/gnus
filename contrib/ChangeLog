@@ -1,3 +1,14 @@
+2009-02-26  Tobias C. Rittweiler  <tcr@freebits.de>  (tiny change)
+
+	* sendmail.el (sendmail-send-it): `call-process-region' can return a
+	string.  (Bug#2428)
+
+2009-02-07  Glenn Morris  <rgm@gnu.org>
+
+	* sendmail.el (mail-bury-selects-summary, mail-yank-original): Doc fix.
+	(rmail-output-to-rmail-buffer): Autoload it.
+	(mail-do-fcc): Give it a doc string.  Update for mbox Rmail, simplify.
+
 2009-01-23  Glenn Morris  <rgm@gnu.org>
 
 	* sendmail.el (mail-bury): Revert previous change now pmail is no more.
