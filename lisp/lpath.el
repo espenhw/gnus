@@ -21,8 +21,8 @@
      '(Info-index
        Info-index-next Info-menu bbdb-complete-name display-time-event-handler
        epg-check-configuration find-coding-system frame-device w3-do-setup
-       w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
-       w3m-region))
+       rmail-swap-buffers-maybe w3-prepare-buffer w3-region w32-focus-frame
+       w3m-detect-meta-charset w3m-region))
     (maybe-bind
      '(w3m-link-map)))
 
@@ -51,6 +51,8 @@
 (when (featurep 'xemacs)
   (defun nnkiboze-score-file (a))
   (defun split-line (&optional arg))
+  (eval-after-load "rmail"
+    '(defun rmail-toggle-header (&optional arg)))
   (maybe-fbind
    '(clear-string
      codepage-setup create-image detect-coding-string
@@ -61,6 +63,7 @@
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
      mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
      pgg-display-output-buffer posn-point posn-window put-image read-event
+     rmail-msg-restore-non-pruned-header rmail-swap-buffers-maybe
      select-safe-coding-system sort-coding-systems track-mouse ucs-to-char
      url-generic-parse-url url-http-file-exists-p url-insert-file-contents
      vcard-pretty-print w3m-detect-meta-charset w3m-region window-edges))
@@ -71,8 +74,8 @@
      filladapt-mode gnus-agent-expire-current-dirs
      help-xref-stack-item idna-program installation-directory
      line-spacing mark-active mouse-selection-click-count
-     mouse-selection-click-count-buffer ps-print-color-p
-     rmail-insert-mime-forwarded-message-function
+     mouse-selection-click-count-buffer ps-print-color-p rmail-default-file
+     rmail-default-rmail-file rmail-insert-mime-forwarded-message-function
      show-trailing-whitespace tool-bar-mode transient-mark-mode
      url-version w3-meta-charset-content-type-regexp w3m-link-map
      w3-meta-content-type-charset-regexp))

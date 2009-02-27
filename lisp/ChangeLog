@@ -1,3 +1,10 @@
+2009-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind rmail-swap-buffers-maybe for Emacs 21~22;
+	fbind rmail-msg-restore-non-pruned-header, rmail-swap-buffers-maybe and
+	rmail-toggle-header for XEmacs;
+	bind rmail-default-file and rmail-default-rmail-file for XEmacs.
+
 2009-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-dired.el: Remove autoload for gnus-setup-message.
