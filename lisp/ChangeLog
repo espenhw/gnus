@@ -1,3 +1,7 @@
+2009-03-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-insert-mime): Don't break parts that mm-uu dissected.
+
 2009-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind rmail-swap-buffers-maybe for Emacs 21~22;
