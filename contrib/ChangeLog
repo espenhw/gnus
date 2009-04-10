@@ -1,4 +1,41 @@
-2009-02-26  Tobias C. Rittweiler  <tcr@freebits.de>  (tiny change)
+2009-04-09  Richard M Stallman  <rms@gnu.org>
+
+	* sendmail.el (sendmail-send-it): Replace any
+	pre-existing Content-type header if we insert one.
+
+2009-03-15  Glenn Morris  <rgm@gnu.org>
+
+	* sendmail.el (mail-yank-prefix): Doc fix.
+	(mail-mode-map): Only enable the "Cite Original" menu-item when
+	appropriate.  Standardize the text used for other headers re hyphens.
+
+2009-03-14  Glenn Morris  <rgm@gnu.org>
+
+	* sendmail.el (mail-interactive): Doc fix.
+	(mail-yank-ignored-headers): Add X-RMAIL- headers, bump :version.
+	(mail-setup): Use the function mail-signature.
+	(mail-mode-hook): Doc fix.
+	(mail-to, mail-subject, mail-cc, mail-bcc, mail-reply-to)
+	(mail-mail-reply-to, mail-mail-followup-to): Doc fixes.
+	(mail-signature): Check the signature file is readable.
+	With the argument ATPOINT, really insert at point.
+	Handle the case when the variable mail-signature is an expression.
+
+2009-03-10  Glenn Morris  <rgm@gnu.org>
+
+	* sendmail.el (mail-archive-file-name, mail-default-headers):
+	Doc fixes.
+	(mail-mailing-lists): Remove leading `*' from defcustom doc.
+
+2009-03-03  Simon Josefsson  <simon@josefsson.org>
+
+	* smtpmail.el (smtpmail-auth-supported): Mention that list is
+	in preference order.
+	(smtpmail-try-auth-methods): Improve which authentication
+	mechanism to use, so that the locally most preferred and mutually
+	supported mechanism is used.
+
+009-02-26  Tobias C. Rittweiler  <tcr@freebits.de>  (tiny change)
 
 	* sendmail.el (sendmail-send-it): `call-process-region' can return a
 	string.  (Bug#2428)
@@ -42,7 +79,7 @@
 
 2008-05-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* mail/smtpmail.el: Add autoload for `auth-source-user-or-password'.
+	* smtpmail.el: Add autoload for `auth-source-user-or-password'.
 	(smtpmail-try-auth-methods): Use it.
 
 2008-05-15  Andreas Schwab  <schwab@suse.de>
@@ -135,7 +172,7 @@
 
 2007-12-09  Dan Nicolaescu  <dann@ics.uci.edu>
 
-	* mail/sendmail.el (dired-view-file, dired-get-filename): Declare as
+	* sendmail.el (dired-view-file, dired-get-filename): Declare as
 	functions.
 
 2007-11-24  Kenichi Handa  <handa@m17n.org>

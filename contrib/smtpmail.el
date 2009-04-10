@@ -219,7 +219,8 @@ This is relative to `smtpmail-queue-dir'.")
 				     smtpmail-queue-index-file))
 
 (defconst smtpmail-auth-supported '(cram-md5 plain login)
-  "List of supported SMTP AUTH mechanisms.")
+  "List of supported SMTP AUTH mechanisms.
+The list is in preference order.")
 
 ;;;
 ;;;
@@ -540,7 +541,7 @@ This is relative to `smtpmail-queue-dir'.")
 
 (defun smtpmail-try-auth-methods (process supported-extensions host port)
   (let* ((mechs (cdr-safe (assoc 'auth supported-extensions)))
-	 (mech (car (smtpmail-intersection smtpmail-auth-supported mechs)))
+	 (mech (car (smtpmail-intersection mechs smtpmail-auth-supported)))
 	 (auth-user (auth-source-user-or-password
 		     "login" host (or port "smtp")))
 	 (auth-pass (auth-source-user-or-password

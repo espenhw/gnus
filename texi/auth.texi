@@ -1,6 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename auth.info
+@settitle Emacs auth-source Library @value{VERSION}
 
 @set VERSION 0.1
 
@@ -37,7 +38,10 @@ license to the document, as described in section 6 of the license.
 @end quotation
 @end copying
 
-@tex
+@dircategory Emacs
+@direntry
+* Auth-source: (auth).   The Emacs auth-source library.
+@end direntry
 
 @titlepage
 @title Emacs auth-source Library
