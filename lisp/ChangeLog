@@ -3,6 +3,11 @@
 	* spam.el: Use dns-query instead of query-dns.  Was renamed on
 	2008-12-25 in dns.el.
 
+2009-04-20  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* rfc2047.el (rfc2047-decode-region): Don't skip past `start', which
+	could happen if the text is only composed of spaces and/or tabs.
+
 2009-03-03  Brian Sniffen  <bts@evenmere.org>  (tiny change)
 
 	* gnus-draft.el (gnus-draft-send): Bind gnus-message-setup-hook to nil
@@ -4841,6 +4846,13 @@
 	* mm-extern.el (mm-extern-mail-server): End `y-or-n-p' prompt with a
 	space.
 
+2006-08-10  Romain Francoise  <romain@orebokech.com>
+
+	* dns-mode.el: Alias `zone-mode' to `dns-mode'.
+	(dns-mode-soa-auto-increment-serial): New user option.
+	(dns-mode-soa-maybe-increment-serial): New function.
+	(dns-mode): Add the latter to `write-contents-functions'.
+
 2006-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* compface.el (uncompface): Use binary rather than raw-text-unix.
@@ -8787,6 +8799,10 @@
 
 	* dgnushack.el: Advise byte-optimize-form-code-walker to avoid the
 	``...called for effect'' warnings for Emacs 21.4 as well as 21.3.
+
+2005-05-27  Lute Kamstra  <lute@gnu.org>
+
+	* textmodes/dns-mode.el (dns-mode): Specify customization group.
 
 2005-05-26  Luc Teirlinck  <teirllm@auburn.edu>
 
