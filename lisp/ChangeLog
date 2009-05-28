@@ -8802,7 +8802,7 @@
 
 2005-05-27  Lute Kamstra  <lute@gnu.org>
 
-	* textmodes/dns-mode.el (dns-mode): Specify customization group.
+	* dns-mode.el (dns-mode): Specify customization group.
 
 2005-05-26  Luc Teirlinck  <teirllm@auburn.edu>
 
