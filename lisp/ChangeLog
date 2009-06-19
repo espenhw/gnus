@@ -1,3 +1,8 @@
+2009-06-18  Ulrich Mueller  <ulm@gentoo.org>
+
+	* pgg-gpg.el (pgg-gpg-lookup-key-owner): Handle colon listings
+	format used by GnuPG 2.0.11.
+
 2009-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-delete-part): Specify gnus-decoded as charset
