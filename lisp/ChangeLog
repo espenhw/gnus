@@ -1,3 +1,9 @@
+2009-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-dissect-buffer): Use message-fetch-field instead of
+	mail-fetch-field to fetch Content-Description header in order to
+	exclude newlines.
+
 2009-06-18  Ulrich Mueller  <ulm@gentoo.org>
 
 	* pgg-gpg.el (pgg-gpg-lookup-key-owner): Handle colon listings
