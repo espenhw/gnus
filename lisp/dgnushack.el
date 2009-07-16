@@ -255,6 +255,7 @@ fixed in Emacs 22."
     (autoload 'smtpmail-send-it "smtpmail")
     (autoload 'sort-numeric-fields "sort" nil t)
     (autoload 'sort-subr "sort")
+    (autoload 'thing-at-point "thingatpt")
     (autoload 'toggle-truncate-lines "view-less" nil t)
     (autoload 'trace-function-background "trace" nil t)
     (autoload 'unmorse-region "morse" nil t)

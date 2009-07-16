@@ -55,7 +55,7 @@
     '(defun rmail-toggle-header (&optional arg)))
   (maybe-fbind
    '(clear-string
-     codepage-setup create-image detect-coding-string
+     codepage-setup cp-supported-codepages create-image detect-coding-string
      display-time-event-handler epg-check-configuration event-click-count
      event-end event-start find-coding-systems-for-charsets
      find-coding-systems-region find-coding-systems-string find-image
