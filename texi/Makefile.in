@@ -86,12 +86,11 @@ gnus-booklet.dvi: $(REFCARD).tex $(LOGO).eps
 gnus-booklet.pdf: $(REFCARD).tex  $(LOGO).pdf
 	if [ "$(PAPERTYPE)" == a4 ]; then \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(PDFLATEX) '\def\booklettrue{}\input{$(REFCARD)}' ;\
+          $(PDFLATEX) -jobname=gnus-booklet '\def\booklettrue{}\input{$(REFCARD)}' ;\
 	else \
 	  TEXINPUTS=$(srcdir):$$TEXINPUTS:: \
-          $(PDFLATEX) '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' ;\
+          $(PDFLATEX) -jobname=gnus-booklet '\def\booklettrue{}\def\letterpapertrue{}\input{$(REFCARD)}' ;\
 	fi
-	mv $(REFCARD).pdf $@
 
 gnus-faq-full-update: gnus-faq-clean gnus-faq-texi
 
