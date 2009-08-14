@@ -1,4 +1,5 @@
 Makefile
+auth
 emacs-mime
 gnus
 gnus-[0-9]*
