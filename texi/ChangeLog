@@ -1,3 +1,7 @@
+2009-08-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* auth.texi: Rewritten for coverage and clarity.
+
 2009-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Expiring Mail): Mention
