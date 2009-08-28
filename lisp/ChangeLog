@@ -1,3 +1,8 @@
+2009-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-attach-file, mml-attach-buffer, mml-attach-external):
+	Don't save excursion.
+
 2009-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-safe-html-newsgroups): New user option.
