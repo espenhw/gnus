@@ -1,3 +1,8 @@
+2009-08-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-attach-file, mml-attach-buffer, mml-attach-external):
+	Don't move point if the command is invoked inside the message header.
+
 2009-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-attach-file, mml-attach-buffer, mml-attach-external):
