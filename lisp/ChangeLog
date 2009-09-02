@@ -1,3 +1,8 @@
+2009-09-02  Karl Kleinpaste  <karl@kleinpaste.org>
+
+	* gnus-art.el (gnus-article-read-summary-keys):
+	Fix gnus-buffer-configuration's value temporarily used.
+
 2009-08-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-attach-file, mml-attach-buffer, mml-attach-external):
