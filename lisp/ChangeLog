@@ -1,3 +1,12 @@
+2009-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-encode.el (mm-encode-buffer): Don't force 7bit encoding since MTA
+	may break data.  Suggested by Dmitri Paduchikh <dpaduch@k66.ru>.
+	Add the optional argument `encoding' that overrides the default.
+
+	* mml.el (mml-generate-mime-1): Pass encoding defined by a user to
+	mm-encode-buffer.
+
 2009-09-02  Karl Kleinpaste  <karl@kleinpaste.org>
 
 	* gnus-art.el (gnus-article-read-summary-keys):
