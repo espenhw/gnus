@@ -1,3 +1,7 @@
+2009-09-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* imap.el (imap-message-map): Docstring fix.
+
 2009-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-encode.el (mm-encode-buffer): Don't force 7bit encoding since MTA
