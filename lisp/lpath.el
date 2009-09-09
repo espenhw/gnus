@@ -37,7 +37,7 @@
        make-annotation make-event make-glyph make-network-process map-extents
        message-xmas-redefine put-char-table run-mode-hooks set-extent-property
        set-itimer-function set-keymap-default-binding temp-directory
-       ucs-to-char unicode-precedence-list unicode-to-char
+       time-to-seconds ucs-to-char unicode-precedence-list unicode-to-char
        url-generic-parse-url url-http-file-exists-p
        valid-image-instantiator-format-p vcard-pretty-print
        w3-coding-system-for-mime-charset window-pixel-height
@@ -59,7 +59,7 @@
      display-time-event-handler epg-check-configuration event-click-count
      event-end event-start find-coding-systems-for-charsets
      find-coding-systems-region find-coding-systems-string find-image
-     help-buffer image-size image-type-available-p insert-image
+     float-time help-buffer image-size image-type-available-p insert-image
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
      mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
      pgg-display-output-buffer posn-point posn-window put-image read-event

@@ -616,9 +616,9 @@ If EXAMINE is non-nil the group is selected read-only."
 	(setq uid imap-current-message
 	      mbx imap-current-mailbox
 	      headers (if (imap-capability 'IMAP4rev1)
-			   ;; xxx don't just use car? alist doesn't contain
-			   ;; anything else now, but it might...
-			   (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
+                          ;; xxx don't just use car? alist doesn't contain
+                          ;; anything else now, but it might...
+                          (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
                         (imap-message-get uid 'RFC822.HEADER))
 	      lines (imap-body-lines (imap-message-body imap-current-message))
 	      chars (imap-message-get imap-current-message 'RFC822.SIZE)))
