@@ -2,6 +2,10 @@
 
 	* auth.texi (Help for users): Corrected markup.
 
+2009-09-02  Glenn Morris  <rgm@gnu.org>
+
+	* emacs-mime.texi (time-date): Mention float-time.
+
 2009-08-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* auth.texi: Rewritten for coverage and clarity.
