@@ -8,7 +8,8 @@
 	(time-to-number-of-days): Don't use (featurep 'xemacs) to check if
 	float-time is available; suppress compile warning for time-to-seconds.
 
-	* gnus-util.el (gnus-float-time): Alias to float-time if it exists.
+	* gnus-util.el (with-no-warnings): Define it for old Emacsen.
+	(gnus-float-time): Alias to float-time if it exists.
 
 	* ecomplete.el (with-no-warnings): Define it for old Emacsen.
 	(ecomplete-add-item): Don't use (featurep 'xemacs) to check if
