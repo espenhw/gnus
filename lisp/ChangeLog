@@ -360,7 +360,7 @@
 	* imap.el (imap-fetch-safe): Bind debug-on-error.
 	(imap-debug): Add imap-fetch-safe.
 
-2009-01-26  Teodor Zlatanov  <tzlatanov@jumptrading.com>
+2009-01-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* auth-source.el (auth-source-forget-user-or-password): Clarify docs.
 	(auth-source-forget-all-cached): New convenience function.
