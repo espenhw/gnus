@@ -6,6 +6,8 @@
 	for easier debugging and cleaner code.  On successful (guessed based on
 	server capabilities) secondary authentication, set imap-state
 	correctly.
+	(imap-last-authenticator): Define imap-last-authenticator as a variable
+	to avoid warnings.
 
 2009-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 

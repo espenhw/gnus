@@ -380,6 +380,7 @@ basis.")
 (defvar imap-port nil)
 (defvar imap-username nil)
 (defvar imap-password nil)
+(defvar imap-last-authenticator nil)
 (defvar imap-calculate-literal-size-first nil)
 (defvar imap-state 'closed
   "IMAP state.
