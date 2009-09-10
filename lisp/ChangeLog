@@ -1,3 +1,12 @@
+2009-09-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* imap.el (imap-interactive-login): Better messages.
+	(imap-open): Fix bug with renamed buffer on reconnect.
+	(imap-authenticate): Add buffer-local imap-last-authenticator variable
+	for easier debugging and cleaner code.  On successful (guessed based on
+	server capabilities) secondary authentication, set imap-state
+	correctly.
+
 2009-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-article): Remove binding of
