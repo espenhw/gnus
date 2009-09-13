@@ -1,3 +1,9 @@
+2009-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* parse-time.el (parse-time-syntax): Restore it to keep compatibility
+	with XEmacs.
+	(parse-time-string-chars): Use it.
+
 2009-09-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* imap.el (imap-interactive-login): Better messages.
@@ -172,6 +178,11 @@
 
 	* nnrss.el (nnrss-request-article): Avoid default-fill-column.
 
+2009-08-26  Glenn Morris  <rgm@gnu.org>
+
+	* parse-time.el (parse-time-rules): Autoload riskiness here, rather
+	than placing in files.el.
+
 2009-08-25  Glenn Morris  <rgm@gnu.org>
 
 	* nnir.el (top-level): Don't require cl at run-time.
@@ -190,6 +201,15 @@
 
 	* gnus-art.el (gnus-button-patch): Use forward-line rather than
 	goto-line.
+
+2009-08-16  Chong Yidong  <cyd@stupidchicken.com>
+
+	* parse-time.el (parse-time-string-chars): Save match data.
+
+2009-08-16  Jan Seeger  <jan.seeger@thenybble.de>  (tiny change)
+
+	* parse-time.el (parse-time-string-chars): Compute using character
+	classes, to handle non-ascii characters (Bug#3190).
 
 2009-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
