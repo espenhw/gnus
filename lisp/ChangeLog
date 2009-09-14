@@ -1,3 +1,9 @@
+2009-09-14  Adam Sjøgren  <asjo@koldfront.dk>
+
+	* spam.el (spam-unregister-on-reregister): Add boolean variable.
+	(spam-resolve-registrations-routine): Use it to unregister articles
+	that change status.
+
 2009-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* parse-time.el (parse-time-syntax): Restore it to keep compatibility
