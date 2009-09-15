@@ -1,3 +1,9 @@
+2009-09-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-edit-part): Work for the buffer
+	configuration that provides the sole article window in a frame;
+	position point correctly after deleting a part.
+
 2009-09-14  Adam Sjøgren  <asjo@koldfront.dk>
 
 	* spam.el (spam-unregister-on-reregister): Add boolean variable.
