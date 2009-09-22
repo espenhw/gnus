@@ -1,8 +1,8 @@
 2009-09-22  Daiki Ueno  <ueno@unixuser.org>
 
-	* mm-decode.el (mm-sign-option): New user option.
+	* mm-encode.el (mm-sign-option, mm-encrypt-option): New user option.
 	* mml2015.el (mml2015-epg-sign, mml2015-epg-encrypt): Let users select
-	signing keys if mm-sign-option is 'guided.
+	keys from the menu if mm-{sign,encrypt}-option is 'guided.
 	* mml-smime.el (mml-smime-epg-sign, mml-smime-epg-encrypt): Ditto.
 	* mml1991.el (mml1991-epg-sign, mml1991-epg-encrypt): Ditto.
 

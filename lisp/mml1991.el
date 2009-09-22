@@ -34,7 +34,7 @@
   (require 'cl)
   (require 'mm-util))
 
-(require 'mm-decode)
+(require 'mm-encode)
 (require 'mml-sec)
 
 (defvar mc-pgp-always-sign)
@@ -449,7 +449,7 @@ If no one is selected, default secret key is used.  "
 			       (or (epg-expand-group config recipient)
 				   (list recipient)))
 			     recipients))))
-    (if (eq mm-sign-option 'guided)
+    (if (eq mm-encrypt-option 'guided)
 	(setq recipients
 	      (epa-select-keys context "Select recipients for encryption.
 If no one is selected, symmetric encryption will be performed.  "

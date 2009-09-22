@@ -1269,7 +1269,7 @@ If no one is selected, default secret key is used.  "
 	(unless mml2015-signers
 	  (error "mml2015-signers not set"))
 	(setq recipients (nconc recipients mml2015-signers)))
-      (if (eq mm-sign-option 'guided)
+      (if (eq mm-encrypt-option 'guided)
 	  (setq recipients
 		(epa-select-keys context "\
 Select recipients for encryption.

@@ -462,7 +462,7 @@ Content-Disposition: attachment; filename=smime.p7s
 			 (message-options-set 'message-recipients
 					      (read-string "Recipients: ")))
 		     "[ \f\t\n\r\v,]+"))))
-      (if (eq mm-sign-option 'guided)
+      (if (eq mm-encrypt-option 'guided)
 	  (setq recipients
 		(epa-select-keys context "\
 Select recipients for encryption.
