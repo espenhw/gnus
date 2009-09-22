@@ -490,7 +490,8 @@ result of the verification."
 
 (defcustom mm-sign-option nil
   "Option how to create signed parts.
-nil, use the default keys; `guided', let you to select signing keys."
+nil, use the default keys without asking;
+`guided', let you select signing keys from the menu."
   :version "23.1"
   :type '(choice (item guided)
 		 (item :tag "default" nil))
