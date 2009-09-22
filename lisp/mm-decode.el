@@ -488,6 +488,14 @@ result of the verification."
 		 (item :tag "ask" nil))
   :group 'mime-security)
 
+(defcustom mm-sign-option nil
+  "Option how to create signed parts.
+nil, use the default keys; `guided', let you to select signing keys."
+  :version "23.1"
+  :type '(choice (item guided)
+		 (item :tag "default" nil))
+  :group 'mime-security)
+
 (defvar mm-viewer-completion-map
   (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
     (set-keymap-parent map minibuffer-local-completion-map)
