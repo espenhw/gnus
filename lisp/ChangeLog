@@ -1,3 +1,10 @@
+2009-09-22  Daiki Ueno  <ueno@unixuser.org>
+
+	* mm-decode.el (mm-sign-option): New user option.
+	* mml2015.el (mml2015-epg-sign, mml2015-epg-encrypt): Let users select
+	signing keys if mm-sign-option is 'guided.
+	* mml-smime.el (mml-smime-epg-sign, mml-smime-epg-encrypt): Ditto.
+
 2009-09-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-edit-part): Work for the buffer
