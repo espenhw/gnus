@@ -1,3 +1,7 @@
+2009-09-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* pgg-pgp.el (pgg-pgp-encrypt-region): Add 3rd arg to mapconcat.
+
 2009-09-22  Daiki Ueno  <ueno@unixuser.org>
 
 	* mm-encode.el (mm-sign-option, mm-encrypt-option): New user option.
