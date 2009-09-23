@@ -12051,7 +12051,7 @@ protocols.  Otherwise, ask user.
 Option of creating signed parts.  @code{nil}, use default signing
 keys; @code{guided}, ask user to select signing keys from the menu.
 
-@item mm-decrypt-option
+@item mm-encrypt-option
 @vindex mm-encrypt-option
 Option of creating encrypted parts.  @code{nil}, use the first
 public-key matching the @samp{From:} header as the recipient;
