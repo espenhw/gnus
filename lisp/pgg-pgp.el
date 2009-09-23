@@ -145,7 +145,8 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
                (mapconcat 'shell-quote-argument
                           (append recipients
                                   (if pgg-encrypt-for-me
-                                      (list pgg-pgp-user-id)))))
+                                      (list pgg-pgp-user-id)))
+			  " "))
            (if sign (concat " -s -u " (shell-quote-argument pgg-pgp-user-id))))))
     (pgg-pgp-process-region start end nil pgg-pgp-program args)
     (pgg-process-when-success nil)))
