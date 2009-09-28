@@ -1,6 +1,15 @@
-2009-09-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-09-24  Juanma Barranquero  <lekktu@gmail.com>
 
-	* pgg-pgp.el (pgg-pgp-encrypt-region): Add 3rd arg to mapconcat.
+	* dig.el (dig-invoke): Fix typo in docstring.
+	(query-dig): Reflow docstring.
+
+2009-09-23  Juanma Barranquero  <lekktu@gmail.com>
+
+	* gnus-art.el (gnus-article-encrypt-body):
+	* message.el (message-check-recipients):
+	* mm-util.el (mm-codepage-setup):
+	* nnir.el (gnus-summary-nnir-goto-thread, nnir-run-waissearch)
+	(nnir-run-swish++, nnir-run-swish-e): Fix typos in error messages.
 
 2009-09-22  Daiki Ueno  <ueno@unixuser.org>
 
@@ -9,6 +18,26 @@
 	keys from the menu if mm-{sign,encrypt}-option is 'guided.
 	* mml-smime.el (mml-smime-epg-sign, mml-smime-epg-encrypt): Ditto.
 	* mml1991.el (mml1991-epg-sign, mml1991-epg-encrypt): Ditto.
+
+2009-09-21  Kevin Ryde  <user42@zip.com.au>
+
+	* dig.el: Add "Keywords: comm", as per net-utils.el.
+
+2009-09-21  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* dig.el (dig-mode): Use define-derived-mode.
+
+2009-09-19  Glenn Morris  <rgm@gnu.org>
+
+	* pgg-pgp.el (pgg-pgp-encrypt-region): Add missing mapconcat separator.
+
+2009-09-18  Glenn Morris  <rgm@gnu.org>
+
+	* gnus-diary.el (gnus-diary-check-message):
+	* message.el (message-insert-formatted-citation-line):
+	* nnbabyl.el (top-level):
+	* nndiary.el (nndiary-schedule):
+	Fix typos in condition-case handlers.
 
 2009-09-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
