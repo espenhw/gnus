@@ -1,3 +1,7 @@
+2009-09-29  Juanma Barranquero  <lekktu@gmail.com>
+
+	* spam-stat.el (spam-stat-load): Fix typo in message.
+
 2009-09-24  Juanma Barranquero  <lekktu@gmail.com>
 
 	* dig.el (dig-invoke): Fix typo in docstring.
