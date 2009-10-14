@@ -1,3 +1,18 @@
+2009-10-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-remove-overlays): Add doc string and alias.
+
+2009-10-14  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* gnus-sum.el (gnus-remove-overlays): Compatibility code for Emacs 21
+	and XEmacs that don't have `remove-overlays'.
+
+2009-10-14  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-sum.el (gnus-summary-mode, gnus-summary-show-all-threads)
+	(gnus-summary-show-thread, gnus-summary-hide-thread): Get rid of
+	selective display.  Use overlays instead.
+
 2009-10-04  Juanma Barranquero  <lekktu@gmail.com>
 
 	* spam-stat.el (spam-stat-strip-xref): Fix typo in docstring.
