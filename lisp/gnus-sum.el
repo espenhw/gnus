@@ -11282,9 +11282,9 @@ If ARG is positive number, turn showing conversation threads on."
   (defun gnus-remove-overlays (beg end name val)
     "Clear BEG and END of overlays whose property NAME has value VAL.
 For compatibility with Emacs 21 and XEmacs."
-    (dolist (ov (overlays-in beg end))
-      (when (overlay-get ov val)
-	(delete-overlay ov)))))
+    (dolist (ov (gnus-overlays-in beg end))
+      (when (eq (gnus-overlay-get ov name) val)
+	(gnus-delete-overlay ov)))))
 
 (defun gnus-summary-show-all-threads ()
   "Show all threads."
@@ -11301,8 +11301,16 @@ Returns nil if no thread was there to be shown."
 	;; Leave point at bol
          (beg (progn (beginning-of-line) (if (bobp) (point) (1- (point)))))
          (eoi (when (eq (get-char-property end 'invisible) 'gnus-sum)
-                (or (next-single-char-property-change end 'invisible)
-                    (point-max)))))
+		(if (fboundp 'next-single-char-property-change)
+		    (or (next-single-char-property-change end 'invisible)
+			(point-max))
+		  (goto-char end)
+		  (while (progn
+			   (end-of-line 2)
+			   (and (not (eobp))
+				(eq (get-char-property (point) 'invisible)
+				    'gnus-sum))))
+		  (point)))))
     (when eoi
       (gnus-remove-overlays beg eoi 'invisible 'gnus-sum)
       (goto-char orig)
@@ -11370,9 +11378,9 @@ Returns nil if no threads were there to be hidden."
 	      (progn
             (when (> (point) starteol)
               (gnus-remove-overlays starteol (point) 'invisible 'gnus-sum)
-              (let ((ol (make-overlay starteol (point) nil t nil)))
-                (overlay-put ol 'invisible 'gnus-sum)
-                (overlay-put ol 'evaporate t)))
+              (let ((ol (gnus-make-overlay starteol (point) nil t nil)))
+		(gnus-overlay-put ol 'invisible 'gnus-sum)
+		(gnus-overlay-put ol 'evaporate t)))
 		(gnus-summary-goto-subject article))
 	    (goto-char start)
         nil))))

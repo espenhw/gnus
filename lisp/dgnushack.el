@@ -207,6 +207,10 @@ fixed in Emacs 22."
     (autoload 'Info-index-next "info" nil t)
     (autoload 'Info-menu "info" nil t)
     (autoload 'ad-add-advice "advice")
+    (unless (and (emacs-version>= 21 5)
+		 (not (featurep 'sxemacs)))
+      ;; calendar/auto-autoloads.el provides it.
+      (autoload 'add-to-invisibility-spec "dummy"))
     (autoload 'annotations-at "annotations")
     (autoload 'apropos "apropos" nil t)
     (autoload 'apropos-command "apropos" nil t)

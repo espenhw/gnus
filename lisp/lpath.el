@@ -85,8 +85,9 @@
     (maybe-fbind
      '(custom-autoload
        decode-char display-graphic-p display-images-p display-visual-class
-       get-display-table put-display-table select-frame-set-input-focus
-       unicode-precedence-list unicode-to-char w32-focus-frame x-focus-frame))
+       get-display-table next-single-char-property-change put-display-table
+       select-frame-set-input-focus unicode-precedence-list unicode-to-char
+       w32-focus-frame x-focus-frame))
     (maybe-bind
      '(default-file-name-coding-system scroll-margin)))
 

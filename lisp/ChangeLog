@@ -1,3 +1,24 @@
+2009-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-overlay-get): New alias to overlay-get.
+	(gnus-overlays-in): New alias to overlays-in.
+
+	* gnus-sum.el (gnus-remove-overlays): Use gnus-overlays-in,
+	gnus-overlay-get, and gnus-delete-overlay.
+	(gnus-summary-show-thread): Make it work as well for systems in which
+	next-single-char-property-change is not available.
+	(gnus-summary-hide-thread): Use gnus-make-overlay and gnus-overlay-put.
+
+	* gnus-xmas.el (gnus-xmas-overlays-in): New function.
+	(gnus-overlay-get): New alias to extent-property.
+	(gnus-overlays-in): New alias to gnus-xmas-overlays-in.
+
+	* dgnushack.el: Autoload add-to-invisibility-spec for XEmacs 21.4 and
+	SXEmacs.
+
+	* lpath.el: Fbind next-single-char-property-change for XEmacs 21.4 and
+	SXEmacs.
+
 2009-10-14  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-remove-overlays): Add doc string and alias.
