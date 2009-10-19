@@ -11297,14 +11297,13 @@ For compatibility with Emacs 21 and XEmacs."
 Returns nil if no thread was there to be shown."
   (interactive)
   (let* ((orig (point))
-	(end (point-at-eol))
-	;; Leave point at bol
-         (beg (progn (beginning-of-line) (if (bobp) (point) (1- (point)))))
-         (eoi (when (eq (get-char-property end 'invisible) 'gnus-sum)
+	 (end (point-at-eol))
+	 ;; Leave point at bol
+	 (beg (progn (beginning-of-line) (if (bobp) (point) (1- (point)))))
+	 (eoi (when (eq (get-char-property end 'invisible) 'gnus-sum)
 		(if (fboundp 'next-single-char-property-change)
 		    (or (next-single-char-property-change end 'invisible)
 			(point-max))
-		  (goto-char end)
 		  (while (progn
 			   (end-of-line 2)
 			   (and (not (eobp))
@@ -11365,25 +11364,25 @@ will not be hidden.
 Returns nil if no threads were there to be hidden."
   (interactive)
   (let ((start (point))
-        (starteol (line-end-position))
+	(starteol (line-end-position))
 	(article (gnus-summary-article-number)))
     (goto-char start)
     ;; Go forward until either the buffer ends or the subthread ends.
     (when (and (not (eobp))
 	       (or (zerop (gnus-summary-next-thread 1 t))
 		   (goto-char (point-max))))
-	  (if (and (> (point) start)
-               ;; FIXME: this should actually search for a non-invisible \n.
-		   (search-backward "\n" start t))
-	      (progn
-            (when (> (point) starteol)
-              (gnus-remove-overlays starteol (point) 'invisible 'gnus-sum)
-              (let ((ol (gnus-make-overlay starteol (point) nil t nil)))
+      (if (and (> (point) start)
+	       ;; FIXME: this should actually search for a non-invisible \n.
+	       (search-backward "\n" start t))
+	  (progn
+	    (when (> (point) starteol)
+	      (gnus-remove-overlays starteol (point) 'invisible 'gnus-sum)
+	      (let ((ol (gnus-make-overlay starteol (point) nil t nil)))
 		(gnus-overlay-put ol 'invisible 'gnus-sum)
 		(gnus-overlay-put ol 'evaporate t)))
-		(gnus-summary-goto-subject article))
-	    (goto-char start)
-        nil))))
+	    (gnus-summary-goto-subject article))
+	(goto-char start)
+	nil))))
 
 (defun gnus-summary-go-to-next-thread (&optional previous)
   "Go to the same level (or less) next thread.

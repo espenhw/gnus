@@ -1,3 +1,8 @@
+2009-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-show-thread): Remove useless goto-char.
+	(gnus-summary-show-thread, gnus-summary-hide-thread): Indent.
+
 2009-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-overlay-get): New alias to overlay-get.
