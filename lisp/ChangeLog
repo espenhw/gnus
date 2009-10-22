@@ -1,3 +1,7 @@
+2009-10-21  Kevin Ryde  <user42@zip.com.au>
+
+	* dns.el: Add "Keywords: comm", as per net/net-utils.el.
+
 2009-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-remove-overlays): eval-and-compile.
