@@ -1,3 +1,8 @@
+2009-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-decode-region): Don't quote decoded words
+	containing tspecial characters if they have been already quoted.
+
 2009-11-05  Dan Nicolaescu  <dann@ics.uci.edu>
 
 	* dns-mode.el (auto-mode-alist): Purecopy string.
