@@ -1,3 +1,9 @@
+2009-11-26  Kevin Ryde  <user42@zip.com.au>
+
+	* sha1.el (sha1-string-external): default-directory "/" in case
+	otherwise non-existent.  process-connection-type pipe for touch of
+	efficiency recommended by elisp manual.  (An aside in Bug#3911.)
+
 2009-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-decode-region): Don't quote decoded words
