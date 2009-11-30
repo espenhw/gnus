@@ -20,9 +20,10 @@
     (maybe-fbind
      '(Info-index
        Info-index-next Info-menu bbdb-complete-name display-time-event-handler
-       epg-check-configuration find-coding-system frame-device w3-do-setup
-       rmail-swap-buffers-maybe w3-prepare-buffer w3-region w32-focus-frame
-       w3m-detect-meta-charset w3m-region))
+       epg-check-configuration find-coding-system frame-device
+       recenter-top-bottom rmail-swap-buffers-maybe w3-do-setup
+       w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
+       w3m-region))
     (maybe-bind
      '(w3m-link-map)))
 
@@ -63,10 +64,11 @@
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
      mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
      pgg-display-output-buffer posn-point posn-window put-image read-event
-     rmail-msg-restore-non-pruned-header rmail-swap-buffers-maybe
-     select-safe-coding-system sort-coding-systems track-mouse ucs-to-char
-     url-generic-parse-url url-http-file-exists-p url-insert-file-contents
-     vcard-pretty-print w3m-detect-meta-charset w3m-region window-edges))
+     recenter-top-bottom rmail-msg-restore-non-pruned-header
+     rmail-swap-buffers-maybe select-safe-coding-system sort-coding-systems
+     track-mouse ucs-to-char url-generic-parse-url url-http-file-exists-p
+     url-insert-file-contents vcard-pretty-print w3m-detect-meta-charset
+     w3m-region window-edges))
   (maybe-bind
    '(adaptive-fill-first-line-regexp
      buffer-display-table cursor-in-non-selected-windows
