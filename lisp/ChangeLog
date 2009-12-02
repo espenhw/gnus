@@ -1,3 +1,9 @@
+2009-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-prepare-flat): Check also whether groups
+	with no unread article should be listed if the 2nd arg `predicate' is
+	given.
+
 2009-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind recenter-top-bottom for Emacs 21, 22, and (S)XEmacs.
