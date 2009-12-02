@@ -1,3 +1,7 @@
+2009-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Always bind default-file-name-coding-system for (S)XEmacs.
+
 2009-12-02  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* message.el (message-completion-in-region): New compatibility function.

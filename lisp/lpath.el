@@ -72,8 +72,8 @@
   (maybe-bind
    '(adaptive-fill-first-line-regexp
      buffer-display-table cursor-in-non-selected-windows
-     default-enable-multibyte-characters eudc-protocol
-     filladapt-mode gnus-agent-expire-current-dirs
+     default-enable-multibyte-characters default-file-name-coding-system
+     eudc-protocol filladapt-mode gnus-agent-expire-current-dirs
      help-xref-stack-item idna-program installation-directory
      line-spacing mark-active mouse-selection-click-count
      mouse-selection-click-count-buffer ps-print-color-p rmail-default-file
@@ -91,7 +91,7 @@
        select-frame-set-input-focus unicode-precedence-list unicode-to-char
        w32-focus-frame x-focus-frame))
     (maybe-bind
-     '(default-file-name-coding-system scroll-margin)))
+     '(scroll-margin)))
 
   (when (and (= emacs-major-version 21) (= emacs-minor-version 4))
     (maybe-fbind
@@ -105,7 +105,7 @@
        unicode-precedence-list))
     (maybe-bind
      '(current-language-environment
-       default-file-name-coding-system language-info-alist pgg-parse-crc24)))
+       language-info-alist pgg-parse-crc24)))
 
   (unless (featurep 'file-coding)
     (maybe-fbind
