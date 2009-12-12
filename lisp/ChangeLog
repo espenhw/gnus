@@ -1,3 +1,7 @@
+2009-12-12  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-info): Explain why we use `Info-goto-node'.
+
 2009-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Always bind default-file-name-coding-system for (S)XEmacs.
