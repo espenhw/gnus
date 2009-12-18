@@ -1,3 +1,7 @@
+2009-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Direct Functions): Add missing port number to tls method.
+
 2009-09-22  Daiki Ueno  <ueno@unixuser.org>
 
 	* gnus.texi (Security): Document mm-sign-option and mm-encrypt-option.
