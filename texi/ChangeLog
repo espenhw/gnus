@@ -1,3 +1,7 @@
+2010-01-04  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus.texi (Posting Styles): Use with-current-buffer.
+
 2009-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Direct Functions): Add missing port number to tls method.
