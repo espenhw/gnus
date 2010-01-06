@@ -1,5 +1,14 @@
 2010-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-article-describe-bindings): Work for prefix keys.
+
+	* gnus-xmas.el (gnus-xmas-article-describe-bindings): Ditto.
+
+	* message.el (message-check-news-header-syntax): Protect against a
+	string that `rfc822-addresses' returns when parsing fails.
+
+2010-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-util.el (gnus-invisible-p, gnus-next-char-property-change)
 	(gnus-previous-char-property-change): New functions.
 
