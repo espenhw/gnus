@@ -26,7 +26,7 @@ heart's delight at <URL:http://www.gnus.org/> and
 <URL:http://quimby.gnus.org/lmi/>.
 
 ;; Copyright (C) 1995, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-;;   2008, 2009  Free Software Foundation, Inc.
+;;   2008, 2009, 2010  Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
