@@ -1,3 +1,7 @@
+2010-01-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Score File Format): Fix typo.
+
 2010-01-04  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* gnus.texi (Posting Styles): Use with-current-buffer.
