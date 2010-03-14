@@ -1,3 +1,9 @@
+2010-03-14  Juri Linkov  <juri@jurta.org>
+
+	* hmac-def.el:
+	* hmac-md5.el:
+	* netrc.el: Fix keywords.
+
 2010-02-26  Glenn Morris  <rgm@gnu.org>
 
 	* message.el (message-send-mail-function): Change the default, so that
