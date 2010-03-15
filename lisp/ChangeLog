@@ -1,3 +1,11 @@
+2010-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-charset-to-coding-system): Use coding-system-from-name
+	if it is available.  (bug#5647)
+
+	* lpath.el: Suppress compiler warning for coding-system-from-name for
+	Emacs 21 and XEmacs.
+
 2010-03-14  Juri Linkov  <juri@jurta.org>
 
 	* hmac-def.el:

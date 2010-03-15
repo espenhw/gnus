@@ -31,17 +31,17 @@
     (defun split-line (&optional arg))
     (maybe-fbind
      '(clear-string
-       coding-system-aliasee custom-autoload delete-annotation delete-extent
-       device-connection dfw-device events-to-keys find-face
-       font-lock-set-defaults get-char-table glyph-height glyph-width
-       help-buffer int-to-char ldap-search-entries mail-aliases-setup
-       make-annotation make-event make-glyph make-network-process map-extents
-       message-xmas-redefine put-char-table run-mode-hooks set-extent-property
-       set-itimer-function set-keymap-default-binding temp-directory
-       time-to-seconds ucs-to-char unicode-precedence-list unicode-to-char
-       url-generic-parse-url url-http-file-exists-p
-       valid-image-instantiator-format-p vcard-pretty-print
-       w3-coding-system-for-mime-charset window-pixel-height
+       coding-system-aliasee coding-system-from-name custom-autoload
+       delete-annotation delete-extent device-connection dfw-device
+       events-to-keys find-face font-lock-set-defaults get-char-table
+       glyph-height glyph-width help-buffer int-to-char ldap-search-entries
+       mail-aliases-setup make-annotation make-event make-glyph
+       make-network-process map-extents message-xmas-redefine put-char-table
+       run-mode-hooks set-extent-property set-itimer-function
+       set-keymap-default-binding temp-directory time-to-seconds ucs-to-char
+       unicode-precedence-list unicode-to-char url-generic-parse-url
+       url-http-file-exists-p valid-image-instantiator-format-p
+       vcard-pretty-print w3-coding-system-for-mime-charset window-pixel-height
        window-pixel-width))
     (maybe-bind
      '(eudc-protocol
@@ -56,9 +56,9 @@
     '(defun rmail-toggle-header (&optional arg)))
   (maybe-fbind
    '(clear-string
-     codepage-setup cp-supported-codepages create-image detect-coding-string
-     display-time-event-handler epg-check-configuration event-click-count
-     event-end event-start find-coding-systems-for-charsets
+     codepage-setup coding-system-from-name cp-supported-codepages create-image
+     detect-coding-string display-time-event-handler epg-check-configuration
+     event-click-count event-end event-start find-coding-systems-for-charsets
      find-coding-systems-region find-coding-systems-string find-image
      float-time help-buffer image-size image-type-available-p insert-image
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
