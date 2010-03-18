@@ -1,3 +1,7 @@
+2010-03-18  Glenn Morris  <rgm@gnu.org>
+
+	* hashcash.el (declare-function): Remove duplicate definition.
+
 2010-03-17  Kevin Ryde  <user42@zip.com.au>
 
 	* mml.el (mml-read-tag): Unquote values with `read' to reverse
