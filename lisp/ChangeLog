@@ -1,3 +1,9 @@
+2010-03-20  Mark Triggs <mst@dishevelled.net> (tiny change)
+
+	* nnir.el (nnir-get-article-nov-override-function): New function to
+	override the normal NOV retrieval.
+	(nnir-retrieve-headers): Use it.
+
 2010-03-18  Glenn Morris  <rgm@gnu.org>
 
 	* hashcash.el (declare-function): Remove duplicate definition.
