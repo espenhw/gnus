@@ -1,3 +1,24 @@
+2010-03-20  Martin Stjernholm <mast@lysator.liu.se>
+
+	* nnimap.el (nnimap-decode-group-name, nnimap-encode-group-name):
+	In-place substitutions for the group name encoding/decoding.
+	(nnimap-find-minmax-uid, nnimap-possibly-change-group)
+	(nnimap-retrieve-headers-progress, nnimap-possibly-change-group)
+	(nnimap-retrieve-headers-progress, nnimap-request-article-part)
+	(nnimap-update-unseen, nnimap-request-list)
+	(nnimap-retrieve-groups, nnimap-request-update-info-internal)
+	(nnimap-request-set-mark, nnimap-split-to-groups)
+	(nnimap-split-articles, nnimap-request-newgroups)
+	(nnimap-request-create-group, nnimap-request-accept-article)
+	(nnimap-request-delete-group, nnimap-request-rename-group)
+	(nnimap-acl-get, nnimap-acl-edit): Use them.  Replace `mbx' with
+	`encoded-mbx' for consistency.
+	(nnimap-close-group): Call `imap-current-mailbox' instead of using the
+	variable `imap-current-mailbox'.
+
+	* gnus-agent.el (gnus-agent-fetch-articles, gnus-agent-fetch-headers)
+	(gnus-agent-regenerate-group): Use `gnus-agent-decoded-group-name'.
+
 2010-03-20  Bojan Petrovic <bpetrovi@f.bg.ac.rs>
 
 	* pop3.el (pop3-display-message-size-flag): Display message size byte
