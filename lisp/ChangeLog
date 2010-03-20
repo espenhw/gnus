@@ -1,3 +1,10 @@
+2010-03-20  Bojan Petrovic <bpetrovi@f.bg.ac.rs>
+
+	* pop3.el (pop3-display-message-size-flag): Display message size byte
+	counts during POP3 download.
+	(pop3-movemail): Use it.
+	(pop3-list): Implement listing of available messages.
+
 2010-03-20  Mark Triggs <mst@dishevelled.net> (tiny change)
 
 	* nnir.el (nnir-get-article-nov-override-function): New function to
