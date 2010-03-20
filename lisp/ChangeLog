@@ -1,5 +1,12 @@
 2010-03-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* auth-source.el: Set up autoloads.  Bump to 23.2 because of the
+	secrets.el dependency.
+	(auth-sources): Add optional user name.  Add secrets.el configuration
+	choice (unused right now).
+
+2010-03-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Let
 	`gnus-registry-install-shortcuts' fill in the functions.
 
