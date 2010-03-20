@@ -1,3 +1,14 @@
+2010-03-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Let
+	`gnus-registry-install-shortcuts' fill in the functions.
+
+	* gnus-registry.el (gnus-summary-misc-menu): Declare to avoid
+	warnings.
+	(gnus-registry-misc-menus): Variable to hold registry mark menus.
+	(gnus-registry-install-shortcuts): Populate and use it in a
+	`gnus-summary-menu-hook' lambda, under "Gnus"->"Registry Marks".
+
 2010-03-20  Martin Stjernholm <mast@lysator.liu.se>
 
 	* nnimap.el (nnimap-decode-group-name, nnimap-encode-group-name):
