@@ -505,6 +505,12 @@ See also `nnimap-log'."
   (and group
        (mm-encode-coding-string group (gnus-group-name-charset nil group))))
 
+(defun nnimap-group-prefixed-name (group &optional server)
+  (gnus-group-prefixed-name group
+			    (gnus-server-to-method
+			     (format "nnimap:%s"
+				     (or server nnimap-current-server)))))
+
 (defsubst nnimap-get-server-buffer (server)
   "Return buffer for SERVER, if nil use current server."
   (cadr (assoc (or server nnimap-current-server) nnimap-server-buffer-alist)))
@@ -525,9 +531,7 @@ If SERVER is nil, uses the current server."
 
 (defun nnimap-verify-uidvalidity (group server)
   "Verify stored uidvalidity match current one in GROUP on SERVER."
-  (let* ((gnusgroup (gnus-group-prefixed-name
-		     group (gnus-server-to-method
-			    (format "nnimap:%s" server))))
+  (let* ((gnusgroup (nnimap-group-prefixed-name group server))
 	 (new-uidvalidity (imap-mailbox-get 'uidvalidity))
 	 (old-uidvalidity (gnus-group-get-parameter gnusgroup 'uidvalidity))
 	 (dir (file-name-as-directory (expand-file-name nnimap-directory)))
@@ -548,10 +552,18 @@ If SERVER is nil, uses the current server."
     (if old-uidvalidity
 	(if (not (equal old-uidvalidity new-uidvalidity))
 	    ;; uidvalidity clash
-	    (gnus-delete-file file)
-	  (gnus-group-set-parameter gnusgroup 'uidvalidity new-uidvalidity)
+	    (progn
+	      (gnus-group-set-parameter gnusgroup 'uidvalidity new-uidvalidity)
+	      (gnus-group-remove-parameter gnusgroup 'imap-status)
+	      (gnus-sethash (gnus-group-prefixed-name group server)
+			    nil nnimap-mailbox-info)
+	      (gnus-delete-file file))
 	  t)
       (gnus-group-add-parameter gnusgroup (cons 'uidvalidity new-uidvalidity))
+      (gnus-group-remove-parameter gnusgroup 'imap-status)
+      (gnus-sethash			; Maybe not necessary here.
+       (gnus-group-prefixed-name group server)
+       nil nnimap-mailbox-info)
       t)))
 
 (defun nnimap-before-find-minmax-bugworkaround ()
@@ -672,9 +684,7 @@ If EXAMINE is non-nil the group is selected read-only."
   "Make file name for GROUP on SERVER."
   (let* ((dir (file-name-as-directory (expand-file-name nnimap-directory)))
 	 (uidvalidity (gnus-group-get-parameter
-		       (gnus-group-prefixed-name
-			group (gnus-server-to-method
-			       (format "nnimap:%s" server)))
+		       (nnimap-group-prefixed-name group server)
 		       'uidvalidity))
 	 (name (nnheader-translate-file-chars
 		(concat nnimap-nov-file-name
@@ -1028,8 +1038,7 @@ function is generally only called when Gnus is shutting down."
 (deffoo nnimap-request-group (group &optional server fast)
   (nnimap-request-update-info-internal
    group
-   (gnus-get-info (gnus-group-prefixed-name
-		   group (gnus-server-to-method (format "nnimap:%s" server))))
+   (gnus-get-info (nnimap-group-prefixed-name group server))
    server)
   (when (nnimap-possibly-change-group group server)
     (nnimap-before-find-minmax-bugworkaround)
@@ -1053,8 +1062,7 @@ function is generally only called when Gnus is shutting down."
 				 nnimap-mailbox-info)))
      (list (nth 0 old) (nth 1 old)
 	   (imap-mailbox-status (nnimap-decode-group-name group)
-				'unseen nnimap-server-buffer)
-	   (nth 3 old)))
+				'unseen nnimap-server-buffer)))
    nnimap-mailbox-info))
 
 (defun nnimap-close-group (group &optional server)
@@ -1160,9 +1168,9 @@ function is generally only called when Gnus is shutting down."
 	    (setq decoded-group (nnimap-decode-group-name group))
 	    (gnus-message 9 "nnimap: Quickly checking mailbox %s"
 			  decoded-group)
-	    (add-to-list (if (gnus-gethash-safe
-			      (gnus-group-prefixed-name group server)
-			      nnimap-mailbox-info)
+	    (add-to-list (if (gnus-group-get-parameter
+			      (nnimap-group-prefixed-name group)
+			      'imap-status)
 			     'asyncgroups
 			   'slowgroups)
 			 (list group (imap-mailbox-status-asynch
@@ -1170,61 +1178,71 @@ function is generally only called when Gnus is shutting down."
 				      '(uidvalidity uidnext unseen)
 				      nnimap-server-buffer))))
 	  (dolist (asyncgroup asyncgroups)
-	    (let ((group (nth 0 asyncgroup))
-		  (tag   (nth 1 asyncgroup))
-		  new old)
+	    (let* ((group (nth 0 asyncgroup))
+		   (tag   (nth 1 asyncgroup))
+		   (gnusgroup (nnimap-group-prefixed-name group))
+		   (saved-uidvalidity (gnus-group-get-parameter gnusgroup
+								'uidvalidity))
+		   (saved-imap-status (gnus-group-get-parameter gnusgroup
+								'imap-status))
+		   (saved-info (and saved-imap-status
+				    (split-string saved-imap-status " "))))
 	      (setq decoded-group (nnimap-decode-group-name group))
 	      (when (imap-ok-p (imap-wait-for-tag tag nnimap-server-buffer))
-		(if (or (not (string=
-			      (nth 0 (gnus-gethash (gnus-group-prefixed-name
-						    group server)
-						   nnimap-mailbox-info))
+		(if (or (not (equal
+			      saved-uidvalidity
 			      (imap-mailbox-get 'uidvalidity decoded-group
 						nnimap-server-buffer)))
-			(not (string=
-			      (nth 1 (gnus-gethash (gnus-group-prefixed-name
-						    group server)
-						   nnimap-mailbox-info))
+			(not (equal
+			      (nth 0 saved-info)
 			      (imap-mailbox-get 'uidnext decoded-group
 						nnimap-server-buffer))))
 		    (push (list group) slowgroups)
-		  (insert (nth 3 (gnus-gethash (gnus-group-prefixed-name
-						group server)
-					       nnimap-mailbox-info))))))))
+		  (gnus-sethash
+		   (gnus-group-prefixed-name group server)
+		   (list (imap-mailbox-get 'uidvalidity
+					   decoded-group nnimap-server-buffer)
+			 (imap-mailbox-get 'uidnext
+					   decoded-group nnimap-server-buffer)
+			 (imap-mailbox-get 'unseen
+					   decoded-group nnimap-server-buffer))
+		   nnimap-mailbox-info)
+		  (insert (format "\"%s\" %s %s y\n" group
+				  (nth 2 saved-info)
+				  (nth 1 saved-info))))))))
 	(dolist (group slowgroups)
 	  (if nnimap-retrieve-groups-asynchronous
 	      (setq group (car group)))
 	  (setq decoded-group (nnimap-decode-group-name group))
 	  (gnus-message 7 "nnimap: Mailbox %s modified" decoded-group)
-	  (imap-mailbox-put 'uidnext nil decoded-group nnimap-server-buffer)
 	  (or (member "\\NoSelect" (imap-mailbox-get 'list-flags decoded-group
 						     nnimap-server-buffer))
-	      (let* ((info (nnimap-find-minmax-uid group 'examine))
-		     (str (format "\"%s\" %d %d y\n" group
-				  (or (nth 2 info) 0)
-				  (max 1 (or (nth 1 info) 1)))))
+	      (let* ((gnusgroup (nnimap-group-prefixed-name group))
+		     (status (imap-mailbox-status
+			      decoded-group '(uidvalidity uidnext unseen)
+			      nnimap-server-buffer))
+		     (info (nnimap-find-minmax-uid group 'examine))
+		     (min-uid (max 1 (or (nth 1 info) 1)))
+		     (max-uid (or (nth 2 info) 0)))
 		(when (> (or (imap-mailbox-get 'recent decoded-group
 					       nnimap-server-buffer) 0)
 			 0)
 		  (push (list (cons decoded-group 0)) nnmail-split-history))
-		(insert str)
-		(when nnimap-retrieve-groups-asynchronous
-		  (gnus-sethash
-		   (gnus-group-prefixed-name group server)
-		   (list (or (imap-mailbox-get
-			      'uidvalidity decoded-group nnimap-server-buffer)
-			     (imap-mailbox-status
-			      decoded-group 'uidvalidity nnimap-server-buffer))
-			 (or (imap-mailbox-get
-			      'uidnext decoded-group nnimap-server-buffer)
-			     (imap-mailbox-status
-			      decoded-group 'uidnext nnimap-server-buffer))
-			 (or (imap-mailbox-get
-			      'unseen decoded-group nnimap-server-buffer)
-			     (imap-mailbox-status
-			      decoded-group 'unseen nnimap-server-buffer))
-			 str)
-		   nnimap-mailbox-info)))))))
+		(insert (format "\"%s\" %d %d y\n" group max-uid min-uid))
+		(gnus-sethash
+		 (gnus-group-prefixed-name group server)
+		 status
+		 nnimap-mailbox-info)
+		(if (not (equal (nth 0 status)
+				(gnus-group-get-parameter gnusgroup
+							  'uidvalidity)))
+		    (nnimap-verify-uidvalidity group nnimap-current-server))
+		;; The imap-status parameter is a string on the form
+		;; "<uidnext> <min-uid> <max-uid>".
+		(gnus-group-add-parameter
+		 gnusgroup
+		 (cons 'imap-status
+		       (format "%s %s %s" (nth 1 status) min-uid max-uid))))))))
     (gnus-message 5 "nnimap: Checking mailboxes...done")
     'active))
 
