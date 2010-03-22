@@ -1,3 +1,9 @@
+2010-03-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus/gnus-setup.ast: Add finish links to the top nodes.
+
+	* gnus/news-server.ast: Add some trivial validation.
+
 2008-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install): Install png and svg files.
