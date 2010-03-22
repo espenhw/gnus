@@ -279,14 +279,12 @@
 	    :assistant-variable variable
 	    (assistant-get-variable node variable))
 	   assistant-widgets)
-	  ;; The editable-field widget apparently inserts a newline;
-	  ;; remove it.
-	  (delete-char -1)
 	  (add-text-properties start (point)
-			       (list
-				'bold t
-				'face 'assistant-field
-				'not-read-only t))))))))
+	  		       (list
+	  			'bold t
+	  			'face 'assistant-field
+	  			'not-read-only t)))))))
+  (widget-setup))
 
 (defun assistant-render-node (node-name)
   (let ((node (assistant-find-node node-name))

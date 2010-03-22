@@ -1,3 +1,9 @@
+2010-03-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* assistant.el (assistant-render-text): Run `widget-setup' and don't
+	delete the extra newline.  Otherwise editing of :string and :number
+	types don't work.
+
 2010-03-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* auth-source.el: Set up autoloads.  Bump to 23.2 because of the
