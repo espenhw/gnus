@@ -486,7 +486,8 @@ Otherwise, return the size of the message-id MSG"
 	  (mapcar #'(lambda (s) (let ((split (split-string s " ")))
 				  (cons (string-to-number (nth 0 split))
 					(string-to-number (nth 1 split)))))
-		  (split-string (buffer-substring start end) "\r\n" t)))))))
+		  (delete "" (split-string (buffer-substring start end)
+					   "\r\n"))))))))
 
 (defun pop3-retr (process msg crashbuf)
   "Retrieve message-id MSG to buffer CRASHBUF."

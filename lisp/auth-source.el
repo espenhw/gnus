@@ -34,8 +34,7 @@
 (require 'gnus-util)
 
 (eval-when-compile (require 'cl))
-(eval-when-compile (require 'netrc))
-
+(autoload 'netrc-machine-user-or-password "netrc")
 (autoload 'secrets-search-items "secrets")
 (autoload 'secrets-get-alias "secrets")
 (autoload 'secrets-get-attribute "secrets")
@@ -90,7 +89,7 @@ If the value is a function, debug messages are logged by calling
  that function using the same arguments as `message'."
   :group 'auth-source
   :version "23.2" ;; No Gnus
-  :type	`(choice 
+  :type	`(choice
 	  :tag "auth-source debugging mode"
 	  (const :tag "Log using `message' to the *Messages* buffer" t)
 	  (function :tag "Function that takes arguments like `message'")
@@ -170,7 +169,7 @@ can get pretty complex."
   ;; we also check the value
   (when auth-source-debug
     (let ((logger (if (functionp auth-source-debug)
-		      auth-source-debug 
+		      auth-source-debug
 		    'message)))
       (apply logger msg))))
 

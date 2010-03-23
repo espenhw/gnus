@@ -16,6 +16,16 @@
 		w3-meta-content-type-charset-regexp))
 
   (when (<= emacs-major-version 22)
+    (defun ecomplete-add-item (type key text))
+    (defun ecomplete-save nil)
+    (defun hashcash-wait-async (&optional buffer))
+    (defun mail-add-payment (&optional arg async))
+    (defun mail-add-payment-async (&optional arg))
+    (defun netrc-get (alist type))
+    (defun netrc-machine (list machine &optional port defaultport))
+    (defun netrc-machine-user-or-password (mode authinfo-file-or-list machines
+						ports defaults))
+    (defun netrc-parse (file))
     (defun nnkiboze-score-file (a))
     (maybe-fbind
      '(Info-index
@@ -28,6 +38,7 @@
      '(w3m-link-map)))
 
   (when (= emacs-major-version 21)
+    (defun canlock-insert-header (&optional id-for-key id-for-lock password))
     (defun split-line (&optional arg))
     (maybe-fbind
      '(clear-string
@@ -46,10 +57,21 @@
     (maybe-bind
      '(eudc-protocol
        filladapt-mode help-echo-owns-message itimer-list ps-print-color-p
-       w3-meta-charset-content-type-regexp
+       smtpmail-default-smtp-server w3-meta-charset-content-type-regexp
        w3-meta-content-type-charset-regexp))))
 
 (when (featurep 'xemacs)
+  (defun canlock-insert-header (&optional id-for-key id-for-lock password))
+  (defun ecomplete-add-item (type key text))
+  (defun ecomplete-save nil)
+  (defun hashcash-wait-async (&optional buffer))
+  (defun mail-add-payment (&optional arg async))
+  (defun mail-add-payment-async (&optional arg))
+  (defun netrc-get (alist type))
+  (defun netrc-machine (list machine &optional port defaultport))
+  (defun netrc-machine-user-or-password (mode authinfo-file-or-list machines
+					      ports defaults))
+  (defun netrc-parse (file))
   (defun nnkiboze-score-file (a))
   (defun split-line (&optional arg))
   (eval-after-load "rmail"
@@ -78,9 +100,9 @@
      line-spacing mark-active mouse-selection-click-count
      mouse-selection-click-count-buffer ps-print-color-p rmail-default-file
      rmail-default-rmail-file rmail-insert-mime-forwarded-message-function
-     show-trailing-whitespace tool-bar-mode transient-mark-mode
-     url-version w3-meta-charset-content-type-regexp w3m-link-map
-     w3-meta-content-type-charset-regexp))
+     show-trailing-whitespace smtpmail-default-smtp-server tool-bar-mode
+     transient-mark-mode url-version w3-meta-charset-content-type-regexp
+     w3m-link-map w3-meta-content-type-charset-regexp))
 
   (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
 	    (featurep 'sxemacs))

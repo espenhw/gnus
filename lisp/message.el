@@ -34,11 +34,12 @@
 (eval-when-compile
   (require 'cl))
 
-(require 'hashcash)
-(require 'canlock)
 (require 'mailheader)
 (require 'gmm-utils)
-(require 'nnheader)
+(require 'mail-utils)
+;; Only for the trivial macros mail-header-from, mail-header-date
+;; mail-header-references, mail-header-subject, mail-header-id
+(eval-when-compile (require 'nnheader))
 ;; This is apparently necessary even though things are autoloaded.
 ;; Because we dynamically bind mail-abbrev-mode-regexp, we'd better
 ;; require mailabbrev here.
@@ -48,7 +49,6 @@
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
-(require 'ecomplete)
 
 (autoload 'mailclient-send-it "mailclient") ;; Emacs 22 or contrib/
 
@@ -171,6 +171,7 @@ If `angles', they look like:
 
 Otherwise, most addresses look like `angles', but they look like
 `parens' if `angles' would need quoting and `parens' would not."
+  :version "23.2"
   :type '(choice (const :tag "simple" nil)
 		 (const parens)
 		 (const angles)
@@ -436,6 +437,7 @@ whitespace)."
 (defcustom message-interactive t
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors."
+  :version "23.2"
   :group 'message-sending
   :group 'message-mail
   :link '(custom-manual "(message)Sending Variables")
@@ -626,7 +628,7 @@ Done before generating the new subject of a forward."
 		non-word-constituents
 		"]\\)+>+\\|[ \t]*[]>|}]\\)+"))))
   "*Regexp matching the longest possible citation prefix on a line."
-  :version "22.1"
+  :version "23.2"
   :group 'message-insertion
   :link '(custom-manual "(message)Insertion Variables")
   :type 'regexp
@@ -643,8 +645,6 @@ Done before generating the new subject of a forward."
   :link '(custom-manual "(message)Canceling News")
   :type 'string)
 
-(defvar smtpmail-default-smtp-server)
-
 (defun message-send-mail-function ()
   "Return suitable value for the variable `message-send-mail-function'."
   (cond ((and (require 'sendmail)
@@ -653,14 +653,13 @@ Done before generating the new subject of a forward."
 	      (executable-find sendmail-program))
 	 'message-send-mail-with-sendmail)
 	((and (locate-library "smtpmail")
-	      (require 'smtpmail)
+	      (boundp 'smtpmail-default-smtp-server)
 	      smtpmail-default-smtp-server)
 	 'message-smtpmail-send-it)
 	((locate-library "mailclient")
 	 'message-send-mail-with-mailclient)
 	(t
-	 (lambda ()
-	   (error "Don't know how to send mail.  Please customize `message-send-mail-function'")))))
+	 (error "Don't know how to send mail.  Please customize `message-send-mail-function'"))))
 
 ;; Useful to set in site-init.el
 (defcustom message-send-mail-function
@@ -824,7 +823,7 @@ Doing so would be even more evil than leaving it out."
   "*Envelope-from when sending mail with sendmail.
 If this is nil, use `user-mail-address'.  If it is the symbol
 `header', use the From: header of the message."
-  :version "22.1"
+  :version "23.2"
   :type '(choice (string :tag "From name")
 		 (const :tag "Use From: header from message" header)
 		 (const :tag "Use `user-mail-address'" nil))
@@ -1001,6 +1000,7 @@ Please also read the note in the documentation of
   "*Prefix inserted on the lines of yanked messages.
 Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
 See also `message-yank-cited-prefix' and `message-yank-empty-prefix'."
+  :version "23.2"
   :type 'string
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
@@ -1025,6 +1025,7 @@ See also `message-yank-prefix' and `message-yank-cited-prefix'."
 (defcustom message-indentation-spaces 3
   "*Number of spaces to insert at the beginning of each cited line.
 Used by `message-yank-original' via `message-yank-cite'."
+  :version "23.2"
   :group 'message-insertion
   :link '(custom-manual "(message)Insertion Variables")
   :type 'integer)
@@ -1056,6 +1057,7 @@ point and mark around the citation text as modified."
 If t, the `message-signature-file' file will be inserted instead.
 If a function, the result from the function will be used instead.
 If a form, the result from the form will be used instead."
+  :version "23.2"
   :type 'sexp
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
@@ -1066,6 +1068,7 @@ Ignored if the named file doesn't exist.
 If nil, don't insert a signature.
 If a path is specified, the value of `message-signature-directory' is ignored,
 even if set."
+  :version "23.2"
   :type '(choice file (const :tags "None" nil))
   :link '(custom-manual "(message)Insertion Variables")
   :group 'message-insertion)
@@ -1141,6 +1144,7 @@ It is a vector of the following headers:
   "*A string containing header lines to be inserted in outgoing messages.
 It is inserted before you edit the message, so you can edit or delete
 these lines."
+  :version "23.2"
   :group 'message-headers
   :link '(custom-manual "(message)Message Headers")
   :type 'message-header-lines)
@@ -1244,7 +1248,7 @@ text and it replaces `self-insert-command' with the other command, e.g.
   :type '(repeat function))
 
 (defcustom message-auto-save-directory
-  (file-name-as-directory (nnheader-concat message-directory "drafts"))
+  (file-name-as-directory (expand-file-name "drafts" message-directory))
   "*Directory where Message auto-saves buffers if Gnus isn't running.
 If nil, Message won't auto-save."
   :group 'message-buffers
@@ -1919,6 +1923,8 @@ is used by default."
 		      (not quoted))
 		 (setq paren nil))))
 	(nreverse elems)))))
+
+(autoload 'nnheader-insert-file-contents "nnheader")
 
 (defun message-mail-file-mbox-p (file)
   "Say whether FILE looks like a Unix mbox file."
@@ -2813,6 +2819,8 @@ See also `message-forbidden-properties'."
 	  (inhibit-read-only t))
       (remove-text-properties begin end message-forbidden-properties))))
 
+(autoload 'ecomplete-setup "ecomplete") ;; for Emacs <23.
+
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
   "Major mode for editing mail and news to be sent.
@@ -3372,8 +3380,8 @@ Message buffers and is not meant to be called directly."
 				;; if message-signature-file contains a path.
 				(not (file-name-directory
 				      message-signature-file)))
-			   (nnheader-concat message-signature-directory
-					    message-signature-file)
+			   (expand-file-name message-signature-file
+					     message-signature-directory)
 			 message-signature-file))
 		 (file-exists-p signature-file))))
     (when signature
@@ -4376,6 +4384,8 @@ This function could be useful in `message-setup-hook'."
 	    (erase-buffer)))
       (kill-buffer tembuf))))
 
+(declare-function hashcash-wait-async "hashcash" (&optional buffer))
+
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
   (let* ((tembuf (message-generate-new-buffer-clone-locals " message temp"))
@@ -4383,14 +4393,26 @@ This function could be useful in `message-setup-hook'."
 	 (news (message-news-p))
 	 (mailbuf (current-buffer))
 	 (message-this-is-mail t)
+	 ;; gnus-setup-posting-charset is autoloaded in mml.el (FIXME
+	 ;; maybe it should not be), which this file requires.  Hence
+	 ;; the fboundp test is always true.  Loading it from gnus-msg
+	 ;; loads many Gnus files (Bug#5642).  If
+	 ;; gnus-group-posting-charset-alist hasn't been customized,
+	 ;; this is just going to return nil anyway.  FIXME it would
+	 ;; be good to improve this further, because even if g-g-p-c-a
+	 ;; has been customized, that is likely to just be for news.
+	 ;; Eg either move the definition from gnus-msg, or separate out
+	 ;; the mail and news parts.
 	 (message-posting-charset
-	  (if (fboundp 'gnus-setup-posting-charset)
+	  (if (and (fboundp 'gnus-setup-posting-charset)
+		   (boundp 'gnus-group-posting-charset-alist))
 	      (gnus-setup-posting-charset nil)
 	    message-posting-charset))
 	 (headers message-required-mail-headers))
     (when (and message-generate-hashcash
 	       (not (eq message-generate-hashcash 'opportunistic)))
       (message "Generating hashcash...")
+      (require 'hashcash)
       ;; Wait for calculations already started to finish...
       (hashcash-wait-async)
       ;; ...and do calculations not already done.  mail-add-payment
@@ -4512,6 +4534,7 @@ If you always want Gnus to send messages in one piece, set
 
 (defun message-send-mail-with-sendmail ()
   "Send off the prepared buffer with sendmail."
+  (require 'sendmail)
   (let ((errbuf (if message-interactive
 		    (message-generate-new-buffer-clone-locals
 		     " sendmail errors")
@@ -4560,8 +4583,8 @@ If you always want Gnus to send messages in one piece, set
 			;; since some systems have broken sendmails.
 			;; But some systems are more broken with -f, so
 			;; we'll let users override this.
-			(if (null message-sendmail-f-is-evil)
-			    (list "-f" (message-sendmail-envelope-from)))
+			(and (null message-sendmail-f-is-evil)
+			     (list "-f" (message-sendmail-envelope-from)))
 			;; These mean "report errors by mail"
 			;; and "deliver in background".
 			(if (null message-interactive) '("-oem" "-odb"))
@@ -4675,10 +4698,14 @@ Do not use this for anything important, it is cryptographically weak."
 		  (prin1-to-string (recent-keys))
 		  (prin1-to-string (garbage-collect))))))
 
+(defvar canlock-password)
+(defvar canlock-password-for-verify)
+
 (defun message-canlock-password ()
   "The password used by message for cancel locks.
 This is the value of `canlock-password', if that option is non-nil.
 Otherwise, generate and save a value for `canlock-password' first."
+  (require 'canlock)
   (unless canlock-password
     (customize-save-variable 'canlock-password (message-canlock-generate))
     (setq canlock-password-for-verify canlock-password))
@@ -4689,7 +4716,12 @@ Otherwise, generate and save a value for `canlock-password' first."
     (message-canlock-password)
     (canlock-insert-header)))
 
+(autoload 'nnheader-get-report "nnheader")
+
+(declare-function gnus-setup-posting-charset "gnus-msg" (group))
+
 (defun message-send-news (&optional arg)
+  (require 'gnus-msg)
   (let* ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
 	 (case-fold-search nil)
 	 (method (if (functionp message-post-method)
@@ -5428,7 +5460,7 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
 (defun message-make-references ()
   "Return the References header for this message."
   (when message-reply-headers
-    (let ((message-id (mail-header-message-id message-reply-headers))
+    (let ((message-id (mail-header-id message-reply-headers))
 	  (references (mail-header-references message-reply-headers)))
       (if (or references message-id)
 	  (concat (or references "") (and references " ")
@@ -5440,7 +5472,7 @@ In posting styles use `(\"Expires\" (make-expires-date 30))'."
   (when message-reply-headers
     (let ((from (mail-header-from message-reply-headers))
 	  (date (mail-header-date message-reply-headers))
-	  (msg-id (mail-header-message-id message-reply-headers)))
+	  (msg-id (mail-header-id message-reply-headers)))
       (when from
 	(let ((name (mail-extract-address-components from)))
 	  (concat
@@ -7965,7 +7997,11 @@ From headers in the original article."
 	(not result)
       result)))
 
+(declare-function ecomplete-add-item "ecomplete" (type key text))
+(declare-function ecomplete-save "ecomplete" ())
+
 (defun message-put-addresses-in-ecomplete ()
+  (require 'ecomplete)
   (dolist (header '("to" "cc" "from" "reply-to"))
     (let ((value (message-field-value header)))
       (dolist (string (mail-header-parse-addresses value 'raw))
@@ -7975,6 +8011,8 @@ From headers in the original article."
 	(ecomplete-add-item 'mail (car (mail-header-parse-address string))
 			    string))))
   (ecomplete-save))
+
+(autoload 'ecomplete-display-matches "ecomplete")
 
 (defun message-display-abbrev (&optional choose)
   "Display the next possible abbrev for the text before point."
