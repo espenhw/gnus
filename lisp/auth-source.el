@@ -103,7 +103,7 @@ Only relevant if `auth-source-debug' is not nil."
   :version "23.2" ;; No Gnus
   :type `boolean)
 
-(defcustom auth-sources '((:source "~/.authinfo.gpg" :host t :protocol t nil))
+(defcustom auth-sources '((:source "~/.authinfo.gpg" :host t :protocol t))
   "List of authentication sources.
 
 Each entry is the authentication type with optional properties.
@@ -136,9 +136,9 @@ can get pretty complex."
 			       (const :tag "Any" t)
 			       (const :tag "Fallback" nil)
 			       ,@auth-source-protocols-customize)
-		       (repeat :tag "Extra Parameters"
+		       (repeat :tag "Extra Parameters" :inline t
 			       (choice :tag "Extra parameter"
-				       (list :tag "Preferred username"
+				       (list :tag "Preferred username" :inline t
 					     (const :format "" :value :preferred-username)
 					     (choice :tag "Personality or username"
 						     (const :tag "Any" t)
