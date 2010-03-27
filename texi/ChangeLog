@@ -1,3 +1,8 @@
+2010-03-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* auth.texi (Secret Service API): Add TODO node.
+	(Help for users): Explain the new source options for `auth-sources'.
+
 2010-01-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Score File Format): Fix typo.
