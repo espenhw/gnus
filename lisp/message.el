@@ -1153,16 +1153,18 @@ these lines."
   ;; Ease the transition from mail-mode to message-mode.  See bugs#4431, 5555.
   (concat (if (and (boundp 'mail-default-reply-to)
 		   (stringp mail-default-reply-to))
-	      (format "Reply-to: %s\n" mail-default-reply-to)
-	    "")
+	      (format "Reply-to: %s\n" mail-default-reply-to))
 	  (if (and (boundp 'mail-self-blind)
 		   mail-self-blind)
-	      (format "BCC: %s\n" user-mail-address)
-	    "")
+	      (format "BCC: %s\n" user-mail-address))
 	  (if (and (boundp 'mail-archive-file-name)
 		   (stringp mail-archive-file-name))
-	      (format "FCC: %s\n" mail-archive-file-name)
-	    ""))
+	      (format "FCC: %s\n" mail-archive-file-name))
+	  ;; Use the value of `mail-default-headers' if available.
+	  ;; Note: as for Emacs 21, XEmacs 21.4 and 21.5, it is
+	  ;; unavailable unless sendmail.el is loaded.
+	  (if (boundp 'mail-default-headers)
+	      mail-default-headers))
   "*A string of header lines to be inserted in outgoing mails."
   :version "23.2"
   :group 'message-headers
