@@ -29,11 +29,12 @@
     (defun nnkiboze-score-file (a))
     (maybe-fbind
      '(Info-index
-       Info-index-next Info-menu bbdb-complete-name display-time-event-handler
-       epg-check-configuration find-coding-system frame-device
-       recenter-top-bottom rmail-swap-buffers-maybe w3-do-setup
-       w3-prepare-buffer w3-region w32-focus-frame w3m-detect-meta-charset
-       w3m-region))
+       Info-index-next Info-menu bbdb-complete-name bookmark-default-handler
+       bookmark-get-bookmark-record bookmark-make-record-default
+       bookmark-prop-get display-time-event-handler epg-check-configuration
+       find-coding-system frame-device recenter-top-bottom
+       rmail-swap-buffers-maybe w3-do-setup w3-prepare-buffer w3-region
+       w32-focus-frame w3m-detect-meta-charset w3m-region))
     (maybe-bind
      '(w3m-link-map)))
 
@@ -77,10 +78,12 @@
   (eval-after-load "rmail"
     '(defun rmail-toggle-header (&optional arg)))
   (maybe-fbind
-   '(clear-string
-     codepage-setup coding-system-from-name cp-supported-codepages create-image
-     detect-coding-string display-time-event-handler epg-check-configuration
-     event-click-count event-end event-start find-coding-systems-for-charsets
+   '(bookmark-default-handler
+     bookmark-get-bookmark-record bookmark-make-record-default
+     bookmark-prop-get clear-string codepage-setup coding-system-from-name
+     cp-supported-codepages create-image detect-coding-string
+     display-time-event-handler epg-check-configuration event-click-count
+     event-end event-start find-coding-systems-for-charsets
      find-coding-systems-region find-coding-systems-string find-image
      float-time help-buffer image-size image-type-available-p insert-image
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
