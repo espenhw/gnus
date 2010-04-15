@@ -1,3 +1,8 @@
+2010-04-15  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* gnus.texi (Score File Format): Fix typo.  Reported by Štěpán Němec.
+	(Mail Group Commands): Add index entry.
+
 2010-04-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Finding the News): Add pointers to the Server buffer
