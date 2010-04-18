@@ -1,3 +1,7 @@
+2010-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* git.gnus.org/index.html: Fix 'comit' typos.
+
 2010-04-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* git.gnus.org/index.html: Added index.html for git.gnus.org.
