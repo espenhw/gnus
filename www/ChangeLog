@@ -1,7 +1,7 @@
 2010-04-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* git.gnus.org/index.html: Tell about server setup.  Tell about
-	commit cvslog@quimby.gnus.org address.
+	commit cvslog@quimby.gnus.org address.  Tell about subject prefix.
 
 2010-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
