@@ -1,3 +1,7 @@
+2010-04-19  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* git.gnus.org/index.html: Tell about server setup.
+
 2010-04-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* git.gnus.org/index.html: Fix 'comit' typos.
