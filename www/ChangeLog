@@ -1,3 +1,7 @@
+2010-04-20  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* git.gnus.org/index.html: Tell about the cgit repository.
+
 2010-04-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* git.gnus.org/index.html: Tell about server setup.  Tell about
