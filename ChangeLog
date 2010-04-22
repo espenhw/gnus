@@ -1,3 +1,7 @@
+2010-04-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* configure: Regenerated from configure.in using Autoconf 2.65.
+
 2009-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* GNUS-NEWS: Generated.
