@@ -1,3 +1,7 @@
+2010-04-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* .gitignore: Remove configure from ignores.
+
 2010-04-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* configure: Regenerated from configure.in using Autoconf 2.65.
