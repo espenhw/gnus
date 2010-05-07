@@ -81,13 +81,13 @@
    '(bookmark-default-handler
      bookmark-get-bookmark-record bookmark-make-record-default
      bookmark-prop-get clear-string codepage-setup coding-system-from-name
-     cp-supported-codepages create-image detect-coding-string
+     cp-supported-codepages create-image delete-overlay detect-coding-string
      display-time-event-handler epg-check-configuration event-click-count
      event-end event-start find-coding-systems-for-charsets
      find-coding-systems-region find-coding-systems-string find-image
      float-time help-buffer image-size image-type-available-p insert-image
      mail-abbrevs-setup make-mode-line-mouse-map make-network-process
-     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
+     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr overlay-lists
      pgg-display-output-buffer posn-point posn-window put-image read-event
      recenter-top-bottom rmail-msg-restore-non-pruned-header
      rmail-swap-buffers-maybe select-safe-coding-system sort-coding-systems
@@ -103,20 +103,23 @@
      line-spacing mark-active mouse-selection-click-count
      mouse-selection-click-count-buffer ps-print-color-p rmail-default-file
      rmail-default-rmail-file rmail-insert-mime-forwarded-message-function
-     show-trailing-whitespace smtpmail-default-smtp-server tool-bar-mode
-     transient-mark-mode url-version w3-meta-charset-content-type-regexp
-     w3m-link-map w3-meta-content-type-charset-regexp))
+     show-trailing-whitespace smtpmail-default-smtp-server
+     temporary-file-directory tool-bar-mode transient-mark-mode url-version
+     w3-meta-charset-content-type-regexp w3m-link-map
+     w3-meta-content-type-charset-regexp))
 
   (when (or (and (= emacs-major-version 21) (= emacs-minor-version 4))
 	    (featurep 'sxemacs))
     (maybe-fbind
      '(custom-autoload
        decode-char display-graphic-p display-images-p display-visual-class
-       get-display-table next-single-char-property-change put-display-table
-       select-frame-set-input-focus unicode-precedence-list unicode-to-char
-       w32-focus-frame x-focus-frame))
+       get-display-table make-temp-file next-single-char-property-change
+       put-display-table select-frame-set-input-focus set-buffer-multibyte
+       string-as-multibyte timer-set-function unicode-precedence-list
+       unicode-to-char w32-focus-frame x-focus-frame))
     (maybe-bind
-     '(scroll-margin)))
+     '(scroll-margin
+       timer-list)))
 
   (when (and (= emacs-major-version 21) (= emacs-minor-version 4))
     (maybe-fbind
@@ -125,8 +128,8 @@
   (unless (featurep 'mule)
     (maybe-fbind
      '(ccl-execute-on-string
-       charsetp coding-system-get get-charset-property
-       pgg-display-output-buffer pgg-parse-crc24-string
+       char-charset charsetp coding-system-get find-charset-region
+       get-charset-property pgg-display-output-buffer pgg-parse-crc24-string
        unicode-precedence-list))
     (maybe-bind
      '(current-language-environment
@@ -136,7 +139,9 @@
     (maybe-fbind
      '(coding-system-aliasee
        coding-system-base coding-system-change-eol-conversion coding-system-list
-       coding-system-p find-coding-system))
+       coding-system-p decode-coding-region decode-coding-string
+       detect-coding-region encode-coding-region encode-coding-string
+       find-coding-system))
     (maybe-bind
      '(buffer-file-coding-system
        coding-system-for-read coding-system-for-write
