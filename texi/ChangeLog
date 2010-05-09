@@ -1,3 +1,7 @@
+2010-05-08  Štěpán Němec  <stepnem@gmail.com>  (tiny change)
+
+	* message.texi (Header Commands, Responses): Fix typos.
+
 2010-04-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Gnus Versions, Oort Gnus): Mention the Git repo instead of
