@@ -1,3 +1,7 @@
+2010-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-emacs-mule): Remove.
+
 2010-05-10  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* gnus-sum.el (gnus-summary-mode): Don't make minor-mode-alist
