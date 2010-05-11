@@ -1901,7 +1901,7 @@
 
 2008-06-03  Glenn Morris  <rgm@gnu.org>
 
-       * pop3.el (nnheader-accept-process-output): Autoload it.
+	* pop3.el (nnheader-accept-process-output): Autoload it.
 
 2008-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -2284,9 +2284,9 @@
 	(message-shorten-references): Be more strict when building list of
 	valid references to comply with GNKSA.
 
-        * gnus-group.el (gnus-read-ephemeral-bug-group)
-        (gnus-read-ephemeral-debian-bug-group)
-        (gnus-read-ephemeral-emacs-bug-group): Use the correct variable.
+	* gnus-group.el (gnus-read-ephemeral-bug-group)
+	(gnus-read-ephemeral-debian-bug-group)
+	(gnus-read-ephemeral-emacs-bug-group): Use the correct variable.
 
 	* message.el (message-info): Don't use booleanp which isn't supported
 	in Emacs 21 and XEmacs.
@@ -12431,7 +12431,7 @@
 	* gnus-group.el (gnus-group-get-new-news-this-group): Don't
 	update info that isn't there.
 
-2004-06-29  Ilya N. Golubev  <gin@mo.msk.ru>.
+2004-06-29  Ilya N. Golubev  <gin@mo.msk.ru>
 
 	* mm-util.el (mm-mime-mule-charset-alist): Add the windows-1251
 	entry.
@@ -13365,7 +13365,7 @@
 	sorting.
 	(spam-extra-header-to-number): Add function to get a score from a
 	header.
-	(spam-summary-score): Add function to  get a numeric score from the
+	(spam-summary-score): Add function to get a numeric score from the
 	headers.
 	(spam-generic-score): Fix function doc, was in wrong place.
 	(spam-initialize): Take symbols when it's run, and install the

@@ -303,7 +303,7 @@
 2008-06-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail Source Customization): Correct values of
-	 `mail-source-delete-incoming'.  Reported by Tassilo Horn.
+	`mail-source-delete-incoming'.  Reported by Tassilo Horn.
 	(Oort Gnus): Fix version comment for mml-dnd-protocol-alist.
 
 2008-06-14  Reiner Steib  <Reiner.Steib@gmx.de>
