@@ -7138,7 +7138,7 @@ Optional DIGEST will use digest to forward."
 	(contents (with-current-buffer forward-buffer (buffer-string)))
 	e)
     (unless (featurep 'xemacs)
-      (unless (multibyte-string-p contents)
+      (unless (mm-multibyte-string-p contents)
 	(error "Attempt to insert unibyte string from the buffer \"%s\"\
  to the multibyte buffer \"%s\""
 	       (if (bufferp forward-buffer)
@@ -7193,7 +7193,7 @@ Optional DIGEST will use digest to forward."
     (if (not message-forward-decoded-p)
 	(let ((contents (with-current-buffer forward-buffer (buffer-string))))
 	  (unless (featurep 'xemacs)
-	    (unless (multibyte-string-p contents)
+	    (unless (mm-multibyte-string-p contents)
 	      (error "Attempt to insert unibyte string from the buffer \"%s\"\
  to the multibyte buffer \"%s\""
 		     (if (bufferp forward-buffer)
