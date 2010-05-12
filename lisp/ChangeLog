@@ -5,6 +5,8 @@
 	(message-forward-make-body-plain): Ditto; don't add excessive newline
 	in body end.
 
+	* lpath.el: Fbind multibyte-string-p for XEmacs 21.4 and SXEmacs.
+
 2010-05-11  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* gnus-sum.el (gnus-summary-kill-thread): Use gnus-summary-mark-article
